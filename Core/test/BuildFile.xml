@@ -1,0 +1,5 @@
+
+<bin   name="TestArtusCore" file="Artus_t.cpp">
+  <use   name="boost"/>
+  <use   name="root"/>
+</bin>
