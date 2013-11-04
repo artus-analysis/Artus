@@ -3,7 +3,7 @@
 #include "DataFormats/interface/Kappa.h"
 #include "DataFormats/interface/KDebug.h"
 
-#include "Pipeline/EventPipelineRunner.h"
+#include "Artus/Core/interface/EventPipelineRunner.h"
 
 template<class TEventType>
 class KappaEventProvider: public EventProvider<TEventType> {
@@ -31,7 +31,7 @@ public:
 		assert(false);
 	}
 
-	virtual bool GotoEvent(long long lEvent, HLTTools * hltInfo) {
+	virtual bool GotoEvent(long long lEvent /*, HLTTools * hltInfo*/ ) {
 		m_mon->Update();
 		m_fi.eventdata.GetEntry(lEvent);
 

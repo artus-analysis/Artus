@@ -3,6 +3,7 @@
 #include <boost/test/included/unit_test.hpp>
 
 #include "Artus/Core/interface/FilterBase.h"
+#include "Artus/Core/interface/FilterResult.h"
 
 BOOST_AUTO_TEST_CASE( test_filter_result )
 {

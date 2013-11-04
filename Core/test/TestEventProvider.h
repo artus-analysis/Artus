@@ -2,8 +2,9 @@
 
 #include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/EventPipelineRunner.h"
+#include "Artus/Core/interface/EventProviderBase.h"
 
-class TestEventProvider: public EventProvider<TestData> {
+class TestEventProvider: public EventProviderBase<TestData> {
 	virtual TestData const& GetCurrentEvent() const ARTUS_CPP11_OVERRIDE {
 		return m_data;
 	}

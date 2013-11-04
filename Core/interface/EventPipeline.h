@@ -14,7 +14,6 @@ template<class TTypes>
 class EventPipeline;
 
 /*
-
  Base class for your custom PipelineInitializer. Your custom code
  can add Filters and Consumers to newly created pipelines.
  */
@@ -99,17 +98,15 @@ public:
 		initializer.InitPipeline(this, pset);
 
 		// init Filters
-		for (FilterVectorIterator itfilter = m_filter.begin();
-				itfilter != m_filter.end(); itfilter++) {
-			itfilter->Init(this);
+
+		for (auto & it : m_filter) {
+			it.Init(this);
 		}
 
 		// init Consumers
-		for (ConsumerVectorIterator itcons = m_consumer.begin();
-				itcons != m_consumer.end(); itcons++) {
-			itcons->Init(this);
+		for (auto & it : m_consumer) {
+			it.Init(this);
 		}
-
 	}
 
 	/*
@@ -133,16 +130,13 @@ public:
 	 Called once all events have been passed to the pipeline
 	 */
 	virtual void FinishPipeline() {
-		//std::cout << "finish size = " << m_consumer.size() << std::endl;
-		for (ConsumerVectorIterator itcons = m_consumer.begin();
-				itcons != m_consumer.end(); itcons++) {
-			//std::cout << "calling fin" << std::endl;
-			itcons->Finish();
+		for (auto & it : m_consumer) {
+			it.Finish();
 		}
 
-		for (FilterVectorIterator itfilter = m_filter.begin();
-				itfilter != m_filter.end(); itfilter++)
-			itfilter->Finish();
+		for (auto & it : m_filter) {
+			it.Finish();
+		}
 	}
 
 	/*
@@ -150,9 +144,8 @@ public:
 	 * Pipelines which process output from Pipelines already run.
 	 */
 	virtual void Run() {
-		for (ConsumerVectorIterator itcons = m_consumer.begin();
-				itcons != m_consumer.end(); itcons++) {
-			itcons->Process();
+		for (auto & it : m_consumer) {
+			it.Process();
 		}
 	}
 

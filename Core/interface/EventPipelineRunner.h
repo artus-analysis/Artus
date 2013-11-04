@@ -5,19 +5,8 @@
 #include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_list.hpp>
 
-//#include "KappaTools/RootTools/libKRootTools.h"
-//#include "KappaTools/RootTools/HLTTools.h"
-
 #include "EventPipeline.h"
-
-template<class TEvent>
-class EventProvider: public boost::noncopyable {
-public:
-
-	virtual TEvent const& GetCurrentEvent() const = 0;
-	virtual bool GotoEvent(long long lEventNumber) = 0;
-	virtual long long GetOverallEventCount() const = 0;
-};
+#include "EventProviderBase.h"
 
 /*
  * The EventPipelineRunner utilizes a user-provided EventProvider to load events and passes them to
@@ -54,9 +43,9 @@ public:
 	 * Add a range of pipelines. The object is destroy in the destructor of the EventPipelineRunner
 	 */
 	void AddPipelines(std::vector<TPipeline*> pVec) {
-		BOOST_FOREACH(TPipeline * pline, pVec)
-		{
-			AddPipeline(pline);
+
+		for (auto * it : pVec) {
+			AddPipeline(it);
 		}
 	}
 
@@ -67,7 +56,7 @@ public:
 	 *
 	 */
 	template<class TEvent, class TMetaData, class TSettings>
-	void RunPipelines(EventProvider<TEvent>& evtProvider,
+	void RunPipelines(EventProviderBase<TEvent>& evtProvider,
 			TSettings const& settings) {
 		long long firstEvent = 0; // settings.Global()->GetSkipEvents();
 		long long nEvents = evtProvider.GetOverallEventCount();
@@ -103,23 +92,11 @@ public:
 
 			// run the pipelines, if the event is valid
 			if (bEventValid) {
-				// only works for root input provider
-				/*if (unlikely(nEvents - firstEvent < 100)) // debug output
-				 CALIB_LOG("Event "
-				 << evtProvider.GetCurrentEvent().m_eventmetadata->nRun << ":"
-				 << evtProvider.GetCurrentEvent().m_eventmetadata->nLumi << ":"
-				 << evtProvider.GetCurrentEvent().m_eventmetadata->nEvent)*/
 				for (PipelinesIterator it = m_pipelines.begin();
 						it != m_pipelines.end(); it++) {
 					if (it->GetSettings().GetLevel() == 1)
-						//{
-						/*if (unlikely(nEvents - firstEvent < 5)) // debug output
-						 CALIB_LOG("Event:" << i
-						 << ", new pipeline: " << it->GetSettings().ToString()
-						 << ", algorithm: " << it->GetSettings().GetJetAlgorithm())*/
 						it->RunEvent(evtProvider.GetCurrentEvent(),
 								metaDataGlobal);
-					//}
 				}
 			}
 			metaDataGlobal.ClearContent();
