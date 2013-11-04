@@ -6,6 +6,7 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 
 #include "FilterBase.h"
+#include "FilterResult.h"
 
 
 template<class TTypes>

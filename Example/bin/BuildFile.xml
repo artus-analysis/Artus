@@ -1,0 +1,5 @@
+
+<bin   name="artusExample" file="ArtusExample.cpp">
+   <use   name="Artus/Core"/>
+   <use   name="Artus/Provider"/>
+</bin>
