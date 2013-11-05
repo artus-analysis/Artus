@@ -1,3 +1,5 @@
+#include <boost/foreach.hpp>
+#include "Artus/Core/interface/GlobalInclude.h"
 
 /*
  * This class provides various convinience functions when working with Boost PropertyTrees.
@@ -16,9 +18,9 @@ public:
 		} catch (boost::property_tree::ptree_bad_path& e) {
 			// no problem, node optional ?
 			if (failIfNotFound)
-			CALIB_LOG_FATAL(
-					"String list on path " + path
-							+ " can not be found in configuration file")
+				CALIB_LOG_FATAL(
+						"String list on path " + path
+								+ " can not be found in configuration file")
 		}
 		return fvec;
 	}

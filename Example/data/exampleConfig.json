@@ -1,0 +1,26 @@
+{
+    "EventCount": -1, 
+    "GlobalProducer": [
+        "json_producer"
+    ], 
+    "InputFiles": [
+        "sample_ntuple.root"
+    ], 
+    "OutputPath": "sample_output.root", 
+    "Pipelines": {
+        "default": {
+            "Consumer": {
+                "quantities_all": {
+                    "Name": "quantities_all"
+                }
+            }, 
+           "Filter": [
+            ], 
+            "Level": 1, 
+            "LocalProducer": [
+                "VertexCandidatesSelector"
+            ], 
+            "RootFileFolder": "default" 
+        }
+    }
+} 

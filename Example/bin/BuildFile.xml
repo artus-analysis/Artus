@@ -2,4 +2,5 @@
 <bin   name="artusExample" file="ArtusExample.cpp">
    <use   name="Artus/Core"/>
    <use   name="Artus/Provider"/>
+   <use   name="Artus/Configuration"/>
 </bin>
