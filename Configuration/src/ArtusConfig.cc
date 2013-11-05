@@ -3,10 +3,6 @@
 #include <iostream>
 #include <cstdlib>
 
-#include <boost/algorithm/string.hpp>
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/property_tree/ptree.hpp>
-
 #include "Artus/Configuration/interface/ArtusConfig.h"
 #include "Artus/Configuration/interface/PropertyTreeSupport.h"
 

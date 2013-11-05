@@ -15,13 +15,6 @@ public:
 		for (auto const & fname : fileNames) {
 			m_rootChain->Add(fname.c_str());
 		}
-
-		WireEvent();
-	}
-
-	// overwrite using template specialization
-	void WireEvent() {
-		assert(false);
 	}
 
 	virtual bool GotoEvent(long long lEvent) {

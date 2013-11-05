@@ -1,5 +1,8 @@
 #pragma once
 
-class TraxPipelineSettings {
+#include "Artus/Core/interface/SettingsBase.h"
+
+class TraxPipelineSettings: public SettingsBase {
+public:
 
 };

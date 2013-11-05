@@ -21,6 +21,20 @@
                 "VertexCandidatesSelector"
             ], 
             "RootFileFolder": "default" 
-        }
+        },
+        "highPt": {
+            "Consumer": {
+                "quantities_all": {
+                    "Name": "quantities_all"
+                }
+            }, 
+           "Filter": [
+            ], 
+            "Level": 1, 
+            "LocalProducer": [
+                "VertexCandidatesSelector"
+            ], 
+            "RootFileFolder": "highPt" 
+        }        
     }
 } 

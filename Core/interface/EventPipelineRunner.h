@@ -19,6 +19,9 @@
 template<class TPipeline, class TGlobalMetaProducer>
 class EventPipelineRunner: public boost::noncopyable {
 public:
+
+	typedef TPipeline pipeline_type;
+
 	typedef boost::ptr_list<TPipeline> Pipelines;
 	typedef typename Pipelines::iterator PipelinesIterator;
 
@@ -55,9 +58,10 @@ public:
 	 * read from the global settings ...
 	 *
 	 */
-	template<  class TEvent, class TMetaData, class TSettings>
-	void RunPipelines(EventProviderBase<TEvent>& evtProvider,
-			TSettings const& settings) {
+	template<class TTypes>
+	void RunPipelines(
+			EventProviderBase<typename TTypes::event_type>& evtProvider,
+			typename TTypes::setting_type const& settings) {
 		long long firstEvent = 0; // settings.Global()->GetSkipEvents();
 		long long nEvents = evtProvider.GetOverallEventCount();
 		/*if (settings.Global()->GetEventCount() >= 0)
@@ -75,8 +79,9 @@ public:
 
 		for (long long i = firstEvent; i < nEvents; ++i) {
 			// TODO refactor the evtProvider to clean up this mess with the hltTools
+			std::cout << "going to " << i << std::endl;
 			evtProvider.GotoEvent(i);
-			TMetaData metaDataGlobal;
+			typename TTypes::global_meta_type metaDataGlobal;
 			//metaDataGlobal.m_hltInfo = hltTools;
 
 			// create global meta data
@@ -99,7 +104,6 @@ public:
 								metaDataGlobal);
 				}
 			}
-			metaDataGlobal.ClearContent();
 		}
 
 		// first safe the results ( > plots ) from all level one pipelines

@@ -7,6 +7,7 @@
 #include "Artus/Example/interface/TraxTypes.h"
 #include "Artus/Example/interface/TraxEventProvider.h"
 #include "Artus/Example/interface/TraxPipelineRunner.h"
+#include "Artus/Example/interface/TraxPipelineInitializer.h"
 
 int main(int argc, char** argv) {
 
@@ -20,7 +21,16 @@ int main(int argc, char** argv) {
 
 	TraxEventProvider evtProvider(myConfig.getInputFiles());
 
+	TraxPipelineInitilizer pInit;
 	TraxPipelineRunner runner;
+	//TraxPip
+
+	myConfig.loadPipelines(pInit);
+
+	// fix me
+	TraxPipelineSettings settings;
+
+	runner.RunPipelines<TraxTypes>(evtProvider, settings);
 
 	/*
 	 // removes the old file

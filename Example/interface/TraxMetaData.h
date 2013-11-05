@@ -2,6 +2,10 @@
 #pragma once
 
 
-class TraxMetaData {
+class TraxLocalMetaData {
+
+};
+
+class TraxGlobalMetaData {
 
 };

@@ -21,7 +21,15 @@ class EventPipeline;
 template<class TTypes>
 class PipelineInitilizerBase {
 public:
-	virtual void InitPipeline(EventPipeline<TTypes> * pLine,
+
+	typedef typename TTypes::event_type event_type;
+	typedef typename TTypes::local_meta_type local_meta_type;
+	typedef typename TTypes::global_meta_type global_meta_type;
+	typedef typename TTypes::setting_type setting_type;
+
+	typedef EventPipeline<TTypes> pipeline_type;
+
+	virtual void InitPipeline(pipeline_type * pLine,
 			typename TTypes::setting_type const& pset) const = 0;
 
 };
