@@ -189,9 +189,10 @@ public:
 		// run Consumer
 		for (ConsumerVectorIterator itcons = m_consumer.begin();
 				itcons != m_consumer.end(); itcons++) {
-			if (fres.HasPassed())
+			if (fres.HasPassed()) {
 				itcons->ProcessFilteredEvent(evt, globalMetaData,
 						localMetaData);
+			}
 
 			itcons->ProcessEvent(evt, globalMetaData, localMetaData, fres);
 		}

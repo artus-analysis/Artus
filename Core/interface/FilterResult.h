@@ -6,7 +6,8 @@ public:
 	typedef std::map<std::string, bool> FilterDecisions;
 
 	FilterResult() :
-			m_cacheHasPassed(false), m_IsCachedHasPassed(false) {
+			// has passed by default
+			m_cacheHasPassed(true), m_IsCachedHasPassed(false) {
 	}
 
 	// Note: only call this, when all FilterDecisions have been added, as this result is cached

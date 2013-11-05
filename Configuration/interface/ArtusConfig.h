@@ -15,8 +15,8 @@ public:
 		return m_fileNames;
 	}
 
-	template<class TPipelineInitializer>
-	void loadPipelines(TPipelineInitializer & pInit) {
+	template<class TPipelineInitializer, class TPipelineRunner>
+	void loadPipelines(TPipelineInitializer & pInit, TPipelineRunner & runner) {
 
 		typedef typename TPipelineInitializer::setting_type setting_type;
 		typedef typename TPipelineInitializer::pipeline_type pipeline_type;
@@ -39,7 +39,7 @@ public:
 			pipeline_type* pLine = new pipeline_type; //CreateDefaultPipeline();
 
 			pLine->InitPipeline(pset, pInit);
-			//pRunner.AddPipeline(pLine);
+			runner.AddPipeline(pLine);
 		}
 	}
 
