@@ -33,7 +33,12 @@ Hist1D::Hist1D(std::string sName, std::string sFolder, ValueModifiers l) :
 	m_hist->Sumw2();
 }
 
+void Hist1D::Init() {
+
+}
+
 void Hist1D::Store(TFile* pRootFile) {
+	assert(pRootFile);
 	CALIB_LOG(
 			"Storing Histogram " + this->GetRootFileFolder() + "/"
 					+ this->GetName())

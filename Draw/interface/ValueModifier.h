@@ -85,7 +85,9 @@ public:
 	static ValueModifiers getRModifier(size_t binCount = 500);
 	static ValueModifiers getZModifier(size_t binCount = 500);
 	static ValueModifiers getEtaModifier(size_t binCount = 100);
+	static ValueModifiers getThetaModifier();
 	static ValueModifiers getPtModifier(float);
+	static ValueModifiers getPtModifier(float, float);
 	static ValueModifiers getMassModifier(float, float);
 
 	static ValueModifiers getRunModifier();

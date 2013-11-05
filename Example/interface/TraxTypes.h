@@ -1,10 +1,10 @@
 #pragma once
 
 // only forward declared here
-class TraxEventData;
-class TraxLocalMetaData;
-class TraxGlobalMetaData;
-class TraxPipelineSettings;
+#include "TraxEventData.h"
+#include "TraxMetaData.h"
+#include "TraxMetaData.h"
+#include "TraxPipelineSettings.h"
 
 struct TraxTypes {
 	typedef TraxEventData event_type;

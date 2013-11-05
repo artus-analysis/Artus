@@ -1,5 +1,7 @@
 #pragma once
 
+#include <TFile.h>
+
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/property_tree/json_parser.hpp>
@@ -16,7 +18,10 @@ public:
 	}
 
 	template<class TPipelineInitializer, class TPipelineRunner>
-	void loadPipelines(TPipelineInitializer & pInit, TPipelineRunner & runner) {
+	void loadPipelines(TPipelineInitializer & pInit, TPipelineRunner & runner,
+			TFile * outputFile) {
+
+		assert(outputFile);
 
 		typedef typename TPipelineInitializer::setting_type setting_type;
 		typedef typename TPipelineInitializer::pipeline_type pipeline_type;
@@ -30,10 +35,9 @@ public:
 
 			// set up the Settings class access to the property tree
 			// in order to be able to load additional settings
-			pset.SetSettingsRoot("Pipelines." + sKeyName);
+			pset.SetPropTreePath("Pipelines." + sKeyName);
 			pset.SetPropTree(&m_propTreeRoot);
-
-			//{pset->SetRootOutFile(g_resFile);
+			pset.SetRootOutFile(outputFile);
 			//pset->m_globalSettings = &gset;
 
 			std::cout << " %% Adding new pipeline" << sKeyName << std::endl;
@@ -43,6 +47,10 @@ public:
 			pLine->InitPipeline(pset, pInit);
 			runner.AddPipeline(pLine);
 		}
+	}
+
+	std::string const& GetOutputPath() const {
+		return m_outputPath;
 	}
 
 private:
