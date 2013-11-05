@@ -13,7 +13,8 @@ class LocalMetaDataProducerBase: public boost::noncopyable {
 public:
 
 	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::meta_type meta_type;
+	typedef typename TTypes::global_meta_type global_meta_type;
+	typedef typename TTypes::local_meta_type local_meta_type;
 	typedef typename TTypes::setting_type setting_type;
 
 	virtual ~LocalMetaDataProducerBase() {
@@ -21,31 +22,8 @@ public:
 	}
 
 	virtual void PopulateLocal(event_type const& data,
-			meta_type const& metaData,
-			typename meta_type::LocalMetaDataType & localMetaData,
+			global_meta_type const& metaData, local_meta_type & localMetaData,
 			setting_type const& m_pipelineSettings) const = 0;
 
-};
-
-// Basis for producers which are run before the pipelines and produce 
-// results useful to all
-template<class TTypes>
-class GlobalMetaDataProducerBase: public boost::noncopyable {
-public:
-
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::meta_type meta_type;
-	typedef typename TTypes::setting_type setting_type;
-
-	virtual ~GlobalMetaDataProducerBase() {
-
-	}
-
-	virtual void Init(setting_type const& globalSettings) {
-	}
-
-	// if false is returned, the event is dropped as it does not meet the minimum requirements for the producer
-	virtual bool PopulateGlobalMetaData(event_type const& data,
-			meta_type & metaData, setting_type const& globalSettings) const = 0;
 };
 

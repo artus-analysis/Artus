@@ -19,7 +19,7 @@ public:
 	}
 
 	virtual bool DoesEventPass(const TestData & event,
-			TestMetaData const& metaData, TestSettings const& settings) {
+			TestGlobalMetaData const& metaData, TestSettings const& settings) {
 		return (event.iVal < 2);
 	}
 };
@@ -32,7 +32,7 @@ public:
 	}
 
 	virtual bool DoesEventPass(const TestData & event,
-			TestMetaData const& metaData, TestSettings const& settings) {
+			TestGlobalMetaData const& metaData, TestSettings const& settings) {
 		return false;
 	}
 };
@@ -42,8 +42,8 @@ public:
 
 	// for each pipeline
 	virtual void PopulateLocal(TestData const& data,
-			TestMetaData const& metaData,
-			typename TestMetaData::LocalMetaDataType & localMetaData,
+			TestGlobalMetaData const& metaData,
+			TestLocalMetaData & localMetaData,
 			TestSettings const& m_pipelineSettings) const {
 		localMetaData.iMetaData = data.iVal + 1;
 	}
@@ -56,26 +56,28 @@ public:
 					0) {
 	}
 
-	virtual void Init(EventPipeline<TestTypes> * pset) {
+	virtual void Init(EventPipeline<TestTypes> * pset) ARTUS_CPP11_OVERRIDE {
 		m_pipeline = pset;
 		iInit++;
 	}
 
-	virtual void Finish() {
+	virtual void Finish() ARTUS_CPP11_OVERRIDE {
 		iFinish++;
 	}
 
 	virtual void ProcessFilteredEvent(TestData const& event,
-			TestMetaData const& metaData) ARTUS_CPP11_FINAL {
+			TestGlobalMetaData const& metaData,
+			TestLocalMetaData const& localMetaData) ARTUS_CPP11_OVERRIDE {
 		iProcessFilteredEvent++;
 	}
 
 	// this method is called for all events
 	virtual void ProcessEvent(TestData const& event,
-			TestMetaData const& metaData, FilterResult & result) ARTUS_CPP11_OVERRIDE {
+			TestGlobalMetaData const& metaData,
+			TestLocalMetaData const& localMetaData, FilterResult & result)
+					ARTUS_CPP11_OVERRIDE {
 		// did metaData work ?
-		BOOST_CHECK_EQUAL(event.iVal + 1,
-				metaData.GetLocalMetaData()->iMetaData);
+		BOOST_CHECK_EQUAL(event.iVal + 1, localMetaData.iMetaData);
 		BOOST_CHECK_EQUAL(event.iVal + 5, metaData.iGlobalMetaData);
 
 		iProcessEvent++;
@@ -130,7 +132,7 @@ BOOST_AUTO_TEST_CASE( test_event_pipeline )
 	pline.InitPipeline( settings, init );
 
 	TestGlobalMetaDataProducer globalProducer;
-	TestMetaData global;
+	TestGlobalMetaData global;
 	TestData td;
 	td.iVal = 23;
 
@@ -179,7 +181,7 @@ BOOST_AUTO_TEST_CASE( test_event_filter )
 	pline.InitPipeline( settings, init );
 
 	TestData td;
-	TestMetaData global;
+	TestGlobalMetaData global;
 	TestGlobalMetaDataProducer globalProducer;
 
 	globalProducer.PopulateGlobalMetaData( td, global, settings );
@@ -216,7 +218,7 @@ BOOST_AUTO_TEST_CASE( test_event_multiplefilter )
 	pline.InitPipeline( settings, init );
 
 	TestData td;
-	TestMetaData global;
+	TestGlobalMetaData global;
 
 	globalProducer.PopulateGlobalMetaData( td, global, settings );
 	pline.RunEvent( td,global );
@@ -257,7 +259,7 @@ BOOST_AUTO_TEST_CASE( test_event_pipeline_level2 )
 	pline.InitPipeline( settings, init );
 
 	TestGlobalMetaDataProducer globalProducer;
-	TestMetaData global;
+	TestGlobalMetaData global;
 	TestData td;
 	td.iVal = 23;
 

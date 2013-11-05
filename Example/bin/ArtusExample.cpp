@@ -6,6 +6,7 @@
 
 #include "Artus/Example/interface/TraxTypes.h"
 #include "Artus/Example/interface/TraxEventProvider.h"
+#include "Artus/Example/interface/TraxPipelineRunner.h"
 
 int main(int argc, char** argv) {
 
@@ -17,8 +18,11 @@ int main(int argc, char** argv) {
 
 	ArtusConfig myConfig(argc, argv);
 
-	/*? MassRecoEventProvider evtProvider(finterface, g_inputType, false, false);
+	TraxEventProvider evtProvider(myConfig.getInputFiles());
 
+	TraxPipelineRunner runner;
+
+	/*
 	 // removes the old file
 	 std::string sRootOutputFilename = g_sOutputPath + ".root";
 
@@ -26,9 +30,6 @@ int main(int argc, char** argv) {
 	 g_resFile = new TFile(sRootOutputFilename.c_str(), "RECREATE");
 	 CALIB_LOG_FILE("Writing to the root file " << sRootOutputFilename)
 
-	 // insert config into log file
-	 CALIB_LOG_FILE("Configuration file " << jsonConfig << " dump:");
-	 //boost::property_tree::json_parser::write_json(*g_logFile, g_propTree);
 
 	 MassRecoGlobalSettings gset;
 

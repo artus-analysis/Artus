@@ -6,6 +6,10 @@ class ArtusConfig {
 public:
 	ArtusConfig(int argc, char** argv);
 
+	stringvector const& getInputFiles() const {
+		return m_fileNames;
+	}
+
 private:
 	std::string m_outputPath;
 	stringvector m_fileNames;

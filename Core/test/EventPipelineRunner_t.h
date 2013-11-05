@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_metadata )
 	prunner.AddPipelines( vPipes );
 
 	TestEventProvider evtProvider;
-	prunner.RunPipelines<TestData, TestMetaData, TestSettings>( evtProvider, tset );
+	prunner.RunPipelines<TestData, TestGlobalMetaData, TestSettings>( evtProvider, tset );
 
 	tline1->CheckCalls(10);
 	tline2->CheckCalls(10);
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner )
 	prunner.AddPipelines( vPipes );
 
 	TestEventProvider evtProvider;
-	prunner.RunPipelines<TestData, TestMetaData, TestSettings>( evtProvider, tset );
+	prunner.RunPipelines<TestData, TestGlobalMetaData, TestSettings>( evtProvider, tset );
 
 	tline1->CheckCalls(10);
 	tline2->CheckCalls(10);
@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_multi_level )
 	TestEventProvider evtProvider;
 	// give any pipeline setting here: only the global meta data producer will
 	// read from the global settings ...
-	prunner.RunPipelines<TestData, TestMetaData, TestSettings>( evtProvider, tset_lvl1 );
+	prunner.RunPipelines<TestData, TestGlobalMetaData, TestSettings>( evtProvider, tset_lvl1 );
 
 	tline1->CheckCalls(10);
 	tline2->CheckCalls(10);

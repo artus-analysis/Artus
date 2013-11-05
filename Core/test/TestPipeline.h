@@ -8,7 +8,7 @@ public:
 
 	}
 
-	virtual void RunEvent(TestData const& evt, TestMetaData const& meta) ARTUS_CPP11_OVERRIDE {
+	virtual void RunEvent(TestData const& evt, TestGlobalMetaData const& meta) ARTUS_CPP11_OVERRIDE {
 		iRunEvent++;
 		//if (bCheckMetaProducer) {
 		//BOOST_CHECK(meta.iGlobalMetaData == 1);

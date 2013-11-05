@@ -55,7 +55,7 @@ public:
 	 * read from the global settings ...
 	 *
 	 */
-	template<class TEvent, class TMetaData, class TSettings>
+	template<  class TEvent, class TMetaData, class TSettings>
 	void RunPipelines(EventProviderBase<TEvent>& evtProvider,
 			TSettings const& settings) {
 		long long firstEvent = 0; // settings.Global()->GetSkipEvents();

@@ -1,35 +1,21 @@
 #pragma once
 
-class TestMetaData {
-public:
-	TestMetaData() :
-			iGlobalMetaData(0) {
+struct TestLocalMetaData {
+	TestLocalMetaData() :
+			iMetaData(0) {
 	}
 
-	struct LocalData {
-		LocalData() :
-				iMetaData(0) {
-		}
+	int iMetaData;
+};
 
-		int iMetaData;
-	};
-
-	typedef LocalData LocalMetaDataType;
-
-	void SetLocalMetaData(LocalMetaDataType * pipelineMetaData) {
-		m_localData = pipelineMetaData;
+class TestGlobalMetaData {
+public:
+	TestGlobalMetaData() :
+			iGlobalMetaData(0) {
 	}
 
 	void ClearContent() {
 	}
 
-	LocalMetaDataType * GetLocalMetaData() const {
-		assert(m_localData != NULL);
-		return m_localData;
-	}
 	int iGlobalMetaData;
-
-private:
-
-	LocalMetaDataType * m_localData;
 };

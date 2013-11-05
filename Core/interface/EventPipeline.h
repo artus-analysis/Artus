@@ -66,7 +66,8 @@ class EventPipeline: public boost::noncopyable {
 public:
 
 	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::meta_type meta_type;
+	typedef typename TTypes::local_meta_type local_meta_type;
+	typedef typename TTypes::global_meta_type global_meta_type;
 	typedef typename TTypes::setting_type setting_type;
 
 	typedef EventConsumerBase<TTypes> ConsumerForThisPipeline;
@@ -98,7 +99,6 @@ public:
 		initializer.InitPipeline(this, pset);
 
 		// init Filters
-
 		for (auto & it : m_filter) {
 			it.Init(this);
 		}
@@ -155,11 +155,11 @@ public:
 	 * been created only once.
 	 */
 	virtual void RunEvent(event_type const& evt,
-			meta_type const& globalMetaData) {
+			global_meta_type const& globalMetaData) {
 		// create the pipeline local data and set the pointer to the localMetaData
-		meta_type & nonconst_metaData = const_cast<meta_type&>(globalMetaData);
-		typename meta_type::LocalMetaDataType localMetaData;
-		nonconst_metaData.SetLocalMetaData(&localMetaData);
+		//global_meta_type & nonconst_metaData = const_cast<global_meta_type&>(globalMetaData);
+		local_meta_type localMetaData;
+		//nonconst_metaData.SetLocalMetaData(&localMetaData);
 
 		// run MetaDataProducers
 		// Pipeline private MetaDataProducers not supported at the moment
@@ -182,9 +182,10 @@ public:
 		for (ConsumerVectorIterator itcons = m_consumer.begin();
 				itcons != m_consumer.end(); itcons++) {
 			if (fres.HasPassed())
-				itcons->ProcessFilteredEvent(evt, globalMetaData);
+				itcons->ProcessFilteredEvent(evt, globalMetaData,
+						localMetaData);
 
-			itcons->ProcessEvent(evt, globalMetaData, fres);
+			itcons->ProcessEvent(evt, globalMetaData, localMetaData, fres);
 		}
 	}
 

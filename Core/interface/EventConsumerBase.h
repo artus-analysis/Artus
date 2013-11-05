@@ -8,7 +8,6 @@
 #include "FilterBase.h"
 #include "FilterResult.h"
 
-
 template<class TTypes>
 class EventPipeline;
 
@@ -25,7 +24,8 @@ class EventConsumerBase: public boost::noncopyable {
 public:
 
 	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::meta_type meta_type;
+	typedef typename TTypes::local_meta_type local_meta_type;
+	typedef typename TTypes::global_meta_type global_meta_type;
 	typedef typename TTypes::setting_type setting_type;
 
 	virtual ~EventConsumerBase() {
@@ -42,14 +42,16 @@ public:
 	 * pipeline
 	 */
 	virtual void ProcessFilteredEvent(event_type const& event,
-			meta_type const& metaData) {
+			global_meta_type const& globalMetaData,
+			local_meta_type const& localMetaData) {
 	}
 
 	/*
 	 *  this method is called for all events
 	 */
 	virtual void ProcessEvent(event_type const& event,
-			meta_type const& metaData, FilterResult & result) {
+			global_meta_type const& globalMetaData,
+			local_meta_type const& localMetaData, FilterResult & result) {
 	}
 
 	/*
