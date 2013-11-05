@@ -1,5 +1,10 @@
+#pragma once
+
+#include "VarCache.h"
+
 /*
- * Implements a Setting with automatic read + caching from a Boost PropertyTree
+
+* Implements a Setting with automatic read + caching from a Boost PropertyTree
  * You can access the value via myObject.GetSNAME
  */
 

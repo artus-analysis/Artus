@@ -25,13 +25,15 @@ public:
 				m_propTreeRoot.get_child("Pipelines"))
 		{
 			setting_type pset;
-			;
-			//pset->SetPropTree(&m_propTreeRoot);
 
 			std::string sKeyName = v.first.data();
 
-			//pset->SetSettingsRoot("Pipelines." + sKeyName);
-			//pset->SetRootOutFile(g_resFile);
+			// set up the Settings class access to the property tree
+			// in order to be able to load additional settings
+			pset.SetSettingsRoot("Pipelines." + sKeyName);
+			pset.SetPropTree(&m_propTreeRoot);
+
+			//{pset->SetRootOutFile(g_resFile);
 			//pset->m_globalSettings = &gset;
 
 			std::cout << " %% Adding new pipeline" << sKeyName << std::endl;

@@ -2,7 +2,7 @@
 
 #include "Artus/Core/interface/Cpp11Support.h"
 
-#include "TraxConsumer.h"
+#include "TraxConsumerBase.h"
 
 /*
  * IMPORTANT NOTE:
