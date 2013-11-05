@@ -7,6 +7,7 @@
 
 #include "EventPipeline.h"
 #include "EventProviderBase.h"
+#include "ProgressReport.h"
 
 /*
  * The EventPipelineRunner utilizes a user-provided EventProvider to load events and passes them to
@@ -20,6 +21,12 @@ template<class TPipeline, class TGlobalMetaProducer>
 class EventPipelineRunner: public boost::noncopyable {
 public:
 
+	EventPipelineRunner() {
+		// this is the default
+		// use AddProgressReport / ClearProgressReports to adapt it to your needs
+		AddProgressReport(new ConsoleProgressReport());
+	}
+
 	typedef TPipeline pipeline_type;
 
 	typedef boost::ptr_list<TPipeline> Pipelines;
@@ -27,6 +34,9 @@ public:
 
 	typedef boost::ptr_list<TGlobalMetaProducer> GlobalMetaProducer;
 	typedef typename GlobalMetaProducer::iterator GlobalMetaProducerIterator;
+
+	typedef boost::ptr_list<ProgressReportBase> ProgressReportList;
+	typedef typename ProgressReportList::iterator ProgressReportIterator;
 
 	/*
 	 * Add a pipeline. The object is destroy in the destructor of the EventPipelineRunner
@@ -78,8 +88,12 @@ public:
 		}
 
 		for (long long i = firstEvent; i < nEvents; ++i) {
-			// TODO refactor the evtProvider to clean up this mess with the hltTools
-			std::cout << "going to " << i << std::endl;
+
+			for (ProgressReportIterator it = m_progressReport.begin();
+					it != m_progressReport.end(); it++) {
+				it->update(i, nEvents);
+			}
+
 			evtProvider.GotoEvent(i);
 			typename TTypes::global_meta_type metaDataGlobal;
 			//metaDataGlobal.m_hltInfo = hltTools;
@@ -104,6 +118,11 @@ public:
 								metaDataGlobal);
 				}
 			}
+		}
+
+		for (ProgressReportIterator it = m_progressReport.begin();
+				it != m_progressReport.end(); it++) {
+			it->finish(nEvents - 1, nEvents);
 		}
 
 		// first safe the results ( > plots ) from all level one pipelines
@@ -131,9 +150,18 @@ public:
 		}
 	}
 
+	void AddProgressReport(ProgressReportBase * p) {
+		m_progressReport.push_back(p);
+	}
+
+	void ClearProgressReports() {
+		m_progressReport.clear();
+	}
+
 private:
 
 	Pipelines m_pipelines;
 	GlobalMetaProducer m_globalMetaProducer;
+	ProgressReportList m_progressReport;
 };
 
