@@ -31,10 +31,13 @@ public:
 		{
 			setting_type pset;
 
+			// the key name of the dictionary will also become the 
+			// pipeline name
 			std::string sKeyName = v.first.data();
 
 			// set up the Settings class access to the property tree
 			// in order to be able to load additional settings
+			pset.SetName( sKeyName );
 			pset.SetPropTreePath("Pipelines." + sKeyName);
 			pset.SetPropTree(&m_propTreeRoot);
 			pset.SetRootOutFile(outputFile);

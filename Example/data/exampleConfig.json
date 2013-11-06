@@ -14,13 +14,11 @@
                     "Name": "quantities_all"
                 }
             }, 
-           "Filter": [ "filter_pt"
+            "Filter": [ "filter_pt"
             ], 
-            "Level": 1, 
             "LocalProducer": [
                 "VertexCandidatesSelector"
             ], 
-            "RootFileFolder": "lowPt",
             "FilterPtLow" : "0.0",
             "FilterPtHigh" : "1.0"                      
         },
@@ -30,16 +28,14 @@
                     "Name": "quantities_all"
                 }
             }, 
-           "Filter": [  "filter_pt"
+            "Filter": [  "filter_pt"
             ], 
-            "Level": 1, 
             "LocalProducer": [
                 "VertexCandidatesSelector"
             ], 
-            "RootFileFolder": "highPt",
-            
             "FilterPtLow" : "1.0",
             "FilterPtHigh" : "10000.0"
         }        
     }
-} 
+}
+

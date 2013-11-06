@@ -12,26 +12,33 @@ public:
 	SettingsBase() :
 			m_RootOutFile(ARTUS_CPP11_NULLPTR) {
 	}
+	
+	virtual ~SettingsBase() {
+	}
 
 	// path in the config file to reach the settings for this pipeline
-IMPL_PROPERTY(std::string, PropTreePath)
+	IMPL_PROPERTY(std::string, PropTreePath)
 	// pointer to the global, loaded property tree
-IMPL_PROPERTY(boost::property_tree::ptree*, PropTree)
+	IMPL_PROPERTY(boost::property_tree::ptree*, PropTree)
 
-	// default setting content
-IMPL_SETTING(size_t, Level)
+	// pipeline leve, the default if no entry is in the json file will be 1
+	IMPL_SETTING_DEFAULT(size_t, Level, 1 )
+
+	IMPL_PROPERTY( std::string, Name )
 
 	// the folder name in the output root file where plots or ntuples of
 	// this pipeline will end up,
-	// is read from JSON config file
-IMPL_SETTING(std::string, RootFileFolder)
-
+	// if you want it not to be the pipeline name, override it
+	virtual std::string GetRootFileFolder() const {
+		return GetName();
+	}
+ 
 	// a pointer to the root file where all the output will be stored
 	// must be set by the application
-IMPL_PROPERTY(TFile *, RootOutFile)
+	IMPL_PROPERTY(TFile *, RootOutFile)
 
 	virtual std::string ToString() const {
-		return "SettingsBase - ToString";
+		return "SettingsBase - Pipeline name: " + GetName();
 	}
 
 };
