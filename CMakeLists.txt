@@ -38,14 +38,16 @@ add_library(artus_provider STATIC
 	Provider/src/ArtusProvider.cc
 )
 
+add_executable(artus_core_test
+	Core/test/Artus_t.cc
+)
+
 add_executable(artus_example
 	Example/bin/ArtusExample.cc
 )
 
-#target_link_libraries( artus_configuration boost_regex )
-
 target_link_libraries( artus_example 	
-	artus_core
+	artus_core	
 	artus_configuration
 	artus_provider
 	artus_draw
