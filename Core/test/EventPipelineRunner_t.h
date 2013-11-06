@@ -32,6 +32,8 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_metadata )
 	tline5->InitPipeline( tset, TestPipelineInitilizer() );
 
 	EventPipelineRunner<TestPipeline, TestMetaDataProducerBase> prunner;
+	// don't show progress report in this test cases
+	prunner.ClearProgressReports();
 
 	prunner.AddPipeline( tline1 );
 	prunner.AddPipeline( tline2 );
@@ -72,6 +74,8 @@ BOOST_AUTO_TEST_CASE( test_event_prunner )
 	tline5->InitPipeline( tset, TestPipelineInitilizer() );
 
 	EventPipelineRunner<TestPipeline, TestMetaDataProducerBase> prunner;
+	// don't show progress report in this test cases
+	prunner.ClearProgressReports();
 
 	prunner.AddPipeline( tline1 );
 	prunner.AddPipeline( tline2 );
@@ -107,6 +111,8 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_multi_level )
 	tline3->InitPipeline( tset_lvl2, TestPipelineInitilizer() );
 
 	EventPipelineRunner<TestPipeline, TestMetaDataProducerBase> prunner;
+	// don't show progress report in this test cases
+	prunner.ClearProgressReports();
 	prunner.AddPipelines( { {tline1, tline2, tline3}});
 
 	TestEventProvider evtProvider;
