@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Artus/Core/interface/Cpp11Support.h"
-#include "Artus/Draw/interface/ValueModifier.h"
+#include "Artus/Consumer/interface/ValueModifier.h"
 
-#include "Artus/Draw/interface/DrawHist1dConsumer.h"
-#include "Artus/Draw/interface/ProfileConsumerBase.h"
+#include "Artus/Consumer/interface/DrawHist1dConsumer.h"
+#include "Artus/Consumer/interface/ProfileConsumerBase.h"
 
 #include "TraxTypes.h"
 

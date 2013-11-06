@@ -1,8 +1,8 @@
-#include "Artus/Draw/interface/Hist1D.h"
+#include "Artus/Consumer/interface/Hist1D.h"
 
 #include "TROOT.h"
 
-#include "Artus/Draw/interface/ValueModifier.h"
+#include "Artus/Consumer/interface/ValueModifier.h"
 #include "Artus/Utility/interface/RootFileHelper.h"
 
 Hist1D::Hist1D(std::string sName, std::string sFolder, ValueModifiers l) :

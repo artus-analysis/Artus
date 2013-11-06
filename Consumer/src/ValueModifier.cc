@@ -1,8 +1,6 @@
-#include "Artus/Draw/interface/ValueModifier.h"
+#include "Artus/Consumer/interface/ValueModifier.h"
 
-#include "Artus/Draw/interface/Hist1D.h"
-//#include "Artus/Draw/interface/Hist2D.h"
-//#include "Artus/Draw/interface/Profile.h"
+#include "Artus/Consumer/interface/Hist1D.h"
 
 void ValueModifierRange::applyHistBeforeCreation(Hist1D * h1, size_t index) {
 	h1->m_dBinLower = this->m_binLower;
