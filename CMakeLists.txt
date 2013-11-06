@@ -28,10 +28,10 @@ add_library(artus_configuration STATIC
 	Configuration/src/ArtusConfig.cc
 )
 
-add_library(artus_draw STATIC
-	Draw/src/Draw.cc
-	Draw/src/Hist1D.cc
-	Draw/src/ValueModifier.cc
+add_library(artus_consumer STATIC
+	Consumer/src/Draw.cc
+	Consumer/src/Hist1D.cc
+	Consumer/src/ValueModifier.cc
 )
 
 add_library(artus_provider STATIC
@@ -50,6 +50,6 @@ target_link_libraries( artus_example
 	artus_core	
 	artus_configuration
 	artus_provider
-	artus_draw
+	artus_consumer
 	${ROOT_LIBRARIES})
 
