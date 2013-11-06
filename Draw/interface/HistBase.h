@@ -2,6 +2,12 @@
 
 #include "PlotBase.h"
 
+/*
+
+Base class for all wrappers which hold histograms
+
+*/
+
 template<class THistType>
 class HistBase: public PlotBase<THistType> {
 public:

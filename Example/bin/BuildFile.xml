@@ -1,5 +1,5 @@
 
-<bin   name="artusExample" file="ArtusExample.cpp">
+<bin   name="artusExample" file="ArtusExample.cc">
    <use   name="Artus/Core"/>
    <use   name="Artus/Provider"/>
    <use   name="Artus/Configuration"/>

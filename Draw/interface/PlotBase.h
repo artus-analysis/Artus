@@ -2,6 +2,13 @@
 
 #include "Artus/Core/interface/GlobalInclude.h"
 
+/*
+
+Base class for all Plotting-related classes. Stores
+Caption, Name and root output folder for the consumer.
+
+*/
+
 template<typename TPlotType>
 class PlotBase {
 public:

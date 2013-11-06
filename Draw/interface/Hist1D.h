@@ -6,6 +6,12 @@
 #include "HistBase.h"
 #include "ValueModifierFwd.h"
 
+/*
+	Wrapper for Root's TH1D histograms.
+	Enables flexible binning and range setup and takes 
+	care of storing the TH1D into the proper ROOT folder.
+*/
+
 class Hist1D: public HistBase<Hist1D> {
 public:
 

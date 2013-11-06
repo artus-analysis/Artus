@@ -3,7 +3,6 @@
 #include "TROOT.h"
 
 #include "Artus/Draw/interface/ValueModifier.h"
-
 #include "Artus/Utility/interface/RootFileHelper.h"
 
 Hist1D::Hist1D(std::string sName, std::string sFolder, ValueModifiers l) :
@@ -16,13 +15,12 @@ Hist1D::Hist1D(std::string sName, std::string sFolder, ValueModifiers l) :
 	}
 
 	RootFileHelper::SafeCd(gROOT, GetRootFileFolder());
+
+	// create with custom TH1D binning, or not ...
 	if (m_bUseCustomBin) {
 		m_hist.reset(
 				RootFileHelper::GetStandaloneTH1D_1(GetName(), GetCaption(),
 						m_iBinCount, &m_dCustomBins[0]));
-		/*new TH1D(this->m_sName.c_str(),
-		 this->m_sCaption.c_str(),
-		 m_iBinCount, &m_dCustomBins[0] );*/
 	} else {
 		m_hist.reset(
 				RootFileHelper::GetStandaloneTH1D_2(
@@ -30,6 +28,12 @@ Hist1D::Hist1D(std::string sName, std::string sFolder, ValueModifiers l) :
 						this->m_iBinCount, this->m_dBinLower,
 						this->m_dBinUpper));
 	}
+	// store sum of weights^2 per bin to take the weight into consideration 
+	// for the error computation
+	// From ROOT docu:
+	//  If Sumw2 has been called, the error per bin is computed as 
+	//  the sqrt(sum of squares of weights), otherwise the error is 
+	//  set equal to the sqrt(bin content). 
 	m_hist->Sumw2();
 }
 
@@ -39,8 +43,7 @@ void Hist1D::Init() {
 
 void Hist1D::Store(TFile* pRootFile) {
 	assert(pRootFile);
-	CALIB_LOG(
-			"Storing Histogram " + this->GetRootFileFolder() + "/"
+	CALIB_LOG( "Storing Histogram " + this->GetRootFileFolder() + "/"
 					+ this->GetName())
 
 	RootFileHelper::SafeCd(pRootFile, GetRootFileFolder());
