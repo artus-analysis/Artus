@@ -18,7 +18,8 @@ private: 						  \
 TYPE m_##SNAME;					  \
 public:  						  \
 std::string Key##SNAME () const { return "##SNAME"; }                                         \
-std::string FullKey##SNAME () const { return GetPropTreePath() + "." + #SNAME; }              \
+std::string FullKey##SNAME () const { if ( GetPropTreePath() == "" )								\
+{return #SNAME;} else {return GetPropTreePath() + "." + #SNAME; }}             \
 mutable VarCache<TYPE> Cache##SNAME; 														  \
 TYPE Get##SNAME ( ) const { if (Cache##SNAME.IsCached()) { return Cache##SNAME.GetValue(); }  \
        TYPE  val = GetPropTree()->get< TYPE >( FullKey##SNAME ());     						  \
@@ -35,9 +36,10 @@ TYPE Get##SNAME ( ) const { if (Cache##SNAME.IsCached()) { return Cache##SNAME.G
 private: \
 TYPE m_##SNAME;                                                                                                                        \
 public: \
-std::string Key##SNAME () const { return "##SNAME"; }                                                        \
-std::string FullKey##SNAME () const  { return GetPropTreePath() + "." + #SNAME; }                                                     \
-mutable VarCache<TYPE> Cache##SNAME; \
+std::string Key##SNAME () const { return "##SNAME"; }                                               \
+std::string FullKey##SNAME () const  { if ( GetPropTreePath() == "" )								\
+{return #SNAME;} else {return GetPropTreePath() + "." + #SNAME; } }                                 \
+mutable VarCache<TYPE> Cache##SNAME; 																\
 TYPE Get##SNAME ( ) const { if (Cache##SNAME.IsCached()) { return Cache##SNAME.GetValue(); }         \
        TYPE  val = GetPropTree()->get< TYPE >( FullKey##SNAME (), DEFAULT_VAL );       \
        Cache##SNAME.SetCache( val ); \
