@@ -8,7 +8,7 @@
 
 #include "Artus/Core/interface/Cpp11Support.h"
 
-#include "TraxFilterBase.h"
+#include "TraxTypes.h"
 
 class PtFilter: public TraxFilterBase {
 public:

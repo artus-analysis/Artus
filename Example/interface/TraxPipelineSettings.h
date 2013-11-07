@@ -18,8 +18,6 @@ public:
 
 };
 
-
-
 class TraxGlobalSettings: public GlobalSettingsBase {
 public:
 
