@@ -6,7 +6,10 @@
 
 #pragma once
 
-// only forward declared here
+#include "Artus/Core/interface/Cpp11Support.h"
+#include "Artus/Core/interface/GlobalMetaDataProducerBase.h"
+#include "Artus/Core/interface/EventPipelineRunner.h"
+
 #include "TraxEventData.h"
 #include "TraxMetaData.h"
 #include "TraxMetaData.h"
@@ -17,4 +20,16 @@ struct TraxTypes {
 	typedef TraxLocalMetaData local_meta_type;
 	typedef TraxGlobalMetaData global_meta_type;
 	typedef TraxPipelineSettings setting_type;
+	typedef TraxGlobalSettings global_setting_type;
 };
+
+typedef GlobalMetaDataProducerBase<TraxTypes> TraxGlobalMetaDataProducerBase;
+typedef LocalMetaDataProducerBase<TraxTypes> TraxLocalMetaDataProducerBase;
+
+typedef EventConsumerBase<TraxTypes> TraxConsumerBase;
+typedef FilterBase<TraxTypes> TraxFilterBase;
+
+typedef EventPipeline<TraxTypes> TraxPipeline;
+
+typedef EventPipelineRunner<TraxPipeline, TraxGlobalMetaDataProducerBase> TraxPipelineRunner;
+

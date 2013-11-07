@@ -14,8 +14,9 @@
 
 #include "Artus/Example/interface/TraxTypes.h"
 #include "Artus/Example/interface/TraxEventProvider.h"
-#include "Artus/Example/interface/TraxPipelineRunner.h"
 #include "Artus/Example/interface/TraxPipelineInitializer.h"
+
+#include "Artus/Example/interface/PtCorrectionProducer.h"
 
 int main(int argc, char** argv) {
 
@@ -27,18 +28,23 @@ int main(int argc, char** argv) {
 			> rootOutputFile(
 					new TFile(myConfig.GetOutputPath().c_str(), "RECREATE"));
 
-	TraxEventProvider evtProvider(myConfig.getInputFiles());
+	TraxEventProvider evtProvider(myConfig.GetInputFiles());
 
-	TraxPipelineInitilizer pInit;
+	TraxPipelineInitializer pInit;
 	TraxPipelineRunner runner;
 
-	myConfig.loadPipelines(pInit, runner, rootOutputFile.get());
+	// add global meta producers
+	runner.AddGlobalMetaProducer(new PtCorrectionProducer());
 
-	// fix me
-	TraxPipelineSettings settings;
+	myConfig.LoadPipelines(pInit, runner, rootOutputFile.get());
 
-	runner.RunPipelines<TraxTypes>(evtProvider, settings);
+	TraxGlobalSettings global_settings = myConfig.GetGlobalSettings<
+			TraxGlobalSettings>();
 
+	runner.RunPipelines<TraxTypes>(evtProvider, global_settings);
+
+	// close output root file, pointer will be automatically
+	// deleted
 	rootOutputFile->Close();
 
 	return 0;

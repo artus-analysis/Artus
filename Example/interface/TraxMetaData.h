@@ -12,6 +12,7 @@ class TraxLocalMetaData {
 
 };
 
-class TraxGlobalMetaData {
+struct TraxGlobalMetaData {
 
+	float m_floatPtSim_corrected;
 };

@@ -24,7 +24,7 @@
 // consumer
 #include "MeanPtConsumer.h"
 
-class TraxPipelineInitilizer: public PipelineInitilizerBase<TraxTypes> {
+class TraxPipelineInitializer: public PipelineInitilizerBase<TraxTypes> {
 public:
 
 	virtual void InitPipeline(TraxPipeline * pLine,
@@ -43,9 +43,15 @@ public:
 		auto extractPtSim =
 				[]( TraxEventData const& ev, TraxGlobalMetaData const & gm, TraxLocalMetaData const & lm )
 				-> std::vector<float> {return {ev.m_floatPtSim};};
-
 		auto PtSimValue = std::make_pair(extractPtSim,
-				DefaultModifiers::getPtModifier(0.8, 1.2f));
+				DefaultModifiers::getPtModifier(0.7, 1.3f));
+
+		// extracts the value which has been corrected by a globalMetaDataProducer
+		auto extractPtSimCorrected =
+				[]( TraxEventData const& ev, TraxGlobalMetaData const & gm, TraxLocalMetaData const & lm )
+				-> std::vector<float> {return {gm.m_floatPtSim_corrected};};
+		auto PtSimCorrectedValue = std::make_pair(extractPtSimCorrected,
+				DefaultModifiers::getPtModifier(0.7, 1.3f));
 
 		// define how to extract Theta and the range
 		auto extractThetaSim =
@@ -58,6 +64,11 @@ public:
 		// plot Pt
 		pLine->AddConsumer(
 				new DrawHist1dConsumerBase<TraxTypes>("pt", PtSimValue));
+
+		// plot Pt - corrected, from the meta data
+		pLine->AddConsumer(
+				new DrawHist1dConsumerBase<TraxTypes>("pt_corr", PtSimCorrectedValue));
+
 
 		// plot Theta
 		pLine->AddConsumer(

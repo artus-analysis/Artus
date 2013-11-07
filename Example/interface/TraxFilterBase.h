@@ -14,4 +14,4 @@
 #include "TraxMetaData.h"
 #include "TraxPipelineSettings.h"
 
-typedef FilterBase<TraxTypes> TraxFilterBase;
+

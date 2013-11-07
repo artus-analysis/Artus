@@ -14,4 +14,3 @@
 #include "TraxMetaData.h"
 #include "TraxPipelineSettings.h"
 
-typedef EventConsumerBase<TraxTypes> TraxConsumerBase;

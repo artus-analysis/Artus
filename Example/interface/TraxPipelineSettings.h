@@ -13,8 +13,16 @@
 class TraxPipelineSettings: public SettingsBase {
 public:
 
-
 	IMPL_SETTING( float, FilterPtLow )
 	IMPL_SETTING( float, FilterPtHigh )
+
+};
+
+
+
+class TraxGlobalSettings: public GlobalSettingsBase {
+public:
+
+	IMPL_SETTING( float, ProducerPtCorrectionFactor )
 
 };
