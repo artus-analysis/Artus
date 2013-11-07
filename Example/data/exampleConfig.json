@@ -1,5 +1,6 @@
 {
     "EventCount": -1, 
+    "ProducerPtCorrectionFactor": 1.05,
     "GlobalProducer": [
         "json_producer"
     ], 
