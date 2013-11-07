@@ -1,3 +1,9 @@
+/* Copyright (c) 2013 - All Rights Reserved
+ *   Thomas Hauth  <Thomas.Hauth@cern.ch>
+ *   Joram Berger  <Joram.Berger@cern.ch>
+ *   Dominik Haitz <Dominik.Haitz@kit.edu>
+ */
+
 #include <boost/algorithm/string.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
@@ -13,8 +19,10 @@
 
 int main(int argc, char** argv) {
 
+	// parse the command line and load the
 	ArtusConfig myConfig(argc, argv);
 
+	// create the output root file
 	boost::scoped_ptr < TFile
 			> rootOutputFile(
 					new TFile(myConfig.GetOutputPath().c_str(), "RECREATE"));
