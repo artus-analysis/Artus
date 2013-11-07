@@ -15,6 +15,7 @@
 #include "TraxMetaData.h"
 #include "TraxPipelineSettings.h"
 
+// all data types which are used for this analysis
 struct TraxTypes {
 	typedef TraxEventData event_type;
 	typedef TraxLocalMetaData local_meta_type;
@@ -23,13 +24,19 @@ struct TraxTypes {
 	typedef TraxGlobalSettings global_setting_type;
 };
 
+// Pass the template parameters for the Producers
 typedef GlobalMetaDataProducerBase<TraxTypes> TraxGlobalMetaDataProducerBase;
 typedef LocalMetaDataProducerBase<TraxTypes> TraxLocalMetaDataProducerBase;
 
+// Pass the template parameters for the Consumer
 typedef EventConsumerBase<TraxTypes> TraxConsumerBase;
+
+// Pass the template parameters for the Filter
 typedef FilterBase<TraxTypes> TraxFilterBase;
 
+//Pass the template parameters for the Pipeline
 typedef EventPipeline<TraxTypes> TraxPipeline;
 
+//Setup our custom pipeline runner
 typedef EventPipelineRunner<TraxPipeline, TraxGlobalMetaDataProducerBase> TraxPipelineRunner;
 

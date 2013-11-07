@@ -8,11 +8,11 @@
 
 #include "Artus/Core/interface/Cpp11Support.h"
 
-#include "TraxConsumerBase.h"
+#include "TraxTypes.h"
 
 /*
  * IMPORTANT NOTE:
- * Not numericaly stable. Don't use in real world applications
+ * Not nummericaly stable. Don't use in real world applications
  * This is just to illustrate an easy consumer.
  */
 

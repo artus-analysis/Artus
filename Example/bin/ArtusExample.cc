@@ -18,6 +18,13 @@
 
 #include "Artus/Example/interface/PtCorrectionProducer.h"
 
+/*
+	This example implements a simple dummy anaylsis which
+	reads entries from a root file and produces various pt plots
+
+	It can be run with the config file data/exampleConfig.json
+*/
+
 int main(int argc, char** argv) {
 
 	// parse the command line and load the
@@ -28,19 +35,28 @@ int main(int argc, char** argv) {
 			> rootOutputFile(
 					new TFile(myConfig.GetOutputPath().c_str(), "RECREATE"));
 
+	// will load the Ntuples from the root file
+	// this must be modified if you want to load more/new quantities
 	TraxEventProvider evtProvider(myConfig.GetInputFiles());
 
+	// the pipeline initializer will setup the pipeline, with
+	// all the attached Producer, Filer and Consumer
 	TraxPipelineInitializer pInit;
+
 	TraxPipelineRunner runner;
 
 	// add global meta producers
 	runner.AddGlobalMetaProducer(new PtCorrectionProducer());
 
+	// load the pipeline with their configuration from the config file
 	myConfig.LoadPipelines(pInit, runner, rootOutputFile.get());
 
+	// load the global settings from the config file
 	TraxGlobalSettings global_settings = myConfig.GetGlobalSettings<
 			TraxGlobalSettings>();
 
+	// run all the configured pipelines and all their attached
+	// consumers
 	runner.RunPipelines<TraxTypes>(evtProvider, global_settings);
 
 	// close output root file, pointer will be automatically

@@ -11,6 +11,12 @@
 
 #include "TraxTypes.h"
 
+/*
+ * Will load the corresponding ntuple from a root file
+ * The memory locations are passed to ROOT one time, in the
+ * WireEvent() method call.
+ */
+
 class TraxEventProvider: public RootEventProvider<TraxTypes::event_type> {
 public:
 	TraxEventProvider(stringvector const & fileNames) :
