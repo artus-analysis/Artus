@@ -84,7 +84,7 @@ public:
 					ARTUS_CPP11_OVERRIDE {
 		// did metaData work ?
 		BOOST_CHECK_EQUAL(event.iVal + 1, localMetaData.iMetaData);
-		BOOST_CHECK_EQUAL(event.iVal + 5, metaData.iGlobalMetaData);
+		BOOST_CHECK_EQUAL(event.iVal + 5 + 23, metaData.iGlobalMetaData);
 
 		iProcessEvent++;
 		fres = result;
