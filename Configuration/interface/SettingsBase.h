@@ -18,7 +18,7 @@ public:
 	SettingsBase() :
 			m_RootOutFile(ARTUS_CPP11_NULLPTR) {
 	}
-	
+
 	virtual ~SettingsBase() {
 	}
 
@@ -38,7 +38,7 @@ public:
 	virtual std::string GetRootFileFolder() const {
 		return GetName();
 	}
- 
+
 	// a pointer to the root file where all the output will be stored
 	// must be set by the application
 	IMPL_PROPERTY(TFile *, RootOutFile)
@@ -46,5 +46,14 @@ public:
 	virtual std::string ToString() const {
 		return "SettingsBase - Pipeline name: " + GetName();
 	}
+
+};
+
+class GlobalSettingsBase {
+public:
+	// path in the config file to reach the settings for this pipeline
+	IMPL_PROPERTY(std::string, PropTreePath)
+	// pointer to the global, loaded property tree
+	IMPL_PROPERTY(boost::property_tree::ptree*, PropTree)
 
 };
