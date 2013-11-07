@@ -15,4 +15,5 @@ struct TestTypes {
 	typedef TestGlobalMetaData global_meta_type;
 	typedef TestLocalMetaData local_meta_type;
 	typedef TestSettings setting_type;
+	typedef TestGlobalSettings global_setting_type;
 };

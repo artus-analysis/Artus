@@ -21,3 +21,15 @@ public:
 	IMPL_PROPERTY(unsigned int, Level)
 
 };
+
+class TestGlobalSettings {
+public:
+
+	TestGlobalSettings() :
+			m_Offset(23) {
+
+	}
+
+	IMPL_PROPERTY(unsigned int, Offset)
+
+};

@@ -17,17 +17,18 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::global_meta_type global_meta_type;
 	typedef typename TTypes::setting_type setting_type;
+	typedef typename TTypes::global_setting_type global_setting_type;
 
 	virtual ~GlobalMetaDataProducerBase() {
 
 	}
 
-	virtual void Init(setting_type const& globalSettings) {
+	virtual void Init(global_setting_type const& globalSettings) {
 	}
 
 	// if false is returned, the event is dropped as it does not meet the minimum requirements for the producer
 	virtual bool PopulateGlobalMetaData(event_type const& data,
 			global_meta_type & metaData,
-			setting_type const& globalSettings) const = 0;
+			global_setting_type const& globalSettings) const = 0;
 };
 

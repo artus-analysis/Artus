@@ -77,7 +77,7 @@ public:
 	template<class TTypes>
 	void RunPipelines(
 			EventProviderBase<typename TTypes::event_type>& evtProvider,
-			typename TTypes::setting_type const& settings) {
+			typename TTypes::global_setting_type const& globalSettings) {
 		long long firstEvent = 0; // settings.Global()->GetSkipEvents();
 		long long nEvents = evtProvider.GetOverallEventCount();
 		/*if (settings.Global()->GetEventCount() >= 0)
@@ -90,7 +90,7 @@ public:
 		// init global producers
 		for (GlobalMetaProducerIterator it = m_globalMetaProducer.begin();
 				it != m_globalMetaProducer.end(); it++) {
-			it->Init(settings);
+			it->Init(globalSettings);
 		}
 
 		for (long long i = firstEvent; i < nEvents; ++i) {
@@ -109,7 +109,7 @@ public:
 					it != m_globalMetaProducer.end(); it++) {
 				bEventValid = it->PopulateGlobalMetaData(
 						evtProvider.GetCurrentEvent(), metaDataGlobal,
-						settings);
+						globalSettings);
 				//CALIB_LOG(it->GetContent())
 				if (!bEventValid)
 					break;

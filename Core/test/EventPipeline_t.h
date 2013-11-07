@@ -135,6 +135,7 @@ BOOST_AUTO_TEST_CASE( test_event_pipeline )
 	TestPipelineInitilizer init;
 
 	TestSettings settings;
+	TestGlobalSettings globa_settings;
 	pline.InitPipeline( settings, init );
 
 	TestGlobalMetaDataProducer globalProducer;
@@ -143,13 +144,13 @@ BOOST_AUTO_TEST_CASE( test_event_pipeline )
 	td.iVal = 23;
 
 	// run global meta data
-	globalProducer.PopulateGlobalMetaData( td, global, settings );
+	globalProducer.PopulateGlobalMetaData( td, global, globa_settings );
 	pline.RunEvent( td, global );
 
-	globalProducer.PopulateGlobalMetaData( td, global, settings );
+	globalProducer.PopulateGlobalMetaData( td, global, globa_settings );
 	pline.RunEvent( td, global );
 
-	globalProducer.PopulateGlobalMetaData( td, global, settings );
+	globalProducer.PopulateGlobalMetaData( td, global, globa_settings );
 	pline.RunEvent( td, global );
 
 	pline.FinishPipeline();
@@ -184,19 +185,20 @@ BOOST_AUTO_TEST_CASE( test_event_filter )
 	TestPipelineInitilizer init;
 
 	TestSettings settings;
+	TestGlobalSettings global_settings;
 	pline.InitPipeline( settings, init );
 
 	TestData td;
 	TestGlobalMetaData global;
 	TestGlobalMetaDataProducer globalProducer;
 
-	globalProducer.PopulateGlobalMetaData( td, global, settings );
+	globalProducer.PopulateGlobalMetaData( td, global, global_settings );
 	pline.RunEvent( td, global );
 	td.iVal++;
-	globalProducer.PopulateGlobalMetaData( td, global, settings );
+	globalProducer.PopulateGlobalMetaData( td, global, global_settings );
 	pline.RunEvent( td, global );
 	td.iVal++;
-	globalProducer.PopulateGlobalMetaData( td, global, settings );
+	globalProducer.PopulateGlobalMetaData( td, global, global_settings );
 	pline.RunEvent( td, global );
 
 	pline.FinishPipeline();
@@ -221,12 +223,13 @@ BOOST_AUTO_TEST_CASE( test_event_multiplefilter )
 
 	TestPipelineInitilizer init;
 	TestSettings settings;
+	TestGlobalSettings global_settings;
 	pline.InitPipeline( settings, init );
 
 	TestData td;
 	TestGlobalMetaData global;
 
-	globalProducer.PopulateGlobalMetaData( td, global, settings );
+	globalProducer.PopulateGlobalMetaData( td, global, global_settings );
 	pline.RunEvent( td,global );
 
 	pline.FinishPipeline();
@@ -261,6 +264,7 @@ BOOST_AUTO_TEST_CASE( test_event_pipeline_level2 )
 	TestPipelineInitilizer init;
 
 	TestSettings settings;
+	TestGlobalSettings global_settings;
 	settings.SetLevel ( 2 );
 	pline.InitPipeline( settings, init );
 

@@ -29,7 +29,9 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_metadata )
 	tline4->bCheckMetaProducer = true;
 	tline5->bCheckMetaProducer = true;
 
+
 	TestSettings tset;
+	TestGlobalSettings global_tset;
 	tset.SetLevel(1);
 	tline1->InitPipeline( tset, TestPipelineInitilizer() );
 	tline2->InitPipeline( tset, TestPipelineInitilizer() );
@@ -53,7 +55,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_metadata )
 	prunner.AddPipelines( vPipes );
 
 	TestEventProvider evtProvider;
-	prunner.RunPipelines<TestTypes>( evtProvider, tset );
+	prunner.RunPipelines<TestTypes>( evtProvider, global_tset );
 
 	tline1->CheckCalls(10);
 	tline2->CheckCalls(10);
@@ -72,6 +74,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner )
 	TestPipeline * tline5 = new TestPipeline;
 
 	TestSettings tset;
+	TestGlobalSettings global_tset;
 	tset.SetLevel(1);
 	tline1->InitPipeline( tset, TestPipelineInitilizer() );
 	tline2->InitPipeline( tset, TestPipelineInitilizer() );
@@ -93,7 +96,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner )
 	prunner.AddPipelines( vPipes );
 
 	TestEventProvider evtProvider;
-	prunner.RunPipelines<TestTypes>( evtProvider, tset );
+	prunner.RunPipelines<TestTypes>( evtProvider, global_tset );
 
 	tline1->CheckCalls(10);
 	tline2->CheckCalls(10);
@@ -110,6 +113,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_multi_level )
 
 	TestSettings tset_lvl1;
 	TestSettings tset_lvl2;
+	TestGlobalSettings global_tset_lvl2;
 	tset_lvl1.SetLevel(1);
 	tset_lvl2.SetLevel(2);
 	tline1->InitPipeline( tset_lvl1, TestPipelineInitilizer() );
@@ -124,7 +128,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_multi_level )
 	TestEventProvider evtProvider;
 	// give any pipeline setting here: only the global meta data producer will
 	// read from the global settings ...
-	prunner.RunPipelines<TestTypes>( evtProvider, tset_lvl1 );
+	prunner.RunPipelines<TestTypes>( evtProvider, global_tset_lvl2 );
 
 	tline1->CheckCalls(10);
 	tline2->CheckCalls(10);
