@@ -11,9 +11,6 @@
 #include "Artus/Configuration/interface/PropertyTreeSupport.h"
 
 ArtusConfig::ArtusConfig(int argc, char** argv) {
-
-	std::cout << "This is closure MASS" << std::endl;
-
 	if (argc < 2) {
 		std::cerr << "Usage: " << argv[0]
 				<< " json_config_file.json [VerboseLevel]\n";
@@ -21,6 +18,7 @@ ArtusConfig::ArtusConfig(int argc, char** argv) {
 	}
 
 	std::string jsonConfig = argv[1];
+	std::cout << "Loading Config file from " << jsonConfig << std::endl;
 	boost::property_tree::json_parser::read_json(jsonConfig, m_propTreeRoot);
 
 	m_outputPath = m_propTreeRoot.get < std::string > ("OutputPath");
