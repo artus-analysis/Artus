@@ -19,12 +19,12 @@ class ArtusConfig {
 public:
 	ArtusConfig(int argc, char** argv);
 
-	stringvector const& getInputFiles() const {
+	stringvector const& GetInputFiles() const {
 		return m_fileNames;
 	}
 
 	template<class TPipelineInitializer, class TPipelineRunner>
-	void loadPipelines(TPipelineInitializer & pInit, TPipelineRunner & runner,
+	void LoadPipelines(TPipelineInitializer & pInit, TPipelineRunner & runner,
 			TFile * outputFile) {
 
 		assert(outputFile);
@@ -43,7 +43,7 @@ public:
 
 			// set up the Settings class access to the property tree
 			// in order to be able to load additional settings
-			pset.SetName( sKeyName );
+			pset.SetName(sKeyName);
 			pset.SetPropTreePath("Pipelines." + sKeyName);
 			pset.SetPropTree(&m_propTreeRoot);
 			pset.SetRootOutFile(outputFile);
@@ -56,6 +56,16 @@ public:
 			pLine->InitPipeline(pset, pInit);
 			runner.AddPipeline(pLine);
 		}
+	}
+
+	template<class TGlobalSettings>
+	TGlobalSettings GetGlobalSettings() {
+		TGlobalSettings pset;
+
+		pset.SetPropTreePath("");
+		pset.SetPropTree(&m_propTreeRoot);
+
+		return pset;
 	}
 
 	std::string const& GetOutputPath() const {
