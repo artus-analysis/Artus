@@ -1,3 +1,9 @@
-CMakeCache.txt
-CMakeFiles/
+/CMakeCache.txt
+/CMakeFiles/
+/cake_install.cmake
+/Makefile
+*.a
 
+*.root
+*.png
+*.pdf
