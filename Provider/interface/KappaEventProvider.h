@@ -37,7 +37,8 @@ public:
 	}
 
 	virtual bool GotoEvent(long long lEvent /*, HLTTools * hltInfo*/ ) {
-		m_mon->Update();
+		if (!m_mon->Update())
+			return false;
 		m_fi.eventdata.GetEntry(lEvent);
 
 		if (m_prevRun != m_event.m_eventmetadata->nRun) {

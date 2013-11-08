@@ -99,8 +99,9 @@ public:
 					it != m_progressReport.end(); it++) {
 				it->update(i, nEvents);
 			}
+			if (!evtProvider.GotoEvent(i))
+				break;
 
-			evtProvider.GotoEvent(i);
 			typename TTypes::global_product_type productGlobal;
 			//productGlobal.m_hltInfo = hltTools;
 
