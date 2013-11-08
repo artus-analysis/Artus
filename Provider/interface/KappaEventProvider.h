@@ -80,22 +80,6 @@ public:
 
 protected:
 
-	// WTF ?
-	/*void InitPFJets(ZJetEventData & event, std::string algoName)
-	 {
-	 event.m_pfJets[algoName] = m_fi.Get<KDataPFJets> (algoName);
-	 }
-
-	 void InitCaloJets(ZJetEventData & event, std::string algoName)
-	 {
-	 event.m_caloJets[algoName] = m_fi.Get<KDataJets>(algoName);
-	 }
-
-	 void InitGenJets(ZJetEventData & event, std::string algoName)
-	 {
-	 event.m_genJets[algoName] = m_fi.Get<KDataLVs> (algoName);
-	 }*/
-
 	long m_prevRun, m_prevLumi;
 	TEventType m_event;
 
