@@ -13,11 +13,11 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 #include "PipelineSettings.h"
 #include "FilterBase.h"
-#include "EventConsumerBase.h"
+#include "ConsumerBase.h"
 #include "LocalProducerBase.h"
 
 template<class TTypes>
-class EventPipeline;
+class Pipeline;
 
 /*
  Base class for your custom PipelineInitializer. Your custom code
@@ -33,7 +33,7 @@ public:
 	typedef typename TTypes::global_product_type global_product_type;
 	typedef typename TTypes::setting_type setting_type;
 
-	typedef EventPipeline<TTypes> pipeline_type;
+	typedef Pipeline<TTypes> pipeline_type;
 
 	virtual void InitPipeline(pipeline_type * pLine,
 			typename TTypes::setting_type const& pset) const = 0;
@@ -42,13 +42,13 @@ public:
 
 /*
 
- \brief Base implementation of the EventPipeline paradigm
+ \brief Base implementation of the Pipeline paradigm
 
  The EventPipline contains settings, producer, filter and consumer which, when combined,
  produce the desired output of a pipeline as soon as Events are send to the pipeline. An incoming event
  must not be changed by the pipeline but the pipeline can create additional data for an event using
  Producers.
- Most of the time, the EventPipeline will not be used stand-alone but by an EventPipelineRunner class.
+ Most of the time, the Pipeline will not be used stand-alone but by an PipelineRunner class.
 
  The intention of the
  different components is outlined in the following:
@@ -76,7 +76,7 @@ public:
  */
 
 template<class TTypes>
-class EventPipeline: public boost::noncopyable {
+class Pipeline: public boost::noncopyable {
 public:
 
 	typedef typename TTypes::event_type event_type;
@@ -84,8 +84,8 @@ public:
 	typedef typename TTypes::global_product_type global_product_type;
 	typedef typename TTypes::setting_type setting_type;
 
-	typedef EventConsumerBase<TTypes> ConsumerForThisPipeline;
-	typedef boost::ptr_vector<EventConsumerBase<TTypes> > ConsumerVector;
+	typedef ConsumerBase<TTypes> ConsumerForThisPipeline;
+	typedef boost::ptr_vector<ConsumerBase<TTypes> > ConsumerVector;
 	typedef typename ConsumerVector::iterator ConsumerVectorIterator;
 
 	typedef FilterBase<TTypes> FilterForThisPipeline;
@@ -100,7 +100,7 @@ public:
 	/*
 	 * Virtual constructor
 	 */
-	virtual ~EventPipeline() {
+	virtual ~Pipeline() {
 	}
 
 	/*
@@ -225,7 +225,7 @@ public:
 
 	/*
 	 * Add a new Filter to this Pipeline
-	 * The object will be freed in EventPipelines destructor
+	 * The object will be freed in Pipelines destructor
 	 */
 	virtual void AddFilter(FilterForThisPipeline * pFilter) {
 		if (FindFilter(pFilter->GetFilterId()) != NULL)
@@ -236,7 +236,7 @@ public:
 
 	/*
 	 * Add a new Consumer to this Pipeline
-	 * The object will be freed in EventPipelines destructor
+	 * The object will be freed in Pipelines destructor
 	 */
 	virtual void AddConsumer(ConsumerForThisPipeline * pConsumer) {
 		//std::cout << "=== AddConsumer" << std::endl;
@@ -246,7 +246,7 @@ public:
 
 	/*
 	 * Add a new Producer to this Pipeline
-	 * The object will be freed in EventPipelines destructor
+	 * The object will be freed in Pipelines destructor
 	 */
 	virtual void AddProducer(ProducerForThisPipeline * pProd) {
 		m_producer.push_back(pProd);

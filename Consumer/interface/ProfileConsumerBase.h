@@ -14,7 +14,7 @@
 #include "Profile2D.h"
 
 template<class TTypes>
-class ProfileConsumerBase: public EventConsumerBase<TTypes> {
+class ProfileConsumerBase: public ConsumerBase<TTypes> {
 public:
 
 	typedef typename TTypes::event_type event_type;
@@ -27,7 +27,7 @@ public:
 					local_product_type const&)> ValueExtractLambda;
 	typedef std::pair<ValueExtractLambda, ValueModifiers> ValueDesc;
 
-	typedef EventPipeline<TTypes> PipelineTypeForThis;
+	typedef Pipeline<TTypes> PipelineTypeForThis;
 
 	ProfileConsumerBase(std::string plotName, ValueDesc xsource,
 			ValueDesc ysource) :
@@ -35,7 +35,7 @@ public:
 	}
 
 	virtual void Init(PipelineTypeForThis * pset) ARTUS_CPP11_OVERRIDE {
-		EventConsumerBase<TTypes>::Init(pset);
+		ConsumerBase<TTypes>::Init(pset);
 
 		m_profile.reset(
 				new Profile2d(m_plotName,
@@ -55,7 +55,7 @@ public:
 			typename TTypes::global_product_type const& globalProduct,
 			typename TTypes::local_product_type const& localProduct,
 			FilterResult& result) ARTUS_CPP11_OVERRIDE {
-		EventConsumerBase<TTypes>::ProcessEvent(event, globalProduct, localProduct,
+		ConsumerBase<TTypes>::ProcessEvent(event, globalProduct, localProduct,
 				result);
 
 		// not supported ..
@@ -65,7 +65,7 @@ public:
 			typename TTypes::global_product_type const& globalProduct,
 			typename TTypes::local_product_type const& localProduct)
 					ARTUS_CPP11_OVERRIDE {
-		EventConsumerBase<TTypes>::ProcessFilteredEvent(event, globalProduct,
+		ConsumerBase<TTypes>::ProcessFilteredEvent(event, globalProduct,
 				localProduct);
 
 		auto resX = m_xsource.first(event, globalProduct, localProduct);

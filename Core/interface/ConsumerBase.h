@@ -15,17 +15,17 @@
 #include "FilterResult.h"
 
 template<class TTypes>
-class EventPipeline;
+class Pipeline;
 
 /*
- The base class to implement your own EventConsumer which run within an EventPipeline.
+ The base class to implement your own Consumer which run within an Pipeline.
  This class gets the FilterResult, the created products, the settings and the input event ifself
  and can create the output you desire.
  It is not allowed to write to the settings, filter, event and products.
  */
 
 template<class TTypes>
-class EventConsumerBase: public boost::noncopyable {
+class ConsumerBase: public boost::noncopyable {
 public:
 
 	typedef typename TTypes::event_type event_type;
@@ -33,13 +33,13 @@ public:
 	typedef typename TTypes::global_product_type global_product_type;
 	typedef typename TTypes::setting_type setting_type;
 
-	virtual ~EventConsumerBase() {
+	virtual ~ConsumerBase() {
 	}
 
 	/*
 	 * Called before the first Event is passed to this consumer
 	 */
-	virtual void Init(EventPipeline<TTypes> * pipeline) {
+	virtual void Init(Pipeline<TTypes> * pipeline) {
 		m_pipeline = pipeline;
 	}
 
@@ -72,7 +72,7 @@ public:
 	virtual void Finish() = 0;
 
 	/*
-	 * Must return a unique id of the EventConsumer.
+	 * Must return a unique id of the Consumer.
 	 */
 	virtual std::string GetId() const {
 		return "default";
@@ -86,5 +86,5 @@ public:
 	}
 
 protected:
-	EventPipeline<TTypes> * m_pipeline;
+	Pipeline<TTypes> * m_pipeline;
 };

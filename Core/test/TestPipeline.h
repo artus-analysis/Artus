@@ -6,7 +6,7 @@
 
 #pragma once
 
-class TestPipeline: public EventPipeline<TestTypes> {
+class TestPipeline: public Pipeline<TestTypes> {
 public:
 
 	TestPipeline() :

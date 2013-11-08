@@ -37,7 +37,7 @@ public:
 	virtual ~DrawHist1dConsumerBase() {
 	}
 
-	virtual void Init(EventPipeline<TTypes> * pset) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(Pipeline<TTypes> * pset) ARTUS_CPP11_OVERRIDE {
 		DrawConsumerBase<TTypes>::Init(pset);
 
 		// init called

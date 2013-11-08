@@ -12,7 +12,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 
-#include "Artus/Core/interface/EventPipeline.h"
+#include "Artus/Core/interface/Pipeline.h"
 
 #include "TestGlobalProducer.h"
 #include "TestTypes.h"
@@ -55,14 +55,14 @@ public:
 	}
 };
 
-class TestEventConsumer: public EventConsumerBase<TestTypes> {
+class TestConsumer: public ConsumerBase<TestTypes> {
 public:
-	TestEventConsumer() :
+	TestConsumer() :
 			iFinish(0), iInit(0), iProcessFilteredEvent(0), iProcessEvent(0), iProcess(
 					0) {
 	}
 
-	virtual void Init(EventPipeline<TestTypes> * pset) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(Pipeline<TestTypes> * pset) ARTUS_CPP11_OVERRIDE {
 		m_pipeline = pset;
 		iInit++;
 	}
@@ -114,7 +114,7 @@ public:
 
 class TestPipelineInitilizer: public PipelineInitilizerBase<TestTypes> {
 public:
-	virtual void InitPipeline(EventPipeline<TestTypes> * pLine,
+	virtual void InitPipeline(Pipeline<TestTypes> * pLine,
 			TestSettings const& pset) const {
 	}
 
@@ -122,10 +122,10 @@ public:
 
 BOOST_AUTO_TEST_CASE( test_event_pipeline )
 {
-	TestEventConsumer * pCons1 = new TestEventConsumer();
-	TestEventConsumer * pCons2 = new TestEventConsumer();
+	TestConsumer * pCons1 = new TestConsumer();
+	TestConsumer * pCons2 = new TestConsumer();
 
-	EventPipeline<TestTypes> pline;
+	Pipeline<TestTypes> pline;
 
 	pline.AddConsumer( pCons1 );
 	pline.AddConsumer( pCons2 );
@@ -161,7 +161,7 @@ BOOST_AUTO_TEST_CASE( test_event_pipeline )
 
 BOOST_AUTO_TEST_CASE( test_add_one_filter2times )
 {
-	EventPipeline<TestTypes> pline;
+	Pipeline<TestTypes> pline;
 
 	pline.AddFilter( new TestFilter() );
 	BOOST_CHECK_THROW( pline.AddFilter( new TestFilter() ),
@@ -171,10 +171,10 @@ BOOST_AUTO_TEST_CASE( test_add_one_filter2times )
 
 BOOST_AUTO_TEST_CASE( test_event_filter )
 {
-	TestEventConsumer * pCons1 = new TestEventConsumer();
-	TestEventConsumer * pCons2 = new TestEventConsumer();
+	TestConsumer * pCons1 = new TestConsumer();
+	TestConsumer * pCons2 = new TestConsumer();
 
-	EventPipeline<TestTypes> pline;
+	Pipeline<TestTypes> pline;
 
 	pline.AddConsumer( pCons1 );
 	pline.AddConsumer( pCons2 );
@@ -209,10 +209,10 @@ BOOST_AUTO_TEST_CASE( test_event_filter )
 
 BOOST_AUTO_TEST_CASE( test_event_multiplefilter )
 {
-	TestEventConsumer * pCons1 = new TestEventConsumer();
+	TestConsumer * pCons1 = new TestConsumer();
 
 	TestGlobalProducer globalProducer;
-	EventPipeline<TestTypes> pline;
+	Pipeline<TestTypes> pline;
 
 	pline.AddConsumer( pCons1 );
 
@@ -253,10 +253,10 @@ BOOST_AUTO_TEST_CASE( test_event_multiplefilter )
 
 BOOST_AUTO_TEST_CASE( test_event_pipeline_level2 )
 {
-	TestEventConsumer * pCons1 = new TestEventConsumer();
-	TestEventConsumer * pCons2 = new TestEventConsumer();
+	TestConsumer * pCons1 = new TestConsumer();
+	TestConsumer * pCons2 = new TestConsumer();
 
-	EventPipeline<TestTypes> pline;
+	Pipeline<TestTypes> pline;
 
 	pline.AddConsumer( pCons1 );
 	pline.AddConsumer( pCons2 );

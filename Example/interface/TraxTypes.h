@@ -8,7 +8,7 @@
 
 #include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/GlobalProducerBase.h"
-#include "Artus/Core/interface/EventPipelineRunner.h"
+#include "Artus/Core/interface/PipelineRunner.h"
 
 #include "TraxEventData.h"
 #include "TraxProduct.h"
@@ -29,14 +29,14 @@ typedef GlobalProducerBase<TraxTypes> TraxGlobalProducerBase;
 typedef LocalProducerBase<TraxTypes> TraxLocalProducerBase;
 
 // Pass the template parameters for the Consumer
-typedef EventConsumerBase<TraxTypes> TraxConsumerBase;
+typedef ConsumerBase<TraxTypes> TraxConsumerBase;
 
 // Pass the template parameters for the Filter
 typedef FilterBase<TraxTypes> TraxFilterBase;
 
 //Pass the template parameters for the Pipeline
-typedef EventPipeline<TraxTypes> TraxPipeline;
+typedef Pipeline<TraxTypes> TraxPipeline;
 
 //Setup our custom pipeline runner
-typedef EventPipelineRunner<TraxPipeline, TraxGlobalProducerBase> TraxPipelineRunner;
+typedef PipelineRunner<TraxPipeline, TraxGlobalProducerBase> TraxPipelineRunner;
 

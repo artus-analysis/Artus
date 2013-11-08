@@ -11,23 +11,23 @@
 #include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_list.hpp>
 
-#include "EventPipeline.h"
+#include "Pipeline.h"
 #include "EventProviderBase.h"
 #include "ProgressReport.h"
 
 /*
- * The EventPipelineRunner utilizes a user-provided EventProvider to load events and passes them to
- * all registered EventPipelines.
+ * The PipelineRunner utilizes a user-provided EventProvider to load events and passes them to
+ * all registered Pipelines.
  * Furthermore, GlobalProducers can be registered, which can generate Pipeline-independet products
  * of the event. These GlobalProducers are run before any pipeline is started and the generated data is passed to the
  * pipelines.
  */
 
 template<class TPipeline, class TGlobalProducer>
-class EventPipelineRunner: public boost::noncopyable {
+class PipelineRunner: public boost::noncopyable {
 public:
 
-	EventPipelineRunner() {
+	PipelineRunner() {
 		// this is the default
 		// use AddProgressReport / ClearProgressReports to adapt it to your needs
 		AddProgressReport(new ConsoleProgressReport());
@@ -45,21 +45,21 @@ public:
 	typedef typename ProgressReportList::iterator ProgressReportIterator;
 
 	/*
-	 * Add a pipeline. The object is destroy in the destructor of the EventPipelineRunner
+	 * Add a pipeline. The object is destroy in the destructor of the PipelineRunner
 	 */
 	void AddPipeline(TPipeline* pline) {
 		m_pipelines.push_back(pline);
 	}
 
 	/*
-	 * Add a GlobalProducer. The object is destroy in the destructor of the EventPipelineRunner
+	 * Add a GlobalProducer. The object is destroy in the destructor of the PipelineRunner
 	 */
 	void AddGlobalProducer(TGlobalProducer* prod) {
 		m_globalProducer.push_back(prod);
 	}
 
 	/*
-	 * Add a range of pipelines. The object is destroy in the destructor of the EventPipelineRunner
+	 * Add a range of pipelines. The object is destroy in the destructor of the PipelineRunner
 	 */
 	void AddPipelines(std::vector<TPipeline*> pVec) {
 

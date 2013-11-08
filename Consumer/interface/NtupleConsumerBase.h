@@ -8,14 +8,14 @@
 
 #include <TNtuple.h>
 
-#include "Artus/Core/interface/EventConsumerBase.h"
+#include "Artus/Core/interface/ConsumerBase.h"
 
 /*
 Base class for all Consumers which output some form of Ntuple
 */
 
 template<class TTypes>
-class NtupleConsumerBase: public EventConsumerBase<TTypes> {
+class NtupleConsumerBase: public ConsumerBase<TTypes> {
 public:
 
 	typedef typename TTypes::event_type event_type;
@@ -24,13 +24,13 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 
 	NtupleConsumerBase() :
-			EventConsumerBase<TTypes>() {
+			ConsumerBase<TTypes>() {
 	}
 	virtual ~NtupleConsumerBase() {
 	}
 
-	virtual void Init(EventPipeline<TTypes> * pset) ARTUS_CPP11_OVERRIDE {
-		EventConsumerBase<TTypes>::Init(pset);
+	virtual void Init(Pipeline<TTypes> * pset) ARTUS_CPP11_OVERRIDE {
+		ConsumerBase<TTypes>::Init(pset);
 
 		quantities_vector = pset->GetSettings().GetQuantities();
 		quantities = boost::algorithm::join(quantities_vector, ":");
@@ -47,7 +47,7 @@ public:
 	void ProcessFilteredEvent(event_type const& event,
 			global_product_type const& globalProduct,
 			local_product_type const& localProduct) ARTUS_CPP11_OVERRIDE {
-		EventConsumerBase<TTypes>::ProcessFilteredEvent(event, globalProduct, localProduct);
+		ConsumerBase<TTypes>::ProcessFilteredEvent(event, globalProduct, localProduct);
 
 		std::vector<float> array;
 

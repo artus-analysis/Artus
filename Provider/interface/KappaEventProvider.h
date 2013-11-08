@@ -9,7 +9,7 @@
 #include "DataFormats/interface/Kappa.h"
 #include "DataFormats/interface/KDebug.h"
 
-#include "Artus/Core/interface/EventPipelineRunner.h"
+#include "Artus/Core/interface/PipelineRunner.h"
 
 template<class TEventType>
 class KappaEventProvider: public EventProvider<TEventType> {

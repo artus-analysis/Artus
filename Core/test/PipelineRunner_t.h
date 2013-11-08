@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include "Artus/Core/interface/EventPipelineRunner.h"
+#include "Artus/Core/interface/PipelineRunner.h"
 
 #include "TestPipeline.h"
 #include "TestGlobalProducer.h"
 #include "TestEventProvider.h"
-#include "EventPipeline_t.h"
+#include "Pipeline_t.h"
 
 #include <boost/test/included/unit_test.hpp>
 
@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_product )
 	tline4->InitPipeline( tset, TestPipelineInitilizer() );
 	tline5->InitPipeline( tset, TestPipelineInitilizer() );
 
-	EventPipelineRunner<TestPipeline, TestProducerBase> prunner;
+	PipelineRunner<TestPipeline, TestProducerBase> prunner;
 	// don't show progress report in this test cases
 	prunner.ClearProgressReports();
 
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner )
 	tline4->InitPipeline( tset, TestPipelineInitilizer() );
 	tline5->InitPipeline( tset, TestPipelineInitilizer() );
 
-	EventPipelineRunner<TestPipeline, TestProducerBase> prunner;
+	PipelineRunner<TestPipeline, TestProducerBase> prunner;
 	// don't show progress report in this test cases
 	prunner.ClearProgressReports();
 
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_multi_level )
 	tline2->InitPipeline( tset_lvl1, TestPipelineInitilizer() );
 	tline3->InitPipeline( tset_lvl2, TestPipelineInitilizer() );
 
-	EventPipelineRunner<TestPipeline, TestProducerBase> prunner;
+	PipelineRunner<TestPipeline, TestProducerBase> prunner;
 	// don't show progress report in this test cases
 	prunner.ClearProgressReports();
 	prunner.AddPipelines( { {tline1, tline2, tline3}});

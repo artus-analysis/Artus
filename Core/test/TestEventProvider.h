@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Artus/Core/interface/Cpp11Support.h"
-#include "Artus/Core/interface/EventPipelineRunner.h"
+#include "Artus/Core/interface/PipelineRunner.h"
 #include "Artus/Core/interface/EventProviderBase.h"
 
 class TestEventProvider: public EventProviderBase<TestData> {

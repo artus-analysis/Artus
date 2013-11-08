@@ -13,7 +13,7 @@
 
 // forward define to be able to use the event pipeline here
 template<class TTypes>
-class EventPipeline;
+class Pipeline;
 
 template<class TTypes>
 class FilterBase: public boost::noncopyable {
@@ -28,7 +28,7 @@ public:
 	}
 
 	// todo: do we event need this init this ?
-	virtual void Init(EventPipeline<TTypes> * pset) {
+	virtual void Init(Pipeline<TTypes> * pset) {
 		//m_pipeline = pset;
 	}
 
