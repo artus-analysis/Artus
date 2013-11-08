@@ -1,0 +1,36 @@
+{
+    "EventCount": -1, 
+    "ProducerPtCorrectionFactor": 1.05,
+    "GlobalProducer": [
+        "json_producer"
+    ], 
+    "InputFiles": [
+        "sample_ntuple.root"
+    ], 
+    "OutputPath": "sample_output_ntuple.root", 
+    "Pipelines": {
+        "lowPt": {
+            "Consumer": [ "ntuple" ], 
+            "Quantities" :["pt", "pt_corr", "theta"],
+            "Filter": [ "filter_pt"
+            ], 
+            "LocalProducer": [
+                "VertexCandidatesSelector"
+            ], 
+            "FilterPtLow" : "0.0",
+            "FilterPtHigh" : "1.0"                      
+        },
+        "highPt": {
+            "Consumer": [ "ntuple" ],
+            "Quantities" :["pt", "pt_corr", "theta"],
+            "Filter": [  "filter_pt"
+            ], 
+            "LocalProducer": [
+                "VertexCandidatesSelector"
+            ], 
+            "FilterPtLow" : "1.0",
+            "FilterPtHigh" : "10000.0"
+        }        
+    }
+}
+
