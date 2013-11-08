@@ -29,7 +29,6 @@ add_library(artus_configuration STATIC
 )
 
 add_library(artus_consumer STATIC
-	Consumer/src/Draw.cc
 	Consumer/src/Hist1D.cc
 	Consumer/src/ValueModifier.cc
 )
