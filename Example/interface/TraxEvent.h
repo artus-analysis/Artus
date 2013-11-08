@@ -6,7 +6,7 @@
 
 #pragma once
 
-class TraxEventData {
+class TraxEvent {
 public:
 
 	float m_floatTheSim;

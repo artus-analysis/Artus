@@ -6,11 +6,9 @@
 
 #pragma once
 
-class TestData {
+class TestEvent {
 public:
-	TestData() :
-			iVal(0) {
-	}
+	TestEvent() : iVal(0) {}
 
 	int iVal;
 

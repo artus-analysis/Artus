@@ -24,7 +24,7 @@ public:
 		return "testfilter";
 	}
 
-	virtual bool DoesEventPass(const TestData & event,
+	virtual bool DoesEventPass(const TestEvent & event,
 			TestGlobalProduct const& product, TestSettings const& settings) {
 		return (event.iVal < 2);
 	}
@@ -37,7 +37,7 @@ public:
 		return "testfilter2";
 	}
 
-	virtual bool DoesEventPass(const TestData & event,
+	virtual bool DoesEventPass(const TestEvent & event,
 			TestGlobalProduct const& product, TestSettings const& settings) {
 		return false;
 	}
@@ -47,19 +47,17 @@ class TestLocalProducer: public LocalProducerBase<TestTypes> {
 public:
 
 	// for each pipeline
-	virtual void PopulateLocal(TestData const& data,
+	virtual void ProduceLocal(TestEvent const& event,
 			TestGlobalProduct const& product,
 			TestLocalProduct & localProduct,
 			TestSettings const& m_pipelineSettings) const {
-		localProduct.iProduct = data.iVal + 1;
+		localProduct.iLocalProduct = event.iVal + 1;
 	}
 };
 
 class TestConsumer: public ConsumerBase<TestTypes> {
 public:
-	TestConsumer() :
-			iFinish(0), iInit(0), iProcessFilteredEvent(0), iProcessEvent(0), iProcess(
-					0) {
+	TestConsumer() : iFinish(0), iInit(0), iProcessFilteredEvent(0), iProcessEvent(0), iProcess(0) {
 	}
 
 	virtual void Init(Pipeline<TestTypes> * pset) ARTUS_CPP11_OVERRIDE {
@@ -71,20 +69,22 @@ public:
 		iFinish++;
 	}
 
-	virtual void ProcessFilteredEvent(TestData const& event,
+	virtual void ProcessFilteredEvent(TestEvent const& event,
 			TestGlobalProduct const& product,
-			TestLocalProduct const& localProduct) ARTUS_CPP11_OVERRIDE {
+			TestLocalProduct const& localProduct) ARTUS_CPP11_OVERRIDE
+	{
 		iProcessFilteredEvent++;
 	}
 
 	// this method is called for all events
-	virtual void ProcessEvent(TestData const& event,
-			TestGlobalProduct const& product,
-			TestLocalProduct const& localProduct, FilterResult & result)
-					ARTUS_CPP11_OVERRIDE {
+	virtual void ProcessEvent(TestEvent const& event,
+			TestGlobalProduct const& globalproduct,
+			TestLocalProduct const& localProduct,
+			FilterResult& result) ARTUS_CPP11_OVERRIDE
+	{
 		// did product work ?
-		BOOST_CHECK_EQUAL(event.iVal + 1, localProduct.iProduct);
-		BOOST_CHECK_EQUAL(event.iVal + 5 + 23, product.iGlobalProduct);
+		BOOST_CHECK_EQUAL(event.iVal + 1, localProduct.iLocalProduct);
+		BOOST_CHECK_EQUAL(event.iVal + 5 + 23, globalproduct.iGlobalProduct);
 
 		iProcessEvent++;
 		fres = result;
@@ -120,7 +120,7 @@ public:
 
 };
 
-BOOST_AUTO_TEST_CASE( test_event_pipeline )
+BOOST_AUTO_TEST_CASE( test_pipeline )
 {
 	TestConsumer * pCons1 = new TestConsumer();
 	TestConsumer * pCons2 = new TestConsumer();
@@ -136,11 +136,11 @@ BOOST_AUTO_TEST_CASE( test_event_pipeline )
 
 	TestSettings settings;
 	TestGlobalSettings globa_settings;
-	pline.InitPipeline( settings, init );
+	pline.InitPipeline(settings, init);
 
 	TestGlobalProducer globalProducer;
 	TestGlobalProduct global;
-	TestData td;
+	TestEvent td;
 	td.iVal = 23;
 
 	// run global producers
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE( test_add_one_filter2times )
 
 }
 
-BOOST_AUTO_TEST_CASE( test_event_filter )
+BOOST_AUTO_TEST_CASE( test_filter )
 {
 	TestConsumer * pCons1 = new TestConsumer();
 	TestConsumer * pCons2 = new TestConsumer();
@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE( test_event_filter )
 	TestGlobalSettings global_settings;
 	pline.InitPipeline( settings, init );
 
-	TestData td;
+	TestEvent td;
 	TestGlobalProduct global;
 	TestGlobalProducer globalProducer;
 
@@ -207,7 +207,7 @@ BOOST_AUTO_TEST_CASE( test_event_filter )
 	pCons2->CheckCalls(2, 3);
 }
 
-BOOST_AUTO_TEST_CASE( test_event_multiplefilter )
+BOOST_AUTO_TEST_CASE( test_multiplefilter )
 {
 	TestConsumer * pCons1 = new TestConsumer();
 
@@ -226,7 +226,7 @@ BOOST_AUTO_TEST_CASE( test_event_multiplefilter )
 	TestGlobalSettings global_settings;
 	pline.InitPipeline( settings, init );
 
-	TestData td;
+	TestEvent td;
 	TestGlobalProduct global;
 
 	globalProducer.PopulateGlobalProduct( td, global, global_settings );
@@ -238,15 +238,15 @@ BOOST_AUTO_TEST_CASE( test_event_multiplefilter )
 	BOOST_CHECK( pCons1->fres.GetFilterDecisions().at("testfilter2") == false );
 	BOOST_CHECK( pCons1->fres.HasPassed() == false);
 	/*
-	 for ( FilterResult::FilterDecisions::const_iterator it = pCons1->fres.GetFilterDecisions().begin();
+	 for (FilterResult::FilterDecisions::const_iterator it = pCons1->fres.GetFilterDecisions().begin();
 	 it != pCons1->fres.GetFilterDecisions().end();
-	 it ++ )
+	 it ++)
 	 {
-	 if ( it->first == "testfilter" )
+	 if (it->first == "testfilter")
 	 BOOST_CHECK( it->second == true )
 
-	 if ( it->first == "testfilter" )
-	 BOOST_CHECK( it->second == true )
+	 if (it->first == "testfilter")
+	 BOOST_CHECK(it->second == true)
 	 std::cout << it->first << " : " << it->second << std::endl;
 	 }*/
 }
@@ -265,19 +265,19 @@ BOOST_AUTO_TEST_CASE( test_event_pipeline_level2 )
 
 	TestSettings settings;
 	TestGlobalSettings global_settings;
-	settings.SetLevel ( 2 );
-	pline.InitPipeline( settings, init );
+	settings.SetLevel(2);
+	pline.InitPipeline(settings, init);
 
 	TestGlobalProducer globalProducer;
 	TestGlobalProduct global;
-	TestData td;
+	TestEvent td;
 	td.iVal = 23;
 
-	pline.Run( );
-	pline.Run( );
+	pline.Run();
+	pline.Run();
 	pline.FinishPipeline();
 
 	pCons1->CheckCalls(0, 0, 2);
-	pCons2->CheckCalls(0,0,2 );
+	pCons2->CheckCalls(0,0,2);
 }
 

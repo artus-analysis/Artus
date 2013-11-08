@@ -12,7 +12,7 @@
 #include "Hist1D.h"
 /*
  typedef std::function<
- std::vector<float>(MassRecoEventData const&, MassRecoProduct const&)> ValueExtractLambda;
+ std::vector<float>(MassRecoEvent const&, MassRecoProduct const&)> ValueExtractLambda;
  typedef std::pair<ValueExtractLambda, ValueModifiers> ValueDesc;
  */
 template<class TTypes>

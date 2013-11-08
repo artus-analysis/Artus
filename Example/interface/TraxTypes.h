@@ -10,14 +10,14 @@
 #include "Artus/Core/interface/GlobalProducerBase.h"
 #include "Artus/Core/interface/PipelineRunner.h"
 
-#include "TraxEventData.h"
+#include "TraxEvent.h"
 #include "TraxProduct.h"
 #include "TraxProduct.h"
 #include "TraxPipelineSettings.h"
 
 // all data types which are used for this analysis
 struct TraxTypes {
-	typedef TraxEventData event_type;
+	typedef TraxEvent event_type;
 	typedef TraxLocalProduct local_product_type;
 	typedef TraxGlobalProduct global_product_type;
 	typedef TraxPipelineSettings setting_type;

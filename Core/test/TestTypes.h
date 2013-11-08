@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include "TestData.h"
+#include "TestEvent.h"
 #include "TestProduct.h"
 #include "TestSettings.h"
 
 struct TestTypes {
-	typedef TestData event_type;
+	typedef TestEvent event_type;
 	typedef TestGlobalProduct global_product_type;
 	typedef TestLocalProduct local_product_type;
 	typedef TestSettings setting_type;

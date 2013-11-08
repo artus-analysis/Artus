@@ -9,12 +9,11 @@
 class TestPipeline: public Pipeline<TestTypes> {
 public:
 
-	TestPipeline() :
-			iRunEvent(0), iRun(0), iFinish(0), bCheckProducer(false) {
+	TestPipeline() : iRunEvent(0), iRun(0), iFinish(0), bCheckProducer(false) {
 
 	}
 
-	virtual void RunEvent(TestData const& evt, TestGlobalProduct const& product) ARTUS_CPP11_OVERRIDE {
+	virtual void RunEvent(TestEvent const& evt, TestGlobalProduct const& product) ARTUS_CPP11_OVERRIDE {
 		iRunEvent++;
 		//if (bCheckProducer) {
 		//BOOST_CHECK(product.iGlobalProduct == 1);

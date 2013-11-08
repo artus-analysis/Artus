@@ -20,7 +20,7 @@ public:
 		return "filter_pt";
 	}
 
-	virtual bool DoesEventPass(TraxEventData const& event,
+	virtual bool DoesEventPass(TraxEvent const& event,
 			TraxGlobalProduct const& product,
 			TraxPipelineSettings const& settings) {
 

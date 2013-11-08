@@ -16,7 +16,7 @@
 class TraxNtupleConsumer: public NtupleConsumerBase<TraxTypes> {
 private:
 	
-	float returnvalue(std::string string, TraxEventData const& event,
+	float returnvalue(std::string string, TraxEvent const& event,
 			TraxGlobalProduct const& globalProduct,
 			TraxLocalProduct const& localProduct) ARTUS_CPP11_OVERRIDE
 	{

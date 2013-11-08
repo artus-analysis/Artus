@@ -23,7 +23,7 @@ public:
 
 	}
 
-	virtual void ProcessFilteredEvent(TraxEventData const& event,
+	virtual void ProcessFilteredEvent(TraxEvent const& event,
 			TraxGlobalProduct const& globalProduct,
 			TraxLocalProduct const& localProduct) ARTUS_CPP11_OVERRIDE {
 

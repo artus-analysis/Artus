@@ -7,21 +7,15 @@
 #pragma once
 
 struct TestLocalProduct {
-	TestLocalProduct() :
-			iProduct(0) {
-	}
+	TestLocalProduct() : iLocalProduct(0) {}
 
-	int iProduct;
+	int iLocalProduct;
 };
 
 class TestGlobalProduct {
 public:
-	TestGlobalProduct() :
-			iGlobalProduct(0) {
-	}
-
-	void ClearContent() {
-	}
+	TestGlobalProduct() : iGlobalProduct(0) {}
+	void ClearContent() {}
 
 	int iGlobalProduct;
 };
