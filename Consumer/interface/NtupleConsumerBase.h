@@ -19,8 +19,8 @@ class NtupleConsumerBase: public EventConsumerBase<TTypes> {
 public:
 
 	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::local_meta_type local_meta_type;
-	typedef typename TTypes::global_meta_type global_meta_type;
+	typedef typename TTypes::local_product_type local_product_type;
+	typedef typename TTypes::global_product_type global_product_type;
 	typedef typename TTypes::setting_type setting_type;
 
 	NtupleConsumerBase() :
@@ -45,15 +45,15 @@ public:
 	}
 
 	void ProcessFilteredEvent(event_type const& event,
-			global_meta_type const& globalMetaData,
-			local_meta_type const& localMetaData) ARTUS_CPP11_OVERRIDE {
-		EventConsumerBase<TTypes>::ProcessFilteredEvent(event, globalMetaData, localMetaData);
+			global_product_type const& globalProduct,
+			local_product_type const& localProduct) ARTUS_CPP11_OVERRIDE {
+		EventConsumerBase<TTypes>::ProcessFilteredEvent(event, globalProduct, localProduct);
 
 		std::vector<float> array;
 
 		//iterate over string vector and fill the array for each quantitiy
 		for (stringvector::iterator it = quantities_vector.begin(); it != quantities_vector.end(); ++it)
-			array.push_back(returnvalue(*it, event, globalMetaData, localMetaData));
+			array.push_back(returnvalue(*it, event, globalProduct, localProduct));
 
 		// add the array to the ntuple
 		ntuple->Fill(&array[0]);
@@ -71,8 +71,8 @@ private:
 	std::string quantities;
 
 	virtual float returnvalue(std::string string, event_type const& event,
-			global_meta_type const& globalMetaData,
-			local_meta_type const& localMetaData)
+			global_product_type const& globalProduct,
+			local_product_type const& localProduct)
 	{return 0.;}
 };
 

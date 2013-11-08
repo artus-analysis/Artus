@@ -12,7 +12,7 @@
 #include "Hist1D.h"
 /*
  typedef std::function<
- std::vector<float>(MassRecoEventData const&, MassRecoMetaData const&)> ValueExtractLambda;
+ std::vector<float>(MassRecoEventData const&, MassRecoProduct const&)> ValueExtractLambda;
  typedef std::pair<ValueExtractLambda, ValueModifiers> ValueDesc;
  */
 template<class TTypes>
@@ -20,13 +20,13 @@ class DrawHist1dConsumerBase: public DrawConsumerBase<TTypes> {
 public:
 
 	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::local_meta_type local_meta_type;
-	typedef typename TTypes::global_meta_type global_meta_type;
+	typedef typename TTypes::local_product_type local_product_type;
+	typedef typename TTypes::global_product_type global_product_type;
 	typedef typename TTypes::setting_type setting_type;
 
 	typedef std::function<
-			std::vector<float>(event_type const&, global_meta_type const&,
-					local_meta_type const&)> ValueExtractLambda;
+			std::vector<float>(event_type const&, global_product_type const&,
+					local_product_type const&)> ValueExtractLambda;
 	typedef std::pair<ValueExtractLambda, ValueModifiers> ValueDesc;
 
 	DrawHist1dConsumerBase(std::string const& histName, ValueDesc desc) :
@@ -57,13 +57,13 @@ public:
 	}
 
 	virtual void ProcessFilteredEvent(event_type const& event,
-			global_meta_type const& globalMetaData,
-			local_meta_type const& localMetaData) ARTUS_CPP11_OVERRIDE {
+			global_product_type const& globalProduct,
+			local_product_type const& localProduct) ARTUS_CPP11_OVERRIDE {
 
-		DrawConsumerBase<TTypes>::ProcessFilteredEvent(event, globalMetaData,
-				localMetaData);
+		DrawConsumerBase<TTypes>::ProcessFilteredEvent(event, globalProduct,
+				localProduct);
 
-		auto res = m_desc.first(event, globalMetaData, localMetaData);
+		auto res = m_desc.first(event, globalProduct, localProduct);
 
 		for (auto const& v : res) {
 			getHist()->Fill(v, 1.0f);

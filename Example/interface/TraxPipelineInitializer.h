@@ -16,7 +16,7 @@
 
 #include "TraxPipelineSettings.h"
 #include "TraxEventData.h"
-#include "TraxMetaData.h"
+#include "TraxProduct.h"
 
 // filter
 #include "PtFilter.h"
@@ -36,27 +36,27 @@ public:
 		pLine->AddConsumer(new MeanPtConsumer());
 
 		typedef std::function<
-				std::vector<float>(event_type const&, global_meta_type const&,
-						local_meta_type const&)> ValueExtractLambda;
+				std::vector<float>(event_type const&, global_product_type const&,
+						local_product_type const&)> ValueExtractLambda;
 		typedef std::pair<ValueExtractLambda, ValueModifiers> ValueDesc;
 
 		// define how to extract Pt and the range
 		auto extractPtSim =
-				[]( TraxEventData const& ev, TraxGlobalMetaData const & gm, TraxLocalMetaData const & lm )
+				[]( TraxEventData const& ev, TraxGlobalProduct const & gm, TraxLocalProduct const & lm )
 				-> std::vector<float> {return {ev.m_floatPtSim};};
 		auto PtSimValue = std::make_pair(extractPtSim,
 				DefaultModifiers::getPtModifier(0.7, 1.3f));
 
-		// extracts the value which has been corrected by a globalMetaDataProducer
+		// extracts the value which has been corrected by a globalProducer
 		auto extractPtSimCorrected =
-				[]( TraxEventData const& ev, TraxGlobalMetaData const & gm, TraxLocalMetaData const & lm )
+				[]( TraxEventData const& ev, TraxGlobalProduct const & gm, TraxLocalProduct const & lm )
 				-> std::vector<float> {return {gm.m_floatPtSim_corrected};};
 		auto PtSimCorrectedValue = std::make_pair(extractPtSimCorrected,
 				DefaultModifiers::getPtModifier(0.7, 1.3f));
 
 		// define how to extract Theta and the range
 		auto extractThetaSim =
-				[]( TraxEventData const& ev, TraxGlobalMetaData const & gm, TraxLocalMetaData const & lm )
+				[]( TraxEventData const& ev, TraxGlobalProduct const & gm, TraxLocalProduct const & lm )
 				-> std::vector<float> {return {ev.m_floatTheSim};};
 
 		auto ThetaSimValue = std::make_pair(extractThetaSim,
@@ -71,7 +71,7 @@ public:
 				pLine->AddConsumer(
 						new DrawHist1dConsumerBase<TraxTypes>("pt", PtSimValue));
 
-				// plot Pt - corrected, from the meta data
+				// plot Pt - corrected, from the global product
 				pLine->AddConsumer(
 						new DrawHist1dConsumerBase<TraxTypes>("pt_corr", PtSimCorrectedValue));
 

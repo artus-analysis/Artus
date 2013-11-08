@@ -18,13 +18,13 @@ class ProfileConsumerBase: public EventConsumerBase<TTypes> {
 public:
 
 	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::local_meta_type local_meta_type;
-	typedef typename TTypes::global_meta_type global_meta_type;
+	typedef typename TTypes::local_product_type local_product_type;
+	typedef typename TTypes::global_product_type global_product_type;
 	typedef typename TTypes::setting_type setting_type;
 
 	typedef std::function<
-			std::vector<float>(event_type const&, global_meta_type const&,
-					local_meta_type const&)> ValueExtractLambda;
+			std::vector<float>(event_type const&, global_product_type const&,
+					local_product_type const&)> ValueExtractLambda;
 	typedef std::pair<ValueExtractLambda, ValueModifiers> ValueDesc;
 
 	typedef EventPipeline<TTypes> PipelineTypeForThis;
@@ -52,24 +52,24 @@ public:
 	}
 
 	virtual void ProcessEvent(typename TTypes::event_type const& event,
-			typename TTypes::global_meta_type const& globalData,
-			typename TTypes::local_meta_type const& localData,
+			typename TTypes::global_product_type const& globalProduct,
+			typename TTypes::local_product_type const& localProduct,
 			FilterResult& result) ARTUS_CPP11_OVERRIDE {
-		EventConsumerBase<TTypes>::ProcessEvent(event, globalData, localData,
+		EventConsumerBase<TTypes>::ProcessEvent(event, globalProduct, localProduct,
 				result);
 
 		// not supported ..
 	}
 
 	virtual void ProcessFilteredEvent(typename TTypes::event_type const& event,
-			typename TTypes::global_meta_type const& globalData,
-			typename TTypes::local_meta_type const& localData)
+			typename TTypes::global_product_type const& globalProduct,
+			typename TTypes::local_product_type const& localProduct)
 					ARTUS_CPP11_OVERRIDE {
-		EventConsumerBase<TTypes>::ProcessFilteredEvent(event, globalData,
-				localData);
+		EventConsumerBase<TTypes>::ProcessFilteredEvent(event, globalProduct,
+				localProduct);
 
-		auto resX = m_xsource.first(event, globalData, localData);
-		auto resY = m_ysource.first(event, globalData, localData);
+		auto resX = m_xsource.first(event, globalProduct, localProduct);
+		auto resY = m_ysource.first(event, globalProduct, localProduct);
 
 		if ((resX.size() == 0) || (resY.size() == 0))
 			return;

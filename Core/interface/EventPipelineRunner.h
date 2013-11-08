@@ -18,12 +18,12 @@
 /*
  * The EventPipelineRunner utilizes a user-provided EventProvider to load events and passes them to
  * all registered EventPipelines.
- * Furthermore, GlobalEventProducers can be registered, which can generate Pipeline-Independet meta data
- * of the event. This GlobalEventProducers are run before any pipeline is started and the generated data is passed to the
+ * Furthermore, GlobalProducers can be registered, which can generate Pipeline-independet products
+ * of the event. These GlobalProducers are run before any pipeline is started and the generated data is passed to the
  * pipelines.
  */
 
-template<class TPipeline, class TGlobalMetaProducer>
+template<class TPipeline, class TGlobalProducer>
 class EventPipelineRunner: public boost::noncopyable {
 public:
 
@@ -38,8 +38,8 @@ public:
 	typedef boost::ptr_list<TPipeline> Pipelines;
 	typedef typename Pipelines::iterator PipelinesIterator;
 
-	typedef boost::ptr_list<TGlobalMetaProducer> GlobalMetaProducer;
-	typedef typename GlobalMetaProducer::iterator GlobalMetaProducerIterator;
+	typedef boost::ptr_list<TGlobalProducer> GlobalProducer;
+	typedef typename GlobalProducer::iterator GlobalProducerIterator;
 
 	typedef boost::ptr_list<ProgressReportBase> ProgressReportList;
 	typedef typename ProgressReportList::iterator ProgressReportIterator;
@@ -52,10 +52,10 @@ public:
 	}
 
 	/*
-	 * Add a GlobalMetaProducer. The object is destroy in the destructor of the EventPipelineRunner
+	 * Add a GlobalProducer. The object is destroy in the destructor of the EventPipelineRunner
 	 */
-	void AddGlobalMetaProducer(TGlobalMetaProducer* metaProd) {
-		m_globalMetaProducer.push_back(metaProd);
+	void AddGlobalProducer(TGlobalProducer* prod) {
+		m_globalProducer.push_back(prod);
 	}
 
 	/*
@@ -69,8 +69,8 @@ public:
 	}
 
 	/*
-	 * Run the GlobalMetaProducers and all pipelines.
-	 * give any pipeline setting here: only the global meta data producer will
+	 * Run the GlobalProducers and all pipelines.
+	 * give any pipeline setting here: only the global producer will
 	 * read from the global settings ...
 	 *
 	 */
@@ -88,8 +88,8 @@ public:
 		bool bEventValid = true;
 
 		// init global producers
-		for (GlobalMetaProducerIterator it = m_globalMetaProducer.begin();
-				it != m_globalMetaProducer.end(); it++) {
+		for (GlobalProducerIterator it = m_globalProducer.begin();
+				it != m_globalProducer.end(); it++) {
 			it->Init(globalSettings);
 		}
 
@@ -101,14 +101,14 @@ public:
 			}
 
 			evtProvider.GotoEvent(i);
-			typename TTypes::global_meta_type metaDataGlobal;
-			//metaDataGlobal.m_hltInfo = hltTools;
+			typename TTypes::global_product_type productGlobal;
+			//productGlobal.m_hltInfo = hltTools;
 
-			// create global meta data
-			for (GlobalMetaProducerIterator it = m_globalMetaProducer.begin();
-					it != m_globalMetaProducer.end(); it++) {
-				bEventValid = it->PopulateGlobalMetaData(
-						evtProvider.GetCurrentEvent(), metaDataGlobal,
+			// create global products
+			for (GlobalProducerIterator it = m_globalProducer.begin();
+					it != m_globalProducer.end(); it++) {
+				bEventValid = it->PopulateGlobalProduct(
+						evtProvider.GetCurrentEvent(), productGlobal,
 						globalSettings);
 				//CALIB_LOG(it->GetContent())
 				if (!bEventValid)
@@ -121,7 +121,7 @@ public:
 						it != m_pipelines.end(); it++) {
 					if (it->GetSettings().GetLevel() == 1)
 						it->RunEvent(evtProvider.GetCurrentEvent(),
-								metaDataGlobal);
+								productGlobal);
 				}
 			}
 		}
@@ -167,7 +167,7 @@ public:
 private:
 
 	Pipelines m_pipelines;
-	GlobalMetaProducer m_globalMetaProducer;
+	GlobalProducer m_globalProducer;
 	ProgressReportList m_progressReport;
 };
 

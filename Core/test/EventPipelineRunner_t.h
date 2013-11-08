@@ -15,7 +15,7 @@
 
 #include <boost/test/included/unit_test.hpp>
 
-BOOST_AUTO_TEST_CASE( test_event_prunner_global_metadata )
+BOOST_AUTO_TEST_CASE( test_event_prunner_global_product )
 {
 	TestPipeline * tline1 = new TestPipeline;
 	TestPipeline * tline2 = new TestPipeline;
@@ -23,11 +23,11 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_metadata )
 	TestPipeline * tline4 = new TestPipeline;
 	TestPipeline * tline5 = new TestPipeline;
 
-	tline1->bCheckMetaProducer = true;
-	tline2->bCheckMetaProducer = true;
-	tline3->bCheckMetaProducer = true;
-	tline4->bCheckMetaProducer = true;
-	tline5->bCheckMetaProducer = true;
+	tline1->bCheckProducer = true;
+	tline2->bCheckProducer = true;
+	tline3->bCheckProducer = true;
+	tline4->bCheckProducer = true;
+	tline5->bCheckProducer = true;
 
 
 	TestSettings tset;
@@ -39,14 +39,14 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_metadata )
 	tline4->InitPipeline( tset, TestPipelineInitilizer() );
 	tline5->InitPipeline( tset, TestPipelineInitilizer() );
 
-	EventPipelineRunner<TestPipeline, TestMetaDataProducerBase> prunner;
+	EventPipelineRunner<TestPipeline, TestProducerBase> prunner;
 	// don't show progress report in this test cases
 	prunner.ClearProgressReports();
 
 	prunner.AddPipeline( tline1 );
 	prunner.AddPipeline( tline2 );
 
-	prunner.AddGlobalMetaProducer( new TestGlobalProducer() );
+	prunner.AddGlobalProducer( new TestGlobalProducer() );
 
 	std::vector<TestPipeline *> vPipes;
 	vPipes.push_back( tline3 );
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner )
 	tline4->InitPipeline( tset, TestPipelineInitilizer() );
 	tline5->InitPipeline( tset, TestPipelineInitilizer() );
 
-	EventPipelineRunner<TestPipeline, TestMetaDataProducerBase> prunner;
+	EventPipelineRunner<TestPipeline, TestProducerBase> prunner;
 	// don't show progress report in this test cases
 	prunner.ClearProgressReports();
 
@@ -120,13 +120,13 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_multi_level )
 	tline2->InitPipeline( tset_lvl1, TestPipelineInitilizer() );
 	tline3->InitPipeline( tset_lvl2, TestPipelineInitilizer() );
 
-	EventPipelineRunner<TestPipeline, TestMetaDataProducerBase> prunner;
+	EventPipelineRunner<TestPipeline, TestProducerBase> prunner;
 	// don't show progress report in this test cases
 	prunner.ClearProgressReports();
 	prunner.AddPipelines( { {tline1, tline2, tline3}});
 
 	TestEventProvider evtProvider;
-	// give any pipeline setting here: only the global meta data producer will
+	// give any pipeline setting here: only the global producer will
 	// read from the global settings ...
 	prunner.RunPipelines<TestTypes>( evtProvider, global_tset_lvl2 );
 

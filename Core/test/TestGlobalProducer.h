@@ -11,14 +11,14 @@
 
 #include "TestTypes.h"
 
-typedef GlobalProducerBase<TestTypes> TestMetaDataProducerBase;
+typedef GlobalProducerBase<TestTypes> TestProducerBase;
 
-class TestGlobalProducer: public TestMetaDataProducerBase {
+class TestGlobalProducer: public TestProducerBase {
 public:
-	virtual bool PopulateGlobalMetaData(TestData const& data,
-			TestGlobalMetaData & metaData,
+	virtual bool PopulateGlobalProduct(TestData const& data,
+			TestGlobalProduct & product,
 			TestGlobalSettings const& globalSettings) const ARTUS_CPP11_OVERRIDE {
-		metaData.iGlobalMetaData = data.iVal + 5 + globalSettings.GetOffset();
+		product.iGlobalProduct = data.iVal + 5 + globalSettings.GetOffset();
 		return true;
 	}
 };

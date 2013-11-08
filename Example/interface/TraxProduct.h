@@ -8,11 +8,11 @@
 #pragma once
 
 
-class TraxLocalMetaData {
+class TraxLocalProduct {
 
 };
 
-struct TraxGlobalMetaData {
+struct TraxGlobalProduct {
 
 	float m_floatPtSim_corrected;
 };

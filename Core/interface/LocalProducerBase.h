@@ -9,26 +9,26 @@
 #include <boost/noncopyable.hpp>
 
 /*
- * This producer creates meta-data for a pipeline and event before the filter or the consumer are run
- * Meta data producer have to be stateless since they may used by multiple threads
+ * This producer creates products for a pipeline and event before the filter or the consumer are run.
+ * Producers have to be stateless since they may used by multiple threads.
  */
 
 // Basis for producers attached to a pipeline and producing local results for this pipeline
 template<class TTypes>
-class LocalMetaDataProducerBase: public boost::noncopyable {
+class LocalProducerBase: public boost::noncopyable {
 public:
 
 	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::global_meta_type global_meta_type;
-	typedef typename TTypes::local_meta_type local_meta_type;
+	typedef typename TTypes::global_product_type global_product_type;
+	typedef typename TTypes::local_product_type local_product_type;
 	typedef typename TTypes::setting_type setting_type;
 
-	virtual ~LocalMetaDataProducerBase() {
+	virtual ~LocalProducerBase() {
 
 	}
 
 	virtual void PopulateLocal(event_type const& data,
-			global_meta_type const& metaData, local_meta_type & localMetaData,
+			global_product_type const& globalProduct, local_product_type& localProduct,
 			setting_type const& m_pipelineSettings) const = 0;
 
 };

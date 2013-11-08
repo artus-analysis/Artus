@@ -21,7 +21,7 @@ public:
 	}
 
 	virtual bool DoesEventPass(TraxEventData const& event,
-			TraxGlobalMetaData const& metaData,
+			TraxGlobalProduct const& product,
 			TraxPipelineSettings const& settings) {
 
 		const float lowCut = settings.GetFilterPtLow();

@@ -29,8 +29,8 @@ class PipelineInitilizerBase {
 public:
 
 	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::local_meta_type local_meta_type;
-	typedef typename TTypes::global_meta_type global_meta_type;
+	typedef typename TTypes::local_product_type local_product_type;
+	typedef typename TTypes::global_product_type global_product_type;
 	typedef typename TTypes::setting_type setting_type;
 
 	typedef EventPipeline<TTypes> pipeline_type;
@@ -44,10 +44,10 @@ public:
 
  \brief Base implementation of the EventPipeline paradigm
 
- The EventPipline contains settings, filter and MetaDataProducer and Consumer which, when combined,
+ The EventPipline contains settings, producer, filter and consumer which, when combined,
  produce the desired output of a pipeline as soon as Events are send to the pipeline. An incoming event
  must not be changed by the pipeline but the pipeline can create additional data for an event using
- MetaDataProducers.
+ Producers.
  Most of the time, the EventPipeline will not be used stand-alone but by an EventPipelineRunner class.
 
  The intention of the
@@ -56,10 +56,10 @@ public:
 
  - Settings
  Contain all specifics for the behaviour of this pipeline. The Settings object of type TSettings must be used
- to steer the behaviour of the MetaDataProducers, Filters and Consumers
+ to steer the behaviour of the Producers, Filters and Consumers
 
- - MetaDataProducers
- Create additional, pipeline-specific, data for an event and stores this information in a TMetaData object
+ - LocalProducers
+ Create additional, pipeline-specific, data for an event and stores this information in a TProduct object
 
  - Filter
  Filter decide whether an input event is suitable to be processed by this pipeline. An event might not be in the desired
@@ -67,11 +67,11 @@ public:
  Filter process.
 
  - Consumer
- The Consumer can access the input event, the created metadata, the settings and the filter result and produce the output they
+ The Consumer can access the input event, the created products, the settings and the filter result and produce the output they
  desire, like Histograms -> PLOTS PLOTS PLOTS
 
  Execution order is easy:
- MetaDataProducers -> Filters -> Consumers
+ Producers -> Filters -> Consumers
 
  */
 
@@ -80,8 +80,8 @@ class EventPipeline: public boost::noncopyable {
 public:
 
 	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::local_meta_type local_meta_type;
-	typedef typename TTypes::global_meta_type global_meta_type;
+	typedef typename TTypes::local_product_type local_product_type;
+	typedef typename TTypes::global_product_type global_product_type;
 	typedef typename TTypes::setting_type setting_type;
 
 	typedef EventConsumerBase<TTypes> ConsumerForThisPipeline;
@@ -92,10 +92,10 @@ public:
 	typedef boost::ptr_vector<FilterBase<TTypes> > FilterVector;
 	typedef typename FilterVector::iterator FilterVectorIterator;
 
-	typedef LocalMetaDataProducerBase<TTypes> MetaDataProducerForThisPipeline;
+	typedef LocalProducerBase<TTypes> ProducerForThisPipeline;
 
-	typedef boost::ptr_vector<MetaDataProducerForThisPipeline> MetaDataProducerVector;
-	typedef typename MetaDataProducerVector::iterator MetaDataVectorIterator;
+	typedef boost::ptr_vector<ProducerForThisPipeline> ProducerVector;
+	typedef typename ProducerVector::iterator ProducerVectorIterator;
 
 	/*
 	 * Virtual constructor
@@ -165,21 +165,21 @@ public:
 
 	/*
 	 * Run the pipeline with one specific event as input
-	 * The globalMetaData is meta data which is equal for all pipelines and has therefore
+	 * The globalProduct are products which common for all pipelines and has therefore
 	 * been created only once.
 	 */
 	virtual void RunEvent(event_type const& evt,
-			global_meta_type const& globalMetaData) {
-		// create the pipeline local data and set the pointer to the localMetaData
-		//global_meta_type & nonconst_metaData = const_cast<global_meta_type&>(globalMetaData);
-		local_meta_type localMetaData;
-		//nonconst_metaData.SetLocalMetaData(&localMetaData);
+			global_product_type const& globalProduct) {
+		// create the pipeline local data and set the pointer to the localProduct
+		//global_product_type & nonconst_product = const_cast<global_product_type&>(globalProduct);
+		local_product_type localProduct;
+		//nonconst_product.SetLocalProduct(&localProduct);
 
-		// run MetaDataProducers
-		// Pipeline private MetaDataProducers not supported at the moment
-		for (MetaDataVectorIterator it = m_producer.begin();
+		// run Producers
+		// Pipeline private Producers not supported at the moment
+		for (ProducerVectorIterator it = m_producer.begin();
 				it != m_producer.end(); it++) {
-			it->PopulateLocal(evt, globalMetaData, localMetaData,
+			it->PopulateLocal(evt, globalProduct, localProduct,
 					m_pipelineSettings);
 		}
 
@@ -188,7 +188,7 @@ public:
 		for (FilterVectorIterator itfilter = m_filter.begin();
 				itfilter != m_filter.end(); itfilter++) {
 			fres.SetFilterDecisions(itfilter->GetFilterId(),
-					itfilter->DoesEventPass(evt, globalMetaData,
+					itfilter->DoesEventPass(evt, globalProduct,
 							m_pipelineSettings));
 		}
 
@@ -196,11 +196,11 @@ public:
 		for (ConsumerVectorIterator itcons = m_consumer.begin();
 				itcons != m_consumer.end(); itcons++) {
 			if (fres.HasPassed()) {
-				itcons->ProcessFilteredEvent(evt, globalMetaData,
-						localMetaData);
+				itcons->ProcessFilteredEvent(evt, globalProduct,
+						localProduct);
 			}
 
-			itcons->ProcessEvent(evt, globalMetaData, localMetaData, fres);
+			itcons->ProcessEvent(evt, globalProduct, localProduct, fres);
 		}
 	}
 
@@ -245,10 +245,10 @@ public:
 	}
 
 	/*
-	 * Add a new MetaDataProducer to this Pipeline
+	 * Add a new Producer to this Pipeline
 	 * The object will be freed in EventPipelines destructor
 	 */
-	virtual void AddMetaDataProducer(MetaDataProducerForThisPipeline * pProd) {
+	virtual void AddProducer(ProducerForThisPipeline * pProd) {
 		m_producer.push_back(pProd);
 	}
 
@@ -262,7 +262,7 @@ public:
 private:
 	ConsumerVector m_consumer;
 	FilterVector m_filter;
-	MetaDataProducerVector m_producer;
+	ProducerVector m_producer;
 	setting_type m_pipelineSettings;
 };
 

@@ -10,14 +10,14 @@ class TestPipeline: public EventPipeline<TestTypes> {
 public:
 
 	TestPipeline() :
-			iRunEvent(0), iRun(0), iFinish(0), bCheckMetaProducer(false) {
+			iRunEvent(0), iRun(0), iFinish(0), bCheckProducer(false) {
 
 	}
 
-	virtual void RunEvent(TestData const& evt, TestGlobalMetaData const& meta) ARTUS_CPP11_OVERRIDE {
+	virtual void RunEvent(TestData const& evt, TestGlobalProduct const& product) ARTUS_CPP11_OVERRIDE {
 		iRunEvent++;
-		//if (bCheckMetaProducer) {
-		//BOOST_CHECK(meta.iGlobalMetaData == 1);
+		//if (bCheckProducer) {
+		//BOOST_CHECK(product.iGlobalProduct == 1);
 		//}
 	}
 
@@ -38,5 +38,5 @@ public:
 	int iRunEvent;
 	int iRun;
 	int iFinish;
-	bool bCheckMetaProducer;
+	bool bCheckProducer;
 };

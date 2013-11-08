@@ -6,22 +6,22 @@
 
 #pragma once
 
-struct TestLocalMetaData {
-	TestLocalMetaData() :
-			iMetaData(0) {
+struct TestLocalProduct {
+	TestLocalProduct() :
+			iProduct(0) {
 	}
 
-	int iMetaData;
+	int iProduct;
 };
 
-class TestGlobalMetaData {
+class TestGlobalProduct {
 public:
-	TestGlobalMetaData() :
-			iGlobalMetaData(0) {
+	TestGlobalProduct() :
+			iGlobalProduct(0) {
 	}
 
 	void ClearContent() {
 	}
 
-	int iGlobalMetaData;
+	int iGlobalProduct;
 };

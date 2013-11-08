@@ -9,23 +9,23 @@
 
 #include "GlobalInclude.h"
 
-template < class TEvent, class TMetaData, class TSettings >
+template < class TEvent, class TProduct, class TSettings >
 class SourceBase
 {
 public:
 	virtual bool GetValue(TEvent const& event,
-			TMetaData const& metaData,
+			TProduct const& product,
 			TSettings const& settings,
 			double & val) const = 0 ;
 
 
 	virtual void StartOnEvent(TEvent const& event,
-			TMetaData const& metaData,
+			TProduct const& product,
 			TSettings const& settings) const {}
 
 
 	virtual void EndOnEvent(TEvent const& event,
-			TMetaData const& metaData,
+			TProduct const& product,
 			TSettings const& settings) const {}
 
 

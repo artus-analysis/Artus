@@ -13,12 +13,12 @@
 class PtCorrectionProducer: public TraxGlobalProducerBase {
 public:
 
-	virtual bool PopulateGlobalMetaData(TraxEventData const& data,
-			TraxGlobalMetaData & metaData,
+	virtual bool PopulateGlobalProduct(TraxEventData const& data,
+			TraxGlobalProduct & product,
 			TraxGlobalSettings const& globalSettings) const
 					ARTUS_CPP11_OVERRIDE {
 
-		metaData.m_floatPtSim_corrected = data.m_floatPtSim
+		product.m_floatPtSim_corrected = data.m_floatPtSim
 				* globalSettings.GetProducerPtCorrectionFactor();
 
 		return true;

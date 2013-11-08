@@ -11,22 +11,22 @@
 #include "Artus/Core/interface/EventPipelineRunner.h"
 
 #include "TraxEventData.h"
-#include "TraxMetaData.h"
-#include "TraxMetaData.h"
+#include "TraxProduct.h"
+#include "TraxProduct.h"
 #include "TraxPipelineSettings.h"
 
 // all data types which are used for this analysis
 struct TraxTypes {
 	typedef TraxEventData event_type;
-	typedef TraxLocalMetaData local_meta_type;
-	typedef TraxGlobalMetaData global_meta_type;
+	typedef TraxLocalProduct local_product_type;
+	typedef TraxGlobalProduct global_product_type;
 	typedef TraxPipelineSettings setting_type;
 	typedef TraxGlobalSettings global_setting_type;
 };
 
 // Pass the template parameters for the Producers
 typedef GlobalProducerBase<TraxTypes> TraxGlobalProducerBase;
-typedef LocalMetaDataProducerBase<TraxTypes> TraxLocalMetaDataProducerBase;
+typedef LocalProducerBase<TraxTypes> TraxLocalProducerBase;
 
 // Pass the template parameters for the Consumer
 typedef EventConsumerBase<TraxTypes> TraxConsumerBase;

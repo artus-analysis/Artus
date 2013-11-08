@@ -45,8 +45,8 @@ int main(int argc, char** argv) {
 
 	TraxPipelineRunner runner;
 
-	// add global meta producers
-	runner.AddGlobalMetaProducer(new PtCorrectionProducer());
+	// add global producers
+	runner.AddGlobalProducer(new PtCorrectionProducer());
 
 	// load the pipeline with their configuration from the config file
 	myConfig.LoadPipelines(pInit, runner, rootOutputFile.get());

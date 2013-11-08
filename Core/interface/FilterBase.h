@@ -20,8 +20,8 @@ class FilterBase: public boost::noncopyable {
 public:
 
 	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::global_meta_type global_meta_type;
-	typedef typename TTypes::local_meta_type local_meta_type;
+	typedef typename TTypes::global_product_type global_product_type;
+	typedef typename TTypes::local_product_type local_product_type;
 	typedef typename TTypes::setting_type setting_type;
 
 	virtual ~FilterBase() {
@@ -38,7 +38,7 @@ public:
 	virtual std::string GetFilterId() = 0;
 
 	virtual bool DoesEventPass(event_type const& event,
-			global_meta_type const& metaData, setting_type const& settings) = 0;
+			global_product_type const& product, setting_type const& settings) = 0;
 
 	virtual std::string ToString(bool bVerbose = false) {
 		return GetFilterId();
