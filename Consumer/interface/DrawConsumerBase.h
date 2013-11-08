@@ -17,9 +17,6 @@ Base class for all Consumers which output some form of plot
 template<class TTypes>
 class DrawConsumerBase: public ConsumerBase<TTypes> {
 public:
-	DrawConsumerBase() :
-			ConsumerBase<TTypes>() {
-	}
-	virtual ~DrawConsumerBase() {
-	}
+	DrawConsumerBase() : ConsumerBase<TTypes>() {}
+	virtual ~DrawConsumerBase() {}
 };

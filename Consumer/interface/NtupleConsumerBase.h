@@ -23,8 +23,7 @@ public:
 	typedef typename TTypes::global_product_type global_product_type;
 	typedef typename TTypes::setting_type setting_type;
 
-	NtupleConsumerBase() :
-			ConsumerBase<TTypes>() {
+	NtupleConsumerBase() : ConsumerBase<TTypes>() {
 	}
 	virtual ~NtupleConsumerBase() {
 	}

@@ -19,20 +19,21 @@ class ArtusConfig {
 public:
 	ArtusConfig(int argc, char** argv);
 
-	stringvector const& GetInputFiles() const {
+	stringvector const& GetInputFiles() const
+	{
 		return m_fileNames;
 	}
 
 	template<class TPipelineInitializer, class TPipelineRunner>
-	void LoadPipelines(TPipelineInitializer & pInit, TPipelineRunner & runner,
-			TFile * outputFile) {
-
+	void LoadPipelines(TPipelineInitializer& pInit, TPipelineRunner& runner,
+			TFile * outputFile)
+	{
 		assert(outputFile);
 
 		typedef typename TPipelineInitializer::setting_type setting_type;
 		typedef typename TPipelineInitializer::pipeline_type pipeline_type;
 
-		BOOST_FOREACH(boost::property_tree::ptree::value_type & v,
+		BOOST_FOREACH(boost::property_tree::ptree::value_type& v,
 				m_propTreeRoot.get_child("Pipelines"))
 		{
 			setting_type pset;
@@ -59,16 +60,16 @@ public:
 	}
 
 	template<class TGlobalSettings>
-	TGlobalSettings GetGlobalSettings() {
+	TGlobalSettings GetGlobalSettings()
+	{
 		TGlobalSettings pset;
-
 		pset.SetPropTreePath("");
 		pset.SetPropTree(&m_propTreeRoot);
-
 		return pset;
 	}
 
-	std::string const& GetOutputPath() const {
+	std::string const& GetOutputPath() const
+	{
 		return m_outputPath;
 	}
 
