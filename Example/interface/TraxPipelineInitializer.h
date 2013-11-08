@@ -61,23 +61,30 @@ public:
 		auto ThetaSimValue = std::make_pair(extractThetaSim,
 				DefaultModifiers::getThetaModifier());
 
-		// plot Pt
-		pLine->AddConsumer(
-				new DrawHist1dConsumerBase<TraxTypes>("pt", PtSimValue));
 
-		// plot Pt - corrected, from the meta data
-		pLine->AddConsumer(
-				new DrawHist1dConsumerBase<TraxTypes>("pt_corr", PtSimCorrectedValue));
+		BOOST_FOREACH(std::string id, pset.GetConsumer())
+		{
+			if (id == "quantities_all")
+			{
+				// plot Pt
+				pLine->AddConsumer(
+						new DrawHist1dConsumerBase<TraxTypes>("pt", PtSimValue));
+
+				// plot Pt - corrected, from the meta data
+				pLine->AddConsumer(
+						new DrawHist1dConsumerBase<TraxTypes>("pt_corr", PtSimCorrectedValue));
 
 
-		// plot Theta
-		pLine->AddConsumer(
-				new DrawHist1dConsumerBase<TraxTypes>("theta", ThetaSimValue));
+				// plot Theta
+				pLine->AddConsumer(
+						new DrawHist1dConsumerBase<TraxTypes>("theta", ThetaSimValue));
 
-		// profile Pt over Theta
-		pLine->AddConsumer(
-				new ProfileConsumerBase<TraxTypes>("pt_over_theta",
-						ThetaSimValue, PtSimValue));
+				// profile Pt over Theta
+				pLine->AddConsumer(
+						new ProfileConsumerBase<TraxTypes>("pt_over_theta",
+							ThetaSimValue, PtSimValue));
+			}
+		}
 
 	}
 };

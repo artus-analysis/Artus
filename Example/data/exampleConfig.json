@@ -10,11 +10,8 @@
     "OutputPath": "sample_output.root", 
     "Pipelines": {
         "lowPt": {
-            "Consumer": {
-                "quantities_all": {
-                    "Name": "quantities_all"
-                }
-            }, 
+            "Consumer": [ "quantities_all"
+            ],
             "Filter": [ "filter_pt"
             ], 
             "LocalProducer": [
@@ -24,11 +21,8 @@
             "FilterPtHigh" : "1.0"                      
         },
         "highPt": {
-            "Consumer": {
-                "quantities_all": {
-                    "Name": "quantities_all"
-                }
-            }, 
+            "Consumer": [ "quantities_all"
+            ],
             "Filter": [  "filter_pt"
             ], 
             "LocalProducer": [
