@@ -179,7 +179,7 @@ public:
 		// Pipeline private Producers not supported at the moment
 		for (ProducerVectorIterator it = m_producer.begin();
 				it != m_producer.end(); it++) {
-			it->PopulateLocal(evt, globalProduct, localProduct,
+			it->ProduceLocal(evt, globalProduct, localProduct,
 					m_pipelineSettings);
 		}
 

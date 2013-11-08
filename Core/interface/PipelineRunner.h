@@ -108,9 +108,8 @@ public:
 			// create global products
 			for (GlobalProducerIterator it = m_globalProducer.begin();
 					it != m_globalProducer.end(); it++) {
-				bEventValid = it->PopulateGlobalProduct(
-						evtProvider.GetCurrentEvent(), productGlobal,
-						globalSettings);
+				bEventValid = it->ProduceGlobal(evtProvider.GetCurrentEvent(),
+						productGlobal, globalSettings);
 				//LOG(it->GetContent())
 				if (!bEventValid)
 					break;

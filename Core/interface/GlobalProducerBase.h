@@ -27,7 +27,7 @@ public:
 	}
 
 	// if false is returned, the event is dropped as it does not meet the minimum requirements for the producer
-	virtual bool PopulateGlobalProduct(event_type const& data,
+	virtual bool ProduceGlobal(event_type const& event,
 			global_product_type & product,
 			global_setting_type const& globalSettings) const = 0;
 };
