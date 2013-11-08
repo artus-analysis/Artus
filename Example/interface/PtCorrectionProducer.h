@@ -10,7 +10,7 @@
 
 #include "TraxTypes.h"
 
-class PtCorrectionProducer: public TraxGlobalMetaDataProducerBase {
+class PtCorrectionProducer: public TraxGlobalProducerBase {
 public:
 
 	virtual bool PopulateGlobalMetaData(TraxEventData const& data,

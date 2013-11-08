@@ -9,7 +9,7 @@
 #include "Artus/Core/interface/EventPipelineRunner.h"
 
 #include "TestPipeline.h"
-#include "TestMetaDataProducer.h"
+#include "TestGlobalProducer.h"
 #include "TestEventProvider.h"
 #include "EventPipeline_t.h"
 
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_metadata )
 	prunner.AddPipeline( tline1 );
 	prunner.AddPipeline( tline2 );
 
-	prunner.AddGlobalMetaProducer( new TestGlobalMetaDataProducer() );
+	prunner.AddGlobalMetaProducer( new TestGlobalProducer() );
 
 	std::vector<TestPipeline *> vPipes;
 	vPipes.push_back( tline3 );

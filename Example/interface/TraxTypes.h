@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Artus/Core/interface/Cpp11Support.h"
-#include "Artus/Core/interface/GlobalMetaDataProducerBase.h"
+#include "Artus/Core/interface/GlobalProducerBase.h"
 #include "Artus/Core/interface/EventPipelineRunner.h"
 
 #include "TraxEventData.h"
@@ -25,7 +25,7 @@ struct TraxTypes {
 };
 
 // Pass the template parameters for the Producers
-typedef GlobalMetaDataProducerBase<TraxTypes> TraxGlobalMetaDataProducerBase;
+typedef GlobalProducerBase<TraxTypes> TraxGlobalProducerBase;
 typedef LocalMetaDataProducerBase<TraxTypes> TraxLocalMetaDataProducerBase;
 
 // Pass the template parameters for the Consumer
@@ -38,5 +38,5 @@ typedef FilterBase<TraxTypes> TraxFilterBase;
 typedef EventPipeline<TraxTypes> TraxPipeline;
 
 //Setup our custom pipeline runner
-typedef EventPipelineRunner<TraxPipeline, TraxGlobalMetaDataProducerBase> TraxPipelineRunner;
+typedef EventPipelineRunner<TraxPipeline, TraxGlobalProducerBase> TraxPipelineRunner;
 

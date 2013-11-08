@@ -11,7 +11,7 @@
 // Basis for producers which are run before the pipelines and produce
 // results useful to all
 template<class TTypes>
-class GlobalMetaDataProducerBase: public boost::noncopyable {
+class GlobalProducerBase: public boost::noncopyable {
 public:
 
 	typedef typename TTypes::event_type event_type;
@@ -19,7 +19,7 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 	typedef typename TTypes::global_setting_type global_setting_type;
 
-	virtual ~GlobalMetaDataProducerBase() {
+	virtual ~GlobalProducerBase() {
 
 	}
 

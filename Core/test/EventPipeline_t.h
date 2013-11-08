@@ -14,7 +14,7 @@
 
 #include "Artus/Core/interface/EventPipeline.h"
 
-#include "TestMetaDataProducer.h"
+#include "TestGlobalProducer.h"
 #include "TestTypes.h"
 
 class TestFilter: public FilterBase<TestTypes> {
@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE( test_event_pipeline )
 	TestGlobalSettings globa_settings;
 	pline.InitPipeline( settings, init );
 
-	TestGlobalMetaDataProducer globalProducer;
+	TestGlobalProducer globalProducer;
 	TestGlobalMetaData global;
 	TestData td;
 	td.iVal = 23;
@@ -190,7 +190,7 @@ BOOST_AUTO_TEST_CASE( test_event_filter )
 
 	TestData td;
 	TestGlobalMetaData global;
-	TestGlobalMetaDataProducer globalProducer;
+	TestGlobalProducer globalProducer;
 
 	globalProducer.PopulateGlobalMetaData( td, global, global_settings );
 	pline.RunEvent( td, global );
@@ -211,7 +211,7 @@ BOOST_AUTO_TEST_CASE( test_event_multiplefilter )
 {
 	TestEventConsumer * pCons1 = new TestEventConsumer();
 
-	TestGlobalMetaDataProducer globalProducer;
+	TestGlobalProducer globalProducer;
 	EventPipeline<TestTypes> pline;
 
 	pline.AddConsumer( pCons1 );
@@ -268,7 +268,7 @@ BOOST_AUTO_TEST_CASE( test_event_pipeline_level2 )
 	settings.SetLevel ( 2 );
 	pline.InitPipeline( settings, init );
 
-	TestGlobalMetaDataProducer globalProducer;
+	TestGlobalProducer globalProducer;
 	TestGlobalMetaData global;
 	TestData td;
 	td.iVal = 23;

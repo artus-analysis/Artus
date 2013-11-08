@@ -14,7 +14,7 @@
 #include "PipelineSettings.h"
 #include "FilterBase.h"
 #include "EventConsumerBase.h"
-#include "MetaDataProducerBase.h"
+#include "LocalProducerBase.h"
 
 template<class TTypes>
 class EventPipeline;

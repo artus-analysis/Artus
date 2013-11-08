@@ -7,13 +7,13 @@
 #pragma once
 
 #include "Artus/Core/interface/Cpp11Support.h"
-#include "Artus/Core/interface/GlobalMetaDataProducerBase.h"
+#include "Artus/Core/interface/GlobalProducerBase.h"
 
 #include "TestTypes.h"
 
-typedef GlobalMetaDataProducerBase<TestTypes> TestMetaDataProducerBase;
+typedef GlobalProducerBase<TestTypes> TestMetaDataProducerBase;
 
-class TestGlobalMetaDataProducer: public TestMetaDataProducerBase {
+class TestGlobalProducer: public TestMetaDataProducerBase {
 public:
 	virtual bool PopulateGlobalMetaData(TestData const& data,
 			TestGlobalMetaData & metaData,
