@@ -25,7 +25,7 @@ public:
 	}
 
 	virtual bool DoesEventPass(const TestEvent & event,
-			TestGlobalProduct const& product, TestSettings const& settings) {
+			TestGlobalProduct const& globalProduct, TestSettings const& settings) {
 		return (event.iVal < 2);
 	}
 };
@@ -38,7 +38,7 @@ public:
 	}
 
 	virtual bool DoesEventPass(const TestEvent & event,
-			TestGlobalProduct const& product, TestSettings const& settings) {
+			TestGlobalProduct const& globalProduct, TestSettings const& settings) {
 		return false;
 	}
 };
@@ -48,7 +48,7 @@ public:
 
 	// for each pipeline
 	virtual void ProduceLocal(TestEvent const& event,
-			TestGlobalProduct const& product,
+			TestGlobalProduct const& globalProduct,
 			TestLocalProduct & localProduct,
 			TestSettings const& m_pipelineSettings) const {
 		localProduct.iLocalProduct = event.iVal + 1;
@@ -70,7 +70,7 @@ public:
 	}
 
 	virtual void ProcessFilteredEvent(TestEvent const& event,
-			TestGlobalProduct const& product,
+			TestGlobalProduct const& globalProduct,
 			TestLocalProduct const& localProduct) ARTUS_CPP11_OVERRIDE
 	{
 		iProcessFilteredEvent++;
@@ -78,13 +78,13 @@ public:
 
 	// this method is called for all events
 	virtual void ProcessEvent(TestEvent const& event,
-			TestGlobalProduct const& globalproduct,
+			TestGlobalProduct const& globalProduct,
 			TestLocalProduct const& localProduct,
 			FilterResult& result) ARTUS_CPP11_OVERRIDE
 	{
 		// did product work ?
 		BOOST_CHECK_EQUAL(event.iVal + 1, localProduct.iLocalProduct);
-		BOOST_CHECK_EQUAL(event.iVal + 5 + 23, globalproduct.iGlobalProduct);
+		BOOST_CHECK_EQUAL(event.iVal + 5 + 23, globalProduct.iGlobalProduct);
 
 		iProcessEvent++;
 		fres = result;
@@ -135,23 +135,23 @@ BOOST_AUTO_TEST_CASE( test_pipeline )
 	TestPipelineInitilizer init;
 
 	TestSettings settings;
-	TestGlobalSettings globa_settings;
+	TestGlobalSettings globalSettings;
 	pline.InitPipeline(settings, init);
 
 	TestGlobalProducer globalProducer;
-	TestGlobalProduct global;
+	TestGlobalProduct globalProduct;
 	TestEvent td;
 	td.iVal = 23;
 
 	// run global producers
-	globalProducer.ProduceGlobal(td, global, globa_settings);
-	pline.RunEvent(td, global);
+	globalProducer.ProduceGlobal(td, globalProduct, globalSettings);
+	pline.RunEvent(td, globalProduct);
 
-	globalProducer.ProduceGlobal(td, global, globa_settings);
-	pline.RunEvent(td, global);
+	globalProducer.ProduceGlobal(td, globalProduct, globalSettings);
+	pline.RunEvent(td, globalProduct);
 
-	globalProducer.ProduceGlobal(td, global, globa_settings);
-	pline.RunEvent(td, global);
+	globalProducer.ProduceGlobal(td, globalProduct, globalSettings);
+	pline.RunEvent(td, globalProduct);
 
 	pline.FinishPipeline();
 
@@ -185,21 +185,21 @@ BOOST_AUTO_TEST_CASE( test_filter )
 	TestPipelineInitilizer init;
 
 	TestSettings settings;
-	TestGlobalSettings global_settings;
-	pline.InitPipeline( settings, init );
+	TestGlobalSettings globalSettings;
+	pline.InitPipeline(settings, init);
 
 	TestEvent td;
-	TestGlobalProduct global;
+	TestGlobalProduct globalProduct;
 	TestGlobalProducer globalProducer;
 
-	globalProducer.ProduceGlobal(td, global, global_settings);
-	pline.RunEvent(td, global);
+	globalProducer.ProduceGlobal(td, globalProduct, globalSettings);
+	pline.RunEvent(td, globalProduct);
 	td.iVal++;
-	globalProducer.ProduceGlobal(td, global, global_settings);
-	pline.RunEvent(td, global);
+	globalProducer.ProduceGlobal(td, globalProduct, globalSettings);
+	pline.RunEvent(td, globalProduct);
 	td.iVal++;
-	globalProducer.ProduceGlobal(td, global, global_settings);
-	pline.RunEvent(td, global);
+	globalProducer.ProduceGlobal(td, globalProduct, globalSettings);
+	pline.RunEvent(td, globalProduct);
 
 	pline.FinishPipeline();
 
@@ -223,14 +223,14 @@ BOOST_AUTO_TEST_CASE( test_multiplefilter )
 
 	TestPipelineInitilizer init;
 	TestSettings settings;
-	TestGlobalSettings global_settings;
+	TestGlobalSettings globalSettings;
 	pline.InitPipeline( settings, init );
 
 	TestEvent td;
-	TestGlobalProduct global;
+	TestGlobalProduct globalProduct;
 
-	globalProducer.ProduceGlobal(td, global, global_settings);
-	pline.RunEvent(td, global);
+	globalProducer.ProduceGlobal(td, globalProduct, globalSettings);
+	pline.RunEvent(td, globalProduct);
 
 	pline.FinishPipeline();
 
@@ -264,12 +264,12 @@ BOOST_AUTO_TEST_CASE( test_event_pipeline_level2 )
 	TestPipelineInitilizer init;
 
 	TestSettings settings;
-	TestGlobalSettings global_settings;
+	TestGlobalSettings globalSettings;
 	settings.SetLevel(2);
 	pline.InitPipeline(settings, init);
 
 	TestGlobalProducer globalProducer;
-	TestGlobalProduct global;
+	TestGlobalProduct globalProduct;
 	TestEvent td;
 	td.iVal = 23;
 

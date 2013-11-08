@@ -27,7 +27,7 @@ public:
 
 	}
 
-	virtual void ProduceLocal(event_type const& data,
+	virtual void ProduceLocal(event_type const& event,
 			global_product_type const& globalProduct, local_product_type& localProduct,
 			setting_type const& m_pipelineSettings) const = 0;
 

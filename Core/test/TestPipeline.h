@@ -13,10 +13,10 @@ public:
 
 	}
 
-	virtual void RunEvent(TestEvent const& evt, TestGlobalProduct const& product) ARTUS_CPP11_OVERRIDE {
+	virtual void RunEvent(TestEvent const& event, TestGlobalProduct const& globalProduct) ARTUS_CPP11_OVERRIDE {
 		iRunEvent++;
 		//if (bCheckProducer) {
-		//BOOST_CHECK(product.iGlobalProduct == 1);
+		//BOOST_CHECK(globalProduct.iGlobalProduct == 1);
 		//}
 	}
 

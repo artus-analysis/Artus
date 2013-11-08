@@ -16,9 +16,9 @@ typedef GlobalProducerBase<TestTypes> TestProducerBase;
 class TestGlobalProducer: public TestProducerBase {
 public:
 	virtual bool ProduceGlobal(TestEvent const& event,
-			TestGlobalProduct & product,
+			TestGlobalProduct & globalProduct,
 			TestGlobalSettings const& globalSettings) const ARTUS_CPP11_OVERRIDE {
-		product.iGlobalProduct = event.iVal + 5 + globalSettings.GetOffset();
+		globalProduct.iGlobalProduct = event.iVal + 5 + globalSettings.GetOffset();
 		return true;
 	}
 };

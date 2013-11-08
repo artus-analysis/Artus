@@ -38,7 +38,7 @@ public:
 	virtual std::string GetFilterId() = 0;
 
 	virtual bool DoesEventPass(event_type const& event,
-			global_product_type const& product, setting_type const& settings) = 0;
+			global_product_type const& globalProduct, setting_type const& settings) = 0;
 
 	virtual std::string ToString(bool bVerbose = false) {
 		return GetFilterId();
