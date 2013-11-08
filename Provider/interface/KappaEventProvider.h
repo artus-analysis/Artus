@@ -14,8 +14,7 @@
 template<class TEventType>
 class KappaEventProvider: public EventProvider<TEventType> {
 public:
-	KappaEventProvider(FileInterface2 & fi, InputTypeEnum inpType,
-			bool phicorrection, bool tagged) :
+	KappaEventProvider(FileInterface2 & fi, InputTypeEnum inpType) :
 			m_prevRun(-1), m_prevLumi(-1), m_inpType(inpType), m_fi(fi) {
 		// setup pointer to collections
 		m_event.m_eventmetadata = fi.Get<KEventMetadata>();
@@ -33,7 +32,7 @@ public:
 	}
 
 	// overwrite using template specialization
-	void WireEvent(bool phicorrection, bool tagged) {
+	void WireEvent() {
 		assert(false);
 	}
 
@@ -100,8 +99,6 @@ protected:
 	TEventType m_event;
 
 	InputTypeEnum m_inpType;
-	bool phicorrection;
-	bool tagged;
 	boost::scoped_ptr<ProgressMonitor> m_mon;
 
 	FileInterface2 & m_fi;
