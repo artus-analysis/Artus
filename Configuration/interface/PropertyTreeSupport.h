@@ -26,7 +26,7 @@ public:
 		} catch (boost::property_tree::ptree_bad_path& e) {
 			// no problem, node optional ?
 			if (failIfNotFound)
-				CALIB_LOG_FATAL(
+				LOG_FATAL(
 						"String list on path " + path
 								+ " can not be found in configuration file")
 		}

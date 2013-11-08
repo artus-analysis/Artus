@@ -42,17 +42,17 @@ public:
 
 	virtual unsigned int GetDefaultBinCount() const
 	{
-		CALIB_LOG_FATAL("implement this for your class")
+		LOG_FATAL("implement this for your class")
 	}
 
 	virtual double GetDefaultLowBin() const
 	{
-		CALIB_LOG_FATAL("implement this for your class")
+		LOG_FATAL("implement this for your class")
 	}
 
 	virtual double GetDefaultHighBin() const
 	{
-		CALIB_LOG_FATAL("implement this for your class")
+		LOG_FATAL("implement this for your class")
 	}
 };
 

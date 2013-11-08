@@ -83,7 +83,7 @@ public:
 		/*if (settings.Global()->GetEventCount() >= 0)
 		 nEvents = firstEvent + settings.Global()->GetEventCount();
 		 if (firstEvent != 0 || nEvents != evtProvider.GetOverallEventCount())
-		 CALIB_LOG(red << "Warning: Custom range of events: " << firstEvent << " to " << nEvents << reset)
+		 LOG(red << "Warning: Custom range of events: " << firstEvent << " to " << nEvents << reset)
 		 */
 		bool bEventValid = true;
 
@@ -110,7 +110,7 @@ public:
 				bEventValid = it->PopulateGlobalProduct(
 						evtProvider.GetCurrentEvent(), productGlobal,
 						globalSettings);
-				//CALIB_LOG(it->GetContent())
+				//LOG(it->GetContent())
 				if (!bEventValid)
 					break;
 			}

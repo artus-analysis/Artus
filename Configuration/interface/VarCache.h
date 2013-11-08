@@ -31,7 +31,7 @@ public:
 	 */
 	inline TData GetValue() const {
 		if (!m_isCached)
-		CALIB_LOG_FATAL("not Cached variable used")
+		LOG_FATAL("not Cached variable used")
 
 		return m_val;
 	}

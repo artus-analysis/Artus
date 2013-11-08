@@ -59,7 +59,7 @@ public:
 				 m_event.m_eventmetadata->nRun,
 				 m_event.m_eventmetadata->nLumi);*/
 			} else {
-				CALIB_LOG_FATAL("Unknown input type")
+				LOG_FATAL("Unknown input type")
 			}
 
 			//std::cout << "Loading new lumi info" << std::endl;

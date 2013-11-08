@@ -27,7 +27,7 @@ private:
 		else if (string == "theta")
 			return event.m_floatTheSim;
 		else
-			CALIB_LOG_FATAL("The quantity " << string << " could not be added to the Ntuple")
+			LOG_FATAL("The quantity " << string << " could not be added to the Ntuple")
 	}
 
 

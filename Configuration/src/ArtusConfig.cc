@@ -40,15 +40,15 @@ ArtusConfig::ArtusConfig(int argc, char** argv) {
 
 	m_fileNames = PropertyTreeSupport::GetAsStringList(&m_propTreeRoot,
 			"InputFiles");
-	CALIB_LOG_FILE("Loading " << m_fileNames.size() << " input files.")
+	LOG_FILE("Loading " << m_fileNames.size() << " input files.")
 
 	if (m_fileNames.size() == 0) {
-		CALIB_LOG_FATAL("No Kappa input files specified");
+		LOG_FATAL("No Kappa input files specified");
 	}
 
 	//BOOST_FOREACH(std::string s, g_sourcefiles)
 	//{
-	//    CALIB_LOG_FILE("Input File " << s)
+	//    LOG_FILE("Input File " << s)
 	//}
 }
 
