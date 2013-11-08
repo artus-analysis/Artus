@@ -86,10 +86,7 @@ public:
 							ThetaSimValue, PtSimValue));
 			}
 			else if (id == "ntuple")
-			{		
-				std::cout << "ntuple added" << std::endl;
 				pLine->AddConsumer(new TraxNtupleConsumer);
-			}
 		}
 
 	}

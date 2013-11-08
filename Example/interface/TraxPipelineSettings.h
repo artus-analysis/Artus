@@ -20,14 +20,12 @@ public:
 	VarCache<stringvector> m_consumer;
 	stringvector GetConsumer() const
 	{
-std::cout << "Pipelines." + GetName() + ".Consumer" << std::endl;
 		RETURN_CACHED(m_consumer, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".Consumer"))
 	}
 
 	VarCache<stringvector> quantities;
 	stringvector GetQuantities() const
 	{
-std::cout << "Pipelines." + GetName() + ".Quantities" << std::endl;
 		RETURN_CACHED(quantities, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".Quantities"))
 	}
 
