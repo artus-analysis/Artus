@@ -52,7 +52,6 @@ public:
 		// store hist
 		// + modifiers
 		//LOG( "Storing Hist for " << this->GetProductName() )
-		std::cout << "STORING HIST" << std::endl;
 		m_hist->Store(this->GetPipelineSettings().GetRootOutFile());
 	}
 
