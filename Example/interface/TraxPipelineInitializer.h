@@ -23,6 +23,7 @@
 
 // consumer
 #include "MeanPtConsumer.h"
+#include "TraxNtupleConsumer.h"
 
 class TraxPipelineInitializer: public PipelineInitilizerBase<TraxTypes> {
 public:
@@ -83,6 +84,11 @@ public:
 				pLine->AddConsumer(
 						new ProfileConsumerBase<TraxTypes>("pt_over_theta",
 							ThetaSimValue, PtSimValue));
+			}
+			else if (id == "ntuple")
+			{		
+				std::cout << "ntuple added" << std::endl;
+				pLine->AddConsumer(new TraxNtupleConsumer);
 			}
 		}
 
