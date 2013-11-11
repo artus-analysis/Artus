@@ -10,6 +10,10 @@ include(FindROOT.cmake)
 
 set(INCLUDE_DIRECTORIES
 ${ROOT_INCLUDE_DIR} 
+/afs/cern.ch/cms/slc6_amd64_gcc472/external/boost/1.51.0-cms5/include/ # BOOST: example paths (use one of those)
+/afs/cern.ch/cms/slc5_amd64_gcc462/external/boost/1.51.0/include/
+/afs/cern.ch/cms/slc5_amd64_gcc462/external/boost/1.49.0-cms2/include/
+/wlcg/sw/boost/current/include/
 )
 
 include_directories( ${INCLUDE_DIRECTORIES})
