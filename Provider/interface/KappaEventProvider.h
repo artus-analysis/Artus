@@ -28,7 +28,7 @@ public:
 		// auto-delete objects when moving to a new object. Not defult root behaviour
 		//fi.eventdata.SetAutoDelete(kTRUE);
 
-		m_mon.reset(new ProgressMonitor(GetOverallEventCount()));
+		m_mon.reset(new ProgressMonitor(GetEntries()));
 	}
 
 	// overwrite using template specialization
@@ -36,7 +36,7 @@ public:
 		assert(false);
 	}
 
-	virtual bool GotoEvent(long long lEvent /*, HLTTools * hltInfo*/ ) {
+	virtual bool GetEntry(long long lEvent /*, HLTTools * hltInfo*/ ) {
 		if (!m_mon->Update())
 			return false;
 		m_fi.eventdata.GetEntry(lEvent);
@@ -74,7 +74,7 @@ public:
 		return m_event;
 	}
 
-	virtual long long GetOverallEventCount() const {
+	virtual long long GetEntries() const {
 		return m_fi.eventdata.GetEntries();
 	}
 

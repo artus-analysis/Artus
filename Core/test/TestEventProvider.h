@@ -14,10 +14,10 @@ class TestEventProvider: public EventProviderBase<TestEvent> {
 	virtual TestEvent const& GetCurrentEvent() const ARTUS_CPP11_OVERRIDE {
 		return m_event;
 	}
-	virtual bool GotoEvent(long long lEventNumber) ARTUS_CPP11_OVERRIDE {
+	virtual bool GetEntry(long long lEventNumber) ARTUS_CPP11_OVERRIDE {
 		return true;
 	}
-	virtual long long GetOverallEventCount() const ARTUS_CPP11_OVERRIDE {
+	virtual long long GetEntries() const ARTUS_CPP11_OVERRIDE {
 		return 10;
 	}
 
