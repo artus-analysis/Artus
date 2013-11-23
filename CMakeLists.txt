@@ -7,7 +7,7 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wfatal-errors -std=c++0x -Wa
 
 # Load some basic macros which are needed later on
 include(FindROOT.cmake)
-execute_process(COMMAND ls /afs/cern.ch/cms/$ENV{SCRAM_ARCH}/external/boost COMMAND tail -n 1 COMMAND tr -d '\n' OUTPUT_VARIABLE BOOSTVER)
+execute_process(COMMAND ls $ENV{CMSSW_RELEASE_BASE}/../../../../$ENV{SCRAM_ARCH
 set(BOOST_INCLUDE_DIR "/afs/cern.ch/cms/$ENV{SCRAM_ARCH}/external/boost/${BOOSTVER}/include/")
 message("Looking for boost... - found ${BOOST_INCLUDE_DIR}")
 
