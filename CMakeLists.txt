@@ -45,11 +45,13 @@ add_executable(artus_core_test
 	Core/test/Artus_t.cc
 )
 
-add_executable(artus_example
+# use a capitaal *E*xample here and no underscore
+# to be compatible of how the binary is named in the CMSSW build
+add_executable(artusExample
 	Example/bin/ArtusExample.cc
 )
 
-target_link_libraries( artus_example 	
+target_link_libraries( artusExample 	
 	artus_core	
 	artus_configuration
 	artus_provider
