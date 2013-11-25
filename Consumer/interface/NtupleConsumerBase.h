@@ -25,6 +25,7 @@ public:
 
 	NtupleConsumerBase() : ConsumerBase<TTypes>() {
 	}
+
 	virtual ~NtupleConsumerBase() {
 	}
 
@@ -34,8 +35,9 @@ public:
 		quantities_vector = pset->GetSettings().GetQuantities();
 		quantities = boost::algorithm::join(quantities_vector, ":");
 
-		ntuple = new TNtuple(this->GetPipelineSettings().GetName().c_str(), this->GetPipelineSettings().GetName().c_str(), quantities.c_str());
-
+		ntuple = new TNtuple(this->GetPipelineSettings().GetName().c_str(),
+							 this->GetPipelineSettings().GetName().c_str(),
+							 quantities.c_str());
 	}
 
 	static std::string GetName()
