@@ -50,11 +50,15 @@ public:
 			local_product_type const& localProduct) ARTUS_CPP11_OVERRIDE {
 		ConsumerBase<TTypes>::ProcessFilteredEvent(event, globalProduct, localProduct);
 
-		std::vector<float> array;
+		// preallocated vector
+		std::vector<float> array (quantities_vector.size()) ;
 
-		//iterate over string vector and fill the array for each quantitiy
-		for (stringvector::iterator it = quantities_vector.begin(); it != quantities_vector.end(); ++it)
-			array.push_back(returnvalue(*it, event, globalProduct, localProduct));
+		//iterate over string vector and fill the array for each quantity
+		size_t arrayI = 0;
+		for (stringvector::iterator it = quantities_vector.begin(); it != quantities_vector.end(); ++it) {
+			array[ arrayI ] = returnvalue(*it, event, globalProduct, localProduct);
+			arrayI ++;
+		}
 
 		// add the array to the ntuple
 		ntuple->Fill(&array[0]);
