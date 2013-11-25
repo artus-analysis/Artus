@@ -65,7 +65,7 @@ public:
 	}
 
 
-	virtual void Finish()
+	virtual void Finish() ARTUS_CPP11_OVERRIDE
 	{
 		ntuple->Write(this->GetPipelineSettings().GetName().c_str());
 	}
