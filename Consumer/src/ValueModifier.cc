@@ -125,6 +125,15 @@ ValueModifiers DefaultModifiers::getMassModifier(float lowMass,
 	return modList;
 }
 
+ValueModifiers  DefaultModifiers::getGenericModifier(float up, float down, size_t binCount ) {
+        ValueModifiers modList;
+
+        modList.push_back(new ValueModifierRange(up, down));
+        modList.push_back(new ValueModifierBinCount(binCount));
+
+        return modList;
+}
+
 ValueModifiers DefaultModifiers::getRunModifier() {
 	ValueModifiers modList;
 

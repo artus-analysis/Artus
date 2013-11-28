@@ -88,6 +88,7 @@ typedef std::vector<ValueModifier *> ValueModifiers;
 
 class DefaultModifiers {
 public:
+	static ValueModifiers getGenericModifier(float, float, size_t binCount = 500);
 	static ValueModifiers getRModifier(size_t binCount = 500);
 	static ValueModifiers getZModifier(size_t binCount = 500);
 	static ValueModifiers getEtaModifier(size_t binCount = 100);
