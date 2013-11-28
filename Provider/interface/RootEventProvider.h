@@ -23,7 +23,7 @@ public:
 		}
 	}
 
-	virtual bool GotoEvent(long long lEvent) {
+	virtual bool GetEntry(long long lEvent) {
 		m_rootChain->GetEntry(lEvent);
 		return true;
 	}
@@ -32,7 +32,7 @@ public:
 		return m_event;
 	}
 
-	virtual long long GetOverallEventCount() const {
+	virtual long long GetEntries() const {
 		return m_rootChain->GetEntries();
 	}
 

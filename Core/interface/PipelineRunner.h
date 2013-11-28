@@ -23,7 +23,7 @@
  * pipelines.
  */
 
-template<class TPipeline, class TGlobalProducer>
+template<typename TPipeline, typename TGlobalProducer>
 class PipelineRunner: public boost::noncopyable {
 public:
 
@@ -79,10 +79,10 @@ public:
 			EventProviderBase<typename TTypes::event_type>& evtProvider,
 			typename TTypes::global_setting_type const& globalSettings) {
 		long long firstEvent = 0; // settings.Global()->GetSkipEvents();
-		long long nEvents = evtProvider.GetOverallEventCount();
+		long long nEvents = evtProvider.GetEntries();
 		/*if (settings.Global()->GetEventCount() >= 0)
 		 nEvents = firstEvent + settings.Global()->GetEventCount();
-		 if (firstEvent != 0 || nEvents != evtProvider.GetOverallEventCount())
+		 if (firstEvent != 0 || nEvents != evtProvider.GetEntries())
 		 LOG(red << "Warning: Custom range of events: " << firstEvent << " to " << nEvents << reset)
 		 */
 		bool bEventValid = true;
@@ -99,7 +99,7 @@ public:
 					it != m_progressReport.end(); it++) {
 				it->update(i, nEvents);
 			}
-			if (!evtProvider.GotoEvent(i))
+			if (!evtProvider.GetEntry(i))
 				break;
 
 			typename TTypes::global_product_type productGlobal;

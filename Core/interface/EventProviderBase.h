@@ -13,6 +13,6 @@ class EventProviderBase: public boost::noncopyable {
 public:
 
 	virtual TEvent const& GetCurrentEvent() const = 0;
-	virtual bool GotoEvent(long long lEventNumber) = 0;
-	virtual long long GetOverallEventCount() const = 0;
+	virtual bool GetEntry(long long lEventNumber) = 0;
+	virtual long long GetEntries() const = 0;
 };
