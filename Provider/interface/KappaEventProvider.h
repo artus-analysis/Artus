@@ -10,9 +10,11 @@
 #include "DataFormats/interface/KDebug.h"
 
 #include "Artus/Core/interface/PipelineRunner.h"
+#include "KappaTools/RootTools/FileInterface2.h"
+#include "KappaTools/Toolbox/ProgressMonitor.h"
 
 template<class TEventType>
-class KappaEventProvider: public EventProvider<TEventType> {
+class KappaEventProvider: public EventProviderBase<TEventType> {
 public:
 	KappaEventProvider(FileInterface2 & fi, InputTypeEnum inpType) :
 			m_prevRun(-1), m_prevLumi(-1), m_inpType(inpType), m_fi(fi) {
@@ -22,7 +24,6 @@ public:
 		if (inpType == McInput) {
 			m_event.m_geneventmetadata = fi.Get<KGenEventMetadata>();
 		}
-		WireEvent(phicorrection, tagged);
 		m_fi.SpeedupTree();
 
 		// auto-delete objects when moving to a new object. Not defult root behaviour
@@ -32,7 +33,7 @@ public:
 	}
 
 	// overwrite using template specialization
-	void WireEvent() {
+	virtual void WireEvent() {
 		assert(false);
 	}
 

@@ -14,9 +14,8 @@
  *
  * Enum to store wether the input data if MC or Data
  *
+ */
  enum InputTypeEnum
  {
  McInput, DataInput, GenInput, UnknownInput
  };
-
- */
