@@ -18,7 +18,7 @@ by the user for the specific use-case, others are general and can be used as-is.
 
 Here is a list of the main components and their description:
 
-* Event provider
+* Event Provider
 
   Load the event data from a source ( file / network ) and hand the data contained in a c++ class to other
   components for further processing.
@@ -37,6 +37,9 @@ Here is a list of the main components and their description:
   A pipeline runner holds a set of pipelines and their configuration and passes all events provided by the event
   provider to the pipeline. A default pipeline runner is provided.
 
+* Global & Local Producer
+
+  If you want to compute addi
 
 .. TODO ..
 
