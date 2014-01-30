@@ -29,8 +29,7 @@ class PipelineInitilizerBase {
 public:
 
 	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::local_product_type local_product_type;
-	typedef typename TTypes::global_product_type global_product_type;
+	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 
 	typedef Pipeline<TTypes> pipeline_type;
@@ -80,8 +79,7 @@ class Pipeline: public boost::noncopyable {
 public:
 
 	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::local_product_type local_product_type;
-	typedef typename TTypes::global_product_type global_product_type;
+	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 
 	typedef ConsumerBase<TTypes> ConsumerForThisPipeline;
@@ -169,17 +167,16 @@ public:
 	 * been created only once.
 	 */
 	virtual void RunEvent(event_type const& evt,
-			global_product_type const& globalProduct) {
-		// create the pipeline local data and set the pointer to the localProduct
-		//global_product_type & nonconst_product = const_cast<global_product_type&>(globalProduct);
-		local_product_type localProduct;
-		//nonconst_product.SetLocalProduct(&localProduct);
+			product_type const& globalProduct) {
 
-		// run Producers
-		// Pipeline private Producers not supported at the moment
+        // make a local copy of the global product
+        // and let this one modify by the local producers
+		product_type localProduct ( globalProduct );
+
+		// run local Producers
 		for (ProducerVectorIterator it = m_producer.begin();
 				it != m_producer.end(); it++) {
-			it->ProduceLocal(evt, globalProduct, localProduct,
+			it->ProduceLocal(evt, localProduct,
 					m_pipelineSettings);
 		}
 
@@ -188,7 +185,7 @@ public:
 		for (FilterVectorIterator itfilter = m_filter.begin();
 				itfilter != m_filter.end(); itfilter++) {
 			fres.SetFilterDecisions(itfilter->GetFilterId(),
-					itfilter->DoesEventPass(evt, globalProduct,
+					itfilter->DoesEventPass(evt, localProduct,
 							m_pipelineSettings));
 		}
 
@@ -196,11 +193,10 @@ public:
 		for (ConsumerVectorIterator itcons = m_consumer.begin();
 				itcons != m_consumer.end(); itcons++) {
 			if (fres.HasPassed()) {
-				itcons->ProcessFilteredEvent(evt, globalProduct,
-						localProduct);
+				itcons->ProcessFilteredEvent(evt, localProduct);
 			}
 
-			itcons->ProcessEvent(evt, globalProduct, localProduct, fres);
+			itcons->ProcessEvent(evt, localProduct, fres);
 		}
 	}
 

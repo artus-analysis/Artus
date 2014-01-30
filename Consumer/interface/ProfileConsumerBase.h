@@ -18,13 +18,12 @@ class ProfileConsumerBase: public ConsumerBase<TTypes> {
 public:
 
 	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::local_product_type local_product_type;
-	typedef typename TTypes::global_product_type global_product_type;
+	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 
 	typedef std::function<
-			std::vector<float>(event_type const&, global_product_type const&,
-					local_product_type const&)> ValueExtractLambda;
+			std::vector<float>(event_type const&, product_type const& )>
+					            ValueExtractLambda;
 	typedef std::pair<ValueExtractLambda, ValueModifiers> ValueDesc;
 
 	typedef Pipeline<TTypes> PipelineTypeForThis;
@@ -52,28 +51,24 @@ public:
 	}
 
 	virtual void ProcessEvent(typename TTypes::event_type const& event,
-			typename TTypes::global_product_type const& globalProduct,
-			typename TTypes::local_product_type const& localProduct,
+			typename TTypes::product_type const& product,
 			FilterResult& result) ARTUS_CPP11_OVERRIDE {
-		ConsumerBase<TTypes>::ProcessEvent(event, globalProduct, localProduct,
+		ConsumerBase<TTypes>::ProcessEvent(event, product,
 				result);
 
 		// not supported ..
 	}
 
 	virtual void ProcessFilteredEvent(typename TTypes::event_type const& event,
-			typename TTypes::global_product_type const& globalProduct,
-			typename TTypes::local_product_type const& localProduct)
+			typename TTypes::product_type const& product )
 					ARTUS_CPP11_OVERRIDE {
-		ConsumerBase<TTypes>::ProcessFilteredEvent(event, globalProduct,
-				localProduct);
+		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product);
 
-		auto resX = m_xsource.first(event, globalProduct, localProduct);
-		auto resY = m_ysource.first(event, globalProduct, localProduct);
+		auto resX = m_xsource.first(event, product);
+		auto resY = m_ysource.first(event, product);
 
 		if ((resX.size() == 0) || (resY.size() == 0))
 			return;
-		//assert(resX.size() == resY.size());
 
 		size_t ix = 0;
 		size_t iy = 0;

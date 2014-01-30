@@ -15,7 +15,7 @@ class GlobalProducerBase: public boost::noncopyable {
 public:
 
 	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::global_product_type global_product_type;
+	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 	typedef typename TTypes::global_setting_type global_setting_type;
 
@@ -28,7 +28,7 @@ public:
 
 	// if false is returned, the event is dropped as it does not meet the minimum requirements for the producer
 	virtual bool ProduceGlobal(event_type const& event,
-			global_product_type& globalProduct,
+			product_type& product,
 			global_setting_type const& globalSettings) const = 0;
 };
 

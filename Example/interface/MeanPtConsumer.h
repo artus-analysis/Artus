@@ -24,8 +24,7 @@ public:
 	}
 
 	virtual void ProcessFilteredEvent(TraxEvent const& event,
-			TraxGlobalProduct const& globalProduct,
-			TraxLocalProduct const& localProduct) ARTUS_CPP11_OVERRIDE {
+			TraxProduct const& product ) ARTUS_CPP11_OVERRIDE {
 
 		m_mean = ((m_mean * m_itemCount) + event.m_floatPtSim)
 				/ (m_itemCount + 1);

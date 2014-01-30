@@ -6,16 +6,10 @@
 
 #pragma once
 
-struct TestLocalProduct {
-	TestLocalProduct() : iLocalProduct(0) {}
-
-	int iLocalProduct;
-};
-
-class TestGlobalProduct {
+class TestProduct {
 public:
-	TestGlobalProduct() : iGlobalProduct(0) {}
-	void ClearContent() {}
+	TestProduct() : iGlobalProduct(0), iLocalProduct(0) {}
 
 	int iGlobalProduct;
+	int iLocalProduct;
 };

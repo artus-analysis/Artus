@@ -17,13 +17,12 @@ class TraxNtupleConsumer: public NtupleConsumerBase<TraxTypes> {
 private:
 	
 	float returnvalue(std::string string, TraxEvent const& event,
-			TraxGlobalProduct const& globalProduct,
-			TraxLocalProduct const& localProduct) ARTUS_CPP11_OVERRIDE
+			TraxProduct const& product ) ARTUS_CPP11_OVERRIDE
 	{
 		if (string == "pt")
 			return event.m_floatPtSim;
 		else if (string == "pt_corr")
-			return globalProduct.m_floatPtSim_corrected;
+			return product.m_floatPtSim_corrected;
 		else if (string == "theta")
 			return event.m_floatTheSim;
 		else

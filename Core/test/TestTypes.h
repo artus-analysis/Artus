@@ -12,8 +12,7 @@
 
 struct TestTypes {
 	typedef TestEvent event_type;
-	typedef TestGlobalProduct global_product_type;
-	typedef TestLocalProduct local_product_type;
+	typedef TestProduct product_type;
 	typedef TestSettings setting_type;
 	typedef TestGlobalSettings global_setting_type;
 };

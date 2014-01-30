@@ -29,8 +29,7 @@ class ConsumerBase: public boost::noncopyable {
 public:
 
 	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::local_product_type local_product_type;
-	typedef typename TTypes::global_product_type global_product_type;
+	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 
 	virtual ~ConsumerBase() {
@@ -47,16 +46,15 @@ public:
 	 * pipeline
 	 */
 	virtual void ProcessFilteredEvent(event_type const& event,
-			global_product_type const& globalProduct,
-			local_product_type const& localProduct) {
+			product_type const& product) {
 	}
 
 	/*
 	 *  this method is called for all events
 	 */
 	virtual void ProcessEvent(event_type const& event,
-			global_product_type const& globalProduct,
-			local_product_type const& localProduct, FilterResult & result) {
+			product_type const& product,
+            FilterResult & result) {
 	}
 
 	/*

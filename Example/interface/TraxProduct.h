@@ -7,12 +7,8 @@
 
 #pragma once
 
-
-class TraxLocalProduct {
-
-};
-
-struct TraxGlobalProduct {
+struct TraxProduct {
 
 	float m_floatPtSim_corrected;
+
 };

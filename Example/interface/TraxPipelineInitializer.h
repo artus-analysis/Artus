@@ -36,27 +36,26 @@ public:
 		pLine->AddConsumer(new MeanPtConsumer());
 
 		typedef std::function<
-				std::vector<float>(event_type const&, global_product_type const&,
-						local_product_type const&)> ValueExtractLambda;
+				std::vector<float>(event_type const&, product_type const& )> ValueExtractLambda;
 		typedef std::pair<ValueExtractLambda, ValueModifiers> ValueDesc;
 
 		// define how to extract Pt and the range
 		auto extractPtSim =
-				[]( TraxEvent const& ev, TraxGlobalProduct const & gm, TraxLocalProduct const & lm )
+				[]( TraxEvent const& ev, TraxProduct const & prod )
 				-> std::vector<float> {return {ev.m_floatPtSim};};
 		auto PtSimValue = std::make_pair(extractPtSim,
 				DefaultModifiers::getPtModifier(0.7, 1.3f));
 
 		// extracts the value which has been corrected by a globalProducer
 		auto extractPtSimCorrected =
-				[]( TraxEvent const& ev, TraxGlobalProduct const & gm, TraxLocalProduct const & lm )
-				-> std::vector<float> {return {gm.m_floatPtSim_corrected};};
+				[]( TraxEvent const& ev, TraxProduct const & prod )
+				-> std::vector<float> {return {prod.m_floatPtSim_corrected};};
 		auto PtSimCorrectedValue = std::make_pair(extractPtSimCorrected,
 				DefaultModifiers::getPtModifier(0.7, 1.3f));
 
 		// define how to extract Theta and the range
 		auto extractThetaSim =
-				[]( TraxEvent const& ev, TraxGlobalProduct const & gm, TraxLocalProduct const & lm )
+				[]( TraxEvent const& ev, TraxProduct const & prod )
 				-> std::vector<float> {return {ev.m_floatTheSim};};
 
 		auto ThetaSimValue = std::make_pair(extractThetaSim,

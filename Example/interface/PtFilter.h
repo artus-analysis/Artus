@@ -21,8 +21,8 @@ public:
 	}
 
 	virtual bool DoesEventPass(TraxEvent const& event,
-			TraxGlobalProduct const& globalProduct,
-			TraxPipelineSettings const& settings) {
+			TraxProduct const& product,
+            TraxPipelineSettings const& settings ) {
 
 		const float lowCut = settings.GetFilterPtLow();
 		const float highCut = settings.GetFilterPtHigh();
@@ -32,3 +32,5 @@ public:
 		return ((lowCut <= event.m_floatPtSim) && (highCut > event.m_floatPtSim));
 	}
 };
+
+

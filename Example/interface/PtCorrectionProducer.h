@@ -14,7 +14,7 @@ class PtCorrectionProducer: public TraxGlobalProducerBase {
 public:
 
 	virtual bool ProduceGlobal(TraxEvent const& event,
-			TraxGlobalProduct & product,
+			TraxProduct & product,
 			TraxGlobalSettings const& globalSettings) const
 					ARTUS_CPP11_OVERRIDE {
 

@@ -102,7 +102,7 @@ public:
 			if (!evtProvider.GetEntry(i))
 				break;
 
-			typename TTypes::global_product_type productGlobal;
+			typename TTypes::product_type productGlobal;
 			//productGlobal.m_hltInfo = hltTools;
 
 			// create global products

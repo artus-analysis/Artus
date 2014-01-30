@@ -17,5 +17,8 @@
  */
  enum InputTypeEnum
  {
- McInput, DataInput, GenInput, UnknownInput
+    McInput, 
+    DataInput, 
+    GenInput, 
+    UnknownInput
  };

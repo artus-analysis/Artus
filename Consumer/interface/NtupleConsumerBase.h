@@ -19,8 +19,7 @@ class NtupleConsumerBase: public ConsumerBase<TTypes> {
 public:
 
 	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::local_product_type local_product_type;
-	typedef typename TTypes::global_product_type global_product_type;
+	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 
 	NtupleConsumerBase() : ConsumerBase<TTypes>() {
@@ -46,9 +45,8 @@ public:
 	}
 
 	void ProcessFilteredEvent(event_type const& event,
-			global_product_type const& globalProduct,
-			local_product_type const& localProduct) ARTUS_CPP11_OVERRIDE {
-		ConsumerBase<TTypes>::ProcessFilteredEvent(event, globalProduct, localProduct);
+			product_type const& product ) ARTUS_CPP11_OVERRIDE {
+		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product);
 
 		// preallocated vector
 		std::vector<float> array (quantities_vector.size()) ;
@@ -56,7 +54,7 @@ public:
 		//iterate over string vector and fill the array for each quantity
 		size_t arrayI = 0;
 		for (stringvector::iterator it = quantities_vector.begin(); it != quantities_vector.end(); ++it) {
-			array[ arrayI ] = returnvalue(*it, event, globalProduct, localProduct);
+			array[ arrayI ] = returnvalue(*it, event, product);
 			arrayI ++;
 		}
 
@@ -76,8 +74,7 @@ private:
 	std::string quantities;
 
 	virtual float returnvalue(std::string string, event_type const& event,
-			global_product_type const& globalProduct,
-			local_product_type const& localProduct)
+			product_type const& product )
 	{return 0.;}
 };
 
