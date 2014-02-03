@@ -10,6 +10,7 @@
 
 #include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/GlobalInclude.h"
+#include "Artus/Configuration/interface/PropertyTreeSupport.h"
 #include "Artus/Configuration/interface/SettingMacros.h"
 
 class SettingsBase {
@@ -45,6 +46,27 @@ public:
 
 	virtual std::string ToString() const {
 		return "SettingsBase - Pipeline name: " + GetName();
+	}
+
+	// get list of all filters
+	VarCache<stringvector> m_filter;
+	stringvector GetFilters() const
+	{
+		RETURN_CACHED(m_filter, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".Filter"))
+	}
+
+	// get list of all producers
+	VarCache<stringvector> m_producer;
+	stringvector GetProducers() const
+	{
+		RETURN_CACHED(m_producer, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".Producer"))
+	}
+
+	// get list of all consumers
+	VarCache<stringvector> m_consumer;
+	stringvector GetConsumers() const
+	{
+		RETURN_CACHED(m_consumer, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".Consumer"))
 	}
 
 };
