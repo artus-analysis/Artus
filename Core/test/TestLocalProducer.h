@@ -15,6 +15,10 @@
 class TestLocalProducer: public LocalProducerBase<TestTypes> {
 public:
 
+	virtual std::string GetProducerId() {
+		return "test_local_producer";
+	}
+
 	// for each pipeline
 	virtual void ProduceLocal(TestEvent const& event,
 			TestProduct & product,
@@ -27,6 +31,10 @@ public:
 
 class TestLocalProducerFromGlobal: public LocalProducerBase<TestTypes> {
 public:
+
+	virtual std::string GetProducerId() {
+		return "test_local_global_producer";
+	}
 
 	// for each pipeline
 	virtual void ProduceLocal(TestEvent const& event,

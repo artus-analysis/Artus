@@ -34,6 +34,9 @@ public:
 	virtual void Finish() {
 	}
 
+	/*
+	 * Must return a unique id of the filter.
+	 */
 	virtual std::string GetFilterId() = 0;
 
 	virtual bool DoesEventPass(event_type const& event,

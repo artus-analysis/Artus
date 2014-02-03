@@ -23,6 +23,10 @@ public:
 
 	}
 
+	virtual std::string GetConsumerId() {
+		return "mean_pt";
+	}
+
 	virtual void ProcessFilteredEvent(TraxEvent const& event,
 			TraxProduct const& product ) ARTUS_CPP11_OVERRIDE {
 

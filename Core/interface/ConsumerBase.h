@@ -72,9 +72,7 @@ public:
 	/*
 	 * Must return a unique id of the Consumer.
 	 */
-	virtual std::string GetId() const {
-		return "default";
-	}
+	virtual std::string GetConsumerId() = 0;
 
 	/*
 	 * Return a reference to the settings used for this consumer

@@ -30,5 +30,10 @@ public:
 	virtual bool ProduceGlobal(event_type const& event,
 			product_type& product,
 			global_setting_type const& globalSettings) const = 0;
+
+	/*
+	 * Must return a unique id of the producer.
+	 */
+	virtual std::string GetProducerId() = 0;
 };
 

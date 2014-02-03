@@ -13,6 +13,10 @@ public:
 	TestConsumer() : iFinish(0), iInit(0), iProcessFilteredEvent(0), iProcessEvent(0), iProcess(0) {
 	}
 
+	virtual std::string GetConsumerId() {
+		return "test_consumer";
+	}
+
 	virtual void Init(Pipeline<TestTypes> * pset) ARTUS_CPP11_OVERRIDE {
 		m_pipeline = pset;
 		iInit++;
@@ -67,6 +71,10 @@ public:
 class TestConsumerLocalProduct: public ConsumerBase<TestTypes> {
 public:
 	TestConsumerLocalProduct() : m_iLocalValue (0) {
+	}
+
+	virtual std::string GetConsumerId() {
+		return "test_consumer_local";
 	}
 
 	virtual void Init(Pipeline<TestTypes> * pset) ARTUS_CPP11_OVERRIDE {

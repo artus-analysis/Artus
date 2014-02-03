@@ -13,6 +13,10 @@
 class PtCorrectionProducer: public TraxGlobalProducerBase {
 public:
 
+	virtual std::string GetProducerId() {
+		return "pt_correction";
+	}
+
 	virtual bool ProduceGlobal(TraxEvent const& event,
 			TraxProduct & product,
 			TraxGlobalSettings const& globalSettings) const

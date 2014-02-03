@@ -36,6 +36,10 @@ public:
 	virtual ~DrawHist1dConsumerBase() {
 	}
 
+	virtual std::string GetConsumerId() {
+		return "hist1d";
+	}
+
 	virtual void Init(Pipeline<TTypes> * pset) ARTUS_CPP11_OVERRIDE {
 		DrawConsumerBase<TTypes>::Init(pset);
 

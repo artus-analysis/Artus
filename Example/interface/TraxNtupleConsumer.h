@@ -15,6 +15,10 @@
 
 class TraxNtupleConsumer: public NtupleConsumerBase<TraxTypes> {
 private:
+
+	virtual std::string GetConsumerId() {
+		return "ntuple";
+	}
 	
 	float returnvalue(std::string string, TraxEvent const& event,
 			TraxProduct const& product ) ARTUS_CPP11_OVERRIDE

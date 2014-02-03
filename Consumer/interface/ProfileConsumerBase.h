@@ -33,6 +33,10 @@ public:
 			m_plotName(plotName), m_xsource(xsource), m_ysource(ysource) {
 	}
 
+	virtual std::string GetConsumerId() {
+		return "profile";
+	}
+
 	virtual void Init(PipelineTypeForThis * pset) ARTUS_CPP11_OVERRIDE {
 		ConsumerBase<TTypes>::Init(pset);
 
