@@ -6,8 +6,8 @@
 
 #include <cassert>
 
-#include "DataFormats/interface/Kappa.h"
-#include "DataFormats/interface/KDebug.h"
+#include "Kappa/DataFormats/interface/Kappa.h"
+#include "Kappa/DataFormats/interface/KDebug.h"
 
 #include "Artus/Core/interface/PipelineRunner.h"
 #include "KappaTools/RootTools/FileInterface2.h"
