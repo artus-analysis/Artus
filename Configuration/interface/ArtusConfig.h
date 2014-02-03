@@ -50,7 +50,7 @@ public:
 			pset.SetRootOutFile(outputFile);
 			//pset->m_globalSettings = &gset;
 
-			std::cout << " %% Adding new pipeline" << sKeyName << std::endl;
+			std::cout << " %% Adding new pipeline " << sKeyName << std::endl;
 
 			pipeline_type* pLine = new pipeline_type; //CreateDefaultPipeline();
 
