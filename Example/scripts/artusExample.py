@@ -5,5 +5,5 @@ import Artus.Configuration.artus as artusWrapper
 
 
 if __name__ == "__main__":
-	artusWrapper.artusWrapper()
+	artusWrapper.artusWrapper("artusExample")
 
