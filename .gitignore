@@ -4,6 +4,9 @@
 /Makefile
 *.a
 
+__init__.py
+*.pyc
+
 *.root
 *.png
 *.pdf
