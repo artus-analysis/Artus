@@ -7,8 +7,11 @@
 #include <iostream>
 #include <cstdlib>
 
+#include "TObjString.h"
+
 #include "Artus/Configuration/interface/ArtusConfig.h"
 #include "Artus/Configuration/interface/PropertyTreeSupport.h"
+#include "Artus/Utility/interface/StringHelper.h"
 
 ArtusConfig::ArtusConfig(int argc, char** argv) {
 	if (argc < 2) {
@@ -17,9 +20,9 @@ ArtusConfig::ArtusConfig(int argc, char** argv) {
 		exit(1);
 	}
 
-	std::string jsonConfig = argv[1];
-	std::cout << "Loading Config file from " << jsonConfig << std::endl;
-	boost::property_tree::json_parser::read_json(jsonConfig, m_propTreeRoot);
+	m_jsonConfig = argv[1];
+	std::cout << "Loading Config file from " << m_jsonConfig << std::endl;
+	boost::property_tree::json_parser::read_json(m_jsonConfig, m_propTreeRoot);
 
 	m_outputPath = m_propTreeRoot.get < std::string > ("OutputPath");
 	//std::string sLogFileName = g_sOutputPath + ".log";
@@ -52,3 +55,8 @@ ArtusConfig::ArtusConfig(int argc, char** argv) {
 	//}
 }
 
+void ArtusConfig::SaveConfig(TFile * outputFile) {
+	TObjString jsonConfigContent(StringHelper::ReadStringFromFile(m_jsonConfig).c_str());
+	outputFile->cd();
+	jsonConfigContent.Write("config");
+}

@@ -18,6 +18,8 @@
 class ArtusConfig {
 public:
 	ArtusConfig(int argc, char** argv);
+	
+	void SaveConfig(TFile * outputFile);
 
 	stringvector const& GetInputFiles() const
 	{
@@ -75,6 +77,7 @@ public:
 
 private:
 
+	std::string m_jsonConfig;
 	std::string m_outputPath;
 	stringvector m_fileNames;
 	boost::property_tree::ptree m_propTreeRoot;
