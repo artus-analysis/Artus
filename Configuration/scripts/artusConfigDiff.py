@@ -7,7 +7,7 @@ import logging
 import pprint
 import sys
 
-import Artus.Configuration.logger as logger
+import Artus.Utility.logger as logger
 import Artus.Configuration.jsonTools as jsonTools
 
 

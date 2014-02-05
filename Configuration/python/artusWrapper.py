@@ -6,7 +6,7 @@ import logging
 import sys
 import os
 
-import Artus.Configuration.logger as logger
+import Artus.Utility.logger as logger
 import Artus.Configuration.jsonTools as jsonTools
 
 
