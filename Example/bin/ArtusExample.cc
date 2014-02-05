@@ -11,6 +11,7 @@
 #include <TFile.h>
 
 #include "Artus/Configuration/interface/ArtusConfig.h"
+#include "Artus/Configuration/interface/RootEnvironment.h"
 
 #include "Artus/Example/interface/TraxTypes.h"
 #include "Artus/Example/interface/TraxEventProvider.h"
@@ -30,10 +31,8 @@ int main(int argc, char** argv) {
 	// parse the command line and load the
 	ArtusConfig myConfig(argc, argv);
 
-	// create the output root file
-	boost::scoped_ptr < TFile
-			> rootOutputFile(
-					new TFile(myConfig.GetOutputPath().c_str(), "RECREATE"));
+	// create the output root environment, automatically saves the config into the root file
+	RootEnvironment rootEnv(myConfig);
 
 	// will load the Ntuples from the root file
 	// this must be modified if you want to load more/new quantities
@@ -49,7 +48,7 @@ int main(int argc, char** argv) {
 	runner.AddGlobalProducer(new PtCorrectionProducer());
 
 	// load the pipeline with their configuration from the config file
-	myConfig.LoadPipelines(pInit, runner, rootOutputFile.get());
+	myConfig.LoadPipelines(pInit, runner, rootEnv.GetRootFile());
 
 	// load the global settings from the config file
 	TraxGlobalSettings global_settings = myConfig.GetGlobalSettings<
@@ -59,9 +58,8 @@ int main(int argc, char** argv) {
 	// consumers
 	runner.RunPipelines<TraxTypes>(evtProvider, global_settings);
 
-	// close output root file, pointer will be automatically
-	// deleted
-	rootOutputFile->Close();
+	// close output root file
+	rootEnv.Close();
 
 	return 0;
 }
