@@ -19,7 +19,7 @@ class ArtusConfig {
 public:
 	ArtusConfig(int argc, char** argv);
 	
-	void SaveConfig(TFile * outputFile);
+	void SaveConfig(TFile* outputFile) const;
 
 	stringvector const& GetInputFiles() const
 	{

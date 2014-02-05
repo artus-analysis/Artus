@@ -55,7 +55,7 @@ ArtusConfig::ArtusConfig(int argc, char** argv) {
 	//}
 }
 
-void ArtusConfig::SaveConfig(TFile * outputFile) {
+void ArtusConfig::SaveConfig(TFile * outputFile) const {
 	TObjString jsonConfigContent(StringHelper::ReadStringFromFile(m_jsonConfig).c_str());
 	outputFile->cd();
 	jsonConfigContent.Write("config");
