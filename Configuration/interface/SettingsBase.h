@@ -49,24 +49,24 @@ public:
 	}
 
 	// get list of all filters
-	VarCache<stringvector> m_filter;
+	VarCache<stringvector> m_filters;
 	stringvector GetFilters() const
 	{
-		RETURN_CACHED(m_filter, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".Filter"))
+		RETURN_CACHED(m_filters, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".Filters"))
 	}
 
-	// get list of all producers
-	VarCache<stringvector> m_producer;
-	stringvector GetProducers() const
+	// get list of all local producers
+	VarCache<stringvector> m_localProducers;
+	stringvector GetLocalProducers() const
 	{
-		RETURN_CACHED(m_producer, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".Producer"))
+		RETURN_CACHED(m_localProducers, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".LocalProducers"))
 	}
 
 	// get list of all consumers
-	VarCache<stringvector> m_consumer;
+	VarCache<stringvector> m_consumers;
 	stringvector GetConsumers() const
 	{
-		RETURN_CACHED(m_consumer, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".Consumer"))
+		RETURN_CACHED(m_consumers, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".Consumers"))
 	}
 
 };
@@ -77,5 +77,12 @@ public:
 	IMPL_PROPERTY(std::string, PropTreePath)
 	// pointer to the global, loaded property tree
 	IMPL_PROPERTY(boost::property_tree::ptree*, PropTree)
+
+	// get list of all local producers
+	VarCache<stringvector> m_globalProducers;
+	stringvector GetGlobalProducers() const
+	{
+		RETURN_CACHED(m_globalProducers, PropertyTreeSupport::GetAsStringList(GetPropTree(), "GlobalProducers"))
+	}
 
 };
