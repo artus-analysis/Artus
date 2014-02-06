@@ -22,7 +22,12 @@ public:
 	
 		BOOST_FOREACH(std::string producerId, m_globalSettings.GetGlobalProducers())
 		{
-			// TODO
+			if(producerId == ValidMuonsProducer<TTypes>().GetProducerId()) {
+				this->AddGlobalProducer(new ValidMuonsProducer<TTypes>());
+			}
+			else {
+				LOG_FATAL("Global producer \"" << producerId << "\" not found.");
+			}
 		}
 	}
 
