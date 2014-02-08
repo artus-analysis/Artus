@@ -103,7 +103,6 @@ public:
 				break;
 
 			typename TTypes::product_type productGlobal;
-			//productGlobal.m_hltInfo = hltTools;
 
 			// create global products
 			for (GlobalProducerIterator it = m_globalProducer.begin();
