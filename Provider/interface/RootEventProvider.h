@@ -11,9 +11,11 @@
 #include "Artus/Core/interface/EventProviderBase.h"
 #include "Artus/Core/interface/GlobalInclude.h"
 
-template<class TEventType>
-class RootEventProvider: public EventProviderBase<TEventType> {
+template<class TTypes>
+class RootEventProvider: public EventProviderBase<TTypes> {
 public:
+	typedef typename TTypes::event_type event_type;
+
 	RootEventProvider(stringvector const & fileNames,
 			std::string const& treeName) {
 		m_rootChain.reset(new TChain(treeName.c_str()));
@@ -28,7 +30,7 @@ public:
 		return true;
 	}
 
-	virtual TEventType const& GetCurrentEvent() const {
+	virtual event_type const& GetCurrentEvent() const {
 		return m_event;
 	}
 
@@ -36,9 +38,12 @@ public:
 		return m_rootChain->GetEntries();
 	}
 
+	virtual void WireEvent( TraxTypes::global_setting_type const& ) = 0;
+
+
 protected:
 
-	TEventType m_event;
+	event_type m_event;
 	boost::scoped_ptr<TChain> m_rootChain;
 };
 

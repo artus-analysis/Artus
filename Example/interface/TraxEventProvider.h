@@ -17,18 +17,17 @@
  * WireEvent() method call.
  */
 
-class TraxEventProvider: public RootEventProvider<TraxTypes::event_type> {
+class TraxEventProvider: public RootEventProvider<TraxTypes> {
 public:
 	TraxEventProvider(stringvector const & fileNames) :
-			RootEventProvider<TraxTypes::event_type>(fileNames,
+			RootEventProvider<TraxTypes>(fileNames,
 			// hardcode the root treename already here
 					"ec") {
-
-		WireEvent();
 	}
 
-private:
-	void WireEvent() {
+	virtual void WireEvent( TraxTypes::global_setting_type const& )
+		ARTUS_CPP11_OVERRIDE
+	{
 		// set up the ROOT pointers to our local memory regions
 		m_rootChain->SetBranchAddress("theSim", &m_event.m_floatTheSim);
 		m_rootChain->SetBranchAddress("pSim", &m_event.m_floatPSim);

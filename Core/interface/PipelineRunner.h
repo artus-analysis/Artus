@@ -76,7 +76,7 @@ public:
 	 */
 	template<class TTypes>
 	void RunPipelines(
-			EventProviderBase<typename TTypes::event_type>& evtProvider,
+			EventProviderBase<TTypes> & evtProvider,
 			typename TTypes::global_setting_type const& globalSettings) {
 		long long firstEvent = 0; // settings.Global()->GetSkipEvents();
 		long long nEvents = evtProvider.GetEntries();

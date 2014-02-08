@@ -10,8 +10,8 @@
 #include "Artus/Core/interface/PipelineRunner.h"
 #include "Artus/Core/interface/EventProviderBase.h"
 
-class TestEventProvider: public EventProviderBase<TestEvent> {
-	virtual TestEvent const& GetCurrentEvent() const ARTUS_CPP11_OVERRIDE {
+class TestEventProvider: public EventProviderBase<TestTypes> {
+	virtual TestTypes::event_type const& GetCurrentEvent() const ARTUS_CPP11_OVERRIDE {
 		return m_event;
 	}
 	virtual bool GetEntry(long long lEventNumber) ARTUS_CPP11_OVERRIDE {
@@ -21,5 +21,5 @@ class TestEventProvider: public EventProviderBase<TestEvent> {
 		return 10;
 	}
 
-	TestEvent m_event;
+	TestTypes::event_type m_event;
 };

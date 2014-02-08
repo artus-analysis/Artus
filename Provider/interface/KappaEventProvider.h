@@ -13,7 +13,7 @@
 #include "KappaTools/RootTools/FileInterface2.h"
 #include "KappaTools/Toolbox/ProgressMonitor.h"
 
-template<class TEventType>
+template<class TTypes>
 class KappaEventProvider: public EventProviderBase<TEventType> {
 public:
 	KappaEventProvider(FileInterface2 & fi, InputTypeEnum inpType) :
@@ -32,12 +32,11 @@ public:
 		m_mon.reset(new ProgressMonitor(GetEntries()));
 	}
 
-	// overwrite using template specialization
-	virtual void WireEvent() {
-		assert(false);
-	}
+	// overwrite and load the Kappa products into your event structure
+	// call yourself after creating the provider
+	virtual void WireEvent( global_setting_type const& ) = 0;
 
-	virtual bool GetEntry(long long lEvent /*, HLTTools * hltInfo*/ ) {
+	virtual bool GetEntry(long long lEvent ) {
 		if (!m_mon->Update())
 			return false;
 		m_fi.eventdata.GetEntry(lEvent);

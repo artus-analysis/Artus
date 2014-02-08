@@ -8,11 +8,14 @@
 
 #include <boost/noncopyable.hpp>
 
-template<class TEvent>
+template<class TTypes>
 class EventProviderBase: public boost::noncopyable {
 public:
 
-	virtual TEvent const& GetCurrentEvent() const = 0;
+	typedef typename TTypes::event_type event_type;
+	typedef typename TTypes::global_setting_type global_setting_type;
+
+	virtual event_type const& GetCurrentEvent() const = 0;
 	virtual bool GetEntry(long long lEventNumber) = 0;
 	virtual long long GetEntries() const = 0;
 };
