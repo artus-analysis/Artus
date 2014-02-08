@@ -28,7 +28,7 @@ public:
 
 	virtual void ProduceLocal(event_type const& event,
 			product_type & product, 
-			setting_type const& m_pipelineSettings) const = 0;
+			setting_type const& pipelineSettings) const = 0;
 
 	/*
 	 * Must return a unique id of the producer.

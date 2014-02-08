@@ -4,6 +4,8 @@
  *   Dominik Haitz <Dominik.Haitz@kit.edu>
  */
 
+#pragma once
+
 #include <cassert>
 
 #include "Kappa/DataFormats/interface/Kappa.h"
@@ -19,10 +21,10 @@ public:
 	KappaEventProvider(FileInterface2 & fi, InputTypeEnum inpType) :
 			m_prevRun(-1), m_prevLumi(-1), m_inpType(inpType), m_fi(fi) {
 		// setup pointer to collections
-		m_event.m_eventmetadata = fi.Get<KEventMetadata>();
+		m_event.m_eventMetadata = fi.Get<KEventMetadata>();
 
 		if (inpType == McInput) {
-			m_event.m_geneventmetadata = fi.Get<KGenEventMetadata>();
+			m_event.m_genEventMetadata = fi.Get<KGenEventMetadata>();
 		}
 		m_fi.SpeedupTree();
 
@@ -41,23 +43,23 @@ public:
 			return false;
 		m_fi.eventdata.GetEntry(lEvent);
 
-		if (m_prevRun != m_event.m_eventmetadata->nRun) {
-			m_prevRun = m_event.m_eventmetadata->nRun;
+		if (m_prevRun != m_event.m_eventMetadata->nRun) {
+			m_prevRun = m_event.m_eventMetadata->nRun;
 			m_prevLumi = -1;
 		}
 
-		if (m_prevLumi != m_event.m_eventmetadata->nLumi) {
-			m_prevLumi = m_event.m_eventmetadata->nLumi;
+		if (m_prevLumi != m_event.m_eventMetadata->nLumi) {
+			m_prevLumi = m_event.m_eventMetadata->nLumi;
 
 			// load the correct lumi information
 			if (m_inpType == McInput) {
 				/*m_event.m_lumimetadata = m_fi.Get<KGenLumiMetadata> (
-				 m_event.m_eventmetadata->nRun,
-				 m_event.m_eventmetadata->nLumi);*/
+				 m_event.m_eventMetadata->nRun,
+				 m_event.m_eventMetadata->nLumi);*/
 			} else if (m_inpType == DataInput) {
 				/*m_event.m_lumimetadata = m_fi.Get<KDataLumiMetadata> (
-				 m_event.m_eventmetadata->nRun,
-				 m_event.m_eventmetadata->nLumi);*/
+				 m_event.m_eventMetadata->nRun,
+				 m_event.m_eventMetadata->nLumi);*/
 			} else {
 				LOG_FATAL("Unknown input type")
 			}
