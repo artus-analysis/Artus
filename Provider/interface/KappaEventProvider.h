@@ -14,9 +14,13 @@
 #include "KappaTools/Toolbox/ProgressMonitor.h"
 
 template<class TTypes>
-class KappaEventProvider: public EventProviderBase<TEventType> {
+class KappaEventProvider: public EventProviderBase<TTypes> {
 public:
+	typedef typename TTypes::event_type event_type;
+	typedef typename TTypes::global_setting_type global_setting_type;
+
 	KappaEventProvider(FileInterface2 & fi, InputTypeEnum inpType) :
+			EventProviderBase<TTypes>(),
 			m_prevRun(-1), m_prevLumi(-1), m_inpType(inpType), m_fi(fi) {
 		// setup pointer to collections
 		m_event.m_eventmetadata = fi.Get<KEventMetadata>();
@@ -70,7 +74,7 @@ public:
 		return true;
 	}
 
-	virtual TEventType const& GetCurrentEvent() const {
+	virtual event_type const& GetCurrentEvent() const {
 		return m_event;
 	}
 
@@ -81,7 +85,7 @@ public:
 protected:
 
 	long m_prevRun, m_prevLumi;
-	TEventType m_event;
+	event_type m_event;
 
 	InputTypeEnum m_inpType;
 	boost::scoped_ptr<ProgressMonitor> m_mon;

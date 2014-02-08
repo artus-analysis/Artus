@@ -14,7 +14,7 @@
 #include "Artus/Configuration/interface/RootEnvironment.h"
 
 #include "Artus/Example/interface/TraxTypes.h"
-#include "Artus/Example/interface/TraxEventProvider.h"
+#include "Artus/Example/interface/TraxKappaEventProvider.h"
 #include "Artus/Example/interface/TraxPipelineInitializer.h"
 
 #include "Artus/Example/interface/PtCorrectionProducer.h"
@@ -30,13 +30,18 @@ int main(int argc, char** argv) {
 
 	// parse the command line and load the
 	ArtusConfig myConfig(argc, argv);
+        // load the global settings from the config file
+        TraxGlobalSettings global_settings = myConfig.GetGlobalSettings<
+                        TraxGlobalSettings>();
 
 	// create the output root environment, automatically saves the config into the root file
 	RootEnvironment rootEnv(myConfig);
 
 	// will load the Ntuples from the root file
 	// this must be modified if you want to load more/new quantities
-	TraxEventProvider evtProvider(myConfig.GetInputFiles());
+	FileInterface2 fileInterface(myConfig.GetInputFiles());
+	TraxKappaEventProvider evtProvider( fileInterface, McInput );
+	evtProvider.WireEvent( global_settings );
 
 	// the pipeline initializer will setup the pipeline, with
 	// all the attached Producer, Filer and Consumer
@@ -49,10 +54,6 @@ int main(int argc, char** argv) {
 
 	// load the pipeline with their configuration from the config file
 	myConfig.LoadPipelines(pInit, runner, rootEnv.GetRootFile());
-
-	// load the global settings from the config file
-	TraxGlobalSettings global_settings = myConfig.GetGlobalSettings<
-			TraxGlobalSettings>();
 
 	// run all the configured pipelines and all their attached
 	// consumers

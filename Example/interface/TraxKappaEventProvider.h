@@ -19,13 +19,13 @@
 
 class TraxKappaEventProvider: public KappaEventProvider<TraxTypes> {
 public:
-	TraxEventProvider(FileInterface2 & fi, InputTypeEnum inpType) :
+	TraxKappaEventProvider(FileInterface2 & fi, InputTypeEnum inpType) :
 		KappaEventProvider<TraxTypes>(fi, inpType) {
 	}
 
 	virtual void WireEvent( TraxTypes::global_setting_type const& )
 		ARTUS_CPP11_OVERRIDE
 	{
-		// set up the Kppa pointers to our local memory regions
+		// set up the Kappa pointers to our local memory regions
 	}
 };
