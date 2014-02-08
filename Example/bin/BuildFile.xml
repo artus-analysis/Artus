@@ -1,5 +1,12 @@
-
 <bin   name="artusExample" file="ArtusExample.cc">
+   <use   name="Artus/Core"/>
+   <use   name="Artus/Provider"/>
+   <use   name="Artus/Configuration"/>
+   <use   name="Artus/Consumer"/>
+   <use   name="Artus/Utility"/>
+</bin>
+
+<bin   name="artusKappaExample" file="ArtusKappaExample.cc">
    <use   name="Artus/Core"/>
    <use   name="Artus/Provider"/>
    <use   name="Artus/Configuration"/>
