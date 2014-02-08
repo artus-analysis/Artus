@@ -1,4 +1,3 @@
-
 <bin   name="artusExample" file="ArtusExample.cc">
    <use   name="Artus/Core"/>
    <use   name="Artus/Provider"/>
@@ -6,3 +5,13 @@
    <use   name="Artus/Consumer"/>
    <use   name="Artus/Utility"/>
 </bin>
+
+<!-- this example is not complete neither working but can optionally 
+   be build to test-compile the KappaEventProvider -->
+<!--bin   name="artusKappaExample" file="ArtusKappaExample.cc">
+   <use   name="Artus/Core"/>
+   <use   name="Artus/Provider"/>
+   <use   name="Artus/Configuration"/>
+   <use   name="Artus/Consumer"/>
+   <use   name="Artus/Utility"/>
+</bin-->
