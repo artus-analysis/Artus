@@ -43,7 +43,7 @@ add_library(artus_provider STATIC
 )
 
 add_library(artus_kappaleptonanalysis STATIC
-	KappaLeptonAnalysis/src/KappaLeptonProduct.cc
+	KappaAnalysis/src/KappaProduct.cc
 )
 
 add_executable(artus_core_test

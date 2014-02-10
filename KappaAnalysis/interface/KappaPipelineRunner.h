@@ -4,12 +4,12 @@
 #include "Artus/Core/interface/PipelineRunner.h"
 
 template<class TTypes, typename TPipeline, typename TGlobalProducer>
-class KappaLeptonPipelineRunner : public PipelineRunner<TPipeline, TGlobalProducer> {
+class KappaPipelineRunner : public PipelineRunner<TPipeline, TGlobalProducer> {
 
 public:
 	typedef typename TTypes::global_setting_type global_setting_type;
 
-	KappaLeptonPipelineRunner(global_setting_type const& globalSettings) :
+	KappaPipelineRunner(global_setting_type const& globalSettings) :
 		PipelineRunner<TPipeline, TGlobalProducer>(),
 		m_globalSettings(globalSettings)
 	{

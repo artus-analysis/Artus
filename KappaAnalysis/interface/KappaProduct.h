@@ -4,10 +4,10 @@
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 
-class KappaLeptonProduct {
+class KappaProduct {
 public:
-	KappaLeptonProduct() ;
-	~KappaLeptonProduct();
+	KappaProduct();
+	~KappaProduct();
 
 	KDataMuons m_validMuons;
 	KDataMuons m_invalidMuons;

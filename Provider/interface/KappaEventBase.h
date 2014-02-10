@@ -3,7 +3,7 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
-class KappaEvent {
+class KappaEventBase {
 public:
 
 	// Meta data

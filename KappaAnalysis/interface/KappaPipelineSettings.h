@@ -6,12 +6,12 @@
 #include "Artus/Configuration/interface/SettingMacros.h"
 #include "Artus/Configuration/interface/PropertyTreeSupport.h"
 
-class KappaLeptonPipelineSettings: public SettingsBase {
+class KappaPipelineSettings: public SettingsBase {
 public:
 
 };
 
-class KappaLeptonGlobalSettings: public GlobalSettingsBase {
+class KappaGlobalSettings: public GlobalSettingsBase {
 
 public:
 	IMPL_SETTING_DEFAULT(std::string, Muons, "");

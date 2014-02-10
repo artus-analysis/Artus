@@ -1,12 +1,12 @@
 
 #pragma once
 
-#include "Artus/Provider/interface/KappaEvent.h"
+#include "Artus/Provider/interface/KappaEventBase.h"
 
-class KappaLeptonEvent : public KappaEvent
+class KappaEvent : public KappaEventBase
 {
 public:
-	KappaLeptonEvent() : KappaEvent() {};
+	KappaEvent() : KappaEventBase() {};
 
 	// Electrons
 	

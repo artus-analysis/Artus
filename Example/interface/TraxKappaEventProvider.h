@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Artus/Core/interface/Cpp11Support.h"
-#include "Artus/Provider/interface/KappaEventProvider.h"
+#include "Artus/Provider/interface/KappaEventProviderBase.h"
 
 #include "TraxTypes.h"
 
@@ -17,10 +17,10 @@
  * WireEvent() method call.
  */
 
-class TraxKappaEventProvider: public KappaEventProvider<TraxTypes> {
+class TraxKappaEventProvider: public KappaEventProviderBase<TraxTypes> {
 public:
 	TraxKappaEventProvider(FileInterface2 & fi, InputTypeEnum inpType) :
-		KappaEventProvider<TraxTypes>(fi, inpType) {
+		KappaEventProviderBase<TraxTypes>(fi, inpType) {
 	}
 
 	virtual void WireEvent( TraxTypes::global_setting_type const& )

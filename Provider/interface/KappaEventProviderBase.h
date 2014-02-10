@@ -16,14 +16,15 @@
 #include "KappaTools/Toolbox/ProgressMonitor.h"
 
 template<class TTypes>
-class KappaEventProvider: public EventProviderBase<TTypes> {
+class KappaEventProviderBase: public EventProviderBase<TTypes> {
 public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::global_setting_type global_setting_type;
 
-	KappaEventProvider(FileInterface2 & fi, InputTypeEnum inpType) :
+	KappaEventProviderBase(FileInterface2 & fi, InputTypeEnum inpType) :
 			EventProviderBase<TTypes>(),
-			m_prevRun(-1), m_prevLumi(-1), m_inpType(inpType), m_fi(fi) {
+			m_prevRun(-1), m_prevLumi(-1), m_inpType(inpType), m_fi(fi)
+	{
 		// setup pointer to collections
 		m_event.m_eventMetadata = fi.Get<KEventMetadata>();
 
@@ -32,7 +33,7 @@ public:
 		}
 		m_fi.SpeedupTree();
 
-		// auto-delete objects when moving to a new object. Not defult root behaviour
+		// auto-delete objects when moving to a new object. Not default root behaviour
 		//fi.eventdata.SetAutoDelete(kTRUE);
 
 		m_mon.reset(new ProgressMonitor(GetEntries()));
@@ -43,6 +44,7 @@ public:
 	virtual void WireEvent( global_setting_type const& ) = 0;
 
 	virtual bool GetEntry(long long lEvent ) {
+
 		if (!m_mon->Update())
 			return false;
 		m_fi.eventdata.GetEntry(lEvent);

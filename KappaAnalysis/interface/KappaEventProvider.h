@@ -1,22 +1,22 @@
 
 #pragma once
 
-#include "Artus/Provider/interface/KappaEventProvider.h"
+#include "Artus/Core/interface/Cpp11Support.h"
+#include "Artus/Provider/interface/KappaEventProviderBase.h"
 
 template<class TTypes>
-class KappaLeptonEventProvider: public KappaEventProvider<TTypes> {
+class KappaEventProvider: public KappaEventProviderBase<TTypes> {
 public:
 	
 	typedef typename TTypes::global_setting_type global_setting_type;
 	
-	KappaLeptonEventProvider(FileInterface2 & fi, InputTypeEnum inpType) :
-		KappaEventProvider<TTypes>(fi, inpType)
+	KappaEventProvider(FileInterface2 & fi, InputTypeEnum inpType) :
+		KappaEventProviderBase<TTypes>(fi, inpType)
 	{
 
-	};
+	}
 
 	virtual void WireEvent(global_setting_type const& globalSettings) {
-
 		// Electrons
 	
 
@@ -44,5 +44,5 @@ public:
 		// Meta data	
 		if(! globalSettings.GetLumiMetadata().empty())
 			this->m_event.m_lumiMetadata = this->m_fi.template Get<KLumiMetadata>(globalSettings.GetLumiMetadata(), true);
-	};
+	}
 };
