@@ -50,9 +50,11 @@ def artusWrapper(defaultExecutable=None):
 		logging.getLogger(__name__).error("Exit with code %s.\n\n" % exitCode)
 		logging.getLogger(__name__).info("Dump configuration:\n")
 		jsonTools.printJsonDict(mainConfigFileName)
-		sys.exit(exitCode)
 	
 	# remove tmp. config
 	logging.getLogger(__name__).info("Remove temporary config file.")
 	os.system("rm " + mainConfigFileName)
+	
+	if exitCode < 256: return exitCode
+	else: return 1 # Artus sometimes returns exit codes >255 that are not supported
 
