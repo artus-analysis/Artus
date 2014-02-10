@@ -21,22 +21,28 @@ public:
 	
 
 		// Muons
-		this->m_event.m_muons = this->m_fi.template Get<KDataMuons>("muons", true);
+		if(! globalSettings.GetMuons().empty())
+			this->m_event.m_muons = this->m_fi.template Get<KDataMuons>(globalSettings.GetMuons(), true);
 
 		// Taus
 	
 
 		// Jets
-		this->m_event.m_pfJets = this->m_fi.template Get<KDataPFJets>("AK5PFJets", true);
+		if(! globalSettings.GetJets().empty())
+			this->m_event.m_pfJets = this->m_fi.template Get<KDataPFJets>(globalSettings.GetJets(), true);
 	
 		// MET info
 		
 	
 		// Vertex info
-		this->m_event.m_beamSpot = this->m_fi.template Get<KDataBeamSpot>("offlineBeamSpot", true);
-		this->m_event.m_vertexSummary = this->m_fi.template Get<KVertexSummary>("goodOfflinePrimaryVerticesSummary", true);
+		if(! globalSettings.GetBeamSpot().empty())
+			this->m_event.m_beamSpot = this->m_fi.template Get<KDataBeamSpot>(globalSettings.GetBeamSpot(), true);
+		
+		if(! globalSettings.GetVertexSummary().empty())
+			this->m_event.m_vertexSummary = this->m_fi.template Get<KVertexSummary>(globalSettings.GetVertexSummary(), true);
 
 		// Meta data	
-		this->m_event.m_lumiMetadata = this->m_fi.template Get<KLumiMetadata>("KLumiMetadata", true);
+		if(! globalSettings.GetLumiMetadata().empty())
+			this->m_event.m_lumiMetadata = this->m_fi.template Get<KLumiMetadata>(globalSettings.GetLumiMetadata(), true);
 	};
 };
