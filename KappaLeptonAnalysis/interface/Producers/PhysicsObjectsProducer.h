@@ -3,7 +3,8 @@
 
 #include <Math/VectorUtil.h>
 
-#include <Artus/KappaLeptonAnalysis/interface/KappaLeptonTypes.h>
+#include "Kappa/DataFormats/interface/Kappa.h"
+
 
 /** Select only valid muons.
 
