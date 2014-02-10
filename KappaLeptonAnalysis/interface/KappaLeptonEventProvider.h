@@ -3,17 +3,19 @@
 
 #include "Artus/Provider/interface/KappaEventProvider.h"
 
-template<class TEventType>
-class KappaLeptonEventProvider: public KappaEventProvider<TEventType> {
+template<class TTypes>
+class KappaLeptonEventProvider: public KappaEventProvider<TTypes> {
 public:
+	
+	typedef typename TTypes::global_setting_type global_setting_type;
+	
 	KappaLeptonEventProvider(FileInterface2 & fi, InputTypeEnum inpType) :
-		KappaEventProvider<TEventType>(fi, inpType)
+		KappaEventProvider<TTypes>(fi, inpType)
 	{
 
-		WireEvent();
 	};
 
-	virtual void WireEvent() {
+	virtual void WireEvent(global_setting_type const& globalSettings) {
 
 		// Electrons
 	
