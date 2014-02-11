@@ -13,7 +13,7 @@ public:
 		PipelineRunner<TPipeline, TGlobalProducer>(),
 		m_globalSettings(globalSettings)
 	{
-		AddGlobalProducersById();
+
 	}
 	
 	
