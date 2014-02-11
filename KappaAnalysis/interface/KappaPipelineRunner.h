@@ -3,6 +3,10 @@
 
 #include "Artus/Core/interface/PipelineRunner.h"
 
+#include "Artus/KappaAnalysis/interface/Producers/ValidMuonsProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/ValidJetsProducer.h"
+
+
 template<class TTypes, typename TPipeline, typename TGlobalProducer>
 class KappaPipelineRunner : public PipelineRunner<TPipeline, TGlobalProducer> {
 
@@ -24,6 +28,9 @@ public:
 		{
 			if(producerId == ValidMuonsProducer<TTypes>().GetProducerId()) {
 				this->AddGlobalProducer(new ValidMuonsProducer<TTypes>());
+			}
+			else if(producerId == ValidJetsProducer<TTypes>().GetProducerId()) {
+				this->AddGlobalProducer(new ValidJetsProducer<TTypes>());
 			}
 			else {
 				LOG_FATAL("Global producer \"" << producerId << "\" not found.");
