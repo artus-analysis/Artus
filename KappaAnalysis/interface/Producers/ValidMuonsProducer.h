@@ -16,6 +16,7 @@
 template<class TTypes>
 class ValidMuonsProducer: public GlobalProducerBase<TTypes>
 {
+
 public:
 
 	typedef typename TTypes::event_type event_type;
@@ -56,7 +57,7 @@ public:
 						// hitPattern().numberOfValidMuonHits
 						&& muon->globalTrack.nValidMuonHits > 0
 						// numberOfMatchedStations
-						//&& muon->nMatches > 1
+						//&& muon->nMatches > 1 // TODO
 						// fabs(muonBestTrack()->dxy(vertex->position))
 						&& std::abs(muon->bestTrack.getDxy(&event.m_vertexSummary->pv)) < 0.2
 						// fabs(muonBestTrack()->dz(vertex->position)) // not in 2011
