@@ -7,16 +7,16 @@ class KappaEvent : public KappaEventBase
 {
 public:
 	KappaEvent() : KappaEventBase() {};
-
-	// Electrons
 	
-
+	// Electrons
+	KDataElectron* m_electrons = 0;
+	
 	// Muons
 	KDataMuons* m_muons = 0;
-
-	// Taus
 	
-
+	// Taus
+	KDataTaus* m_taus = 0;
+	
 	// Jets
 	KDataPFJets* m_pfJets = 0;
 	KJetArea* m_jetArea = 0;
@@ -29,10 +29,9 @@ public:
 	KVertexSummary* m_vertexSummary = 0;
 	
 	// Generator info
-	KGenParticles* m_particles = 0;
+	KGenParticles* m_genParticles = 0;
 	
-
-	// Meta data
+	// Meta data // TODO: move to Artus/Provider
 	KLumiMetadata* m_lumiMetadata = 0;
 	KGenLumiMetadata* m_genLumiMetadata = 0;
 	KEventMetadata* m_eventMetadata = 0;
