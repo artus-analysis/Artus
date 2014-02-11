@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-import numpy as np 
+import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import AxesGrid
@@ -27,8 +27,10 @@ xydict = {
 plots = []
 
 #plotting function for variations
+
+
 def twoD_all(quantity, datamc, opt):
-	for variation_quantity in ['npv', 'jet1eta','zpt']:
+	for variation_quantity in ['npv', 'jet1eta', 'zpt']:
 		for change in utils.getvariationlist(variation_quantity, opt):
 			twoD(quantity, datamc, opt, changes=change, folder=variation_quantity)
 
@@ -54,7 +56,7 @@ def twoD(quantity, files, opt, fig_axes=(), changes=None, settings=None):
 		datamc += [mplconvert.root2histo(rootobjects[-1], f.GetName(), [1, 1])]
 		settings['events'] += [datamc[-1].ysum()]
 
-	if False: # this is the code snippet to produce the diff plot for the rms methods
+	if False:  # this is the code snippet to produce the diff plot for the rms methods
 		method = 'ptbalance'
 		quantity = "abs((recogen-%s)/recogen)*abs((recogen-%s)/recogen)_npv_zpt" % (method, method)
 		rootobjects += [getroot.getobjectfromtree(quantity, f, settings, twoD=True)]
@@ -66,7 +68,7 @@ def twoD(quantity, files, opt, fig_axes=(), changes=None, settings=None):
 		scaling_factor = datamc[0].binsum() / datamc[1].binsum()
 		rootobjects[1].Scale(scaling_factor)
 		rootobjects[0].Divide(rootobjects[1])
-		rootobjects = [rootobjects[0]]	
+		rootobjects = [rootobjects[0]]
 		datamc = [mplconvert.root2histo(rootobjects[0], f.GetName(), [1, 1])]
 
 	if len(quantity.split("_")) == 2:
@@ -74,7 +76,7 @@ def twoD(quantity, files, opt, fig_axes=(), changes=None, settings=None):
 		if len(datamc) > 1 and settings['normalize']:
 			for d in datamc[1:]:
 				if d.binsum() > 0.0 and datamc[0].binsum() > 0:
-					d.scale(datamc[0].binsum() / d.binsum() )
+					d.scale(datamc[0].binsum() / d.binsum())
 		z_name = 'Events'
 		if settings['z'] is None:
 			settings['z'] = [0, np.max(datamc[0].BinContents)]
@@ -85,49 +87,45 @@ def twoD(quantity, files, opt, fig_axes=(), changes=None, settings=None):
 			z_name = settings['xynames'][2]
 		else:
 			z_name = quantity.split("_")[0]
-	
+
 	# special dictionary for z-axis scaling (do we need this??)
 	# 'quantity':[z_min(incut), z_max(incut), z_min(allevents), z_max(allevents)]
 	z_dict = {
-		'jet1pt':[0, 120, 0, 40],
-		'jet2pt':[0, 40, 0, 40],
-		'METpt':[15, 30, 15, 30],
-		'ptbalance':[0.85, 1.1, 1, 4],
-		'genzmass':[89, 93, 90.5, 92.5],
-		'genzetarapidityratio':[1, 3, 0, 5]
+		'jet1pt': [0, 120, 0, 40],
+		'jet2pt': [0, 40, 0, 40],
+		'METpt': [15, 30, 15, 30],
+		'ptbalance': [0.85, 1.1, 1, 4],
+		'genzmass': [89, 93, 90.5, 92.5],
+		'genzetarapidityratio': [1, 3, 0, 5]
 	}
 
-
-
 	#determine plot type: 2D Histogram or 2D Profile, and get the axis properties
-
-	if settings['subplot']==True:
+	if settings['subplot'] == True:
 		fig = fig_axes[0]
 		grid = [fig_axes[1]]
-	else: 
+	else:
 		# create figure  + axes
-		fig = plt.figure(figsize=(10.*len(datamc), 7.))
+		fig = plt.figure(figsize=(10. * len(datamc), 7.))
 		grid = AxesGrid(fig, 111,
-						nrows_ncols = (1, len(datamc)),
-						axes_pad = 0.4,
+						nrows_ncols=(1, len(datamc)),
+						axes_pad=0.4,
 						share_all=True,
 						aspect=False,
-						label_mode = "L",
-						cbar_pad = 0.2,
-						cbar_location = "right",
+						label_mode="L",
+						cbar_pad=0.2,
+						cbar_location="right",
 						cbar_mode='single',
 						)
 
-	
 	for plot, label, ax in zip(datamc, settings['labels'], grid):
 		ax.set_title(label)
-		cmap1 = matplotlib.cm.get_cmap('jet') # Blues
+		cmap1 = matplotlib.cm.get_cmap('jet')  # Blues
 		ctext = 'white'
 		if settings['fit'] and "profile" in settings['fit']:
-			cmap1 = matplotlib.cm.get_cmap('Blues') # Blues
+			cmap1 = matplotlib.cm.get_cmap('Blues')  # Blues
 			ctext = 'black'
 		print settings['z']
-		if "zlog" in settings and settings["zlog"]: #TODO
+		if "zlog" in settings and settings["zlog"]:  # TODO
 			thenorm = matplotlib.colors.LogNorm()
 			settings['z'][0] = min(settings['z'], 1)
 		else:
@@ -152,7 +150,7 @@ def twoD(quantity, files, opt, fig_axes=(), changes=None, settings=None):
 			ax.errorbar(profy.y, profy.xc, xerr=profy.yerr, fmt='<', label=r"Profile $%s$" % ystr, color=cprofile[1])
 
 		# labels:
-		labels.axislabels(ax, settings['xynames'][0], settings['xynames'][1], 
+		labels.axislabels(ax, settings['xynames'][0], settings['xynames'][1],
 															settings=settings)
 		labels.labels(ax, opt, settings, settings['subplot'])
 		utils.setaxislimits(ax, settings)
@@ -175,8 +173,8 @@ def twoD(quantity, files, opt, fig_axes=(), changes=None, settings=None):
 		return
 
 	#add the colorbar
-	cb = fig.colorbar(image, cax = grid.cbar_axes[0], ax=ax)
-	cb.set_label(labels.unitformat(labels.getaxislabels_list(z_name)[2], 
+	cb = fig.colorbar(image, cax=grid.cbar_axes[0], ax=ax)
+	cb.set_label(labels.unitformat(labels.getaxislabels_list(z_name)[2],
 								labels.getaxislabels_list(z_name)[3], False))
 	# create filename + folder
 	settings['filename'] = utils.getdefaultfilename(quantity, opt, settings)
@@ -184,28 +182,25 @@ def twoD(quantity, files, opt, fig_axes=(), changes=None, settings=None):
 	utils.Save(fig, settings)
 
 
-
-
-def ThreeD(files, opt, changes={}, rebin=[2,2]):
+def ThreeD(files, opt, changes={}, rebin=[2, 2]):
 	from mpl_toolkits.mplot3d import Axes3D
 
-	change= plotbase.getchanges(opt, changes)
-	change['incut']='allevents'
-	datamc = [getroot.getplotfromnick("2D_jet1eta_jet1phi", f,change, rebin) for f in files[1:]]
+	change = plotbase.getchanges(opt, changes)
+	change['incut'] = 'allevents'
+	datamc = [getroot.getplotfromnick("2D_jet1eta_jet1phi", f, change, rebin) for f in files[1:]]
 
 	# create supporting points
-	x = np.linspace(-5,5,100/rebin[0])
-	y = np.linspace(-3.2,3.2,100/rebin[1])
-	X,Y = np.meshgrid(x,y)
+	x = np.linspace(-5, 5, 100 / rebin[0])
+	y = np.linspace(-3.2, 3.2, 100 / rebin[1])
+	X, Y = np.meshgrid(x, y)
 
 	# create numpy array
 	Z = np.array(datamc[0].BinContents)
 
-
 	fig = plt.figure()
 	ax = fig.add_subplot(111, projection='3d')
 
-	# 
+	#
 	ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=matplotlib.cm.jet, linewidth=0)
 
 	# set label + limits
@@ -217,8 +212,7 @@ def ThreeD(files, opt, changes={}, rebin=[2,2]):
 	for i in range(n):
 
 		# rotate viewing angle
-		ax.view_init(20,-120+(360/n)*i)
+		ax.view_init(20,-120 + (360 / n) * i)
 
 		# create filename + save
 		plotbase.Save(fig, str(i).zfill(3), opt)
-

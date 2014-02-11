@@ -1,6 +1,7 @@
 import time
 import numpy as np
 
+
 def root2histo(histo, rootfile='', rebin=1):
 	"""Convert a root histogram to the Histo class"""
 	hst = Histo()
@@ -87,7 +88,6 @@ def root2histo(histo, rootfile='', rebin=1):
 		print "It could not be converted."
 		exit(0)
 	return hst
-
 
 
 class Histo:
@@ -307,8 +307,6 @@ class Histo2D(Histo):
 	def maxBin(self):
 		a = max([max(l) for l in self.BinContents])
 		return a
-
-
 
 
 def histo2root(plot):

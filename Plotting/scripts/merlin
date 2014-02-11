@@ -107,13 +107,13 @@ def options(
 		help='special binning for npv, zpt, eta')
 	general.add_argument('--nbins', type=int, default=nbins,
 		help='number of bins in histogram. Default is %(default)s')
-	general.add_argument('-n', '--normalize', action='store_false', #make it float 0.0 is default
+	general.add_argument('-n', '--normalize', action='store_false',  # make it float 0.0 is default
 		help="normalize Monte Carlo samples to the event count in data ")
 	general.add_argument('-Y', '--year', type=int, default=2012,
 		help="Year of data-taking. Default is %(default)s")
 	general.add_argument('--factor', type=float, default=1.26,
 		help="additional external weight for each MC event %(default)s")
-	general.add_argument('--efficiency', type=float, default=0.965**2,
+	general.add_argument('--efficiency', type=float, default=0.965 ** 2,
 		help="trigger efficiency. Default is %(default)s")
 	general.add_argument('--reweight', action='store_true',
 		help="trigger efficiency. Default is %(default)s")
@@ -229,7 +229,7 @@ def options(
 	opt.eta = eta
 
 	if opt.www:
-		opt.out = "" #artus.getPath('SYNCDIR') # to be adapted to new variable names
+		opt.out = ""  # artus.getPath('SYNCDIR') # to be adapted to new variable names
 	elif opt.live:
 		opt.filename = 'plot'
 		opt.formats = ['pdf']
@@ -250,11 +250,9 @@ def options(
 	opt.user_options = user_options
 	opt.default_options = default_options
 
-
 	if opt.mconly:
 		opt.labels = opt.labels[1:]
 		opt.files = opt.files[1:]
-
 
 	opt.brackets = False
 
@@ -307,7 +305,7 @@ if __name__ == "__main__":
 		user = getPath('USER')
 		userpc = "%s@%s" % (user, getPath('USERPC'))
 
-		subprocess.call(['rsync', 'out/plot.pdf', 
+		subprocess.call(['rsync', 'out/plot.pdf',
 								  '%s:/usr/users/%s/plot.pdf' % (userpc, user)])
 
 		# check if the imageviewer is running on the users local machine:
@@ -321,4 +319,3 @@ if __name__ == "__main__":
 			print "\nOpening %s..." % imageviewer
 			subprocess.Popen(['ssh', userpc,
 				'DISPLAY=:0 %s /usr/users/%s/plot.pdf &' % (imageviewer, user)])
-

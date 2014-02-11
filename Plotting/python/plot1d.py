@@ -102,7 +102,7 @@ def datamcplot(quantity, files, opt, fig_axes=(), changes=None, settings=None):
 			ax.errorbar(f.xc, f.y, f.yerr, drawstyle='steps-mid', color=c,
 													fmt=s, capsize=0, label=l, zorder=10)
 
-		if settings['fit'] is not None and ("MC" not in l or settings['run'] is not "diff" and not settings['ratio'] ):
+		if settings['fit'] is not None and ("MC" not in l or settings['run'] is not "diff" and not settings['ratio']):
 			fit.fit(ax, quantity, rootobj, settings, c, l,
 											datamc.index(f), scalefactor, offset)
 

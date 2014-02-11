@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """This module selects which plot function to use
-- a predefined function from 
+- a predefined function from
 """
 
 import socket
@@ -18,7 +18,7 @@ gROOT.SetBatch(True)  # no root blah blah
 
 # basic functionality
 import Artus.Plotting.tools.getroot as getroot  # read root files
-import Artus.Plotting.tools.dictionaries as dictionaries # this plot dictionary should perhaps move?
+import Artus.Plotting.tools.dictionaries as dictionaries  # this plot dictionary should perhaps move?
 
 # all plot modules
 # use ls and imp to read all of them?
@@ -63,11 +63,11 @@ def plot(op):
 			print "Nothing to do. Please list the plots you want!"
 			plots = []
 		for p in plots:
-			if hasattr(module, p):	# plot directly as a function
+			if hasattr(module, p):	 # plot directly as a function
 				print "Doing %s in %s" % (p, module.__name__)
 				getattr(module, p)(files, op)
 				remaining_plots.remove(p)
-			elif module == plot1d and p in dictionaries.d_plots:	# if no function available, try dictionary
+			elif module == plot1d and p in dictionaries.d_plots:	 # if no function available, try dictionary
 				print "New plot: (from dictionary)", p,
 				plot1d.plotfromdict(files, op, p)
 				remaining_plots.remove(p)

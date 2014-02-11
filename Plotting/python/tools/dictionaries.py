@@ -28,7 +28,7 @@ d_format = {
 	'phi': '\phi',
 	'pt': 'p_\mathrm{T}',
 	'eta': '\eta',
-	'delta':'\Delta',
+	'delta': '\Delta',
 }
 
 #   Quantity:[ax_min, ax_max, Name, unit, z_min, z_max]
