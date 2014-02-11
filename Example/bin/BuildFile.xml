@@ -3,7 +3,6 @@
    <use   name="Artus/Provider"/>
    <use   name="Artus/Configuration"/>
    <use   name="Artus/Consumer"/>
-   <use   name="Artus/Utility"/>
 </bin>
 
 <!-- this example is not complete neither working but can optionally 
