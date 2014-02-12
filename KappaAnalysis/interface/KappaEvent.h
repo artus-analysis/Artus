@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "Artus/Provider/interface/KappaEventBase.h"
+#include "Artus/KappaAnalysis/interface/KappaEventBase.h"
 
 class KappaEvent : public KappaEventBase
 {

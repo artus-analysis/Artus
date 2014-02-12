@@ -6,8 +6,8 @@
 
 class KappaProduct {
 public:
-	KappaProduct();
-	~KappaProduct();
+	KappaProduct() {};
+	~KappaProduct() {};
 
 	KDataMuons m_validMuons;
 	KDataMuons m_invalidMuons;
