@@ -41,8 +41,8 @@ public:
 		
 		// construct extractors vector
 		m_valueExtractors.clear();
-		m_valueExtractors.resize(this->quantities_vector.size());
-		transform(this->quantities_vector.begin(), this->quantities_vector.end(), m_valueExtractors.begin(),
+		m_valueExtractors.resize(this->m_quantitiesVector.size());
+		transform(this->m_quantitiesVector.begin(), this->m_quantitiesVector.end(), m_valueExtractors.begin(),
 		          [&](std::string quantity) { return(m_valueExtractorMap.count(quantity) > 0 ? m_valueExtractorMap[quantity] : defaultExtractor); });
 
 	}
@@ -53,7 +53,7 @@ public:
 		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product);
 		
 		// preallocated vector
-		std::vector<float> array (this->quantities_vector.size());
+		std::vector<float> array (this->m_quantitiesVector.size());
 		
 		size_t arrayIndex = 0;
 		for(typename std::vector<float_extractor_lambda>::iterator valueExtractor = m_valueExtractors.begin();
@@ -64,7 +64,7 @@ public:
 		}
 
 		// add the array to the ntuple
-		this->ntuple->Fill(&array[0]);
+		this->m_ntuple->Fill(&array[0]);
 	}
 
 

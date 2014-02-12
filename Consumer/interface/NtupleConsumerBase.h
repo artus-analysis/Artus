@@ -31,12 +31,12 @@ public:
 	virtual void Init(Pipeline<TTypes> * pset) ARTUS_CPP11_OVERRIDE {
 		ConsumerBase<TTypes>::Init(pset);
 
-		quantities_vector = pset->GetSettings().GetQuantities();
-		quantities = boost::algorithm::join(quantities_vector, ":");
+		m_quantitiesVector = pset->GetSettings().GetQuantities();
+		m_quantities = boost::algorithm::join(m_quantitiesVector, ":");
 
-		ntuple = new TNtuple(this->GetPipelineSettings().GetName().c_str(),
+		m_ntuple = new TNtuple(this->GetPipelineSettings().GetName().c_str(),
 							 this->GetPipelineSettings().GetName().c_str(),
-							 quantities.c_str());
+							 m_quantities.c_str());
 	}
 
 	virtual std::string GetConsumerId()
@@ -49,30 +49,30 @@ public:
 		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product);
 
 		// preallocated vector
-		std::vector<float> array (quantities_vector.size()) ;
+		std::vector<float> array (m_quantitiesVector.size()) ;
 
 		//iterate over string vector and fill the array for each quantity
 		size_t arrayI = 0;
-		for (stringvector::iterator it = quantities_vector.begin(); it != quantities_vector.end(); ++it) {
+		for (stringvector::iterator it = m_quantitiesVector.begin(); it != m_quantitiesVector.end(); ++it) {
 			array[ arrayI ] = returnvalue(*it, event, product);
 			arrayI ++;
 		}
 
 		// add the array to the ntuple
-		ntuple->Fill(&array[0]);
+		m_ntuple->Fill(&array[0]);
 	}
 
 
 	virtual void Finish() ARTUS_CPP11_OVERRIDE
 	{
-		ntuple->Write(this->GetPipelineSettings().GetName().c_str());
+		m_ntuple->Write(this->GetPipelineSettings().GetName().c_str());
 	}
 
 
 protected:
-	TNtuple* ntuple;
-	stringvector quantities_vector;
-	std::string quantities;
+	TNtuple* m_ntuple;
+	stringvector m_quantitiesVector;
+	std::string m_quantities;
 
 
 private:
