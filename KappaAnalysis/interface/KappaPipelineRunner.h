@@ -3,8 +3,9 @@
 
 #include "Artus/Core/interface/PipelineRunner.h"
 
-#include "Artus/KappaAnalysis/interface/Producers/ValidTausProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/ValidElectronsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidMuonsProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/ValidTausProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidJetsProducer.h"
 
 
@@ -27,11 +28,14 @@ public:
 	
 		BOOST_FOREACH(std::string producerId, m_globalSettings.GetGlobalProducers())
 		{
-			if(producerId == ValidTausProducer<TTypes>().GetProducerId()) {
-				this->AddGlobalProducer(new ValidTausProducer<TTypes>());
+			if(producerId == ValidElectronsProducer<TTypes>().GetProducerId()) {
+				this->AddGlobalProducer(new ValidElectronsProducer<TTypes>());
 			}
 			else if(producerId == ValidMuonsProducer<TTypes>().GetProducerId()) {
 				this->AddGlobalProducer(new ValidMuonsProducer<TTypes>());
+			}
+			else if(producerId == ValidTausProducer<TTypes>().GetProducerId()) {
+				this->AddGlobalProducer(new ValidTausProducer<TTypes>());
 			}
 			else if(producerId == ValidJetsProducer<TTypes>().GetProducerId()) {
 				this->AddGlobalProducer(new ValidJetsProducer<TTypes>());
