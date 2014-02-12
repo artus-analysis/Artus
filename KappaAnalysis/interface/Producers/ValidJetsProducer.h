@@ -33,7 +33,7 @@ public:
 		for (KDataPFJets::iterator jet = event.m_jets->begin();
 		     jet != event.m_jets->end(); ++jet)
 		{
-			bool good_jet = true;
+			bool validJet = true;
 
 			/* TODO
 			// Muon isolation DeltaR > 0.5
@@ -50,21 +50,21 @@ public:
 					dr2 = ROOT::Math::VectorUtil::DeltaR(jet->p4,
 														 product.GetValidMuons().at(1).p4);
 				}
-				good_jet = good_jet && (dr1 > 0.5) && (dr2 > 0.5);
+				validJet = validJet && (dr1 > 0.5) && (dr2 > 0.5);
 			}
 			*/
 
 			// JetID
 			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
 			// jets, all eta
-			good_jet = good_jet
+			validJet = validJet
 					   && jet->neutralHadFraction + jet->HFHadFraction < 0.99
 					   && jet->neutralEMFraction < 0.99
 					   && jet->nConst > 1;
 			// jets, |eta| < 2.4 (tracker)
 			if (std::abs(jet->p4.eta()) < 2.4)
 			{
-				good_jet = good_jet
+				validJet = validJet
 						   && jet->chargedHadFraction > 0.0
 						   && jet->nCharged > 0
 						   && jet->chargedEMFraction < 0.99;
@@ -74,11 +74,11 @@ public:
 			if (globalSettings.Global()->GetVetoPileupJets())
 			{
 				bool puID = static_cast<KDataPFTaggedJet*>jet->getpuJetID("PUJetIDFullMedium", event.m_taggermetadata);
-				good_jet = good_jet && puID;
+				validJet = validJet && puID;
 			}
 			*/
 
-			if (good_jet)
+			if (validJet)
 				product.m_validJets.push_back(&(*jet));
 			else
 				product.m_invalidJets.push_back(&(*jet));

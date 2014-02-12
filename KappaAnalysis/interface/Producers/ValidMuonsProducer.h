@@ -35,10 +35,10 @@ public:
 		for (KDataMuons::iterator muon = event.m_muons->begin();
 			 muon != event.m_muons->end(); muon++)
 		{
-			bool good_muon = true;
+			bool validMuon = true;
 
 			// Own loose cuts on muons and muon isolation
-			good_muon = good_muon
+			validMuon = validMuon
 						&& muon->p4.Pt() > 12.0
 						&& std::abs(muon->p4.Eta()) < 5.0
 						&& muon->trackIso03 < 3.0;
@@ -48,7 +48,7 @@ public:
 			// The comments describe, how CMSSW treats the recoMu.
 			/// version of MuonID
 			bool is2011 = false; //globalSettings.Global()->GetMuonID2011();
-			good_muon = good_muon
+			validMuon = validMuon
 						&& muon->isGlobalMuon()
 						// use PF muons
 						&& muon->isPFMuon()
@@ -67,7 +67,7 @@ public:
 						// hitPattern().trackerLayersWithMeasurement() // 8 in 2011
 						&& muon->track.nPixelLayers + muon->track.nStripLayers > 5 + 3 * is2011;
 			
-			if (good_muon)
+			if (validMuon)
 				product.m_validMuons.push_back(&(*muon));
 			else
 				product.m_invalidMuons.push_back(&(*muon));

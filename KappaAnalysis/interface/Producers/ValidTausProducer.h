@@ -32,11 +32,11 @@ public:
 		for (KDataPFTaus::iterator tau = event.m_taus->begin();
 			 tau != event.m_taus->end(); tau++)
 		{
-			bool good_tau = true;
+			bool validTau = true;
 			
 			// TODO
 			
-			if (good_tau)
+			if (validTau)
 				product.m_validTaus.push_back(&(*tau));
 			else
 				product.m_invalidTaus.push_back(&(*tau));
