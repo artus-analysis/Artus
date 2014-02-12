@@ -9,20 +9,20 @@ public:
 	KappaEvent() : KappaEventBase() {};
 	
 	// Electrons
-	KDataElectron* m_electrons = 0;
+	KDataElectrons* m_electrons = 0;
 	
 	// Muons
 	KDataMuons* m_muons = 0;
 	
 	// Taus
-	KDataTaus* m_taus = 0;
+	KDataPFTaus* m_taus = 0;
 	
 	// Jets
-	KDataPFJets* m_pfJets = 0;
+	KDataPFJets* m_jets = 0;
 	KJetArea* m_jetArea = 0;
 	
 	// MET info
-	KDataPFMET* m_pfMet = 0;
+	KDataPFMET* m_met = 0;
 	
 	// Vertex info
 	KDataBeamSpot* m_beamSpot = 0;

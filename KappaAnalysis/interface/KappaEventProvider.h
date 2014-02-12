@@ -20,48 +20,66 @@ public:
 		
 		// Electrons
 		if(! globalSettings.GetElectrons().empty())
-			this->m_event.m_electrons = this->m_fi.template Get<KDataElectron>(globalSettings.GetElectrons(), true);
+			this->m_event.m_electrons = this->template SecureFileInterfaceGet<KDataElectrons>(globalSettings.GetElectrons());
 
 		// Muons
 		if(! globalSettings.GetMuons().empty())
-			this->m_event.m_muons = this->m_fi.template Get<KDataMuons>(globalSettings.GetMuons(), true);
+			this->m_event.m_muons = this->template SecureFileInterfaceGet<KDataMuons>(globalSettings.GetMuons());
 
 		// Taus
 		if(! globalSettings.GetTaus().empty())
-			this->m_event.m_taus = this->m_fi.template Get<KDataTaus>(globalSettings.GetTaus(), true);
+			this->m_event.m_taus = this->template SecureFileInterfaceGet<KDataPFTaus>(globalSettings.GetTaus());
 
 		// Jets
 		if(! globalSettings.GetJets().empty())
-			this->m_event.m_pfJets = this->m_fi.template Get<KDataPFJets>(globalSettings.GetJets(), true);
+			this->m_event.m_jets = this->template SecureFileInterfaceGet<KDataPFJets>(globalSettings.GetJets());
 		if(! globalSettings.GetJetArea().empty())
-			this->m_event.m_jetArea = this->m_fi.template Get<KJetArea>(globalSettings.GetJetArea(), true);
+			this->m_event.m_jetArea = this->template SecureFileInterfaceGet<KJetArea>(globalSettings.GetJetArea());
 	
 		// MET info
 		if(! globalSettings.GetMet().empty())
-			this->m_event.m_pfMet = this->m_fi.template Get<KDataPFMET>(globalSettings.GetMet(), true);
+			this->m_event.m_met = this->template SecureFileInterfaceGet<KDataPFMET>(globalSettings.GetMet());
 		
 		// Generator info
 		if(! globalSettings.GetGenParticles().empty())
-			this->m_event.m_genParticles = this->m_fi.template Get<KGenParticles>(globalSettings.GetGenParticles(), true);
+			this->m_event.m_genParticles = this->template SecureFileInterfaceGet<KGenParticles>(globalSettings.GetGenParticles());
 	
 		// Vertex info
 		if(! globalSettings.GetBeamSpot().empty())
-			this->m_event.m_beamSpot = this->m_fi.template Get<KDataBeamSpot>(globalSettings.GetBeamSpot(), true);
+			this->m_event.m_beamSpot = this->template SecureFileInterfaceGet<KDataBeamSpot>(globalSettings.GetBeamSpot());
 		if(! globalSettings.GetVertexSummary().empty())
-			this->m_event.m_vertexSummary = this->m_fi.template Get<KVertexSummary>(globalSettings.GetVertexSummary(), true);
+			this->m_event.m_vertexSummary = this->template SecureFileInterfaceGet<KVertexSummary>(globalSettings.GetVertexSummary());
 
-		// Meta data // TODO: move to Artus/Provider
+		// Meta data // TODO: move to KappaEventProviderBase?
 		if(! globalSettings.GetLumiMetadata().empty())
-			this->m_event.m_lumiMetadata = this->m_fi.template GetMeta<KLumiMetadata>(globalSettings.GetLumiMetadata(), true);
+			this->m_event.m_lumiMetadata = this->template SecureFileInterfaceGetMeta<KLumiMetadata>(globalSettings.GetLumiMetadata());
 		if(! globalSettings.GetGenLumiMetadata().empty())
-			this->m_event.m_genLumiMetadata = this->m_fi.template GetMeta<KGenLumiMetadata>(globalSettings.GetGenLumiMetadata(), true);
+			this->m_event.m_genLumiMetadata = this->template SecureFileInterfaceGetMeta<KGenLumiMetadata>(globalSettings.GetGenLumiMetadata());
 		if(! globalSettings.GetEventMetadata().empty())
-			this->m_event.m_eventMetadata = this->m_fi.template Get<KEventMetadata>(globalSettings.GetEventMetadata(), true);
+			this->m_event.m_eventMetadata = this->template SecureFileInterfaceGet<KEventMetadata>(globalSettings.GetEventMetadata());
 		if(! globalSettings.GetGenEventMetadata().empty())
-			this->m_event.m_genEventMetadata = this->m_fi.template Get<KGenEventMetadata>(globalSettings.GetGenEventMetadata(), true);
+			this->m_event.m_genEventMetadata = this->template SecureFileInterfaceGet<KGenEventMetadata>(globalSettings.GetGenEventMetadata());
 		if(! globalSettings.GetFilterMetadata().empty())
-			this->m_event.m_filterMetadata = this->m_fi.template GetMeta<KFilterMetadata>(globalSettings.GetFilterMetadata(), true); // TODO: Check
+			this->m_event.m_filterMetadata = this->template SecureFileInterfaceGetMeta<KFilterMetadata>(globalSettings.GetFilterMetadata()); // TODO: Check
 		if(! globalSettings.GetFilterSummary().empty())
-			this->m_event.m_filterSummary = this->m_fi.template GetMeta<KFilterSummary>(globalSettings.GetFilterSummary(), true); // TODO: Check
+			this->m_event.m_filterSummary = this->template SecureFileInterfaceGetMeta<KFilterSummary>(globalSettings.GetFilterSummary()); // TODO: Check
 	}
+
+
+protected:
+
+	template<typename T>
+	T* SecureFileInterfaceGet(const std::string &name, const bool check = true, const bool def = false) {
+		T* result = this->m_fi.template Get<T>(name, check, def);
+		if(result == 0) LOG_FATAL("Requested branch not found!");
+		return result;
+	}
+	
+	template<typename T>
+	T* SecureFileInterfaceGetMeta(const std::string &name, const bool check = true, const bool def = false) {
+		T* result = this->m_fi.template GetMeta<T>(name, check, def);
+		if(result == 0) LOG_FATAL("Requested branch not found!");
+		return result;
+	}
+
 };

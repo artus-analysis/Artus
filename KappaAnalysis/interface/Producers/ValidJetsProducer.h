@@ -30,8 +30,8 @@ public:
 	                           product_type& product,
 	                           global_setting_type const& globalSettings) const
 	{
-		for (KDataPFJets::iterator pfJet = event.m_pfJets->begin();
-		     pfJet != event.m_pfJets->end(); ++pfJet)
+		for (KDataPFJets::iterator jet = event.m_jets->begin();
+		     jet != event.m_jets->end(); ++jet)
 		{
 			bool good_jet = true;
 
@@ -45,9 +45,9 @@ public:
 
 				if (product.HasValidZ())
 				{
-					dr1 = ROOT::Math::VectorUtil::DeltaR(pfJet->p4,
+					dr1 = ROOT::Math::VectorUtil::DeltaR(jet->p4,
 														 product.GetValidMuons().at(0).p4);
-					dr2 = ROOT::Math::VectorUtil::DeltaR(pfJet->p4,
+					dr2 = ROOT::Math::VectorUtil::DeltaR(jet->p4,
 														 product.GetValidMuons().at(1).p4);
 				}
 				good_jet = good_jet && (dr1 > 0.5) && (dr2 > 0.5);
@@ -56,32 +56,32 @@ public:
 
 			// JetID
 			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
-			// PFJets, all eta
+			// jets, all eta
 			good_jet = good_jet
-					   && pfJet->neutralHadFraction + pfJet->HFHadFraction < 0.99
-					   && pfJet->neutralEMFraction < 0.99
-					   && pfJet->nConst > 1;
-			// PFJets, |eta| < 2.4 (tracker)
-			if (std::abs(pfJet->p4.eta()) < 2.4)
+					   && jet->neutralHadFraction + jet->HFHadFraction < 0.99
+					   && jet->neutralEMFraction < 0.99
+					   && jet->nConst > 1;
+			// jets, |eta| < 2.4 (tracker)
+			if (std::abs(jet->p4.eta()) < 2.4)
 			{
 				good_jet = good_jet
-						   && pfJet->chargedHadFraction > 0.0
-						   && pfJet->nCharged > 0
-						   && pfJet->chargedEMFraction < 0.99;
+						   && jet->chargedHadFraction > 0.0
+						   && jet->nCharged > 0
+						   && jet->chargedEMFraction < 0.99;
 			}
 
 			/* TODO
 			if (globalSettings.Global()->GetVetoPileupJets())
 			{
-				bool puID = static_cast<KDataPFTaggedJet*>pfJet->getpuJetID("PUJetIDFullMedium", event.m_taggermetadata);
+				bool puID = static_cast<KDataPFTaggedJet*>jet->getpuJetID("PUJetIDFullMedium", event.m_taggermetadata);
 				good_jet = good_jet && puID;
 			}
 			*/
 
 			if (good_jet)
-				product.m_validJets.push_back(&(*pfJet));
+				product.m_validJets.push_back(&(*jet));
 			else
-				product.m_invalidJets.push_back(&(*pfJet));
+				product.m_invalidJets.push_back(&(*jet));
 		}
 
 		return true;

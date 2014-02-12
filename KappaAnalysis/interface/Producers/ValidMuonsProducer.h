@@ -68,9 +68,9 @@ public:
 						&& muon->track.nPixelLayers + muon->track.nStripLayers > 5 + 3 * is2011;
 			
 			if (good_muon)
-				product.m_validMuons.push_back(*muon);
+				product.m_validMuons.push_back(&(*muon));
 			else
-				product.m_invalidMuons.push_back(*muon);
+				product.m_invalidMuons.push_back(&(*muon));
 		}
 
 		return true;
