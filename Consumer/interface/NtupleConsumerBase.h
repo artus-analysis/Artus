@@ -39,9 +39,9 @@ public:
 							 quantities.c_str());
 	}
 
-	static std::string GetName()
+	virtual std::string GetConsumerId()
 	{
-		return "ntuple_consumer";
+		return "ntuple";
 	}
 
 	void ProcessFilteredEvent(event_type const& event,
