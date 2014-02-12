@@ -44,7 +44,7 @@ public:
 		return "ntuple";
 	}
 
-	void ProcessFilteredEvent(event_type const& event,
+	virtual void ProcessFilteredEvent(event_type const& event,
 			product_type const& product ) ARTUS_CPP11_OVERRIDE {
 		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product);
 
@@ -68,11 +68,14 @@ public:
 		ntuple->Write(this->GetPipelineSettings().GetName().c_str());
 	}
 
-private:
+
+protected:
 	TNtuple* ntuple;
 	stringvector quantities_vector;
 	std::string quantities;
 
+
+private:
 	virtual float returnvalue(std::string string, event_type const& event,
 			product_type const& product )
 	{return 0.;}
