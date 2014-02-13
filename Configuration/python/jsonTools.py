@@ -1,6 +1,7 @@
 
 # -*- coding: utf-8 -*-
 
+import collections
 import copy
 import json
 import logging
@@ -41,6 +42,39 @@ def deepdiff(dictA, dictB):
 				diffDictA[key] = dictA[key]
 				diffDictB[key] = dictB[key]
 	return diffDictA, diffDictB
+
+# resolves/replaces include options in JSON dictionaries
+# protected property names are "include" which is followed by a list of files to include
+# and "property" which is used as a property name in the included file to include just one property
+def deepinclude(jsonDict):
+	result = None
+	if type(jsonDict) == dict:
+		result = {}
+		for key, value in jsonDict.items():
+			if key == "include":
+				if isinstance(value, basestring):
+					value = [value]
+				for includeFile in value:
+					tmpResult = deepinclude(readJsonDict(includeFile))
+					if type(tmpResult) == dict:
+						result = deepmerge(result, tmpResult)
+					else:
+						result = tmpResult
+			elif key == "property":
+				result = copy.deepcopy(value)
+			else:
+				result[key] = deepinclude(value)
+	elif isinstance(jsonDict, collections.Iterable) and not isinstance(jsonDict, basestring):
+		result = []
+		for element in jsonDict:
+			tmpResult = deepinclude(element)
+			if isinstance(tmpResult, collections.Iterable) and not isinstance(tmpResult, basestring):
+				result.extend(tmpResult)
+			else:
+				result.append(tmpResult)
+	else:
+		result = copy.deepcopy(jsonDict)
+	return result
 
 # read JSON dictionary from root file or from JSON text file
 def readJsonDict(fileName, pathInRootFile="config"):
