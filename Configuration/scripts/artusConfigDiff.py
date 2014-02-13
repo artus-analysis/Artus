@@ -35,7 +35,7 @@ def main():
 	minFiles = 1
 	maxFiles = 2 if args.compare else 1
 	if len(args.files) < minFiles:
-		logging.getLogger(__name__).critial("Need a mininum number of %d input files!" % minFiles)
+		logging.getLogger(__name__).critical("Need a mininum number of %d input files!" % minFiles)
 		sys.exit(1)
 	if len(args.files) > maxFiles:
 		logging.getLogger(__name__).warning("Only the first %d file(s) are taken as input." % maxFiles)

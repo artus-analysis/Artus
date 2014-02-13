@@ -6,6 +6,7 @@ import json
 import logging
 import os
 import ROOT
+import sys
 
 
 # deepmerge of two dictionaries.
@@ -43,12 +44,16 @@ def deepdiff(dictA, dictB):
 
 # read JSON dictionary from root file or from JSON text file
 def readJsonDict(fileName, pathInRootFile="config"):
+	if not os.path.exists(fileName):
+		logging.getLogger(__name__).critical("File \"%s\" does not exist!" % fileName)
+		sys.exit(1)
+
 	jsonDict = {}
 	if os.path.splitext(fileName)[1] == ".root":
 		rootFile = ROOT.TFile(fileName, "READ")
 		jsonString = rootFile.Get(pathInRootFile)
 		if not jsonString:
-			logging.getLogger(__name__).critial("Could not read \"%s\" from file \"%s\"!" % (pathInRootFile, rootFileName))
+			logging.getLogger(__name__).critical("Could not read \"%s\" from file \"%s\"!" % (pathInRootFile, rootFileName))
 			sys.exit(1)
 		jsonString = str(jsonString.GetString())
 		jsonDict = json.loads(jsonString)
