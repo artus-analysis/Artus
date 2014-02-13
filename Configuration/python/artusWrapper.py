@@ -38,6 +38,9 @@ def artusWrapper(defaultExecutable=None):
 	else: args.config_files = args.root_config
 	mainConfig = jsonTools.mergeJsonDicts(mainConfig, *args.config_files)
 	
+	# do includes
+	mainConfig = jsonTools.deepinclude(mainConfig)
+	
 	mainConfigFileName = reduce(lambda a, b: a+"__"+b, map(lambda fileName: os.path.splitext(os.path.basename(fileName))[0], args.config_files))+".json"
 	jsonTools.saveJsonDict(mainConfig, mainConfigFileName)
 	logging.getLogger(__name__).info("Saved combined JSON config \"%s\" for temporary usage." % mainConfigFileName)
