@@ -76,6 +76,26 @@ def deepinclude(jsonDict):
 		result = copy.deepcopy(jsonDict)
 	return result
 
+# remove all comments from JSON dictionary
+# comments are keys, values and list entries starting with #
+def deepuncomment(jsonDict):
+	result = None
+	if type(jsonDict) == dict:
+		result = {}
+		for key, value in jsonDict.items():
+			if not key.strip().startswith("#"):
+				if not isinstance(value, basestring) or not value.strip().startswith("#"):
+					tmpValue = copy.deepcopy(value)
+					if type(value) == dict:
+						tmpValue = deepuncomment(value)
+					elif isinstance(value, collections.Iterable) and not isinstance(value, basestring):
+						tmpValue = []
+						for element in value:
+							if not isinstance(element, basestring) or not element.strip().startswith("#"):
+								tmpValue.append(copy.deepcopy(element))
+					result[key] = tmpValue
+	return result
+
 # read JSON dictionary from root file or from JSON text file
 def readJsonDict(fileName, pathInRootFile="config"):
 	fileName = os.path.expandvars(fileName)
