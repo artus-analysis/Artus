@@ -41,7 +41,7 @@ public:
 				this->AddGlobalProducer(new ValidJetsProducer<TTypes>());
 			}
 			else {
-				LOG_FATAL("Global producer \"" << producerId << "\" not found.");
+				LOG("Global producer \"" << producerId << "\" not found.");
 			}
 		}
 	}
