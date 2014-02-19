@@ -103,7 +103,7 @@ def readJsonDict(fileName, pathInRootFile="config"):
 		logging.getLogger(__name__).critical("File \"%s\" does not exist!" % fileName)
 		sys.exit(1)
 
-	jsonDict = {}
+	jsonString = ""
 	if os.path.splitext(fileName)[1] == ".root":
 		rootFile = ROOT.TFile(fileName, "READ")
 		jsonString = rootFile.Get(pathInRootFile)
@@ -111,10 +111,19 @@ def readJsonDict(fileName, pathInRootFile="config"):
 			logging.getLogger(__name__).critical("Could not read \"%s\" from file \"%s\"!" % (pathInRootFile, rootFileName))
 			sys.exit(1)
 		jsonString = str(jsonString.GetString())
-		jsonDict = json.loads(jsonString)
 		rootFile.Close()
 	else:
-		with open(fileName, "r") as jsonFile: jsonDict = json.load(jsonFile)
+		with open(fileName, "r") as jsonFile:
+			jsonString = jsonFile.read()
+	
+	jsonDict = {}
+	print jsonString
+	try:
+		jsonDict = json.loads(jsonString)
+	except ValueError, e:
+		logging.getLogger(__name__).critical("Invalid JSON syntax in file \"%s\"." % fileName)
+		logging.getLogger(__name__).critical(str(e))
+		sys.exit(1)
 	return jsonDict
 
 # print JSON dictionary.
