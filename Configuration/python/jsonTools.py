@@ -78,6 +78,7 @@ def deepinclude(jsonDict):
 
 # read JSON dictionary from root file or from JSON text file
 def readJsonDict(fileName, pathInRootFile="config"):
+	fileName = os.path.expandvars(fileName)
 	if not os.path.exists(fileName):
 		logging.getLogger(__name__).critical("File \"%s\" does not exist!" % fileName)
 		sys.exit(1)
