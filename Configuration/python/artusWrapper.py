@@ -11,10 +11,11 @@ import Artus.Configuration.jsonTools as jsonTools
 
 
 def artusWrapper(defaultExecutable=None):
-	parser = argparse.ArgumentParser(description="Artus executable wrapper script", parents=[logger.loggingParser])
+	parser = argparse.ArgumentParser(description="Wrapper for Artus executables. This wrapper can handle simple merges of all given config files. In the resulting JSON config, include statements are frist replaced by the actual config and comments are taken out.",
+	                                 parents=[logger.loggingParser])
 
 	configGroup = parser.add_mutually_exclusive_group(required=True)
-	configGroup.add_argument("-c", "--config-files", help="JSON config files or string represenations of dicts", nargs="+")
+	configGroup.add_argument("-c", "--config-files", help="JSON config files or string represenations of dicts. All configs are merged, where the first ones in the list have a higher priority than later ones.", nargs="+")
 	configGroup.add_argument("-r", "--root-config", help="Take JSON configuration from existing root file.", nargs=1)
 	
 	parser.add_argument("-i", "--input-files", help="Input root files. Leave empty (\"\") if input files from root file should be taken.", nargs="+", required=True)
