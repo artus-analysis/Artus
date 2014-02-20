@@ -1,6 +1,3 @@
-<Flags LDFLAGS="-Lsrc/KappaTools/lib -lKToolbox -lKRootTools" />
-<Flags LDFLAGS="-Lsrc/Kappa/lib -lKappa" />
-
 <use   name="root"/>
 <use   name="boost"/>
 
