@@ -15,13 +15,15 @@
 #include "EventProviderBase.h"
 #include "ProgressReport.h"
 
-/*
- * The PipelineRunner utilizes a user-provided EventProvider to load events and passes them to
- * all registered Pipelines.
- * Furthermore, GlobalProducers can be registered, which can generate Pipeline-independet products
- * of the event. These GlobalProducers are run before any pipeline is started and the generated data is passed to the
- * pipelines.
- */
+/**
+   \brief Class to manage all registered Pipelines and to connect them to the event.
+   
+   The PipelineRunner utilizes a user-provided EventProvider to load events and passes them to all 
+   registered Pipelines. The EventProvider is passed to the function PipelineRunner::RunPipelines 
+   as an argument. Furthermore, GlobalProducers can be registered, which can generate Pipeline-
+   independet products of the event. These GlobalProducers are run before any pipeline is started 
+   and the generated data is passed on to the pipelines.
+*/
 
 template<typename TPipeline, typename TGlobalProducer>
 class PipelineRunner: public boost::noncopyable {
@@ -44,23 +46,17 @@ public:
 	typedef boost::ptr_list<ProgressReportBase> ProgressReportList;
 	typedef typename ProgressReportList::iterator ProgressReportIterator;
 
-	/*
-	 * Add a pipeline. The object is destroy in the destructor of the PipelineRunner
-	 */
+	/// Add a pipeline. The object is destroy in the destructor of the PipelineRunner.
 	void AddPipeline(TPipeline* pline) {
 		m_pipelines.push_back(pline);
 	}
 
-	/*
-	 * Add a GlobalProducer. The object is destroy in the destructor of the PipelineRunner
-	 */
+	/// Add a GlobalProducer. The object is destroy in the destructor of the PipelineRunner.
 	void AddGlobalProducer(TGlobalProducer* prod) {
 		m_globalProducer.push_back(prod);
 	}
 
-	/*
-	 * Add a range of pipelines. The object is destroy in the destructor of the PipelineRunner
-	 */
+	/// Add a range of pipelines. The object is destroy in the destructor of the PipelineRunner.
 	void AddPipelines(std::vector<TPipeline*> pVec) {
 
 		for (auto * it : pVec) {
@@ -68,12 +64,8 @@ public:
 		}
 	}
 
-	/*
-	 * Run the GlobalProducers and all pipelines.
-	 * give any pipeline setting here: only the global producer will
-	 * read from the global settings ...
-	 *
-	 */
+	/// Run the GlobalProducers and all pipelines. Give any pipeline setting here: only the 
+	/// global producer will read from the global settings ...
 	template<class TTypes>
 	void RunPipelines(
 			EventProviderBase<TTypes> & evtProvider,
