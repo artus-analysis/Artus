@@ -5,12 +5,12 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
-
-/** Select only valid taus.
-
-    The taus are valid if the pass these criteria
-    1. ...
+/**
+   \brief GlobalProducer, for valid taus.
+   
+   ... no comment ...
 */
+
 template<class TTypes>
 class ValidTausProducer: public GlobalProducerBase<TTypes>
 {

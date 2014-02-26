@@ -6,11 +6,12 @@
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 
-/** Select only valid electrons.
-
-    The electrons are valid if the pass these criteria
-    1. ...
+/**
+   \brief GlobalProducer, for valid electrons.
+   
+   ... no comment ...
 */
+
 template<class TTypes>
 class ValidElectronsProducer: public GlobalProducerBase<TTypes>
 {
