@@ -8,8 +8,13 @@
 
 #include <boost/noncopyable.hpp>
 
-// Basis for producers which are run before the pipelines and produce
-// results useful to all
+/**
+   \brief Base class for GlobalProducers, which are run before the pipelines.
+   
+   This is a base class for GlobalProducers, which produce something before a pipeline that can be 
+   used fro all pieplines in the following. 
+*/
+
 template<class TTypes>
 class GlobalProducerBase: public boost::noncopyable {
 public:
@@ -26,14 +31,12 @@ public:
 	virtual void Init(global_setting_type const& globalSettings) {
 	}
 
-	// if false is returned, the event is dropped as it does not meet the minimum requirements for the producer
+	/// if false is returned, the event is dropped as it does not meet the minimum requirements for the producer
 	virtual bool ProduceGlobal(event_type const& event,
 			product_type& product,
 			global_setting_type const& globalSettings) const = 0;
 
-	/*
-	 * Must return a unique id of the producer.
-	 */
+	/// Must return a unique id of the producer.
 	virtual std::string GetProducerId() = 0;
 };
 
