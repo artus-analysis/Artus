@@ -34,5 +34,10 @@ public:
 	IMPL_SETTING_DEFAULT(std::string, GenEventMetadata, ""); // TODO: Default value, move to Artus/Provider
 	IMPL_SETTING_DEFAULT(std::string, FilterMetadata, ""); // TODO: Default value, move to Artus/Provider
 	IMPL_SETTING_DEFAULT(std::string, FilterSummary, ""); // TODO: Default value, move to Artus/Provider
-
+	
+	VarCache<std::vector<std::string>> jsonFiles;
+	stringvector GetJsonFiles() const
+	{
+		RETURN_CACHED(jsonFiles, PropertyTreeSupport::GetAsStringList(GetPropTree(), "JsonFiles"))
+	}
 };

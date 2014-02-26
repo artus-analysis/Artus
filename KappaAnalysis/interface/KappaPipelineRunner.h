@@ -3,6 +3,7 @@
 
 #include "Artus/Core/interface/PipelineRunner.h"
 
+#include "Artus/KappaAnalysis/interface/Producers/JsonFilter.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidElectronsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidMuonsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidTausProducer.h"
@@ -28,7 +29,10 @@ public:
 	
 		BOOST_FOREACH(std::string producerId, m_globalSettings.GetGlobalProducers())
 		{
-			if(producerId == ValidElectronsProducer<TTypes>().GetProducerId()) {
+			if(producerId == JsonFilter<TTypes>().GetProducerId()) {
+				this->AddGlobalProducer(new JsonFilter<TTypes>(m_globalSettings.GetJsonFiles()));
+			}
+			else if(producerId == ValidElectronsProducer<TTypes>().GetProducerId()) {
 				this->AddGlobalProducer(new ValidElectronsProducer<TTypes>());
 			}
 			else if(producerId == ValidMuonsProducer<TTypes>().GetProducerId()) {
