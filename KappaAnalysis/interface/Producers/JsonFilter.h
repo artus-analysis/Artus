@@ -26,9 +26,11 @@ public:
 		return "json_filter";
 	}
 	
-	JsonFilter(const std::vector<std::string>& jsonFiles=std::vector<std::string>(), const run_id passRunLow=1, const run_id passRunHigh=0) :
+	JsonFilter() : GlobalProducerBase<TTypes>() {};
+	
+	JsonFilter(global_setting_type const& globalSettings) :
 		GlobalProducerBase<TTypes>(),
-		m_runLumiSelector(jsonFiles, passRunLow, passRunHigh)
+		m_runLumiSelector(globalSettings.GetJsonFiles(), globalSettings.GetPassRunLow(), globalSettings.GetPassRunHigh())
 	{
 		
 	}

@@ -30,7 +30,7 @@ public:
 		BOOST_FOREACH(std::string producerId, m_globalSettings.GetGlobalProducers())
 		{
 			if(producerId == JsonFilter<TTypes>().GetProducerId()) {
-				this->AddGlobalProducer(new JsonFilter<TTypes>(m_globalSettings.GetJsonFiles()));
+				this->AddGlobalProducer(new JsonFilter<TTypes>(m_globalSettings));
 			}
 			else if(producerId == ValidElectronsProducer<TTypes>().GetProducerId()) {
 				this->AddGlobalProducer(new ValidElectronsProducer<TTypes>());

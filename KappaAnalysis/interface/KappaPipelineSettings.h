@@ -40,4 +40,6 @@ public:
 	{
 		RETURN_CACHED(jsonFiles, PropertyTreeSupport::GetAsStringList(GetPropTree(), "JsonFiles"))
 	}
+	IMPL_SETTING_DEFAULT(int, PassRunLow, 1);
+	IMPL_SETTING_DEFAULT(int, PassRunHigh, 0);
 };
