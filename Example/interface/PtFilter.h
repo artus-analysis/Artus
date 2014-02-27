@@ -22,7 +22,7 @@ public:
 
 	virtual bool DoesEventPass(TraxEvent const& event,
 			TraxProduct const& product,
-            TraxPipelineSettings const& settings ) {
+            TraxPipelineSettings const& settings ) const {
 
 		const float lowCut = settings.GetFilterPtLow();
 		const float highCut = settings.GetFilterPtHigh();

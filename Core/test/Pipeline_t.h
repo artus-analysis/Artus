@@ -27,7 +27,7 @@ public:
 	}
 
 	virtual bool DoesEventPass(const TestEvent & event,
-			TestProduct const& product, TestSettings const& settings) {
+			TestProduct const& product, TestSettings const& settings) const {
 		return (event.iVal < 2);
 	}
 };
@@ -40,7 +40,7 @@ public:
 	}
 
 	virtual bool DoesEventPass(const TestEvent & event,
-			TestProduct const& product, TestSettings const& settings) {
+			TestProduct const& product, TestSettings const& settings) const {
 		return false;
 	}
 };
