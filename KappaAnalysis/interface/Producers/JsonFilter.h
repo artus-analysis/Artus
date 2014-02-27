@@ -22,7 +22,7 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::global_setting_type global_setting_type;
 
-	virtual std::string GetProducerId() {
+	virtual std::string GetProducerId() ARTUS_CPP11_OVERRIDE {
 		return "json_filter";
 	}
 	
@@ -37,7 +37,7 @@ public:
 
 	virtual bool ProduceGlobal(event_type const& event,
 	                           product_type& product,
-	                           global_setting_type const& globalSettings) const
+	                           global_setting_type const& globalSettings) const ARTUS_CPP11_OVERRIDE
 	{
 		return m_runLumiSelector.accept(event.m_eventMetadata->nRun, event.m_eventMetadata->nLumi);
 	}

@@ -43,7 +43,7 @@ public:
 	// call yourself after creating the provider
 	virtual void WireEvent( global_setting_type const& ) = 0;
 
-	virtual bool GetEntry(long long lEvent ) {
+	virtual bool GetEntry(long long lEvent ) ARTUS_CPP11_OVERRIDE {
 
 		if (!m_mon->Update())
 			return false;
@@ -78,11 +78,11 @@ public:
 		return true;
 	}
 
-	virtual event_type const& GetCurrentEvent() const {
+	virtual event_type const& GetCurrentEvent() const ARTUS_CPP11_OVERRIDE {
 		return m_event;
 	}
 
-	virtual long long GetEntries() const {
+	virtual long long GetEntries() const ARTUS_CPP11_OVERRIDE {
 		return m_fi.eventdata.GetEntries();
 	}
 

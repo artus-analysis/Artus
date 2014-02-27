@@ -21,13 +21,13 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::global_setting_type global_setting_type;
 
-	virtual std::string GetProducerId() {
+	virtual std::string GetProducerId() ARTUS_CPP11_OVERRIDE {
 		return "valid_electrons";
 	}
 
 	virtual bool ProduceGlobal(event_type const& event,
 	                           product_type& product,
-	                           global_setting_type const& globalSettings) const
+	                           global_setting_type const& globalSettings) const ARTUS_CPP11_OVERRIDE
 	{
 		for (KDataElectrons::iterator electron = event.m_electrons->begin();
 			 electron != event.m_electrons->end(); electron++)

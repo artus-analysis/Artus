@@ -16,7 +16,7 @@ public:
 
 	}
 
-	virtual void WireEvent(global_setting_type const& globalSettings) {
+	virtual void WireEvent(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
 		
 		// Electrons
 		if(! globalSettings.GetElectrons().empty())
