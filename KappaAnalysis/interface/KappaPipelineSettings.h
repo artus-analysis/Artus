@@ -44,4 +44,10 @@ public:
 	}
 	IMPL_SETTING_DEFAULT(int, PassRunLow, 1);
 	IMPL_SETTING_DEFAULT(int, PassRunHigh, 0);
+	
+	VarCache<std::vector<std::string>> hltPaths;
+	stringvector GetHltPaths() const
+	{
+		RETURN_CACHED(jsonFiles, PropertyTreeSupport::GetAsStringList(GetPropTree(), "HltPaths"))
+	}
 };

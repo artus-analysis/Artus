@@ -3,6 +3,8 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
+#include "KappaTools/RootTools/HLTTools.h"
+
 
 class KappaProduct {
 public:
@@ -24,6 +26,9 @@ public:
 	// Jets
 	std::vector<KDataPFJet*> m_validJets;
 	std::vector<KDataPFJet*> m_invalidJets;
+	
+	HLTTools* m_hltInfo = 0;
+	std::string selectedHltName = "";
 
 private:
 	

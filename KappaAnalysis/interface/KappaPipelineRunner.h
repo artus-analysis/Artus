@@ -4,6 +4,7 @@
 #include "Artus/Core/interface/PipelineRunner.h"
 
 #include "Artus/KappaAnalysis/interface/Producers/JsonFilter.h"
+#include "Artus/KappaAnalysis/interface/Producers/HltProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidElectronsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidMuonsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidTausProducer.h"
@@ -31,6 +32,9 @@ public:
 		{
 			if(producerId == JsonFilter<TTypes>().GetProducerId()) {
 				this->AddGlobalProducer(new JsonFilter<TTypes>(m_globalSettings));
+			}
+			else if(producerId == HltProducer<TTypes>().GetProducerId()) {
+				this->AddGlobalProducer(new HltProducer<TTypes>());
 			}
 			else if(producerId == ValidElectronsProducer<TTypes>().GetProducerId()) {
 				this->AddGlobalProducer(new ValidElectronsProducer<TTypes>());
