@@ -14,6 +14,8 @@ public:
 class KappaGlobalSettings: public GlobalSettingsBase {
 
 public:
+	IMPL_SETTING_DEFAULT(bool, Verbose, false);
+	
 	IMPL_SETTING_DEFAULT(std::string, Electrons, "");
 	IMPL_SETTING_DEFAULT(std::string, Muons, "");
 	IMPL_SETTING_DEFAULT(std::string, Taus, "");
