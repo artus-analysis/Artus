@@ -36,8 +36,7 @@ public:
 	virtual void Init(Pipeline<TTypes> * pset) ARTUS_CPP11_OVERRIDE {
 		NtupleConsumerBase<TTypes>::Init(pset);
 		
-		float defaultValue = -999.0;
-		float_extractor_lambda defaultExtractor = [&defaultValue](event_type const&, product_type const&) { return defaultValue; };
+		float_extractor_lambda defaultExtractor = [](event_type const&, product_type const&) { return UNDEFINED_VALUE; };
 		
 		// construct extractors vector
 		m_valueExtractors.clear();

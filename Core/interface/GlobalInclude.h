@@ -20,6 +20,9 @@
 
 //extern std::ofstream * g_logFile;
 
+// value indicating that variable is not defined
+#define UNDEFINED_VALUE -999
+
 /// compare floats
 #define FLOAT_COMPARE(first, second) (std::abs((first - second) / second) < 0.02)
 
