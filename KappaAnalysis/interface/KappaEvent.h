@@ -3,35 +3,37 @@
 
 #include "Artus/KappaAnalysis/interface/KappaEventBase.h"
 
+/**
+   \brief Defines the content of the kappa ntuple.
+
+   Defines the objects which are contained in a kappa ntuple. Members are pointer to the corresponding 
+   collections of objects in the input file. This class derives from KapaEventBase, which contains
+   pointers to the eventMetadata and genEventMetadata, the minimal content of a kappa ntuple. 
+*/
+
 class KappaEvent : public KappaEventBase
 {
 public:
 	KappaEvent() : KappaEventBase() {};
-	
-	// Electrons
+	/// pointer to electron collection
 	KDataElectrons* m_electrons = 0;
-	
-	// Muons
+	/// pointer to muon collection
 	KDataMuons* m_muons = 0;
-	
-	// Taus
+	/// pointer to tau collection
 	KDataPFTaus* m_taus = 0;
-	
-	// Jets
+	/// pointer to jet collection
 	KDataPFJets* m_jets = 0;
+	/// pointer to jet area collection
 	KJetArea* m_jetArea = 0;
-	
-	// MET info
+	/// pointer to MET collection
 	KDataPFMET* m_met = 0;
-	
-	// Vertex info
+	/// pointer to beamspot collection
 	KDataBeamSpot* m_beamSpot = 0;
+        /// pointer to primary vertex summary
 	KVertexSummary* m_vertexSummary = 0;
-	
-	// Generator info
+	/// pointer to generator particles
 	KGenParticles* m_genParticles = 0;
-	
-	// Meta data // TODO: move to Artus/Provider
+	/// pointer to metadata // TODO: move to Artus/Provider
 	KLumiMetadata* m_lumiMetadata = 0;
 	KGenLumiMetadata* m_genLumiMetadata = 0;
 	KEventMetadata* m_eventMetadata = 0;

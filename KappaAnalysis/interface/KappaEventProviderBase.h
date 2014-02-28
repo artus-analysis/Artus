@@ -15,6 +15,14 @@
 #include "KappaTools/RootTools/FileInterface2.h"
 #include "KappaTools/Toolbox/ProgressMonitor.h"
 
+/**
+   \brief Base class to connect the analysis specific event content to the pipelines.
+
+   Defines the basic functionality expected by PipelineRunner. EventProviderBase::WireEvent is a
+   purely virtual function that needs to be implemented by any derived class. This function needs
+   to be called after the derived EventProvider is instantiated in the main executable.
+*/
+
 template<class TTypes>
 class KappaEventProviderBase: public EventProviderBase<TTypes> {
 public:
@@ -39,8 +47,8 @@ public:
 		m_mon.reset(new ProgressMonitor(GetEntries()));
 	}
 
-	// overwrite and load the Kappa products into your event structure
-	// call yourself after creating the provider
+	/// overwrite and load the Kappa products into your event structure call yourself after 
+	/// creating the provider
 	virtual void WireEvent( global_setting_type const& ) = 0;
 
 	virtual bool GetEntry(long long lEvent ) ARTUS_CPP11_OVERRIDE {

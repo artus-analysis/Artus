@@ -6,13 +6,14 @@
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 
-/** Select only valid muons.
-
-    The muons are valid if the pass these criteria
-    1. soft cuts on muons
-    1. muon isolation
-    1. tight muonID
+/**
+   \brief GlobalProducer, for valid muons.
+   
+   Valid muons pass the tightId requirement of the muon POG. In addition there is a loose 
+   isolation requirement. Two collectons are written into the KappaProduct for valid and 
+   invalid muons. 
 */
+
 template<class TTypes>
 class ValidMuonsProducer: public GlobalProducerBase<TTypes>
 {

@@ -4,6 +4,14 @@
 #include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/KappaAnalysis/interface/KappaEventProviderBase.h"
 
+/**
+   \brief class to connect the analysis specific event content to the pipelines.
+
+   Defines the basic functionality expected by PipelineRunner and implements the WireEvent function. 
+   This function needs to be called after the KappaEventProvider is instantiated in the main 
+   executable.
+*/
+
 template<class TTypes>
 class KappaEventProvider: public KappaEventProviderBase<TTypes> {
 public:

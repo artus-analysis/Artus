@@ -8,10 +8,10 @@
 
 #include "VarCache.h"
 
-/*
-* Implements a Setting with automatic read + caching from a Boost PropertyTree
- * You can access the value via myObject.GetSNAME
- */
+/**
+   Implements a Setting with automatic read + caching from a Boost PropertyTree
+   You can access the value via myObject.GetSNAME
+*/
 
 #define IMPL_SETTING(TYPE, SNAME) \
 private: 						  \
@@ -26,11 +26,11 @@ TYPE Get##SNAME ( ) const { if (Cache##SNAME.IsCached()) { return Cache##SNAME.G
        Cache##SNAME.SetCache( val ); \
        return val;}
 
-/*
- * Implements a Setting with automatic read + caching from a Boost PropertyTree
- * You can set a default value which will be used if the entry was not found in the PropertyTree
- * You can access the value via myObject.GetSNAME
- */
+/**
+   Implements a Setting with automatic read + caching from a Boost PropertyTree
+   You can set a default value which will be used if the entry was not found in the PropertyTree
+   You can access the value via myObject.GetSNAME
+*/
 
 #define IMPL_SETTING_DEFAULT(TYPE, SNAME, DEFAULT_VAL) \
 private: \

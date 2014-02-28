@@ -5,13 +5,13 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
-
-/** Select only valid jets.
-
-    The jets are valid if the pass these criteria
-    1. muon isolation
-    1. jetID
+/**
+   \brief GlobalProducer, for valid jets.
+   
+   Valid jets pass the partivle flow tight jetId by JetMET. There are not pileupJetId requirments 
+   applied.
 */
+
 template<class TTypes>
 class ValidJetsProducer: public GlobalProducerBase<TTypes>
 {
