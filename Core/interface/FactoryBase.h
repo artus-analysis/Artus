@@ -33,12 +33,21 @@ public:
 	virtual ~FactoryBase() {
 	}
 
-	virtual global_producer_base_type * createGlobalProducer ( std::string const& id ) = 0;
+	// these virtual methods offer no default objects, so far
+	virtual global_producer_base_type * createGlobalProducer ( std::string const& id ) {
+		return ARTUS_CPP11_NULLPTR;
+	}
 
-	virtual local_producer_base_type * createLocalProducer ( std::string const& id ) = 0;
+	virtual local_producer_base_type * createLocalProducer ( std::string const& id ) {
+		return ARTUS_CPP11_NULLPTR;
+	}
 
-	virtual consumer_base_type * createConsumer ( std::string const& id ) = 0;
+	virtual consumer_base_type * createConsumer ( std::string const& id ) {
+		return ARTUS_CPP11_NULLPTR;
+	}
 
-	virtual filter_base_type * createFilter ( std::string const& id ) = 0;
+	virtual filter_base_type * createFilter ( std::string const& id ) {
+		return ARTUS_CPP11_NULLPTR;
+	}
 
 };
