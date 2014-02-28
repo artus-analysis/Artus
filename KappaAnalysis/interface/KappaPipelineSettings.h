@@ -26,6 +26,18 @@
 class KappaPipelineSettings: public SettingsBase {
 public:
 
+	VarCache<stringvector> quantities;
+	stringvector GetQuantities() const
+	{
+		RETURN_CACHED(quantities, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".Quantities"))
+	}
+	
+	VarCache<std::vector<std::string>> hltPaths;
+	stringvector GetHltPaths() const
+	{
+		RETURN_CACHED(hltPaths, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".HltPaths"))
+	}
+
 };
 
 /**

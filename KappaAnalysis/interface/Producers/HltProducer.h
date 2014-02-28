@@ -32,7 +32,25 @@ public:
 	                           product_type& product,
 	                           global_setting_type const& globalSettings) const ARTUS_CPP11_OVERRIDE
 	{
-		if (globalSettings.GetVerbose())
+		std::vector<std::string> hltPaths = globalSettings.GetHltPaths();
+		return Produce(event, product, hltPaths, globalSettings.GetVerbose());
+	}
+
+	virtual void ProduceLocal(event_type const& event,
+	                          product_type& product,
+	                          setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	{
+		//Produce(event, product, settings.GetHltPaths());
+	}
+
+
+private:
+
+	// function that lets this producer work as both a global and a local producer
+	bool Produce(event_type const& event, product_type& product,
+	             std::vector<std::string> hltPaths, bool verbose=false) const
+	{
+		if (verbose)
 		{
 			for (std::vector< std::string >::const_iterator it = event.m_lumiMetadata->hltNames.begin();
 				 it != event.m_lumiMetadata->hltNames.end(); ++it)
@@ -41,7 +59,6 @@ public:
 			}
 		}
 
-		std::vector<std::string> hltPaths = globalSettings.GetHltPaths();
 		bool unprescaledPathFound = false;
 		std::string bestHltName, curName;
 
@@ -52,7 +69,7 @@ public:
 		{
 			curName = product.m_hltInfo->getHLTName(*hltPath);
 
-			if (globalSettings.GetVerbose())
+			if (verbose)
 				std::cout << *hltPath << " becomes " << curName << std::endl;
 
 			if (! curName.empty())
@@ -79,7 +96,7 @@ public:
 			LOG_FATAL("No unprescaled trigger found for " << bestHltName << ", prescale: " << product.m_hltInfo->getPrescale(bestHltName) << ", event: " << event.m_eventMetadata->nRun);
 		}
 
-		if (globalSettings.GetVerbose())
+		if (verbose)
 			LOG("selected " << bestHltName << " as best HLT, prescale: " << product.m_hltInfo->getPrescale(bestHltName));
 
 		if (bestHltName.empty())
@@ -89,11 +106,5 @@ public:
 		return true;
 	}
 
-	// empty to serve as a pure global producer
-	virtual void ProduceLocal(event_type const& event,
-	                          product_type& product,
-	                          setting_type const& settings) const ARTUS_CPP11_OVERRIDE
-	{
-	}
 };
 
