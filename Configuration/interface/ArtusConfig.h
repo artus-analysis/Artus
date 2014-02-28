@@ -13,6 +13,7 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 
+#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/GlobalInclude.h"
 
 class ArtusConfig {
@@ -26,8 +27,44 @@ public:
 		return m_fileNames;
 	}
 
-	template<class TPipelineInitializer, class TPipelineRunner>
+	template<class TPipelineInitializer, class TPipelineRunner, class TFactory>
+	void LoadConfiguration(TPipelineInitializer& pInit, TPipelineRunner& runner,
+			TFactory & factory,
+			TFile * outputFile)
+	{
+		typedef typename TPipelineRunner::global_setting_type global_setting_type;
+
+		LoadGlobalProducer <TPipelineRunner,TFactory, global_setting_type > (runner, factory);
+		LoadPipelines< TPipelineInitializer, TPipelineRunner>(pInit, runner, factory, outputFile);
+	}
+
+	template<class TPipelineRunner, class TFactory, class TGlobalSettings>
+	void LoadGlobalProducer( TPipelineRunner& runner, TFactory & factory ) {
+
+		TGlobalSettings gSettings = GetGlobalSettings< TGlobalSettings >();
+		stringvector globalProds = gSettings.GetGlobalProducers();
+		std::cout << "global count " << globalProds.size() << std::endl;
+		for ( stringvector::const_iterator it = globalProds.begin();
+			it != globalProds.end(); it ++ ) {
+			std::cout << "PROD " << (*it) << std::endl;
+
+				typename TPipelineRunner::global_producer_base_type * gProd =
+						ARTUS_CPP11_NULLPTR;
+
+				gProd = factory.createGlobalProducer ( *it );
+
+				if ( gProd == ARTUS_CPP11_NULLPTR ){
+					std::cout << "Error: Global producer with id " + (*it) + " not found" << std::endl;
+					exit(1);
+				} else {
+					runner.AddGlobalProducer( gProd );
+				}
+			}
+	}
+
+	template<class TPipelineInitializer, class TPipelineRunner, class TFactory>
 	void LoadPipelines(TPipelineInitializer& pInit, TPipelineRunner& runner,
+			TFactory & factory,
 			TFile * outputFile)
 	{
 		assert(outputFile);

@@ -14,12 +14,16 @@
 
 
 class TraxNtupleConsumer: public NtupleConsumerBase<TraxTypes> {
-private:
 
-	virtual std::string GetConsumerId() {
+public:
+	virtual std::string GetConsumerId()
+		ARTUS_CPP11_OVERRIDE
+	{
 		return "ntuple";
 	}
-	
+
+private:
+
 	float returnvalue(std::string string, TraxEvent const& event,
 			TraxProduct const& product ) ARTUS_CPP11_OVERRIDE
 	{
@@ -32,6 +36,5 @@ private:
 		else
 			LOG_FATAL("The quantity " << string << " could not be added to the Ntuple")
 	}
-
 
 };

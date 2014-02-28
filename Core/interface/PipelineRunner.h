@@ -23,7 +23,7 @@
  * pipelines.
  */
 
-template<typename TPipeline, typename TGlobalProducer>
+template<typename TPipeline, typename TTypes>
 class PipelineRunner: public boost::noncopyable {
 public:
 
@@ -35,10 +35,18 @@ public:
 
 	typedef TPipeline pipeline_type;
 
+	typedef typename TTypes::event_type event_type;
+	typedef typename TTypes::product_type product_type;
+	typedef typename TTypes::setting_type setting_type;
+	typedef typename TTypes::global_setting_type global_setting_type;
+
+	typedef GlobalProducerBase< TTypes > global_producer_base_type;
+
+
 	typedef boost::ptr_list<TPipeline> Pipelines;
 	typedef typename Pipelines::iterator PipelinesIterator;
 
-	typedef boost::ptr_list<TGlobalProducer> GlobalProducer;
+	typedef boost::ptr_list< global_producer_base_type > GlobalProducer;
 	typedef typename GlobalProducer::iterator GlobalProducerIterator;
 
 	typedef boost::ptr_list<ProgressReportBase> ProgressReportList;
@@ -54,7 +62,7 @@ public:
 	/*
 	 * Add a GlobalProducer. The object is destroy in the destructor of the PipelineRunner
 	 */
-	void AddGlobalProducer(TGlobalProducer* prod) {
+	void AddGlobalProducer(global_producer_base_type* prod) {
 		m_globalProducer.push_back(prod);
 	}
 
@@ -74,10 +82,10 @@ public:
 	 * read from the global settings ...
 	 *
 	 */
-	template<class TTypes>
+	template < class TEventProvider >
 	void RunPipelines(
-			EventProviderBase<TTypes> & evtProvider,
-			typename TTypes::global_setting_type const& globalSettings) {
+			/*EventProviderBase<TTypes>*/TEventProvider & evtProvider,
+			global_setting_type const& globalSettings) {
 		long long firstEvent = 0; // settings.Global()->GetSkipEvents();
 		long long nEvents = evtProvider.GetEntries();
 		/*if (settings.Global()->GetEventCount() >= 0)
@@ -102,7 +110,7 @@ public:
 			if (!evtProvider.GetEntry(i))
 				break;
 
-			typename TTypes::product_type productGlobal;
+			product_type productGlobal;
 
 			// create global products
 			for (GlobalProducerIterator it = m_globalProducer.begin();

@@ -13,6 +13,9 @@
 #include "Artus/Configuration/interface/ArtusConfig.h"
 #include "Artus/Configuration/interface/RootEnvironment.h"
 
+
+#include "Artus/Example/interface/TraxFactory.h"
+
 #include "Artus/Example/interface/TraxTypes.h"
 #include "Artus/Example/interface/TraxEventProvider.h"
 #include "Artus/Example/interface/TraxPipelineInitializer.h"
@@ -27,6 +30,8 @@
 */
 
 int main(int argc, char** argv) {
+
+	TraxFactory traxFactory;
 
 	// parse the command line and load the
 	ArtusConfig myConfig(argc, argv);
@@ -45,18 +50,18 @@ int main(int argc, char** argv) {
 	// the pipeline initializer will setup the pipeline, with
 	// all the attached Producer, Filer and Consumer
 	TraxPipelineInitializer pInit;
-
+	TraxFactory factory;
 	TraxPipelineRunner runner;
 
 	// add global producers
-	runner.AddGlobalProducer(new PtCorrectionProducer());
+	//runner.AddGlobalProducer(new PtCorrectionProducer());
 
 	// load the pipeline with their configuration from the config file
-	myConfig.LoadPipelines(pInit, runner, rootEnv.GetRootFile());
+	myConfig.LoadConfiguration( pInit, runner, factory, rootEnv.GetRootFile());
 
 	// run all the configured pipelines and all their attached
 	// consumers
-	runner.RunPipelines<TraxTypes>(evtProvider, global_settings);
+	runner.RunPipelines(evtProvider, global_settings);
 
 	// close output root file
 	rootEnv.Close();
