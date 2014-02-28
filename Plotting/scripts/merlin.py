@@ -2,7 +2,6 @@
 #### todo: allow push to webserver
 #### todo: enable 2D plotting with stacked inputs
 #### todo: allow formula plotting
-#### todo: enable selection
 #### todo: use dictionaries
 
 #!/usr/bin/env python

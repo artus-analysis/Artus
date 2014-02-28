@@ -114,17 +114,16 @@ def gettreename(settings):
 def getselection(settings, mcWeights=False):
 	# create the final selection from the settings
 	selection = []
-	if settings['folder'] == 'incut' and not settings['allalpha']:
-		selection += ["(jet2pt/zpt < 0.2)"]  # || jet2pt<12
-	if settings['folder'] == 'incut' and not settings['alleta']:
-		selection += ["(abs(jet1eta) < 1.3)"]
 	if settings['selection']:
 		selection += [settings['selection']]
 
 	# add weights
+
 	weights = []
+
 	if selection:
 		weights = ["(" + " && ".join(selection) + ")"]
+	"""
 	if (mcWeights and ('noweighting' not in settings
 		or not settings['noweighting'])):
 		weights += ["weight"]
@@ -134,7 +133,9 @@ def getselection(settings, mcWeights=False):
 		weights += [str(settings['efficiency'])]
 	if mcWeights and settings['factor']:
 		weights += [str(settings['factor'])]
+	"""
 	selectionstr = " * ".join(weights)
+
 
 	#create a copy of quantities to iterate over (to replace the from the dict):
 	for key in dictionaries.ntuple_dict.keys():
@@ -196,7 +197,7 @@ def histofromntuple(quantities, name, ntuple, settings, twoD=False):
 	#isMC = bool(ntuple.GetLeaf("npu"))
 
 	variables = ":".join(quantities)
-	selection = ""#getselection(settings, isMC)
+	selection = getselection(settings, False)
 
 	if settings['verbose']:
 		print "Creating a %s with the following selection:\n   %s" % (
