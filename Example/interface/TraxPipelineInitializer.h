@@ -62,8 +62,10 @@ public:
 				DefaultModifiers::getThetaModifier());
 
 
-		BOOST_FOREACH(std::string id, pset.GetConsumer())
+		BOOST_FOREACH(std::string id, pset.GetConsumers())
 		{
+			// the quantities_all serves as an alias which
+			// will install custom producers to pipeline
 			if (id == "quantities_all")
 			{
 				// plot Pt
