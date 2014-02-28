@@ -25,14 +25,14 @@
    The order of running is: GlobalProducers -> LocalProducers -> Filters -> Consumers.
 */
 
-template<class TTypes, typename TPipeline, typename TGlobalProducer>
-class KappaPipelineRunner : public PipelineRunner<TPipeline, TGlobalProducer> {
+template<class TTypes, typename TPipeline, typename TProducer>
+class KappaPipelineRunner : public PipelineRunner<TPipeline, TProducer> {
 
 public:
 	typedef typename TTypes::global_setting_type global_setting_type;
 
 	KappaPipelineRunner(global_setting_type const& globalSettings) :
-		PipelineRunner<TPipeline, TGlobalProducer>(),
+		PipelineRunner<TPipeline, TProducer>(),
 		m_globalSettings(globalSettings)
 	{
 
@@ -64,9 +64,6 @@ public:
 			}
 			else if(producerId == ValidJetsProducer<TTypes>().GetProducerId()) {
 				this->AddGlobalProducer(new ValidJetsProducer<TTypes>());
-			}
-			else {
-				LOG("Global producer \"" << producerId << "\" not found.");
 			}
 		}
 	}

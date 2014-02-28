@@ -5,6 +5,8 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
+#include "Artus/Core/interface/ProducerBase.h"
+
 
 /**
    \brief GlobalProducer, for valid muons.
@@ -15,7 +17,7 @@
 */
 
 template<class TTypes>
-class ValidMuonsProducer: public GlobalProducerBase<TTypes>
+class ValidMuonsProducer: public ProducerBase<TTypes>
 {
 
 public:
@@ -23,6 +25,7 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::global_setting_type global_setting_type;
+	typedef typename TTypes::setting_type setting_type;
 
 	virtual std::string GetProducerId() ARTUS_CPP11_OVERRIDE {
 		return "valid_muons";
@@ -75,6 +78,13 @@ public:
 		}
 
 		return true;
+	}
+
+	// empty to serve as a pure global producer
+	virtual void ProduceLocal(event_type const& event,
+	                          product_type& product,
+	                          setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	{
 	}
 };
 

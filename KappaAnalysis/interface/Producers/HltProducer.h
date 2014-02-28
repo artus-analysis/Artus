@@ -4,7 +4,7 @@
 #include "Kappa/DataFormats/interface/Kappa.h"
 #include "KappaTools/RootTools/RunLumiReader.h"
 
-#include "Artus/Core/interface/GlobalProducerBase.h"
+#include "Artus/Core/interface/ProducerBase.h"
 
 
 /** 
@@ -12,7 +12,7 @@
  *	
  */
 template<class TTypes>
-class HltProducer: public GlobalProducerBase<TTypes>
+class HltProducer: public ProducerBase<TTypes>
 {
 
 public:
@@ -20,12 +20,13 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::global_setting_type global_setting_type;
+	typedef typename TTypes::setting_type setting_type;
 
 	virtual std::string GetProducerId() ARTUS_CPP11_OVERRIDE {
 		return "hlt_selector";
 	}
 	
-	HltProducer() : GlobalProducerBase<TTypes>() {};
+	HltProducer() : ProducerBase<TTypes>() {};
 
 	virtual bool ProduceGlobal(event_type const& event,
 	                           product_type& product,
@@ -86,6 +87,13 @@ public:
 
 		product.selectedHltName = bestHltName;
 		return true;
+	}
+
+	// empty to serve as a pure global producer
+	virtual void ProduceLocal(event_type const& event,
+	                          product_type& product,
+	                          setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	{
 	}
 };
 
