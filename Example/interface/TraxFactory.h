@@ -41,7 +41,7 @@ public:
 		if ( PtCorrectionProducer().GetProducerId() == id )
 			return new PtCorrectionProducer();
 		else
-			return ARTUS_CPP11_NULLPTR;
+			return FactoryBase<TraxTypes>::createGlobalProducer( id );
 	}
 
 	virtual TraxLocalProducerBase * createLocalProducer ( std::string const& id )
@@ -50,7 +50,7 @@ public:
 		if ( PtCorrectionProducerLocal().GetProducerId() == id )
 			return new PtCorrectionProducerLocal();
 		else
-			return ARTUS_CPP11_NULLPTR;
+			return FactoryBase<TraxTypes>::createLocalProducer( id );
 	}
 
 	virtual TraxConsumerBase * createConsumer ( std::string const& id )
@@ -61,7 +61,7 @@ public:
 		else if ( TraxNtupleConsumer().GetConsumerId() == id )
 			return new TraxNtupleConsumer();
 		else
-			return ARTUS_CPP11_NULLPTR ;
+			return FactoryBase<TraxTypes>::createConsumer( id );
 	}
 
 	virtual TraxFilterBase * createFilter ( std::string const& id )
@@ -70,7 +70,7 @@ public:
 		if ( PtFilter().GetFilterId() == id )
 			return new PtFilter();
 		else
-			return ARTUS_CPP11_NULLPTR ;
+			return FactoryBase<TraxTypes>::createFilter( id );
 	}
 
 
