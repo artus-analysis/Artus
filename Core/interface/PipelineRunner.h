@@ -41,6 +41,9 @@ public:
 	typedef typename TTypes::global_setting_type global_setting_type;
 
 	typedef GlobalProducerBase< TTypes > global_producer_base_type;
+	typedef LocalProducerBase< TTypes > local_producer_base_type;
+	typedef FilterBase< TTypes > filter_base_type;
+	typedef ConsumerBase< TTypes > consumer_base_type;
 
 
 	typedef boost::ptr_list<TPipeline> Pipelines;

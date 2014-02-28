@@ -71,6 +71,9 @@ public:
 
 		typedef typename TPipelineInitializer::setting_type setting_type;
 		typedef typename TPipelineInitializer::pipeline_type pipeline_type;
+		typedef typename TPipelineRunner::filter_base_type filter_base_type;
+		typedef typename TPipelineRunner::local_producer_base_type local_producer_base_type;
+		typedef typename TPipelineRunner::consumer_base_type consumer_base_type;
 
 		BOOST_FOREACH(boost::property_tree::ptree::value_type& v,
 				m_propTreeRoot.get_child("Pipelines"))
@@ -92,6 +95,50 @@ public:
 			std::cout << " %% Adding new pipeline " << sKeyName << std::endl;
 
 			pipeline_type* pLine = new pipeline_type; //CreateDefaultPipeline();
+
+			// add local producer
+			stringvector localProducers = pset.GetLocalProducers();
+			for ( stringvector::const_iterator it = localProducers.begin();
+				it != localProducers.end(); it ++ ) {
+					local_producer_base_type * pProducer = factory.createLocalProducer ( *it );
+
+					if ( pProducer == ARTUS_CPP11_NULLPTR ){
+						std::cout << "Error: Local Producer with id " + (*it) + " not found" << std::endl;
+						exit(1);
+					} else {
+						pLine->AddProducer ( pProducer );
+					}
+				}
+
+			// add local filter
+			stringvector localFilters = pset.GetFilters();
+			for ( stringvector::const_iterator it = localFilters.begin();
+				it != localFilters.end(); it ++ ) {
+					filter_base_type * pFilter = factory.createFilter ( *it );
+
+					if ( pFilter == ARTUS_CPP11_NULLPTR ){
+						std::cout << "Error: Filter with id " + (*it) + " not found" << std::endl;
+						exit(1);
+					} else {
+						pLine->AddFilter ( pFilter );
+					}
+				}
+
+			// add consumer
+			stringvector localConsumers = pset.GetConsumers();
+			for ( stringvector::const_iterator it = localConsumers.begin();
+				it != localConsumers.end(); it ++ ) {
+					consumer_base_type * pConsumer = factory.createConsumer ( *it );
+
+					// special case for consumer:
+					// it is ok if they cannot be created here, because some might
+					// only be produced in the InitPipeline method below
+					// for example when using an alias for a set of producer
+					if ( pConsumer != ARTUS_CPP11_NULLPTR ){
+						pLine->AddConsumer ( pConsumer );
+					}
+				}
+
 
 			pLine->InitPipeline(pset, pInit);
 			runner.AddPipeline(pLine);
