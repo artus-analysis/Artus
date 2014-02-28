@@ -22,7 +22,8 @@ public:
 			TraxPipelineSettings const& localSettings) const
 					ARTUS_CPP11_OVERRIDE {
 
-		product.m_floatPtSim_corrected = event.m_floatPtSim
+		// m_floatPtSim_corrected has been set by the global producer before
+		product.m_floatPtSim_corrected = product.m_floatPtSim_corrected
 				* localSettings.GetProducerPtCorrectionFactorLocal();
 
 	}
