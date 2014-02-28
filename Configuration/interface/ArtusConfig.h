@@ -27,6 +27,8 @@ public:
 		return m_fileNames;
 	}
 
+	// run this method to add all the producers/filter/consumer which are
+	// listed in your configuration file
 	template<class TPipelineInitializer, class TPipelineRunner, class TFactory>
 	void LoadConfiguration(TPipelineInitializer& pInit, TPipelineRunner& runner,
 			TFactory & factory,
@@ -38,30 +40,52 @@ public:
 		LoadPipelines< TPipelineInitializer, TPipelineRunner>(pInit, runner, factory, outputFile);
 	}
 
+
+
+	template<class TGlobalSettings>
+	TGlobalSettings GetGlobalSettings()
+	{
+		TGlobalSettings pset;
+		pset.SetPropTreePath("");
+		pset.SetPropTree(&m_propTreeRoot);
+		return pset;
+	}
+
+	std::string const& GetOutputPath() const
+	{
+		return m_outputPath;
+	}
+
+
+
+private:
+
+	// load the global produce list from configuration and
+	// use the factory object to add these producers to the pipeline runner
+	// don't use directly but call LoadConfiguration
 	template<class TPipelineRunner, class TFactory, class TGlobalSettings>
 	void LoadGlobalProducer( TPipelineRunner& runner, TFactory & factory ) {
 
+		typedef typename TPipelineRunner::global_producer_base_type global_producer_base_type;
+
 		TGlobalSettings gSettings = GetGlobalSettings< TGlobalSettings >();
 		stringvector globalProds = gSettings.GetGlobalProducers();
-		std::cout << "global count " << globalProds.size() << std::endl;
 		for ( stringvector::const_iterator it = globalProds.begin();
 			it != globalProds.end(); it ++ ) {
-			std::cout << "PROD " << (*it) << std::endl;
+			global_producer_base_type * gProd = factory.createGlobalProducer ( *it );
 
-				typename TPipelineRunner::global_producer_base_type * gProd =
-						ARTUS_CPP11_NULLPTR;
-
-				gProd = factory.createGlobalProducer ( *it );
-
-				if ( gProd == ARTUS_CPP11_NULLPTR ){
-					std::cout << "Error: Global producer with id " + (*it) + " not found" << std::endl;
-					exit(1);
-				} else {
-					runner.AddGlobalProducer( gProd );
-				}
+			if ( gProd == ARTUS_CPP11_NULLPTR ){
+				std::cout << "Error: Global producer with id " + (*it) + " not found" << std::endl;
+				exit(1);
+			} else {
+				runner.AddGlobalProducer( gProd );
 			}
+		}
 	}
 
+	// create all pipelines and add all filter/consumer/producer according the
+	// pipelines configuration
+	// don't use directly but call LoadConfiguration
 	template<class TPipelineInitializer, class TPipelineRunner, class TFactory>
 	void LoadPipelines(TPipelineInitializer& pInit, TPipelineRunner& runner,
 			TFactory & factory,
@@ -144,22 +168,6 @@ public:
 			runner.AddPipeline(pLine);
 		}
 	}
-
-	template<class TGlobalSettings>
-	TGlobalSettings GetGlobalSettings()
-	{
-		TGlobalSettings pset;
-		pset.SetPropTreePath("");
-		pset.SetPropTree(&m_propTreeRoot);
-		return pset;
-	}
-
-	std::string const& GetOutputPath() const
-	{
-		return m_outputPath;
-	}
-
-private:
 
 	std::string m_jsonConfig;
 	std::string m_outputPath;
