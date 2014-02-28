@@ -25,25 +25,25 @@ public:
 	virtual TestGlobalProducer * createGlobalProducer ( std::string const& id )
 		ARTUS_CPP11_OVERRIDE
 	{
-
+		return ARTUS_CPP11_NULLPTR;
 	}
 
 	virtual TestLocalProducer * createLocalProducer ( std::string const& id )
 		ARTUS_CPP11_OVERRIDE
 	{
-
+		return ARTUS_CPP11_NULLPTR;
 	}
 
 	virtual TestConsumer * createConsumer ( std::string const& id )
 		ARTUS_CPP11_OVERRIDE
 	{
-
+		return ARTUS_CPP11_NULLPTR;
 	}
 
 	virtual TestFilter * createFilter ( std::string const& id )
 		ARTUS_CPP11_OVERRIDE
 	{
-
+		return ARTUS_CPP11_NULLPTR;
 	}
 
 };
