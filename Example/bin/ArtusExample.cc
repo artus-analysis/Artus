@@ -53,9 +53,6 @@ int main(int argc, char** argv) {
 	TraxFactory factory;
 	TraxPipelineRunner runner;
 
-	// add global producers
-	//runner.AddGlobalProducer(new PtCorrectionProducer());
-
 	// load the pipeline with their configuration from the config file
 	myConfig.LoadConfiguration( pInit, runner, factory, rootEnv.GetRootFile());
 
