@@ -25,7 +25,7 @@
    and the generated data is passed on to the pipelines.
 */
 
-template<typename TPipeline, typename TGlobalProducer>
+template<typename TPipeline, typename TProducer>
 class PipelineRunner: public boost::noncopyable {
 public:
 
@@ -40,8 +40,8 @@ public:
 	typedef boost::ptr_list<TPipeline> Pipelines;
 	typedef typename Pipelines::iterator PipelinesIterator;
 
-	typedef boost::ptr_list<TGlobalProducer> GlobalProducer;
-	typedef typename GlobalProducer::iterator GlobalProducerIterator;
+	typedef boost::ptr_list<TProducer> Producer;
+	typedef typename Producer::iterator ProducerIterator;
 
 	typedef boost::ptr_list<ProgressReportBase> ProgressReportList;
 	typedef typename ProgressReportList::iterator ProgressReportIterator;
@@ -52,7 +52,7 @@ public:
 	}
 
 	/// Add a GlobalProducer. The object is destroy in the destructor of the PipelineRunner.
-	void AddGlobalProducer(TGlobalProducer* prod) {
+	void AddGlobalProducer(TProducer* prod) {
 		m_globalProducer.push_back(prod);
 	}
 
@@ -80,9 +80,9 @@ public:
 		bool bEventValid = true;
 
 		// init global producers
-		for (GlobalProducerIterator it = m_globalProducer.begin();
+		for (ProducerIterator it = m_globalProducer.begin();
 				it != m_globalProducer.end(); it++) {
-			it->Init(globalSettings);
+			it->InitGlobal(globalSettings);
 		}
 
 		for (long long i = firstEvent; i < nEvents; ++i) {
@@ -97,7 +97,7 @@ public:
 			typename TTypes::product_type productGlobal;
 
 			// create global products
-			for (GlobalProducerIterator it = m_globalProducer.begin();
+			for (ProducerIterator it = m_globalProducer.begin();
 					it != m_globalProducer.end(); it++) {
 				bEventValid = it->ProduceGlobal(evtProvider.GetCurrentEvent(),
 						productGlobal, globalSettings);
@@ -158,7 +158,7 @@ public:
 private:
 
 	Pipelines m_pipelines;
-	GlobalProducer m_globalProducer;
+	Producer m_globalProducer;
 	ProgressReportList m_progressReport;
 };
 

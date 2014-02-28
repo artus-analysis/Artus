@@ -14,7 +14,7 @@
 #include "PipelineSettings.h"
 #include "FilterBase.h"
 #include "ConsumerBase.h"
-#include "LocalProducerBase.h"
+#include "ProducerBase.h"
 
 template<class TTypes>
 class Pipeline;
@@ -90,7 +90,7 @@ public:
 	typedef boost::ptr_vector<FilterBase<TTypes> > FilterVector;
 	typedef typename FilterVector::iterator FilterVectorIterator;
 
-	typedef LocalProducerBase<TTypes> ProducerForThisPipeline;
+	typedef ProducerBase<TTypes> ProducerForThisPipeline;
 
 	typedef boost::ptr_vector<ProducerForThisPipeline> ProducerVector;
 	typedef typename ProducerVector::iterator ProducerVectorIterator;
