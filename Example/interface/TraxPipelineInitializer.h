@@ -32,9 +32,6 @@ public:
 			TraxPipelineSettings const& pset) const ARTUS_CPP11_OVERRIDE
 			{
 
-	/*	pLine->AddFilter(new PtFilter());
-		pLine->AddConsumer(new MeanPtConsumer());*/
-
 		typedef std::function<
 				std::vector<float>(event_type const&, product_type const& )> ValueExtractLambda;
 		typedef std::pair<ValueExtractLambda, ValueModifiers> ValueDesc;
