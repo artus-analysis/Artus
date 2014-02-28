@@ -36,5 +36,5 @@ typedef FilterBase<TraxTypes> TraxFilterBase;
 typedef Pipeline<TraxTypes> TraxPipeline;
 
 //Setup our custom pipeline runner
-typedef PipelineRunner<TraxPipeline, TraxGlobalProducerBase> TraxPipelineRunner;
+typedef PipelineRunner<TraxPipeline, TraxTypes> TraxPipelineRunner;
 
