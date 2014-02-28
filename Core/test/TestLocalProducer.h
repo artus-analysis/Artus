@@ -15,7 +15,7 @@
 class TestLocalProducer: public ProducerBase<TestTypes> {
 public:
 
-	virtual std::string GetProducerId() {
+	virtual std::string GetProducerId() const {
 		return "test_local_producer";
 	}
 	
@@ -40,7 +40,7 @@ public:
 class TestLocalProducerFromGlobal: public ProducerBase<TestTypes> {
 public:
 
-	virtual std::string GetProducerId() {
+	virtual std::string GetProducerId() const {
 		return "test_local_global_producer";
 	}
 	

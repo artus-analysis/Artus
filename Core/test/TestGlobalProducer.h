@@ -16,7 +16,7 @@ typedef ProducerBase<TestTypes> TestProducerBase;
 class TestGlobalProducer: public TestProducerBase {
 public:
 
-	virtual std::string GetProducerId() {
+	virtual std::string GetProducerId() const {
 		return "test_global_producer";
 	}
 	

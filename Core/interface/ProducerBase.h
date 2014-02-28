@@ -34,13 +34,19 @@ public:
 	/// if false is returned, the event is dropped as it does not meet the minimum requirements for the producer
 	// called once per event before the pipelines are split
 	virtual bool ProduceGlobal(event_type const& event, product_type& product,
-	                           global_setting_type const& globalSettings) const = 0;
+	                           global_setting_type const& globalSettings) const {
+                std::cout << "ProduceGlobal for producer " << this->GetProducerId() << " is not implemented" << std::endl;
+                exit(1);
+	}
 
 	// called once per event within a given pipeline
 	virtual void ProduceLocal(event_type const& event, product_type & product, 
-	                          setting_type const& pipelineSettings) const = 0;
+	                          setting_type const& pipelineSettings) const {
+		std::cout << "ProduceLocal for producer " << this->GetProducerId() << " is not implemented" << std::endl;
+		exit(1); 
+	}
 
 	/// Must return a unique id of the producer.
-	virtual std::string GetProducerId() = 0;
+	virtual std::string GetProducerId() const = 0;
 };
 
