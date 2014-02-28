@@ -92,6 +92,6 @@ public:
 	VarCache<std::vector<std::string>> hltPaths;
 	stringvector GetHltPaths() const
 	{
-		RETURN_CACHED(jsonFiles, PropertyTreeSupport::GetAsStringList(GetPropTree(), "HltPaths"))
+		RETURN_CACHED(hltPaths, PropertyTreeSupport::GetAsStringList(GetPropTree(), "HltPaths"))
 	}
 };
