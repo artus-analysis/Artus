@@ -48,9 +48,6 @@ public:
 			else if(producerId == ValidJetsProducer<TTypes>().GetProducerId()) {
 				this->AddGlobalProducer(new ValidJetsProducer<TTypes>());
 			}
-			else {
-				LOG("Global producer \"" << producerId << "\" not found.");
-			}
 		}
 	}
 
