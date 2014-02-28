@@ -7,11 +7,16 @@ import logging
 import pprint
 import sys
 
+import ROOT
+
 import Artus.Utility.logger as logger
 import Artus.Configuration.jsonTools as jsonTools
 
 
+
 def main():
+	ROOT.gROOT.SetBatch(True)
+	
 	parser = argparse.ArgumentParser(description="Compare or print Artus configurations", parents=[logger.loggingParser])
 
 	configGroup = parser.add_mutually_exclusive_group()
