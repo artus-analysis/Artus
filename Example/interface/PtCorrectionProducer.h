@@ -10,7 +10,7 @@
 
 #include "TraxTypes.h"
 
-class PtCorrectionProducer: public TraxGlobalProducerBase {
+class PtCorrectionProducer: public TraxProducerBase {
 public:
 
 	virtual std::string GetProducerId() {
@@ -26,6 +26,14 @@ public:
 				* globalSettings.GetProducerPtCorrectionFactor();
 
 		return true;
+	}
+
+	// empty to serve as a global producer only
+	virtual void ProduceLocal(TraxEvent const& event,
+			TraxProduct & product,
+			TraxPipelineSettings const& settings) const
+					ARTUS_CPP11_OVERRIDE
+	{
 	}
 
 };
