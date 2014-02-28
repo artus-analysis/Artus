@@ -7,11 +7,11 @@
 #pragma once
 
 #include "Artus/Core/interface/Cpp11Support.h"
-#include "Artus/Core/interface/GlobalProducerBase.h"
+#include "Artus/Core/interface/ProducerBase.h"
 
 #include "TestTypes.h"
 
-typedef GlobalProducerBase<TestTypes> TestProducerBase;
+typedef ProducerBase<TestTypes> TestProducerBase;
 
 class TestGlobalProducer: public TestProducerBase {
 public:
@@ -21,9 +21,16 @@ public:
 	}
 	
 	virtual bool ProduceGlobal(TestEvent const& event,
-			TestProduct & globalProduct,
+			TestProduct & product,
 			TestGlobalSettings const& globalSettings) const ARTUS_CPP11_OVERRIDE {
-		globalProduct.iGlobalProduct = event.iVal + 5 + globalSettings.GetOffset();
+		product.iGlobalProduct = event.iVal + 5 + globalSettings.GetOffset();
 		return true;
+	}
+	
+	// empty to serve as a global producer only
+	virtual void ProduceLocal(TestEvent const& event,
+			TestProduct & product,
+			TestSettings const& settings) const ARTUS_CPP11_OVERRIDE
+	{
 	}
 };

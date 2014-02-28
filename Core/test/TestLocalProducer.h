@@ -12,11 +12,19 @@
 #include "TestConsumer.h"
 #include "TestTypes.h"
 
-class TestLocalProducer: public LocalProducerBase<TestTypes> {
+class TestLocalProducer: public ProducerBase<TestTypes> {
 public:
 
 	virtual std::string GetProducerId() {
 		return "test_local_producer";
+	}
+	
+	// empty to serve as a local producer only
+	virtual bool ProduceGlobal(TestEvent const& event,
+			TestProduct & globalProduct,
+			TestGlobalSettings const& globalSettings) const ARTUS_CPP11_OVERRIDE
+	{
+		return true;
 	}
 
 	// for each pipeline
@@ -29,11 +37,19 @@ public:
 };
 
 
-class TestLocalProducerFromGlobal: public LocalProducerBase<TestTypes> {
+class TestLocalProducerFromGlobal: public ProducerBase<TestTypes> {
 public:
 
 	virtual std::string GetProducerId() {
 		return "test_local_global_producer";
+	}
+	
+	// empty to serve as a local producer only
+	virtual bool ProduceGlobal(TestEvent const& event,
+			TestProduct & globalProduct,
+			TestGlobalSettings const& globalSettings) const ARTUS_CPP11_OVERRIDE
+	{
+		return true;
 	}
 
 	// for each pipeline
