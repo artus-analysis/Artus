@@ -20,7 +20,6 @@ public:
 	typedef typename TTypes::global_setting_type global_setting_type;
 
 	virtual ~GlobalProducerBase() {
-
 	}
 
 	virtual void Init(global_setting_type const& globalSettings) {
