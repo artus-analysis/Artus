@@ -18,6 +18,7 @@
 
 // producer
 #include "PtCorrectionProducer.h"
+#include "PtCorrectionProducerLocal.h"
 
 // filter
 #include "PtFilter.h"
@@ -46,7 +47,10 @@ public:
 	virtual TraxLocalProducerBase * createLocalProducer ( std::string const& id )
 		ARTUS_CPP11_OVERRIDE
 	{
-		return ARTUS_CPP11_NULLPTR ;
+		if ( PtCorrectionProducerLocal().GetProducerId() == id )
+			return new PtCorrectionProducerLocal();
+		else
+			return ARTUS_CPP11_NULLPTR;
 	}
 
 	virtual TraxConsumerBase * createConsumer ( std::string const& id )
