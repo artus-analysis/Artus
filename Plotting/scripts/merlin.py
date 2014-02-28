@@ -1,3 +1,10 @@
+#### todo: re-enable live plotting
+#### todo: allow push to webserver
+#### todo: enable 2D plotting with stacked inputs
+#### todo: allow formula plotting
+#### todo: enable selection
+#### todo: use dictionaries
+
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
@@ -17,13 +24,9 @@ import Artus.Plotting.tools.plotrc as plotrc
 
 def options(
 			# standard values go here:
-			files=[os.environ['DATA'], os.environ['MC']],
+#			files=[os.environ['DATA'], os.environ['MC']],
 
 			plots=['zmass'],
-
-			algorithm="AK5PFJetsCHS",
-			correction="L1L2L3Res",
-
 			out="out",
 			formats=['png'],
 
@@ -46,10 +49,6 @@ def options(
 			fit=None,
 			filename=None,
 
-			npv=[(0, 4), (5, 8), (9, 15), (16, 21), (22, 28), (29, 100)],
-			cut=[0.3],
-			eta=[0, 0.783, 1.305, 1.93, 2.5, 2.964, 3.139, 5.191],
-			zbins=[30, 40, 50, 60, 75, 95, 125, 180, 300, 1000],
 	):
 	"""Set standard options and read command line arguments.
 
@@ -68,25 +67,20 @@ def options(
 	# source options
 	source = parser.add_argument_group('Source options')
 	parser.add_argument('-i', '--files', type=str, nargs='*',
-		default=files,
-		help="data and Monte Carlo input root file(s). One data file and at " +
-			 "least one Monte Carlo file is assumed. Default: %(default)s")
+		#default=files,
+		help="Input root file(s). Specify their affiliation with -a.") # todo: allow many different input files, that are also not yet added
+	parser.add_argument('-a', '--affiliation', type=str, nargs='*',
+		help="Affiliation and name of input files. Specify the same name to produce stacked plots.")
+#	parser.add_argument('--sample-name', type=str, nargs='*',
+#		help="Name of the samples provided with --files. Necessary to produce stacked plots.")
+
+
 	source.add_argument('--selection', '-S', type=str,
 		default=None,
 		help='selection (cut) expression, C++ expressions are valid')
-	source.add_argument('--folder', type=str,
+	source.add_argument('--folder', type=str, nargs='*',
 		default='incut',
-		help="folder in rootfile: 'incut' or 'allevents'")
-	source.add_argument('--allalpha', action='store_true',
-		default=False,
-		help='Extend the alpha range up to 0.4')
-	source.add_argument('--alleta', action='store_true',
-		default=False,
-		help='Extend the eta range beyond 1.3')
-	source.add_argument('-a', '--algorithm', type=str,
-		default=algorithm, help="Jet algorithm. Default is %(default)s")
-	source.add_argument('-c', '--correction', type=str, default=correction,
-		help="Jet energy correction level. Default is %(default)s")
+		help="folder in rootfile. Specify only once if everything is in the same folder or multiple times for each input file.")
 
 	# more general options
 	general = parser.add_argument_group('General options')
@@ -98,22 +92,15 @@ def options(
 		help="Add a ratio subplot")
 	general.add_argument('-F', '--fit', type=str, default=fit,
 		help="Do a fit. Options: vertical, chi2, gauss, slope, intercept")
-	general.add_argument('--extrapolation', type=str, default=False,
-		help='For response plots: Apply alpha-extrapolation. Possible values \
-			  are bin or global')
 	general.add_argument('--run', type=str, default=False,
 		help='Some special options for runplots. Valid options are true or diff')
-	general.add_argument('--special_binning', action='store_true', default=False,
-		help='special binning for npv, zpt, eta')
 	general.add_argument('--nbins', type=int, default=nbins,
 		help='number of bins in histogram. Default is %(default)s')
-	general.add_argument('-n', '--normalize', action='store_false',  # make it float 0.0 is default
-		help="normalize Monte Carlo samples to the event count in data ")
 	general.add_argument('-Y', '--year', type=int, default=2012,
-		help="Year of data-taking. Default is %(default)s")
-	general.add_argument('--factor', type=float, default=1.26,
+		help="Year of data-taking. Default is %(default)s") # generalize this information
+	general.add_argument('--factor', type=float, default=1.0,
 		help="additional external weight for each MC event %(default)s")
-	general.add_argument('--efficiency', type=float, default=0.965 ** 2,
+	general.add_argument('--efficiency', type=float, default= 1.0,
 		help="trigger efficiency. Default is %(default)s")
 	general.add_argument('--reweight', action='store_true',
 		help="trigger efficiency. Default is %(default)s")
@@ -164,12 +151,15 @@ def options(
 	formatting.add_argument('-C', '--colors', type=str, nargs='+', default=colors,
 		help="colors for the plots in the order of the files. Default is: " +
 			 ", ".join(colors))
-	formatting.add_argument('-k', '--labels', type=str, nargs='+', default=labels,
-		help="labels for the plots in the order of the files. Default is: " +
-			 ", ".join(labels))
+#	formatting.add_argument('-k', '--labels', type=str, nargs='+', default=labels,
+#		help="labels for the plots in the order of the files. Default is: " +
+#			 ", ".join(labels))
 	formatting.add_argument('-m', '--markers', type=str, nargs='+', default=markers,
 		help="style for the plot in the order of the files. 'o' for points, \
 			  '-' for lines, 'f' for fill. Default is: %s" % ", ".join(markers))
+	formatting.add_argument('--errorbar', default=["True"], nargs='+',
+		help="Include errorbars. Give one argument to count for all curves or one for each input file")
+
 	formatting.add_argument('--text', type=str,
 		default=None,
 		help='Place a text at a certain location. Syntax is --text="abs" or \
@@ -208,14 +198,12 @@ def options(
 		help="Show a list of the available predefined functions with docstrings")
 	group.add_argument('--quantities', action='store_true',
 		help="Show a list of the available quantities in the NTuple in each file")
-	general.add_argument('-L', '--live', action='store_true',
-		help="Live plotting: directly display the plot on your local EKP machine.")
+#	general.add_argument('-L', '--live', action='store_true',
+#		help="Live plotting: directly display the plot on your local EKP machine.")
 	general.add_argument('-N', '--nologo', action='store_true',
 		help="Don't show the merlin logo at startup")
-	general.add_argument('-M', '--mconly', action='store_true',
-		help="Skip the first (data) file")
-	general.add_argument('-w', '--www', action='store_true',
-		help="Push output plots directly to your public EKP webspace")
+#	general.add_argument('-w', '--www', action='store_true',
+#		help="Push output plots directly to your public EKP webspace")
 
 	opt = parser.parse_args()
 
@@ -223,22 +211,18 @@ def options(
 	parser.set_defaults(fit_offset=0)
 	opt.subplot = False
 	parser.set_defaults(subplot=False)
-	opt.zbins = zbins
-	opt.npv = npv
-	opt.cut = cut
-	opt.eta = eta
 
-	if opt.www:
-		opt.out = ""  # artus.getPath('SYNCDIR') # to be adapted to new variable names
-	elif opt.live:
-		opt.filename = 'plot'
-		opt.formats = ['pdf']
-		opt.out = 'out/'
+#	if opt.www:
+#		opt.out = ""  # artus.getPath('SYNCDIR') # to be adapted to new variable names
+#	elif opt.live:
+#		opt.filename = 'plot'
+#		opt.formats = ['pdf']
+#		opt.out = 'out/'
 
-	if opt.year == 2011:
-		opt.npv = [(0, 3), (4, 5), (6, 7), (8, 10), (11, 24)]
-		opt.lumi = 5.1
-		opt.energy = 7
+#	if opt.year == 2011:
+#		opt.npv = [(0, 3), (4, 5), (6, 7), (8, 10), (11, 24)]
+#		opt.lumi = 5.1
+#		opt.energy = 7
 
 	# get a separate dictionary with only the user-set values
 	user_options = {}
@@ -249,10 +233,6 @@ def options(
 			user_options[key] = vars(opt)[key]
 	opt.user_options = user_options
 	opt.default_options = default_options
-
-	if opt.mconly:
-		opt.labels = opt.labels[1:]
-		opt.files = opt.files[1:]
 
 	opt.brackets = False
 
@@ -296,26 +276,26 @@ if __name__ == "__main__":
 
 	merlincore.plot(op)
 
-	if op.www:
-		subprocess.call(['. plotsync.sh'], shell=True)
-		exit(0)
+#	if op.www:
+#		subprocess.call(['. plotsync.sh'], shell=True)
+#		exit(0)
 
-	if op.live:
-		imageviewer = 'evince'
-		user = getPath('USER')
-		userpc = "%s@%s" % (user, getPath('USERPC'))
+#	if op.live:
+#		imageviewer = 'evince'
+#		user = getPath('USER')
+#		userpc = "%s@%s" % (user, getPath('USERPC'))
 
-		subprocess.call(['rsync', 'out/plot.pdf',
-								  '%s:/usr/users/%s/plot.pdf' % (userpc, user)])
+#		subprocess.call(['rsync', 'out/plot.pdf',
+#								  '%s:/usr/users/%s/plot.pdf' % (userpc, user)])
 
 		# check if the imageviewer is running on the users local machine:
-		p = subprocess.Popen(['ssh', userpc, 'ps', 'aux', '|', 'grep',
-						'"%s /usr/users/%s/plot.pdf"' % (imageviewer, user), '|', 'grep',
-						 '-v', 'grep', '|', 'wc', '-l'], stdout=subprocess.PIPE)
-		out, err = p.communicate()
+#		p = subprocess.Popen(['ssh', userpc, 'ps', 'aux', '|', 'grep',
+#						'"%s /usr/users/%s/plot.pdf"' % (imageviewer, user), '|', 'grep',
+#						 '-v', 'grep', '|', 'wc', '-l'], stdout=subprocess.PIPE)
+#		out, err = p.communicate()
 
-		# if its not already running, start!
-		if out[:1] == '0':
-			print "\nOpening %s..." % imageviewer
-			subprocess.Popen(['ssh', userpc,
-				'DISPLAY=:0 %s /usr/users/%s/plot.pdf &' % (imageviewer, user)])
+#		# if its not already running, start!
+#		if out[:1] == '0':
+#			print "\nOpening %s..." % imageviewer
+#			subprocess.Popen(['ssh', userpc,
+#				'DISPLAY=:0 %s /usr/users/%s/plot.pdf &' % (imageviewer, user)])

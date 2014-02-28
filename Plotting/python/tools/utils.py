@@ -51,7 +51,7 @@ def printfunctions(module_list):
 
 def printquantities(files, opt):
 	quantities = {}
-	treename = "_".join([opt.folder, opt.algorithm + opt.correction])
+	treename = "_".join([opt.folder,  opt.correction])
 
 	for f, name in zip(files, opt.labels):
 		quantities[name] = []
@@ -146,6 +146,9 @@ def getsettings(opt, changes=None, settings=None, quantity=None):
 	if settings['y'] is None:
 		settings['y'] = labels.getaxislabels_list(settings['xynames'][1])[:2]
 
+#	settings['folder'] = opt.folder
+#	print settings['folder']
+
 	return settings
 
 
@@ -182,10 +185,7 @@ def getalgorithms(algorithm):
 
 
 def getgenname(opt):
-	if "AK7" in opt.algorithm:
-		gen = 'AK7GenJets'
-	else:
-		gen = 'AK5GenJets'
+	gen = 'AK5GenJets'
 	return gen
 
 
@@ -345,14 +345,6 @@ def getdefaultfilename(quantity, opt, settings):
 		return settings['filename']
 	else:
 		filename = quantity
-
-	if settings['folder'] is 'allevents':
-		filename += "_%s_" % 'allevents'
-
-	if 'algorithm' in opt.user_options:
-		filename += "_%s" % settings['algorithm']
-	if 'correction' in opt.user_options:
-		filename += "_%s" % settings['correction']
 
 	#remove special characters:
 	for char in ["*", "/", " "]:

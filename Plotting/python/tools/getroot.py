@@ -97,19 +97,18 @@ def getplotfromtree(nickname, rootfile, settings, twoD=False, changes=None):
 #def gethistofromtree(name, tree, settings, changes=None, twoD=False):
 
 
-def gettreename(settings, parts=['folder', 'algorithm', 'correction'],
-		string="%s_%s%s"):
-	"""naming scheme
-
-	format the treename from its parts with the format of string
-	"""
-	for p in parts:
-		if p not in settings:
-			print p, "is not in settings."
-			exit(1)
-	part = [settings[p] for p in parts]
-	name = string % tuple(part)
-	return name
+def gettreename(settings):
+#	"""naming scheme
+#
+#	format the treename from its parts with the format of string
+#	"""
+#	for p in parts:
+#		if p not in settings:
+#			print p, "is not in settings."
+#			exit(1)
+#	part = [settings[p] for p in parts]
+#	name = settings['folder']
+	return settings['tree']
 
 
 def getselection(settings, mcWeights=False):
@@ -170,17 +169,17 @@ def getbinning(quantity, settings, axis='x'):
 	#special binning for certain quantities:
 	# No, opt is the wrong place, -> dict
 	bin_dict = {
-		'zpt': settings['zbins'],
-		'jet1abseta': settings['eta'],
-		'jet1eta': [-elem for elem in settings['eta'][1:][::-1]] + settings['eta'],
-		'npv': [a - 0.5 for a, b in settings['npv']] + [settings['npv'][-1][1] - 0.5]
+		#'zpt': settings['zbins'],
+		#'jet1abseta': settings['eta'],
+		#'jet1eta': [-elem for elem in settings['eta'][1:][::-1]] + settings['eta'],
+		#'npv': [a - 0.5 for a, b in settings['npv']] + [settings['npv'][-1][1] - 0.5]
 	}
 
-	if settings['special_binning'] and quantity in bin_dict:
-		bins = bin_dict[quantity]
+#	if settings['special_binning'] and quantity in bin_dict:
+#		bins = bin_dict[quantity]
 
-	print "Binning of", axis, ":", nbins, "bins from",
-	print xmin, "to", xmax, "for", quantity
+#	print "Binning of", axis, ":", nbins, "bins from",
+#	print xmin, "to", xmax, "for", quantity
 	return array.array('d', bins)
 
 
@@ -194,10 +193,10 @@ def histofromntuple(quantities, name, ntuple, settings, twoD=False):
 			if key in quantity:
 				quantities[i] = quantities[i].replace(key, dictconvert(key))
 	#TODO: TTree UserInfo: http://root.cern.ch/phpBB3/viewtopic.php?f=3&t=16902
-	isMC = bool(ntuple.GetLeaf("npu"))
+	#isMC = bool(ntuple.GetLeaf("npu"))
 
 	variables = ":".join(quantities)
-	selection = getselection(settings, isMC)
+	selection = ""#getselection(settings, isMC)
 
 	if settings['verbose']:
 		print "Creating a %s with the following selection:\n   %s" % (
@@ -221,11 +220,11 @@ def histofromntuple(quantities, name, ntuple, settings, twoD=False):
 
 	# fill the histogram from the ntuple
 	roothisto.Sumw2()
-	if False and isMC:
-		vv = variables.split(':')
-		vv[0] += "*0.995"
-		variables = ":".join(vv)
-		print "name =", variables
+#	if False and isMC:
+#		vv = variables.split(':')
+#		vv[0] += "*0.995"
+#		variables = ":".join(vv)
+#		print "name =", variables
 	print "Weights:", selection
 	ntuple.Project(name, variables, selection)
 
@@ -233,18 +232,10 @@ def histofromntuple(quantities, name, ntuple, settings, twoD=False):
 		print "Correlation between %s and %s in %s in the selected range:  %1.5f" % (
 			quantities[1], quantities[0], roothisto.GetName(),  # .split("/")[-3],
 			roothisto.GetCorrelationFactor())
-
-	#no no no! not here
-	if settings.get('binroot', False):
-		for n in range(roothisto.GetSize()):
-			if roothisto.GetBinContent(n) > 0:
-				a = roothisto.GetBinContent(n)
-				b = math.sqrt(a)
-				roothisto.SetBinContent(n, b)
-				roothisto.SetBinEntries(n, 1)
+	print roothisto
 	return roothisto
 
-
+# histofromfile(quantity, rootfile, treename, settings)
 def histofromfile(quantity, rootfile, settings, changes=None, twoD=False):
 	"""This function returns a root object
 
@@ -252,14 +243,15 @@ def histofromfile(quantity, rootfile, settings, changes=None, twoD=False):
 	If not, the histo is filled from ntuple variables via the
 	histofromntuple function
 	"""
-	settings = utils.apply_changes(settings, changes)
-	histo = objectfromfile(quantity, rootfile, warn=False)
-	if histo:
-		return histo
+
+#	histo = objectfromfile(quantity, rootfile, warn=False)
+#	if histo:
+#		return histo
 
 	treename = gettreename(settings)
 	ntuple = objectfromfile(treename, rootfile)
-	name = quantity + rootfile.GetName()
+
+	name = quantity + "_" + rootfile.GetName()
 	name = name.replace("/", "").replace(")", "").replace("(", "")
 	#rootfile.Delete("%s;*" % name)
 	quantities = quantity.split("_")
@@ -291,11 +283,11 @@ def objectfromfile(name, rootfile, exact=False, warn=True):
 	not the MC version without 'Res' but it is not at the moment (strict version)
 	"""
 	oj = rootfile.Get(name)
-	if not oj and "Res" in name and not exact:
-		oj = rootfile.Get(name.replace("Res", ""))
-	if warn and not oj:
-		print "Can't load object", name, "from root file", rootfile.GetName()
-		exit(0)
+#	if not oj and "Res" in name and not exact:
+#		oj = rootfile.Get(name.replace("Res", ""))
+#	if warn and not oj:
+#		print "Can't load object", name, "from root file", rootfile.GetName()
+#		exit(0)
 	return oj
 
 
@@ -311,6 +303,8 @@ def getobjectname(quantity='z_mass', change={}):
 		z_pt, mu_plus_eta, cut_all_npv, L1_npv
 
 	This is very old and hopefully unused!!
+	"""
+
 	"""
 	# Set default values
 	keys = ['bin', 'incut', 'var', 'quantity', 'algorithm', 'correction']
@@ -330,7 +324,8 @@ def getobjectname(quantity='z_mass', change={}):
 		hst += selection[k] + '_'
 	hst = hst.replace('Jets_', 'Jets').replace('__', '_')
 	hst = hst.replace('_L1', 'L1')[:-1].replace('_<quantity>', '/' + quantity)
-	return hst
+	"""
+	return "genericName"
 
 
 def saveasroot(rootobjects, opt, settings):
