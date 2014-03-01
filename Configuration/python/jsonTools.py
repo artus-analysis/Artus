@@ -34,7 +34,7 @@ class JsonDict(dict):
 				print jsonDict
 				self.update(eval(jsonDict))
 		elif isinstance(jsonDict, collections.Iterable):
-			self.update(JsonDictList(jsonDict).mergeAll())
+			self.update(reduce(lambda jsonDict1, jsonDict2: jsonDict1+jsonDict2, jsonDict))
 		else:
 			raise TypeError("Unsupported type \"%s\" in JsonDict constructor", type(jsonDict))
 	
