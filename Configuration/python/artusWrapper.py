@@ -3,20 +3,22 @@
 
 import argparse
 import logging
-import sys
 import os
+import sys
+import tempfile
 
 import Artus.Utility.logger as logger
 import Artus.Configuration.jsonTools as jsonTools
 
 
 def artusWrapper(defaultExecutable=None):
-	parser = argparse.ArgumentParser(description="Wrapper for Artus executables. This wrapper can handle simple merges of all given config files. In the resulting JSON config, include statements are frist replaced by the actual config and comments are taken out.",
-	                                 parents=[logger.loggingParser])
+	parser = argparse.ArgumentParser(parents=[logger.loggingParser],
+	                                 description="Wrapper for Artus executables. JSON configs can be file names pointing to JSON text files or Artus ROOT output files with saved configs or python statements that can be evaluated as dictionary. When JSON configs are merged, the first ones in the list have a higher priority than later ones. In the final config, all includes and comments are replaced accordingly.")
 
-	configGroup = parser.add_mutually_exclusive_group(required=True)
-	configGroup.add_argument("-c", "--config-files", help="JSON config files or string represenations of dicts. All configs are merged, where the first ones in the list have a higher priority than later ones.", nargs="+")
-	configGroup.add_argument("-r", "--root-config", help="Take JSON configuration from existing root file.", nargs=1)
+	parser.add_argument("-c", "--base-configs", nargs="+", required=True,
+	                    help="JSON base configurations. All configs are merged.")
+	parser.add_argument("-p", "--pipeline-configs", nargs="+", action="append",
+	                    help="JSON pipeline configurations. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")
 	
 	parser.add_argument("-i", "--input-files", help="Input root files. Leave empty (\"\") if input files from root file should be taken.", nargs="+", required=True)
 	parser.add_argument("-o", "--output-file", help="Output root file. [Default: output.root]", default="output.root")
@@ -27,22 +29,36 @@ def artusWrapper(defaultExecutable=None):
 	args = parser.parse_args()
 	logger.initLogger(args)
 	
-	if args.config_files and args.input_files == "":
+	if len(args.input_files) == 1 and args.input_files[0] == "":
+		args.input_files = []
+	if all(map(lambda baseConfig: not baseConfig.endswith(".root"), args.base_configs)) and args.input_files == "":
 		logging.getLogger(__name__).critial("No input file specified!")
 		sys.exit(1)
 	
 	# constuct main JSON config
-	mainConfig = {
-		"OutputPath" : args.output_file,
-	}
-	if args.config_files: mainConfig["InputFiles"] = args.input_files
-	else: args.config_files = args.root_config
-	mainConfig = jsonTools.JsonDict(jsonTools.JsonDictList([mainConfig]+[args.config_files]))
+	mainConfig = jsonTools.JsonDict({ "OutputPath" : args.output_file })
+	if len(args.input_files) > 0:
+		mainConfig["InputFiles"] = args.input_files
+	
+	# merge all base configs into the main config
+	mainConfig += jsonTools.JsonDict.mergeAll(*args.base_configs)
+	
+	# treat pipeline configs
+	pipelineJsonDict = {}
+	if args.pipeline_configs and len(args.pipeline_configs) > 0:
+		pipelineJsonDict = []
+		for pipelineConfigs in args.pipeline_configs:
+			pipelineJsonDict.append(jsonTools.JsonDict.expandAll(*map(lambda pipelineConfig: jsonTools.JsonDict.mergeAll(*pipelineConfig.split()), pipelineConfigs)))
+		pipelineJsonDict = jsonTools.JsonDict.mergeAll(*pipelineJsonDict)
+		pipelineJsonDict = jsonTools.JsonDict({ "Pipelines" : pipelineJsonDict })
+	
+	# merge resulting pipeline config into the main config
+	mainConfig += jsonTools.JsonDict(pipelineJsonDict)
 	
 	# treat includes and comments
 	mainConfig = mainConfig.doIncludes().doComments()
 	
-	mainConfigFileName = reduce(lambda a, b: a+"__"+b, map(lambda fileName: os.path.splitext(os.path.basename(fileName))[0], args.config_files))+".json"
+	mainConfigFileName = tempfile.mktemp(prefix="artus_", suffix=".json")
 	mainConfig.save(mainConfigFileName)
 	logging.getLogger(__name__).info("Saved combined JSON config \"%s\" for temporary usage." % mainConfigFileName)
 	
