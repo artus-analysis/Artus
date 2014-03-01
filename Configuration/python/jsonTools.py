@@ -228,16 +228,32 @@ class JsonDictList(list):
 	def expand(self, jsonDictList2):
 		return (self * jsonDictList2)
 	
+	# does the same expansion as expand(...) but with property names (strings)
+	# the result is used in the collapse function
+	@staticmethod
+	def expandPropertyNames(propertyNames1=[], propertyNames2=[]):
+		propertyNames = []
+		for propertyName1 in propertyNames1:
+			for propertyName2 in propertyNames2:
+				propertyNames.append(str(propertyName1) + "_" + str(propertyName2))
+		return propertyNames
+	
 	# collapses list and return JsonDict { name1 : dict1, name2 : dict2 }
+	# propertyNames can be a list of one or two dimensions
+	# in case the dimension is 2, the expandPropertyNames function is called first
 	def __div__(self, propertyNames):
 		if not isinstance(propertyNames, collections.Iterable):
 			logging.getLogger(__name__).error("Unsupported type in JsonDictList.collapse/__div__", type(propertyNames))
 			propertyNames = []
+		if len(propertyNames) == 2 and not isinstance(propertyNames[0], basestring):
+			propertyNames = JsonDictList.expandPropertyNames(*propertyNames)
 		propertyNames += map(lambda index: "entry"+str(index), range(len(propertyNames)+1, len(self)+1))
 		return JsonDict(reduce(lambda jsonDict1, jsonDict2: jsonDict1+jsonDict2,
 		                       map(lambda jsonDict, propertyName: JsonDict({propertyName : jsonDict}), self, propertyNames[:len(self)])))
 	
 	# collapses list and returns JsonDict { name1 : dict1, name2 : dict2 }
+	# propertyNames can be a list of one or two dimensions
+	# in case the dimension is 2, the expandPropertyNames function is called first
 	def collapse(self, propertyNames=[]):
 		return (self / propertyNames)
 	
