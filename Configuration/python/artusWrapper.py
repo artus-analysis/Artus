@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import glob
 import logging
 import os
 import sys
@@ -38,7 +39,7 @@ def artusWrapper(defaultExecutable=None):
 	# constuct main JSON config
 	mainConfig = jsonTools.JsonDict({ "OutputPath" : args.output_file })
 	if len(args.input_files) > 0:
-		mainConfig["InputFiles"] = args.input_files
+		mainConfig["InputFiles"] = reduce(lambda a, b: a+b, map(lambda inputFile: glob.glob(os.path.expandvars(inputFile)), args.input_files))
 	
 	# merge all base configs into the main config
 	mainConfig += jsonTools.JsonDict.mergeAll(*args.base_configs)
