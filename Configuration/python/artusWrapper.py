@@ -15,14 +15,18 @@ import Artus.Configuration.jsonTools as jsonTools
 def artusWrapper(defaultExecutable=None):
 	parser = argparse.ArgumentParser(parents=[logger.loggingParser], fromfile_prefix_chars="@",
 	                                 description="Wrapper for Artus executables. JSON configs can be file names pointing to JSON text files or Artus ROOT output files with saved configs or python statements that can be evaluated as dictionary. When JSON configs are merged, the first ones in the list have a higher priority than later ones. In the final config, all includes and comments are replaced accordingly.")
-
-	parser.add_argument("-c", "--base-configs", nargs="+", required=True,
-	                    help="JSON base configurations. All configs are merged.")
-	parser.add_argument("-p", "--pipeline-configs", nargs="+", action="append",
-	                    help="JSON pipeline configurations. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")
 	
-	parser.add_argument("-i", "--input-files", help="Input root files. Leave empty (\"\") if input files from root file should be taken.", nargs="+", required=True)
-	parser.add_argument("-o", "--output-file", help="Output root file. [Default: output.root]", default="output.root")
+	fileOptionsGroup = parser.add_argument_group("File options")
+	fileOptionsGroup.add_argument("-i", "--input-files", nargs="+", required=True,
+	                              help="Input root files. Leave empty (\"\") if input files from root file should be taken.")
+	fileOptionsGroup.add_argument("-o", "--output-file", default="output.root",
+	                              help="Output root file. [Default: output.root]")
+
+	configOptionsGroup = parser.add_argument_group("Config options")
+	configOptionsGroup.add_argument("-c", "--base-configs", nargs="+", required=True,
+	                    help="JSON base configurations. All configs are merged.")
+	configOptionsGroup.add_argument("-p", "--pipeline-configs", nargs="+", action="append",
+	                    help="JSON pipeline configurations. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")
 	
 	if defaultExecutable: parser.add_argument("-x", "--executable", help="Artus executable. [Default: %s]" % str(defaultExecutable), default=defaultExecutable)
 	else: parser.add_argument("-x", "--executable", help="Artus executable.", required=True)

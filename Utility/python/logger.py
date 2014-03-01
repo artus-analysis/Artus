@@ -8,7 +8,9 @@ import logging
 # http://docs.python.org/2/howto/logging.html#logging-advanced-tutorial
 
 loggingParser = argparse.ArgumentParser(add_help=False)
-loggingParser.add_argument("--log-level", default="debug",
+
+logginOptionsGroup = loggingParser.add_argument_group("Logging options")
+logginOptionsGroup.add_argument("--log-level", default="debug",
                            choices=["debug", "info", "warning", "error", "critical"],
                            help="Log level. [Default: debug]")
 
