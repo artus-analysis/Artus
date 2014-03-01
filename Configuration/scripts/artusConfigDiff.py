@@ -20,9 +20,9 @@ def main():
 	parser = argparse.ArgumentParser(description="Compare or print Artus configurations", parents=[logger.loggingParser])
 
 	configGroup = parser.add_mutually_exclusive_group()
-	configGroup.add_argument("-c", "--compare", help="Use compare mode. Needs two files. [Default]", action="store_true", default=True)
-	configGroup.add_argument("-P", "--compare-pipelines", help="Use compare pipelines mode. Needs one file. [Default]", action="store_true", default=False)
-	configGroup.add_argument("-p", "--print", help="Use print mode. Needs one file.", action="store_false", dest="compare")
+	configGroup.add_argument("-c", "--compare", help="Use compare mode. Needs two files. [Default in case of two input files]", action="store_true", default=True)
+	configGroup.add_argument("-P", "--compare-pipelines", help="Use compare pipelines mode. Needs one file.", action="store_true", default=False)
+	configGroup.add_argument("-p", "--print", help="Use print mode. Needs one file. [Default in case of one input file]", action="store_false", dest="compare")
 	
 	parser.add_argument("-1", "--pipelines-1", help="First set of pipeline names to compared with the second set in compare pipelines mode", nargs="*", default=[])
 	parser.add_argument("-2", "--pipelines-2", help="Second set of pipeline names to compared with the first set in compare pipelines mode", nargs="*", default=[])
@@ -33,6 +33,7 @@ def main():
 	logger.initLogger(args)
 	
 	if args.compare_pipelines: args.compare = False
+	if args.compare and len(args.files) < 2: args.compare = False
 	
 	pathInRootFile = "config"
 	indent = 4
