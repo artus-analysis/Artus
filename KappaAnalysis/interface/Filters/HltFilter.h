@@ -20,7 +20,7 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::global_setting_type global_setting_type;
 
-	virtual std::string GetFilterId() ARTUS_CPP11_OVERRIDE {
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "hlt_filter";
 	}
 	

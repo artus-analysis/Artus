@@ -16,7 +16,7 @@ public:
 	virtual ~PtFilter() {
 	}
 
-	virtual std::string GetFilterId() {
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "filter_pt";
 	}
 

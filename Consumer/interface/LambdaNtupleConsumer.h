@@ -19,7 +19,7 @@ public:
 	
 	typedef typename std::function<float(event_type const&, product_type const&)> float_extractor_lambda;
 
-	virtual std::string GetConsumerId()
+	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE
 	{
 		return "lambda_ntuple";
 	}

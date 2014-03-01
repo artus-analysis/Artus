@@ -13,7 +13,7 @@ public:
 	TestConsumer() : iFinish(0), iInit(0), iProcessFilteredEvent(0), iProcessEvent(0), iProcess(0) {
 	}
 
-	virtual std::string GetConsumerId() {
+	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE {
 		return "test_consumer";
 	}
 
@@ -73,7 +73,7 @@ public:
 	TestConsumerLocalProduct() : m_iLocalValue (0) {
 	}
 
-	virtual std::string GetConsumerId() {
+	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE {
 		return "test_consumer_local";
 	}
 

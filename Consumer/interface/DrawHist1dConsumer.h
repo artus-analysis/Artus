@@ -36,7 +36,7 @@ public:
 	virtual ~DrawHist1dConsumerBase() {
 	}
 
-	virtual std::string GetConsumerId() {
+	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE {
 		return "hist1d";
 	}
 

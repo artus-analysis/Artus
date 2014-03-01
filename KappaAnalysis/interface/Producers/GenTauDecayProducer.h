@@ -29,7 +29,7 @@ public:
 	typedef typename TTypes::global_setting_type global_setting_type;
 	typedef typename TTypes::setting_type setting_type;
 
-	virtual std::string GetProducerId() {
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "gen_taudecay";
 	}
 

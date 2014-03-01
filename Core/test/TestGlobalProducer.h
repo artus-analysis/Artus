@@ -16,7 +16,7 @@ typedef ProducerBase<TestTypes> TestProducerBase;
 class TestGlobalProducer: public TestProducerBase {
 public:
 
-	virtual std::string GetProducerId() const {
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "test_global_producer";
 	}
 	

@@ -13,8 +13,7 @@
 class PtCorrectionProducer: public TraxProducerBase {
 public:
 
-	virtual std::string GetProducerId() const
-		ARTUS_CPP11_OVERRIDE 
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE
 	{
 		return "pt_correction";
 	}

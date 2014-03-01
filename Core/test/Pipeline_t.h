@@ -22,7 +22,7 @@
 class TestFilter: public FilterBase<TestTypes> {
 public:
 
-	virtual std::string GetFilterId() {
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "testfilter";
 	}
 
@@ -35,7 +35,7 @@ public:
 class TestFilter2: public FilterBase<TestTypes> {
 public:
 
-	virtual std::string GetFilterId() {
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "testfilter2";
 	}
 

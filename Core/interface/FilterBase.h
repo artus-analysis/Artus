@@ -37,7 +37,7 @@ public:
 	/*
 	 * Must return a unique id of the filter.
 	 */
-	virtual std::string GetFilterId() = 0;
+	virtual std::string GetFilterId() const = 0;
 
 	virtual bool DoesEventPass(event_type const& event,
 			product_type const& product, setting_type const& settings) const = 0;

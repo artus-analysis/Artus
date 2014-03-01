@@ -33,7 +33,7 @@ public:
 			m_plotName(plotName), m_xsource(xsource), m_ysource(ysource) {
 	}
 
-	virtual std::string GetConsumerId() {
+	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE {
 		return "profile";
 	}
 

@@ -23,7 +23,7 @@ public:
 
 	}
 
-	virtual std::string GetConsumerId() {
+	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE {
 		return "mean_pt";
 	}
 
