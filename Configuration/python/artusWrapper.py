@@ -13,7 +13,7 @@ import Artus.Configuration.jsonTools as jsonTools
 
 
 def artusWrapper(defaultExecutable=None):
-	parser = argparse.ArgumentParser(parents=[logger.loggingParser],
+	parser = argparse.ArgumentParser(parents=[logger.loggingParser], fromfile_prefix_chars="@",
 	                                 description="Wrapper for Artus executables. JSON configs can be file names pointing to JSON text files or Artus ROOT output files with saved configs or python statements that can be evaluated as dictionary. When JSON configs are merged, the first ones in the list have a higher priority than later ones. In the final config, all includes and comments are replaced accordingly.")
 
 	parser.add_argument("-c", "--base-configs", nargs="+", required=True,
@@ -33,8 +33,7 @@ def artusWrapper(defaultExecutable=None):
 	if len(args.input_files) == 1 and args.input_files[0] == "":
 		args.input_files = []
 	if all(map(lambda baseConfig: not baseConfig.endswith(".root"), args.base_configs)) and args.input_files == "":
-		logging.getLogger(__name__).critial("No input file specified!")
-		sys.exit(1)
+		parser.error("No input file specified!")
 	
 	# constuct main JSON config
 	mainConfig = jsonTools.JsonDict({ "OutputPath" : args.output_file })
