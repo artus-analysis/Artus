@@ -13,27 +13,49 @@ import Artus.Configuration.jsonTools as jsonTools
 
 
 # main function, to be called in user script for each analysis
-def artusWrapper(defaultExecutable=None):
+# additional parsers can be introduced as well as lists of function pointers
+# to be executed at specific steps of the run
+def artusWrapper(defaultExecutable=None,
+                 additionalArgumentParsers=[],
+                 functionsToBeCalledBeforeConfigConstruction=[],
+                 functionsToBeCalledBeforeRunningArtus=[],
+                 functionsToBeCalledAfterRunningArtus=[]):
 	
-	args = parseArguments(defaultExecutable)
+	args = parseArguments(defaultExecutable, additionalArgumentParsers)
 	
+	# call used defined functions
+	for function in functionsToBeCalledBeforeConfigConstruction:
+		function(args)
+	
+	# construct JSON config dictionary
 	jsonConfig = constructJsonConfig(args)
 	if args.print_config:
 		print jsonConfig
+	
+	# call used defined functions
+	for function in functionsToBeCalledBeforeRunningArtus:
+		function(args, jsonConfig)
 	
 	# run Artus
 	exitCode = 0
 	if not args.no_run:
 		exitCode = runArtus(args, jsonConfig)
 	
-	if exitCode < 256: return exitCode
-	else: return 1 # Artus sometimes returns exit codes >255 that are not supported
+	if exitCode != 0:
+		if exitCode < 256: return exitCode
+		else: return 1 # Artus sometimes returns exit codes >255 that are not supported
+	
+	# call used defined functions
+	for function in functionsToBeCalledAfterRunningArtus:
+		function(args, jsonConfig)
+	
+	return 0
 
 
 # parse arguments and return the options
-def parseArguments(defaultExecutable):
+def parseArguments(defaultExecutable, additionalArgumentParsers=[]):
 
-	parser = argparse.ArgumentParser(parents=[logger.loggingParser], fromfile_prefix_chars="@",
+	parser = argparse.ArgumentParser(parents=[logger.loggingParser]+additionalArgumentParsers, fromfile_prefix_chars="@",
 	                                 description="Wrapper for Artus executables. JSON configs can be file names pointing to JSON text files or Artus ROOT output files with saved configs or python statements that can be evaluated as dictionary. When JSON configs are merged, the first ones in the list have a higher priority than later ones. In the final config, all includes and comments are replaced accordingly.")
 	
 	fileOptionsGroup = parser.add_argument_group("File options")
