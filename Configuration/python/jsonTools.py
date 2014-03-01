@@ -56,6 +56,20 @@ class JsonDict(dict):
 	def diff(self, jsonDict2):
 		return (self - jsonDict2)
 	
+	# expands all possible combinations of second-layer dictionaries
+	# returns new JsonDict { keyA1_keyB1 : valueA1+valueB1, ... }
+	def __mul__(self, jsonDict2):
+		jsonDict = JsonDict()
+		for key1, value1 in self:
+			for key2, value2 in jsonDict2:
+				jsonDict[str(key1) + "_" + str(key2)] = JsonDict(value1) + JsonDict(value2)
+		return jsonDict
+	
+	# expands all possible combinations of second-layer dictionaries
+	# returns new JsonDict { keyA1_keyB1 : valueA1+valueB1, ... }
+	def expand(self, jsonDict2):
+		return (self * jsonDict2)
+	
 	# resolves the includes and returns a new object
 	def doIncludes(self):
 		return JsonDict(JsonDict.deepinclude(self))
@@ -150,7 +164,7 @@ class JsonDict(dict):
 	def deepinclude(jsonDict):
 		result = None
 		if isinstance(jsonDict, dict):
-			result = JsonDict({})
+			result = JsonDict()
 			for key, value in jsonDict.items():
 				if key == "include":
 					if isinstance(value, basestring):
@@ -183,7 +197,7 @@ class JsonDict(dict):
 	def deepuncomment(jsonDict):
 		result = None
 		if isinstance(jsonDict, dict):
-			result = JsonDict({})
+			result = JsonDict()
 			for key, value in jsonDict.items():
 				if not key.strip().startswith("#"):
 					if not isinstance(value, basestring) or not value.strip().startswith("#"):
@@ -197,67 +211,4 @@ class JsonDict(dict):
 									tmpValue.append(copy.deepcopy(element))
 						result[key] = tmpValue
 		return result
-
-
-# Class that stores lists of python JsonDict objects
-# which is useful for combining different JsonDict objects
-class JsonDictList(list):
-	
-	# Constructor
-	# list items of jsonDictList can be of all types
-	# that the constructor of JsonDict accepts
-	def __init__(self, jsonDictList=[]):
-		if isinstance(jsonDictList, basestring):
-			jsonDictList = eval(jsonDictList)
-
-		if isinstance(jsonDictList, collections.Iterable):
-			for jsonDict in jsonDictList:
-				self.append(JsonDict(jsonDict))
-		else:
-			raise TypeError("Unsupported type \"%s\" in JsonDictList constructor", type(jsonDictList))
-	
-	# expands all possible combinations [a1+b1, a1+b2, ..., a2+b1, a2+b1, ...]
-	def __mul__(self, jsonDictList2):
-		jsonDictList = JsonDictList()
-		for jsonDict1 in self:
-			for jsonDict2 in JsonDictList(jsonDictList2):
-				jsonDictList.append(jsonDict1 + jsonDict2)
-		return jsonDictList
-	
-	# expands all possible combinations [a1+b1, a1+b2, ..., a2+b1, a2+b1, ...]
-	def expand(self, jsonDictList2):
-		return (self * jsonDictList2)
-	
-	# does the same expansion as expand(...) but with property names (strings)
-	# the result is used in the collapse function
-	@staticmethod
-	def expandPropertyNames(propertyNames1=[], propertyNames2=[]):
-		propertyNames = []
-		for propertyName1 in propertyNames1:
-			for propertyName2 in propertyNames2:
-				propertyNames.append(str(propertyName1) + "_" + str(propertyName2))
-		return propertyNames
-	
-	# collapses list and return JsonDict { name1 : dict1, name2 : dict2 }
-	# propertyNames can be a list of one or two dimensions
-	# in case the dimension is 2, the expandPropertyNames function is called first
-	def __div__(self, propertyNames):
-		if not isinstance(propertyNames, collections.Iterable):
-			logging.getLogger(__name__).error("Unsupported type in JsonDictList.collapse/__div__", type(propertyNames))
-			propertyNames = []
-		if len(propertyNames) == 2 and not isinstance(propertyNames[0], basestring):
-			propertyNames = JsonDictList.expandPropertyNames(*propertyNames)
-		propertyNames += map(lambda index: "entry"+str(index), range(len(propertyNames)+1, len(self)+1))
-		return JsonDict(reduce(lambda jsonDict1, jsonDict2: jsonDict1+jsonDict2,
-		                       map(lambda jsonDict, propertyName: JsonDict({propertyName : jsonDict}), self, propertyNames[:len(self)])))
-	
-	# collapses list and returns JsonDict { name1 : dict1, name2 : dict2 }
-	# propertyNames can be a list of one or two dimensions
-	# in case the dimension is 2, the expandPropertyNames function is called first
-	def collapse(self, propertyNames=[]):
-		return (self / propertyNames)
-	
-	# merge all list item into one single JsonDict
-	def mergeAll(self):
-		return JsonDict(reduce(lambda jsonDict1, jsonDict2: jsonDict1+jsonDict2, self))
 
