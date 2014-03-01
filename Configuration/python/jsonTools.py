@@ -34,7 +34,7 @@ class JsonDict(dict):
 				print jsonDict
 				self.update(eval(jsonDict))
 		elif isinstance(jsonDict, collections.Iterable):
-			self.update(reduce(lambda jsonDict1, jsonDict2: jsonDict1+jsonDict2, jsonDict))
+			self.update(JsonDict.mergeAll(*jsonDict))
 		else:
 			raise TypeError("Unsupported type \"%s\" in JsonDict constructor", type(jsonDict))
 	
@@ -47,6 +47,13 @@ class JsonDict(dict):
 	# merges two JSON dicts and returns a new object
 	def merge(self, jsonDict2):
 		return (self + jsonDict2)
+	
+	@staticmethod
+	def mergeAll(*jsonDicts):
+		if len(jsonDicts) == 1:
+			return JsonDict(jsonDicts[0])
+		else:
+			return reduce(lambda jsonDict1, jsonDict2: JsonDict(jsonDict1) + JsonDict(jsonDict2), jsonDicts)
 	
 	# compares two JSON dicts and returns two diff dicts
 	def __sub__(self, jsonDict2):
@@ -69,6 +76,13 @@ class JsonDict(dict):
 	# returns new JsonDict { keyA1_keyB1 : valueA1+valueB1, ... }
 	def expand(self, jsonDict2):
 		return (self * jsonDict2)
+	
+	@staticmethod
+	def expandAll(*jsonDicts):
+		if len(jsonDicts) == 1:
+			return JsonDict(jsonDicts[0])
+		else:
+			return reduce(lambda jsonDict1, jsonDict2: JsonDict(jsonDict1) * JsonDict(jsonDict2), jsonDicts)
 	
 	# resolves the includes and returns a new object
 	def doIncludes(self):
