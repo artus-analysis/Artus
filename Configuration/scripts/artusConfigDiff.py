@@ -35,9 +35,6 @@ def main():
 	if args.compare_pipelines: args.compare = False
 	if args.compare and len(args.files) < 2: args.compare = False
 	
-	pathInRootFile = "config"
-	indent = 4
-	
 	minFiles = 1
 	maxFiles = 2 if args.compare else 1
 	if len(args.files) < minFiles:
@@ -47,19 +44,18 @@ def main():
 		logging.getLogger(__name__).warning("Only the first %d file(s) are taken as input." % maxFiles)
 	
 	if args.compare:
-		diffDictA, diffDictB = jsonTools.deepdiff(jsonTools.readJsonDict(args.files[0], pathInRootFile),
-		                                          jsonTools.readJsonDict(args.files[1], pathInRootFile))
+		diffDictA, diffDictB = jsonTools.JsonDict(args.files[0]) - jsonTools.JsonDict(args.files[1])
 		
 		logging.getLogger(__name__).info("Diff in file \"%s\":\n" % args.files[0])
-		jsonTools.printJsonDict(diffDictA)
+		print jsonTools.JsonDict(diffDictA)
 		
 		logging.getLogger(__name__).info("\n\n")
 		
 		logging.getLogger(__name__).info("Diff in file \"%s\":\n" % args.files[1])
-		jsonTools.printJsonDict(diffDictB)
+		print jsonTools.JsonDict(diffDictB)
 	
 	elif args.compare_pipelines:
-		jsonDict = jsonTools.readJsonDict(args.files[0], pathInRootFile)
+		jsonDict = jsonTools.JsonDict(args.files[0])
 		
 		if len(args.pipelines_1) > 0 and len(args.pipelines_2) == 0:
 			args.pipelines_2 = filter(lambda pipelineName: pipelineName not in args.pipelines_1, jsonDict.get("Pipelines", {}).keys())
@@ -80,21 +76,21 @@ def main():
 				
 				logging.getLogger(__name__).info("Comparison of pipeline \"%s\" with pipeline \"%s\":\n" % (pipelineName1, pipelineName2))
 				
-				diffDictA, diffDictB = jsonTools.deepdiff(pipeline1, pipeline2)
+				diffDictA, diffDictB = jsonTools.JsonDict(pipeline1) - jsonTools.JsonDict(pipeline2)
 		
 				logging.getLogger(__name__).info("Diff in pipeline \"%s\":\n" % pipelineName1)
-				jsonTools.printJsonDict(diffDictA)
+				print jsonTools.JsonDict(diffDictA)
 		
 				logging.getLogger(__name__).info("\n\n")
 		
 				logging.getLogger(__name__).info("Diff in pipeline \"%s\":\n" % pipelineName2)
-				jsonTools.printJsonDict(diffDictB)
+				print jsonTools.JsonDict(diffDictB)
 				
 				logging.getLogger(__name__).info((50*"-") + "\n")
 				
 	
 	else:
-		jsonTools.printJsonDict(jsonTools.readJsonDict(args.files[0], pathInRootFile))
+		print jsonTools.JsonDict(args.files[0])
 
 
 if __name__ == "__main__":

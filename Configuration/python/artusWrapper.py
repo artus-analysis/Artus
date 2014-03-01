@@ -37,13 +37,13 @@ def artusWrapper(defaultExecutable=None):
 	}
 	if args.config_files: mainConfig["InputFiles"] = args.input_files
 	else: args.config_files = args.root_config
-	mainConfig = jsonTools.mergeJsonDicts(mainConfig, *args.config_files)
+	mainConfig = jsonTools.JsonDict(jsonTools.JsonDictList([mainConfig]+[args.config_files]))
 	
 	# treat includes and comments
-	mainConfig = jsonTools.deepuncomment(jsonTools.deepinclude(mainConfig))
+	mainConfig = mainConfig.doIncludes().doComments()
 	
 	mainConfigFileName = reduce(lambda a, b: a+"__"+b, map(lambda fileName: os.path.splitext(os.path.basename(fileName))[0], args.config_files))+".json"
-	jsonTools.saveJsonDict(mainConfig, mainConfigFileName)
+	mainConfig.save(mainConfigFileName)
 	logging.getLogger(__name__).info("Saved combined JSON config \"%s\" for temporary usage." % mainConfigFileName)
 	
 	# call C++ executable
@@ -53,7 +53,7 @@ def artusWrapper(defaultExecutable=None):
 	if exitCode != 0:
 		logging.getLogger(__name__).error("Exit with code %s.\n\n" % exitCode)
 		logging.getLogger(__name__).info("Dump configuration:\n")
-		jsonTools.printJsonDict(mainConfigFileName)
+		print jsonTools.JsonDict(mainConfigFileName)
 	
 	# remove tmp. config
 	logging.getLogger(__name__).info("Remove temporary config file.")
