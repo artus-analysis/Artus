@@ -99,11 +99,6 @@ def parseArguments(defaultExecutable, additionalArgumentParsers=[]):
 	if all(map(lambda baseConfig: not baseConfig.endswith(".root"), args.base_configs)) and args.input_files == "":
 		parser.error("No input file specified!")
 	
-	# work directory check
-	args.work = os.path.expandvars(args.work)
-	if not os.path.exists(args.work):
-		os.makedirs(args.work)
-	
 	return args
 
 
@@ -146,11 +141,21 @@ def runArtus(args, jsonConfig):
 	logging.getLogger(__name__).info("Saved JSON config \"%s\" for temporary usage." % jsonConfigFileName)
 	
 	if args.batch:
+		
+		# check work directory
+		args.work = os.path.expandvars(args.work)
+		if not os.path.exists(args.work):
+			os.makedirs(args.work)
 	
 		# run Artus with grid-control
 		pass
 	
 	else:
+		
+		# check output directory
+		outputDir = os.path.dirname(args.output_file)
+		if len(outputDir) > 0 and not os.path.exists(outputDir):
+			os.makedirs(outputDir)
 	
 		# call C++ executable locally
 		command = args.executable + " " + jsonConfigFileName
