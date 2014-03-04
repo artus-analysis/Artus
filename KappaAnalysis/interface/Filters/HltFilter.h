@@ -26,9 +26,9 @@ public:
 	
 	HltFilter() : FilterBase<TTypes>() {};
 
-	virtual bool DoesEventPass(HttEvent const& event,
-			HttProduct const& product,
-            HttPipelineSettings const& settings) const ARTUS_CPP11_OVERRIDE
+	virtual bool DoesEventPass(event_type const& event,
+			product_type const& product,
+            global_setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		if (product.selectedHltName.empty()) {
 			// no HLT found
