@@ -139,7 +139,7 @@ def constructJsonConfig(args):
 	mainConfig += jsonTools.JsonDict(pipelineJsonDict)
 	
 	# treat includes and comments
-	mainConfig = mainConfig.doIncludes().doComments()
+	mainConfig = mainConfig.doComments().doIncludes().doComments()
 	
 	return mainConfig
 
