@@ -18,7 +18,7 @@ public:
 
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::global_setting_type global_setting_type;
+	typedef typename TTypes::setting_type setting_type;
 
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "hlt_filter";
@@ -28,7 +28,7 @@ public:
 
 	virtual bool DoesEventPass(event_type const& event,
 			product_type const& product,
-            global_setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+            setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		if (product.selectedHltName.empty()) {
 			// no HLT found
