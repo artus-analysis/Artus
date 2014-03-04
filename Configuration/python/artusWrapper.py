@@ -16,10 +16,23 @@ import Artus.Configuration.jsonTools as jsonTools
 # additional parsers can be introduced as well as lists of function pointers
 # to be executed at specific steps of the run
 def artusWrapper(defaultExecutable=None,
-                 additionalArgumentParsers=[],
-                 functionsToBeCalledBeforeConfigConstruction=[],
-                 functionsToBeCalledBeforeRunningArtus=[],
-                 functionsToBeCalledAfterRunningArtus=[]):
+                 additionalArgumentParsers=None,
+                 functionsToBeCalledBeforeConfigConstruction=None,
+                 functionsToBeCalledBeforeRunningArtus=None,
+                 functionsToBeCalledAfterRunningArtus=None):
+	
+	# set default paramters here to prevent bugs
+	if additionalArgumentParsers is None:
+		additionalArgumentParsers = []
+	
+	if functionsToBeCalledBeforeConfigConstruction is None:
+		functionsToBeCalledBeforeConfigConstruction = []
+	
+	if functionsToBeCalledBeforeRunningArtus is None:
+		functionsToBeCalledBeforeRunningArtus = []
+	
+	if functionsToBeCalledAfterRunningArtus is None:
+		functionsToBeCalledAfterRunningArtus = []
 	
 	args = parseArguments(defaultExecutable, additionalArgumentParsers)
 	
