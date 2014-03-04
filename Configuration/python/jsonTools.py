@@ -69,7 +69,10 @@ class JsonDict(dict):
 		jsonDict = JsonDict()
 		for key1, value1 in self:
 			for key2, value2 in jsonDict2:
-				jsonDict[str(key1) + "_" + str(key2)] = JsonDict(value1) + JsonDict(value2)
+				key = (str(key1) if len(self) > 1 else "") + \
+				      ("_" if len(self) > 1 and len(jsonDict2) > 1 else "") + \
+				      (str(key2) if len(jsonDict2) > 1 else "")
+				jsonDict[key] = JsonDict(value1) + JsonDict(value2)
 		return jsonDict
 	
 	# expands all possible combinations of second-layer dictionaries
