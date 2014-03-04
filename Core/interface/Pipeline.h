@@ -35,8 +35,7 @@ public:
 
 	typedef Pipeline<TTypes> pipeline_type;
 
-	virtual void InitPipeline(pipeline_type * pLine,
-			typename TTypes::setting_type const& pset) const = 0;
+	virtual void InitPipeline(pipeline_type * pLine, setting_type const& pset) const = 0;
 
 };
 
@@ -105,6 +104,11 @@ public:
 			PipelineInitilizerBase<TTypes> const& initializer) {
 		m_pipelineSettings = pset;
 		initializer.InitPipeline(this, pset);
+
+		// init local Producrs
+		/*for (auto & it : m_producer) {
+			it.InitLocal(this);
+		}*/
 
 		// init Filters
 		for (auto & it : m_filter) {

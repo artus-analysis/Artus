@@ -26,14 +26,11 @@ public:
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "json_filter";
 	}
-	
-	JsonFilter() : ProducerBase<TTypes>() {};
-	
-	JsonFilter(global_setting_type const& globalSettings) :
-		ProducerBase<TTypes>(),
-		m_runLumiSelector(globalSettings.GetJsonFiles(), globalSettings.GetPassRunLow(), globalSettings.GetPassRunHigh())
-	{
-		
+
+	virtual void InitGlobal(global_setting_type const& globalSettings) {
+		m_runLumiSelector = RunLumiSelector(globalSettings.GetJsonFiles(),
+		                                    globalSettings.GetPassRunLow(),
+		                                    globalSettings.GetPassRunHigh());
 	}
 
 	virtual bool ProduceGlobal(event_type const& event,
@@ -48,6 +45,7 @@ public:
 	                          product_type& product,
 	                          setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
+		// return m_runLumiSelector.accept(event.m_eventMetadata->nRun, event.m_eventMetadata->nLumi); // TODO: implement JsonFilter::InitLocal
 	}
 
 private:

@@ -6,10 +6,12 @@
 /*
  * Fills NTuples with valueExtractors defined as lambda functions
  * This removes the string operations from its base class
+ * This consumer can only be fully initilised in the constructor of an derived class
+ * where the map m_valueExtractorMap is filled with analysis specific code
  */
 
 template<class TTypes>
-class LambdaNtupleConsumer: public NtupleConsumerBase<TTypes> {
+class LambdaNtupleConsumerBase: public NtupleConsumerBase<TTypes> {
 
 public:
 
@@ -24,13 +26,10 @@ public:
 		return "lambda_ntuple";
 	}
 
-	LambdaNtupleConsumer(std::map<std::string, float_extractor_lambda> valueExtractorMap = std::map<std::string, float_extractor_lambda>()) :
-			NtupleConsumerBase<TTypes>(),
-			m_valueExtractorMap(valueExtractorMap)
-	{
+	LambdaNtupleConsumerBase() : NtupleConsumerBase<TTypes>() {
 	}
 
-	virtual ~LambdaNtupleConsumer() {
+	virtual ~LambdaNtupleConsumerBase() {
 	}
 
 	virtual void Init(Pipeline<TTypes> * pset) ARTUS_CPP11_OVERRIDE {
@@ -67,8 +66,10 @@ public:
 	}
 
 
-private:
+protected:
 	std::map<std::string, float_extractor_lambda> m_valueExtractorMap;
+
+private:
 	std::vector<float_extractor_lambda> m_valueExtractors;
 
 };

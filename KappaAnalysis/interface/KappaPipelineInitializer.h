@@ -4,31 +4,19 @@
 #include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/Pipeline.h"
 
-#include "Filters/HltFilter.h"
-
 
 template<class TTypes>
-class KappaPipelineInitializer: public PipelineInitilizerBase<HttTypes> {
+class KappaPipelineInitializer: public PipelineInitilizerBase<TTypes> {
 public:
 
-	virtual void InitPipeline(HttPipeline * pLine,  HttPipelineSettings const& pset) const ARTUS_CPP11_OVERRIDE {
+	typedef typename TTypes::event_type event_type;
+	typedef typename TTypes::product_type product_type;
+	typedef typename TTypes::setting_type setting_type;
 
-		BOOST_FOREACH(std::string producerId, pset.GetLocalProducers())
-		{
-			// TODO
-		}
+	typedef Pipeline<TTypes> pipeline_type;
 
-		BOOST_FOREACH(std::string filterId, pset.GetFilters())
-		{
-			if(filterId == HltFilter<TTypes>().GetFilterId()) {
-				pLine->AddFilter(new HltFilter<TTypes>());
-			}
-		}
-
-		BOOST_FOREACH(std::string consumerId, pset.GetConsumers())
-		{
-			// TODO
-		}
-
+	virtual void InitPipeline(pipeline_type * pLine, setting_type const& pset) const ARTUS_CPP11_OVERRIDE
+	{
+		// new implementation of pure PipelineInitilizerBase::InitPipeline
 	}
 };
