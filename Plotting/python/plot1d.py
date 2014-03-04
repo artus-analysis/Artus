@@ -1,3 +1,10 @@
+#### todo: adjust to dictionary plotdict to save root files
+#### todo: allow interaction with external modules
+#### todo: save root histograms for import/export
+#### todo: save command-line settings to reproduce the plot later/ plotfromdict
+#### todo: enable ratiosubplot
+
+
 # -*- coding: utf-8 -*-
 """Plot quantities from data and MC.
 
@@ -18,93 +25,91 @@ import Artus.Plotting.tools.fit as fit
 import Artus.Plotting.tools.dictionaries as dictionaries
 
 
-def datamcplot(quantity, files, opt, fig_axes=(), changes=None, settings=None):
+#def datamcplot(quantity, files, opt, fig_axes=(), changes=None, settings=None):
+def plot(plotname, plotsdict, opt, fig_axes=(), changes=None, settings=None):
 	"""Template for all data/MC comparison plots for basic quantities."""
 
 	# if no settings are given, create:
+	quantity = plotsdict["plots"][plotname]["var1"]
 	settings = utils.getsettings(opt, changes, settings, quantity)
 	print "A %s plot is created with the following selection: %s" % (quantity,
 															settings['selection'])
 
-	if 'flavour' in settings['xynames'][0]:
-		settings['nbins'] = 25
-	# create list with histograms from a ttree/tntuple
-	datamc, rootobjects = [], []
+
+	# produce the histograms for each collection and write them do the dictionary
 	settings['events'] = []
-	for f in files:
-		rootobjects += [getroot.histofromfile(quantity, f, settings)]
-		datamc += [mplconvert.root2histo(rootobjects[-1], f.GetName(), 1)]
-		settings['events'] += [datamc[-1].ysum()]
-		if 'flavour' in settings['xynames'][0]:
-			datamc[-1].x = [5.5 if x == 20.5 else 6.5 if x == -0.5 else x for x in datamc[-1].x]
-			datamc[-1].xc = [6 if x == 21 else 7 if x == 0 else x for x in datamc[-1].xc]
-		#print datamc[-1]
+	settings['type'] = "1D"
+
+	for collection in plotsdict["collections"]:
+		if not ("collections" in plotsdict["plots"][plotname]): plotsdict["plots"][plotname]["collections"] = {}
+		if not collection in plotsdict["plots"][plotname]["collections"]: plotsdict["plots"][plotname]["collections"][collection] = {}
+		for affiliation in plotsdict["collections"][collection]:
+			plotsdict["plots"][plotname]["collections"][collection][affiliation] = {}
+			if not ("roothistos" in plotsdict["plots"][plotname]["collections"][collection][affiliation]):
+				plotsdict["plots"][plotname]["collections"][collection][affiliation]["roothistos"] = []
+				plotsdict["plots"][plotname]["collections"][collection][affiliation]["mplhistos"] = []
+			for rootfile in plotsdict["collections"][collection][affiliation]["files"]:
+				print "histofromfile: " + rootfile.GetName()
+				settings["tree"] = plotsdict["collections"][collection][affiliation]["tree"]
+				print settings
+				rootobject = getroot.histofromfile(quantity, rootfile, settings)
+				plotsdict["plots"][plotname]["collections"][collection][affiliation]["roothistos"].append(rootobject)
+				plotsdict["plots"][plotname]["collections"][collection][affiliation]["mplhistos"].append(mplconvert.root2histo(rootobject, rootfile.GetName(), 1))
+
+	print plotsdict
+
 
 	# if true, create a ratio plot:
-	if settings['ratio'] and len(datamc) == 2:
-		rootobject = getroot.rootdivision(rootobjects)
-		datamc = [mplconvert.root2histo(rootobject, files[0].GetName(), 1)]
-	else:
-		rootobject = None
+#	if settings['ratio'] and len(datamc) == 2:                     # todo: add ratio plot
+#		rootobject = getroot.rootdivision(rootobjects)
+#		datamc = [mplconvert.root2histo(rootobject, files[0].GetName(), 1)]
+#	else:
+#		rootobject = None
 
-	# use the argument-given fig/axis or create new one:
-	if settings['subplot'] == True:
-		fig, ax = fig_axes
-	else:
-		fig, ax = utils.newplot(run=settings['run'])
+#	# use the argument-given fig/axis or create new one:
+#	if settings['subplot'] == True:
+#		fig, ax = fig_axes
+#	else:
+	fig, ax = utils.newplot(run=settings['run'])
 
 	settings['filename'] = utils.getdefaultfilename(quantity, opt, settings)
 
 	# create an additional ratio subplot at the bottom:
-	if settings['ratiosubplot'] and not settings['subplot']:
-		ratiosubplot(quantity, files, opt, settings)
-		return
+#	if settings['ratiosubplot'] and not settings['subplot']:
+#		ratiosubplot(quantity, files, opt, settings)
+#		return
 
-	# if runplot_diff, get the mean from mc:
-	if settings['run'] == 'diff':
-		datamc, ax, offset = runplot_diff(files, datamc, ax, settings, quantity)
-	else:
-		offset = 0
+	# create plot from dictionary
+	colors = settings['colors']
+	colors.reverse()
+	for collection in plotsdict["plots"][plotname]["collections"]:
+		sumy = []
+		for name in plotsdict["plots"][plotname]["collections"][collection]:
+			for f in plotsdict["plots"][plotname]["collections"][collection][name]["mplhistos"]:
+				color = colors.pop()
+				label = name
+				if plotsdict["collections"][collection][name]["errorbar"] == "True":
+					yerr = f.yerr
+				else:
+					yerr = [0] * len(f.yerr)
 
-	# if true, save as root file:
-	if settings['root'] is not False:
-		getroot.saveasroot(rootobjects, opt, settings)
-		return
+				if plotsdict["collections"][collection][name]["markers"] == 'stack':
+					if len(sumy) == 0:
+						sumy = len(f.y) * [0]
+					widths = (f.x[2] - f.x[1])
 
-	#loop over histograms: scale and plot
-	for f, l, c, s, rootfile, rootobj in reversed(zip(datamc, settings['labels'],
-					settings['colors'], settings['markers'], files, rootobjects)):
-		scalefactor = 1
-		if 'Profile' in f.classname:
-			scalefactor = 1
-			#s = s.replace('f','o')
-		elif settings['normalize']:
-			if 'scalefactor' in settings:
-				f.scale(settings['scalefactor'])
-			elif (f.ysum() != 0 and datamc[0].ysum() != 0):
-				scalefactor = datamc[0].ysum() / f.ysum()
-				f.scale(scalefactor)
+					ax.bar(f.x, f.y, widths, bottom=sumy, yerr=yerr, 
+						ecolor=color, label=label, fill=True, facecolor=color, edgecolor=color)
+					for i in range(len(sumy)):
+						sumy[i] += f.y[i]
+				else: 
+					fmt = plotsdict["collections"][collection][name]["markers"]
+					ax.errorbar(f.xc, f.y, yerr, drawstyle='steps-mid', color=color, fmt=fmt, capsize=0, label=label, zorder=10)
 
-		if s == 'f':
-			wid = 0
-			if len(f) > 1:
-				wid = f.x[-1] - f.x[-2]
-			f.append(f.x[-1] + wid, f.x[-1] + wid, 0.0)
-
-			if settings['special_binning']:
-				widths = [(a - b) for a, b in zip(f.x[1:], f.x[:-1])]
-				widths += [0]
-			else:
-				widths = (f.x[2] - f.x[1])
-			ax.bar(f.x, f.y, widths, bottom=numpy.ones(len(f.x))
-				* 1e-6, yerr=f.yerr, ecolor=c, label=l, fill=True, facecolor=c, edgecolor=c)
-		else:
-			ax.errorbar(f.xc, f.y, f.yerr, drawstyle='steps-mid', color=c,
-													fmt=s, capsize=0, label=l, zorder=10)
-
-		if settings['fit'] is not None and ("MC" not in l or settings['run'] is not "diff" and not settings['ratio']):
-			fit.fit(ax, quantity, rootobj, settings, c, l,
-											datamc.index(f), scalefactor, offset)
+	labels.labels(ax, opt, settings, settings['subplot'])
+	labels.axislabels(ax, settings['xynames'][0], settings['xynames'][1],
+															settings=settings)
+	utils.setaxislimits(ax, settings)
 
 	# set the axis labels and limits
 	labels.labels(ax, opt, settings, settings['subplot'])
@@ -114,20 +119,8 @@ def datamcplot(quantity, files, opt, fig_axes=(), changes=None, settings=None):
 	if settings['xynames'][1] == 'events' and 'y' not in opt.user_options:
 		ax.set_ylim(top=max(d.ymax() for d in datamc) * 1.2)
 
-	#plot a vertical line at 1.0 for certain y-axis quantities:
-	if ((settings['xynames'][1] in ['response', 'balresp', 'mpfresp', 'recogen',
-							'ptbalance', 'L1', 'L2', 'L3', 'mpf', 'mpfresp']) or
-							'cut' in settings['xynames'][1] or settings['ratio']):
-		ax.axhline(1.0, color='black', linestyle=':')
-
 	if settings['grid']:
 		ax.grid(True)
-
-	if 'flavour' in settings['xynames'][0]:
-		ax.set_xlim(0.5, 7.5)
-		ax.set_xticks([1, 2, 3, 4, 5, 6, 7])
-		ax.set_xticklabels(['d', 'u', 's', 'c', 'b', 'g', 'undef.'])
-		ax.axvline(6.5, color='black', linestyle=':')
 
 	if settings['log']:
 		if 'y' not in opt.user_options:
@@ -135,11 +128,11 @@ def datamcplot(quantity, files, opt, fig_axes=(), changes=None, settings=None):
 		ax.set_yscale('log')
 
 	# save it
-	if settings['subplot']:
-		del rootobjects
-		return
-	else:
-		utils.Save(fig, settings)
+#	if settings['subplot']:
+#		del rootobjects
+#		return
+#	else:
+	utils.Save(fig, settings)
 
 try:
 	datamcplot = profile(datamcplot)
@@ -198,7 +191,7 @@ def datamc_all(quantity, files, opt, fig_axes=(), subplot=False,
 
 	# change this
 	run = False
-
+	"""
 	if quantity in variations:
 		variations.remove(quantity)
 	for variation in variations:
@@ -220,19 +213,19 @@ def datamc_all(quantity, files, opt, fig_axes=(), subplot=False,
 				text = " for different " + plotbase.nicetext(variation) + " values "
 			else:
 				text = " in " + plotbase.nicetext(variation) + " bins for " + r"$\alpha$ " + str(cut) + "  "
-			title = plotbase.nicetext(quantity) + text + opt.algorithm + " " + opt.correction
+			title = plotbase.nicetext(quantity) + text #+ #opt.algorithm + " " + opt.correction
 			fig_axes[0].suptitle(title, size='x-large')
 
 			if variation == 'alpha':
 				text = "_bins__"
 			else:
 				text = "_bins__alpha_" + str(cut).replace('.', '_') + "__"
-			filename = quantity + "/" + quantity + "_in_" + variation + text + opt.algorithm + opt.correction
+			filename = quantity + "/" + quantity + "_in_" + variation + text #+ #opt.algorithm + opt.correction
 			plotbase.EnsurePathExists(opt.out + "/" + quantity)
 			plotbase.Save(fig_axes[0], filename, opt)
 			if variation == 'alpha':
 				break
-
+	"""
 
 def ratiosubplot(quantity, files, opt, settings):
 

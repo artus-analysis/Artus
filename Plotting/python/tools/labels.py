@@ -9,8 +9,8 @@ def labels(ax, opt, settings, subplot=False):
 	"""
 	if not (settings['ratio'] and settings['subplot']
 			and not settings['fit'] == 'intercept'):
-		if settings['lumi'] is not None and not settings['mconly']:
-			lumilabel(ax, settings['lumi'])  # always (if given) pure MC plots?
+#		if settings['lumi'] is not None and not settings['mconly']:
+#			lumilabel(ax, settings['lumi'])  # always (if given) pure MC plots?
 		statuslabel(ax, settings['status'])
 		if settings['energy'] is not None:
 			energylabel(ax, settings['energy'])
@@ -31,10 +31,10 @@ def labels(ax, opt, settings, subplot=False):
 		if settings['subtext'] is not None:
 			ax.text(-0.03, 1.01, settings['subtext'], va='bottom', ha='right',
 					transform=ax.transAxes, size='xx-large', color='black')
-		if settings['extrapolation'] is not False:
-			ax.text(0.02, 0.02, "%s extrapolation applied" % settings['extrapolation'],
-				va='bottom', ha='left', transform=ax.transAxes, size='small',
-				color='black')
+#		if settings['extrapolation'] is not False:
+#			ax.text(0.02, 0.02, "%s extrapolation applied" % settings['extrapolation'],
+#				va='bottom', ha='left', transform=ax.transAxes, size='small',
+#				color='black')
 		if settings['text'] is not None:
 			textlabel(ax, settings['text'])
 		if settings.get('cutlabel', None) is not None:
@@ -162,8 +162,8 @@ def jetlabel_string(changes, opt):
 
 
 def jetlabel(ax, changes={}, sub_plot=False, posx=0.05, posy=0.95, opt=None):
-	res = jetlabel_string(changes, opt)
-
+#	res = jetlabel_string(changes, opt)
+	res = ""
 	if sub_plot:
 		col = 'red'
 	else:
