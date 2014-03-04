@@ -12,6 +12,7 @@
 #include "TestGlobalProducer.h"
 #include "TestEventProvider.h"
 #include "Pipeline_t.h"
+#include "TestFactory.h"
 
 #include <boost/test/included/unit_test.hpp>
 
@@ -39,7 +40,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_product )
 	tline4->InitPipeline( tset, TestPipelineInitilizer() );
 	tline5->InitPipeline( tset, TestPipelineInitilizer() );
 
-	PipelineRunner<TestPipeline, TestProducerBase> prunner;
+	PipelineRunner<TestPipeline, TestTypes > prunner;
 	// don't show progress report in this test cases
 	prunner.ClearProgressReports();
 
@@ -55,7 +56,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_product )
 	prunner.AddPipelines( vPipes );
 
 	TestEventProvider evtProvider;
-	prunner.RunPipelines<TestTypes>( evtProvider, global_tset );
+	prunner.RunPipelines ( evtProvider, global_tset );
 
 	tline1->CheckCalls(10);
 	tline2->CheckCalls(10);
@@ -96,7 +97,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner )
 	prunner.AddPipelines( vPipes );
 
 	TestEventProvider evtProvider;
-	prunner.RunPipelines<TestTypes>( evtProvider, global_tset );
+	prunner.RunPipelines ( evtProvider, global_tset );
 
 	tline1->CheckCalls(10);
 	tline2->CheckCalls(10);
@@ -128,7 +129,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_multi_level )
 	TestEventProvider evtProvider;
 	// give any pipeline setting here: only the global producer will
 	// read from the global settings ...
-	prunner.RunPipelines<TestTypes>( evtProvider, global_tset_lvl2 );
+	prunner.RunPipelines ( evtProvider, global_tset_lvl2 );
 
 	tline1->CheckCalls(10);
 	tline2->CheckCalls(10);

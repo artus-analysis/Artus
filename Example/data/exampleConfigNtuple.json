@@ -2,8 +2,8 @@
     "SkipEvents": 0,
     "EventCount": -1, 
     "ProducerPtCorrectionFactor": 1.05,
-    "GlobalProducer": [
-        "json_producer"
+    "GlobalProducers": [
+        "pt_correction"
     ], 
     "InputFiles": [
         "sample_ntuple.root"
@@ -11,26 +11,28 @@
     "OutputPath": "sample_output_ntuple.root", 
     "Pipelines": {
         "lowPt": {
-            "Consumer": [ "ntuple" ], 
+            "Consumers": [ "ntuple" ], 
             "Quantities" :["pt", "pt_corr", "theta"],
-            "Filter": [ "filter_pt"
+            "Filters": [ "filter_pt"
             ], 
-            "LocalProducer": [
-                "VertexCandidatesSelector"
+            "LocalProducers": [
+                 "pt_correction_local"
             ], 
             "FilterPtLow" : "0.0",
-            "FilterPtHigh" : "1.0"                      
+            "FilterPtHigh" : "1.0",
+            "ProducerPtCorrectionFactorLocal" : 1.1             
         },
         "highPt": {
-            "Consumer": [ "ntuple" ],
+            "Consumers": [ "ntuple" ],
             "Quantities" :["pt", "pt_corr", "theta"],
-            "Filter": [  "filter_pt"
+            "Filters": [  "filter_pt"
             ], 
-            "LocalProducer": [
-                "VertexCandidatesSelector"
+            "LocalProducers": [
+                 "pt_correction_local"
             ], 
             "FilterPtLow" : "1.0",
-            "FilterPtHigh" : "10000.0"
+            "FilterPtHigh" : "10000.0",
+            "ProducerPtCorrectionFactorLocal" : 1.0
         }        
     }
 }

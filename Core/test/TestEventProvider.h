@@ -11,6 +11,9 @@
 #include "Artus/Core/interface/EventProviderBase.h"
 
 class TestEventProvider: public EventProviderBase<TestTypes> {
+public:
+	~TestEventProvider() {}
+
 	virtual TestTypes::event_type const& GetCurrentEvent() const ARTUS_CPP11_OVERRIDE {
 		return m_event;
 	}

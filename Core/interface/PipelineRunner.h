@@ -24,8 +24,8 @@
    independet products of the event. These GlobalProducers are run before any pipeline is started 
    and the generated data is passed on to the pipelines.
 */
+template<typename TPipeline, typename TTypes>
 
-template<typename TPipeline, typename TProducer>
 class PipelineRunner: public boost::noncopyable {
 public:
 
@@ -37,10 +37,20 @@ public:
 
 	typedef TPipeline pipeline_type;
 
+	typedef typename TTypes::event_type event_type;
+	typedef typename TTypes::product_type product_type;
+	typedef typename TTypes::setting_type setting_type;
+	typedef typename TTypes::global_setting_type global_setting_type;
+
+	typedef ProducerBase< TTypes > producer_base_type;
+	typedef FilterBase< TTypes > filter_base_type;
+	typedef ConsumerBase< TTypes > consumer_base_type;
+
+
 	typedef boost::ptr_list<TPipeline> Pipelines;
 	typedef typename Pipelines::iterator PipelinesIterator;
 
-	typedef boost::ptr_list<TProducer> Producer;
+	typedef boost::ptr_list< producer_base_type > Producer;
 	typedef typename Producer::iterator ProducerIterator;
 
 	typedef boost::ptr_list<ProgressReportBase> ProgressReportList;
@@ -52,7 +62,7 @@ public:
 	}
 
 	/// Add a GlobalProducer. The object is destroy in the destructor of the PipelineRunner.
-	void AddGlobalProducer(TProducer* prod) {
+	void AddGlobalProducer(producer_base_type* prod) {
 		m_globalProducer.push_back(prod);
 	}
 
@@ -66,10 +76,10 @@ public:
 
 	/// Run the GlobalProducers and all pipelines. Give any pipeline setting here: only the 
 	/// global producer will read from the global settings ...
-	template<class TTypes>
+	template<class TEventProvider>
 	void RunPipelines(
-			EventProviderBase<TTypes> & evtProvider,
-			typename TTypes::global_setting_type const& globalSettings) {
+			/*EventProviderBase<TTypes>*/TEventProvider & evtProvider,
+			global_setting_type const& globalSettings) {
 		long long firstEvent = 0; // settings.Global()->GetSkipEvents();
 		long long nEvents = evtProvider.GetEntries();
 		/*if (settings.Global()->GetEventCount() >= 0)
@@ -94,7 +104,7 @@ public:
 			if (!evtProvider.GetEntry(i))
 				break;
 
-			typename TTypes::product_type productGlobal;
+			product_type productGlobal;
 
 			// create global products
 			for (ProducerIterator it = m_globalProducer.begin();

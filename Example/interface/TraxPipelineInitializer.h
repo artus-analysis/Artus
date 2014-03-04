@@ -32,9 +32,6 @@ public:
 			TraxPipelineSettings const& pset) const ARTUS_CPP11_OVERRIDE
 			{
 
-		pLine->AddFilter(new PtFilter());
-		pLine->AddConsumer(new MeanPtConsumer());
-
 		typedef std::function<
 				std::vector<float>(event_type const&, product_type const& )> ValueExtractLambda;
 		typedef std::pair<ValueExtractLambda, ValueModifiers> ValueDesc;
@@ -62,8 +59,10 @@ public:
 				DefaultModifiers::getThetaModifier());
 
 
-		BOOST_FOREACH(std::string id, pset.GetConsumer())
+		BOOST_FOREACH(std::string id, pset.GetConsumers())
 		{
+			// the quantities_all serves as an alias which
+			// will install custom producers to pipeline
 			if (id == "quantities_all")
 			{
 				// plot Pt
@@ -84,8 +83,6 @@ public:
 						new ProfileConsumerBase<TraxTypes>("pt_over_theta",
 							ThetaSimValue, PtSimValue));
 			}
-			else if (id == "ntuple")
-				pLine->AddConsumer(new TraxNtupleConsumer);
 		}
 
 	}

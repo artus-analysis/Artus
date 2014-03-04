@@ -17,11 +17,7 @@ public:
 	IMPL_SETTING( float, FilterPtLow )
 	IMPL_SETTING( float, FilterPtHigh )
 
-	VarCache<stringvector> m_consumer;
-	stringvector GetConsumer() const
-	{
-		RETURN_CACHED(m_consumer, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".Consumer"))
-	}
+	IMPL_SETTING( float, ProducerPtCorrectionFactorLocal )
 
 	VarCache<stringvector> quantities;
 	stringvector GetQuantities() const
