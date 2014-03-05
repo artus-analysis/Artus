@@ -22,13 +22,21 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
+	typedef typename TTypes::global_setting_type global_setting_type;
 
 	virtual ~FilterBase() {
 	}
 
-	// todo: do we event need this init this ?
+	// initialise global pre-filters
+	virtual void InitGlobal(global_setting_type const& globalSettings) {
+	}
+
+	// initialise local (pre-) filters
+	virtual void InitLocal(setting_type const& pipelineSettings) {
+	}
+
+	// TODO: delete
 	virtual void Init(Pipeline<TTypes> * pset) {
-		//m_pipeline = pset;
 	}
 
 	virtual void Finish() {
@@ -39,6 +47,21 @@ public:
 	 */
 	virtual std::string GetFilterId() const = 0;
 
+	// process global event
+	virtual bool DoesEventPassGlobal(event_type const& event,
+			product_type const& product, global_setting_type const& globalSettings) const
+	{
+		return true;
+	}
+
+	// process local event
+	virtual bool DoesEventPassLocal(event_type const& event,
+			product_type const& product, setting_type const& settings) const
+	{
+		return true;
+	}
+
+	// TODO: delete
 	virtual bool DoesEventPass(event_type const& event,
 			product_type const& product, setting_type const& settings) const = 0;
 

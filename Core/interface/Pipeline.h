@@ -176,6 +176,11 @@ public:
 		for (FilterVectorIterator itfilter = m_filter.begin();
 				itfilter != m_filter.end(); itfilter++) {
 			fres.SetFilterDecisions(itfilter->GetFilterId(),
+					itfilter->DoesEventPassLocal(evt, localProduct,
+							m_pipelineSettings));
+			
+			// TODO: delete
+			fres.SetFilterDecisions(itfilter->GetFilterId(),
 					itfilter->DoesEventPass(evt, localProduct,
 							m_pipelineSettings));
 		}
