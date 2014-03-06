@@ -29,7 +29,7 @@ public:
 		return "valid_jets";
 	}
 
-	virtual bool ProduceGlobal(event_type const& event,
+	virtual void ProduceGlobal(event_type const& event,
 	                           product_type& product,
 	                           global_setting_type const& globalSettings) const ARTUS_CPP11_OVERRIDE
 	{
@@ -86,15 +86,6 @@ public:
 			else
 				product.m_invalidJets.push_back(&(*jet));
 		}
-
-		return true;
-	}
-
-	// empty to serve as a pure global producer
-	virtual void ProduceLocal(event_type const& event,
-	                          product_type& product,
-	                          setting_type const& settings) const ARTUS_CPP11_OVERRIDE
-	{
 	}
 	
 	//bool tagged;

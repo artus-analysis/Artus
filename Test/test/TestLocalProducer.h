@@ -18,14 +18,6 @@ public:
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "test_local_producer";
 	}
-	
-	// empty to serve as a local producer only
-	virtual bool ProduceGlobal(TestEvent const& event,
-			TestProduct & globalProduct,
-			TestGlobalSettings const& globalSettings) const ARTUS_CPP11_OVERRIDE
-	{
-		return true;
-	}
 
 	// for each pipeline
 	virtual void ProduceLocal(TestEvent const& event,
@@ -42,14 +34,6 @@ public:
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "test_local_global_producer";
-	}
-	
-	// empty to serve as a local producer only
-	virtual bool ProduceGlobal(TestEvent const& event,
-			TestProduct & globalProduct,
-			TestGlobalSettings const& globalSettings) const ARTUS_CPP11_OVERRIDE
-	{
-		return true;
 	}
 
 	// for each pipeline

@@ -28,12 +28,12 @@ public:
 	
 	HltProducer() : ProducerBase<TTypes>() {};
 
-	virtual bool ProduceGlobal(event_type const& event,
+	virtual void ProduceGlobal(event_type const& event,
 	                           product_type& product,
 	                           global_setting_type const& globalSettings) const ARTUS_CPP11_OVERRIDE
 	{
 		std::vector<std::string> hltPaths = globalSettings.GetHltPaths();
-		return Produce(event, product, hltPaths, globalSettings.GetVerbose());
+		Produce(event, product, hltPaths, globalSettings.GetVerbose());
 	}
 
 	virtual void ProduceLocal(event_type const& event,
@@ -48,7 +48,7 @@ public:
 private:
 
 	// function that lets this producer work as both a global and a local producer
-	bool Produce(event_type const& event, product_type& product,
+	void Produce(event_type const& event, product_type& product,
 	             std::vector<std::string> hltPaths, bool verbose=false) const
 	{
 		if (verbose)
@@ -104,7 +104,6 @@ private:
 			LOG_FATAL("No HLT trigger path found at all!");
 
 		product.selectedHltName = bestHltName;
-		return true;
 	}
 
 };
