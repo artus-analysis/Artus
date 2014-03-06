@@ -28,8 +28,8 @@ public:
 	virtual void InitGlobal(global_setting_type const& globalSettings) {
 	}
 
-	//virtual void InitLocal(setting_type const& pipelineSettings) {
-	//}
+	virtual void InitLocal(setting_type const& pipelineSettings) {
+	}
 
 	/// if false is returned, the event is dropped as it does not meet the minimum requirements for the producer
 	// called once per event before the pipelines are split
