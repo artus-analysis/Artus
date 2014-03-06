@@ -50,6 +50,9 @@ public:
 	typedef boost::ptr_list<TPipeline> Pipelines;
 	typedef typename Pipelines::iterator PipelinesIterator;
 
+	typedef boost::ptr_list< filter_base_type > Filter;
+	typedef typename Filter::iterator FilterIterator;
+
 	typedef boost::ptr_list< producer_base_type > Producer;
 	typedef typename Producer::iterator ProducerIterator;
 
@@ -59,6 +62,11 @@ public:
 	/// Add a pipeline. The object is destroy in the destructor of the PipelineRunner.
 	void AddPipeline(TPipeline* pline) {
 		m_pipelines.push_back(pline);
+	}
+
+	/// Add a global pre-filter. The object is destroy in the destructor of the PipelineRunner.
+	void AddGlobalPreFilter(filter_base_type* filter) {
+		m_globalPreFilters.push_back(filter);
 	}
 
 	/// Add a GlobalProducer. The object is destroy in the destructor of the PipelineRunner.
@@ -89,6 +97,12 @@ public:
 		 */
 		bool bEventValid = true;
 
+		// init global pre-filters
+		for (FilterIterator it = m_globalPreFilters.begin();
+				it != m_globalPreFilters.end(); it++) {
+			it->InitGlobal(globalSettings);
+		}
+
 		// init global producers
 		for (ProducerIterator it = m_globalProducer.begin();
 				it != m_globalProducer.end(); it++) {
@@ -106,7 +120,16 @@ public:
 
 			product_type productGlobal;
 
-			// create global products
+			// call global pre-filters
+			for (FilterIterator it = m_globalPreFilters.begin();
+					it != m_globalPreFilters.end(); it++) {
+				
+				// TODO: handle return value
+				it->DoesEventPassGlobal(evtProvider.GetCurrentEvent(),
+						productGlobal, globalSettings);
+			}
+
+			// call global products
 			for (ProducerIterator it = m_globalProducer.begin();
 					it != m_globalProducer.end(); it++) {
 				bEventValid = it->ProduceGlobal(evtProvider.GetCurrentEvent(),
@@ -168,6 +191,7 @@ public:
 private:
 
 	Pipelines m_pipelines;
+	Producer m_globalPreFilters;
 	Producer m_globalProducer;
 	ProgressReportList m_progressReport;
 };
