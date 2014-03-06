@@ -40,7 +40,8 @@ public:
 	                          product_type& product,
 	                          setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
-		//Produce(event, product, settings.GetHltPaths());
+		std::vector<std::string> hltPaths = settings.GetHltPaths();
+		Produce(event, product, hltPaths, settings.GetVerbose());
 	}
 
 

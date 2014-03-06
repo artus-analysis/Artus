@@ -26,6 +26,8 @@
 class KappaPipelineSettings: public SettingsBase {
 public:
 
+	IMPL_SETTING_DEFAULT(bool, Verbose, false);
+
 	VarCache<stringvector> quantities;
 	stringvector GetQuantities() const
 	{
