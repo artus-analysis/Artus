@@ -5,7 +5,6 @@
 #include "Artus/Core/interface/FactoryBase.h"
 
 // producer
-#include "Artus/KappaAnalysis/interface/Producers/JsonFilter.h"
 #include "Artus/KappaAnalysis/interface/Producers/HltProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenTauDecayProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidElectronsProducer.h"
@@ -14,6 +13,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/ValidJetsProducer.h"
 
 // filter
+#include "Artus/KappaAnalysis/interface/Filters/JsonFilter.h"
 #include "Artus/KappaAnalysis/interface/Filters/HltFilter.h"
 
 // consumer
@@ -33,8 +33,6 @@ public:
 	{
 		if(id == GenTauDecayProducer<TTypes>().GetProducerId())
 	  		return new GenTauDecayProducer<TTypes>();
-		if(id == JsonFilter<TTypes>().GetProducerId())
-			return new JsonFilter<TTypes>(); // TODO: add global settings to init function
 		else if(id == HltProducer<TTypes>().GetProducerId())
 			return new HltProducer<TTypes>();
 		else if(id == ValidElectronsProducer<TTypes>().GetProducerId())
@@ -52,7 +50,9 @@ public:
 	virtual FilterBase<TTypes> * createFilter ( std::string const& id )
 		ARTUS_CPP11_OVERRIDE
 	{
-		if(id == HltFilter<TTypes>().GetFilterId())
+		if(id == JsonFilter<TTypes>().GetFilterId())
+			return new JsonFilter<TTypes>();
+		else if(id == HltFilter<TTypes>().GetFilterId())
 			return new HltFilter<TTypes>();
 		else
 			return FactoryBase<TTypes>::createFilter( id );
