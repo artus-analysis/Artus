@@ -75,16 +75,17 @@ BOOST_AUTO_TEST_CASE( test_pipeline )
 	TestProduct product;
 	TestEvent td;
 	td.iVal = 23;
+	FilterResult globalFilterResult;
 
 	// run global producers
 	globalProducer.ProduceGlobal(td, product, globalSettings);
-	pline.RunEvent(td, product);
+	pline.RunEvent(td, product, globalFilterResult);
 
 	globalProducer.ProduceGlobal(td, product, globalSettings);
-	pline.RunEvent(td, product);
+	pline.RunEvent(td, product, globalFilterResult);
 
 	globalProducer.ProduceGlobal(td, product, globalSettings);
-	pline.RunEvent(td, product);
+	pline.RunEvent(td, product, globalFilterResult);
 
 	pline.FinishPipeline();
 
@@ -112,10 +113,11 @@ BOOST_AUTO_TEST_CASE( test_pipeline_gobal_local_producer )
 	TestProduct product;
 	TestEvent td;
 	td.iVal = 23;
+	FilterResult globalFilterResult;
 
 	// run global producers
 	globalProducer.ProduceGlobal( td, product, globalSettings );
-	pline.RunEvent( td, product );
+	pline.RunEvent( td, product, globalFilterResult );
 
 	pline.FinishPipeline();
 
@@ -156,15 +158,16 @@ BOOST_AUTO_TEST_CASE( test_filter )
 	TestEvent td;
 	TestProduct product;
 	TestGlobalProducer globalProducer;
+	FilterResult globalFilterResult;
 
 	globalProducer.ProduceGlobal(td, product, globalSettings);
-	pline.RunEvent(td, product);
+	pline.RunEvent(td, product, globalFilterResult);
 	td.iVal++;
 	globalProducer.ProduceGlobal(td, product, globalSettings);
-	pline.RunEvent(td, product);
+	pline.RunEvent(td, product, globalFilterResult);
 	td.iVal++;
 	globalProducer.ProduceGlobal(td, product, globalSettings);
-	pline.RunEvent(td, product);
+	pline.RunEvent(td, product, globalFilterResult);
 
 	pline.FinishPipeline();
 
@@ -193,9 +196,10 @@ BOOST_AUTO_TEST_CASE( test_multiplefilter )
 
 	TestEvent td;
 	TestProduct product;
+	FilterResult globalFilterResult;
 
 	globalProducer.ProduceGlobal(td, product, globalSettings);
-	pline.RunEvent(td, product);
+	pline.RunEvent(td, product, globalFilterResult);
 
 	pline.FinishPipeline();
 
