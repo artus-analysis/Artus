@@ -51,14 +51,14 @@ public:
 	virtual bool DoesEventPassGlobal(event_type const& event,
 			product_type const& product, global_setting_type const& globalSettings) const
 	{
-		return true;
+		LOG_FATAL("DoesEventPassGlobal for filter " << this->GetFilterId() << " is not implemented");
 	}
 
 	// process local event
 	virtual bool DoesEventPassLocal(event_type const& event,
 			product_type const& product, setting_type const& settings) const
 	{
-		return true;
+		LOG_FATAL("DoesEventPassLocal for filter " << this->GetFilterId() << " is not implemented");
 	}
 
 	// TODO: delete
