@@ -35,9 +35,8 @@ public:
 	virtual void InitLocal(setting_type const& pipelineSettings) {
 	}
 
-	/// if false is returned, the event is dropped as it does not meet the minimum requirements for the producer
 	// called once per event before the pipelines are split
-	virtual bool ProduceGlobal(event_type const& event, product_type& product,
+	virtual void ProduceGlobal(event_type const& event, product_type& product,
 	                           global_setting_type const& globalSettings) const {
 		LOG_FATAL("ProduceGlobal for producer " << this->GetProducerId() << " is not implemented");
 	}
