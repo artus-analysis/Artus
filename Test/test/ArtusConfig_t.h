@@ -42,7 +42,6 @@ BOOST_AUTO_TEST_CASE( test_parse_config )
 	<<	    "    }"
 	<<	    "}"
 	<<	"}";
-	std::cout << std::endl << configStream.str();
 
 	ArtusConfig cfg ( configStream );
 
