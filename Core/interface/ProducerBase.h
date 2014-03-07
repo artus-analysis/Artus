@@ -3,6 +3,8 @@
 
 #include <boost/noncopyable.hpp>
 
+#include "Artus/Core/interface/GlobalInclude.h"
+
 /**
    \brief Base class for Producers, that extend the product.
    
