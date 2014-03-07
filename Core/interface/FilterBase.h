@@ -39,10 +39,6 @@ public:
 	virtual void InitLocal(setting_type const& pipelineSettings) {
 	}
 
-	// TODO: delete
-	virtual void Init(Pipeline<TTypes> * pset) {
-	}
-
 	/*
 	 * not supported any more. Request it, if you need it again
 	virtual void Finish() {
@@ -68,10 +64,6 @@ public:
 		LOG_FATAL("DoesEventPassLocal for filter " << this->GetFilterId() << " is not implemented");
 		return false;
 	}
-
-	// TODO: delete
-	virtual bool DoesEventPass(event_type const& event,
-			product_type const& product, setting_type const& settings) const = 0;
 
 	virtual std::string ToString(bool bVerbose = false) {
 		return GetFilterId();

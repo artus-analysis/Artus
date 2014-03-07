@@ -27,7 +27,9 @@ public:
 	}
 
 	virtual bool DoesEventPassLocal(const TestEvent & event,
-			TestProduct const& product, TestSettings const& settings) const {
+			TestProduct const& product, TestSettings const& settings)  const
+	ARTUS_CPP11_OVERRIDE
+	{
 		return (event.iVal < 2);
 	}
 };
@@ -40,7 +42,9 @@ public:
 	}
 
 	virtual bool DoesEventPassLocal(const TestEvent & event,
-			TestProduct const& product, TestSettings const& settings) const {
+			TestProduct const& product, TestSettings const& settings) const
+	ARTUS_CPP11_OVERRIDE
+	{
 		return false;
 	}
 };
@@ -53,8 +57,9 @@ public:
 	}
 
 	virtual bool DoesEventPassLocal(const TestEvent & event,
-			TestProduct const& product, TestSettings const& settings) const {
-
+			TestProduct const& product, TestSettings const& settings) const
+	ARTUS_CPP11_OVERRIDE
+	{
 		// this is only 1, if the local producer ran before
 		return ( product.iLocalProduct == 1 );
 	}
