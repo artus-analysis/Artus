@@ -2,7 +2,7 @@
     "SkipEvents": 0,
     "EventCount": -1, 
     "ProducerPtCorrectionFactor": 1.05,
-    "FilterProducer": [
+    "GlobalFilterProducer": [
         "producer:pt_correction"
     ], 
     "InputFiles": [
