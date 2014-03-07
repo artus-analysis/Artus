@@ -105,8 +105,6 @@ public:
 
 		for (long long i = firstEvent; i < nEvents; ++i) {
 
-			bool bEventValid = true;
-
 			for (ProgressReportIterator it = m_progressReport.begin();
 					it != m_progressReport.end(); it++) {
 				it->update(i, nEvents);
@@ -119,31 +117,33 @@ public:
 
 			for( ProcessNodesIterator it = m_globalNodes.begin();
 					it != m_globalNodes.end(); it ++ ) {
+
+				// stop processing as soon as one filter fails
+				// but the consumers will still be processed
+				if (! globalFilterResult.HasPassed())
+					break;
+				
 				if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
 					static_cast<producer_base_type&> ( *it ) . ProduceGlobal(evtProvider.GetCurrentEvent(),
 							productGlobal, globalSettings);
 				}
 				else if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
-					// if one filter returns false, the event is not processed further
-					bEventValid =
-						static_cast<filter_base_type&> ( *it ) . DoesEventPassGlobal(evtProvider.GetCurrentEvent(),
-								productGlobal, globalSettings);
-					if ( !bEventValid )
-						break;
+					filter_base_type & flt = static_cast<filter_base_type&> ( *it );
+					const bool filterResult = flt . DoesEventPassGlobal(evtProvider.GetCurrentEvent(),
+					                                                    productGlobal, globalSettings);
+					globalFilterResult.SetFilterDecisions( flt.GetFilterId(), filterResult );
 				}
 				else {
 					LOG_FATAL( "ProcessNodeType not supported by the pipeline runner" );
 				}
 			}
 
-			// run the pipelines, if the event is valid
-			if (bEventValid) {
-				for (PipelinesIterator it = m_pipelines.begin();
-						it != m_pipelines.end(); it++) {
-					if (it->GetSettings().GetLevel() == 1)
-						it->RunEvent(evtProvider.GetCurrentEvent(),
-								productGlobal, globalFilterResult);
-				}
+			// run the pipelines
+			for (PipelinesIterator it = m_pipelines.begin();
+					it != m_pipelines.end(); it++) {
+				if (it->GetSettings().GetLevel() == 1)
+					it->RunEvent(evtProvider.GetCurrentEvent(), productGlobal,
+					             globalFilterResult);
 			}
 		}
 

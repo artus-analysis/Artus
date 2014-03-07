@@ -159,15 +159,20 @@ public:
 			product_type const& globalProduct,
 			FilterResult const& globalFilterResult) {
 
-		// make a local copy of the global product and allow this one to be modified by local
-		// Producers.
+		// make a local copy of the global product/filter result
+		// and allow this one to be modified by local producers/filters.
 		product_type localProduct ( globalProduct );
+		FilterResult localFilterResult ( globalFilterResult );
 
 		// run Filters & Producers
-		FilterResult fres;
-		bool eventValid = true;
 		for( ProcessNodeIterator it = m_nodes.begin();
 				it != m_nodes.end(); it ++ ) {
+
+			// stop processing as soon as one filter fails
+			// but the consumers will still be processed
+			if (! localFilterResult.HasPassed())
+				break;
+			
 			if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
 				static_cast< ProducerForThisPipeline &> ( *it ) . ProduceLocal(evt, localProduct,
 						m_pipelineSettings);
@@ -175,14 +180,8 @@ public:
 			else if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
 				FilterForThisPipeline & flt = static_cast<FilterForThisPipeline &> ( *it );
 				const bool filterResult = flt . DoesEventPassLocal(evt, localProduct,
-											m_pipelineSettings);
-				eventValid = filterResult;
-				fres.SetFilterDecisions( flt.GetFilterId(), filterResult );
-
-				// stop processing as soon as one filter fails
-				// but the consumers will still be processed
-				if ( !eventValid )
-					break;
+				                                                   m_pipelineSettings);
+				localFilterResult.SetFilterDecisions( flt.GetFilterId(), filterResult );
 			}
 			else {
 				LOG_FATAL( "ProcessNodeType not supported by the pipeline" );
@@ -192,11 +191,11 @@ public:
 		// run Consumers
 		for (ConsumerVectorIterator itcons = m_consumer.begin();
 				itcons != m_consumer.end(); itcons++) {
-			if (fres.HasPassed()) {
+			if (localFilterResult.HasPassed()) {
 				itcons->ProcessFilteredEvent(evt, localProduct);
 			}
 
-			itcons->ProcessEvent(evt, localProduct, fres);
+			itcons->ProcessEvent(evt, localProduct, localFilterResult);
 		}
 	}
 
