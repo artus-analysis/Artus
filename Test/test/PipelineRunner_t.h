@@ -11,6 +11,7 @@
 #include "TestPipeline.h"
 #include "TestGlobalProducer.h"
 #include "TestEventProvider.h"
+#include "TestPipelineRunner.h"
 #include "TestFilter.h"
 #include "Pipeline_t.h"
 #include "TestFactory.h"
@@ -19,11 +20,11 @@
 
 BOOST_AUTO_TEST_CASE( test_event_prunner_global_product )
 {
-	TestPipeline * tline1 = new TestPipeline;
-	TestPipeline * tline2 = new TestPipeline;
-	TestPipeline * tline3 = new TestPipeline;
-	TestPipeline * tline4 = new TestPipeline;
-	TestPipeline * tline5 = new TestPipeline;
+	TestPipelineInstr * tline1 = new TestPipelineInstr;
+	TestPipelineInstr * tline2 = new TestPipelineInstr;
+	TestPipelineInstr * tline3 = new TestPipelineInstr;
+	TestPipelineInstr * tline4 = new TestPipelineInstr;
+	TestPipelineInstr * tline5 = new TestPipelineInstr;
 
 	tline1->bCheckProducer = true;
 	tline2->bCheckProducer = true;
@@ -35,13 +36,13 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_product )
 	TestSettings tset;
 	TestGlobalSettings global_tset;
 	tset.SetLevel(1);
-	tline1->InitPipeline( tset, TestPipelineInitilizer() );
-	tline2->InitPipeline( tset, TestPipelineInitilizer() );
-	tline3->InitPipeline( tset, TestPipelineInitilizer() );
-	tline4->InitPipeline( tset, TestPipelineInitilizer() );
-	tline5->InitPipeline( tset, TestPipelineInitilizer() );
+	tline1->InitPipeline( tset, TestPipelineInitializer() );
+	tline2->InitPipeline( tset, TestPipelineInitializer() );
+	tline3->InitPipeline( tset, TestPipelineInitializer() );
+	tline4->InitPipeline( tset, TestPipelineInitializer() );
+	tline5->InitPipeline( tset, TestPipelineInitializer() );
 
-	PipelineRunner<TestPipeline, TestTypes > prunner;
+	TestPipelineRunnerInstr prunner;
 	// don't show progress report in this test cases
 	prunner.ClearProgressReports();
 
@@ -50,7 +51,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_product )
 
 	prunner.AddGlobalProducer( new TestGlobalProducer() );
 
-	std::vector<TestPipeline *> vPipes;
+	std::vector<TestPipelineInstr *> vPipes;
 	vPipes.push_back( tline3 );
 	vPipes.push_back( tline4 );
 	vPipes.push_back( tline5 );
@@ -69,16 +70,16 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_product )
 
 BOOST_AUTO_TEST_CASE( test_event_prunner_global_producer_filter )
 {
-	TestPipeline * tline1 = new TestPipeline;
+	TestPipelineInstr * tline1 = new TestPipelineInstr;
 
 	tline1->bCheckProducer = true;
 
 	TestSettings tset;
 	TestGlobalSettings global_tset;
 	tset.SetLevel(1);
-	tline1->InitPipeline( tset, TestPipelineInitilizer() );
+	tline1->InitPipeline( tset, TestPipelineInitializer() );
 
-	PipelineRunner<TestPipeline, TestTypes > prunner;
+	TestPipelineRunnerInstr prunner;
 	// don't show progress report in this test cases
 	prunner.ClearProgressReports();
 
@@ -97,16 +98,16 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_producer_filter )
 
 BOOST_AUTO_TEST_CASE( test_event_prunner_global_producer_filter_pass )
 {
-	TestPipeline * tline1 = new TestPipeline;
+	TestPipelineInstr * tline1 = new TestPipelineInstr;
 
 	tline1->bCheckProducer = true;
 
 	TestSettings tset;
 	TestGlobalSettings global_tset;
 	tset.SetLevel(1);
-	tline1->InitPipeline( tset, TestPipelineInitilizer() );
+	tline1->InitPipeline( tset, TestPipelineInitializer() );
 
-	PipelineRunner<TestPipeline, TestTypes > prunner;
+	TestPipelineRunnerInstr prunner;
 	// don't show progress report in this test cases
 	prunner.ClearProgressReports();
 
@@ -127,29 +128,29 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_producer_filter_pass )
 
 BOOST_AUTO_TEST_CASE( test_event_prunner )
 {
-	TestPipeline * tline1 = new TestPipeline;
-	TestPipeline * tline2 = new TestPipeline;
-	TestPipeline * tline3 = new TestPipeline;
-	TestPipeline * tline4 = new TestPipeline;
-	TestPipeline * tline5 = new TestPipeline;
+	TestPipelineInstr * tline1 = new TestPipelineInstr;
+	TestPipelineInstr * tline2 = new TestPipelineInstr;
+	TestPipelineInstr * tline3 = new TestPipelineInstr;
+	TestPipelineInstr * tline4 = new TestPipelineInstr;
+	TestPipelineInstr * tline5 = new TestPipelineInstr;
 
 	TestSettings tset;
 	TestGlobalSettings global_tset;
 	tset.SetLevel(1);
-	tline1->InitPipeline( tset, TestPipelineInitilizer() );
-	tline2->InitPipeline( tset, TestPipelineInitilizer() );
-	tline3->InitPipeline( tset, TestPipelineInitilizer() );
-	tline4->InitPipeline( tset, TestPipelineInitilizer() );
-	tline5->InitPipeline( tset, TestPipelineInitilizer() );
+	tline1->InitPipeline( tset, TestPipelineInitializer() );
+	tline2->InitPipeline( tset, TestPipelineInitializer() );
+	tline3->InitPipeline( tset, TestPipelineInitializer() );
+	tline4->InitPipeline( tset, TestPipelineInitializer() );
+	tline5->InitPipeline( tset, TestPipelineInitializer() );
 
-	PipelineRunner<TestPipeline, TestProducerBase> prunner;
+	TestPipelineRunnerInstr prunner;
 	// don't show progress report in this test cases
 	prunner.ClearProgressReports();
 
 	prunner.AddPipeline( tline1 );
 	prunner.AddPipeline( tline2 );
 
-	std::vector<TestPipeline *> vPipes;
+	std::vector<TestPipelineInstr *> vPipes;
 	vPipes.push_back( tline3 );
 	vPipes.push_back( tline4 );
 	vPipes.push_back( tline5 );
@@ -167,20 +168,20 @@ BOOST_AUTO_TEST_CASE( test_event_prunner )
 
 BOOST_AUTO_TEST_CASE( test_event_prunner_multi_level )
 {
-	TestPipeline * tline1 = new TestPipeline;
-	TestPipeline * tline2 = new TestPipeline;
-	TestPipeline * tline3 = new TestPipeline;
+	TestPipelineInstr * tline1 = new TestPipelineInstr;
+	TestPipelineInstr * tline2 = new TestPipelineInstr;
+	TestPipelineInstr * tline3 = new TestPipelineInstr;
 
 	TestSettings tset_lvl1;
 	TestSettings tset_lvl2;
 	TestGlobalSettings global_tset_lvl2;
 	tset_lvl1.SetLevel(1);
 	tset_lvl2.SetLevel(2);
-	tline1->InitPipeline( tset_lvl1, TestPipelineInitilizer() );
-	tline2->InitPipeline( tset_lvl1, TestPipelineInitilizer() );
-	tline3->InitPipeline( tset_lvl2, TestPipelineInitilizer() );
+	tline1->InitPipeline( tset_lvl1, TestPipelineInitializer() );
+	tline2->InitPipeline( tset_lvl1, TestPipelineInitializer() );
+	tline3->InitPipeline( tset_lvl2, TestPipelineInitializer() );
 
-	PipelineRunner<TestPipeline, TestProducerBase> prunner;
+	TestPipelineRunnerInstr prunner;
 	// don't show progress report in this test cases
 	prunner.ClearProgressReports();
 	prunner.AddPipelines( { {tline1, tline2, tline3}});

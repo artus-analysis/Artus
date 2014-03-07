@@ -48,7 +48,8 @@ add_executable(artus_core_test
 
 target_link_libraries( artus_core_test 	
 	artus_core	
-	artus_configuration)
+	artus_configuration
+	${ROOT_LIBRARIES})
 
 # use a capitaal *E*xample here and no underscore
 # to be compatible of how the binary is named in the CMSSW build

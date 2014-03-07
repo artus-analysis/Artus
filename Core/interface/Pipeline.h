@@ -35,7 +35,7 @@ public:
 
 	typedef Pipeline<TTypes> pipeline_type;
 
-	virtual void InitPipeline(pipeline_type * pLine, setting_type const& pset) const = 0;
+	virtual void InitPipeline(pipeline_type * pLine, setting_type const& pset) const {};
 
 };
 
@@ -180,6 +180,7 @@ public:
 				fres.SetFilterDecisions( flt.GetFilterId(), filterResult );
 
 				// stop processing as soon as one filter fails
+				// but the consumers will still be processed
 				if ( !eventValid )
 					break;
 			}
@@ -234,6 +235,10 @@ public:
 	/// Add a new Producer to this Pipeline. The object will be freed in Pipelines destructor.
 	virtual void AddProducer(ProducerForThisPipeline * pProd) {
 		m_nodes.push_back ( pProd );
+	}
+
+	ProcessNodeVector & GetNodes () {
+		return m_nodes;
 	}
 
 	/// Return a list of filters is this pipeline.

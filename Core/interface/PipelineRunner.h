@@ -185,6 +185,14 @@ public:
 		m_progressReport.clear();
 	}
 
+	Pipelines & GetPipelines() {
+		return m_pipelines;
+	}
+
+	ProcessNodes & GetGlobalNodes() {
+		return m_globalNodes;
+	}
+
 private:
 
 	Pipelines m_pipelines;

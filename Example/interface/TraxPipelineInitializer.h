@@ -25,7 +25,7 @@
 #include "MeanPtConsumer.h"
 #include "TraxNtupleConsumer.h"
 
-class TraxPipelineInitializer: public PipelineInitilizerBase<TraxTypes> {
+class TraxPipelineInitializer: public PipelineInitilizerBase<TraxTypes > {
 public:
 
 	virtual void InitPipeline(TraxPipeline * pLine,

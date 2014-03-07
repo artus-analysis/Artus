@@ -6,7 +6,9 @@
 
 #pragma once
 
-class TestSettings {
+#include "Artus/Configuration/interface/SettingsBase.h"
+
+class TestSettings : public SettingsBase {
 public:
 
 	TestSettings() :
@@ -22,7 +24,7 @@ public:
 
 };
 
-class TestGlobalSettings {
+class TestGlobalSettings : public GlobalSettingsBase {
 public:
 
 	TestGlobalSettings() :

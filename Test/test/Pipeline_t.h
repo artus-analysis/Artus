@@ -15,18 +15,11 @@
 #include "Artus/Core/interface/Pipeline.h"
 
 #include "TestGlobalProducer.h"
+#include "TestPipelineRunner.h"
 #include "TestLocalProducer.h"
 #include "TestConsumer.h"
 #include "TestFilter.h"
 #include "TestTypes.h"
-
-class TestPipelineInitilizer: public PipelineInitilizerBase<TestTypes> {
-public:
-	virtual void InitPipeline(Pipeline<TestTypes> * pLine,
-			TestSettings const& pset) const {
-	}
-
-};
 
 BOOST_AUTO_TEST_CASE( test_pipeline )
 {
@@ -40,7 +33,7 @@ BOOST_AUTO_TEST_CASE( test_pipeline )
 
 	pline.AddProducer( new TestLocalProducer() );
 
-	TestPipelineInitilizer init;
+	TestPipelineInitializer init;
 
 	TestSettings settings;
 	TestGlobalSettings globalSettings;
@@ -78,7 +71,7 @@ BOOST_AUTO_TEST_CASE( test_pipeline_gobal_local_producer )
 	pline.AddConsumer( pCons1 );
 	pline.AddProducer( new TestLocalProducerFromGlobal() );
 
-	TestPipelineInitilizer init;
+	TestPipelineInitializer init;
 
 	TestSettings settings;
 	TestGlobalSettings globalSettings;
@@ -124,7 +117,7 @@ BOOST_AUTO_TEST_CASE( test_filter )
 	pline.AddProducer( new TestLocalProducer() );
 	pline.AddFilter( new TestFilter() );
 
-	TestPipelineInitilizer init;
+	TestPipelineInitializer init;
 
 	TestSettings settings;
 	TestGlobalSettings globalSettings;
@@ -165,7 +158,7 @@ BOOST_AUTO_TEST_CASE( test_multiplefilter_producer )
 	// if run after TestFilter3, TestFilter3 will be still true
 	pline.AddProducer( new TestLocalProducer() );
 
-	TestPipelineInitilizer init;
+	TestPipelineInitializer init;
 	TestSettings settings;
 	TestGlobalSettings globalSettings;
 	pline.InitPipeline( settings, init );
@@ -200,7 +193,7 @@ BOOST_AUTO_TEST_CASE( test_multiplefilter_producer_stop_exec )
 	pline.AddFilter( new TestFilter() );
 	pline.AddProducer( new TestLocalProducer() );
 
-	TestPipelineInitilizer init;
+	TestPipelineInitializer init;
 	TestSettings settings;
 	TestGlobalSettings globalSettings;
 	pline.InitPipeline( settings, init );
@@ -229,7 +222,7 @@ BOOST_AUTO_TEST_CASE( test_event_pipeline_level2 )
 	pline.AddConsumer( pCons1 );
 	pline.AddConsumer( pCons2 );
 
-	TestPipelineInitilizer init;
+	TestPipelineInitializer init;
 
 	TestSettings settings;
 	TestGlobalSettings globalSettings;

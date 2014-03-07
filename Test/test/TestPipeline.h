@@ -6,10 +6,12 @@
 
 #pragma once
 
-class TestPipeline: public Pipeline<TestTypes> {
+#include "TestTypes.h"
+
+class TestPipelineInstr: public Pipeline<TestTypes> {
 public:
 
-	TestPipeline() : iRunEvent(0), iRun(0), iFinish(0), bCheckProducer(false) {
+	TestPipelineInstr() : iRunEvent(0), iRun(0), iFinish(0), bCheckProducer(false) {
 
 	}
 
@@ -41,3 +43,5 @@ public:
 	int iFinish;
 	bool bCheckProducer;
 };
+
+typedef Pipeline<TestTypes> TestPipeline;
