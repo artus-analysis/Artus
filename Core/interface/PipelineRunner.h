@@ -131,7 +131,7 @@ public:
 					filter_base_type & flt = static_cast<filter_base_type&> ( *it );
 					const bool filterResult = flt . DoesEventPassGlobal(evtProvider.GetCurrentEvent(),
 					                                                    productGlobal, globalSettings);
-					globalFilterResult.SetFilterDecisions( flt.GetFilterId(), filterResult );
+					globalFilterResult.SetFilterDecision( flt.GetFilterId(), filterResult );
 				}
 				else {
 					LOG_FATAL( "ProcessNodeType not supported by the pipeline runner" );

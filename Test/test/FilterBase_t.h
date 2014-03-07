@@ -15,8 +15,8 @@ BOOST_AUTO_TEST_CASE( test_filter_result )
 {
 	FilterResult fres;
 
-	fres.SetFilterDecisions("filter1",true);
-	fres.SetFilterDecisions("filter_too", false);
+	fres.SetFilterDecision("filter1",true);
+	fres.SetFilterDecision("filter_too", false);
 
 	BOOST_CHECK( fres.GetFilterDecision("filter1") == true );
 	BOOST_CHECK( fres.GetFilterDecision("filter_too") == false );

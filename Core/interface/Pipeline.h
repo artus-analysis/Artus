@@ -181,7 +181,7 @@ public:
 				FilterForThisPipeline & flt = static_cast<FilterForThisPipeline &> ( *it );
 				const bool filterResult = flt . DoesEventPassLocal(evt, localProduct,
 				                                                   m_pipelineSettings);
-				localFilterResult.SetFilterDecisions( flt.GetFilterId(), filterResult );
+				localFilterResult.SetFilterDecision( flt.GetFilterId(), filterResult );
 			}
 			else {
 				LOG_FATAL( "ProcessNodeType not supported by the pipeline" );

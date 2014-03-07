@@ -51,7 +51,7 @@ public:
 		return m_filterDecision;
 	}
 
-	void SetFilterDecisions(std::string filterName, bool passed) {
+	void SetFilterDecision(std::string filterName, bool passed) {
 		m_filterDecision[filterName] = passed;
 		
 		if (!passed && m_IsCachedHasPassed && m_cacheHasPassed)
