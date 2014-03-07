@@ -141,10 +141,6 @@ public:
 		for (auto & it : m_consumer) {
 			it.Finish();
 		}
-
-		for (auto & it : m_filter) {
-			it.Finish();
-		}
 	}
 
 	/// Run the pipeline without specific event input. This is most useful for Pipelines which 

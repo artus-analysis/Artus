@@ -43,8 +43,10 @@ public:
 	virtual void Init(Pipeline<TTypes> * pset) {
 	}
 
+	/*
+	 * not supported any more. Request it, if you need it again
 	virtual void Finish() {
-	}
+	}*/
 
 	/*
 	 * Must return a unique id of the filter.
