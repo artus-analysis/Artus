@@ -53,6 +53,9 @@ public:
 
 	void SetFilterDecisions(std::string filterName, bool passed) {
 		m_filterDecision[filterName] = passed;
+		
+		if (!passed && m_IsCachedHasPassed && m_cacheHasPassed)
+			m_IsCachedHasPassed = false;
 	}
 
 	std::string ToString() const {
