@@ -101,7 +101,7 @@ private:
 		typedef typename TPipelineRunner::filter_base_type filter_base_type;
 
 		TGlobalSettings gSettings = GetGlobalSettings< TGlobalSettings >();
-		stringvector globalProds = gSettings.GetGlobalFilterProducer();
+		stringvector globalProds = gSettings.GetGlobalProcessors();
 		for ( stringvector::const_iterator it = globalProds.begin();
 			it != globalProds.end(); it ++ ) {
 
@@ -161,7 +161,7 @@ private:
 			pipeline_type* pLine = new pipeline_type; //CreateDefaultPipeline();
 
 			// add local producer
-			stringvector localProducers = pset.GetFilterProducer();
+			stringvector localProducers = pset.GetProcessors();
 			for ( stringvector::const_iterator it = localProducers.begin();
 				it != localProducers.end(); it ++ ) {
 

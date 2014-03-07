@@ -55,10 +55,10 @@ public:
 	}
 
 	/// get list of all local producers
-	VarCache<stringvector> m_filterProducer;
-	stringvector GetFilterProducer() const
+	VarCache<stringvector> m_processors;
+	stringvector GetProcessors() const
 	{
-		RETURN_CACHED(m_filterProducer, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".FilterProducer"))
+		RETURN_CACHED(m_processors, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".Processors"))
 	}
 
 	/// get list of all consumers
@@ -85,10 +85,10 @@ public:
 	IMPL_PROPERTY(boost::property_tree::ptree*, PropTree)
 
 	/// get list of all local producers
-	VarCache<stringvector> m_globalFilterProducer;
-	stringvector GetGlobalFilterProducer() const
+	VarCache<stringvector> m_globalProcessors;
+	stringvector GetGlobalProcessors() const
 	{
-		RETURN_CACHED(m_globalFilterProducer, PropertyTreeSupport::GetAsStringList(GetPropTree(), "GlobalFilterProducer"))
+		RETURN_CACHED(m_globalProcessors, PropertyTreeSupport::GetAsStringList(GetPropTree(), "GlobalProcessors"))
 	}
 
 };
