@@ -25,7 +25,6 @@
    and the generated data is passed on to the pipelines.
 */
 template<typename TPipeline, typename TTypes>
-
 class PipelineRunner: public boost::noncopyable {
 public:
 
@@ -46,35 +45,35 @@ public:
 	typedef FilterBase< TTypes > filter_base_type;
 	typedef ConsumerBase< TTypes > consumer_base_type;
 
-
 	typedef boost::ptr_list<TPipeline> Pipelines;
 	typedef typename Pipelines::iterator PipelinesIterator;
 
-	typedef boost::ptr_list< filter_base_type > Filter;
-	typedef typename Filter::iterator FilterIterator;
-
-	typedef boost::ptr_list< producer_base_type > Producer;
-	typedef typename Producer::iterator ProducerIterator;
+	typedef boost::ptr_list< ProcessNodeBase > ProcessNodes;
+	typedef typename ProcessNodes::iterator ProcessNodesIterator;
 
 	typedef boost::ptr_list<ProgressReportBase> ProgressReportList;
 	typedef typename ProgressReportList::iterator ProgressReportIterator;
 
-	/// Add a pipeline. The object is destroy in the destructor of the PipelineRunner.
+	/// Add a pipeline. The object is destroyed in the destructor of the PipelineRunner.
 	void AddPipeline(TPipeline* pline) {
 		m_pipelines.push_back(pline);
 	}
 
-	/// Add a global pre-filter. The object is destroy in the destructor of the PipelineRunner.
-	void AddGlobalPreFilter(filter_base_type* filter) {
-		m_globalPreFilters.push_back(filter);
+	/// Add a global filter. The object is destroyed in the destructor of the PipelineRunner.
+	// the execution order of AddGlobalFilter and AddGlobalProducer is defined by the order
+	// this methods are called
+	void AddGlobalFilter(filter_base_type* filter) {
+		m_globalNodes.push_back(filter);
 	}
 
-	/// Add a GlobalProducer. The object is destroy in the destructor of the PipelineRunner.
+	/// Add a GlobalProducer. The object is destroyed in the destructor of the PipelineRunner.
+	// the execution order of AddGlobalFilter and AddGlobalProducer is defined by the order
+	// this methods are called
 	void AddGlobalProducer(producer_base_type* prod) {
-		m_globalProducer.push_back(prod);
+		m_globalNodes.push_back(prod);
 	}
 
-	/// Add a range of pipelines. The object is destroy in the destructor of the PipelineRunner.
+	/// Add a range of pipelines. The object is destroyed in the destructor of the PipelineRunner.
 	void AddPipelines(std::vector<TPipeline*> pVec) {
 
 		for (auto * it : pVec) {
@@ -86,30 +85,27 @@ public:
 	/// global producer will read from the global settings ...
 	template<class TEventProvider>
 	void RunPipelines(
-			/*EventProviderBase<TTypes>*/TEventProvider & evtProvider,
+			TEventProvider & evtProvider,
 			global_setting_type const& globalSettings) {
-		long long firstEvent = 0; // settings.Global()->GetSkipEvents();
+		long long firstEvent = 0;
 		long long nEvents = evtProvider.GetEntries();
-		/*if (settings.Global()->GetEventCount() >= 0)
-		 nEvents = firstEvent + settings.Global()->GetEventCount();
-		 if (firstEvent != 0 || nEvents != evtProvider.GetEntries())
-		 LOG(red << "Warning: Custom range of events: " << firstEvent << " to " << nEvents << reset)
-		 */
-		bool bEventValid = true;
 
-		// init global pre-filters
-		for (FilterIterator it = m_globalPreFilters.begin();
-				it != m_globalPreFilters.end(); it++) {
-			it->InitGlobal(globalSettings);
-		}
-
-		// init global producers
-		for (ProducerIterator it = m_globalProducer.begin();
-				it != m_globalProducer.end(); it++) {
-			it->InitGlobal(globalSettings);
+		for( ProcessNodesIterator it = m_globalNodes.begin();
+				it != m_globalNodes.end(); it ++ ) {
+			if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
+				static_cast<producer_base_type&> ( *it ) . InitGlobal(globalSettings);
+			}
+			else if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
+				static_cast<filter_base_type&> ( *it ) . InitGlobal(globalSettings);
+			}
+			else {
+				LOG_FATAL( "ProcessNodeType not supported by the pipeline runner" );
+			}
 		}
 
 		for (long long i = firstEvent; i < nEvents; ++i) {
+
+			bool bEventValid = true;
 
 			for (ProgressReportIterator it = m_progressReport.begin();
 					it != m_progressReport.end(); it++) {
@@ -119,24 +115,25 @@ public:
 				break;
 
 			product_type productGlobal;
+			FilterResult globalFilterResult;
 
-			// call global pre-filters
-			for (FilterIterator it = m_globalPreFilters.begin();
-					it != m_globalPreFilters.end(); it++) {
-				
-				// TODO: handle return value
-				it->DoesEventPassGlobal(evtProvider.GetCurrentEvent(),
-						productGlobal, globalSettings);
-			}
-
-			// call global products
-			for (ProducerIterator it = m_globalProducer.begin();
-					it != m_globalProducer.end(); it++) {
-				bEventValid = it->ProduceGlobal(evtProvider.GetCurrentEvent(),
-						productGlobal, globalSettings);
-				//LOG(it->GetContent())
-				if (!bEventValid)
-					break;
+			for( ProcessNodesIterator it = m_globalNodes.begin();
+					it != m_globalNodes.end(); it ++ ) {
+				if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
+					static_cast<producer_base_type&> ( *it ) . ProduceGlobal(evtProvider.GetCurrentEvent(),
+							productGlobal, globalSettings);
+				}
+				else if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
+					// if one filter returns false, the event is not processed further
+					bEventValid =
+						static_cast<filter_base_type&> ( *it ) . DoesEventPassGlobal(evtProvider.GetCurrentEvent(),
+								productGlobal, globalSettings);
+					if ( !bEventValid )
+						break;
+				}
+				else {
+					LOG_FATAL( "ProcessNodeType not supported by the pipeline runner" );
+				}
 			}
 
 			// run the pipelines, if the event is valid
@@ -145,7 +142,7 @@ public:
 						it != m_pipelines.end(); it++) {
 					if (it->GetSettings().GetLevel() == 1)
 						it->RunEvent(evtProvider.GetCurrentEvent(),
-								productGlobal);
+								productGlobal, globalFilterResult);
 				}
 			}
 		}
@@ -191,8 +188,7 @@ public:
 private:
 
 	Pipelines m_pipelines;
-	Producer m_globalPreFilters;
-	Producer m_globalProducer;
+	ProcessNodes m_globalNodes;
 	ProgressReportList m_progressReport;
 };
 

@@ -16,6 +16,36 @@
 
 #include <boost/test/included/unit_test.hpp>
 
+class TestGlobalFilter: public FilterBase<TestTypes> {
+public:
+
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
+		return "testglobalfilter";
+	}
+
+	virtual bool DoesEventPassGlobal(const TestEvent & event,
+			TestProduct const& product, TestGlobalSettings const& settings) const
+	ARTUS_CPP11_OVERRIDE
+	{
+		return (event.iVal == 0);
+	}
+};
+
+class TestGlobalFilter2: public FilterBase<TestTypes> {
+public:
+
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
+		return "testglobalfilter2";
+	}
+
+	virtual bool DoesEventPassGlobal(const TestEvent & event,
+			TestProduct const& product, TestGlobalSettings const& settings) const
+	ARTUS_CPP11_OVERRIDE
+	{
+		return ( product.iGlobalProduct2 == 1 );
+	}
+};
+
 BOOST_AUTO_TEST_CASE( test_event_prunner_global_product )
 {
 	TestPipeline * tline1 = new TestPipeline;
@@ -63,7 +93,65 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_product )
 	tline3->CheckCalls(10);
 	tline4->CheckCalls(10);
 	tline5->CheckCalls(10);
+}
 
+
+BOOST_AUTO_TEST_CASE( test_event_prunner_global_producer_filter )
+{
+	TestPipeline * tline1 = new TestPipeline;
+
+	tline1->bCheckProducer = true;
+
+	TestSettings tset;
+	TestGlobalSettings global_tset;
+	tset.SetLevel(1);
+	tline1->InitPipeline( tset, TestPipelineInitilizer() );
+
+	PipelineRunner<TestPipeline, TestTypes > prunner;
+	// don't show progress report in this test cases
+	prunner.ClearProgressReports();
+
+	prunner.AddPipeline( tline1 );
+
+	prunner.AddGlobalProducer( new TestGlobalProducer() );
+	// this filter will drop all events
+	prunner.AddGlobalFilter( new TestGlobalFilter2() );
+
+	TestEventProvider evtProvider;
+	prunner.RunPipelines ( evtProvider, global_tset );
+
+	// pipeline should never have been called
+	tline1->CheckCalls(0);
+}
+
+BOOST_AUTO_TEST_CASE( test_event_prunner_global_producer_filter_pass )
+{
+	TestPipeline * tline1 = new TestPipeline;
+
+	tline1->bCheckProducer = true;
+
+	TestSettings tset;
+	TestGlobalSettings global_tset;
+	tset.SetLevel(1);
+	tline1->InitPipeline( tset, TestPipelineInitilizer() );
+
+	PipelineRunner<TestPipeline, TestTypes > prunner;
+	// don't show progress report in this test cases
+	prunner.ClearProgressReports();
+
+	prunner.AddPipeline( tline1 );
+
+	prunner.AddGlobalProducer( new TestGlobalProducer() );
+	prunner.AddGlobalFilter( new TestGlobalFilter() );
+	// this filter will drop all events
+	prunner.AddGlobalProducer( new TestGlobalProducer2() );
+	prunner.AddGlobalFilter( new TestGlobalFilter2() );
+
+	TestEventProvider evtProvider;
+	prunner.RunPipelines ( evtProvider, global_tset );
+
+	// pipeline should never have been called
+	tline1->CheckCalls(10);
 }
 
 BOOST_AUTO_TEST_CASE( test_event_prunner )

@@ -26,7 +26,7 @@ public:
 		return "testfilter";
 	}
 
-	virtual bool DoesEventPass(const TestEvent & event,
+	virtual bool DoesEventPassLocal(const TestEvent & event,
 			TestProduct const& product, TestSettings const& settings) const {
 		return (event.iVal < 2);
 	}
@@ -39,9 +39,24 @@ public:
 		return "testfilter2";
 	}
 
-	virtual bool DoesEventPass(const TestEvent & event,
+	virtual bool DoesEventPassLocal(const TestEvent & event,
 			TestProduct const& product, TestSettings const& settings) const {
 		return false;
+	}
+};
+
+class TestFilter3: public FilterBase<TestTypes> {
+public:
+
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
+		return "testfilter3";
+	}
+
+	virtual bool DoesEventPassLocal(const TestEvent & event,
+			TestProduct const& product, TestSettings const& settings) const {
+
+		// this is only 1, if the local producer ran before
+		return ( product.iLocalProduct == 1 );
 	}
 };
 
@@ -146,8 +161,8 @@ BOOST_AUTO_TEST_CASE( test_filter )
 	pline.AddConsumer( pCons1 );
 	pline.AddConsumer( pCons2 );
 
-	pline.AddFilter( new TestFilter() );
 	pline.AddProducer( new TestLocalProducer() );
+	pline.AddFilter( new TestFilter() );
 
 	TestPipelineInitilizer init;
 
@@ -175,7 +190,7 @@ BOOST_AUTO_TEST_CASE( test_filter )
 	pCons2->CheckCalls(2, 3);
 }
 
-BOOST_AUTO_TEST_CASE( test_multiplefilter )
+BOOST_AUTO_TEST_CASE( test_multiplefilter_producer )
 {
 	TestConsumer * pCons1 = new TestConsumer();
 
@@ -184,9 +199,10 @@ BOOST_AUTO_TEST_CASE( test_multiplefilter )
 
 	pline.AddConsumer( pCons1 );
 
-	pline.AddFilter( new TestFilter2() );
 	pline.AddFilter( new TestFilter() );
-
+	pline.AddProducer( new TestLocalProducer() );
+	pline.AddFilter( new TestFilter3() );
+	// if run after TestFilter3, TestFilter3 will be still true
 	pline.AddProducer( new TestLocalProducer() );
 
 	TestPipelineInitilizer init;
@@ -204,20 +220,43 @@ BOOST_AUTO_TEST_CASE( test_multiplefilter )
 	pline.FinishPipeline();
 
 	BOOST_CHECK( pCons1->fres.GetFilterDecisions().at("testfilter") == true );
-	BOOST_CHECK( pCons1->fres.GetFilterDecisions().at("testfilter2") == false );
-	BOOST_CHECK( pCons1->fres.HasPassed() == false);
-	/*
-	 for (FilterResult::FilterDecisions::const_iterator it = pCons1->fres.GetFilterDecisions().begin();
-	 it != pCons1->fres.GetFilterDecisions().end();
-	 it ++)
-	 {
-	 if (it->first == "testfilter")
-	 BOOST_CHECK( it->second == true )
+	BOOST_CHECK( pCons1->fres.GetFilterDecisions().at("testfilter3") == true );
+	BOOST_CHECK( pCons1->fres.HasPassed() == true);
+}
 
-	 if (it->first == "testfilter")
-	 BOOST_CHECK(it->second == true)
-	 std::cout << it->first << " : " << it->second << std::endl;
-	 }*/
+BOOST_AUTO_TEST_CASE( test_multiplefilter_producer_stop_exec )
+{
+	TestConsumer * pCons1 = new TestConsumer( false );
+
+	TestGlobalProducer globalProducer;
+	Pipeline<TestTypes> pline;
+
+	pline.AddConsumer( pCons1 );
+
+	// this first filter will stop the further
+	// processing of filters & producers right away
+	pline.AddFilter( new TestFilter3() );
+	pline.AddFilter( new TestFilter2() );
+	pline.AddFilter( new TestFilter() );
+	pline.AddProducer( new TestLocalProducer() );
+
+	TestPipelineInitilizer init;
+	TestSettings settings;
+	TestGlobalSettings globalSettings;
+	pline.InitPipeline( settings, init );
+
+	TestEvent td;
+	TestProduct product;
+	FilterResult globalFilterResult;
+
+	globalProducer.ProduceGlobal(td, product, globalSettings);
+	pline.RunEvent(td, product, globalFilterResult);
+
+	pline.FinishPipeline();
+
+	BOOST_CHECK( pCons1->fres.GetFilterDecisions().size() == 1 );
+	BOOST_CHECK( pCons1->fres.GetFilterDecisions().at("testfilter3") == false );
+	BOOST_CHECK( pCons1->fres.HasPassed() == false);
 }
 
 BOOST_AUTO_TEST_CASE( test_event_pipeline_level2 )

@@ -86,13 +86,10 @@ public:
 	typedef typename ConsumerVector::iterator ConsumerVectorIterator;
 
 	typedef FilterBase<TTypes> FilterForThisPipeline;
-	typedef boost::ptr_vector<FilterBase<TTypes> > FilterVector;
-	typedef typename FilterVector::iterator FilterVectorIterator;
-
 	typedef ProducerBase<TTypes> ProducerForThisPipeline;
 
-	typedef boost::ptr_vector<ProducerForThisPipeline> ProducerVector;
-	typedef typename ProducerVector::iterator ProducerVectorIterator;
+	typedef boost::ptr_vector< ProcessNodeBase > ProcessNodeVector;
+	typedef typename ProcessNodeVector::iterator ProcessNodeIterator;
 
 	/// Virtual constructor.
 	virtual ~Pipeline() {
@@ -105,14 +102,17 @@ public:
 		m_pipelineSettings = pset;
 		initializer.InitPipeline(this, pset);
 
-		// init local Producrs
-		for (auto & it : m_producer) {
-			it.InitLocal(pset);
-		}
-
-		// init Filters
-		for (auto & it : m_filter) {
-			it.Init(this);
+		for( ProcessNodeIterator it = m_nodes.begin();
+				it != m_nodes.end(); it ++ ) {
+			if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
+				static_cast< ProducerForThisPipeline &> ( *it ) . InitLocal( pset );
+			}
+			else if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
+				static_cast< FilterForThisPipeline &> ( *it ) . InitLocal ( pset );
+			}
+			else {
+				LOG_FATAL( "ProcessNodeType not supported by the pipeline" );
+			}
 		}
 
 		// init Consumers
@@ -128,9 +128,11 @@ public:
 		s << m_pipelineSettings.ToString() << std::endl;
 		s << "== Pipeline Filter: ";
 
-		for (FilterVectorIterator itfilter = m_filter.begin();
-				itfilter != m_filter.end(); itfilter++) {
-			s << std::endl << itfilter->GetFilterId();
+		for( ProcessNodeIterator it = m_nodes.begin();
+				it != m_nodes.end(); it ++ ) {
+			if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
+				s << std::endl << static_cast<FilterForThisPipeline &> ( *it ) . GetFilterId();
+			}
 		}
 
 		return s.str();
@@ -154,31 +156,36 @@ public:
 	/// Run the pipeline with one specific event as input. GlobalProduct are products which are 
 	/// common for all pipelines and have therefore been created only once.
 	virtual void RunEvent(event_type const& evt,
-			product_type const& globalProduct) {
+			product_type const& globalProduct,
+			FilterResult const& globalFilterResult) {
 
-	        // make a local copy of the global product and allow this one to be modified by local 
-	        // Producers.
+		// make a local copy of the global product and allow this one to be modified by local
+		// Producers.
 		product_type localProduct ( globalProduct );
 
-		// run local Producers
-		for (ProducerVectorIterator it = m_producer.begin();
-				it != m_producer.end(); it++) {
-			it->ProduceLocal(evt, localProduct,
-					m_pipelineSettings);
-		}
-
-		// run Filters
+		// run Filters & Producers
 		FilterResult fres;
-		for (FilterVectorIterator itfilter = m_filter.begin();
-				itfilter != m_filter.end(); itfilter++) {
-			fres.SetFilterDecisions(itfilter->GetFilterId(),
-					itfilter->DoesEventPassLocal(evt, localProduct,
-							m_pipelineSettings));
-			
-			// TODO: delete
-			fres.SetFilterDecisions(itfilter->GetFilterId(),
-					itfilter->DoesEventPass(evt, localProduct,
-							m_pipelineSettings));
+		bool eventValid = true;
+		for( ProcessNodeIterator it = m_nodes.begin();
+				it != m_nodes.end(); it ++ ) {
+			if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
+				static_cast< ProducerForThisPipeline &> ( *it ) . ProduceLocal(evt, localProduct,
+						m_pipelineSettings);
+			}
+			else if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
+				FilterForThisPipeline & flt = static_cast<FilterForThisPipeline &> ( *it );
+				const bool filterResult = flt . DoesEventPassLocal(evt, localProduct,
+											m_pipelineSettings);
+				eventValid = filterResult;
+				fres.SetFilterDecisions( flt.GetFilterId(), filterResult );
+
+				// stop processing as soon as one filter fails
+				if ( !eventValid )
+					break;
+			}
+			else {
+				LOG_FATAL( "ProcessNodeType not supported by the pipeline" );
+			}
 		}
 
 		// run Consumers
@@ -194,11 +201,15 @@ public:
 
 	/// Find and return a Filter by it's id in this pipeline.
 	virtual FilterBase<TTypes>* FindFilter(std::string sFilterId) {
-		for (FilterVectorIterator it = m_filter.begin(); it != m_filter.end();
-				it++) {
-			if (it->GetFilterId() == sFilterId)
-				return &(*it);
+		for( ProcessNodeIterator it = m_nodes.begin();
+				it != m_nodes.end(); it ++ ) {
+			if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
+				FilterForThisPipeline * filter = &( static_cast<FilterForThisPipeline&> ( *it ) );
+				if ( filter->GetFilterId() == sFilterId )
+					return filter;
+			}
 		}
+
 		return NULL;
 	}
 
@@ -212,30 +223,29 @@ public:
 		if (FindFilter(pFilter->GetFilterId()) != NULL)
 			throw std::exception();
 
-		m_filter.push_back(pFilter);
+		m_nodes.push_back(pFilter);
 	}
 
 	/// Add a new Consumer to this Pipeline. The object will be freed in Pipelines destructor.
 	virtual void AddConsumer(ConsumerForThisPipeline * pConsumer) {
-		//std::cout << "=== AddConsumer" << std::endl;
 		m_consumer.push_back(pConsumer);
-		//std::cout << "size = " << m_consumer.size() << std::endl;
 	}
 
 	/// Add a new Producer to this Pipeline. The object will be freed in Pipelines destructor.
 	virtual void AddProducer(ProducerForThisPipeline * pProd) {
-		m_producer.push_back(pProd);
+		m_nodes.push_back ( pProd );
 	}
 
 	/// Return a list of filters is this pipeline.
+	/*
+	 * disabled for now, if you need this again, contact Thomas
 	const FilterVector& GetFilters() {
 		return m_filter;
-	}
+	}*/
 
 private:
 	ConsumerVector m_consumer;
-	FilterVector m_filter;
-	ProducerVector m_producer;
+	ProcessNodeVector m_nodes;
 	setting_type m_pipelineSettings;
 };
 

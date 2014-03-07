@@ -8,8 +8,9 @@
 
 class TestProduct {
 public:
-	TestProduct() : iGlobalProduct(0), iLocalProduct(0) {}
+	TestProduct() : iGlobalProduct(0), iGlobalProduct2(0), iLocalProduct(0) {}
 
 	int iGlobalProduct;
+	int iGlobalProduct2;
 	int iLocalProduct;
 };
