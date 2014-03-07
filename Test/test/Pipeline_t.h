@@ -17,53 +17,8 @@
 #include "TestGlobalProducer.h"
 #include "TestLocalProducer.h"
 #include "TestConsumer.h"
+#include "TestFilter.h"
 #include "TestTypes.h"
-
-class TestFilter: public FilterBase<TestTypes> {
-public:
-
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "testfilter";
-	}
-
-	virtual bool DoesEventPassLocal(const TestEvent & event,
-			TestProduct const& product, TestSettings const& settings)  const
-	ARTUS_CPP11_OVERRIDE
-	{
-		return (event.iVal < 2);
-	}
-};
-
-class TestFilter2: public FilterBase<TestTypes> {
-public:
-
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "testfilter2";
-	}
-
-	virtual bool DoesEventPassLocal(const TestEvent & event,
-			TestProduct const& product, TestSettings const& settings) const
-	ARTUS_CPP11_OVERRIDE
-	{
-		return false;
-	}
-};
-
-class TestFilter3: public FilterBase<TestTypes> {
-public:
-
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "testfilter3";
-	}
-
-	virtual bool DoesEventPassLocal(const TestEvent & event,
-			TestProduct const& product, TestSettings const& settings) const
-	ARTUS_CPP11_OVERRIDE
-	{
-		// this is only 1, if the local producer ran before
-		return ( product.iLocalProduct == 1 );
-	}
-};
 
 class TestPipelineInitilizer: public PipelineInitilizerBase<TestTypes> {
 public:

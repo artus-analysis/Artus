@@ -43,8 +43,12 @@ add_library(artus_provider STATIC
 )
 
 add_executable(artus_core_test
-	Core/test/Artus_t.cc
+	Test/test/Artus_t.cc
 )
+
+target_link_libraries( artus_core_test 	
+	artus_core	
+	artus_configuration)
 
 # use a capitaal *E*xample here and no underscore
 # to be compatible of how the binary is named in the CMSSW build

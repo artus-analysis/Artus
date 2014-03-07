@@ -11,40 +11,11 @@
 #include "TestPipeline.h"
 #include "TestGlobalProducer.h"
 #include "TestEventProvider.h"
+#include "TestFilter.h"
 #include "Pipeline_t.h"
 #include "TestFactory.h"
 
 #include <boost/test/included/unit_test.hpp>
-
-class TestGlobalFilter: public FilterBase<TestTypes> {
-public:
-
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "testglobalfilter";
-	}
-
-	virtual bool DoesEventPassGlobal(const TestEvent & event,
-			TestProduct const& product, TestGlobalSettings const& settings) const
-	ARTUS_CPP11_OVERRIDE
-	{
-		return (event.iVal == 0);
-	}
-};
-
-class TestGlobalFilter2: public FilterBase<TestTypes> {
-public:
-
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "testglobalfilter2";
-	}
-
-	virtual bool DoesEventPassGlobal(const TestEvent & event,
-			TestProduct const& product, TestGlobalSettings const& settings) const
-	ARTUS_CPP11_OVERRIDE
-	{
-		return ( product.iGlobalProduct2 == 1 );
-	}
-};
 
 BOOST_AUTO_TEST_CASE( test_event_prunner_global_product )
 {
