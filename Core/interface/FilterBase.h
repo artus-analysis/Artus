@@ -12,14 +12,15 @@
 #include <sstream>
 
 #include "Artus/Core/interface/GlobalInclude.h"
-
+#include "Artus/Core/interface/Cpp11Support.h"
+#include "Artus/Core/interface/ProcessNodeBase.h"
 
 // forward define to be able to use the event pipeline here
 template<class TTypes>
 class Pipeline;
 
 template<class TTypes>
-class FilterBase: public boost::noncopyable {
+class FilterBase: public ProcessNodeBase {
 public:
 
 	typedef typename TTypes::event_type event_type;
@@ -72,6 +73,13 @@ public:
 
 	virtual std::string ToString(bool bVerbose = false) {
 		return GetFilterId();
+	}
+
+	virtual ProcessNodeType GetProcessNodeType () const
+		ARTUS_CPP11_OVERRIDE
+		ARTUS_CPP11_FINAL
+	{
+		return ProcessNodeType::Filter;
 	}
 
 };

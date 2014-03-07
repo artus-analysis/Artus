@@ -4,6 +4,8 @@
 #include <boost/noncopyable.hpp>
 
 #include "Artus/Core/interface/GlobalInclude.h"
+#include "Artus/Core/interface/Cpp11Support.h"
+#include "Artus/Core/interface/ProcessNodeBase.h"
 
 /**
    \brief Base class for Producers, that extend the product.
@@ -15,7 +17,7 @@
 */
 
 template<class TTypes>
-class ProducerBase: public boost::noncopyable {
+class ProducerBase: public ProcessNodeBase {
 public:
 
 	typedef typename TTypes::event_type event_type;
@@ -50,5 +52,12 @@ public:
 
 	/// Must return a unique id of the producer.
 	virtual std::string GetProducerId() const = 0;
+
+	virtual ProcessNodeType GetProcessNodeType () const
+		ARTUS_CPP11_FINAL
+		ARTUS_CPP11_OVERRIDE
+	{
+		return ProcessNodeType::Producer;
+	}
 };
 
