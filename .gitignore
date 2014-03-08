@@ -4,6 +4,8 @@
 /Makefile
 *.a
 
+__init__.py
+!Plotting\*__init__.py
 *.pyc
 
 *.root
