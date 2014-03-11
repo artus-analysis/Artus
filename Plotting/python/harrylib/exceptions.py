@@ -5,7 +5,7 @@ class CustomException(Exception):
 	"""
 	Base class for custom exceptions
 	"""
-	__init__(self, *args, **kwargs):
+	def __init__(self, *args, **kwargs):
 		Exception.__init__(self, *args, **kwargs)
 
 class UserError(CustomException):
@@ -27,12 +27,12 @@ class ToBeImplementedError(CustomException):
 	"""
 	In (derived) classes, methods should raise this exception when 
 	"""
-	__init__(self, *args, **kwargs):
+	def __init__(self, *args, **kwargs):
 		Exception.__init__(self, *args, **kwargs)
 		
 class NotApplicableError(CustomException):
 	"""
 	In (derived) classes, methods should raise this exception when it is logically impossible to provide functionality which is very likely to be expected
 	"""
-	__init__(self, *args, **kwargs):
+	def __init__(self, *args, **kwargs):
 		Exception.__init__(self, *args, **kwargs)
