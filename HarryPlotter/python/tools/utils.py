@@ -5,11 +5,8 @@ This module contains all the often used plotting tools
 
 """
 import os
-import copy
-#import glob
-#import inspect
-#import artus
-
+import ROOT
+import inspect
 import matplotlib.pyplot as plt
 
 import Artus.HarryPlotter.tools.labels as labels
@@ -27,50 +24,60 @@ def fail(fail_message):
 	exit(0)
 
 
-def printfiles(filelist):
-	if len(filelist) > 0:
-		print "Data file:", filelist[0]
-	else:
-		print "No input files given!"
-		exit(0)
-	if len(filelist) == 2:
-		print "MC file:", filelist[1]
-	elif len(filelist) > 2:
-		print "MC files:", ", ".join(filelist[1:])
-
-
 def printfunctions(module_list):
+	"""This function prints the list of functions present in a list of modules,
+	along with their docstrings.
+	"""
 	for module in module_list:
 		print '\033[92m%s' % module.__name__
 		for elem in inspect.getmembers(module, inspect.isfunction):
-			if (inspect.getargspec(elem[1])[0][:2] == ['files', 'opt']):
-				print "\033[93m  %s \033[0m" % elem[0]
-				if (elem[1].__doc__ is not None):
-					print "	 ", elem[1].__doc__
+			print "\033[93m  %s \033[0m" % elem[0]
+			if (elem[1].__doc__ is not None):
+				print "	 ", elem[1].__doc__
 
 
-def printquantities(files, opt):
+def printquantities(plotdict):
+	"""This functions prints a list of histograms or quantites present in one 
+	folder or NTuple in the input files.
+	"""
 	quantities = {}
-	treename = "_".join([opt.folder,  opt.correction])
 
-	for f, name in zip(files, opt.labels):
+
+	print plotdict['rootfiles'], plotdict['labels'], plotdict['folder']
+
+	for f, name, folder in zip(plotdict['rootfiles'], plotdict['labels'], plotdict['folder']):
+		print "Looking into folder", folder
 		quantities[name] = []
 
 		# Get the ntuple
-		ntuple = f.Get(treename)
-		if not ntuple and "Res" in treename:
-			ntuple = f.Get(treename.replace("Res", ""))
+		obj = f.Get(folder)
+		
+		#determine type of obj
+		if (type(obj) == ROOT.TDirectoryFile):
+			string = "Root histograms"
+			func = "GetListOfKeys"
+		elif (type(obj) == ROOT.TTree) or (type(obj) == ROOT.TNtuple):
+			string = "Ntuple-variables"
+			func = "GetListOfBranches"
+		else:
+			print (type(obj) == ROOT.TNtuple)
+			print "Cannot access folder with name '%s'" % folder
+			print "Available folders are:", 
+			for i in f.GetListOfKeys():
+				print i.GetName()
+			return
 
-		# Get the list of quantities from the ntuple
-		for branch in ntuple.GetListOfBranches():
+		# Get the list of quantities from the object
+		for branch in getattr(obj, func)():
+		
 			quantities[name] += [branch.GetTitle()]
 		quantities[name] = set(quantities[name])
 
-	# Print the list of quantities present in ALL Ntuples
+	# Print the list of quantities present in ALL objects
 	common_set = quantities[quantities.keys()[0]]
 	for name in quantities.keys()[1:]:
 		common_set = common_set.intersection(quantities[name])
-	print '\033[92m%s\033[0m' % "Quantities in ALL files:"
+	print '\033[92m%s in ALL files:\033[0m' % string
 	for q in sorted(common_set, key=lambda v: (v.upper(), v[0].islower())):
 		print "  %s" % q
 
@@ -84,195 +91,7 @@ def printquantities(files, opt):
 				print "  %s" % q
 
 
-def get_selection(settings):
-	"""Prepare the selections."""
-
-	if 'selection' in settings and settings['selection'] is not None:
-		selections = settings['selection'].split(" && ")
-	else:
-		selections = []
-	return " && ".join(list(set(selections)))
-
-
-def apply_changes(settings, changes):
-	""" This function updates the settings dictionary with the changes
-		function in a way that the selection is not overwritten but
-		combined.
-	"""
-	nsettings = copy.deepcopy(settings)
-	if changes is not None:
-		if 'selection' in changes and settings['selection'] is not None:
-			selection = " && ".join([changes['selection'], settings['selection']])
-			nsettings.update(changes)
-			nsettings['selection'] = selection
-		else:
-			nsettings.update(changes)
-	return nsettings
-
-
-def getsettings(opt, changes=None, settings=None, quantity=None):
-	"""Create the local settings dictionary.
-
-		The customizable parameters can be accessed via the settings directory
-		that is created from the global 'opt' module and optional other arguments.
-	"""
-	#opt = copy.deepcopy(opt)
-	# if a setting dictionary is given, apply changes (if any)
-	if settings is not None:
-		settings = apply_changes(settings, changes)
-		return settings
-
-	# 1. create a local copy of the default_settings
-	settings = copy.deepcopy(opt.default_options)
-
-	# 2. overwrite the default_settings with
-	# settings(function argument, e.g. from dictionary):
-	if changes is not None:
-		settings = apply_changes(settings, changes)
-
-	# 3. overwrite the default_settings with user-settings (=command line):
-	if opt.user_options is not {}:
-		settings = apply_changes(settings, opt.user_options)
-
-	# 4. create the local settings for quantites and axes:
-	if quantity is not None and settings['xynames'] is None:
-		settings['xynames'] = quantity.split("_")[::-1]
-
-		if len(settings['xynames']) < 2:
-			settings['xynames'] += ['events']
-	if settings['x'] is None:
-		settings['x'] = labels.getaxislabels_list(settings['xynames'][0])[:2]
-
-	if settings['y'] is None:
-		settings['y'] = labels.getaxislabels_list(settings['xynames'][1])[:2]
-
-#	settings['folder'] = opt.folder
-#	print settings['folder']
-
-	return settings
-
-
-def getdefaultsubtexts():
-	return ["a)", "b)", "c)", "d)", "e)", "f)", "g)", "h)", "i)", "j)", "k)",
-			"l)", "m)", "n)", "o)", "p)", "q)", "r)"]
-
-
-def showoptions(opt):
-	print "Options:"
-	for o, v in opt.__dict__.items():
-		print "   {0:11}: {1}".format(o, v)
-	print "matplotlib settings:"
-	for k, v in plotrc.getstyle(opt.layout).items():
-		print "   {0:24}: {1}".format(k, v)
-
-
-def getfactor(lumi, fdata, fmc, quantity='z_phi', change={}):
-	"""Get the normalization factor for the f_data file w.r.t. f_mc."""
-	histo_data = getroot.getplot(quantity, fdata, change)
-	histo_mc = getroot.getplot(quantity, fmc, change)
-	histo_mc.scale(lumi)
-	print "	>>> The additional scaling factor is:", (
-		histo_data.ysum() / histo_mc.ysum())
-	return histo_data.ysum() / histo_mc.ysum()
-
-
-def getalgorithms(algorithm):
-	if "AK7" in algorithm:
-		algorithms = ['AK7PFJets', 'AK7PFJetsCHS']
-	else:
-		algorithms = ['AK5PFJets', 'AK5PFJetsCHS']
-	return algorithms
-
-
-def getgenname(opt):
-	gen = 'AK5GenJets'
-	return gen
-
-
-def nicetext(s):  # to dictionaries
-	if "run" in s:
-		return r"Time dependence for " + nicetext(s[:-4])
-	elif s in ['z_pt', 'zpt']:
-		return r"$p_\mathrm{T}^\mathrm{Z}$"
-	elif s in ['jet1_pt', 'jet1pt']:
-		return r"$p_\mathrm{T}^\mathrm{Jet 1}$"
-	elif s in ['jet2_pt', 'jet2pt']:
-		return r"$p_\mathrm{T}^\mathrm{Jet 2}$"
-	elif s in ['jet1eta', 'eta']:
-		return r"$\eta^\mathrm{Jet1}$"
-	elif s in ['jets_valid', 'jetsvalid']:
-		return r"Number of valid jets"
-	elif s == 'npv':
-		return 'NPV'
-	elif s == 'alpha':
-		return r"$\alpha$"
-	elif s == 'balresp':
-		return r"$p_\mathrm{T}$ balance"
-	elif s == 'baltwojet':
-		return r"two-jet balance"
-	elif s == 'mpfresp':
-		return "MPF response"
-	elif s == 'sumEt':
-		return r"$\sum E^\mathrm{T}$"
-	elif s == 'METsumEt':
-		return r"Total transverse energy $\sum E^\mathrm{T}$"
-	elif s == 'METpt':
-		return r"$p_\mathrm{T}^\mathrm{MET}$"
-	elif s == 'METphi':
-		return r"$\phi^\mathrm{MET}$"
-	elif s == 'met':
-		return r"E_\mathrm{T}^\mathrm{miss}"
-	elif s == 'MET':
-		return r"E_\mathrm{T}^\mathrm{miss}"
-	elif s == 'muonsvalid':
-		return "Number of valid muons"
-	elif s == 'muonsinvalid':
-		return "Number of invalid muons"
-	elif s == 'muplus':
-		return "mu plus"
-	elif s == 'muminus':
-		return "mu minus"
-	elif s == 'leadingjet':
-		return r"Leading \/Jet"
-	elif s == 'secondjet':
-		return r"Second \/Jet"
-	elif s == 'leadingjetsecondjet':
-		return r"Leading\/ Jet,\/ Second\/ Jet"
-	elif s == 'jet1':
-		return r"Leading Jet"
-	elif s == 'jet2':
-		return r"Second \/Jet"
-	elif s == 'z':
-		return r"Z"
-	elif s == 'genz':
-		return r"GenZ"
-	elif s == 'leadingjetMET':
-		return r"Leading\/ Jet,\/ MET"
-	elif s == 'jet1MET':
-		return r"Leading\/ Jet,\/ MET"
-	elif s == 'zMET':
-		return r"Z, MET"
-	elif s == 'jet2toZpt':
-		return r"2nd Jet Cut"
-	return s
-
-
-#def getreweighting(datahisto, mchisto, drop=True):
-#	if drop:
-#		datahisto.dropbin(0)
-#		datahisto.dropbin(-1)
-#		mchisto.dropbin(0)
-#		mchisto.dropbin(-1)
-#	reweighting = []
-#	for i in range(len(mchisto)):
-#		if i > 13:
-#			break
-#		reweighting.append(datahisto.y[i] / mchisto.y[i])
-#	return reweighting
-
-
-def newplot(ratio=False, run=False, subplots=1, subplots_X=None,
-															subplots_Y=None):
+def newplot(ratio=False, subplots=1, subplots_X=None, subplots_Y=None):
 	fig = plt.figure(figsize=[7, 7])
 	#fig.suptitle(opt.title, size='xx-large')
 	# Get 4 config numbers: FigXsize, FigYsize, NaxesY, NaxesX
@@ -307,11 +126,6 @@ def newplot(ratio=False, run=False, subplots=1, subplots_X=None,
 		ratio.number = 2
 		ratio.axhline(1.0, color='gray', lw=1)
 		return fig, ax, ratio
-	elif run:
-		fig = plt.figure(figsize=[14, 7])
-		ax = fig.add_subplot(111)
-		ax.number = 1
-		return fig, ax
 	else:
 		ax = fig.add_subplot(111)
 		ax.number = 1
@@ -319,79 +133,69 @@ def newplot(ratio=False, run=False, subplots=1, subplots_X=None,
 	return fig
 
 
-def setaxislimits(ax, settings):
-	"""
-	Set the axis limits from changes and or options. Default operation mode is:
-		1. By default, axis limits are taken from the dictionary
-		2. If limits are given in changes, override the dictionary values
-		3. If limits are given in opt (command line values), override the values
-			from dictionary or changes
-	"""
-	if len(settings['x']) >= 2:
-		ax.set_xlim(settings['x'][0], settings['x'][1])
-
-	if hasattr(ax, 'number') and (len(settings['y']) >= 2 * ax.number):
-		ax.set_ylim(settings['y'][2 * ax.number - 2:][0],
-					settings['y'][2 * ax.number - 2:][1])
-	elif not hasattr(ax, 'number'):
-		ax.set_ylim(settings['y'][0], settings['y'][1])
-
-
-def getdefaultfilename(quantity, opt, settings):
-	"""This function creates a default filename based on quantity, changes and
-		algorithm/correction.
-	"""
-	if 'filename' in settings and settings['filename'] is not None:
-		return settings['filename']
+def setaxislimits(plotdict):
+	"""Set the axes (limits etc.) according to dictionary content."""
+	# limits
+	if plotdict['xview']:
+		plotdict['axes'].set_xlim(plotdict['xview'])
 	else:
-		filename = quantity
+		plotdict['axes'].set_xlim(plotdict['x'])
+		
+	if 'y' in plotdict and plotdict['y'] is not None:
+		plotdict['axes'].set_ylim(plotdict['y'])
+	else:
+		if plotdict['log']:
+			bottom = 1
+		else:
+			bottom = 0
+		plotdict['axes'].set_ylim(top= 1.2 * max(d.ymax() for d in plotdict['mplhistos']), bottom = bottom)
 
-	#remove special characters:
-	for char in ["*", "/", " "]:
-		filename = filename.replace(char, "_")
-	return filename
+	# logarithmic axis
+	if plotdict['log']:
+		plotdict['axes'].set_yscale('log')
+	if plotdict['xlog']:
+		plotdict['axes'].set_xscale('log')
+
+	if plotdict['grid']:
+		plotdict['axes'].grid(True)
 
 
-def Save(figure, settings=None, crop=True, pad=None):
+def save(plotdict, figure=None):
 	"""Save this figure in all listed data formats.
 
 	The standard data formats are png and pdf.
 	Available graphics formats are: pdf, png, ps, eps and svg
 	"""
-	if not settings:
-		print "Please use mpl savefig if no settings are given"
+	if not figure:
+		if plotdict['figure']:
+			figure = plotdict['figure']
+		else:
+			print "No figure object to save!"
+
+	if not plotdict:
+		print "Please use mpl savefig if no settings are given - Saving as plot.png"
 		figure.savefig("plot.png")
 		return
-	print settings, type(settings)
-	if not os.path.exists(settings['out']):
-		os.makedirs(settings['out'])
+	if not os.path.exists(plotdict['out']):
+		os.makedirs(plotdict['out'])
 
-	name = settings['out'] + '/' + settings['filename']
-	name = name.replace("PFJets", "PF")
-	print ' -> Saving as',
-	if settings is not None and settings['title'] is not "":
-		title = figure.suptitle(settings['title'], size='large')
-	# this helps not to crop labels, but it is ugly, please change
-	elif crop:
-		title = figure.suptitle("I", color='white')
+	# a hack: this helps not to crop labels:
+	if plotdict['title'] is None:
+		title = plotdict['figure'].suptitle("I", color='white')
+	else:
+		title = plotdict['figure'].suptitle(plotdict['title'])
+
+	name = plotdict['out'] + '/' + plotdict['filename']
+	print ' \033[96m-> Saving as\033[97m',
 	first = True
-	for f in settings['formats']:
+	for f in plotdict['formats']:
 		if f in ['pdf', 'png', 'ps', 'eps', 'svg']:
 			if not first:
 				print ",",
 			else:
 				first = False
-			print name + '.' + f
-			if crop:
-				if pad is not None:
-					figure.savefig(name + '.' + f, bbox_inches='tight',
-						bbox_extra_artists=[title], pad_inches=pad)
-				else:
-					figure.savefig(name + '.' + f, bbox_inches='tight',
-						bbox_extra_artists=[title])
-			else:
-				figure.savefig(name + '.' + f)
+			print '\033[96m%s.%s\033[97m' % (name, f)
+			figure.savefig(name + '.' + f, bbox_inches='tight', bbox_extra_artists=[title])
 			plt.close(figure)
-
 		else:
 			print f, "failed. Output type is unknown or not supported."
