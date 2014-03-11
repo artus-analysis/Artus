@@ -24,33 +24,15 @@ import ROOT
 import cPickle as pickle
 import copy
 import math
+import random
 import os
 import array
 import numpy as np
-import Artus.HarryPlotter.tools.utils as utils
-import Artus.HarryPlotter.tools.dictionaries as dictionaries
 
+import Artus.HarryPlotter.tools.utils as utils
 
 # prevents Root from reading argv
 ROOT.PyConfig.IgnoreCommandLineOptions = True
-
-
-def ptcuts(ptvalues):
-	return ["{0}<=zpt && zpt<{1}".format(*b)
-		for b in zip(ptvalues[:-1], ptvalues[1:])]
-
-
-def npvcuts(npvvalues):
-	return ["{0}<=npv && npv<={1}".format(*b) for b in npvvalues]
-
-
-def etacuts(etavalues):
-	return ["{0}<=jet1abseta && jet1abseta<{1}".format(*b)
-		for b in zip(etavalues[:-1], etavalues[1:])]
-
-
-def alphacuts(alphavalues):
-	return ["alpha<%1.2f" % b for b in alphavalues]
 
 
 def openfile(filename, verbose=False, exitonfail=True):
@@ -74,7 +56,7 @@ try:
 except NameError:
 	pass  # not running with profiler
 
-
+"""
 def getplot(name, rootfile, changes=None, rebin=1):
 	rootobject = getobject(name, rootfile, changes)
 	return root2histo(rootobject, rootfile.GetName(), rebin)
@@ -92,171 +74,83 @@ def getplotfromtree(nickname, rootfile, settings, twoD=False, changes=None):
 	histo = root2histo(rootobject, rootfile.GetName(), settings['rebin'])
 	rootobject.Delete()
 	return histo
+"""
 
+def histofromntuple(rootfile, objectname, ntuple, plotdict):
 
-#def gethistofromtree(name, tree, settings, changes=None, twoD=False):
+	print "Using file %s" % rootfile.GetName()
+	index = plotdict['rootfiles'].index(rootfile)
 
+	if plotdict['x'] == None:
+		plotdict['x'] = [ntuple.GetMinimum(plotdict['xvar'])*1.01, ntuple.GetMaximum(plotdict['xvar'])*1.01]
+		print "Min/Max x values:", plotdict['x'][0], plotdict['x'][1]
 
-def gettreename(settings):
-#	"""naming scheme
-#
-#	format the treename from its parts with the format of string
-#	"""
-#	for p in parts:
-#		if p not in settings:
-#			print p, "is not in settings."
-#			exit(1)
-#	part = [settings[p] for p in parts]
-#	name = settings['folder']
-	return settings['tree']
+	if plotdict['xbins'] == []:
+		plotdict['xbins'] = np.linspace(plotdict['x'][0], plotdict['x'][1], plotdict['nbins']+1)
 
+	if plotdict['type'] == '2D':
+		plotdict['ybins']  = getbinning(plotdict['yvar'], plotdict, 'y')
 
-def getselection(settings, mcWeights=False):
-	# create the final selection from the settings
-	selection = []
-	if settings['selection']:
-		selection += [settings['selection']]
+	variables = plotdict['xvar']
+	if 'yvar' in plotdict:
+		variables += ":%s" % (plotdict['yvar'])
+	if 'zvar' in plotdict:
+		variables += ":%s" % (plotdict['zvar'])
 
-	# add weights
+	print variables
 
-	weights = []
-
-	if selection:
-		weights = ["(" + " && ".join(selection) + ")"]
-	"""
-	if (mcWeights and ('noweighting' not in settings
-		or not settings['noweighting'])):
-		weights += ["weight"]
-	if mcWeights and settings['lumi']:  # add lumi weights always?
-		weights += [str(settings['lumi'])]
-	if mcWeights and settings['efficiency']:
-		weights += [str(settings['efficiency'])]
-	if mcWeights and settings['factor']:
-		weights += [str(settings['factor'])]
-	"""
-	selectionstr = " * ".join(weights)
-
-
-	#create a copy of quantities to iterate over (to replace the from the dict):
-	for key in dictionaries.ntuple_dict.keys():
-		if key in selectionstr:
-			selectionstr = selectionstr.replace(key, dictconvert(key))
-
-	return selectionstr
-
-
-def getbinning(quantity, settings, axis='x'):
-	#missing: guess range from first entries (instead of 0,1)
-	# variants: special_binning, float, int, log,
-	xmin = settings[axis][0]
-	xmax = settings[axis][1]
-	nbins = settings['nbins']
-
-	if nbins < 0:
-		pass  # set it automatically
-	if quantity in ['npv', 'npu', 'jet1nconst']:  # integer binning
-		nbins = int(xmax - xmin)
-
-	bins = [xmin + (xmax - xmin) * float(i) / nbins for i in range(nbins + 1)]
-	#TODO: better log binning also for y etc.
-	#print settings['xlog']
-	if settings['xlog']:
-		print "LOG bins is not done -> getroot.getbinning"
-		xmin = max(xmin, 1.0)
-		print xmin, nbins
-		#bins = [xmin * (float(xmax) / xmin )
-		#** (float(i) / nbins) for i in range(nbins + 1)]
-
-	#special binning for certain quantities:
-	# No, opt is the wrong place, -> dict
-	bin_dict = {
-		#'zpt': settings['zbins'],
-		#'jet1abseta': settings['eta'],
-		#'jet1eta': [-elem for elem in settings['eta'][1:][::-1]] + settings['eta'],
-		#'npv': [a - 0.5 for a, b in settings['npv']] + [settings['npv'][-1][1] - 0.5]
-	}
-
-#	if settings['special_binning'] and quantity in bin_dict:
-#		bins = bin_dict[quantity]
-
-#	print "Binning of", axis, ":", nbins, "bins from",
-#	print xmin, "to", xmax, "for", quantity
-	return array.array('d', bins)
-
-
-def histofromntuple(quantities, name, ntuple, settings, twoD=False):
-	xbins = getbinning(quantities[-1], settings)
-	if twoD and len(quantities) > 1:
-		ybins = getbinning(quantities[0], settings, 'y')
-	copy_of_quantities = quantities
-	for key in dictionaries.ntuple_dict.keys():
-		for quantity, i in zip(copy_of_quantities, range(len(copy_of_quantities))):
-			if key in quantity:
-				quantities[i] = quantities[i].replace(key, dictconvert(key))
-	#TODO: TTree UserInfo: http://root.cern.ch/phpBB3/viewtopic.php?f=3&t=16902
-	#isMC = bool(ntuple.GetLeaf("npu"))
-
-	variables = ":".join(quantities)
-	selection = getselection(settings, False)
-
-	if settings['verbose']:
-		print "Creating a %s with the following selection:\n   %s" % (
-			histtype, settings['selection'])
+	# give each histogram a different name
+	name = "_".join([objectname, str(index)])
 
 	# determine the type of histogram to be created
-	if len(quantities) == 1:
-		roothisto = ROOT.TH1D(name, name, len(xbins) - 1, xbins)
-	elif len(quantities) == 2 and not twoD:
-		roothisto = ROOT.TProfile(name, name, len(xbins) - 1, xbins)
-	elif len(quantities) == 2 and twoD:
-		roothisto = ROOT.TH2D(name, name, len(xbins) - 1, xbins,
-			len(ybins) - 1, ybins)
-	elif len(quantities) == 3:
-		roothisto = ROOT.TProfile2D(name, name, len(xbins) - 1, xbins,
-			len(ybins) - 1, ybins)
+	if len(variables.split(":")) == 1:
+		roothisto = ROOT.TH1D(name, objectname, len(plotdict['xbins']) - 1, plotdict['xbins'])
+	elif len(variables.split(":")) == 2 and not plotdict['type'] == '2D':
+		roothisto = ROOT.TProfile(name, objectname, len(plotdict['xbins']) - 1, plotdict['xbins'])
+	elif len(variables.split(":")) == 2 and plotdict['type'] == '2D':
+		roothisto = ROOT.TH2D(name, objectname, len(plotdict['xbins']) - 1, plotdict['xbins'],
+			len(plotdict['ybins']) - 1, plotdict['ybins'])
+	elif len(variables.split(":")) == 3:
+		roothisto = ROOT.TProfile2D(name, objectname, len(plotdict['xbins']) - 1, plotdict['xbins'],
+			len(plotdict['ybins']) - 1, plotdict['ybins'])
 
-	if settings['verbose']:
-		print "Creating a %s with the following selection:\n   %s" % (
-			roothisto.ClassName(), selection)
+	if plotdict['verbose']:
+		print "Creating a %s with the following weight:\n   %s" % (
+			roothisto.ClassName(), plotdict['weights'][index])
 
 	# fill the histogram from the ntuple
 	roothisto.Sumw2()
-#	if False and isMC:
-#		vv = variables.split(':')
-#		vv[0] += "*0.995"
-#		variables = ":".join(vv)
-#		print "name =", variables
-	print "Weights:", selection
-	ntuple.Project(name, variables, selection)
+	ntuple.Project(name, variables, plotdict['weights'][index])
 
 	if roothisto.ClassName() == 'TH2D':
 		print "Correlation between %s and %s in %s in the selected range:  %1.5f" % (
 			quantities[1], quantities[0], roothisto.GetName(),  # .split("/")[-3],
 			roothisto.GetCorrelationFactor())
-	print roothisto
+
 	return roothisto
 
-# histofromfile(quantity, rootfile, treename, settings)
-def histofromfile(quantity, rootfile, settings, changes=None, twoD=False):
+
+def histofromfile(rootfile, objectname, folder, plotdict):
 	"""This function returns a root object
 
 	If quantity is an object in the rootfile it is returned.
 	If not, the histo is filled from ntuple variables via the
 	histofromntuple function
 	"""
-
-	histo = objectfromfile("%s/%s" % (settings['folder'][0], quantity), rootfile, warn=False)
+	path = objectname
+	if folder is not None:
+		path = "%s/%s" % (folder, path)
+	
+	histo = rootfile.Get(path)
 	if histo:
+		histo.Rebin(plotdict['rebin'])
 		return histo
 
-	treename = gettreename(settings)
-	ntuple = objectfromfile(treename, rootfile)
+	ntuple = rootfile.Get(folder)
 
-	name = quantity + "_" + rootfile.GetName()
+	name = objectname + "_" + rootfile.GetName()
 	name = name.replace("/", "").replace(")", "").replace("(", "")
-	#rootfile.Delete("%s;*" % name)
-	quantities = quantity.split("_")
-	return histofromntuple(quantities, name, ntuple, settings, twoD=twoD)
+	return histofromntuple(rootfile, objectname, ntuple, plotdict)
 
 
 try:
@@ -265,83 +159,20 @@ except NameError:
 	pass  # not running with profiler
 
 
-def dictconvert(quantity):
-	if quantity in dictionaries.ntuple_dict:
-		return dictionaries.ntuple_dict[quantity]
-	else:
-		return quantity
-
-
-def getobjectfromnick(nickname, rootfile, changes, rebin=1, selection=""):
-	objectname = getobjectname(nickname, changes)
-	return getobject(objectname, rootfile, changes, selection=selection)
-
-
-def objectfromfile(name, rootfile, exact=False, warn=True):
-	"""get a root object by knowing the exact name
-
-	'exact' could be used to enforce the loading of exactly this histogram and
-	not the MC version without 'Res' but it is not at the moment (strict version)
-	"""
-	oj = rootfile.Get(name)
-#	if not oj and "Res" in name and not exact:
-#		oj = rootfile.Get(name.replace("Res", ""))
-#	if warn and not oj:
-#		print "Can't load object", name, "from root file", rootfile.GetName()
-#		exit(0)
-	return oj
-
-
-def getobjectname(quantity='z_mass', change={}):
-	"""Build the name of a histogram according to Excalibur conventions.
-
-	Every histogram written by Artus has a name like
-	'NoBinning_incut/<quantity>_ak5PFJetsCHSL1L2L3'
-	This string is returned for each quantity and any changes to the default
-	can be applied via the change dictionary.
-
-	Examples for quantities:
-		z_pt, mu_plus_eta, cut_all_npv, L1_npv
-
-	This is very old and hopefully unused!!
-	"""
-
-	"""
-	# Set default values
-	keys = ['bin', 'incut', 'var', 'quantity', 'algorithm', 'correction']
-	selection = {'bin': 'NoBinning', 'incut': 'incut', 'var': '',
-		'quantity': '<quantity>', 'algorithm': 'AK5PFJetsCHS',
-		'correction': 'L1L2L3Res'}
-
-	hst = ''
-	for k in change:
-		if k not in selection:
-			print k, "is no valid key. Valid keys are: ", keys
-			exit(1)
-	# apply requested changes
-	selection.update(change)
-	# make a prototype name and correct it
-	for k in keys:
-		hst += selection[k] + '_'
-	hst = hst.replace('Jets_', 'Jets').replace('__', '_')
-	hst = hst.replace('_L1', 'L1')[:-1].replace('_<quantity>', '/' + quantity)
-	"""
-	return "genericName"
-
-
-def saveasroot(rootobjects, opt, settings):
-	filename = opt.out + "/%s.root" % settings['filename']
+def save_roothistos(plotdict):
+	"""Save the root histograms to disk."""
+	filename = "%s/%s_histos.root" % (plotdict['out'], plotdict['filename'])
 	f = ROOT.TFile(filename, "UPDATE")
-	for rgraph, name in zip(rootobjects, settings['labels']):
-		plotname = settings['root']  # "_".join([settings['root'], name])
-		print "Saving %s in ROOT-file %s" % (plotname, filename)
-		rgraph.SetTitle(plotname)
-		rgraph.SetName(plotname)
+	for rgraph, histoname in zip(plotdict['roothistos'], plotdict['labels']):
+		print "Saving %s in ROOT-file %s" % (histoname, filename)
+		rgraph.SetTitle(histoname)
+		rgraph.SetName(histoname)
 		rgraph.Write()
 	f.Close()
 
 
 def rootdivision(rootobjects):
+	"""Return the quotient of two ROOT histograms."""
 	#convert TProfiles into TH1Ds because ROOT cannot correctly divide TProfiles
 	if (rootobjects[0].ClassName() != 'TH1D' and
 			rootobjects[1].ClassName() != 'TH1D'):

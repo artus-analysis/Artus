@@ -10,6 +10,9 @@ import os.path
 import sys
 import copy
 import matplotlib
+import json
+import argparse
+import inspect
 
 from time import localtime, strftime, clock
 from ROOT import gROOT, PyConfig
@@ -17,135 +20,386 @@ PyConfig.IgnoreCommandLineOptions = True  # prevents Root from reading argv
 gROOT.SetBatch(True)  # no root blah blah
 
 # basic functionality
-import Artus.HarryPlotter.tools.getroot as getroot  # read root files
-import Artus.HarryPlotter.tools.dictionaries as dictionaries  # this plot dictionary should perhaps move?
+import Artus.HarryPlotter.tools.getroot as getroot
+import Artus.HarryPlotter.tools.utils as utils
+import Artus.HarryPlotter.tools.labels as labels
+import Artus.HarryPlotter.tools.plotrc as plotrc
 
 # all plot modules
-# use ls and imp to read all of them?
 import Artus.HarryPlotter.plot1d as plot1d
 import Artus.HarryPlotter.plot2d as plot2d
-# import ... .Plotting.myhiggsplot as myhiggsplot # to come
-
-def firstpart(inputString):
-	pos = inputString.find("_")
-	if pos != -1:
-		return inputString[:pos]
-	else: 
-		return inputString
 
 
-def secondpart(inputString):
-	pos = inputString.find("_")
-	if pos != -1:
-		return inputString[pos+1:]
-	else: 
-		return inputString
+def get_basic_dictionary():
+	"""This function returns a dictionary with all keys needed by HarryPlotter,
+	however its values are practically None.
+	"""
+	
+	basedict = {
+		'files': [],
+		'listfunctions': False,
+		'analysismodules': [],
+		'writejson': None,
+		'readjson': None,
+		'root': False,
+		'save': True,
+		'normalize': False,
+		
+		'roothistos': [],
+		'mplhistos': [],
+		'rootfiles':[],
+		'groups': None,
+		
+		'x': None,
+		'xview': None,
+		'y': None,
+		'xbins': [],
+		'ybins': [],
+		'xname':None,
+		'yname':None,
+		'xticks': None,
+		'yticks': None,
+		
+		'weights': ['1'],
+		
+		'figure': None,
+		'axes': None,
+		
+		'date':None,
+		'author': None,
+		'title': None,
+		'text': None,
+		
+		'errorbars': [True],
+	# ...
+	# ...
+	# ...
+	}
+	return basedict
 
-plottypes = ["2D", "1D"]
 
-def determinePlottype(inputString):
-	plottype = "1D"
-	for plotstring in plottypes:
-		if plotstring in inputString:
-			plottype = plotstring
-			inputString = inputString[inputString.find("_")+1:]
+def get_basic_parser(
 
-	if firstpart(inputString) == secondpart(inputString):
-		if "2D" in plottype:
-			print "Unsufficient number of variables."
-			sys.exit(1)
+		plot='zmass',
+		out="out",
+		formats=['png'],
+	
+		folder = ['folder1'],
+		files=None,
+
+		labels=["file1", "file2", "file3"],
+		colors=['black', '#CBDBF9'],
+		markers=["o", "stack"],
+		errorbars=[True, True, True],
+
+		weights=None,
+
+		lumi=None,
+		energy=None,
+		author=None,
+		date=None,
+		layout='generic',
+		title=None,
+		eventnumberlabel=None,
+		legloc='best',
+
+		nbins=20,
+		rebin=1,
+		ratio=False,
+		fit=None,
+
+		filename=None,
+		backend='mpl',
+		plottype = '1D',
+	
+		text=None,
+		readjson=None,
+		writejson=None,
+		figure=None,
+		axes=None,
+		x=None, y=None, z=None, xview=None, xbins=[], ybins=[], xname=None,
+		yname=None, xticks=None, yticks=None, log=None, xlog=None,
+
+		save=None,
+		verbose=None,
+	
+		roothistos=None,
+		mplhistos=None,
+		rootfiles=[],
+		groups=None,
+		analysismodules=['x'],
+		listfunctions=False,
+		root=False,
+		normalize=False,
+	
+	):
+	"""This is the basic parser that reads the Harry options from the command line."""
+
+	parser = argparse.ArgumentParser(epilog="Have fun.")
+
+	#plotname
+	parser.add_argument('plot', type=str, default=plot,
+		help="The name of the plot to be created.")
+
+	# source options
+	source = parser.add_argument_group('Source options')
+	source.add_argument('-i', '--files', type=str, nargs='*', default=files,
+		help="Input root file(s). Specify their affiliation with -a.")
+	source.add_argument('--groups', type=str, nargs='*', default = groups,
+		help="Group name of input files. Specify the same name to produce stacked plots.")
+	source.add_argument('--type', type=str, default = plottype,
+		help="Type of plot. Default is %(default)s")
+
+	source.add_argument('--weights', type=str, nargs='+',
+		default=weights,
+		help='Weight (cut) expressions for creating the histogram from the NTuple. \
+			One argument for each input file. If only one argument is given,\
+			assume it is the same for each file.')
+	source.add_argument('--folder', type=str, nargs='*',
+		default=folder,
+		help="folder in rootfile. Specify only once if everything is in the same folder or multiple folders for each input file.")
+	source.add_argument('--normalize', '-n', action='store_true',
+		default=normalize,
+		help="Normalize all histograms to the same number of events.")
+
+	# more general options
+	general = parser.add_argument_group('General options')
+	general.add_argument('-r', '--rebin', type=int, default=rebin,
+		help="Rebinning value n")
+	general.add_argument('-R', '--ratio', action='store_true',
+		help="do a ratio plot from the first two input files")
+	general.add_argument('--ratiosubplot', action='store_true',
+		help="Add a ratio subplot")
+	general.add_argument('-F', '--fit', type=str, default=fit,
+		help="Do a fit. Options: vertical, chi2, gauss, slope, intercept")
+	general.add_argument('--nbins', type=int, default=nbins,
+		help='number of bins in histogram. Default is %(default)s')
+
+	# output settings
+	output = parser.add_argument_group('Output options')
+	output.add_argument('-o', '--out', type=str, default=out,
+		help="output directory for plots")
+	output.add_argument('--backend', type=str, default=backend,
+		help="backend for output. Valid options are 'mpl' and 'root'. Default is %(default)s.")
+	output.add_argument('-f', '--formats', type=str, nargs='+', default=formats,
+		help="output format for the plots.  Default is %(default)s.")
+	output.add_argument('--filename', type=str, default=filename,
+		help='Specify a filename. By default, the plotname is used')
+	output.add_argument('--root', action='store_true', default=root,
+		help="Save the created root histograms to disk.")
+
+
+	# plot labelling
+	labelling = parser.add_argument_group('Labelling options')
+	labelling.add_argument('-l', '--lumi', type=float, default=lumi,
+		help="luminosity for the given data in /fb. Default is %(default)s")
+	labelling.add_argument('-e', '--energy', type=int, default=energy,
+		help="centre-of-mass energy for the given samples in TeV. Default is %(default)s")
+	labelling.add_argument('-A', '--author', type=str, default=author,
+		help="author name of the plot")
+	labelling.add_argument('--date', type=str, default=date,
+		help="show the date in the top left corner. 'iso' is YYYY-MM-DD, " +
+			 "'today' is DD Mon YYYY and 'now' is DD Mon YYYY HH:MM.")
+	labelling.add_argument('-E', '--eventnumberlabel', action='store_true',
+		help="add event number label")
+	labelling.add_argument('-t', '--title', type=str, default=title,
+		 help="plot title")
+
+	#plot formatting
+	formatting = parser.add_argument_group('Formatting options')
+	formatting.add_argument('--layout', type=str,
+		default='generic',
+		help="layout for the plots. E.g. 'document': serif, LaTeX, pdf; " +
+			 "'slides': sans serif, big, png; 'generic': slides + pdf. " +
+			 "This is not implemented yet.")
+	formatting.add_argument('-g', '--legloc', type=str, nargs="?", default=legloc,
+		help="Location of the legend. Default is %(default)s. Possible values " +
+			 "are keywords like 'lower left' or coordinates like '0.5,0.1'.")
+	formatting.add_argument('-C', '--colors', type=str, nargs='+', default=colors,
+		help="colors for the plots in the order of the files. Default is: " +
+			 ", ".join(colors))
+	formatting.add_argument('-k', '--labels', type=str, nargs='+', default=labels,
+		help="labels for the plots in the order of the files. Default is: " +
+			 ", ".join(labels))
+	formatting.add_argument('-m', '--markers', type=str, nargs='+', default=markers,
+		help="style for the plot in the order of the files. 'o' for points, \
+			  '-' for lines, 'stack' for filled plots. Default is: %s" % ", ".join(markers))
+	formatting.add_argument('--errorbars', default=errorbars, nargs='+',
+		help="Include errorbars. Give one argument to count for all curves or one for each input file")
+	formatting.add_argument('--text', type=str,
+		default=text,
+		help='Place a text at a certain location. Syntax is --text="abs" or \
+														  --text="abc,0.5,0.9"')
+	formatting.add_argument('-G', '--grid', action='store_true', default=False,
+		help="Place an axes grid on the plot.")
+
+
+	# AXIS
+	axis = parser.add_argument_group('Axis options')
+	axis.add_argument('--log', action='store_true', default=log,
+		 help="logarithmic y-axis")
+	axis.add_argument('--xlog', action='store_true', default=xlog,
+		 help="logarithmic x-axis")
+	axis.add_argument('-y', type=float, nargs='+', default=y,
+		help="upper and lower limit for y-axis")
+	axis.add_argument('-x', type=float, nargs='+', default=x,
+		help="upper and lower limit for x-axis")
+	axis.add_argument('-xview', type=float, nargs='+', default=xview,
+		help="upper and lower limit for x-axis VIEWING in the plot")
+	axis.add_argument('-z', type=float, nargs='+', default=z,
+		help="upper and lower limit for z-axis")
+	axis.add_argument('--xname', type=str, default=xname,
+		help='x-axis label name')
+	axis.add_argument('--yname', type=str, default=yname,
+		help='y-axis label name')
+
+	axis.add_argument('--xticks', type=float, nargs='+', default=xticks,
+		help="add custom xticks")
+	axis.add_argument('--yticks', type=float, nargs='+', default=yticks,
+		help="add custom yticks")
+
+	# Other options
+	group = parser.add_argument_group('Other options')
+	group.add_argument('-v', '--verbose', action='store_true', default=verbose,
+		help="Increased verbosity")
+	group.add_argument('--listfunctions', action='store_true', default=listfunctions,
+		help="Show a list of the available functions with docstrings")
+	group.add_argument('--quantities', action='store_true',
+		help="Show a list of the available quantities/histograms in the NTuple/folder in each file")
+
+	group.add_argument('--writejson', type=str, default=writejson,
+		help="Write the plot dictionary into a json file. Argument is (path and) filename,\
+			 the .json suffix is added automatically.")
+	group.add_argument('--readjson', type=str, default=readjson,
+		help="Read the plot dictionary from a json file. Argument is (path and) filename,\
+			 the .json suffix is added automatically.")
+
+	return parser
+
+
+def create_dictionary_from_parser(parser):
+	"""This function creates the Harry-conform dictionary from an argparse object."""
+
+	opt = parser.parse_args()
+
+	opt.subplot = False
+	parser.set_defaults(subplot=False)
+
+	opt.brackets = False
+
+	matplotlib.rcParams.update(plotrc.getstyle(opt.layout))
+
+	# get the dicionary from the json file and update the non-default opt values
+	if opt.readjson is not None:
+		jsondict = readjson(opt.__dict__)
+		for i in vars(opt):
+			if getattr(opt, i) == parser.get_default(i):
+				attr = getattr(opt, i)
+				exec("opt.%s = jsondict[i]" % i)
+
+	# Determine plot type and quantities, set filename if not given, ...
+	if len(opt.plot.split("_")) == 2:
+		opt.yvar = opt.plot.split("_")[0]
+		opt.xvar = opt.plot.split("_")[1]
+	elif len(opt.plot.split("_")) == 1:
+		opt.xvar = opt.plot.split("_")[0]
+	if opt.xname == None: opt.xname = opt.xvar
+	if opt.yname == None:
+		if 'yvar' in opt:
+			opt.yname = opt.yvar
 		else:
-			return plottype, inputString, ""
-	else:
-		return "2D", firstpart(inputString), secondpart(inputString)
+			opt.yname = "Entries"
+	if opt.filename is None:
+		opt.filename = opt.plot
+	if opt.groups is None:
+		opt.groups = opt.labels
+
+	# if only one folder/... is given, assume we want always the same:
+	for i in ['errorbars', 'markers', 'folder', 'weights']:
+		if opt.files is not None and len(getattr(opt, i)) != 0 and len(getattr(opt, i)) < len(opt.files):
+			attr = getattr(opt, i) 
+			attr *= len(opt.files) / len(getattr(opt, i))
+
+	return opt.__dict__
 
 
+def writejson(plotdict):
+	""" Write the plotdict (or any dict) as json."""
+	with open("%s.json" % plotdict['writejson'], 'w') as f:
+		plotdict['writejson'] = None
+		json.dump(plotdict, f, sort_keys=True, indent=4, skipkeys=True)
 
 
-def plot(op):
-	"""Search for plots in the module and run them."""
-	# dont display any graphics
-	gROOT.SetBatch(True)
-	startop = copy.deepcopy(op)
-	whichfunctions = []
-	# specify the plots that will be done depending on the variable selection
-	plots = op.plots
+def readjson(plotdict):
+	"""Read the plotdict in from a json file."""
+	with open("%s.json" % plotdict['readjson'], "r") as f:
+		return json.load(f)
 
+def print_plotdict(plotdict):
+	keys = plotdict.keys()
+	keys.sort()
+	print "\nPlotdictionary:"
+	for key in keys:
+		print "  %s: %s" % (key, plotdict[key])
+
+
+def plot(plotdict):
+	"""This is the main function of HarryPlotter. It processes the plotdict and"""
+
+	if plotdict['writejson'] is not None:
+		writejson(plotdict)
+
+	basedict = get_basic_dictionary()
+	basedict.update(plotdict)
+	plotdict = basedict
+
+	startdict = copy.copy(plotdict)
+
+	if plotdict['verbose']:
+		print_plotdict(plotdict)
+
+	# add new harrycore modules here:
 	modules = [plot2d, plot1d]
-
-	if op.verbose:
-		showoptions(op)
-
-	## place the plotsdict creation somewhere else when working
-	plotsdict = {}
-	for plot in op.plots:
-		plotsdict["plots"] = {}
-		plotsdict["plots"][plot] = {}
-		plotsdict["plots"][plot]["type"], plotsdict["plots"][plot]["var1"], var2 = determinePlottype(plot)
-		if "2D" in plotsdict["plots"][plot]["type"]:
-			plotsdict["plots"][plot]["var2"] = var2
-
-	plotsdict["collections"] = {}
-	# create list for stacked histograms
-
-	if len(op.files) != len(op.affiliation):
-		print "Number of affiliations and number of files do not match!"
-		sys.exit()
-
-	for i in range(len(op.files)):
-		if not (firstpart(op.affiliation[i]) in plotsdict["collections"]):
-			plotsdict["collections"][firstpart(op.affiliation[i])] = {}
-		if not (secondpart(op.affiliation[i]) in plotsdict["collections"][firstpart(op.affiliation[i])]):
-			plotsdict["collections"][firstpart(op.affiliation[i])][secondpart(op.affiliation[i])] = {}
-			plotsdict["collections"][firstpart(op.affiliation[i])][secondpart(op.affiliation[i])]["filenames"] = []
-			plotsdict["collections"][firstpart(op.affiliation[i])][secondpart(op.affiliation[i])]["files"] = []
-#			plotsdict["collections"][firstpart(op.affiliation[i])][secondpart(op.affiliation[i])]["name"] = secondpart(op.affiliation[i])
-
-		plotsdict["collections"][firstpart(op.affiliation[i])][secondpart(op.affiliation[i])]["filenames"].append(op.files[i])
-		plotsdict["collections"][firstpart(op.affiliation[i])][secondpart(op.affiliation[i])]["files"].append(getroot.openfile(op.files[i], op.verbose))
-		plotsdict["collections"][firstpart(op.affiliation[i])][secondpart(op.affiliation[i])]["markers"] = op.markers[i]
-		if len(op.folder) == 1:
-			plotsdict["collections"][firstpart(op.affiliation[i])][secondpart(op.affiliation[i])]["tree"] = op.folder[0]
+	if 'analysismodules' in plotdict:
+		if type(plotdict['analysismodules']) == list:
+			modules += plotdict['analysismodules']
 		else:
-			plotsdict["collections"][firstpart(op.affiliation[i])][secondpart(op.affiliation[i])]["tree"] = op.folder[i]
-
-		if len(op.errorbar) == 1:
-			plotsdict["collections"][firstpart(op.affiliation[i])][secondpart(op.affiliation[i])]["errorbar"] = op.errorbar[0]
+			modules += [plotdict['analysismodules']]
+			
+	# print the list of all available functions
+	if plotdict['listfunctions']:
+		print "\nThe following functions are available in the plotting modules:"
+		utils.printfunctions(modules)
+		if not plotdict['verbose']:
+			print "\nIf you also want to see the available HarryPlotter helper",
+			print "functions, activate verbose (type --v)\n"
 		else:
-			plotsdict["collections"][firstpart(op.affiliation[i])][secondpart(op.affiliation[i])]["errorbar"] = op.errorbar[i]
+			print "\nHelper functions:\n"
+		utils.printfunctions([utils, getroot, labels, sys.modules[__name__]])
+		return
 
+	#open root files
+	if plotdict['files']:
+		for f in plotdict['files']:
+			plotdict['rootfiles'].append(getroot.openfile(f, plotdict['verbose']))
 
-	print plotsdict
+	if plotdict['quantities']:
+		utils.printquantities(plotdict)
+		return
 
-	# check input consistency
+	function_selector(plotdict)
 
+	# save created root histograms
+	if plotdict['root']:
+		getroot.save_roothistos(plotdict)
 
-	if op.list:
-		printfunctions(modules)
-		sys.exit()
-
-	if op.quantities:
-		files = []
-		for f in op.files:
-			print "Using as file", 1 + op.files.index(f), ":", f
-			files += [getroot.openfile(f, op.verbose)]
-		printquantities(files, op)
-		sys.exit()
-
-	function_selector(plotsdict, op)
-	"""
-	# check whether the options have changed and warn
-	if op != startop:
-		print "WARNING: The following options have been modified by a plot:"
-		for key in dir(op):
-			if "_" not in key and getattr(op, key) != getattr(startop, key):
-				print " -", repr(key), "was:", getattr(startop, key), "is now:", getattr(op, key)
-		print "These plots modify options:"
-		for f in whichfunctions:
-			print "  ", f
-		print "This should not be the case! Options should not be changed within a plotting function."
-		print "A solution could invoke copy.deepcopy() in such a case."
-	"""
+	# check whether the options have changed and how
+	if plotdict['verbose'] and startdict != plotdict:
+		print "The following entries have been modified by a plot:"
+		for key in plotdict.keys():
+			if key in startdict and startdict[key] != plotdict[key]:
+				print "  '\033[92m%s\033[97m'\n    previously: %s\n    now:        %s" % (key,
+						startdict[key], plotdict[key])
 
 try:
 	getobjectfromtree = profile(getobjectfromtree)
@@ -153,31 +407,15 @@ except NameError:
 	pass  # not running with profiler
 
 
-# function_selector: takes a list of plots and assigns them to the according funtion
-def function_selector(plotsdict, opt):
-	for plot in plotsdict["plots"]:
-
-		if plotsdict["plots"][plot]["type"] == "2D":
-			plot2d.twoD(plotdict, opt)
-		elif plotsdict["plots"][plot]["type"] == "1D":
-			plot1d.plot(plot, plotsdict, opt)
-
-		"""elif "_all" in plot:
-			plot1d.datamc_all(plot[:-4], datamc, opt)
-
-		# for responseratio-plots
-		elif 'responseratio' in plot and len(plot.split('_')) > 2:
-			plotresponse.responseratio(datamc, opt,
-							types=plot.split('_responseratio_')[0].split('_'),
-							over=plot.split('_responseratio_')[1])
-		elif 'response' in plot and len(plot.split('_')) > 2:
-			plot = plot.replace('bal', 'balresp')
-			plotresponse.responseplot(datamc, opt,
-							types=plot.split('_response_')[0].split('_'),
-							over=plot.split('_response_')[1])
-		elif 'ratio' in plot and len(plot.split('_')) > 2:
-			plot = plot.replace('bal', 'balresp')
-			plotresponse.ratioplot(datamc, opt,
-							types=plot.split('_ratio_')[0].split('_'),
-							over=plot.split('_ratio_')[1])
-		"""
+def function_selector(plotdict):
+	"""takes a list of plots and assigns them to the according funtion."""
+	if (len(plotdict['analysismodules']) > 0):
+		for module in plotdict['analysismodules']:
+			if hasattr(module, plotdict['plot']):
+				print "Calling %s in module %s" % (plotdict['plot'], module.__name__)
+				getattr(module, plotdict['plot'])(plotdict)
+				return
+	if plotdict["type"] == "2D":
+		plot2d.plot_2d(plotdict)
+	elif plotdict["type"] == "1D":
+		plot1d.plot1d(plotdict)
