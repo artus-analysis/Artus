@@ -63,12 +63,9 @@ public:
 		return m_outputPath;
 	}
 
-private:
-	void InitConfig();
-
 	typedef std::pair< ProcessNodeType, std::string > NodeTypePair;
 
-	NodeTypePair ParseProcessNode ( std::string const& sInp ) const
+	static NodeTypePair ParseProcessNode ( std::string const& sInp )
 	{
 		std::vector < std::string > splitted;
 		boost::algorithm::split( splitted, sInp, boost::algorithm::is_any_of(":") );
@@ -89,6 +86,11 @@ private:
 
 		return std::make_pair( ntype, splitted[1]);
 	}
+
+private:
+	void InitConfig();
+
+
 
 
 	// load the global produce list from configuration and
