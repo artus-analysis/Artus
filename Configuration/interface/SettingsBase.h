@@ -12,6 +12,7 @@
 #include "Artus/Core/interface/GlobalInclude.h"
 #include "Artus/Configuration/interface/PropertyTreeSupport.h"
 #include "Artus/Configuration/interface/SettingMacros.h"
+#include "Artus/Configuration/interface/ArtusConfig.h"
 
 /**
    \brief Reads setting of local parts of PipelineRunner from a prepared json configuration file.
@@ -19,6 +20,23 @@
    Defines what is needed to read configurations for Artus event processing from a prepared json 
    file and passes it on to LocalProducers, Filters and Consumers.
 */
+
+class SettingsUtil {
+public:
+	static stringvector ExtractFilters ( stringvector const& allProcessors )   {
+		stringvector filt;
+
+		for ( stringvector::const_iterator it = allProcessors.begin();
+				it != allProcessors.end(); it ++ ) {
+			const ArtusConfig::NodeTypePair nodeRes = ArtusConfig::ParseProcessNode( *it );
+			if ( nodeRes.first == ProcessNodeType::Filter ){
+				filt.push_back( nodeRes.second );
+			}
+		}
+
+		return filt;
+	}
+};
 
 class SettingsBase {
 public:
@@ -61,6 +79,10 @@ public:
 		RETURN_CACHED(m_processors, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".Processors"))
 	}
 
+	virtual stringvector GetFilters () const {
+		return SettingsUtil::ExtractFilters(GetProcessors() );
+	}
+
 	/// get list of all consumers
 	VarCache<stringvector> m_consumers;
 	stringvector GetConsumers() const
@@ -79,16 +101,24 @@ public:
 
 class GlobalSettingsBase {
 public:
+
+	virtual ~GlobalSettingsBase() {
+	}
+
 	/// path in the config file to reach the settings for this pipeline
 	IMPL_PROPERTY(std::string, PropTreePath)
 	/// pointer to the global, loaded property tree
 	IMPL_PROPERTY(boost::property_tree::ptree*, PropTree)
 
-	/// get list of all local producers
+	/// get list of all global Processors ( filters & producer )
 	VarCache<stringvector> m_globalProcessors;
 	stringvector GetGlobalProcessors() const
 	{
 		RETURN_CACHED(m_globalProcessors, PropertyTreeSupport::GetAsStringList(GetPropTree(), "GlobalProcessors"))
+	}
+
+	virtual stringvector GetGlobalFilters () const {
+		return SettingsUtil::ExtractFilters(GetGlobalProcessors() );
 	}
 
 };
