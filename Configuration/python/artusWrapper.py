@@ -7,181 +7,161 @@ import logging
 import os
 import sys
 import tempfile
+import hashlib
+import json
+import subprocess
 
 import Artus.Utility.logger as logger
 import Artus.Configuration.jsonTools as jsonTools
 
 
-# main function, to be called in user script for each analysis
-# additional parsers can be introduced as well as lists of function pointers
-# to be executed at specific steps of the run
-def artusWrapper(defaultExecutable=None,
-                 additionalArgumentParsers=None,
-                 functionsToBeCalledBeforeConfigConstruction=None,
-                 functionsToBeCalledBeforeRunningArtus=None,
-                 functionsToBeCalledAfterRunningArtus=None):
-	
-	# set default paramters here to prevent bugs
-	if additionalArgumentParsers is None:
-		additionalArgumentParsers = []
-	
-	if functionsToBeCalledBeforeConfigConstruction is None:
-		functionsToBeCalledBeforeConfigConstruction = []
-	
-	if functionsToBeCalledBeforeRunningArtus is None:
-		functionsToBeCalledBeforeRunningArtus = []
-	
-	if functionsToBeCalledAfterRunningArtus is None:
-		functionsToBeCalledAfterRunningArtus = []
-	
-	args = parseArguments(defaultExecutable, additionalArgumentParsers)
-	
-	# call used defined functions
-	for function in functionsToBeCalledBeforeConfigConstruction:
-		function(args)
-	
-	# construct JSON config dictionary
-	jsonConfig = constructJsonConfig(args)
-	if args.print_config:
-		print jsonConfig
-	
-	# call used defined functions
-	for function in functionsToBeCalledBeforeRunningArtus:
-		function(args, jsonConfig)
-	
-	# run Artus
-	exitCode = 0
-	if not args.no_run:
-		exitCode = runArtus(args, jsonConfig)
-	
-	if exitCode != 0:
-		if exitCode < 256: return exitCode
-		else: return 1 # Artus sometimes returns exit codes >255 that are not supported
-	
-	# call used defined functions
-	for function in functionsToBeCalledAfterRunningArtus:
-		function(args, jsonConfig)
-	
-	return 0
+# main function
+class ArtusWrapper(object):
 
+	def __init__(self, executable=None):
 
-# parse arguments and return the options
-def parseArguments(defaultExecutable, additionalArgumentParsers=[]):
+		self._config = jsonTools.JsonDict()
+		self._executable = executable
 
-	parser = argparse.ArgumentParser(parents=[logger.loggingParser]+additionalArgumentParsers, fromfile_prefix_chars="@",
-	                                 description="Wrapper for Artus executables. JSON configs can be file names pointing to JSON text files or Artus ROOT output files with saved configs or python statements that can be evaluated as dictionary. When JSON configs are merged, the first ones in the list have a higher priority than later ones. In the final config, all includes and comments are replaced accordingly.")
-	
-	fileOptionsGroup = parser.add_argument_group("File options")
-	fileOptionsGroup.add_argument("-i", "--input-files", nargs="+", required=True,
-	                              help="Input root files. Leave empty (\"\") if input files from root file should be taken.")
-	fileOptionsGroup.add_argument("-o", "--output-file", default="output.root",
-	                              help="Output root file. [Default: output.root]")
-	fileOptionsGroup.add_argument("-w", "--work", default="$ARTUS_WORK_BASE",
-	                              help="Work directory base. [Default: $ARTUS_WORK_BASE]")
-	fileOptionsGroup.add_argument("-n", "--project-name",
-	                              help="Name for this Artus project specifies the name of the work subdirectory.")
+		self.parser = None
+		#Load default argument parser
+		self._init_argumentparser()
+		#Parse command line arguments and return dict
+		self._args = vars(self.parser.parse_args())
 
-	configOptionsGroup = parser.add_argument_group("Config options")
-	configOptionsGroup.add_argument("-c", "--base-configs", nargs="+", required=True,
-	                                help="JSON base configurations. All configs are merged.")
-	configOptionsGroup.add_argument("-p", "--pipeline-configs", nargs="+", action="append",
-	                                help="JSON pipeline configurations. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")
-	configOptionsGroup.add_argument("-P", "--print-config", default=False, action="store_true",
-	                                help="Print out the JSON config before running Artus.")
+	def run(self):
 
-	runningOptionsGroup = parser.add_argument_group("Running options")
-	runningOptionsGroup.add_argument("--no-run", default=False, action="store_true",
-	                                 help="Exit before running Artus to only check the configs.")
-	runningOptionsGroup.add_argument("-r", "--root", default=False, action="store_true",
-	                                 help="Open output file in ROOT TBrowser after completion.")
-	runningOptionsGroup.add_argument("-b", "--batch", default=False, action="store_true",
-	                                 help="Run with grid-control.")
-	runningOptionsGroup.add_argument("-R", "--resume", default=False, action="store_true",
-	                                 help="Resume the grid-control run and hadd after interrupting it.")
-	
-	
-	if defaultExecutable: parser.add_argument("-x", "--executable", help="Artus executable. [Default: %s]" % str(defaultExecutable), default=defaultExecutable)
-	else: parser.add_argument("-x", "--executable", help="Artus executable.", required=True)
+		#Expand Config
+		self.expandConfig()
+		self.saveConfig()
 
-	args = parser.parse_args()
-	logger.initLogger(args)
-	
-	# input files check
-	if len(args.input_files) == 1 and args.input_files[0] == "":
-		args.input_files = []
-	if all(map(lambda baseConfig: not baseConfig.endswith(".root"), args.base_configs)) and args.input_files == "":
-		parser.error("No input file specified!")
-	
-	return args
+		#Run Artus if desired
+		if not self._args['no_run']:
+			callExecutable(self._configFilename())
 
+	def setInputFilenames(self, files):
+		if isinstance(files, basestring):
+			self._config['InputFiles'] = glob.glob(files)
+		else:
+			self._config['InputFiles'] = files
 
-# construct the JSON dictionary and return it
-def constructJsonConfig(args):
-	
-	# initialise main JSON config
-	mainConfig = jsonTools.JsonDict({ "OutputPath" : args.output_file })
-	if len(args.input_files) > 0:
-		mainConfig["InputFiles"] = reduce(lambda a, b: a+b, map(lambda inputFile: glob.glob(os.path.expandvars(inputFile)), args.input_files))
-	
-	# merge all base configs into the main config
-	mainConfig += jsonTools.JsonDict.mergeAll(*args.base_configs)
-	
-	# treat pipeline configs
-	pipelineJsonDict = {}
-	if args.pipeline_configs and len(args.pipeline_configs) > 0:
-		pipelineJsonDict = []
-		for pipelineConfigs in args.pipeline_configs:
-			pipelineJsonDict.append(jsonTools.JsonDict.expandAll(*map(lambda pipelineConfig: jsonTools.JsonDict.mergeAll(*pipelineConfig.split()), pipelineConfigs)))
-		pipelineJsonDict = jsonTools.JsonDict.mergeAll(*pipelineJsonDict)
-		pipelineJsonDict = jsonTools.JsonDict({ "Pipelines" : pipelineJsonDict })
-	
-	# merge resulting pipeline config into the main config
-	mainConfig += jsonTools.JsonDict(pipelineJsonDict)
-	
-	# treat includes and comments
-	mainConfig = mainConfig.doComments().doIncludes().doComments()
-	
-	return mainConfig
+	def setOutputFilename(self, output_filename):
+		self._config["OutputPath"] = output_filename
 
+	def getConfig(self):
+		return self._config
 
-# run Artus analysis (C++ executable)
-def runArtus(args, jsonConfig):
-	exitCode = 0
+	def setConfig(self, config):
+		self._config = config
+
+	def saveConfig(self, filepath=None):
+		"""Save Config to File"""
+		if not filepath:
+			basename = "artus_{0}.json".format(hashlib.md5(str(self._config)).hexdigest())
+			filepath = os.path.join(tempfile.gettempdir(), basename)
+		self._configFilename = filepath
+		self._config.save(filepath)
 	
-	# save config file
-	jsonConfigFileName = tempfile.mktemp(prefix="artus_", suffix=".json")
-	jsonConfig.save(jsonConfigFileName)
-	logging.getLogger(__name__).info("Saved JSON config \"%s\" for temporary usage." % jsonConfigFileName)
-	
-	if args.batch:
+	def expandConfig(self):
+
+		# merge all base configs into the main config
+		print self._args.get('base_configs')
+		self._config += jsonTools.JsonDict.mergeAll(self._args.get('base_configs'))
+
+		#Set Input Filenames
+		if self._args.get('input_files'):
+			self.setInputFilenames(self._args.get('input_files'))
+		if self._args.get('output_file'):
+			self.setOutputFilename(self._args.get('output_file'))
+
+		# treat pipeline configs
+		pipelineJsonDict = {}
+		if self._args.get('pipeline_configs') and len(self._args.get('pipeline_configs')) > 0:
+			pipelineJsonDict = []
+			for pipelineConfigs in self._args.get('pipeline_configs'):
+				pipelineJsonDict.append(jsonTools.JsonDict.expandAll(*map(lambda pipelineConfig: jsonTools.JsonDict.mergeAll(*pipelineConfig.split()), pipelineConfigs)))
+			pipelineJsonDict = jsonTools.JsonDict.mergeAll(*pipelineJsonDict)
+			pipelineJsonDict = jsonTools.JsonDict({"Pipelines": pipelineJsonDict})
 		
-		# check work directory
-		args.work = os.path.expandvars(args.work)
-		if not os.path.exists(args.work):
-			os.makedirs(args.work)
-	
-		# run Artus with grid-control
-		pass
-	
-	else:
+		# merge resulting pipeline config into the main config
+		self._config += jsonTools.JsonDict(pipelineJsonDict)
 		
-		# check output directory
-		outputDir = os.path.dirname(args.output_file)
-		if len(outputDir) > 0 and not os.path.exists(outputDir):
-			os.makedirs(outputDir)
-	
-		# call C++ executable locally
-		command = args.executable + " " + jsonConfigFileName
-		logging.getLogger(__name__).info("Execute \"%s\"." % command)
-		exitCode = os.system(command)
-		if exitCode != 0:
-			logging.getLogger(__name__).error("Exit with code %s.\n\n" % exitCode)
-			logging.getLogger(__name__).info("Dump configuration:\n")
-			print jsonConfigFileName
+		# treat includes and comments
+		self._config = self._config.doComments().doIncludes().doComments()
 
-	# remove tmp. config
-	logging.getLogger(__name__).info("Remove temporary config file.")
-	os.system("rm " + jsonConfigFileName)
-	
-	return exitCode
 
+	def _init_argumentparser(self):
+	
+		self.parser = argparse.ArgumentParser(parents=[logger.loggingParser], fromfile_prefix_chars="@",
+		                                       description="Wrapper for Artus executables. JSON configs can be file names pointing to JSON text files or Artus ROOT output files with saved configs or python statements that can be evaluated as dictionary. When JSON configs are merged, the first ones in the list have a higher priority than later ones. In the final config, all includes and comments are replaced accordingly.")
+
+		fileOptionsGroup = self.parser.add_argument_group("File options")
+		fileOptionsGroup.add_argument("-i", "--input-files", nargs="+", required=False,
+	                               help="Input root files. Leave empty (\"\") if input files from root file should be taken.")
+		fileOptionsGroup.add_argument("-o", "--output-file", default="output.root",
+	                               help="Output root file. [Default: output.root]")
+		fileOptionsGroup.add_argument("-w", "--work", default="$ARTUS_WORK_BASE",
+	                               help="Work directory base. [Default: $ARTUS_WORK_BASE]")
+		fileOptionsGroup.add_argument("-n", "--project-name",
+	                               help="Name for this Artus project specifies the name of the work subdirectory.")
+
+		configOptionsGroup = self.parser.add_argument_group("Config options")
+		configOptionsGroup.add_argument("-c", "--base-configs", nargs="+", required=False, default={},
+	                                 help="JSON base configurations. All configs are merged.")
+		configOptionsGroup.add_argument("-p", "--pipeline-configs", nargs="+", action="append",
+	                                 help="JSON pipeline configurations. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")
+		configOptionsGroup.add_argument("-P", "--print-config", default=False, action="store_true",
+	                                 help="Print out the JSON config before running Artus.")
+
+		runningOptionsGroup = self.parser.add_argument_group("Running options")
+		runningOptionsGroup.add_argument("--no-run", default=False, action="store_true",
+	                                  help="Exit before running Artus to only check the configs.")
+		runningOptionsGroup.add_argument("-r", "--root", default=False, action="store_true",
+	                                  help="Open output file in ROOT TBrowser after completion.")
+		runningOptionsGroup.add_argument("-b", "--batch", default=False, action="store_true",
+	                                  help="Run with grid-control.")
+		runningOptionsGroup.add_argument("-R", "--resume", default=False, action="store_true",
+	                                  help="Resume the grid-control run and hadd after interrupting it.")
+
+		if self._executable:
+			self.parser.add_argument("-x", "--executable", help="Artus executable. [Default: %s]" % str(self._executable), default=self._executable)
+		else:
+			self.parser.add_argument("-x", "--executable", help="Artus executable.", required=True)
+	
+
+
+	def callExecutable(self):
+		"""run Artus analysis (C++ executable)"""
+	
+		exitCode = 0
+	
+		if args['batch']:
+			# check work directory
+			args['work'] = os.path.expandvars(args.get('work'))
+			if not os.path.exists(args.get('work')):
+				os.makedirs(args['work'])
+	
+			# run Artus with grid-control
+			pass
+	
+		else:
+	
+			# check output directory
+			outputDir = os.path.dirname(args.output_file)
+			if outputDir > 0 and not os.path.exists(outputDir):
+				os.makedirs(outputDir)
+	
+			# call C++ executable locally
+			command = [args.executable, jsonConfigFileName]
+			logging.getLogger(__name__).info("Execute \"%s\"." % command)
+			exitCode = subprocess.call(command)
+			if exitCode != 0:
+				logging.getLogger(__name__).error("Exit with code %s.\n\n" % exitCode)
+				logging.getLogger(__name__).info("Dump configuration:\n")
+				print jsonConfigFileName
+	
+		# remove tmp. config
+		logging.getLogger(__name__).info("Remove temporary config file.")
+		os.system("rm " + jsonConfigFileName)
+	
+		return exitCode
