@@ -10,6 +10,34 @@
 
 #include "Artus/Core/interface/FilterBase.h"
 #include "Artus/Core/interface/FilterResult.h"
+#include "Artus/Core/interface/CutFlow.h"
+
+BOOST_AUTO_TEST_CASE( test_cut_flow )
+{
+	FilterResult fres1;
+	FilterResult fres2;
+	FilterResult fres3;
+
+	fres1.SetFilterDecision("filter1", false);
+	fres1.SetFilterDecision("filter2", true);
+
+	fres2.SetFilterDecision("filter1",true);
+	fres2.SetFilterDecision("filter2", false);
+
+	fres3.SetFilterDecision("filter1",true);
+	fres3.SetFilterDecision("filter2", true);
+
+	CutFlow cflow;
+
+	cflow.AddFilterResult ( fres1 );
+	cflow.AddFilterResult ( fres2 );
+	cflow.AddFilterResult ( fres3 );
+
+	BOOST_CHECK( cflow.GetEventCount() == 3 );
+	BOOST_CHECK_EQUAL( cflow.GetCutEntry("filter1")->second, 1);
+	BOOST_CHECK_EQUAL( cflow.GetCutEntry("filter2")->second, 1);
+
+}
 
 BOOST_AUTO_TEST_CASE( test_filter_result )
 {
