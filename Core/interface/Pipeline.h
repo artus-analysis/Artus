@@ -170,6 +170,8 @@ public:
 
 			// stop processing as soon as one filter fails
 			// but the consumers will still be processed
+			// this will also stop processing, if a global filter
+			// already failed
 			if (! localFilterResult.HasPassed())
 				break;
 			

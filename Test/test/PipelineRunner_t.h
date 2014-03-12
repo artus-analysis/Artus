@@ -86,14 +86,15 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_producer_filter )
 	prunner.AddPipeline( tline1 );
 
 	prunner.AddGlobalProducer( new TestGlobalProducer() );
-	// this filter will drop all events
+	// this filter will be false for all events
 	prunner.AddGlobalFilter( new TestGlobalFilter2() );
 
 	TestEventProvider evtProvider;
 	prunner.RunPipelines ( evtProvider, global_tset );
 
-	// pipeline should never have been called
-	tline1->CheckCalls(0);
+	// pipelines will be executed, even though the global filter
+	// did not all succeed
+	tline1->CheckCalls(10);
 }
 
 BOOST_AUTO_TEST_CASE( test_event_prunner_global_producer_filter_pass )
