@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Configuration/interface/SettingsBase.h"
 
 class TestSettings : public SettingsBase {
@@ -22,6 +23,15 @@ public:
 
 	IMPL_PROPERTY(unsigned int, Level)
 
+	// needs to be overwritte here, because the test
+	// cases don't have a json file loaded and
+	// the code would fail if a lookup to the json file
+	// would happen
+	virtual stringvector GetFilters () const
+		ARTUS_CPP11_OVERRIDE
+	{
+		return stringvector();
+	}
 };
 
 class TestGlobalSettings : public GlobalSettingsBase {
@@ -34,4 +44,13 @@ public:
 
 	IMPL_PROPERTY(unsigned int, Offset)
 
+	// needs to be overwritte here, because the test
+	// cases don't have a json file loaded and
+	// the code would fail if a lookup to the json file
+	// would happen
+	virtual stringvector GetGlobalFilters () const
+		ARTUS_CPP11_OVERRIDE
+	{
+		return stringvector();
+	}
 };
