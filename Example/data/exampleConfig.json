@@ -3,15 +3,19 @@
     "EventCount": -1, 
     "ProducerPtCorrectionFactor": 1.05,
     "GlobalProcessors": [
-        "producer:pt_correction"
+        "producer:pt_correction",
+        "filter:filter_theta"
     ], 
     "InputFiles": [
         "sample_ntuple.root"
     ], 
+    "FilterThetaLow" : "0.0",
+    "FilterThetaHigh" : "2.0",
+    
     "OutputPath": "sample_output.root", 
     "Pipelines": {
         "lowPt": {
-            "Consumers": [ "mean_pt", "quantities_all"
+            "Consumers": [ "mean_pt", "quantities_all", "cutflow"
             ],
             "Processors": [ "filter:filter_pt",
             	"producer:pt_correction_local" ], 

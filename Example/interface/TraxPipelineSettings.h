@@ -30,6 +30,9 @@ public:
 class TraxGlobalSettings: public GlobalSettingsBase {
 public:
 
+	IMPL_SETTING( float, FilterThetaLow )
+	IMPL_SETTING( float, FilterThetaHigh )
+
 	IMPL_SETTING( float, ProducerPtCorrectionFactor )
 
 };
