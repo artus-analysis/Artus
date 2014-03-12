@@ -57,11 +57,9 @@ BOOST_AUTO_TEST_CASE( test_parse_config )
 	cfg.LoadConfiguration( pInit, runner, factory, ARTUS_CPP11_NULLPTR);
 
 	auto & pList = runner.GetGlobalNodes();
-	//auto itFirst = pList.begin();
 
 	BOOST_CHECK_EQUAL( pList.size(), size_t(2) );
 	BOOST_CHECK( pList.begin()->GetProcessNodeType() == ProcessNodeType::Filter );
-	//BOOST_CHECK( (pList.begin() + 1 )->GetProcessNodeType() == ProcessNodeType::Filter );
 
 	auto & pLine = runner.GetPipelines();
 
@@ -74,11 +72,5 @@ BOOST_AUTO_TEST_CASE( test_parse_config )
 	auto & nodesOne = pLineOne->GetNodes();
 
 	BOOST_CHECK( nodesOne.begin()->GetProcessNodeType() == ProcessNodeType::Producer );
-/*	BOOST_CHECK( (nodesOne.begin() + 1)->GetProcessNodeType() == ProcessNodeType::Filter );
-	BOOST_CHECK( (nodesOne.begin() + 2)->GetProcessNodeType() == ProcessNodeType::Producer );
-*/
-
-	//BOOST_CHECK_EQUAL( runner.GetGlobalNodes().at(1).GetProcessNodeType(), ProcessNodeType::Filter );
-
 }
 
