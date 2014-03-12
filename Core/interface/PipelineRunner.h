@@ -103,6 +103,8 @@ public:
 			}
 		}
 
+		const stringvector globlalFilterIds = globalSettings.GetGlobalFilters();
+
 		for (long long i = firstEvent; i < nEvents; ++i) {
 
 			for (ProgressReportIterator it = m_progressReport.begin();
@@ -113,7 +115,8 @@ public:
 				break;
 
 			product_type productGlobal;
-			FilterResult globalFilterResult;
+			// use the lit of global filters to bootstrap the filter list names
+			FilterResult globalFilterResult ( globlalFilterIds );
 
 			for( ProcessNodesIterator it = m_globalNodes.begin();
 					it != m_globalNodes.end(); it ++ ) {

@@ -119,6 +119,9 @@ public:
 		for (auto & it : m_consumer) {
 			it.Init(this);
 		}
+
+		// store the filter names for later use in RunEvent
+		m_filterNames = pset.GetFilters();
 	}
 
 	/// Useful debug output of the Pipeline Content.
@@ -163,6 +166,7 @@ public:
 		// and allow this one to be modified by local producers/filters.
 		product_type localProduct ( globalProduct );
 		FilterResult localFilterResult ( globalFilterResult );
+		localFilterResult.AddFilterNames( m_filterNames );
 
 		// run Filters & Producers
 		for( ProcessNodeIterator it = m_nodes.begin();
@@ -253,5 +257,6 @@ private:
 	ConsumerVector m_consumer;
 	ProcessNodeVector m_nodes;
 	setting_type m_pipelineSettings;
+	stringvector m_filterNames;
 };
 

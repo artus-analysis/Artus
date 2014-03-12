@@ -6,13 +6,19 @@
 
 #pragma once
 
+#include "Artus/Core/interface/Cpp11Support.h"
+#include "Artus/Core/interface/GlobalInclude.h"
+
 class FilterResult {
 public:
 
 	enum class Decision { Undefined, Passed, NotPassed };
 
-	typedef std::list < std::string> FilterNames;
-	typedef std::map<std::string, Decision> FilterDecisions;
+	typedef std::vector < std::string> FilterNames;
+	//typedef std::map<std::string, Decision> FilterDecisions;
+
+	typedef std::pair <std::string, Decision> DecisionEntry;
+	typedef std::list<DecisionEntry> FilterDecisions;
 
 
 
@@ -25,14 +31,42 @@ public:
 			// has passed by default
 			m_cacheHasPassed(true), m_IsCachedHasPassed(false) {
 
+		AddFilterNames ( initialFilterNames );
+	}
 
-		for ( FilterNames::const_iterator it = initialFilterNames.begin();
-				it != initialFilterNames.end(); it ++ ) {
-			m_filterDecision[ *it ] = Decision::Undefined;
+	DecisionEntry * GetDecisionEntry( std::string const& filterName ) {
+		for ( FilterDecisions::iterator it = m_filterDecision.begin();
+				it != m_filterDecision.end(); it ++ ) {
+			if ( filterName == it->first )
+				return & ( *it );
+		}
+
+		return ARTUS_CPP11_NULLPTR;
+	}
+
+	DecisionEntry const* GetDecisionEntry( std::string const& filterName ) const {
+		for ( FilterDecisions::const_iterator it = m_filterDecision.begin();
+				it != m_filterDecision.end(); it ++ ) {
+			if ( filterName == it->first )
+				return & ( *it );
+		}
+
+		return ARTUS_CPP11_NULLPTR;
+	}
+
+	// add a list of filter names
+	// will only add and set the decision to undefined, if the
+	// name is not in the list before
+	void AddFilterNames( FilterNames const& fn ){
+		for ( FilterNames::const_iterator it = fn.begin();
+				it != fn.end(); it ++ ) {
+			DecisionEntry * entr = GetDecisionEntry( * it );
+			if ( entr == ARTUS_CPP11_NULLPTR ) {
+				m_filterDecision.push_back( std::make_pair( *it, Decision::Undefined ));
+			}
 		}
 	}
 
-	// Note: only call this, when all FilterDecisions have been added, as this result is cached
 	bool HasPassed() const {
 		if (m_IsCachedHasPassed)
 			return m_cacheHasPassed;
@@ -60,7 +94,12 @@ public:
 	}
 
 	Decision GetFilterDecision(std::string filterName) const {
-		return GetFilterDecisions().at(filterName);
+		DecisionEntry const* entr = GetDecisionEntry(filterName);
+
+		if ( entr == ARTUS_CPP11_NULLPTR ){
+			LOG_FATAL( "Decision entry with name " + filterName + " not found" );
+		}
+		return entr->second;
 	}
 
 	FilterDecisions const& GetFilterDecisions() const {
@@ -68,11 +107,13 @@ public:
 	}
 
 	void SetFilterDecision(std::string filterName, bool passed) {
-		if ( passed ) {
-			m_filterDecision[filterName] = Decision::Passed;
-		}
-		else {
-			m_filterDecision[filterName] = Decision::NotPassed;
+		Decision desc = passed ? Decision::Passed : Decision::NotPassed;
+		DecisionEntry * entr = GetDecisionEntry(filterName);
+
+		if ( entr == ARTUS_CPP11_NULLPTR ) {
+			m_filterDecision.push_back( std::make_pair( filterName, desc ));
+		} else {
+			entr->second = desc;
 		}
 		
 		// recompute the cached filter result, if the new filter
