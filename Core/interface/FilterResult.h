@@ -9,11 +9,27 @@
 class FilterResult {
 public:
 
-	typedef std::map<std::string, bool> FilterDecisions;
+	enum class Decision { Undefined, Passed, NotPassed };
+
+	typedef std::list < std::string> FilterNames;
+	typedef std::map<std::string, Decision> FilterDecisions;
+
+
 
 	FilterResult() :
 			// has passed by default
 			m_cacheHasPassed(true), m_IsCachedHasPassed(false) {
+	}
+
+	FilterResult(FilterNames const& initialFilterNames ) :
+			// has passed by default
+			m_cacheHasPassed(true), m_IsCachedHasPassed(false) {
+
+
+		for ( FilterNames::const_iterator it = initialFilterNames.begin();
+				it != initialFilterNames.end(); it ++ ) {
+			m_filterDecision[ *it ] = Decision::Undefined;
+		}
 	}
 
 	// Note: only call this, when all FilterDecisions have been added, as this result is cached
@@ -24,7 +40,7 @@ public:
 		m_cacheHasPassed = true;
 		for (FilterDecisions::const_iterator it = GetFilterDecisions().begin();
 				it != GetFilterDecisions().end(); it++) {
-			if (it->second == false)
+			if (it->second == Decision::NotPassed)
 				m_cacheHasPassed = false;
 		}
 
@@ -35,7 +51,7 @@ public:
 	bool HasPassedIfExcludingFilter(std::string const& excludedFilter) const {
 		for (FilterDecisions::const_iterator it = GetFilterDecisions().begin();
 				it != GetFilterDecisions().end(); it++) {
-			if (it->second == false)
+			if (it->second == Decision::NotPassed)
 				if (it->first != excludedFilter)
 					return false;
 		}
@@ -43,7 +59,7 @@ public:
 		return true;
 	}
 
-	bool GetFilterDecision(std::string filterName) const {
+	Decision GetFilterDecision(std::string filterName) const {
 		return GetFilterDecisions().at(filterName);
 	}
 
@@ -52,9 +68,16 @@ public:
 	}
 
 	void SetFilterDecision(std::string filterName, bool passed) {
-		m_filterDecision[filterName] = passed;
+		if ( passed ) {
+			m_filterDecision[filterName] = Decision::Passed;
+		}
+		else {
+			m_filterDecision[filterName] = Decision::NotPassed;
+		}
 		
-		if (!passed && m_IsCachedHasPassed && m_cacheHasPassed)
+		// recompute the cached filter result, if the new filter
+		// decision might change this
+		if (m_IsCachedHasPassed && ( m_cacheHasPassed != passed ))
 			m_IsCachedHasPassed = false;
 	}
 
@@ -64,10 +87,19 @@ public:
 
 		for (FilterDecisions::const_iterator it = m_filterDecision.begin();
 				it != m_filterDecision.end(); it++) {
-			s << it->first << " : " << it->second << std::endl;
+			s << it->first << " : " << DecisionToString( it->second ) << std::endl;
 		}
 
 		return s.str();
+	}
+
+	std::string DecisionToString ( Decision dc ) const {
+		if ( dc == Decision::Passed )
+			return "passed";
+		else if ( dc == Decision::NotPassed )
+			return "not passed";
+		else
+			return "undefined";
 	}
 
 private:

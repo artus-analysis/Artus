@@ -172,8 +172,8 @@ BOOST_AUTO_TEST_CASE( test_multiplefilter_producer )
 
 	pline.FinishPipeline();
 
-	BOOST_CHECK( pCons1->fres.GetFilterDecisions().at("testfilter") == true );
-	BOOST_CHECK( pCons1->fres.GetFilterDecisions().at("testfilter3") == true );
+	BOOST_CHECK( pCons1->fres.GetFilterDecisions().at("testfilter") == FilterResult::Decision::Passed );
+	BOOST_CHECK( pCons1->fres.GetFilterDecisions().at("testfilter3") == FilterResult::Decision::Passed );
 	BOOST_CHECK( pCons1->fres.HasPassed() == true);
 }
 
@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE( test_multiplefilter_producer_stop_exec )
 	pline.FinishPipeline();
 
 	BOOST_CHECK( pCons1->fres.GetFilterDecisions().size() == 1 );
-	BOOST_CHECK( pCons1->fres.GetFilterDecisions().at("testfilter3") == false );
+	BOOST_CHECK( pCons1->fres.GetFilterDecisions().at("testfilter3") == FilterResult::Decision::NotPassed );
 	BOOST_CHECK( pCons1->fres.HasPassed() == false);
 }
 
