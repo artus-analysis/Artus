@@ -48,9 +48,8 @@ class ArtusWrapper(object):
 
 	def setInputFilenames(self, files):
 		if isinstance(files, basestring):
-			self._config['InputFiles'] = glob.glob(files)
-		else:
-			self._config["InputFiles"] = reduce(lambda a, b: a+b, map(lambda inputFile: glob.glob(os.path.expandvars(inputFile)), args.input_files))
+			files = [files,]
+		self._config["InputFiles"] = reduce(lambda a, b: a+b, map(lambda inputFile: glob.glob(os.path.expandvars(inputFile)), files))
 
 	def setOutputFilename(self, output_filename):
 		self._config["OutputPath"] = output_filename
