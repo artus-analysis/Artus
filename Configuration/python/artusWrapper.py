@@ -13,7 +13,6 @@ import subprocess
 import Artus.Utility.logger as logger
 import Artus.Configuration.jsonTools as jsonTools
 
-
 # main function
 class ArtusWrapper(object):
 
@@ -21,13 +20,14 @@ class ArtusWrapper(object):
 
 		self._config = jsonTools.JsonDict()
 		self._executable = executable
+		self._logger = logging.getLogger(__name__)
 
 		self._parser = None
 		#Load default argument parser
 		self._initArgumentParser(userArgParsers)
 		#Parse command line arguments and return dict
-
-		self._args = vars(self._parser.parse_args())
+		self._args = self._parser.parse_args()
+		logger.initLogger(self._args)
 		
 	def run(self):
 	
@@ -38,7 +38,7 @@ class ArtusWrapper(object):
 		self.saveConfig()
 
 		#Run Artus if desired
-		if not self._args['no_run']:
+		if not self._args.no_run:
 			exitCode = self.callExecutable()
 		
 		if exitCode < 256:
@@ -72,19 +72,19 @@ class ArtusWrapper(object):
 	def expandConfig(self):
 
 		# merge all base configs into the main config
-		self._config += jsonTools.JsonDict.mergeAll(self._args.get('base_configs'))
+		self._config += jsonTools.JsonDict.mergeAll(self._args.base_configs)
 
 		#Set Input Filenames
-		if self._args.get('input_files'):
-			self.setInputFilenames(self._args.get('input_files'))
-		if self._args.get('output_file'):
-			self.setOutputFilename(self._args.get('output_file'))
+		if self._args.input_files:
+			self.setInputFilenames(self._args.input_files)
+		if self._args.output_file:
+			self.setOutputFilename(self._args.output_file)
 
 		# treat pipeline configs
 		pipelineJsonDict = {}
-		if self._args.get('pipeline_configs') and len(self._args.get('pipeline_configs')) > 0:
+		if self._args.pipeline_configs and len(self._args.pipeline_configs) > 0:
 			pipelineJsonDict = []
-			for pipelineConfigs in self._args.get('pipeline_configs'):
+			for pipelineConfigs in self._args.pipeline_configs:
 				pipelineJsonDict.append(jsonTools.JsonDict.expandAll(*map(lambda pipelineConfig: jsonTools.JsonDict.mergeAll(*pipelineConfig.split()), pipelineConfigs)))
 			pipelineJsonDict = jsonTools.JsonDict.mergeAll(*pipelineJsonDict)
 			pipelineJsonDict = jsonTools.JsonDict({"Pipelines": pipelineJsonDict})
@@ -144,11 +144,11 @@ class ArtusWrapper(object):
 	
 		exitCode = 0
 	
-		if self._args['batch']:
+		if self._args.batch:
 			# check work directory
-			self._args['work'] = os.path.expandvars(self._args.get('work'))
-			if not os.path.exists(self._args.get('work')):
-				os.makedirs(self._args['work'])
+			self._args.work = os.path.expandvars(self._args.work)
+			if not os.path.exists(self._args.work):
+				os.makedirs(self._args.work)
 	
 			# run Artus with grid-control
 			pass
@@ -156,7 +156,7 @@ class ArtusWrapper(object):
 		else:
 	
 			# check output directory
-			outputDir = os.path.dirname(self._args.get('output_file'))
+			outputDir = os.path.dirname(self._args.output_file)
 			if outputDir and not os.path.exists(outputDir):
 				os.makedirs(outputDir)
 	
@@ -167,6 +167,7 @@ class ArtusWrapper(object):
 			if exitCode != 0:
 				logging.getLogger(__name__).error("Exit with code %s.\n\n" % exitCode)
 				logging.getLogger(__name__).info("Dump configuration:\n")
+				print self._configFilename
 	
 		# remove tmp. config
 		# logging.getLogger(__name__).info("Remove temporary config file.")
