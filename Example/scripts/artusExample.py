@@ -1,9 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import Artus.Configuration.artus as artusWrapper
+import sys
+from Artus.Configuration.artusWrapper import ArtusWrapper
 
 
 if __name__ == "__main__":
-	artusWrapper.artusWrapper("artusExample")
+
+	artusWrapper = ArtusWrapper("artusExample")
+	
+	# User can manipulate config in code if desired
+	conf = artusWrapper.getConfig()
+	conf['higgs_mass'] = 126
+	artusWrapper.setConfig(conf)
+
+	# Run the wrapper
+	sys.exit(artusWrapper.run())
 
