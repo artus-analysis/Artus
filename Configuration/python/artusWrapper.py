@@ -30,6 +30,8 @@ class ArtusWrapper(object):
 		self._args = vars(self._parser.parse_args())
 		
 	def run(self):
+	
+		exitCode = 0
 
 		#Expand Config
 		self.expandConfig()
@@ -37,7 +39,12 @@ class ArtusWrapper(object):
 
 		#Run Artus if desired
 		if not self._args['no_run']:
-			self.callExecutable()
+			exitCode = self.callExecutable()
+		
+		if exitCode < 256:
+			return exitCode
+		else:
+			return 1 # Artus sometimes returns exit codes >255 that are not supported
 
 	def setInputFilenames(self, files):
 		if isinstance(files, basestring):
