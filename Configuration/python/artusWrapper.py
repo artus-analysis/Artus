@@ -38,6 +38,8 @@ class ArtusWrapper(object):
 		
 		# save final config
 		self.saveConfig()
+		if self._args.print_config:
+			print self._config
 
 		#Run Artus if desired
 		if not self._args.no_run:
@@ -68,8 +70,8 @@ class ArtusWrapper(object):
 			basename = "artus_{0}.json".format(hashlib.md5(str(self._config)).hexdigest())
 			filepath = os.path.join(tempfile.gettempdir(), basename)
 		self._configFilename = filepath
-		print self._configFilename
 		self._config.save(filepath)
+		logging.getLogger(__name__).info("Saved JSON config \"%s\" for temporary usage." % self._configFilename)
 	
 	def expandConfig(self):
 
@@ -169,7 +171,7 @@ class ArtusWrapper(object):
 			if exitCode != 0:
 				logging.getLogger(__name__).error("Exit with code %s.\n\n" % exitCode)
 				logging.getLogger(__name__).info("Dump configuration:\n")
-				print self._configFilename
+				print self._configFilename # TODO
 	
 		# remove tmp. config
 		# logging.getLogger(__name__).info("Remove temporary config file.")
