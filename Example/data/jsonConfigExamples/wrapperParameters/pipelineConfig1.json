@@ -1,0 +1,10 @@
+{
+	"PipelineA" : {
+		"PipelineValue_1" : "a1",
+		"PipelineValue_2" : "a2"
+	},
+	"PipelineB" : {
+		"PipelineValue_1" : "b1",
+		"PipelineValue_2" : "b2"
+	}
+}

@@ -1,0 +1,11 @@
+{
+	"PipelineA" : {
+		"PipelineValue_1" : "c11",
+		"PipelineValue_2" : "c22",
+		"PipelineValue_3" : "a33"
+	},
+	"PipelineC" : {
+		"PipelineValue_1" : "c1",
+		"PipelineValue_2" : "c2"
+	}
+}
