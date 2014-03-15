@@ -67,8 +67,8 @@ class JsonDict(dict):
 	# returns new JsonDict { keyA1_keyB1 : valueA1+valueB1, ... }
 	def __mul__(self, jsonDict2):
 		jsonDict = JsonDict()
-		for key1, value1 in self:
-			for key2, value2 in jsonDict2:
+		for key1, value1 in self.items():
+			for key2, value2 in jsonDict2.items():
 				key = (str(key1) if len(self) > 1 else "") + \
 				      ("_" if len(self) > 1 and len(jsonDict2) > 1 else "") + \
 				      (str(key2) if len(jsonDict2) > 1 else "")
