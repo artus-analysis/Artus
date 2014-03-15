@@ -28,13 +28,15 @@ class ArtusWrapper(object):
 		#Parse command line arguments and return dict
 		self._args = self._parser.parse_args()
 		logger.initLogger(self._args)
+
+		#Expand Config
+		self.expandConfig()
 		
 	def run(self):
 	
 		exitCode = 0
-
-		#Expand Config
-		self.expandConfig()
+		
+		# save final config
 		self.saveConfig()
 
 		#Run Artus if desired
