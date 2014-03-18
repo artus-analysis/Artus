@@ -3,6 +3,10 @@
 
 #include <boost/noncopyable.hpp>
 
+#include "Artus/Core/interface/GlobalInclude.h"
+#include "Artus/Core/interface/Cpp11Support.h"
+#include "Artus/Core/interface/ProcessNodeBase.h"
+
 /**
    \brief Base class for Producers, that extend the product.
    
@@ -13,7 +17,7 @@
 */
 
 template<class TTypes>
-class ProducerBase: public boost::noncopyable {
+class ProducerBase: public ProcessNodeBase {
 public:
 
 	typedef typename TTypes::event_type event_type;
@@ -28,25 +32,29 @@ public:
 	virtual void InitGlobal(global_setting_type const& globalSettings) {
 	}
 
-	//virtual void InitLocal(setting_type const& pipelineSettings) {
-	//}
+	virtual void InitLocal(setting_type const& pipelineSettings) {
+	}
 
-	/// if false is returned, the event is dropped as it does not meet the minimum requirements for the producer
 	// called once per event before the pipelines are split
-	virtual bool ProduceGlobal(event_type const& event, product_type& product,
+	virtual void ProduceGlobal(event_type const& event, product_type& product,
 	                           global_setting_type const& globalSettings) const {
-                std::cout << "ProduceGlobal for producer " << this->GetProducerId() << " is not implemented" << std::endl;
-                exit(1);
+		LOG_FATAL("ProduceGlobal for producer " << this->GetProducerId() << " is not implemented");
 	}
 
 	// called once per event within a given pipeline
 	virtual void ProduceLocal(event_type const& event, product_type & product, 
 	                          setting_type const& pipelineSettings) const {
-		std::cout << "ProduceLocal for producer " << this->GetProducerId() << " is not implemented" << std::endl;
-		exit(1); 
+		LOG_FATAL("ProduceLocal for producer " << this->GetProducerId() << " is not implemented");
 	}
 
 	/// Must return a unique id of the producer.
 	virtual std::string GetProducerId() const = 0;
+
+	virtual ProcessNodeType GetProcessNodeType () const
+		ARTUS_CPP11_FINAL
+		ARTUS_CPP11_OVERRIDE
+	{
+		return ProcessNodeType::Producer;
+	}
 };
 

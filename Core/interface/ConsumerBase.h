@@ -14,6 +14,9 @@
 #include "FilterBase.h"
 #include "FilterResult.h"
 
+#include "Artus/Core/interface/Cpp11Support.h"
+#include "Artus/Core/interface/ProcessNodeBase.h"
+
 template<class TTypes>
 class Pipeline;
 
@@ -25,7 +28,7 @@ class Pipeline;
  */
 
 template<class TTypes>
-class ConsumerBase: public boost::noncopyable {
+class ConsumerBase: public ProcessNodeBase {
 public:
 
 	typedef typename TTypes::event_type event_type;
@@ -51,6 +54,8 @@ public:
 
 	/*
 	 *  this method is called for all events
+	 *  Depending on the outcome of the pipeline ( a filter might have stopped the producers
+	 *  prematurely), some local products might not have been filled
 	 */
 	virtual void ProcessEvent(event_type const& event,
 			product_type const& product,
@@ -79,6 +84,13 @@ public:
 	 */
 	setting_type const& GetPipelineSettings() const {
 		return this->m_pipeline->GetSettings();
+	}
+
+	virtual ProcessNodeType GetProcessNodeType () const
+		ARTUS_CPP11_FINAL
+		ARTUS_CPP11_OVERRIDE
+	{
+		return ProcessNodeType::Consumer;
 	}
 
 protected:

@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include <sstream>
+#include <vector>
+
 #include <TFile.h>
 
 #include <boost/foreach.hpp>
@@ -15,11 +18,16 @@
 
 #include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/GlobalInclude.h"
+#include "Artus/Core/interface/ProcessNodeBase.h"
 
 class ArtusConfig {
 public:
+	// loads the json config file as given in the command line parameters
 	ArtusConfig(int argc, char** argv);
 	
+	// parses the json config from a stringstream
+	ArtusConfig( std::stringstream & sStream );
+
 	void SaveConfig(TFile* outputFile) const;
 
 	stringvector const& GetInputFiles() const
@@ -29,6 +37,7 @@ public:
 
 	// run this method to add all the producers/filter/consumer which are
 	// listed in your configuration file
+	// outputFile can be null, if no root is to be used
 	template<class TPipelineInitializer, class TPipelineRunner, class TFactory>
 	void LoadConfiguration(TPipelineInitializer& pInit, TPipelineRunner& runner,
 			TFactory & factory,
@@ -39,8 +48,6 @@ public:
 		LoadGlobalProducer <TPipelineRunner,TFactory, global_setting_type > (runner, factory);
 		LoadPipelines< TPipelineInitializer, TPipelineRunner>(pInit, runner, factory, outputFile);
 	}
-
-
 
 	template<class TGlobalSettings>
 	TGlobalSettings GetGlobalSettings()
@@ -56,9 +63,35 @@ public:
 		return m_outputPath;
 	}
 
+	typedef std::pair< ProcessNodeType, std::string > NodeTypePair;
 
+	static NodeTypePair ParseProcessNode ( std::string const& sInp )
+	{
+		std::vector < std::string > splitted;
+		boost::algorithm::split( splitted, sInp, boost::algorithm::is_any_of(":") );
+
+		if ( splitted.size() != 2 ) {
+			LOG_FATAL( "Process node description " + sInp + " cannot be parsed" );
+		}
+
+		ProcessNodeType ntype;
+
+		if ( splitted[0] == "filter" ){
+			ntype = ProcessNodeType::Filter;
+		} else if ( splitted[0] == "producer" ) {
+			ntype = ProcessNodeType::Producer;
+		} else {
+			LOG_FATAL("process node type " + splitted[0] + " is unknown" );
+		}
+
+		return std::make_pair( ntype, splitted[1]);
+	}
 
 private:
+	void InitConfig();
+
+
+
 
 	// load the global produce list from configuration and
 	// use the factory object to add these producers to the pipeline runner
@@ -67,18 +100,31 @@ private:
 	void LoadGlobalProducer( TPipelineRunner& runner, TFactory & factory ) {
 
 		typedef typename TPipelineRunner::producer_base_type producer_base_type;
+		typedef typename TPipelineRunner::filter_base_type filter_base_type;
 
 		TGlobalSettings gSettings = GetGlobalSettings< TGlobalSettings >();
-		stringvector globalProds = gSettings.GetGlobalProducers();
+		stringvector globalProds = gSettings.GetGlobalProcessors();
 		for ( stringvector::const_iterator it = globalProds.begin();
 			it != globalProds.end(); it ++ ) {
-			producer_base_type * gProd = factory.createProducer ( *it );
 
-			if ( gProd == ARTUS_CPP11_NULLPTR ){
-				std::cout << "Error: Global producer with id " + (*it) + " not found" << std::endl;
-				exit(1);
-			} else {
-				runner.AddGlobalProducer( gProd );
+			NodeTypePair ntype = ParseProcessNode( *it );
+
+			if (ntype.first == ProcessNodeType::Producer ) {
+				producer_base_type * gProd = factory.createProducer ( ntype.second );
+
+				if ( gProd == ARTUS_CPP11_NULLPTR ){
+					LOG_FATAL( "Error: Global producer with id " + ntype.second + " not found" );
+				} else {
+					runner.AddGlobalProducer( gProd );
+				}
+			} else if (ntype.first == ProcessNodeType::Filter ) {
+				filter_base_type * gProd = factory.createFilter ( ntype.second );
+
+				if ( gProd == ARTUS_CPP11_NULLPTR ){
+					LOG_FATAL( "Error: Global filter with id " + ntype.second + " not found" );
+				} else {
+					runner.AddGlobalFilter( gProd );
+				}
 			}
 		}
 	}
@@ -89,10 +135,9 @@ private:
 	template<class TPipelineInitializer, class TPipelineRunner, class TFactory>
 	void LoadPipelines(TPipelineInitializer& pInit, TPipelineRunner& runner,
 			TFactory & factory,
+			// can be null
 			TFile * outputFile)
 	{
-		assert(outputFile);
-
 		typedef typename TPipelineInitializer::setting_type setting_type;
 		typedef typename TPipelineInitializer::pipeline_type pipeline_type;
 		typedef typename TPipelineRunner::filter_base_type filter_base_type;
@@ -114,37 +159,32 @@ private:
 			pset.SetPropTreePath("Pipelines." + sKeyName);
 			pset.SetPropTree(&m_propTreeRoot);
 			pset.SetRootOutFile(outputFile);
-			//pset->m_globalSettings = &gset;
-
-			std::cout << " %% Adding new pipeline " << sKeyName << std::endl;
 
 			pipeline_type* pLine = new pipeline_type; //CreateDefaultPipeline();
 
 			// add local producer
-			stringvector localProducers = pset.GetLocalProducers();
+			stringvector localProducers = pset.GetProcessors();
 			for ( stringvector::const_iterator it = localProducers.begin();
 				it != localProducers.end(); it ++ ) {
-					producer_base_type * pProducer = factory.createProducer ( *it );
 
-					if ( pProducer == ARTUS_CPP11_NULLPTR ){
-						std::cout << "Error: Local Producer with id " + (*it) + " not found" << std::endl;
-						exit(1);
-					} else {
-						pLine->AddProducer ( pProducer );
-					}
-				}
+					NodeTypePair ntype = ParseProcessNode( *it );
 
-			// add local filter
-			stringvector localFilters = pset.GetFilters();
-			for ( stringvector::const_iterator it = localFilters.begin();
-				it != localFilters.end(); it ++ ) {
-					filter_base_type * pFilter = factory.createFilter ( *it );
+					if (ntype.first == ProcessNodeType::Producer ) {
+						producer_base_type * pProducer = factory.createProducer ( ntype.second );
 
-					if ( pFilter == ARTUS_CPP11_NULLPTR ){
-						std::cout << "Error: Filter with id " + (*it) + " not found" << std::endl;
-						exit(1);
-					} else {
-						pLine->AddFilter ( pFilter );
+						if ( pProducer == ARTUS_CPP11_NULLPTR ){
+							 LOG_FATAL( "Error: Local Producer with id " + ntype.second + " not found" );
+						} else {
+							pLine->AddProducer ( pProducer );
+						}
+					} else if (ntype.first == ProcessNodeType::Filter ) {
+						filter_base_type * pProducer = factory.createFilter ( ntype.second );
+
+						if ( pProducer == ARTUS_CPP11_NULLPTR ){
+							 LOG_FATAL( "Error: Local Filter with id " + ntype.second + " not found" );
+						} else {
+							pLine->AddFilter ( pProducer );
+						}
 					}
 				}
 
@@ -163,13 +203,12 @@ private:
 					}
 				}
 
-
 			pLine->InitPipeline(pset, pInit);
 			runner.AddPipeline(pLine);
 		}
 	}
 
-	std::string m_jsonConfig;
+	std::string m_jsonConfigFileName;
 	std::string m_outputPath;
 	stringvector m_fileNames;
 	boost::property_tree::ptree m_propTreeRoot;

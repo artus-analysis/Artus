@@ -18,7 +18,8 @@ def initLogger(argParserArgs=None, name=""):
 
 	logLevel = "debug"
 
-	if argParserArgs: logLevel = argParserArgs.log_level
+	if argParserArgs:
+		logLevel = argParserArgs.log_level
 
 	logging.basicConfig(level=getattr(logging, logLevel.upper()),
 	                    format="%(levelname)s: %(message)s")

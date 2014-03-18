@@ -18,4 +18,5 @@
 #include "FilterBase_t.h"
 #include "Pipeline_t.h"
 #include "PipelineRunner_t.h"
+#include "ArtusConfig_t.h"
 

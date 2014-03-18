@@ -26,11 +26,21 @@
 class KappaPipelineSettings: public SettingsBase {
 public:
 
+	IMPL_SETTING_DEFAULT(bool, Verbose, false);
+
 	VarCache<stringvector> quantities;
 	stringvector GetQuantities() const
 	{
 		RETURN_CACHED(quantities, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".Quantities"))
 	}
+
+	VarCache<std::vector<std::string>> jsonFiles;
+	stringvector GetJsonFiles() const
+	{
+		RETURN_CACHED(jsonFiles, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + "JsonFiles"))
+	}
+	IMPL_SETTING_DEFAULT(int, PassRunLow, 1);
+	IMPL_SETTING_DEFAULT(int, PassRunHigh, 0);
 	
 	VarCache<std::vector<std::string>> hltPaths;
 	stringvector GetHltPaths() const

@@ -33,7 +33,7 @@ public:
 		return "gen_taudecay";
 	}
 
-	virtual bool ProduceGlobal(event_type const& event,
+	virtual void ProduceGlobal(event_type const& event,
 	                           product_type& product,
 	                           global_setting_type const& globalSettings) const
 	{
@@ -57,15 +57,6 @@ public:
 				}
 			}
 		}
-
-		return true;
-	}
-
-	// empty to serve as a pure global producer
-	virtual void ProduceLocal(event_type const& event,
-	                          product_type& product,
-	                          setting_type const& settings) const ARTUS_CPP11_OVERRIDE
-	{
 	}
 };
 

@@ -18,23 +18,13 @@ public:
 		return "pt_correction";
 	}
 
-	virtual bool ProduceGlobal(TraxEvent const& event,
+	virtual void ProduceGlobal(TraxEvent const& event,
 			TraxProduct & product,
 			TraxGlobalSettings const& globalSettings) const
 					ARTUS_CPP11_OVERRIDE {
 
 		product.m_floatPtSim_corrected = event.m_floatPtSim
 				* globalSettings.GetProducerPtCorrectionFactor();
-
-		return true;
-	}
-
-	// empty to serve as a global producer only
-	virtual void ProduceLocal(TraxEvent const& event,
-			TraxProduct & product,
-			TraxPipelineSettings const& settings) const
-					ARTUS_CPP11_OVERRIDE
-	{
 	}
 
 };

@@ -10,7 +10,8 @@
 
 class TestConsumer: public ConsumerBase<TestTypes> {
 public:
-	TestConsumer() : iFinish(0), iInit(0), iProcessFilteredEvent(0), iProcessEvent(0), iProcess(0) {
+	TestConsumer( bool checkInProcessEvent = true) : bCheckInProcessEvent(checkInProcessEvent), iFinish(0), iInit(0),
+		iProcessFilteredEvent(0), iProcessEvent(0), iProcess(0) {
 	}
 
 	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE {
@@ -37,9 +38,11 @@ public:
 			TestProduct const& product,
 			FilterResult& result) ARTUS_CPP11_OVERRIDE
 	{
-		// did product work ?
-		BOOST_CHECK_EQUAL(event.iVal + 1, product.iLocalProduct);
-		BOOST_CHECK_EQUAL(event.iVal + 5 + 23, product.iGlobalProduct);
+		if ( bCheckInProcessEvent ) {
+			// did product work ?
+			BOOST_CHECK_EQUAL(event.iVal + 1, product.iLocalProduct);
+			BOOST_CHECK_EQUAL(event.iVal + 5 + 23, product.iGlobalProduct);
+		}
 
 		iProcessEvent++;
 		fres = result;
@@ -59,6 +62,7 @@ public:
 		BOOST_CHECK_EQUAL(iProcess, Process);
 	}
 
+	bool bCheckInProcessEvent;
 	int iFinish;
 	int iInit;
 	int iProcessFilteredEvent;

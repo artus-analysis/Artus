@@ -22,10 +22,12 @@
 
 // filter
 #include "PtFilter.h"
+#include "ThetaFilter.h"
 
 // consumer
 #include "MeanPtConsumer.h"
 #include "TraxNtupleConsumer.h"
+#include "CutFlowConsumer.h"
 
 class TraxFactory: public FactoryBase<TraxTypes> {
 public:
@@ -53,6 +55,8 @@ public:
 			return new MeanPtConsumer();
 		else if ( TraxNtupleConsumer().GetConsumerId() == id )
 			return new TraxNtupleConsumer();
+		else if ( CutFlowConsumer().GetConsumerId() == id )
+			return new CutFlowConsumer();
 		else
 			return FactoryBase<TraxTypes>::createConsumer( id );
 	}
@@ -62,6 +66,8 @@ public:
 	{
 		if ( PtFilter().GetFilterId() == id )
 			return new PtFilter();
+		else if ( ThetaFilter().GetFilterId() == id )
+			return new ThetaFilter();
 		else
 			return FactoryBase<TraxTypes>::createFilter( id );
 	}

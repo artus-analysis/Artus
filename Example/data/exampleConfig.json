@@ -2,22 +2,23 @@
     "SkipEvents": 0,
     "EventCount": -1, 
     "ProducerPtCorrectionFactor": 1.05,
-    "GlobalProducers": [
-        "pt_correction"
+    "GlobalProcessors": [
+        "producer:pt_correction",
+        "filter:filter_theta"
     ], 
     "InputFiles": [
         "sample_ntuple.root"
     ], 
+    "FilterThetaLow" : "0.0",
+    "FilterThetaHigh" : "2.0",
+    
     "OutputPath": "sample_output.root", 
     "Pipelines": {
         "lowPt": {
-            "Consumers": [ "mean_pt", "quantities_all"
+            "Consumers": [ "mean_pt", "quantities_all", "cutflow"
             ],
-            "Filters": [ "filter_pt"
-            ], 
-            "LocalProducers": [
-                "pt_correction_local"
-            ], 
+            "Processors": [ "filter:filter_pt",
+            	"producer:pt_correction_local" ], 
             "FilterPtLow" : "0.0",
             "FilterPtHigh" : "1.0",
             "ProducerPtCorrectionFactorLocal" : 1.1
@@ -25,11 +26,8 @@
         "highPt": {
             "Consumers": [ "mean_pt", "quantities_all"
             ],
-            "Filters": [  "filter_pt"
-            ], 
-            "LocalProducers": [
-                "pt_correction_local"
-            ], 
+            "Processors": [ "filter:filter_pt",
+            	"producer:pt_correction_local"],
             "FilterPtLow" : "1.0",
             "FilterPtHigh" : "10000.0",
             "ProducerPtCorrectionFactorLocal" : 1.0

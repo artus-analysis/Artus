@@ -15,22 +15,26 @@ typedef ProducerBase<TestTypes> TestProducerBase;
 
 class TestGlobalProducer: public TestProducerBase {
 public:
-
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "test_global_producer";
 	}
 	
-	virtual bool ProduceGlobal(TestEvent const& event,
+	virtual void ProduceGlobal(TestEvent const& event,
 			TestProduct & product,
 			TestGlobalSettings const& globalSettings) const ARTUS_CPP11_OVERRIDE {
 		product.iGlobalProduct = event.iVal + 5 + globalSettings.GetOffset();
-		return true;
 	}
-	
-	// empty to serve as a global producer only
-	virtual void ProduceLocal(TestEvent const& event,
+};
+
+class TestGlobalProducer2: public TestProducerBase {
+public:
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
+		return "test_global_producer2";
+	}
+
+	virtual void ProduceGlobal(TestEvent const& event,
 			TestProduct & product,
-			TestSettings const& settings) const ARTUS_CPP11_OVERRIDE
-	{
+			TestGlobalSettings const& globalSettings) const ARTUS_CPP11_OVERRIDE {
+		product.iGlobalProduct2 = event.iVal + 1;
 	}
 };
