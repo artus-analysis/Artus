@@ -81,23 +81,25 @@ def histofromntuple(rootfile, objectname, ntuple, plotdict):
 	print "Using file %s" % rootfile.GetName()
 	index = plotdict['rootfiles'].index(rootfile)
 
-	if plotdict['x'] == None:
-		plotdict['x'] = [ntuple.GetMinimum(plotdict['xvar'])*1.01, ntuple.GetMaximum(plotdict['xvar'])*1.01]
-		print "Min/Max x values:", plotdict['x'][0], plotdict['x'][1]
+	if plotdict['xlims'] == None:
+		plotdict['xlims'] = [ntuple.GetMinimum(plotdict['x'][index])*1.01, ntuple.GetMaximum(plotdict['x'][index])*1.01]
+		if plotdict['xlims'] == [0.0, 0.0]:
+			print "WARNING: Axis limits could not be determined! Fallback to [0, 1]"
+			plotdict['xlims'] = [0.0, 1.0]
+		else:
+			print "Min/Max x values:", plotdict['xlims'][0], plotdict['xlims'][1]
 
 	if plotdict['xbins'] == []:
-		plotdict['xbins'] = np.linspace(plotdict['x'][0], plotdict['x'][1], plotdict['nbins']+1)
+		plotdict['xbins'] = np.linspace(plotdict['xlims'][0], plotdict['xlims'][1], plotdict['nbins']+1)
 
 	if plotdict['type'] == '2D':
-		plotdict['ybins']  = getbinning(plotdict['yvar'], plotdict, 'y')
+		plotdict['ybins']  = getbinning(plotdict['ylims'][index], plotdict, 'y')
 
-	variables = plotdict['xvar']
-	if 'yvar' in plotdict:
-		variables += ":%s" % (plotdict['yvar'])
-	if 'zvar' in plotdict:
-		variables += ":%s" % (plotdict['zvar'])
-
-	print variables
+	variables = plotdict['x'][index]
+	if len(plotdict['y']) > 0:
+		variables = "%s:%s" % (plotdict['y'][index], variables)
+	if 'zvar' in plotdict and len(plotdict['z']) > 0:
+		variables = "%s:%s" % (plotdict['z'][index], variables)
 
 	# give each histogram a different name
 	name = "_".join([objectname, str(index)])

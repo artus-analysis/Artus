@@ -81,8 +81,8 @@ def plot1d_mpl(plotdict):
 
 		if marker == 'stack':
 			if group not in stack:
-				if plotdict['y'] is not None:
-					ybottom = plotdict['y'][0]
+				if plotdict['ylims'] is not None:
+					ybottom = plotdict['ylims'][0]
 				elif plotdict['log']:
 					ybottom = 1
 				else:

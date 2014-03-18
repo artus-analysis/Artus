@@ -44,17 +44,21 @@ def get_basic_dictionary():
 		'root': False,
 		'save': True,
 		'normalize': False,
+		'folder': [],
 		
 		'roothistos': [],
 		'mplhistos': [],
 		'rootfiles':[],
-		'groups': None,
+		'groups': [],
 		
-		'x': None,
+		'x': [],
 		'xview': None,
-		'y': None,
+		'y': [],
+		'z': [],
 		'xbins': [],
 		'ybins': [],
+		'xlims': None,
+		'ylims': None,
 		'xname':None,
 		'yname':None,
 		'xticks': None,
@@ -80,15 +84,15 @@ def get_basic_dictionary():
 
 def get_basic_parser(
 
-		plot='zmass',
+		plot='plot',
 		out="out",
 		formats=['png'],
 	
-		folder = ['folder1'],
+		folder = [],
 		files=None,
 
-		labels=["file1", "file2", "file3"],
-		colors=['black', '#CBDBF9'],
+		labels=[],
+		colors=['black', 'cornflowerblue', 'lightgrey'],
 		markers=["o", "stack"],
 		errorbars=[True, True, True],
 
@@ -118,7 +122,7 @@ def get_basic_parser(
 		figure=None,
 		axes=None,
 		x=None, y=None, z=None, xview=None, xbins=[], ybins=[], xname=None,
-		yname=None, xticks=None, yticks=None, log=None, xlog=None,
+		yname=None, xticks=None, yticks=None, log=None, xlog=None, xlims=None, ylims=None,
 
 		save=None,
 		verbose=None,
@@ -138,7 +142,7 @@ def get_basic_parser(
 	parser = argparse.ArgumentParser(epilog="Have fun.")
 
 	#plotname
-	parser.add_argument('plot', type=str, default=plot,
+	parser.add_argument('--plot', '-p', type=str, default=plot,
 		help="The name of the plot to be created.")
 
 	# source options
@@ -157,7 +161,8 @@ def get_basic_parser(
 			assume it is the same for each file.')
 	source.add_argument('--folder', type=str, nargs='*',
 		default=folder,
-		help="folder in rootfile. Specify only once if everything is in the same folder or multiple folders for each input file.")
+		help="folder in rootfile. One argument if the same folder should always\
+		be used, multiple arguments for a different folder for each input file.")
 	source.add_argument('--normalize', '-n', action='store_true',
 		default=normalize,
 		help="Normalize all histograms to the same number of events.")
@@ -165,13 +170,14 @@ def get_basic_parser(
 	# more general options
 	general = parser.add_argument_group('General options')
 	general.add_argument('-r', '--rebin', type=int, default=rebin,
-		help="Rebinning value n")
-	general.add_argument('-R', '--ratio', action='store_true',
-		help="do a ratio plot from the first two input files")
-	general.add_argument('--ratiosubplot', action='store_true',
-		help="Add a ratio subplot")
+		help="Rebinning the histograms with a factor n")
+	#TODO:
+	#general.add_argument('-R', '--ratio', action='store_true',
+	#	help="do a ratio plot from the first two input files")
+	#general.add_argument('--ratiosubplot', action='store_true',
+	#	help="Add a ratio subplot")
 	general.add_argument('-F', '--fit', type=str, default=fit,
-		help="Do a fit. Options: vertical, chi2, gauss, slope, intercept")
+		help="Do a fit. Options: vertical, chi2, gauss, slope, intercept, quadratic")
 	general.add_argument('--nbins', type=int, default=nbins,
 		help='number of bins in histogram. Default is %(default)s')
 
@@ -186,7 +192,7 @@ def get_basic_parser(
 	output.add_argument('--filename', type=str, default=filename,
 		help='Specify a filename. By default, the plotname is used')
 	output.add_argument('--root', action='store_true', default=root,
-		help="Save the created root histograms to disk.")
+		help="Save the created root histograms.")
 
 
 	# plot labelling
@@ -218,11 +224,11 @@ def get_basic_parser(
 	formatting.add_argument('-C', '--colors', type=str, nargs='+', default=colors,
 		help="colors for the plots in the order of the files. Default is: " +
 			 ", ".join(colors))
-	formatting.add_argument('-k', '--labels', type=str, nargs='+', default=labels,
+	formatting.add_argument('-L', '--labels', type=str, nargs='+', default=labels,
 		help="labels for the plots in the order of the files. Default is: " +
 			 ", ".join(labels))
 	formatting.add_argument('-m', '--markers', type=str, nargs='+', default=markers,
-		help="style for the plot in the order of the files. 'o' for points, \
+		help="style for the plot in the order of the files. 'o', 'd', '*', '+' for points, \
 			  '-' for lines, 'stack' for filled plots. Default is: %s" % ", ".join(markers))
 	formatting.add_argument('--errorbars', default=errorbars, nargs='+',
 		help="Include errorbars. Give one argument to count for all curves or one for each input file")
@@ -240,11 +246,11 @@ def get_basic_parser(
 		 help="logarithmic y-axis")
 	axis.add_argument('--xlog', action='store_true', default=xlog,
 		 help="logarithmic x-axis")
-	axis.add_argument('-y', type=float, nargs='+', default=y,
+	axis.add_argument('--ylims', type=float, nargs='+', default=ylims,
 		help="upper and lower limit for y-axis")
-	axis.add_argument('-x', type=float, nargs='+', default=x,
+	axis.add_argument('--xlims', type=float, nargs='+', default=xlims,
 		help="upper and lower limit for x-axis")
-	axis.add_argument('-xview', type=float, nargs='+', default=xview,
+	axis.add_argument('--xview', type=float, nargs='+', default=xview,
 		help="upper and lower limit for x-axis VIEWING in the plot")
 	axis.add_argument('-z', type=float, nargs='+', default=z,
 		help="upper and lower limit for z-axis")
@@ -252,6 +258,10 @@ def get_basic_parser(
 		help='x-axis label name')
 	axis.add_argument('--yname', type=str, default=yname,
 		help='y-axis label name')
+	axis.add_argument('-x', type=str, default=x, nargs='*',
+		help='x-axis variable quantity')
+	axis.add_argument('-y', type=str, default=y, nargs='*',
+		help='y-axis variable quantity')
 
 	axis.add_argument('--xticks', type=float, nargs='+', default=xticks,
 		help="add custom xticks")
@@ -278,9 +288,12 @@ def get_basic_parser(
 
 
 def create_dictionary_from_parser(parser):
-	"""This function creates the Harry-conform dictionary from an argparse object."""
+	"""This function creates the Harry-compliant dictionary from an argparse object."""
 
 	opt = parser.parse_args()
+
+	if opt.listfunctions:
+		return opt.__dict__
 
 	opt.subplot = False
 	parser.set_defaults(subplot=False)
@@ -297,28 +310,47 @@ def create_dictionary_from_parser(parser):
 				attr = getattr(opt, i)
 				exec("opt.%s = jsondict[i]" % i)
 
-	# Determine plot type and quantities, set filename if not given, ...
-	if len(opt.plot.split("_")) == 2:
-		opt.yvar = opt.plot.split("_")[0]
-		opt.xvar = opt.plot.split("_")[1]
-	elif len(opt.plot.split("_")) == 1:
-		opt.xvar = opt.plot.split("_")[0]
-	if opt.xname == None: opt.xname = opt.xvar
+	if len(opt.x) == 0:
+		opt.x = [opt.plot.split("_")[-1]]
+	if len(opt.y) == 0 and len(opt.plot.split("_")) > 1:
+		opt.y =  [opt.plot.split("_")[-2]]
+	if opt.xname == None: 
+		opt.xname = opt.x[0]
 	if opt.yname == None:
-		if 'yvar' in opt:
-			opt.yname = opt.yvar
+		if 'y' in opt and len(opt.y) == 1:
+			opt.yname = opt.y[0]
 		else:
 			opt.yname = "Entries"
 	if opt.filename is None:
 		opt.filename = opt.plot
+		opt.filename.replace('/', '')
 	if opt.groups is None:
 		opt.groups = opt.labels
 
+	# We iterate over these lists, therefore we have to make sure they all contain
+	# the same number of elements
+	primary_iterators = ['folder', 'weights', 'x', 'files']
+	iterators = ['errorbars', 'markers', 'labels', 'colors'] + primary_iterators
+	maximum = max( [len(getattr(opt, i)) for i in primary_iterators])
+
+	if len(opt.labels) == 0:
+		for i in ['x', 'folder', 'weights']:
+			if len(getattr(opt, i)) == maximum:
+				opt.labels = getattr(opt, i)
+	if len(opt.labels) <= 1 and len(opt.files) > 0:
+		opt.labels = [s.split("/")[-1].split(".")[0] for s in opt.files]
+
 	# if only one folder/... is given, assume we want always the same:
-	for i in ['errorbars', 'markers', 'folder', 'weights']:
-		if opt.files is not None and len(getattr(opt, i)) != 0 and len(getattr(opt, i)) < len(opt.files):
-			attr = getattr(opt, i) 
-			attr *= len(opt.files) / len(getattr(opt, i))
+	if maximum > 1:
+		for i in iterators:
+			if len(getattr(opt, i)) == 1:
+				attr = getattr(opt, i) 
+				attr *= maximum / len(getattr(opt, i))
+			elif len(getattr(opt, i)) < maximum:
+				print "WARNING: not enough arguments for %s!" % i
+				print "Only %s arguments provided! We need %s or 1" % (len(getattr(opt, i)), maximum)
+	if len(opt.groups) == 0:
+		opt.groups = opt.labels
 
 	return opt.__dict__
 
