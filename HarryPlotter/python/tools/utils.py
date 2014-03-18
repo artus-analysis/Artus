@@ -42,9 +42,6 @@ def printquantities(plotdict):
 	"""
 	quantities = {}
 
-
-	print plotdict['rootfiles'], plotdict['labels'], plotdict['folder']
-
 	for f, name, folder in zip(plotdict['rootfiles'], plotdict['labels'], plotdict['folder']):
 		print "Looking into folder", folder
 		quantities[name] = []
@@ -139,10 +136,10 @@ def setaxislimits(plotdict):
 	if plotdict['xview']:
 		plotdict['axes'].set_xlim(plotdict['xview'])
 	else:
-		plotdict['axes'].set_xlim(plotdict['x'])
+		plotdict['axes'].set_xlim(plotdict['xlims'])
 		
-	if 'y' in plotdict and plotdict['y'] is not None:
-		plotdict['axes'].set_ylim(plotdict['y'])
+	if 'y' in plotdict and plotdict['ylims'] is not None:
+		plotdict['axes'].set_ylim(plotdict['ylims'])
 	else:
 		if plotdict['log']:
 			bottom = 1
