@@ -52,7 +52,8 @@ dictionary variables itself, but also expressions like `-x '2*muonpt'` or
 Combinations of ntuple quantities are also possible, e.g.
 `-x 'mupluspt/muminuspt'` or `-x 'npv-rho'`.
 Logical expressions like `-x '(zpt>30)'` (which return 0 or 1 for each event) 
-can be used as well.
+can be used, as well as CMath expressions like 
+`-x ' -1 * log(tan(muonTheta/2))'`.
 
 ##### plotname conventions
 The plotname serves as (x-)quantity, filename and axis labels if these are not 
