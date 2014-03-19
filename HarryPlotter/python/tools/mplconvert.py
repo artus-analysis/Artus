@@ -38,8 +38,8 @@ def root2histo(histo, rootfile='', rebin=1):
 		hst.meanerr = histo.GetMeanError()
 	elif histo.ClassName() == 'TH2D' or histo.ClassName() == 'TH2F' or histo.ClassName() == 'TProfile2D':
 		hst = Histo2D()
-		histo.RebinX(rebin[0])
-		histo.RebinY(rebin[1])
+		histo.RebinX(rebin)
+		histo.RebinY(rebin)
 		hst.source = rootfile
 		hst.name = histo.GetName()
 		hst.title = histo.GetTitle()

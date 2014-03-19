@@ -20,24 +20,18 @@ def plot_2d(plotdict):
 
 	plot1d.get_root_histos(plotdict)
 
-
-
-	if len(quantity.split("_")) == 2:
+	if len(plotdict['z']) == 0:
 		# normalize to the same number of events
-		if len(datamc) > 1 and plotdict['normalize']:
-			for d in datamc[1:]:
-				if d.binsum() > 0.0 and datamc[0].binsum() > 0:
-					d.scale(datamc[0].binsum() / d.binsum())
+		if len(plotdict['mplhistos']) > 1 and plotdict['normalize']:
+			pass #TODO implement proper normalization
 		z_name = 'Events'
-		if plotdict['z'] is None:
-			plotdict['z'] = [0, np.max(datamc[0].BinContents)]
 	else:
-		if plotdict['z'] is None:
-			plotdict['z'] = utils.getaxislabels_list(quantity.split("_")[0])[:2]
-		if plotdict['xynames'] is not None and len(plotdict['xynames']) > 2:
-			z_name = plotdict['xynames'][2]
+		if plotdict['zname'] is not None:
+			z_name = plotdict['zname']
 		else:
-			z_name = quantity.split("_")[0]
+			z_name = plotdict['z'][0]
+	if plotdict['zlims'] is None:
+		plotdict['zlims'] = [0, np.max(plotdict['mplhistos'][0].BinContents)]
 
 	#determine plot type: 2D Histogram or 2D Profile, and get the axis properties
 	if plotdict['subplot'] == True:
@@ -46,6 +40,7 @@ def plot_2d(plotdict):
 	else:
 		# create figure  + axes
 		fig = plt.figure(figsize=(10. * len(plotdict['files']), 7.))
+		plotdict['figure'] = fig
 		grid = AxesGrid(fig, 111,
 						nrows_ncols=(1, len(plotdict['files'])),
 						axes_pad=0.4,
@@ -76,8 +71,8 @@ def plot_2d(plotdict):
 			origin='lower',
 			aspect='auto',
 			extent=[plot.xborderlow, plot.xborderhigh, plot.yborderlow, plot.yborderhigh],
-			vmin=plotdict['z'][0],
-			vmax=plotdict['z'][1],)  # norm=matplotlib.colors.LogNorm())
+			vmin=plotdict['zlims'][0],
+			vmax=plotdict['zlims'][1],)  # norm=matplotlib.colors.LogNorm())
 
 		# profiles in plot:
 		if plotdict['fit'] and "profile" in plotdict['fit']:
@@ -89,11 +84,12 @@ def plot_2d(plotdict):
 			ax.errorbar(profx.xc, profx.y, profx.yerr, fmt='v', label=r"Profile $%s$" % xstr, color=cprofile[0])
 			ax.errorbar(profy.y, profy.xc, xerr=profy.yerr, fmt='<', label=r"Profile $%s$" % ystr, color=cprofile[1])
 
+		
 		# labels:
-		labels.axislabels(ax, plotdict['xynames'][0], plotdict['xynames'][1],
-															plotdict=plotdict)
-		labels.labels(ax, opt, plotdict, plotdict['subplot'])
-		utils.setaxislimits(ax, plotdict)
+		plotdict['axes'] = ax
+		labels.add_labels(plotdict)
+		utils.setaxislimits(plotdict)
+		"""
 		if plotdict['fit'] and "correlation" in plotdict['fit']:
 			ax.text(0.04, 0.92, r"correlation: ${0:.3f}$".format(
 				rootobjects[datamc.index(plot)].GetCorrelationFactor()),
@@ -109,11 +105,11 @@ def plot_2d(plotdict):
 				xydict.get(plotdict['xynames'][1], [plotdict['xynames'][1], ""])[1],
 				rootobjects[datamc.index(plot)].GetMean(2)),
 				color=ctext, transform=ax.transAxes)
+		"""
 
 
 	#add the colorbar
 	cb = fig.colorbar(image, cax=grid.cbar_axes[0], ax=ax)
-	cb.set_label(labels.unitformat(labels.getaxislabels_list(z_name)[2],
-								labels.getaxislabels_list(z_name)[3], False))
+	cb.set_label(z_name)
 
-	utils.Save(plotdict)
+	utils.save(plotdict)
