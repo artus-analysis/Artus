@@ -14,8 +14,9 @@ import sys
 # Class that stores python dicts and offers some additional JSON functionality
 class JsonDict(dict):
 	
-	# static member that defines the 
+	# static members as global settings
 	PATH_TO_ROOT_CONFIG = "config"
+	ALWAYS_DO_COMMENTS = True
 
 	# Constructor
 	# The parameter jsonDict can be of typ dict, string or list
@@ -26,17 +27,18 @@ class JsonDict(dict):
 	# and all items are merged into one single JsonDict
 	def __init__(self, jsonDict={}):
 		if isinstance(jsonDict, dict):
-			self.update(copy.deepcopy(jsonDict))
+			dict.__init__(self, jsonDict)
 		elif isinstance(jsonDict, basestring):
 			if os.path.exists(os.path.expandvars(jsonDict)):
-				self.update(JsonDict.readJsonDict(jsonDict))
+				dict.__init__(self, JsonDict.readJsonDict(jsonDict))
 			else:
-				print jsonDict
-				self.update(eval(jsonDict))
+				dict.__init__(self, json.loads(jsonDict))
 		elif isinstance(jsonDict, collections.Iterable):
-			self.update(JsonDict.mergeAll(*jsonDict))
+			dict.__init__(self, JsonDict.mergeAll(*jsonDict))
 		else:
 			raise TypeError("Unsupported type \"%s\" in JsonDict constructor", type(jsonDict))
+		if JsonDict.ALWAYS_DO_COMMENTS:
+			JsonDict.deepuncomment(self)
 	
 	# merges two JSON dicts and returns a new object
 	def __add__(self, jsonDict2):
@@ -93,7 +95,7 @@ class JsonDict(dict):
 	
 	# resolves the comments and returns a new object
 	def doComments(self):
-		return JsonDict(JsonDict.deepuncomment(self))
+		return JsonDict.deepuncomment(JsonDict(copy.deepcopy(self)))
 	
 	# converts JSON dict to a string
 	def __str__(self):
@@ -208,24 +210,23 @@ class JsonDict(dict):
 			result = copy.deepcopy(jsonDict)
 		return result
 
-	# remove all comments from JSON dictionary
+	# remove all comments from this JSON dictionary
 	# comments are keys, values and list entries starting with #
+	# editing in place
 	@staticmethod
 	def deepuncomment(jsonDict):
-		result = None
 		if isinstance(jsonDict, dict):
-			result = JsonDict()
 			for key, value in jsonDict.items():
-				if not key.strip().startswith("#"):
-					if not isinstance(value, basestring) or not value.strip().startswith("#"):
-						tmpValue = copy.deepcopy(value)
-						if isinstance(value, dict):
-							tmpValue = JsonDict.deepuncomment(value)
-						elif isinstance(value, collections.Iterable) and not isinstance(value, basestring):
-							tmpValue = []
-							for element in value:
-								if not isinstance(element, basestring) or not element.strip().startswith("#"):
-									tmpValue.append(copy.deepcopy(element))
-						result[key] = tmpValue
-		return result
+				if key.strip().startswith("#"):
+					del jsonDict[key]
+				else:
+					if isinstance(value, basestring) and value.strip().startswith("#"):
+						del jsonDict[key]
+					elif isinstance(value, collections.Iterable) and not isinstance(value, basestring):
+						for index, element in enumerate(value):
+							if isinstance(element, basestring) and element.strip().startswith("#"):
+								del value[index]
+					if isinstance(value, dict):
+						JsonDict.deepuncomment(value)
+		return jsonDict
 

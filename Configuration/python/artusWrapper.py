@@ -96,8 +96,8 @@ class ArtusWrapper(object):
 		# merge resulting pipeline config into the main config
 		self._config += jsonTools.JsonDict(pipelineJsonDict)
 		
-		# treat includes and comments
-		self._config = self._config.doComments().doIncludes().doComments()
+		# treat includes
+		self._config = self._config.doIncludes()
 
 
 	def _initArgumentParser(self, userArgParsers=None):
