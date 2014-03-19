@@ -18,9 +18,10 @@ It is located in the Artus/HarryPlotter/scripts folder.
 -------------------------------------------------------------------------------
 
 There are several ways an user can put together the plotdict:
-	1. With Harry's built-in command-line parser (shell scripts are possible)
-	3. With python scripts
-	4. With json config files
+	1. With Harry's built-in command-line parser `harry` (custom 
+		shell scripts are possible)
+	2. With custom python scripts
+	3. With json config files
 
 Type `harry -h` to display a list with the available options.
 
@@ -38,7 +39,7 @@ and histogram data according to the dictionary entries.
 2. Using the command-line parser
 -------------------------------------------------------------------------------
 
-If you have sourced the harry_ini.sh, the `harry` executable will be available.
+If you have sourced `harry_ini.sh`, the `harry` executable will be available.
 For a basic usage, you need to provide a plotname/quantity, the path to a 
 root file, the folder (branch) where to look in and you want to plot:
     harry -p theta -i src/Artus/Example/data/sample_output.root --folder highPt
