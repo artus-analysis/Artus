@@ -2,14 +2,16 @@
 ===============================================================================
 
 HarryPlotter can create Matplotlib and ROOT plots from any ROOT Ntuple or 
-histogram, but is optimized for scientific plots in High Energy particle physics.
+histogram and is optimized for scientific plots in High Energy particle physics.
 
 The main object is one large python dictionary (plotdict) which holds all 
 necessary plot metadata and even the actual plot data itself.
-A large library of helper functions is used to create and modify histogram or 
+A comprehensive library of helper functions is used to create and modify histogram or 
 plot data.
 
-DONT FORGET TO SOURCE THE harry_ini.sh INITIALIZATION SCRIPT!
+DONT FORGET TO SOURCE THE ini_harry.sh INITIALIZATION SCRIPT!
+
+It is located in the Artus/HarryPlotter/scripts folder.
 
 
 1. Workflow overview
@@ -55,9 +57,11 @@ Logical expressions like `-x '(zpt>30)'` (which return 0 or 1 for each event)
 can be used, as well as CMath expressions like 
 `-x ' -1 * log(tan(muonTheta/2))'`.
 
-##### plotname conventions
+##### Plotname conventions
 The plotname serves as (x-)quantity, filename and axis labels if these are not 
 explicitly given via -x, --filename or --xname.
+
+##### Profile plots
 For a profile plot, type `y_x`, e.g. `harry -p softLepPt_hardLepPt --folder mm 
 --files <path/to/higgs/tuple>/output.root`
 
@@ -135,5 +139,5 @@ created using the plotdict entries.
 
 
 
-Last edited: dhaitz, 18.03.2014
+Last edited: hauth, 19.03.2014
 
