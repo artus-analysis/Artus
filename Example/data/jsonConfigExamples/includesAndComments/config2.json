@@ -1,0 +1,15 @@
+{
+	"Key1" : "Value1",
+	"Key2" : "Value2",
+	"Key3" : "Value3",
+	"include" : [
+		"$CMSSW_BASE/src/Artus/Example/data/jsonConfigExamples/includesAndComments/config3.json",
+		"$CMSSW_BASE/src/Artus/Example/data/jsonConfigExamples/includesAndComments/config4.json"
+	],
+	"Key4" : { "include" : "$CMSSW_BASE/src/Artus/Example/data/jsonConfigExamples/includesAndComments/config5.json"},
+	"Key5" : [
+		"listItem1",
+		"listItem2",
+		{ "include" : "$CMSSW_BASE/src/Artus/Example/data/jsonConfigExamples/includesAndComments/config6.json"}
+	]
+}
