@@ -74,7 +74,7 @@ def plot1d_mpl(plotdict):
 	stack = {}
 	for histo, marker, label, color, errorbar, group, rootobject in zip(plotdict["mplhistos"], plotdict['markers'],
 				plotdict['labels'], plotdict['colors'], plotdict['errorbars'], plotdict['groups'], plotdict['roothistos']):
-		if errorbar == "True":
+		if errorbar == True:
 			yerr = histo.yerr
 		else:
 			yerr = None

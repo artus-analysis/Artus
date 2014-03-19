@@ -59,7 +59,6 @@ def plot_2d(plotdict):
 		if plotdict['fit'] and "profile" in plotdict['fit']:
 			cmap1 = matplotlib.cm.get_cmap('Blues')  # Blues
 			ctext = 'black'
-		print plotdict['z']
 		if "zlog" in plotdict and plotdict["zlog"]:  # TODO
 			thenorm = matplotlib.colors.LogNorm()
 			plotdict['z'][0] = min(plotdict['z'], 1)
