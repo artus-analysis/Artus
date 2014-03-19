@@ -61,6 +61,7 @@ def get_basic_dictionary():
 		'ylims': None,
 		'xname':None,
 		'yname':None,
+		'zname':None,
 		'xticks': None,
 		'yticks': None,
 		
@@ -122,7 +123,8 @@ def get_basic_parser(
 		figure=None,
 		axes=None,
 		x=None, y=None, z=None, xview=None, xbins=[], ybins=[], xname=None,
-		yname=None, xticks=None, yticks=None, log=None, xlog=None, xlims=None, ylims=None,
+		yname=None, xticks=None, yticks=None, log=None, xlog=None, xlims=None,
+		ylims=None, zname=None, zlims=None,
 
 		save=None,
 		verbose=None,
@@ -250,18 +252,22 @@ def get_basic_parser(
 		help="upper and lower limit for y-axis")
 	axis.add_argument('--xlims', type=float, nargs='+', default=xlims,
 		help="upper and lower limit for x-axis")
+	axis.add_argument('--zlims', type=float, nargs='+', default=zlims,
+		help="upper and lower limit for z-axis")
 	axis.add_argument('--xview', type=float, nargs='+', default=xview,
 		help="upper and lower limit for x-axis VIEWING in the plot")
-	axis.add_argument('-z', type=float, nargs='+', default=z,
-		help="upper and lower limit for z-axis")
 	axis.add_argument('--xname', type=str, default=xname,
 		help='x-axis label name')
 	axis.add_argument('--yname', type=str, default=yname,
 		help='y-axis label name')
+	axis.add_argument('--zname', type=str, default=zname,
+		help='z-axis label name')
 	axis.add_argument('-x', type=str, default=x, nargs='*',
 		help='x-axis variable quantity')
 	axis.add_argument('-y', type=str, default=y, nargs='*',
 		help='y-axis variable quantity')
+	axis.add_argument('-z', type=str, default=z, nargs='*',
+		help='z-axis variable quantity')
 
 	axis.add_argument('--xticks', type=float, nargs='+', default=xticks,
 		help="add custom xticks")

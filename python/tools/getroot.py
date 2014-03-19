@@ -93,12 +93,17 @@ def histofromntuple(rootfile, objectname, ntuple, plotdict):
 		plotdict['xbins'] = np.linspace(plotdict['xlims'][0], plotdict['xlims'][1], plotdict['nbins']+1)
 
 	if plotdict['type'] == '2D':
-		plotdict['ybins']  = getbinning(plotdict['ylims'][index], plotdict, 'y')
+		if plotdict['ylims'] == None:
+			plotdict['ylims'] = [ntuple.GetMinimum(plotdict['y'][index])*1.01, ntuple.GetMaximum(plotdict['y'][index])*1.01]
+		if plotdict['ylims'] == [0.0, 0.0]:
+			print "WARNING: Axis limits could not be determined! Fallback to [0, 1]"
+			plotdict['ylims'] = [0.0, 1.0]
+		plotdict['ybins']  = np.linspace(plotdict['ylims'][0], plotdict['ylims'][1], plotdict['nbins']+1)
 
 	variables = plotdict['x'][index]
 	if len(plotdict['y']) > 0:
 		variables = "%s:%s" % (plotdict['y'][index], variables)
-	if 'zvar' in plotdict and len(plotdict['z']) > 0:
+	if 'z' in plotdict and len(plotdict['z']) > 0:
 		variables = "%s:%s" % (plotdict['z'][index], variables)
 
 	# give each histogram a different name
@@ -126,7 +131,7 @@ def histofromntuple(rootfile, objectname, ntuple, plotdict):
 
 	if roothisto.ClassName() == 'TH2D':
 		print "Correlation between %s and %s in %s in the selected range:  %1.5f" % (
-			quantities[1], quantities[0], roothisto.GetName(),  # .split("/")[-3],
+			variables.split(':')[1], variables.split(':')[0], roothisto.GetName(),
 			roothisto.GetCorrelationFactor())
 
 	return roothisto
