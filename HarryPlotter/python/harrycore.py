@@ -337,7 +337,7 @@ def create_dictionary_from_parser(parser):
 		for i in ['x', 'folder', 'weights']:
 			if len(getattr(opt, i)) == maximum:
 				opt.labels = getattr(opt, i)
-	if len(opt.labels) <= 1 and len(opt.files) > 0:
+	if len(opt.labels) < 1 and len(opt.files) > 0:
 		opt.labels = [s.split("/")[-1].split(".")[0] for s in opt.files]
 
 	# if only one folder/... is given, assume we want always the same:
