@@ -11,9 +11,10 @@ import json
 import subprocess
 
 import Artus.Utility.logger as logger
+import Artus.Utility.tools as tools
 import Artus.Configuration.jsonTools as jsonTools
 
-# main function
+
 class ArtusWrapper(object):
 
 	def __init__(self, executable=None, userArgParsers=None):
@@ -28,6 +29,10 @@ class ArtusWrapper(object):
 		#Parse command line arguments and return dict
 		self._args = self._parser.parse_args()
 		logger.initLogger(self._args)
+
+		# write repository revisions to the config
+		if self._args.add_repo_versions:
+			self.setRepositoryRevisions()
 
 		#Expand Config
 		self.expandConfig()
@@ -57,6 +62,37 @@ class ArtusWrapper(object):
 
 	def setOutputFilename(self, output_filename):
 		self._config["OutputPath"] = output_filename
+	
+	# write repository revisions to the config
+	def setRepositoryRevisions(self):
+		# expand possible environment variables in paths
+		if isinstance(self._args.repo_scan_base_dirs, basestring):
+			self._args.repo_scan_base_dirs = [self._args.repo_scan_base_dirs]
+		self._args.repo_scan_base_dirs = [os.path.expandvars(repoScanBaseDir) for repoScanBaseDir in self._args.repo_scan_base_dirs]
+		
+		# construct possible scan paths
+		subDirWildcards = ["*/" * level for level in range(self._args.repo_scan_depth+1)]
+		scanDirWildcards = [os.path.join(repoScanBaseDir, subDirWildcard) for repoScanBaseDir in self._args.repo_scan_base_dirs for subDirWildcard in subDirWildcards]
+		
+		# globbing and filter for directories
+		scanDirs = tools.flattenList([glob.glob(scanDirWildcard) for scanDirWildcard in scanDirWildcards])
+		scanDirs = [scanDir for scanDir in scanDirs if os.path.isdir(scanDir)]
+		
+		# key: directory to check type of repository
+		# value: command to extract the revision
+		repoVersionCommands = {
+			".git" : "git rev-parse HEAD",
+		}
+		# loop over dirs and revision control systems and write revisions to the config dict
+		for repoDir, currentRevisionCommand in repoVersionCommands.items():
+			repoScanDirs = [os.path.join(scanDir, repoDir) for scanDir in scanDirs]
+			repoScanDirs = [glob.glob(os.path.join(scanDir, repoDir)) for scanDir in scanDirs]
+			repoScanDirs = tools.flattenList([glob.glob(os.path.join(scanDir, repoDir)) for scanDir in scanDirs])
+			repoScanDirs = [os.path.abspath(os.path.join(repoScanDir, "..")) for repoScanDir in repoScanDirs]
+			
+			for repoScanDir in repoScanDirs:
+				popenCout, popenCerr = subprocess.Popen(currentRevisionCommand.split(), stdout=subprocess.PIPE, cwd=repoScanDir).communicate()
+				self._config[repoScanDir] = popenCout.replace("\n", "")
 
 	def getConfig(self):
 		return self._config
@@ -123,6 +159,12 @@ class ArtusWrapper(object):
 	                                 help="JSON base configurations. All configs are merged.")
 		configOptionsGroup.add_argument("-p", "--pipeline-configs", nargs="+", action="append",
 	                                 help="JSON pipeline configurations. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")
+		configOptionsGroup.add_argument("--add-repo-versions", default=True, action="store_true",
+	                                 help="Add repository versions to the JSON config.")
+		configOptionsGroup.add_argument("--repo-scan-base-dirs", nargs="+", required=False, default="$CMSSW_BASE/src/",
+	                                 help="Base directories for repositories scran. [Default: $CMSSW_BASE/src/]")
+		configOptionsGroup.add_argument("--repo-scan-depth", required=False, type=int, default=2,
+	                                 help="Depth of repositories scran. [Default: 2")
 		configOptionsGroup.add_argument("-P", "--print-config", default=False, action="store_true",
 	                                 help="Print out the JSON config before running Artus.")
 
