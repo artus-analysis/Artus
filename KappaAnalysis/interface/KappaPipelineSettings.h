@@ -108,8 +108,8 @@ public:
 	{
 		RETURN_CACHED(jsonFiles, PropertyTreeSupport::GetAsStringList(GetPropTree(), "JsonFiles"))
 	}
-	IMPL_SETTING_DEFAULT(int, PassRunLow, -1);
-	IMPL_SETTING_DEFAULT(int, PassRunHigh, -1);
+	IMPL_SETTING_DEFAULT(int, PassRunLow, 0);
+	IMPL_SETTING_DEFAULT(int, PassRunHigh, 0);
 	
 	VarCache<std::vector<std::string>> hltPaths;
 	stringvector GetHltPaths() const
