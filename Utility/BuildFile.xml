@@ -1,4 +1,5 @@
 <use   name="root"/>
+<use   name="boost"/>
 <flags ADD_SUBDIR="1"/>
 <export>
    <lib   name="1"/>
