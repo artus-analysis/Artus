@@ -15,6 +15,13 @@
 #include "ConsumerBase.h"
 #include "FilterBase.h"
 
+// producer
+
+// filter
+
+// consumer
+#include "Artus/Consumer/interface/CutFlowHistogramConsumer.h"
+
 
 template<class TTypes>
 class FactoryBase: public boost::noncopyable {
@@ -36,12 +43,15 @@ public:
 		return ARTUS_CPP11_NULLPTR;
 	}
 
-	virtual consumer_base_type * createConsumer ( std::string const& id ) {
+	virtual filter_base_type * createFilter ( std::string const& id ) {
 		return ARTUS_CPP11_NULLPTR;
 	}
 
-	virtual filter_base_type * createFilter ( std::string const& id ) {
-		return ARTUS_CPP11_NULLPTR;
+	virtual consumer_base_type * createConsumer ( std::string const& id ) {
+		if(id == CutFlowHistogramConsumer<TTypes>().GetConsumerId())
+			return new CutFlowHistogramConsumer<TTypes>();
+		else
+			return ARTUS_CPP11_NULLPTR;
 	}
 
 };

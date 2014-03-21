@@ -32,6 +32,7 @@ public:
 	virtual void ProcessEvent(event_type const& event,
 			product_type const& product,
             FilterResult & result) {
+		ConsumerBase<TTypes>::ProcessEvent(event, product, result);
 		m_flow.AddFilterResult ( result );
 	}
 
