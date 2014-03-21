@@ -30,6 +30,7 @@ add_library(artus_core STATIC
 
 add_library(artus_configuration STATIC
 	Configuration/src/ArtusConfig.cc
+	Configuration/src/PropertyTreeSupport.cc
 	Configuration/src/RootEnvironment.cc
 )
 
