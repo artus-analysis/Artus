@@ -29,6 +29,7 @@ add_library(artus_core STATIC
 	Core/src/CutFlow.cc
 	Core/src/FilterResult.cc
 	Core/src/Mutation.cc
+	Core/src/ProgressReport.cc
 )
 
 add_library(artus_configuration STATIC
