@@ -35,8 +35,8 @@ public:
 	}
 
 	DecisionEntry * GetDecisionEntry( std::string const& filterName ) {
-		for ( FilterDecisions::iterator it = m_filterDecision.begin();
-				it != m_filterDecision.end(); it ++ ) {
+		for ( FilterDecisions::iterator it = m_filterDecisions.begin();
+				it != m_filterDecisions.end(); it ++ ) {
 			if ( filterName == it->first )
 				return & ( *it );
 		}
@@ -45,8 +45,8 @@ public:
 	}
 
 	DecisionEntry const* GetDecisionEntry( std::string const& filterName ) const {
-		for ( FilterDecisions::const_iterator it = m_filterDecision.begin();
-				it != m_filterDecision.end(); it ++ ) {
+		for ( FilterDecisions::const_iterator it = m_filterDecisions.begin();
+				it != m_filterDecisions.end(); it ++ ) {
 			if ( filterName == it->first )
 				return & ( *it );
 		}
@@ -62,7 +62,7 @@ public:
 				it != fn.end(); it ++ ) {
 			DecisionEntry * entr = GetDecisionEntry( * it );
 			if ( entr == ARTUS_CPP11_NULLPTR ) {
-				m_filterDecision.push_back( std::make_pair( *it, Decision::Undefined ));
+				m_filterDecisions.push_back( std::make_pair( *it, Decision::Undefined ));
 			}
 		}
 	}
@@ -103,7 +103,7 @@ public:
 	}
 
 	FilterDecisions const& GetFilterDecisions() const {
-		return m_filterDecision;
+		return m_filterDecisions;
 	}
 
 	void SetFilterDecision(std::string filterName, bool passed) {
@@ -111,7 +111,7 @@ public:
 		DecisionEntry * entr = GetDecisionEntry(filterName);
 
 		if ( entr == ARTUS_CPP11_NULLPTR ) {
-			m_filterDecision.push_back( std::make_pair( filterName, desc ));
+			m_filterDecisions.push_back( std::make_pair( filterName, desc ));
 		} else {
 			entr->second = desc;
 		}
@@ -126,8 +126,8 @@ public:
 		std::stringstream s;
 		s << "== Filter Decision == " << std::endl;
 
-		for (FilterDecisions::const_iterator it = m_filterDecision.begin();
-				it != m_filterDecision.end(); it++) {
+		for (FilterDecisions::const_iterator it = m_filterDecisions.begin();
+				it != m_filterDecisions.end(); it++) {
 			s << it->first << " : " << DecisionToString( it->second ) << std::endl;
 		}
 
@@ -146,7 +146,7 @@ public:
 private:
 
 	// optimize this, without strings
-	FilterDecisions m_filterDecision;
+	FilterDecisions m_filterDecisions;
 
 	mutable bool m_cacheHasPassed;
 	mutable bool m_IsCachedHasPassed;
