@@ -19,7 +19,9 @@ public:
 	~KappaProduct() {};
 
 	/// added by GenTauDecayProducer
-	std::vector<KGenParticle*> m_genTauDecay;
+	std::vector<std::vector<std::vector<KGenParticle*>>>	m_genHiggsGranddaughters;
+	std::vector<std::vector<KGenParticle*>> m_genHiggsDaughters; 
+	std::vector<KGenParticle*> m_genHiggs;
 
 	/// added by ValidElectronsProducer
 	std::vector<KDataElectron*> m_validElectrons;

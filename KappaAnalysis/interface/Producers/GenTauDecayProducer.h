@@ -14,8 +14,9 @@
    This producers has the GenParticles as input and will extract the following information from 
    this collection:
 
-   - pointer to tau particle
-   - list of pointers to tau decay products
+   - list of pointers to Higgs particles
+   - list of pointers to tau particles as daughters of a certain Higgs
+   - list of pointers to tau decay products as daughters of a certain Tau of a certain Higgs 
 */
 
 template<class TTypes>
@@ -40,22 +41,42 @@ public:
 		for (KGenParticles::iterator part = event.m_genParticles->begin();
 			 part != event.m_genParticles->end(); ++part)
 		{
-		        if (abs(part->pdgId()) == 15)
-			{
-			        product.m_genTauDecay.push_back(&(*part));
-				for (unsigned int d=0; d<part->daughterIndices.size(); ++d)
+			// Filling Higgs, its daughter & granddaughter particles
+		        if ((abs(part->pdgId()) == 25)&&(part->status()==3))// only Higgs with status 3 are needed
+			{ 
+				product.m_genHiggs.push_back(&(*part));
+
+				std::vector<KGenParticle*> daughters;
+				std::vector<std::vector<KGenParticle*>> gdaughters; 
+				for (unsigned int i=0; i<part->daughterIndices.size(); ++i) 
 				{
-				        if (part->daughterIndex(d) < event.m_genParticles->size())
-				        {
-				                product.m_genTauDecay.push_back(&(event.m_genParticles->at(part->daughterIndex(d))));
+				        if ( (part->daughterIndex(i) < event.m_genParticles->size()) && ( abs((event.m_genParticles->at(part->daughterIndex(i))).pdgId()) == 15) )
+				        {      
+						// Taus with status 2 are the only daughters of Taus with status 3. We are not interested in status 2 Taus and thats the reason, why we should  
+                                		// skip them and consider the formal granddaughters of status 3 Taus as real daughters of status 3 Taus. This means, we must skip one generation,
+						// what's done in the following for-loop.
+				                daughters.push_back(&(event.m_genParticles->at(part->daughterIndex(i))));
+                                  		std::vector<KGenParticle*> granddaughters;	
+						for (unsigned int j=0; j<(event.m_genParticles->at((event.m_genParticles->at(part->daughterIndex(i))).daughterIndex(0))).daughterIndices.size();++j)
+						{
+							//Explaining the next line:
+							//(event.m_genParticles->at(part->daughterIndex(i))) is Tau with status 3, daughter of Higgs.
+							//(event.m_genParticles->at((event.m_genParticles->at(part->daughterIndex(i))).daughterIndex(0))) is Tau with status 2, formal daughter of Tau with status 3
+							//(event.m_genParticles->at((event.m_genParticles->at((event.m_genParticles->at(part->daughterIndex(i))).daughterIndex(0))).daughterIndex(j))) is real daughter of Tau with status 3 
+							granddaughters.push_back(&(event.m_genParticles->at((event.m_genParticles->at((event.m_genParticles->at(part->daughterIndex(i))).daughterIndex(0))).daughterIndex(j))));
+						}
+						gdaughters.push_back(granddaughters);					
 					}
-					else
+					else if (!(part->daughterIndex(i) < event.m_genParticles->size()))
 					{
 					  LOG("Daughter index larger than size of gen particle vector:" 
-					      << part->daughterIndex(d) << ">" << event.m_genParticles->size() << ".");
+					      << part->daughterIndex(i) << ">" << event.m_genParticles->size() << ".");
 					}
 				}
+				product.m_genHiggsDaughters.push_back(daughters);
+				product.m_genHiggsGranddaughters.push_back(gdaughters);				
 			}
+
 		}
 	}
 };
