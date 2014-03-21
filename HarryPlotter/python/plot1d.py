@@ -16,6 +16,7 @@ import ROOT
 import sys
 import os
 import copy
+import matplotlib.pyplot as plt
 
 import Artus.HarryPlotter.tools.getroot as getroot
 import Artus.HarryPlotter.tools.mplconvert as mplconvert
@@ -35,6 +36,8 @@ def plot1d(plotdict):
 		plot1d_root(plotdict)
 	elif plotdict['backend'] == 'mpl':
 		plot1d_mpl(plotdict)
+		if plotdict['ratiosubplot']:
+			add_ratiosubplot(plotdict)
 		utils.setaxislimits(plotdict)
 		labels.add_labels(plotdict)
 		if plotdict['save']:
@@ -59,7 +62,7 @@ def plot1d_mpl(plotdict):
 
 	# use the given fig/axis or create new one:
 	if not plotdict['axes'] and not plotdict['figure']:
-		figure, ax = utils.newplot()
+		figure, ax = utils.newplot(plotdict)
 		plotdict['axes'] = ax
 		plotdict['figure'] = figure
 
@@ -98,6 +101,31 @@ def plot1d_mpl(plotdict):
 		else: 
 			ax.errorbar(histo.xc, histo.y, yerr, drawstyle='steps-mid', color=color, fmt=marker, capsize=0, label=label, zorder=10)
 		fit.fit(rootobject, plotdict)
+
+def add_ratiosubplot(plotdict):
+	"""This function adds the ratio of the first two root objects to a subplot."""
+
+	rootratio = getroot.rootdivision(plotdict["roothistos"])
+	mplratio = mplconvert.root2histo(rootratio, "Ratio",)
+
+	plotdict['ratiosubplotaxes'].errorbar(mplratio.xc, mplratio.y, mplratio.yerr,
+		drawstyle='steps-mid', color='black', fmt='o', capsize=0, label="Ratio")
+
+	# Some formatting:
+	plotdict['ratiosubplotaxes'].set_ylabel("Ratio")
+	plotdict['ratiosubplotaxes'].axhline(1.0, color='gray', lw=1)
+	plt.setp(plotdict['axes'].get_xticklabels(), visible=False)
+
+	# Set custom ylim if given, if not fall back to [0.5, 1.5] 
+	if plotdict['ylims'] is not None and len(plotdict['ylims']) > 2:
+		plotdict['ratiosubplotaxes'].set_ylim(plotdict['ylims'][2], plotdict['ylims'][3])
+	else:
+		plotdict['ratiosubplotaxes'].set_ylim(0.5, 1.5)
+		
+	# This should be done automatically by MPL because of the shared axis;
+	# I dont know why it doesnt:
+	if plotdict['xlog']: 
+		plotdict['ratiosubplotaxes'].set_xscale('log')
 
 
 def plot1d_root(plotdict):

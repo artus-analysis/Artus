@@ -79,16 +79,19 @@ def add_datelabel(plotdict, xpos=1.0, ypos=1.10):
 def add_axislabels(plotdict):
 	"""Set axis labels and limits"""
 
+	if 'ratiosubplotaxes' in plotdict:
+		xax = plotdict['ratiosubplotaxes']
+	else:
+		xax = plotdict['axes']
 	# labels
-	plotdict['axes'].set_xlabel(plotdict['xname'], ha="right", x=1)
+	xax.set_xlabel(plotdict['xname'], ha="right", x=1)
 	if plotdict['yname']:
 		plotdict['axes'].set_ylabel(plotdict['yname'], va="top", y=1)
 
 	# axis tick marks
-	if plotdict['xticks']: 
-		plotdict['axes'].set_xticks(plotdict['xticks'])
-		if plotdict['xlog']:
-			plotdict['axes'].set_xticklabels([str(x) for x in plotdict['xticks']])
+	if plotdict['xticks']:
+		xax.set_xticks(plotdict['xticks'])
+		xax.set_xticklabels([str(x) for x in plotdict['xticks']])
 	if plotdict['yticks']: plotdict['axes'].set_yticks(plotdict['yticks'])
 
 

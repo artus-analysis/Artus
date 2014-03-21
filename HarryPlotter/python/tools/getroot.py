@@ -179,6 +179,9 @@ def save_roothistos(plotdict):
 
 
 def rootdivision(rootobjects):
+	if len(rootobjects) < 2:
+		print "rootdivision need at least two rootobjects!"
+		return
 	"""Return the quotient of two ROOT histograms."""
 	#convert TProfiles into TH1Ds because ROOT cannot correctly divide TProfiles
 	if (rootobjects[0].ClassName() != 'TH1D' and

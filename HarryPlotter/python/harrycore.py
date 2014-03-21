@@ -128,6 +128,7 @@ def get_basic_parser(
 
 		save=None,
 		verbose=None,
+		ratiosubplot=False,
 	
 		roothistos=None,
 		mplhistos=None,
@@ -176,8 +177,8 @@ def get_basic_parser(
 	#TODO:
 	#general.add_argument('-R', '--ratio', action='store_true',
 	#	help="do a ratio plot from the first two input files")
-	#general.add_argument('--ratiosubplot', action='store_true',
-	#	help="Add a ratio subplot")
+	general.add_argument('--ratiosubplot', action='store_true',
+		help="Add a ratio plot at the bottom.")
 	general.add_argument('-F', '--fit', type=str, default=fit,
 		help="Do a fit. Options: vertical, chi2, gauss, slope, intercept, quadratic")
 	general.add_argument('--nbins', type=int, default=nbins,
@@ -249,7 +250,8 @@ def get_basic_parser(
 	axis.add_argument('--xlog', action='store_true', default=xlog,
 		 help="logarithmic x-axis")
 	axis.add_argument('--ylims', type=float, nargs='+', default=ylims,
-		help="upper and lower limit for y-axis")
+		help="upper and lower limit for y-axis. Specify four values to also\
+			set the y-axis values for a (ratio-)subplot.")
 	axis.add_argument('--xlims', type=float, nargs='+', default=xlims,
 		help="upper and lower limit for x-axis")
 	axis.add_argument('--zlims', type=float, nargs='+', default=zlims,
