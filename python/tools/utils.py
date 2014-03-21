@@ -57,7 +57,6 @@ def printquantities(plotdict):
 			string = "Ntuple-variables"
 			func = "GetListOfBranches"
 		else:
-			print (type(obj) == ROOT.TNtuple)
 			print "Cannot access folder with name '%s'" % folder
 			print "Available folders are:", 
 			for i in f.GetListOfKeys():
@@ -69,6 +68,14 @@ def printquantities(plotdict):
 		
 			quantities[name] += [branch.GetTitle()]
 		quantities[name] = set(quantities[name])
+
+	if len(quantities) == 0:
+		print "Could not determine any quantites in this file."
+		if len(plotdict['rootfiles']) == 0:
+			print "Please specify a file!"
+		if len(plotdict['folder']) == 0:
+			print "Please specify a folder!"
+		return
 
 	# Print the list of quantities present in ALL objects
 	common_set = quantities[quantities.keys()[0]]
@@ -132,12 +139,16 @@ def newplot(ratio=False, subplots=1, subplots_X=None, subplots_Y=None):
 
 def setaxislimits(plotdict):
 	"""Set the axes (limits etc.) according to dictionary content."""
-	# limits
+
+	# x axes:
 	if plotdict['xview']:
 		plotdict['axes'].set_xlim(plotdict['xview'])
 	else:
 		plotdict['axes'].set_xlim(plotdict['xlims'])
-		
+	if plotdict['xlog']:
+		plotdict['axes'].set_xscale('log')
+
+	# y:
 	if 'y' in plotdict and plotdict['ylims'] is not None:
 		plotdict['axes'].set_ylim(plotdict['ylims'])
 	else:
@@ -147,11 +158,8 @@ def setaxislimits(plotdict):
 			bottom = 0
 		plotdict['axes'].set_ylim(top= 1.2 * max(d.ymax() for d in plotdict['mplhistos']), bottom = bottom)
 
-	# logarithmic axis
 	if plotdict['log']:
 		plotdict['axes'].set_yscale('log')
-	if plotdict['xlog']:
-		plotdict['axes'].set_xscale('log')
 
 	if plotdict['grid']:
 		plotdict['axes'].grid(True)

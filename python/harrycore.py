@@ -314,7 +314,8 @@ def create_dictionary_from_parser(parser):
 		for i in vars(opt):
 			if getattr(opt, i) == parser.get_default(i):
 				attr = getattr(opt, i)
-				exec("opt.%s = jsondict[i]" % i)
+				if i in jsondict:
+					exec("opt.%s = jsondict[i]" % i)
 
 	if len(opt.x) == 0:
 		opt.x = [opt.plot.split("_")[-1]]
