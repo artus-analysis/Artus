@@ -66,6 +66,15 @@ public:
 			}
 		}
 	}
+	
+	// list of all filter names as a vector of strings
+	FilterNames GetFilterNames() const {
+		FilterNames filterNames;
+		filterNames.resize(m_filterDecisions.size());
+		transform(m_filterDecisions.begin(), m_filterDecisions.end(), filterNames.begin(),
+		          [](DecisionEntry decisionEntry) { return decisionEntry.first; });
+		return filterNames;
+	}
 
 	bool HasPassed() const {
 		if (m_IsCachedHasPassed)
