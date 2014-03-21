@@ -112,7 +112,8 @@ def add_ratiosubplot(plotdict):
 		drawstyle='steps-mid', color='black', fmt='o', capsize=0, label="Ratio")
 
 	# Some formatting:
-	plotdict['ratiosubplotaxes'].set_ylabel("Ratio")
+	plotdict['ratiosubplotaxes'].set_ylabel("%s/%s ratio" % (plotdict['labels'][0],
+			plotdict['labels'][1]) )
 	plotdict['ratiosubplotaxes'].axhline(1.0, color='gray', lw=1)
 	plt.setp(plotdict['axes'].get_xticklabels(), visible=False)
 

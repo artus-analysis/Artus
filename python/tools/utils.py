@@ -113,15 +113,15 @@ def setaxislimits(plotdict):
 
 	# x axes:
 	if plotdict['xview']:
-		plotdict['axes'].set_xlim(plotdict['xview'])
+		plotdict['axes'].set_xlim(plotdict['xview'][:2])
 	else:
-		plotdict['axes'].set_xlim(plotdict['xlims'])
+		plotdict['axes'].set_xlim(plotdict['xlims'][:2])
 	if plotdict['xlog']:
 		plotdict['axes'].set_xscale('log')
 
 	# y:
 	if 'y' in plotdict and plotdict['ylims'] is not None:
-		plotdict['axes'].set_ylim(plotdict['ylims'])
+		plotdict['axes'].set_ylim(plotdict['ylims'][:2])
 	else:
 		if plotdict['log']:
 			bottom = 1
