@@ -49,7 +49,7 @@ public:
 		
 		// initialise histograms in first event
 		if(! m_histogramsInitialised) {
-			m_histogramsInitialised = initialiseHistograms(filterResult);
+			m_histogramsInitialised = InitialiseHistograms(filterResult);
 		}
 
 		float weight = weightExtractor(event, product);
@@ -65,7 +65,7 @@ public:
 		// fill bins of histograms corresponding to passed filters
 		FilterResult::FilterDecisions const& filterDecisions = filterResult.GetFilterDecisions();
 		for(FilterResult::FilterDecisions::const_iterator filterDecision = filterDecisions.begin();
-			filterDecision != filterDecisions.end(); filterDecision++)
+		    filterDecision != filterDecisions.end(); filterDecision++)
 		{
 			++bin;
 			if (filterDecision->second == FilterResult::Decision::Passed) {
@@ -98,47 +98,48 @@ protected:
 private:
 	bool m_histogramsInitialised;
 	
-	bool initialiseHistograms(FilterResult & filterResult) {
-	
+	// initialise histograms; to be called in first event
+	bool InitialiseHistograms(FilterResult & filterResult) {
+
 		// filters
 		std::vector<std::string> filterNames = filterResult.GetFilterNames();
 		int nFilters = filterNames.size();
-	
+
 		// title and names for histograms
 		std::string cutFlowHistTitle("Cut Flow for Pipeline \"" + this->GetPipelineSettings().GetName() + "\"");
 		std::string cutFlowUnweightedHistName(this->GetPipelineSettings().GetName() + "_cutFlowUnweighted");
 		std::string cutFlowWeightedHistName(this->GetPipelineSettings().GetName() + "_cutFlowWeighted");
-		
+	
 		// histograms
 		// TODO: select right directory in ROOT output file?
 		m_cutFlowUnweightedHist = new TH1F(cutFlowUnweightedHistName.c_str(), cutFlowHistTitle.c_str(),
 		                                   nFilters+1, 0.0, nFilters+1.0);
-		
+	
 		if(m_addWeightedCutFlow) {
 			m_cutFlowWeightedHist = new TH1F(cutFlowWeightedHistName.c_str(), cutFlowHistTitle.c_str(),
-				                             nFilters+1, 0.0, nFilters+1.0);
+			                                 nFilters+1, 0.0, nFilters+1.0);
 		}
-		
+	
 		// names for bins
 		int bin = 1;
-		
+	
 		m_cutFlowUnweightedHist->GetXaxis()->SetBinLabel(bin, "without filters");
-		
+	
 		if(m_addWeightedCutFlow) {
 			m_cutFlowWeightedHist->GetXaxis()->SetBinLabel(bin, "without filters");
 		}
-		
+	
 		for(std::vector<std::string>::const_iterator filterName = filterNames.begin();
 		    filterName != filterNames.end(); ++filterName)
 		{
 			++bin;
 			m_cutFlowUnweightedHist->GetXaxis()->SetBinLabel(bin, filterName->c_str());
-			
+		
 			if(m_addWeightedCutFlow) {
 				m_cutFlowWeightedHist->GetXaxis()->SetBinLabel(bin, filterName->c_str());
 			}
 		}
-		
+	
 		return true;
 	}
 
