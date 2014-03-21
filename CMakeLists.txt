@@ -32,6 +32,7 @@ add_library(artus_configuration STATIC
 	Configuration/src/ArtusConfig.cc
 	Configuration/src/PropertyTreeSupport.cc
 	Configuration/src/RootEnvironment.cc
+	Configuration/src/SettingsBase.cc
 )
 
 add_library(artus_consumer STATIC

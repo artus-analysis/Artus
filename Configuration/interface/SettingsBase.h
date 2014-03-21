@@ -12,7 +12,6 @@
 #include "Artus/Core/interface/GlobalInclude.h"
 #include "Artus/Configuration/interface/PropertyTreeSupport.h"
 #include "Artus/Configuration/interface/SettingMacros.h"
-#include "Artus/Configuration/interface/ArtusConfig.h"
 
 /**
    \brief Reads setting of local parts of PipelineRunner from a prepared json configuration file.
@@ -23,19 +22,7 @@
 
 class SettingsUtil {
 public:
-	static stringvector ExtractFilters ( stringvector const& allProcessors )   {
-		stringvector filt;
-
-		for ( stringvector::const_iterator it = allProcessors.begin();
-				it != allProcessors.end(); it ++ ) {
-			const ArtusConfig::NodeTypePair nodeRes = ArtusConfig::ParseProcessNode( *it );
-			if ( nodeRes.first == ProcessNodeType::Filter ){
-				filt.push_back( nodeRes.second );
-			}
-		}
-
-		return filt;
-	}
+	static stringvector ExtractFilters ( stringvector const& allProcessors );
 };
 
 class SettingsBase {
