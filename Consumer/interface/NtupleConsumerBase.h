@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <boost/algorithm/string/join.hpp>
+
 #include <TNtuple.h>
 
 #include "Artus/Core/interface/ConsumerBase.h"
