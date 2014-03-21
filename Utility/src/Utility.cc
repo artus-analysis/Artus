@@ -1,10 +1,10 @@
 
 #include <fstream>
 
-#include "Artus/Utility/interface/StringHelper.h"
+#include "Artus/Utility/interface/Utility.h"
 
 
-std::string StringHelper::ReadStringFromFile(std::string fileName)
+std::string Utility::ReadStringFromFile(std::string fileName)
 {
 	std::ifstream inStream(fileName, std::ios::in | std::ios::binary);
 	if(inStream)

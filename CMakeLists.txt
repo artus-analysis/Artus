@@ -49,7 +49,8 @@ add_library(artus_provider STATIC
 )
 
 add_library(artus_utility STATIC
-	Provider/src/ArtusProvider.cc
+	Provider/src/RootFileHelper.cc
+	Provider/src/Utility.cc
 )
 
 add_executable(artus_core_test

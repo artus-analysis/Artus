@@ -11,7 +11,7 @@
 
 #include "Artus/Configuration/interface/ArtusConfig.h"
 #include "Artus/Configuration/interface/PropertyTreeSupport.h"
-#include "Artus/Utility/interface/StringHelper.h"
+#include "Artus/Utility/interface/Utility.h"
 
 ArtusConfig::ArtusConfig(int argc, char** argv) {
 	if (argc < 2) {
@@ -46,7 +46,7 @@ void ArtusConfig::InitConfig() {
 }
 
 void ArtusConfig::SaveConfig(TFile * outputFile) const {
-	TObjString jsonConfigContent(StringHelper::ReadStringFromFile(m_jsonConfigFileName).c_str());
+	TObjString jsonConfigContent(Utility::ReadStringFromFile(m_jsonConfigFileName).c_str());
 	outputFile->cd();
 	jsonConfigContent.Write("config");
 }
