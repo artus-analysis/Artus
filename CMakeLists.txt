@@ -27,6 +27,7 @@ include_directories( ${closure_SOURCE_DIR}../ )
 add_library(artus_core STATIC
 	Core/src/ArtusCore.cc
 	Core/src/CutFlow.cc
+	Core/src/FilterResult.cc
 )
 
 add_library(artus_configuration STATIC
