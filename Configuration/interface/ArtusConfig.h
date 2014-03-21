@@ -65,33 +65,10 @@ public:
 
 	typedef std::pair< ProcessNodeType, std::string > NodeTypePair;
 
-	static NodeTypePair ParseProcessNode ( std::string const& sInp )
-	{
-		std::vector < std::string > splitted;
-		boost::algorithm::split( splitted, sInp, boost::algorithm::is_any_of(":") );
-
-		if ( splitted.size() != 2 ) {
-			LOG_FATAL( "Process node description " + sInp + " cannot be parsed" );
-		}
-
-		ProcessNodeType ntype;
-
-		if ( splitted[0] == "filter" ){
-			ntype = ProcessNodeType::Filter;
-		} else if ( splitted[0] == "producer" ) {
-			ntype = ProcessNodeType::Producer;
-		} else {
-			LOG_FATAL("process node type " + splitted[0] + " is unknown" );
-		}
-
-		return std::make_pair( ntype, splitted[1]);
-	}
+	static NodeTypePair ParseProcessNode ( std::string const& sInp );
 
 private:
 	void InitConfig();
-
-
-
 
 	// load the global produce list from configuration and
 	// use the factory object to add these producers to the pipeline runner
