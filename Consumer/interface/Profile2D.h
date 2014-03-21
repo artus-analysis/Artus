@@ -6,11 +6,13 @@
 
 #pragma once
 
+#include <boost/scoped_ptr.hpp>
+
 #include "TROOT.h"
+#include "TProfile.h"
+#include "TFile.h"
 
 #include "ProfileBase.h"
-
-#include "Artus/Utility/interface/RootFileHelper.h"
 
 class Profile2d: public ProfileBase<Profile2d> {
 public:
@@ -30,22 +32,9 @@ public:
 					100), m_dBinUpperX(100) {
 	}
 
-	void Init() {
-		RootFileHelper::SafeCd(gROOT, GetRootFileFolder());
-		m_profile.reset(
-				RootFileHelper::GetStandaloneTProfile(GetName().c_str(),
-						GetName().c_str(), m_iBinCountX, m_dBinLowerX,
-						m_dBinUpperX));
-	}
-
-	void Store(TFile * pRootFile) {
-		RootFileHelper::SafeCd(pRootFile, GetRootFileFolder());
-		m_profile->Write(GetName().c_str());
-	}
-
-	void AddPoint(double x, double y, double weight) {
-		m_profile->Fill(x, y, weight);
-	}
+	void Init();
+	void Store(TFile * pRootFile);
+	void AddPoint(double x, double y, double weight);
 
 	unsigned int m_iBinCountX;
 	double m_dBinLowerX;

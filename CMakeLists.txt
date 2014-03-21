@@ -37,6 +37,7 @@ add_library(artus_configuration STATIC
 
 add_library(artus_consumer STATIC
 	Consumer/src/Hist1D.cc
+	Consumer/src/Profile2d.cc
 	Consumer/src/ValueModifier.cc
 )
 
