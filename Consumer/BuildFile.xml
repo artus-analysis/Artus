@@ -1,5 +1,6 @@
 <use   name="root"/>
 <use   name="Artus/Core"/>
+<use   name="Artus/Utility"/>
 <flags ADD_SUBDIR="1"/>
 <export>
    <lib   name="1"/>

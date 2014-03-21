@@ -48,8 +48,13 @@ add_library(artus_provider STATIC
 	Provider/src/ArtusProvider.cc
 )
 
+add_library(artus_utility STATIC
+	Provider/src/ArtusProvider.cc
+)
+
 add_executable(artus_core_test
-	Test/test/Artus_t.cc
+	Artus/Utility/src/RootFileHelper.cc
+	Artus/Utility/src/StringHelper.cc
 )
 
 target_link_libraries( artus_core_test 	
