@@ -9,6 +9,7 @@
 #include <TNtuple.h>
 
 #include "Artus/Core/interface/ConsumerBase.h"
+#include "Artus/Core/interface/GlobalInclude.h"
 
 /*
 Base class for all Consumers which output some form of Ntuple
@@ -78,7 +79,7 @@ protected:
 private:
 	virtual float returnvalue(std::string string, event_type const& event,
 			product_type const& product )
-	{return 0.;}
+	{return UNDEFINED_VALUE;}
 };
 
 
