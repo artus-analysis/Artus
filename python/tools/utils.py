@@ -95,46 +95,17 @@ def printquantities(plotdict):
 				print "  %s" % q
 
 
-def newplot(ratio=False, subplots=1, subplots_X=None, subplots_Y=None):
-	fig = plt.figure(figsize=[7, 7])
-	#fig.suptitle(opt.title, size='xx-large')
-	# Get 4 config numbers: FigXsize, FigYsize, NaxesY, NaxesX
-	if subplots is not 1:
-		d = {3: 3, 2: 2, 7: 2}
-		if subplots in d:
-			x = d[subplots]
-			y = int(round(subplots / float(x)))
-		elif subplots_Y is not None:
-			y = subplots_Y
-			x = int(round(subplots / float(y)))
-		elif subplots_X is not None:
-			x = subplots_X
-			y = int(round(subplots / float(x)))
-		else:
-			y = int(math.sqrt(subplots))
-			x = int(round(subplots / float(y)))
-		if x * y < subplots:
-			x = x + 1
-		if run:
-			a = [14 * x, 7 * y, y, x]
-		else:
-			a = [7 * x, 7 * y, y, x]
-		fig = plt.figure(figsize=[a[0], a[1]])  # apply config numbers
-		ax = [fig.add_subplot(a[2], a[3], n + 1) for n in range(subplots)]
-		return fig, ax
-	elif ratio:
-		ax = fig.add_subplot(111, position=[0.13, 0.35, 0.83, 0.58])
-		ax.number = 1
-		ax.set_xlabel([])
-		ratio = fig.add_subplot(111, position=[0.13, 0.12, 0.83, 0.22], sharex=ax)
-		ratio.number = 2
-		ratio.axhline(1.0, color='gray', lw=1)
-		return fig, ax, ratio
+def newplot(plotdict):
+	if plotdict['ratiosubplot'] == True:
+		fig = plt.figure(figsize=[7, 7])
+		ax1 = fig.add_subplot(111, position = [0.13, 0.37, 0.83, 0.58])
+		ax2 = fig.add_subplot(111, position = [0.13, 0.12, 0.83, 0.22], sharex=ax1)
+		plotdict['ratiosubplotaxes'] = ax2
+		return fig, ax1
 	else:
+		fig = plt.figure(figsize=[7, 7])
 		ax = fig.add_subplot(111)
-		ax.number = 1
 		return fig, ax
-	return fig
 
 
 def setaxislimits(plotdict):
