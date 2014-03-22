@@ -1,5 +1,5 @@
-# run like this: ./runBisectArtusTest <good commit> <known bad commit>
-echo "Starting bisect from good rev. $1 to bad rev. $2"
+# run like this: ./runBisectArtusTest <known bad commit> <known good commit>
+echo "Starting bisect from bad rev. $1 to good rev. $2"
 git bisect start
 git bisect bad $1
 git bisect good $2
