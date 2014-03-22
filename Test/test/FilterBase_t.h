@@ -34,8 +34,8 @@ BOOST_AUTO_TEST_CASE( test_cut_flow )
 	cflow.AddFilterResult ( fres3 );
 
 	BOOST_CHECK( cflow.GetEventCount() == 3 );
-	BOOST_CHECK_EQUAL( cflow.GetCutEntry("filter1")->second, 1);
-	BOOST_CHECK_EQUAL( cflow.GetCutEntry("filter2")->second, 1);
+	BOOST_CHECK_EQUAL( cflow.GetCutEntry("filter1")->second, 2);
+	BOOST_CHECK_EQUAL( cflow.GetCutEntry("filter2")->second, 2);
 
 }
 
