@@ -40,7 +40,7 @@ add_library(artus_configuration STATIC
 
 add_library(artus_consumer STATIC
 	Consumer/src/Hist1D.cc
-	Consumer/src/Profile2d.cc
+	Consumer/src/Profile2D.cc
 	Consumer/src/ValueModifier.cc
 )
 
@@ -49,18 +49,18 @@ add_library(artus_provider STATIC
 )
 
 add_library(artus_utility STATIC
-	Provider/src/RootFileHelper.cc
-	Provider/src/Utility.cc
+	Utility/src/RootFileHelper.cc
+	Utility/src/Utility.cc
 )
 
 add_executable(artus_core_test
-	Artus/Utility/src/RootFileHelper.cc
-	Artus/Utility/src/StringHelper.cc
+	Test/test/Artus_t.cc	
 )
 
 target_link_libraries( artus_core_test 	
 	artus_core	
 	artus_configuration
+	artus_utility
 	${ROOT_LIBRARIES})
 
 # use a capitaal *E*xample here and no underscore
@@ -74,5 +74,6 @@ target_link_libraries( artusExample
 	artus_configuration
 	artus_provider
 	artus_consumer
+	artus_utility
 	${ROOT_LIBRARIES})
 
