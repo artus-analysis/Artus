@@ -11,7 +11,7 @@
     "OutputPath": "sample_output_ntuple.root", 
     "Pipelines": {
         "lowPt": {
-            "Consumers": [ "ntuple" ], 
+            "Consumers": [ "ntuple", "cutflow_histogram" ], 
             "Quantities" :["pt", "pt_corr", "theta"],
             "Processors": [ "filter:filter_pt",
             	"producer:pt_correction_local" ], 
@@ -20,7 +20,7 @@
             "ProducerPtCorrectionFactorLocal" : 1.1             
         },
         "highPt": {
-            "Consumers": [ "ntuple" ],
+            "Consumers": [ "ntuple", "cutflow_histogram" ],
             "Quantities" :["pt", "pt_corr", "theta"],
             "Processors": [ "filter:filter_pt",
             	"producer:pt_correction_local" ], 
