@@ -44,7 +44,7 @@ class ArtusWrapper(object):
 		# save final config
 		self.saveConfig()
 		if self._args.print_config:
-			print self._config
+			self._logger.info(self._config)
 
 		#Run Artus if desired
 		if not self._args.no_run:
@@ -214,7 +214,7 @@ class ArtusWrapper(object):
 			if exitCode != 0:
 				logging.getLogger(__name__).error("Exit with code %s.\n\n" % exitCode)
 				logging.getLogger(__name__).info("Dump configuration:\n")
-				print self._configFilename # TODO
+				self._logger.info(self._configFilename) # TODO
 	
 		# remove tmp. config
 		# logging.getLogger(__name__).info("Remove temporary config file.")
