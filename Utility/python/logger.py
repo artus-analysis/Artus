@@ -7,7 +7,7 @@ import sys
 
 
 # Custom formatter with level-dependent formats
-class ArtusFormatter(logging.Formatter):
+class LevelDependentFormatter(logging.Formatter):
 
 	def __init__(self, fmtDict):
 		defaultDebugFmt = "%(levelname)s (%(filename)s.%(lineno)d): %(message)s"
@@ -15,6 +15,7 @@ class ArtusFormatter(logging.Formatter):
 		fmtDict[0] = defaultDebugFmt
 		self._fmtItems = sorted(fmtDict.items(), key=lambda item: item[0])
 
+	# format message according to format rule for this or next smaller level in fmtDict
 	def format(self, record):
 		for levelno, fmt in self._fmtItems:
 			if record.levelno >= levelno:
@@ -39,16 +40,23 @@ def initLogger(argParserArgs=None, name=""):
 		logLevel = argParserArgs.log_level
 		logFile = argParserArgs.log_file
 
-	logging.basicConfig(level=getattr(logging, logLevel.upper()))
-
-	loggingHandler = logging.StreamHandler(sys.stdout)
-	if logFile:
-		loggingHandler = logging.FileHandler(logFile)
-		logging.getLogger(__name__).info("Output will be logged to \"%s\"." % logFile)
+	logging.root.setLevel(getattr(logging, logLevel.upper()))
 	
-	artusFormatter = ArtusFormatter({logging.DEBUG   : "%(levelname)s (%(filename)s.%(lineno)d): %(message)s",
-	                                 logging.INFO    : "%(message)s",
-	                                 logging.WARNING : "%(levelname)s: %(message)s"})
-	loggingHandler.setFormatter(artusFormatter)
-	logging.getLogger().addHandler(loggingHandler)
+	# level dependent formats
+	levelDependentFormatter = LevelDependentFormatter({
+		logging.DEBUG   : "%(levelname)s (%(filename)s.%(lineno)d): %(message)s",
+	    logging.INFO    : "%(message)s",
+	    logging.WARNING : "%(levelname)s: %(message)s"
+	})
+
+	# add output to stdout by default, and file output if requested
+	loggingHandlers = [logging.StreamHandler(sys.stdout)]
+	if logFile:
+		loggingHandlers.append(logging.FileHandler(logFile))
+	
+	for loggingHandler in loggingHandlers:
+		loggingHandler.setFormatter(levelDependentFormatter)
+		logging.root.addHandler(loggingHandler)
+	
+	logging.getLogger(__name__).info("Output will be logged to \"%s\"." % logFile)
 
