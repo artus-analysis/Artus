@@ -130,9 +130,19 @@ class ArtusWrapper(object):
 				pipelineJsonDict.append(jsonTools.JsonDict.expandAll(*map(lambda pipelineConfig: jsonTools.JsonDict.mergeAll(*pipelineConfig.split()), pipelineConfigs)))
 			pipelineJsonDict = jsonTools.JsonDict.mergeAll(*pipelineJsonDict)
 			pipelineJsonDict = jsonTools.JsonDict({"Pipelines": pipelineJsonDict})
+		pipelineJsonDict = jsonTools.JsonDict(pipelineJsonDict)
+		
+		# treat pipeline base configs
+		pipelineBaseJsonDict = jsonTools.JsonDict()
+		if self._args.pipeline_base_configs and len(self._args.pipeline_base_configs) > 0:
+			pipelineBaseJsonDict = jsonTools.JsonDict({
+				"Pipelines" : {
+					pipeline : jsonTools.JsonDict(*self._args.pipeline_base_configs) for pipeline in pipelineJsonDict["Pipelines"].keys()
+				}
+			})
 		
 		# merge resulting pipeline config into the main config
-		self._config += jsonTools.JsonDict(pipelineJsonDict)
+		self._config += (pipelineBaseJsonDict + pipelineJsonDict)
 		
 		# treat includes
 		self._config = self._config.doIncludes()
@@ -159,6 +169,8 @@ class ArtusWrapper(object):
 		configOptionsGroup = self._parser.add_argument_group("Config options")
 		configOptionsGroup.add_argument("-c", "--base-configs", nargs="+", required=False, default={},
 	                                 help="JSON base configurations. All configs are merged.")
+		configOptionsGroup.add_argument("-C", "--pipeline-base-configs", nargs="+",
+	                                 help="JSON pipeline base configurations. All pipeline configs will be merged with these common configs.")
 		configOptionsGroup.add_argument("-p", "--pipeline-configs", nargs="+", action="append",
 	                                 help="JSON pipeline configurations. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")
 		configOptionsGroup.add_argument("--add-repo-versions", default=True, action="store_true",
