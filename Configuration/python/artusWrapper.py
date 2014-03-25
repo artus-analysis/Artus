@@ -209,9 +209,10 @@ class ArtusWrapper(object):
 				os.makedirs(outputDir)
 	
 			# call C++ executable locally
-			command = [self._executable, self._configFilename]
+			command = self._executable + " " + self._configFilename
 			log.info("Execute \"%s\"." % command)
-			exitCode = subprocess.call(command)
+			exitCode = logger.subprocessCall(command.split())
+			
 			if exitCode != 0:
 				log.error("Exit with code %s.\n\n" % exitCode)
 				log.info("Dump configuration:\n")
