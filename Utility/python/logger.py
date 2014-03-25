@@ -3,9 +3,24 @@
 
 import argparse
 import logging
+import sys
 
-# http://docs.python.org/2/library/logging.html
-# http://docs.python.org/2/howto/logging.html#logging-advanced-tutorial
+
+# Custom formatter with level-dependent formats
+class ArtusFormatter(logging.Formatter):
+
+	def __init__(self, fmtDict):
+		defaultDebugFmt = "%(levelname)s (%(filename)s.%(lineno)d): %(message)s"
+		logging.Formatter.__init__(self, fmt=defaultDebugFmt)
+		fmtDict[0] = defaultDebugFmt
+		self._fmtItems = sorted(fmtDict.items(), key=lambda item: item[0])
+
+	def format(self, record):
+		for levelno, fmt in self._fmtItems:
+			if record.levelno >= levelno:
+				self._fmt = fmt
+		return logging.Formatter.format(self, record)
+
 
 loggingParser = argparse.ArgumentParser(add_help=False)
 
@@ -24,11 +39,16 @@ def initLogger(argParserArgs=None, name=""):
 		logLevel = argParserArgs.log_level
 		logFile = argParserArgs.log_file
 
-	logging.basicConfig(level=getattr(logging, logLevel.upper()),# fileName=logFile,
-	                    format="%(levelname)s: %(message)s")
+	logging.basicConfig(level=getattr(logging, logLevel.upper()))
 
+	loggingHandler = logging.StreamHandler(sys.stdout)
 	if logFile:
-		loggingFileHandler = logging.FileHandler(logFile)
-		logging.getLogger().addHandler(loggingFileHandler)
+		loggingHandler = logging.FileHandler(logFile)
 		logging.getLogger(__name__).info("Output will be logged to \"%s\"." % logFile)
+	
+	artusFormatter = ArtusFormatter({logging.DEBUG   : "%(levelname)s (%(filename)s.%(lineno)d): %(message)s",
+	                                 logging.INFO    : "%(message)s",
+	                                 logging.WARNING : "%(levelname)s: %(message)s"})
+	loggingHandler.setFormatter(artusFormatter)
+	logging.getLogger().addHandler(loggingHandler)
 
