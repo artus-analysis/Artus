@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
+
 import argparse
 import glob
-import logging
 import os
 import sys
 import tempfile
@@ -10,7 +13,6 @@ import hashlib
 import json
 import subprocess
 
-import Artus.Utility.logger as logger
 import Artus.Utility.tools as tools
 import Artus.Configuration.jsonTools as jsonTools
 
@@ -21,7 +23,6 @@ class ArtusWrapper(object):
 
 		self._config = jsonTools.JsonDict()
 		self._executable = executable
-		self._logger = logging.getLogger(__name__)
 
 		self._parser = None
 		#Load default argument parser
@@ -44,7 +45,7 @@ class ArtusWrapper(object):
 		# save final config
 		self.saveConfig()
 		if self._args.print_config:
-			self._logger.info(self._config)
+			log.info(self._config)
 
 		#Run Artus if desired
 		if not self._args.no_run:
@@ -108,7 +109,7 @@ class ArtusWrapper(object):
 			filepath = os.path.join(tempfile.gettempdir(), basename)
 		self._configFilename = filepath
 		self._config.save(filepath)
-		logging.getLogger(__name__).info("Saved JSON config \"%s\" for temporary usage." % self._configFilename)
+		log.info("Saved JSON config \"%s\" for temporary usage." % self._configFilename)
 	
 	def expandConfig(self):
 
@@ -209,12 +210,12 @@ class ArtusWrapper(object):
 	
 			# call C++ executable locally
 			command = [self._executable, self._configFilename]
-			logging.getLogger(__name__).info("Execute \"%s\"." % command)
+			log.info("Execute \"%s\"." % command)
 			exitCode = subprocess.call(command)
 			if exitCode != 0:
-				logging.getLogger(__name__).error("Exit with code %s.\n\n" % exitCode)
-				logging.getLogger(__name__).info("Dump configuration:\n")
-				self._logger.info(self._configFilename) # TODO
+				log.error("Exit with code %s.\n\n" % exitCode)
+				log.info("Dump configuration:\n")
+				log.info(self._configFilename) # TODO
 	
 		# remove tmp. config
 		# logging.getLogger(__name__).info("Remove temporary config file.")
