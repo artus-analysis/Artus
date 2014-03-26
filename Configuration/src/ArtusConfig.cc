@@ -38,10 +38,10 @@ void ArtusConfig::InitConfig() {
 	m_outputPath = m_propTreeRoot.get < std::string > ("OutputPath");
 	m_fileNames = PropertyTreeSupport::GetAsStringList(&m_propTreeRoot,
 			"InputFiles");
-	LOG_FILE("Loading " << m_fileNames.size() << " input files.")
+	ARTUS_LOG_FILE("Loading " << m_fileNames.size() << " input files.")
 
 	if (m_fileNames.size() == 0) {
-		LOG_FATAL("No Kappa input files specified");
+		ARTUS_LOG_FATAL("No Kappa input files specified");
 	}
 }
 
@@ -57,7 +57,7 @@ ArtusConfig::NodeTypePair ArtusConfig::ParseProcessNode ( std::string const& sIn
 	boost::algorithm::split( splitted, sInp, boost::algorithm::is_any_of(":") );
 
 	if ( splitted.size() != 2 ) {
-		LOG_FATAL( "Process node description " + sInp + " cannot be parsed" );
+		ARTUS_LOG_FATAL( "Process node description " + sInp + " cannot be parsed" );
 	}
 
 	ProcessNodeType ntype;
@@ -67,7 +67,7 @@ ArtusConfig::NodeTypePair ArtusConfig::ParseProcessNode ( std::string const& sIn
 	} else if ( splitted[0] == "producer" ) {
 		ntype = ProcessNodeType::Producer;
 	} else {
-		LOG_FATAL("process node type " + splitted[0] + " is unknown" );
+		ARTUS_LOG_FATAL("process node type " + splitted[0] + " is unknown" );
 	}
 
 	return std::make_pair( ntype, splitted[1]);

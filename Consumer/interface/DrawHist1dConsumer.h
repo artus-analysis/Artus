@@ -54,7 +54,7 @@ public:
 	virtual void Finish() ARTUS_CPP11_OVERRIDE {
 		// store hist
 		// + modifiers
-		//LOG( "Storing Hist for " << this->GetProductName() )
+		//ARTUS_LOG( "Storing Hist for " << this->GetProductName() )
 		m_hist->Store(this->GetPipelineSettings().GetRootOutFile());
 	}
 

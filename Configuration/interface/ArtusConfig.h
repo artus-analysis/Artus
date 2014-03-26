@@ -90,7 +90,7 @@ private:
 				producer_base_type * gProd = factory.createProducer ( ntype.second );
 
 				if ( gProd == ARTUS_CPP11_NULLPTR ){
-					LOG_FATAL( "Error: Global producer with id " + ntype.second + " not found" );
+					ARTUS_LOG_FATAL( "Error: Global producer with id " + ntype.second + " not found" );
 				} else {
 					runner.AddGlobalProducer( gProd );
 				}
@@ -98,7 +98,7 @@ private:
 				filter_base_type * gProd = factory.createFilter ( ntype.second );
 
 				if ( gProd == ARTUS_CPP11_NULLPTR ){
-					LOG_FATAL( "Error: Global filter with id " + ntype.second + " not found" );
+					ARTUS_LOG_FATAL( "Error: Global filter with id " + ntype.second + " not found" );
 				} else {
 					runner.AddGlobalFilter( gProd );
 				}
@@ -150,7 +150,7 @@ private:
 						producer_base_type * pProducer = factory.createProducer ( ntype.second );
 
 						if ( pProducer == ARTUS_CPP11_NULLPTR ){
-							 LOG_FATAL( "Error: Local Producer with id " + ntype.second + " not found" );
+							 ARTUS_LOG_FATAL( "Error: Local Producer with id " + ntype.second + " not found" );
 						} else {
 							pLine->AddProducer ( pProducer );
 						}
@@ -158,7 +158,7 @@ private:
 						filter_base_type * pProducer = factory.createFilter ( ntype.second );
 
 						if ( pProducer == ARTUS_CPP11_NULLPTR ){
-							 LOG_FATAL( "Error: Local Filter with id " + ntype.second + " not found" );
+							 ARTUS_LOG_FATAL( "Error: Local Filter with id " + ntype.second + " not found" );
 						} else {
 							pLine->AddFilter ( pProducer );
 						}

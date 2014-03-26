@@ -34,7 +34,7 @@ private:
 		else if (string == "theta")
 			return event.m_floatTheSim;
 		else
-			LOG_FATAL("The quantity " << string << " could not be added to the Ntuple")
+			ARTUS_LOG_FATAL("The quantity " << string << " could not be added to the Ntuple")
 	}
 
 };

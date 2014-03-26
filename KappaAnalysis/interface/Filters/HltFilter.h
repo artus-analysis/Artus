@@ -31,7 +31,7 @@ public:
 
 	virtual void InitGlobal(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE
 	{
-		LOG_FATAL("Filter \"" + GetFilterId() + "\" cannot run as a global pre-filter, since it needs data from the product.")
+		ARTUS_LOG_FATAL("Filter \"" + GetFilterId() + "\" cannot run as a global pre-filter, since it needs data from the product.")
 	}
 
 	virtual bool DoesEventPassLocal(event_type const& event,

@@ -35,7 +35,7 @@ public:
 	 */
 	inline TData GetValue() const {
 		if (! m_isCached)
-			LOG_FATAL("non-cached variable used")
+			ARTUS_LOG_FATAL("non-cached variable used")
 
 		return m_val;
 	}

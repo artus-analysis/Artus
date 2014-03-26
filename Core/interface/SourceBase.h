@@ -42,17 +42,17 @@ public:
 
 	virtual unsigned int GetDefaultBinCount() const
 	{
-		LOG_FATAL("implement this for your class")
+		ARTUS_LOG_FATAL("implement this for your class")
 	}
 
 	virtual double GetDefaultLowBin() const
 	{
-		LOG_FATAL("implement this for your class")
+		ARTUS_LOG_FATAL("implement this for your class")
 	}
 
 	virtual double GetDefaultHighBin() const
 	{
-		LOG_FATAL("implement this for your class")
+		ARTUS_LOG_FATAL("implement this for your class")
 	}
 };
 

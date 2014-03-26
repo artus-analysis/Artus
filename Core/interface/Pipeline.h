@@ -111,7 +111,7 @@ public:
 				static_cast< FilterForThisPipeline &> ( *it ) . InitLocal ( pset );
 			}
 			else {
-				LOG_FATAL( "ProcessNodeType not supported by the pipeline" );
+				ARTUS_LOG_FATAL( "ProcessNodeType not supported by the pipeline" );
 			}
 		}
 
@@ -190,7 +190,7 @@ public:
 				localFilterResult.SetFilterDecision( flt.GetFilterId(), filterResult );
 			}
 			else {
-				LOG_FATAL( "ProcessNodeType not supported by the pipeline" );
+				ARTUS_LOG_FATAL( "ProcessNodeType not supported by the pipeline" );
 			}
 		}
 

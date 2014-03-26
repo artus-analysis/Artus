@@ -51,7 +51,7 @@ public:
 					}
 					else
 					{
-					  LOG("Daughter index larger than size of gen particle vector:" 
+					  ARTUS_LOG("Daughter index larger than size of gen particle vector:" 
 					      << part->daughterIndex(d) << ">" << event.m_genParticles->size() << ".");
 					}
 				}

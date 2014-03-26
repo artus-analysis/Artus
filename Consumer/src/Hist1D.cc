@@ -49,7 +49,7 @@ void Hist1D::Init() {
 
 void Hist1D::Store(TFile* pRootFile) {
 	assert(pRootFile);
-	LOG( "Storing Histogram " + this->GetRootFileFolder() + "/"
+	ARTUS_LOG( "Storing Histogram " + this->GetRootFileFolder() + "/"
 					+ this->GetName())
 
 	RootFileHelper::SafeCd(pRootFile, GetRootFileFolder());

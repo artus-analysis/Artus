@@ -64,7 +64,7 @@ private:
 		std::string bestHltName, curName;
 
 		if (hltPaths.size() == 0)
-			LOG_FATAL("No Hlt Trigger path list configured");
+			ARTUS_LOG_FATAL("No Hlt Trigger path list configured");
 
 		for (stringvector::const_iterator hltPath = hltPaths.begin(); hltPath != hltPaths.end(); ++hltPath)
 		{
@@ -86,22 +86,22 @@ private:
 
 		if (! unprescaledPathFound)
 		{
-			LOG("Available Triggers:");
+			ARTUS_LOG("Available Triggers:");
 
 			for (std::vector<std::string>::const_iterator hltName = event.m_lumiMetadata->hltNames.begin();
 				 hltName != event.m_lumiMetadata->hltNames.end(); ++ hltName)
 			{
-				LOG((*hltName) << " prescale: " << product.m_hltInfo->getPrescale(*hltName));
+				ARTUS_LOG((*hltName) << " prescale: " << product.m_hltInfo->getPrescale(*hltName));
 			}
 
-			LOG_FATAL("No unprescaled trigger found for " << bestHltName << ", prescale: " << product.m_hltInfo->getPrescale(bestHltName) << ", event: " << event.m_eventMetadata->nRun);
+			ARTUS_LOG_FATAL("No unprescaled trigger found for " << bestHltName << ", prescale: " << product.m_hltInfo->getPrescale(bestHltName) << ", event: " << event.m_eventMetadata->nRun);
 		}
 
 		if (verbose)
-			LOG("selected " << bestHltName << " as best HLT, prescale: " << product.m_hltInfo->getPrescale(bestHltName));
+			ARTUS_LOG("selected " << bestHltName << " as best HLT, prescale: " << product.m_hltInfo->getPrescale(bestHltName));
 
 		if (bestHltName.empty())
-			LOG_FATAL("No HLT trigger path found at all!");
+			ARTUS_LOG_FATAL("No HLT trigger path found at all!");
 
 		product.selectedHltName = bestHltName;
 	}
