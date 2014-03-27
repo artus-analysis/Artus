@@ -25,18 +25,18 @@ loggingParser = argparse.ArgumentParser(add_help=False)
 
 _loggingOptionsGroup = loggingParser.add_argument_group("Logging options")
 _loggingOptionsGroup.add_argument("--log-level",
-                                  default = "debug",
-                                  choices = ["debug", "info", "warning", "error", "critical"],
+                                  default = "notset",
+                                  choices = ["notset","debug", "info", "warning", "error", "critical"],
                                   help    = "Detail level of logging. [Default: %(default)s]")
 _loggingOptionsGroup.add_argument("--log-files",
-                                 nargs    = '*',
-                                 help     = "List of files to log to. [Default: %(default)s]")
-_loggingOptionsGroup.add_argument("--log-streams",
-                                  default = "stdout",
+                                  nargs    = '*',
+                                  help     = "List of files to log to. [Default: %(default)s]")
+_loggingOptionsGroup.add_argument("--log-std",
+                                  default = "NONE",
                                   choices = ["stdout", "stderr", "NONE"],
-                                  help    = "List of streams to log to. [Default: %(default)s]")
+                                  help    = "Stream to log to. [Default: %(default)s or stdout if no file given]")
 
-def initLogger(argParserArgs=None, name="", logLevel="debug", logFiles=[], logStreams=[]):
+def initLogger(argParserArgs=None, name="", logLevel="debug", logFiles=[], logStream = 'NONE'):
 	'''
 	Initialize a logger for usage.
 
@@ -69,7 +69,7 @@ def initLogger(argParserArgs=None, name="", logLevel="debug", logFiles=[], logSt
 	### TODO: read LDFormat dynamically by name from initLogger attributes
 	levelDependentFormatter = LevelDependentFormatter(initLogger.LDFormatDefault)
 	try:
-		logStreams.extend(argParserArgs.log_std)
+		logStream = argParserArgs.log_std
 	except AttributeError:
 		pass
 	try:
@@ -77,17 +77,19 @@ def initLogger(argParserArgs=None, name="", logLevel="debug", logFiles=[], logSt
 	except AttributeError:
 		pass
 	loggingHandlers = []
-	for logStream in logStreams:
-		if logStream in 'sys.stdout':
-			loggingHandlers.append(logging.StreamHandler(sys.stdout))
-		elif logStream in 'sys.stderr':
-			loggingHandlers.append(logging.StreamHandler(sys.stderr))
-		elif logStream in 'NONE':
-			continue
-		else:
-			raise ValueError('Invalid stream designator for logging: %s' % logStream)
+	if logStream in ['stdout', 'sys.stdout']:
+		loggingHandlers.append(logging.StreamHandler(sys.stdout))
+	elif logStream in ['stderr','sys.stderr']:
+		loggingHandlers.append(logging.StreamHandler(sys.stderr))
+	elif logStream == 'NONE':
+		pass
+	else:
+		raise ValueError('Invalid stream designator for logging: %s' % logStream)
 	for logFile in logFiles:
 		loggingHandlers.append(logging.FileHandler(logFile))
+	# Fallback: logging enabled but no target, use STDOUT
+	if _thisLogger.getEffectiveLevel() > 0 and not loggingHandlers:
+		loggingHandlers.append(logging.StreamHandler(sys.stdout))
 	for loggingHandler in loggingHandlers:
 		loggingHandler.setFormatter(levelDependentFormatter)
 		_thisLogger.addHandler(loggingHandler)
