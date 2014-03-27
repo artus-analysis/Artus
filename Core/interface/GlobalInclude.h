@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <cassert>
+
 #include <boost/scoped_ptr.hpp>
 #include <iostream>
 #include <fstream>

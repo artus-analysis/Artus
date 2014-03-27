@@ -8,6 +8,7 @@
 
 #include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/CutFlow.h"
+#include "Artus/Core/interface/Pipeline.h"
 
 template < class TTypes >
 class CutFlowConsumerBase: public ConsumerBase< TTypes > {
@@ -32,6 +33,7 @@ public:
 	virtual void ProcessEvent(event_type const& event,
 			product_type const& product,
             FilterResult & result) {
+		ConsumerBase<TTypes>::ProcessEvent(event, product, result);
 		m_flow.AddFilterResult ( result );
 	}
 

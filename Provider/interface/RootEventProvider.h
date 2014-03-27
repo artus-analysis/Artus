@@ -3,6 +3,7 @@
  *   Joram Berger  <Joram.Berger@cern.ch>
  *   Dominik Haitz <Dominik.Haitz@kit.edu>
  */
+#pragma once
 
 #include <cassert>
 

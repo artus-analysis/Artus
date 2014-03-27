@@ -25,16 +25,22 @@ ${ROOT_LIBRARY_DIR}
 include_directories( ${closure_SOURCE_DIR}../ )
 
 add_library(artus_core STATIC
-	Core/src/ArtusCore.cc
+	Core/src/CutFlow.cc
+	Core/src/FilterResult.cc
+	Core/src/Mutation.cc
+	Core/src/ProgressReport.cc
 )
 
 add_library(artus_configuration STATIC
 	Configuration/src/ArtusConfig.cc
+	Configuration/src/PropertyTreeSupport.cc
 	Configuration/src/RootEnvironment.cc
+	Configuration/src/SettingsBase.cc
 )
 
 add_library(artus_consumer STATIC
 	Consumer/src/Hist1D.cc
+	Consumer/src/Profile2D.cc
 	Consumer/src/ValueModifier.cc
 )
 
@@ -42,13 +48,19 @@ add_library(artus_provider STATIC
 	Provider/src/ArtusProvider.cc
 )
 
+add_library(artus_utility STATIC
+	Utility/src/RootFileHelper.cc
+	Utility/src/Utility.cc
+)
+
 add_executable(artus_core_test
-	Test/test/Artus_t.cc
+	Test/test/Artus_t.cc	
 )
 
 target_link_libraries( artus_core_test 	
 	artus_core	
 	artus_configuration
+	artus_utility
 	${ROOT_LIBRARIES})
 
 # use a capitaal *E*xample here and no underscore
@@ -62,5 +74,6 @@ target_link_libraries( artusExample
 	artus_configuration
 	artus_provider
 	artus_consumer
+	artus_utility
 	${ROOT_LIBRARIES})
 

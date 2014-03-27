@@ -11,7 +11,7 @@
 
 #include "Artus/Configuration/interface/ArtusConfig.h"
 #include "Artus/Configuration/interface/PropertyTreeSupport.h"
-#include "Artus/Utility/interface/StringHelper.h"
+#include "Artus/Utility/interface/Utility.h"
 
 ArtusConfig::ArtusConfig(int argc, char** argv) {
 	if (argc < 2) {
@@ -46,7 +46,29 @@ void ArtusConfig::InitConfig() {
 }
 
 void ArtusConfig::SaveConfig(TFile * outputFile) const {
-	TObjString jsonConfigContent(StringHelper::ReadStringFromFile(m_jsonConfigFileName).c_str());
+	TObjString jsonConfigContent(Utility::ReadStringFromFile(m_jsonConfigFileName).c_str());
 	outputFile->cd();
 	jsonConfigContent.Write("config");
+}
+
+
+ArtusConfig::NodeTypePair ArtusConfig::ParseProcessNode ( std::string const& sInp ) {
+	std::vector < std::string > splitted;
+	boost::algorithm::split( splitted, sInp, boost::algorithm::is_any_of(":") );
+
+	if ( splitted.size() != 2 ) {
+		LOG_FATAL( "Process node description " + sInp + " cannot be parsed" );
+	}
+
+	ProcessNodeType ntype;
+
+	if ( splitted[0] == "filter" ){
+		ntype = ProcessNodeType::Filter;
+	} else if ( splitted[0] == "producer" ) {
+		ntype = ProcessNodeType::Producer;
+	} else {
+		LOG_FATAL("process node type " + splitted[0] + " is unknown" );
+	}
+
+	return std::make_pair( ntype, splitted[1]);
 }

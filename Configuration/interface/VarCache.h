@@ -6,6 +6,10 @@
 
 #pragma once
 
+#include <assert.h>
+
+#include "Artus/Core/interface/GlobalInclude.h"
+
 /*
  * Convenience class to implement for an arbitrary type TData. This class is useful
  * in conjunction with reading from a Boost PropertyTree or similar
@@ -30,8 +34,8 @@ public:
 	 * Returns the cached value
 	 */
 	inline TData GetValue() const {
-		if (!m_isCached)
-		LOG_FATAL("not Cached variable used")
+		if (! m_isCached)
+			LOG_FATAL("non-cached variable used")
 
 		return m_val;
 	}

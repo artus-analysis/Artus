@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
+
 import argparse
 import glob
-import logging
 import os
 import sys
 import tempfile
@@ -10,17 +13,16 @@ import hashlib
 import json
 import subprocess
 
-import Artus.Utility.logger as logger
+import Artus.Utility.tools as tools
 import Artus.Configuration.jsonTools as jsonTools
 
-# main function
+
 class ArtusWrapper(object):
 
 	def __init__(self, executable=None, userArgParsers=None):
 
 		self._config = jsonTools.JsonDict()
 		self._executable = executable
-		self._logger = logging.getLogger(__name__)
 
 		self._parser = None
 		#Load default argument parser
@@ -28,6 +30,10 @@ class ArtusWrapper(object):
 		#Parse command line arguments and return dict
 		self._args = self._parser.parse_args()
 		logger.initLogger(self._args)
+
+		# write repository revisions to the config
+		if self._args.add_repo_versions:
+			self.setRepositoryRevisions()
 
 		#Expand Config
 		self.expandConfig()
@@ -39,7 +45,7 @@ class ArtusWrapper(object):
 		# save final config
 		self.saveConfig()
 		if self._args.print_config:
-			print self._config
+			log.info(self._config)
 
 		#Run Artus if desired
 		if not self._args.no_run:
@@ -57,6 +63,38 @@ class ArtusWrapper(object):
 
 	def setOutputFilename(self, output_filename):
 		self._config["OutputPath"] = output_filename
+	
+	# write repository revisions to the config
+	def setRepositoryRevisions(self):
+		# expand possible environment variables in paths
+		if isinstance(self._args.repo_scan_base_dirs, basestring):
+			self._args.repo_scan_base_dirs = [self._args.repo_scan_base_dirs]
+		self._args.repo_scan_base_dirs = [os.path.expandvars(repoScanBaseDir) for repoScanBaseDir in self._args.repo_scan_base_dirs]
+		
+		# construct possible scan paths
+		subDirWildcards = ["*/" * level for level in range(self._args.repo_scan_depth+1)]
+		scanDirWildcards = [os.path.join(repoScanBaseDir, subDirWildcard) for repoScanBaseDir in self._args.repo_scan_base_dirs for subDirWildcard in subDirWildcards]
+		
+		# globbing and filter for directories
+		scanDirs = tools.flattenList([glob.glob(scanDirWildcard) for scanDirWildcard in scanDirWildcards])
+		scanDirs = [scanDir for scanDir in scanDirs if os.path.isdir(scanDir)]
+		
+		# key: directory to check type of repository
+		# value: command to extract the revision
+		repoVersionCommands = {
+			".git" : "git rev-parse HEAD",
+			".svn" : "svn info | grep \"Revision\" | awk '{print $2}'"
+		}
+		# loop over dirs and revision control systems and write revisions to the config dict
+		for repoDir, currentRevisionCommand in repoVersionCommands.items():
+			repoScanDirs = [os.path.join(scanDir, repoDir) for scanDir in scanDirs]
+			repoScanDirs = [glob.glob(os.path.join(scanDir, repoDir)) for scanDir in scanDirs]
+			repoScanDirs = tools.flattenList([glob.glob(os.path.join(scanDir, repoDir)) for scanDir in scanDirs])
+			repoScanDirs = [os.path.abspath(os.path.join(repoScanDir, "..")) for repoScanDir in repoScanDirs]
+			
+			for repoScanDir in repoScanDirs:
+				popenCout, popenCerr = subprocess.Popen(currentRevisionCommand.split(), stdout=subprocess.PIPE, cwd=repoScanDir).communicate()
+				self._config[repoScanDir] = popenCout.replace("\n", "")
 
 	def getConfig(self):
 		return self._config
@@ -71,7 +109,7 @@ class ArtusWrapper(object):
 			filepath = os.path.join(tempfile.gettempdir(), basename)
 		self._configFilename = filepath
 		self._config.save(filepath)
-		logging.getLogger(__name__).info("Saved JSON config \"%s\" for temporary usage." % self._configFilename)
+		log.info("Saved JSON config \"%s\" for temporary usage." % self._configFilename)
 	
 	def expandConfig(self):
 
@@ -92,12 +130,22 @@ class ArtusWrapper(object):
 				pipelineJsonDict.append(jsonTools.JsonDict.expandAll(*map(lambda pipelineConfig: jsonTools.JsonDict.mergeAll(*pipelineConfig.split()), pipelineConfigs)))
 			pipelineJsonDict = jsonTools.JsonDict.mergeAll(*pipelineJsonDict)
 			pipelineJsonDict = jsonTools.JsonDict({"Pipelines": pipelineJsonDict})
+		pipelineJsonDict = jsonTools.JsonDict(pipelineJsonDict)
+		
+		# treat pipeline base configs
+		pipelineBaseJsonDict = jsonTools.JsonDict()
+		if self._args.pipeline_base_configs and len(self._args.pipeline_base_configs) > 0:
+			pipelineBaseJsonDict = jsonTools.JsonDict({
+				"Pipelines" : {
+					pipeline : jsonTools.JsonDict(*self._args.pipeline_base_configs) for pipeline in pipelineJsonDict["Pipelines"].keys()
+				}
+			})
 		
 		# merge resulting pipeline config into the main config
-		self._config += jsonTools.JsonDict(pipelineJsonDict)
+		self._config += (pipelineBaseJsonDict + pipelineJsonDict)
 		
-		# treat includes and comments
-		self._config = self._config.doComments().doIncludes().doComments()
+		# treat includes
+		self._config = self._config.doIncludes()
 
 
 	def _initArgumentParser(self, userArgParsers=None):
@@ -121,8 +169,16 @@ class ArtusWrapper(object):
 		configOptionsGroup = self._parser.add_argument_group("Config options")
 		configOptionsGroup.add_argument("-c", "--base-configs", nargs="+", required=False, default={},
 	                                 help="JSON base configurations. All configs are merged.")
+		configOptionsGroup.add_argument("-C", "--pipeline-base-configs", nargs="+",
+	                                 help="JSON pipeline base configurations. All pipeline configs will be merged with these common configs.")
 		configOptionsGroup.add_argument("-p", "--pipeline-configs", nargs="+", action="append",
 	                                 help="JSON pipeline configurations. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")
+		configOptionsGroup.add_argument("--add-repo-versions", default=True, action="store_true",
+	                                 help="Add repository versions to the JSON config.")
+		configOptionsGroup.add_argument("--repo-scan-base-dirs", nargs="+", required=False, default="$CMSSW_BASE/src/",
+	                                 help="Base directories for repositories scran. [Default: $CMSSW_BASE/src/]")
+		configOptionsGroup.add_argument("--repo-scan-depth", required=False, type=int, default=2,
+	                                 help="Depth of repositories scran. [Default: 2")
 		configOptionsGroup.add_argument("-P", "--print-config", default=False, action="store_true",
 	                                 help="Print out the JSON config before running Artus.")
 
@@ -165,13 +221,14 @@ class ArtusWrapper(object):
 				os.makedirs(outputDir)
 	
 			# call C++ executable locally
-			command = [self._executable, self._configFilename]
-			logging.getLogger(__name__).info("Execute \"%s\"." % command)
-			exitCode = subprocess.call(command)
+			command = self._executable + " " + self._configFilename
+			log.info("Execute \"%s\"." % command)
+			exitCode = logger.subprocessCall(command.split())
+			
 			if exitCode != 0:
-				logging.getLogger(__name__).error("Exit with code %s.\n\n" % exitCode)
-				logging.getLogger(__name__).info("Dump configuration:\n")
-				print self._configFilename # TODO
+				log.error("Exit with code %s.\n\n" % exitCode)
+				log.info("Dump configuration:\n")
+				log.info(self._configFilename) # TODO
 	
 		# remove tmp. config
 		# logging.getLogger(__name__).info("Remove temporary config file.")
