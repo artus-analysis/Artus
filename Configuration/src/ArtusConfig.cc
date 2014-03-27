@@ -1,8 +1,9 @@
-/* Copyright (c) 2013 - All Rights Reserved
- *   Thomas Hauth  <Thomas.Hauth@cern.ch>
- *   Joram Berger  <Joram.Berger@cern.ch>
- *   Dominik Haitz <Dominik.Haitz@kit.edu>
- */
+
+#define _ELPP_NO_DEFAULT_LOG_FILE
+#define _ELPP_DISABLE_VERBOSE_LOGS
+#define _ELPP_DISABLE_TRACE_LOGS
+#include "Artus/Utility/interface/easylogging++.h"
+_INITIALIZE_EASYLOGGINGPP
 
 #include <iostream>
 #include <cstdlib>
@@ -43,6 +44,42 @@ void ArtusConfig::InitConfig() {
 	if (m_fileNames.size() == 0) {
 		ARTUS_LOG_FATAL("No Kappa input files specified");
 	}
+	
+	el::Configurations defaultConf;
+	defaultConf.setToDefault();
+	
+	el::Level logLevel = el::Level::Warning;
+	
+	defaultConf.set(el::Level::Debug, el::ConfigurationType::Enabled, "true");
+	defaultConf.set(el::Level::Info, el::ConfigurationType::Enabled, "true");
+	defaultConf.set(el::Level::Warning, el::ConfigurationType::Enabled, "true");
+	defaultConf.set(el::Level::Error, el::ConfigurationType::Enabled, "true");
+	defaultConf.set(el::Level::Fatal, el::ConfigurationType::Enabled, "true");
+	
+	if(logLevel >= el::Level::Info)
+		defaultConf.set(el::Level::Debug, el::ConfigurationType::Enabled, "false");
+	if(logLevel >= el::Level::Warning)
+		defaultConf.set(el::Level::Info, el::ConfigurationType::Enabled, "false");
+	if(logLevel >= el::Level::Error)
+		defaultConf.set(el::Level::Warning, el::ConfigurationType::Enabled, "false");
+	if(logLevel >= el::Level::Fatal)
+		defaultConf.set(el::Level::Error, el::ConfigurationType::Enabled, "false");
+	
+	defaultConf.set(el::Level::Debug, el::ConfigurationType::Format, "%level (%loc): %msg");
+	defaultConf.set(el::Level::Info, el::ConfigurationType::Format, "%msg");
+	defaultConf.set(el::Level::Warning, el::ConfigurationType::Format, "%level: %msg");
+	defaultConf.set(el::Level::Error, el::ConfigurationType::Format, "%level: %msg");
+	defaultConf.set(el::Level::Fatal, el::ConfigurationType::Format, "%level: %msg");
+	
+	el::Loggers::reconfigureLogger("default", defaultConf);
+	
+	
+	
+	LOG(DEBUG) << "DEBUG";
+	LOG(INFO) << "INFO";
+	LOG(WARNING) << "WARNING";
+	LOG(ERROR) << "ERROR";
+	LOG(FATAL) << "FATAL";
 }
 
 void ArtusConfig::SaveConfig(TFile * outputFile) const {
