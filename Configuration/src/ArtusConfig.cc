@@ -1,9 +1,7 @@
-
+/*
 #define _ELPP_NO_DEFAULT_LOG_FILE
 #define _ELPP_DISABLE_VERBOSE_LOGS
-#define _ELPP_DISABLE_TRACE_LOGS
-#include "Artus/Utility/interface/easylogging++.h"
-_INITIALIZE_EASYLOGGINGPP
+#define _ELPP_DISABLE_TRACE_LOGS*/
 
 #include <iostream>
 #include <cstdlib>
@@ -45,7 +43,7 @@ void ArtusConfig::InitConfig() {
 		ARTUS_LOG_FATAL("No Kappa input files specified");
 	}
 	
-	el::Configurations defaultConf;
+/*	el::Configurations defaultConf;
 	defaultConf.setToDefault();
 	
 	el::Level logLevel = el::Level::Warning;
@@ -79,7 +77,7 @@ void ArtusConfig::InitConfig() {
 	LOG(INFO) << "INFO";
 	LOG(WARNING) << "WARNING";
 	LOG(ERROR) << "ERROR";
-	LOG(FATAL) << "FATAL";
+	LOG(FATAL) << "FATAL";*/
 }
 
 void ArtusConfig::SaveConfig(TFile * outputFile) const {
