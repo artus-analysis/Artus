@@ -9,6 +9,8 @@
 #include <sstream>
 #include <vector>
 
+#include "Artus/Utility/interface/easylogging++.h"
+
 #include <TFile.h>
 
 #include <boost/foreach.hpp>
@@ -68,7 +70,10 @@ public:
 	static NodeTypePair ParseProcessNode ( std::string const& sInp );
 
 private:
+
 	void InitConfig();
+
+	std::pair < bool, el::Level> parseLogLevel(std::string const& inpString) const;
 
 	// load the global produce list from configuration and
 	// use the factory object to add these producers to the pipeline runner
@@ -189,5 +194,8 @@ private:
 	std::string m_outputPath;
 	stringvector m_fileNames;
 	boost::property_tree::ptree m_propTreeRoot;
+
+	el::Level m_minimumLogLevel;
+
 };
 
