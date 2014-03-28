@@ -116,4 +116,10 @@ public:
 	{
 		RETURN_CACHED(hltPaths, PropertyTreeSupport::GetAsStringList(GetPropTree(), "HltPaths"))
 	}
+	//Reading Boson PdgId for GenTauDecayProducer studies.
+	VarCache<stringvector> BosonPdgId;
+	stringvector GetBosonPdgId() const
+	{
+		RETURN_CACHED(BosonPdgId, PropertyTreeSupport::GetAsStringList(GetPropTree(), "BosonPdgId"))
+	}
 };
