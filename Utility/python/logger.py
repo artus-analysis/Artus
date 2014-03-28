@@ -64,6 +64,7 @@ def getLoggingParser(parserErrorLevels=[]):
 	                                 default = "NONE",
 	                                 choices = ["stdout", "stderr", "NONE"],
 	                                 help    = "Stream to log to. [Default: %(default)s or stdout if no file given]")
+	return _loggingParser
 getLoggingParser.defaultErrorLevels = ["notset","debug", "info", "warning", "error", "critical"]
 
 # default Parser
