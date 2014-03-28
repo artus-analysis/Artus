@@ -60,7 +60,7 @@ def getLoggingParser(parserErrorLevels=[]):
 	_loggingOptionsGroup.add_argument("--log-files",
 	                                 nargs    = '*',
 	                                 help     = "List of files to log to. [Default: %(default)s]")
-	_loggingOptionsGroup.add_argument("--log-std",
+	_loggingOptionsGroup.add_argument("--log-stream",
 	                                 default = "NONE",
 	                                 choices = ["stdout", "stderr", "NONE"],
 	                                 help    = "Stream to log to. [Default: %(default)s or stdout if no file given]")
@@ -188,7 +188,7 @@ def initLogger(argParserArgs=None, name="", logLevel="debug", logFiles=[], logSt
 	### TODO: read LDFormat dynamically by name from initLogger attributes
 	levelDependentFormatter = LevelDependentFormatter(initLogger.LDFormatDefault)
 	try:
-		logStream = argParserArgs.log_std
+		logStream = argParserArgs.log_stream
 	except AttributeError:
 		pass
 	try:
