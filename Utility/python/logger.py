@@ -148,11 +148,29 @@ def logInit(level = logging.DEBUG, name = None, formatter = None, formatStr = '%
 # default print_function'y
 @logInit(Handler = logging.StreamHandler(stream=sys.stdout))
 def vprint(msg, sep = ' ', level = logging.CRITICAL):
-	"""Write to STDOUT logger"""
+	"""
+	Write to STDOUT logger
+
+	msg
+	                object or list of objects to be printed
+	sep
+	                separator string when printing multiple objects
+	level
+	                verbosity level of the message
+	"""
 	vprint.logMsg(msg, sep, level)
 @logInit(Handler = logging.StreamHandler(stream=sys.stderr))
 def eprint(msg, sep = ' ', level = logging.CRITICAL):
-	"""Write to STDERR logger"""
+	"""
+	Write to STDERR logger
+
+	msg
+	                object or list of objects to be printed
+	sep
+	                separator string when printing multiple objects
+	level
+	                verbosity level of the message
+	"""
 	eprint.logMsg(msg, sep, level)
 # convenience aliases
 print = vprint
