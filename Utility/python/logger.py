@@ -25,18 +25,18 @@ loggingParser = argparse.ArgumentParser(add_help=False)
 
 _loggingOptionsGroup = loggingParser.add_argument_group("Logging options")
 _loggingOptionsGroup.add_argument("--log-level",
-                                default = "debug",
-                                choices = ["debug", "info", "warning", "error", "critical"],
-                                help    = "Detail level of logging. [Default: %(default)s]")
+                                  default = "debug",
+                                  choices = ["debug", "info", "warning", "error", "critical"],
+                                  help    = "Detail level of logging. [Default: %(default)s]")
 _loggingOptionsGroup.add_argument("--log-files",
-                               nargs    = '*',
-                               help     = "List of files to log to. [Default: %(default)s]")
-_loggingOptionsGroup.add_argument("--log-std",
-                                default = "NONE",
-                                choices = ["stdout", "stderr", "NONE"],
-                                help    = "List of streams to log to. [Default: %(default)s]")
+                                 nargs    = '*',
+                                 help     = "List of files to log to. [Default: %(default)s]")
+_loggingOptionsGroup.add_argument("--log-streams",
+                                  default = "stdout",
+                                  choices = ["stdout", "stderr", "NONE"],
+                                  help    = "List of streams to log to. [Default: %(default)s]")
 
-def initLogger(argParserArgs=None, name="", logLevel="debug", logFiles=[], logStreams = []):
+def initLogger(argParserArgs=None, name="", logLevel="debug", logFiles=[], logStreams=[]):
 	'''
 	Initialize a logger for usage.
 
@@ -56,6 +56,7 @@ def initLogger(argParserArgs=None, name="", logLevel="debug", logFiles=[], logSt
 	  _thisLogger
 	                initialized logger instance
 	'''
+	
 	_thisLogger = logging.getLogger(name)
 	try:
 		logLevel = argParserArgs.log_level
@@ -91,6 +92,7 @@ def initLogger(argParserArgs=None, name="", logLevel="debug", logFiles=[], logSt
 		loggingHandler.setFormatter(levelDependentFormatter)
 		_thisLogger.addHandler(loggingHandler)
 	return _thisLogger
+
 # By-name-reference default dictionaries
 initLogger.LDFormatDefault = {
 		logging.DEBUG   : "%(levelname)s (%(filename)s.%(lineno)d): %(message)s",
@@ -158,4 +160,4 @@ def subprocessCall(args, **kwargs):
 		logPipe.close()
 
 	return exitCode
-	
+
