@@ -10,6 +10,9 @@ import threading
 '''
 Global logging module.
 
+mainLog
+  The root python logging logger instance, suitable for general-purpose logging
+
 loggingParser
   Default argparse Parser for inclusion to main Parser as parent.
 
@@ -32,6 +35,7 @@ print
 '''
 
 log = logging.getLogger(__name__)
+mainLog = logging.getLogger()
 
 def getLoggingParser(parserErrorLevels=[]):
 	'''
