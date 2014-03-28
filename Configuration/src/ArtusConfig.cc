@@ -25,7 +25,7 @@ ArtusConfig::ArtusConfig(int argc, char** argv)
 	if (argc < 2)
 	{
 		std::cerr << "Usage: " << argv[0]
-				<< " json_config_file.json [VerboseLevel]\n";
+				<< " json_config_file.json [--log-{debug|info|warning|error|critical}]\n";
 		exit(1);
 	}
 
