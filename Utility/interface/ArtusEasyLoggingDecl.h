@@ -1,13 +1,16 @@
 #pragma once
 
 #include <boost/noncopyable.hpp>
-
 #include "Artus/Utility/interface/easylogging++.h"
 
-class ArtusEasyLogging : boost::noncopyable {
+/*
+ * Staticly creates the easy logging system. Don't use this
+ * class directly, but include ArtusLogging.h
+*/
+class ArtusEasyLoggingDecl : boost::noncopyable {
 public:
-	ArtusEasyLogging();
-	~ArtusEasyLogging();
+	ArtusEasyLoggingDecl();
+	~ArtusEasyLoggingDecl();
 
     static el::base::type::StoragePointer getEasyloggingStorage();
 private:

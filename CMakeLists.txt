@@ -51,6 +51,7 @@ add_library(artus_provider STATIC
 add_library(artus_utility STATIC
 	Utility/src/RootFileHelper.cc
 	Utility/src/Utility.cc
+	Utility/src/ArtusEasyLoggingDecl.cc
 )
 
 add_executable(artus_core_test

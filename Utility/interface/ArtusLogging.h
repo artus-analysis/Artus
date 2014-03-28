@@ -1,6 +1,8 @@
 #pragma once
 
-#include "Artus/Utility/interface/EasyLoggingDecl.h"
+// include this file, if you want to have logging output in your compilation unit
 
-_SHARE_EASYLOGGINGPP(ArtusEasyLogging::getEasyloggingStorage())
+#include "Artus/Utility/interface/ArtusEasyLoggingDecl.h"
+
+_SHARE_EASYLOGGINGPP(ArtusEasyLoggingDecl::getEasyloggingStorage())
 
