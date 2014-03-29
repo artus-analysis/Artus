@@ -95,16 +95,6 @@ void ArtusConfig::InitConfig()
 	// is there a logging setting in the configuration file ?
 	//if (  )
 
-	m_outputPath = m_propTreeRoot.get < std::string > ("OutputPath");
-	m_fileNames = PropertyTreeSupport::GetAsStringList(&m_propTreeRoot,
-			"InputFiles");
-	ARTUS_LOG_FILE("Loading " << m_fileNames.size() << " input files.")
-
-	if (m_fileNames.size() == 0)
-	{
-		ARTUS_LOG_FATAL("No Kappa input files specified");
-	}
-
 	el::Configurations defaultConf;
 	defaultConf.setToDefault();
 
@@ -138,6 +128,15 @@ void ArtusConfig::InitConfig()
 			"%level: %msg");
 
 	el::Loggers::reconfigureLogger("default", defaultConf);
+
+	m_outputPath = m_propTreeRoot.get < std::string > ("OutputPath");
+	m_fileNames = PropertyTreeSupport::GetAsStringList(&m_propTreeRoot, "InputFiles");
+	LOG(INFO) << "Loading " << m_fileNames.size() << " input files.";
+
+	if (m_fileNames.size() == 0)
+	{
+		LOG(FATAL) << "No Kappa input files specified!";
+	}
 }
 
 void ArtusConfig::SaveConfig(TFile * outputFile) const
@@ -155,8 +154,7 @@ ArtusConfig::NodeTypePair ArtusConfig::ParseProcessNode(std::string const& sInp)
 
 	if (splitted.size() != 2)
 	{
-		ARTUS_LOG_FATAL(
-				"Process node description " + sInp + " cannot be parsed");
+		LOG(FATAL) << "Process node description " << sInp << " cannot be parsed!";
 	}
 
 	ProcessNodeType ntype;
@@ -171,7 +169,7 @@ ArtusConfig::NodeTypePair ArtusConfig::ParseProcessNode(std::string const& sInp)
 	}
 	else
 	{
-		ARTUS_LOG_FATAL("process node type " + splitted[0] + " is unknown");
+		LOG(FATAL) << "process node type " << splitted[0] << " is unknown!";
 	}
 
 	return std::make_pair(ntype, splitted[1]);

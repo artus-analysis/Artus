@@ -20,6 +20,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "Artus/Utility/interface/easylogging++.h"
+
 //extern std::ofstream * g_logFile;
 
 // value indicating that variable is not defined

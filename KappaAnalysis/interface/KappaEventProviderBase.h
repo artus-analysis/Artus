@@ -75,7 +75,7 @@ public:
 				 m_event.m_eventMetadata->nRun,
 				 m_event.m_eventMetadata->nLumi);*/
 			} else {
-				ARTUS_LOG_FATAL("Unknown input type")
+				LOG(FATAL) << "Unknown input type!";
 			}
 
 			//std::cout << "Loading new lumi info" << std::endl;
