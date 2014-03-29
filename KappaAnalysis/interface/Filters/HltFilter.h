@@ -44,7 +44,7 @@ public:
 		}
 
 		// TODO: Report that we changed the HLT, if we did
-		// std::cout << "using trigger " << curName << std::endl;
+		// LOG(DEBUG) << "Using trigger " << curName << ".";
 		return event.m_eventMetadata->hltFired(product.selectedHltName, event.m_lumiMetadata);
 	}
 };

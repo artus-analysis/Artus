@@ -78,7 +78,7 @@ public:
 				LOG(FATAL) << "Unknown input type!";
 			}
 
-			//std::cout << "Loading new lumi info" << std::endl;
+			//LOG(INFO) << "Loading new lumi info";
 			// reload the HLT information associated with this lumi
 			//hltInfo->setLumiMetadata(m_event.m_lumimetadata);
 		}
