@@ -193,7 +193,7 @@ private:
 	stringvector m_fileNames;
 	boost::property_tree::ptree m_propTreeRoot;
 
-	el::Level m_minimumLogLevel;
+	std::string m_minimumLogLevelString;
 
 };
 
