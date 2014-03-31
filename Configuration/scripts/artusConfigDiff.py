@@ -49,7 +49,7 @@ def main():
 		diffDictA, diffDictB = jsonTools.JsonDict(args.files[0]) - jsonTools.JsonDict(args.files[1])
 		
 		log.info("Diff in file \"%s\":\n" % args.files[0])
-		log(info(jsonTools.JsonDict(diffDictA))
+		log.info(jsonTools.JsonDict(diffDictA))
 		
 		log.info("\n\n")
 		
