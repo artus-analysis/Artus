@@ -29,9 +29,9 @@ def printfunctions(module_list):
 	along with their docstrings.
 	"""
 	for module in module_list:
-		print '\033[92m%s' % module.__name__
+		print '%s' % module.__name__
 		for elem in inspect.getmembers(module, inspect.isfunction):
-			print "\033[93m  %s \033[0m" % elem[0]
+			print "  %s" % elem[0]
 			if (elem[1].__doc__ is not None):
 				print "	 ", elem[1].__doc__
 
@@ -81,7 +81,7 @@ def printquantities(plotdict):
 	common_set = quantities[quantities.keys()[0]]
 	for name in quantities.keys()[1:]:
 		common_set = common_set.intersection(quantities[name])
-	print '\033[92m%s in ALL files:\033[0m' % string
+	print '%s in ALL files:' % string
 	for q in sorted(common_set, key=lambda v: (v.upper(), v[0].islower())):
 		print "  %s" % q
 
@@ -89,7 +89,7 @@ def printquantities(plotdict):
 	for name in quantities.keys():
 		quantities[name] = quantities[name].difference(common_set)
 		if len(quantities[name]) > 0:
-			print '\033[92m%s\033[0m' % "Quantities only in '%s' file:" % name
+			print "Quantities only in '%s' file:" % name
 			for q in sorted(quantities[name], key=lambda v: (
 					v.upper(), v[0].islower())):
 				print "  %s" % q
@@ -162,7 +162,7 @@ def save(plotdict, figure=None):
 		title = plotdict['figure'].suptitle(plotdict['title'])
 
 	name = plotdict['out'] + '/' + plotdict['filename']
-	print ' \033[96m-> Saving as\033[97m',
+	print ' -> Saving as',
 	first = True
 	for f in plotdict['formats']:
 		if f in ['pdf', 'png', 'ps', 'eps', 'svg']:
@@ -170,7 +170,7 @@ def save(plotdict, figure=None):
 				print ",",
 			else:
 				first = False
-			print '\033[96m%s.%s\033[97m' % (name, f)
+			print '%s.%s' % (name, f)
 			figure.savefig(name + '.' + f, bbox_inches='tight', bbox_extra_artists=[title])
 			plt.close(figure)
 		else:
