@@ -28,6 +28,7 @@ import Artus.HarryPlotter.tools.plotrc as plotrc
 # all plot modules
 import Artus.HarryPlotter.plot1d as plot1d
 import Artus.HarryPlotter.plot2d as plot2d
+import Artus.HarryPlotter.modules.cutEfficiencyPlots as cutEfficiencyPlots
 
 
 def get_basic_dictionary():
@@ -401,6 +402,8 @@ def plot(plotdict):
 
 	# add new harrycore modules here:
 	modules = [plot2d, plot1d]
+	plotdict.setdefault('analysismodules', []).append(cutEfficiencyPlots)
+	
 	if 'analysismodules' in plotdict:
 		if type(plotdict['analysismodules']) == list:
 			modules += plotdict['analysismodules']
