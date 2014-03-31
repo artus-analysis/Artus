@@ -1,5 +1,6 @@
 import time
 import numpy as np
+import ROOT
 
 
 def root2histo(histo, rootfile='', rebin=1):
@@ -77,11 +78,13 @@ def root2histo(histo, rootfile='', rebin=1):
 			histo.GetPoint(i, a, b)
 			x = float(a)
 			y = float(b)
+			xerr = histo.GetErrorX(i)
+			yerr = histo.GetErrorY(i)
 			hst.x.append(x)
 			hst.xc.append(x)
 			hst.y.append(y)
-			hst.xerr.append(histo.GetErrorX(i))
-			hst.yerr.append(histo.GetErrorY(i))
+			hst.xerr.append(xerr if xerr > 0.0 else 0.0)
+			hst.yerr.append(yerr if yerr > 0.0 else 0.0)
 	else:
 		# histo is of unknown type
 		print "The object '" + str(histo) + "' is no histogram, no graph and no profile!",
@@ -90,6 +93,8 @@ def root2histo(histo, rootfile='', rebin=1):
 	return hst
 
 
+# TODO: remove functions modifying the histograms, since these functions are better checked in ROOT histogram classes
+# TODO: I.e. Sum of error squares missing for correct modification of histograms
 class Histo:
 	"""Reduced Histogramm or Graph
 
