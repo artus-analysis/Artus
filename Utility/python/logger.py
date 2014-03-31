@@ -63,6 +63,7 @@ def getLoggingParser(parserErrorLevels=[]):
 	                                 help    = "Detail level of logging. [Default: %(default)s]")
 	_loggingOptionsGroup.add_argument("--log-files",
 	                                 nargs    = '*',
+	                                 default  = [],
 	                                 help     = "List of files to log to. [Default: %(default)s]")
 	_loggingOptionsGroup.add_argument("--log-stream",
 	                                 default = "NONE",
