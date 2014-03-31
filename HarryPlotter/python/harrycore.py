@@ -439,7 +439,7 @@ def plot(plotdict):
 		print "The following entries have been modified by a plot:"
 		for key in plotdict.keys():
 			if key in startdict and startdict[key] != plotdict[key]:
-				print "  '\033[92m%s\033[97m'\n    previously: %s\n    now:        %s" % (key,
+				print "  %s\n    previously: %s\n    now:        %s" % (key,
 						startdict[key], plotdict[key])
 
 try:
