@@ -4,7 +4,7 @@
 import Artus.HarryPlotter.harrycore as harrycore
 
 # import analysis specific functions
-import myanalysis_plots
+import Artus.Example.HarryPlotter.modules.example_plots.py
 import subprocess
 
 if __name__ == "__main__":
@@ -27,12 +27,12 @@ if __name__ == "__main__":
 	plotdict = harrycore.create_dictionary_from_parser(parser)
 
 	# Add the module with the user-written functions to the plotdict
-	plotdict['analysismodules'] =[myanalysis_plots]
+	plotdict['analysismodules'] =[example_plots]
 
 	# Map the samples to weights from a dictionary:
 	for i, label in enumerate(plotdict['labels']):
-		if label in myanalysis_plots.sampleweightdict:
-			plotdict['weight'] += "* %s" % myanalysis_plots.sampleweightdict['label']
+		if label in example_plots.sampleweightdict:
+			plotdict['weight'] += "* %s" % example_plots.sampleweightdict['label']
 		else:
 			print "Sample %s could not be found in dictionary!" % label
 

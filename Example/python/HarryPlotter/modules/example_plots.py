@@ -10,12 +10,12 @@ sampleweightdict = {
 	'background': 234.5,
 }
 
-def myanalysis_plot1(plotdict):
+def example_plot1(plotdict):
 	""" Template: place custom plot code in a function like this."""
 	print "Hallo"
 
 
-def myanalysisplotscale(plotdict):
+def example_plotscale(plotdict):
 	""" This function does basically the same as plot1d, but scales the root
 		histograms with a factor and then convertes them to MPL.
 	"""
