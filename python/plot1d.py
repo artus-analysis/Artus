@@ -50,15 +50,23 @@ except NameError:
 
 
 def get_root_histos(plotdict):
-	"""Get the ROOT histograms from the files, convert to MPL and add to the dictionary."""
+	"""Get the ROOT histograms from the files and add to the dictionary."""
 	for rootfile, folder in zip(plotdict["rootfiles"], plotdict['folder']):
 		rootobject = getroot.histofromfile(rootfile, plotdict['plot'], folder, plotdict)
 		plotdict["roothistos"].append(rootobject)
-		plotdict["mplhistos"].append(mplconvert.root2histo(rootobject, rootfile.GetName(), 1))
+
+def get_mpl_histos(plotdict):
+	"""Convert ROOT histograms to MPL and add to the dictionary."""
+	for roothisto, rootfile in zip(plotdict["roothistos"], plotdict['rootfiles']):
+		plotdict["mplhistos"].append(mplconvert.root2histo(roothisto, rootfile.GetName(), 1))
 
 
 def plot1d_mpl(plotdict):
 	"""Create Matplotlib plots from the ROOT histograms."""
+
+	# convert histograms
+	# TODO: convert just before plotting to avoid editing MPL histograms, because ROOT histograms are better tested
+	get_mpl_histos(plotdict)
 
 	# use the given fig/axis or create new one:
 	if not plotdict['axes'] and not plotdict['figure']:
