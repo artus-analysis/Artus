@@ -4,7 +4,7 @@
 import Artus.HarryPlotter.harrycore as harrycore
 
 # import analysis specific functions
-import Artus.Example.HarryPlotter.modules.example_plots
+import Artus.Example.HarryPlotter.modules.example_plots as example_plots
 import subprocess
 
 if __name__ == "__main__":
