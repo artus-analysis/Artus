@@ -17,5 +17,5 @@ elif [[ `hostname` == *cern* ]]; then
 fi
 
 # init HarryPlotter
-source $CMSSW_BASE/src/Artus/HarryPlotter/scripts/ini_harry.sh
+source $CMSSW_BASE/src/Artus/HarryPlotter/scripts/ini_harry_cmssw.sh
 
