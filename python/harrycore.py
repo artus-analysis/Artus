@@ -139,6 +139,8 @@ def get_basic_parser(
 		listfunctions=False,
 		root=False,
 		normalize=False,
+		
+		userargs = None
 	
 	):
 	"""This is the basic parser that reads the Harry options from the command line."""
@@ -292,6 +294,8 @@ def get_basic_parser(
 	group.add_argument('--readjson', type=str, default=readjson,
 		help="Read the plot dictionary from a json file. Argument is (path and) filename,\
 			 the .json suffix is added automatically.")
+	group.add_argument('--userargs', type=str, default=userargs, nargs='*',
+		help="Additional arguments that can be used optionally in analysis modules.")
 
 	return parser
 
