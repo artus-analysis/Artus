@@ -94,6 +94,14 @@ def printquantities(plotdict):
 					v.upper(), v[0].islower())):
 				print "  %s" % q
 
+# remove complete plot entries from the plot dict
+def removeplots(plotdict, plotIndices,
+                plotLists=["folder", "weights", "x", "files", "roothistos"]):
+	checkedPlotIndices = sorted([index for index in list(set(plotIndices)) if index < len(plotdict[plotLists[0]])])
+	for loopIndex, plotIndex in enumerate(checkedPlotIndices):
+		actualPlotIndex = plotIndex - loopIndex
+		for plotList in plotLists:
+			del plotdict[plotList][actualPlotIndex]
 
 def newplot(plotdict):
 	if plotdict['ratiosubplot'] == True:
