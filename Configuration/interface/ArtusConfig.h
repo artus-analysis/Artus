@@ -69,7 +69,7 @@ public:
 
 private:
 
-	void InitConfig();
+	void InitConfig( bool configPreLoaded = false );
 
 	std::pair < bool, el::Level> parseLogLevel(std::string const& inpString) const;
 

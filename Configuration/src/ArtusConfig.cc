@@ -74,17 +74,20 @@ ArtusConfig::ArtusConfig(std::stringstream & sStream)
 {
 	boost::property_tree::json_parser::read_json(sStream, m_propTreeRoot);
 
-	InitConfig();
+	InitConfig( true );
 }
 
-void ArtusConfig::InitConfig()
+void ArtusConfig::InitConfig( bool configPreLoaded )
 {
-	if(m_jsonConfigFileName.empty()) {
-		LOG(FATAL) << "NO JSON config specified!";
-	}
+    // has the config been preloaded via the constructor already ?
+    if (! configPreLoaded ) {
+	    if(m_jsonConfigFileName.empty()) {
+		    LOG(FATAL) << "NO JSON config specified!";
+	    }
 	
-	std::cout << "Loading Config file from \"" << m_jsonConfigFileName << "\"." << std::endl;
-	boost::property_tree::json_parser::read_json(m_jsonConfigFileName, m_propTreeRoot);
+	    std::cout << "Loading Config file from \"" << m_jsonConfigFileName << "\"." << std::endl;
+	    boost::property_tree::json_parser::read_json(m_jsonConfigFileName, m_propTreeRoot);
+    }
 	
 	// init logging
 	if(m_minimumLogLevelString.empty()) {
