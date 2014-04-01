@@ -77,8 +77,7 @@ def getstyle(style='generic', tab=rctable):
 	try:
 		col = tab.index(style)
 	except ValueError:
-		print repr(style), "is no valid style from", tab[1:maxcol]
-		print repr(tab[1]), "is used instead."
+		lor.warning(repr(style) + " is no valid style from " + tab[1:maxcol] + "! " + repr(tab[1]) + " is used instead!")
 		col = 1
 	# check table
 	assert len(tab) % maxcol == 0, "Wrong table format."
@@ -101,5 +100,5 @@ if __name__ == "__main__":
 	else:
 		d = get_style()
 	for k, v in d.items():
-		print k, ":", v
+		log.info(k + " : " + v)
 

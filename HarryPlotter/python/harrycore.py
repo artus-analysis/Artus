@@ -373,8 +373,7 @@ def create_dictionary_from_parser(parser):
 				attr = getattr(opt, i) 
 				attr *= maximum / len(getattr(opt, i))
 			elif len(getattr(opt, i)) < maximum:
-				print "WARNING: not enough arguments for %s!" % i
-				print "Only %s arguments provided! We need %s or 1" % (len(getattr(opt, i)), maximum)
+				log.warning("Not enough arguments for %s! Only %s arguments provided! We need %s or 1" % (i, len(getattr(opt, i)), maximum))
 	if len(opt.groups) == 0:
 		opt.groups = opt.labels
 
@@ -396,9 +395,9 @@ def readjson(plotdict):
 def print_plotdict(plotdict):
 	keys = plotdict.keys()
 	keys.sort()
-	print "\nPlotdictionary:"
+	log.debug("Plotdictionary:")
 	for key in keys:
-		print "  %s: %s" % (key, plotdict[key])
+		log.debug("  %s: %s" % (key, plotdict[key]))
 
 
 def plot(plotdict):
@@ -413,8 +412,7 @@ def plot(plotdict):
 
 	startdict = copy.copy(plotdict)
 
-	if plotdict['verbose']:
-		print_plotdict(plotdict)
+	print_plotdict(plotdict)
 
 	# add new harrycore modules here:
 	modules = [plot2d, plot1d]
@@ -428,14 +426,12 @@ def plot(plotdict):
 			
 	# print the list of all available functions
 	if plotdict['listfunctions']:
-		print "\nThe following functions are available in the plotting modules:"
-		utils.printfunctions(modules)
-		if not plotdict['verbose']:
-			print "\nIf you also want to see the available HarryPlotter helper",
-			print "functions, activate verbose (type --v)\n"
-		else:
-			print "\nHelper functions:\n"
-		utils.printfunctions([utils, getroot, labels, sys.modules[__name__]])
+		log.info("\nThe following functions are available in the plotting modules:")
+		utils.printfunctions(modules, logging.INFO)
+		if not log.isEnabledFor(logging.DEBUG):
+			log.info("\nIf you also want to see the available HarryPlotter helper\nfunctions, activate the debug log level")
+		log.debug("\nHelper functions:\n")
+		utils.printfunctions([utils, getroot, labels, sys.modules[__name__]], logging.DEBUG)
 		return
 
 	#open root files
@@ -454,12 +450,11 @@ def plot(plotdict):
 		getroot.save_roothistos(plotdict)
 
 	# check whether the options have changed and how
-	if plotdict['verbose'] and startdict != plotdict:
-		print "The following entries have been modified by a plot:"
+	if startdict != plotdict:
+		log.debug("The following entries have been modified by a plot:")
 		for key in plotdict.keys():
 			if key in startdict and startdict[key] != plotdict[key]:
-				print "  %s\n    previously: %s\n    now:        %s" % (key,
-						startdict[key], plotdict[key])
+				log.debug("  %s\n    previously: %s\n    now:        %s" % (key, startdict[key], plotdict[key]))
 
 try:
 	getobjectfromtree = profile(getobjectfromtree)
@@ -472,7 +467,7 @@ def function_selector(plotdict):
 	if (len(plotdict['analysismodules']) > 0):
 		for module in plotdict['analysismodules']:
 			if hasattr(module, plotdict['plot']):
-				print "Calling %s in module %s" % (plotdict['plot'], module.__name__)
+				log.info("Calling %s in module %s" % (plotdict['plot'], module.__name__))
 				getattr(module, plotdict['plot'])(plotdict)
 				return
 	if plotdict["type"] == "2D":

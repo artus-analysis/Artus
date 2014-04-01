@@ -18,7 +18,7 @@ sampleweightdict = {
 
 def example_plot1(plotdict):
 	""" Template: place custom plot code in a function like this."""
-	print "Hallo"
+	log.info("Hallo")
 
 
 def example_plotscale(plotdict):

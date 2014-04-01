@@ -46,15 +46,14 @@ def openfile(filename, verbose=False, exitonfail=True):
 	f = ROOT.TFile(filename)
 	try:
 		if not f or not f.IsOpen():
-			print "Can't open file:", filename
+			log.error("Can't open file: " + filename)
 			if exitonfail:
 				exit(1)
 	except:
-		print "Can't open file:", filename
+		log.error("Can't open file: " + filename)
 		if exitonfail:
 			exit(1)
-	if verbose:
-		print " * Inputfile:", filename
+	log.debug(" * Inputfile: " + filename)
 	return f
 
 try:
@@ -84,16 +83,16 @@ def getplotfromtree(nickname, rootfile, settings, twoD=False, changes=None):
 
 def histofromntuple(rootfile, objectname, ntuple, plotdict):
 
-	print "Using file %s" % rootfile.GetName()
+	log.info("Using file %s" % rootfile.GetName())
 	index = plotdict['rootfiles'].index(rootfile)
 
 	if plotdict['xlims'] == None:
 		plotdict['xlims'] = [ntuple.GetMinimum(plotdict['x'][index])*1.01, ntuple.GetMaximum(plotdict['x'][index])*1.01]
 		if plotdict['xlims'] == [0.0, 0.0]:
-			print "WARNING: Axis limits could not be determined! Fallback to [0, 1]"
+			log.warning("Axis limits could not be determined! Fallback to [0, 1]")
 			plotdict['xlims'] = [0.0, 1.0]
 		else:
-			print "Min/Max x values:", plotdict['xlims'][0], plotdict['xlims'][1]
+			log.info("Min/Max x values: " + str(plotdict['xlims'][0]) + " " + str(plotdict['xlims'][1]))
 
 	if plotdict['xbins'] == []:
 		plotdict['xbins'] = np.linspace(plotdict['xlims'][0], plotdict['xlims'][1], plotdict['nbins']+1)
@@ -102,7 +101,7 @@ def histofromntuple(rootfile, objectname, ntuple, plotdict):
 		if plotdict['ylims'] == None:
 			plotdict['ylims'] = [ntuple.GetMinimum(plotdict['y'][index])*1.01, ntuple.GetMaximum(plotdict['y'][index])*1.01]
 		if plotdict['ylims'] == [0.0, 0.0]:
-			print "WARNING: Axis limits could not be determined! Fallback to [0, 1]"
+			log.warning("Axis limits could not be determined! Fallback to [0, 1]")
 			plotdict['ylims'] = [0.0, 1.0]
 		plotdict['ybins']  = np.linspace(plotdict['ylims'][0], plotdict['ylims'][1], plotdict['nbins']+1)
 
@@ -127,18 +126,16 @@ def histofromntuple(rootfile, objectname, ntuple, plotdict):
 		roothisto = ROOT.TProfile2D(name, objectname, len(plotdict['xbins']) - 1, plotdict['xbins'],
 			len(plotdict['ybins']) - 1, plotdict['ybins'])
 
-	if plotdict['verbose']:
-		print "Creating a %s with the following weight:\n   %s" % (
-			roothisto.ClassName(), plotdict['weights'][index])
+	log.debug("Creating a %s with the following weight:\n   %s" % (roothisto.ClassName(), plotdict['weights'][index]))
 
 	# fill the histogram from the ntuple
 	roothisto.Sumw2()
 	ntuple.Project(name, variables, plotdict['weights'][index])
 
 	if roothisto.ClassName() == 'TH2D':
-		print "Correlation between %s and %s in %s in the selected range:  %1.5f" % (
+		log.info("Correlation between %s and %s in %s in the selected range:  %1.5f" % (
 			variables.split(':')[1], variables.split(':')[0], roothisto.GetName(),
-			roothisto.GetCorrelationFactor())
+			roothisto.GetCorrelationFactor()))
 
 	return roothisto
 
@@ -177,7 +174,7 @@ def save_roothistos(plotdict):
 	filename = "%s/%s_histos.root" % (plotdict['out'], plotdict['filename'])
 	f = ROOT.TFile(filename, "UPDATE")
 	for rgraph, histoname in zip(plotdict['roothistos'], plotdict['labels']):
-		print "Saving %s in ROOT-file %s" % (histoname, filename)
+		log.info("Saving %s in ROOT-file %s" % (histoname, filename))
 		rgraph.SetTitle(histoname)
 		rgraph.SetName(histoname)
 		rgraph.Write()
@@ -186,7 +183,7 @@ def save_roothistos(plotdict):
 
 def rootdivision(rootobjects):
 	if len(rootobjects) < 2:
-		print "rootdivision need at least two rootobjects!"
+		log.error("rootdivision need at least two rootobjects!")
 		return
 	"""Return the quotient of two ROOT histograms."""
 	#convert TProfiles into TH1Ds because ROOT cannot correctly divide TProfiles
@@ -291,7 +288,7 @@ def dividegraphs(graph1, graph2):
 		x1, y1, dx1, dy1 = getgraphpoint(graph1, i)
 		x2, y2, dx2, dy2 = getgraphpoint(graph2, i)
 		if y2 == 0 or y1 == 0:
-			print "Division by zero!"
+			log.error("Division by zero!")
 		else:
 			result.SetPoint(i, 0.5 * (x1 + x2), y1 / y2)
 			result.SetPointError(i, 0.5 * (abs(dx1) + abs(dx2)),

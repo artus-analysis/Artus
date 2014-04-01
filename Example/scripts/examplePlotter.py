@@ -38,7 +38,7 @@ if __name__ == "__main__":
 		if label in example_plots.sampleweightdict:
 			plotdict['weight'] += "* %s" % example_plots.sampleweightdict['label']
 		else:
-			print "Sample %s could not be found in dictionary!" % label
+			log.warning("Sample %s could not be found in dictionary!" % label)
 
 	harrycore.plot(plotdict)
 
