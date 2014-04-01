@@ -38,13 +38,13 @@ public:
 	// called once per event before the pipelines are split
 	virtual void ProduceGlobal(event_type const& event, product_type& product,
 	                           global_setting_type const& globalSettings) const {
-		ARTUS_LOG_FATAL("ProduceGlobal for producer " << this->GetProducerId() << " is not implemented");
+		LOG(FATAL) << "ProduceGlobal for producer " << this->GetProducerId() << " is not implemented!";
 	}
 
 	// called once per event within a given pipeline
 	virtual void ProduceLocal(event_type const& event, product_type & product, 
 	                          setting_type const& pipelineSettings) const {
-		ARTUS_LOG_FATAL("ProduceLocal for producer " << this->GetProducerId() << " is not implemented");
+		LOG(FATAL) << "ProduceLocal for producer " << this->GetProducerId() << " is not implemented!";
 	}
 
 	/// Must return a unique id of the producer.

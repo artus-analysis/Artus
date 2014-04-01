@@ -8,7 +8,7 @@ RootEnvironment::RootEnvironment(const ArtusConfig & artusConfig) :
 	m_rootFileName(artusConfig.GetOutputPath())
 {
 	m_rootFile = new TFile(m_rootFileName.c_str(), "RECREATE");
-	std::cout << "Output file \"" << m_rootFileName << "\" created." << std::endl;
+	LOG(INFO) << "Output file \"" << m_rootFileName << "\" created.";
 	
 	artusConfig.SaveConfig(m_rootFile);
 }
@@ -16,7 +16,7 @@ RootEnvironment::RootEnvironment(const ArtusConfig & artusConfig) :
 void RootEnvironment::Close() {
 	if(m_rootFile) {
 		m_rootFile->Close();
-		std::cout << "Output file \"" << m_rootFileName << "\" closed." << std::endl;
+		LOG(INFO) << "Output file \"" << m_rootFileName << "\" closed.";
 		delete m_rootFile;
 		m_rootFile = 0;
 	}

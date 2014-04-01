@@ -1,5 +1,8 @@
+
 #include <iostream>
 #include <cstdlib>
+
+#include <boost/program_options.hpp>
 
 #include "TObjString.h"
 
@@ -7,75 +10,59 @@
 #include "Artus/Configuration/interface/PropertyTreeSupport.h"
 #include "Artus/Utility/interface/Utility.h"
 
-ArtusConfig::ArtusConfig(int argc, char** argv)
+ArtusConfig::ArtusConfig(int argc, char** argv) :
+	m_jsonConfigFileName(""),
+	m_minimumLogLevelString("")
 {
-	m_minimumLogLevel = el::Level::Info;
-	// set defaults for logging
-	el::Configurations defaultConf;
-	defaultConf.setToDefault();
-
-	defaultConf.set(el::Level::Debug, el::ConfigurationType::Enabled, "false");
-	defaultConf.set(el::Level::Info, el::ConfigurationType::Enabled, "true");
-	defaultConf.set(el::Level::Warning, el::ConfigurationType::Enabled, "true");
-	defaultConf.set(el::Level::Error, el::ConfigurationType::Enabled, "true");
-	defaultConf.set(el::Level::Fatal, el::ConfigurationType::Enabled, "true");
-
-	el::Loggers::reconfigureLogger("default", defaultConf);
-
-	if (argc < 2)
-	{
-		std::cerr << "Usage: " << argv[0]
-				<< " json_config_file.json [--log-{debug|info|warning|error|critical}]\n";
-		exit(1);
+	boost::program_options::options_description programOptions("Options");
+	programOptions.add_options()
+		("help,h", "Print help message")
+		("log-level", boost::program_options::value< std::string >(&m_minimumLogLevelString),
+		 "Detail level of logging (debug, info, warning, error, critical). [Default: taken from JSON config or info]")
+		("json-config", boost::program_options::value< std::string >(&m_jsonConfigFileName),
+		 "JSON config file")
+	;
+	
+	boost::program_options::positional_options_description positionalProgramOptions;
+	positionalProgramOptions.add("json-config", 1);
+	
+	boost::program_options::variables_map optionsVariablesMap;
+	boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(programOptions).positional(positionalProgramOptions).run(),
+	                            optionsVariablesMap);
+	boost::program_options::notify(optionsVariablesMap);
+	
+	// print help message, either if requested or if no parameters 
+    // have been supplied
+	if(optionsVariablesMap.count("help") || ( optionsVariablesMap.size() == 0 )) {
+		std::cout << "Usage: " << argv[0] << " [options] JSON-CONFIG" << std::endl;
+		std::cout << programOptions << std::endl;
+		exit(0);
 	}
-
-	m_jsonConfigFileName = argv[1];
-	std::cout << "Loading Config file from " << m_jsonConfigFileName
-			<< std::endl;
-
-	if (argc > 2)
-	{
-		std::string logLevelString(argv[2]);
-
-		const size_t prefixSize(6); // the character count of "--log-"
-		if (logLevelString.size() > prefixSize)
-		{
-			std::string lvlSubString = logLevelString.substr(prefixSize,
-					std::string::npos);
-			std::pair<bool, el::Level> parseRes = parseLogLevel(lvlSubString);
-			if (parseRes.first)
-			{
-				m_minimumLogLevel = parseRes.second;
-			}
-		}
-	}
-
-	boost::property_tree::json_parser::read_json(m_jsonConfigFileName,
-			m_propTreeRoot);
-
+	
 	InitConfig();
+	// logging can be uses from here on
 }
 
 std::pair<bool, el::Level> ArtusConfig::parseLogLevel(
-		std::string const& logLevelString) const
+		std::string const& m_minimumLogLevelString) const
 {
-	if (logLevelString == "debug")
+	if (m_minimumLogLevelString == "debug")
 	{
 		return std::make_pair(true, el::Level::Debug);
 	}
-	else if (logLevelString == "info")
+	else if (m_minimumLogLevelString == "info")
 	{
 		return std::make_pair(true, el::Level::Info);
 	}
-	else if (logLevelString == "warning")
+	else if (m_minimumLogLevelString == "warning")
 	{
 		return std::make_pair(true, el::Level::Warning);
 	}
-	else if (logLevelString == "error")
+	else if (m_minimumLogLevelString == "error")
 	{
 		return std::make_pair(true, el::Level::Error);
 	}
-	else if (logLevelString == "critical")
+	else if (m_minimumLogLevelString == "critical")
 	{
 		return std::make_pair(true, el::Level::Fatal);
 	}
@@ -92,52 +79,53 @@ ArtusConfig::ArtusConfig(std::stringstream & sStream)
 
 void ArtusConfig::InitConfig()
 {
-	// is there a logging setting in the configuration file ?
-	//if (  )
+	if(m_jsonConfigFileName.empty()) {
+		LOG(FATAL) << "NO JSON config specified!";
+	}
+	
+	std::cout << "Loading Config file from \"" << m_jsonConfigFileName << "\"." << std::endl;
+	boost::property_tree::json_parser::read_json(m_jsonConfigFileName, m_propTreeRoot);
+	
+	// init logging
+	if(m_minimumLogLevelString.empty()) {
+		m_minimumLogLevelString = m_propTreeRoot.get<std::string>("LogLevel", "info");
+	}
+	std::pair<bool, el::Level> minimumLogLevel = parseLogLevel(m_minimumLogLevelString);
+	
+	el::Configurations defaultLoggingConfig;
+	defaultLoggingConfig.setToDefault();
 
-	m_outputPath = m_propTreeRoot.get < std::string > ("OutputPath");
-	m_fileNames = PropertyTreeSupport::GetAsStringList(&m_propTreeRoot,
-			"InputFiles");
-	ARTUS_LOG_FILE("Loading " << m_fileNames.size() << " input files.")
+	defaultLoggingConfig.set(el::Level::Debug, el::ConfigurationType::Enabled, "true");
+	defaultLoggingConfig.set(el::Level::Info, el::ConfigurationType::Enabled, "true");
+	defaultLoggingConfig.set(el::Level::Warning, el::ConfigurationType::Enabled, "true");
+	defaultLoggingConfig.set(el::Level::Error, el::ConfigurationType::Enabled, "true");
+	defaultLoggingConfig.set(el::Level::Fatal, el::ConfigurationType::Enabled, "true");
+
+	if (minimumLogLevel.second >= el::Level::Info)
+		defaultLoggingConfig.set(el::Level::Debug, el::ConfigurationType::Enabled, "false");
+	if (minimumLogLevel.second >= el::Level::Warning)
+		defaultLoggingConfig.set(el::Level::Info, el::ConfigurationType::Enabled, "false");
+	if (minimumLogLevel.second >= el::Level::Error)
+		defaultLoggingConfig.set(el::Level::Warning, el::ConfigurationType::Enabled, "false");
+	if (minimumLogLevel.second >= el::Level::Fatal)
+		defaultLoggingConfig.set(el::Level::Error, el::ConfigurationType::Enabled, "false");
+
+	defaultLoggingConfig.set(el::Level::Debug, el::ConfigurationType::Format, "%level (%loc): %msg");
+	defaultLoggingConfig.set(el::Level::Info, el::ConfigurationType::Format, "%msg");
+	defaultLoggingConfig.set(el::Level::Warning, el::ConfigurationType::Format, "%level: %msg");
+	defaultLoggingConfig.set(el::Level::Error, el::ConfigurationType::Format, "%level: %msg");
+	defaultLoggingConfig.set(el::Level::Fatal, el::ConfigurationType::Format, "%level: %msg");
+
+	el::Loggers::reconfigureLogger("default", defaultLoggingConfig);
+
+	m_outputPath = m_propTreeRoot.get<std::string>("OutputPath", "output.root");
+	m_fileNames = PropertyTreeSupport::GetAsStringList(&m_propTreeRoot, "InputFiles");
+	LOG(INFO) << "Loading " << m_fileNames.size() << " input files.";
 
 	if (m_fileNames.size() == 0)
 	{
-		ARTUS_LOG_FATAL("No Kappa input files specified");
+		LOG(FATAL) << "No input files specified!";
 	}
-
-	el::Configurations defaultConf;
-	defaultConf.setToDefault();
-
-	defaultConf.set(el::Level::Debug, el::ConfigurationType::Enabled, "true");
-	defaultConf.set(el::Level::Info, el::ConfigurationType::Enabled, "true");
-	defaultConf.set(el::Level::Warning, el::ConfigurationType::Enabled, "true");
-	defaultConf.set(el::Level::Error, el::ConfigurationType::Enabled, "true");
-	defaultConf.set(el::Level::Fatal, el::ConfigurationType::Enabled, "true");
-
-	if (m_minimumLogLevel >= el::Level::Info)
-		defaultConf.set(el::Level::Debug, el::ConfigurationType::Enabled,
-				"false");
-	if (m_minimumLogLevel >= el::Level::Warning)
-		defaultConf.set(el::Level::Info, el::ConfigurationType::Enabled,
-				"false");
-	if (m_minimumLogLevel >= el::Level::Error)
-		defaultConf.set(el::Level::Warning, el::ConfigurationType::Enabled,
-				"false");
-	if (m_minimumLogLevel >= el::Level::Fatal)
-		defaultConf.set(el::Level::Error, el::ConfigurationType::Enabled,
-				"false");
-
-	defaultConf.set(el::Level::Debug, el::ConfigurationType::Format,
-			"%level (%loc): %msg");
-	defaultConf.set(el::Level::Info, el::ConfigurationType::Format, "%msg");
-	defaultConf.set(el::Level::Warning, el::ConfigurationType::Format,
-			"%level: %msg");
-	defaultConf.set(el::Level::Error, el::ConfigurationType::Format,
-			"%level: %msg");
-	defaultConf.set(el::Level::Fatal, el::ConfigurationType::Format,
-			"%level: %msg");
-
-	el::Loggers::reconfigureLogger("default", defaultConf);
 }
 
 void ArtusConfig::SaveConfig(TFile * outputFile) const
@@ -155,8 +143,7 @@ ArtusConfig::NodeTypePair ArtusConfig::ParseProcessNode(std::string const& sInp)
 
 	if (splitted.size() != 2)
 	{
-		ARTUS_LOG_FATAL(
-				"Process node description " + sInp + " cannot be parsed");
+		LOG(FATAL) << "Process node description " << sInp << " cannot be parsed!";
 	}
 
 	ProcessNodeType ntype;
@@ -171,7 +158,7 @@ ArtusConfig::NodeTypePair ArtusConfig::ParseProcessNode(std::string const& sInp)
 	}
 	else
 	{
-		ARTUS_LOG_FATAL("process node type " + splitted[0] + " is unknown");
+		LOG(FATAL) << "process node type " << splitted[0] << " is unknown!";
 	}
 
 	return std::make_pair(ntype, splitted[1]);

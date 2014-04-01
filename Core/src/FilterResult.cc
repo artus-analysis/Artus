@@ -89,7 +89,7 @@ FilterResult::Decision FilterResult::GetFilterDecision(std::string filterName) c
 	FilterResult::DecisionEntry const* entr = GetDecisionEntry(filterName);
 
 	if ( entr == ARTUS_CPP11_NULLPTR ){
-		ARTUS_LOG_FATAL( "Decision entry with name " + filterName + " not found" );
+		LOG(FATAL) << "Decision entry with name " << filterName << " not found!";
 	}
 	return entr->second;
 }

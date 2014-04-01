@@ -33,7 +33,7 @@ public:
 		} else if (TestGlobalProducer2().GetProducerId() == id) {
 			return new TestGlobalProducer2();
 		} else {
-			ARTUS_LOG_FATAL("Producer with id " + id + " not found");
+			LOG(FATAL) << "Producer with id " << id << " not found!";
 		}
 
 		return ARTUS_CPP11_NULLPTR;
@@ -47,7 +47,7 @@ public:
 		} else if (TestConsumerLocalProduct().GetConsumerId() == id) {
 			return new TestConsumerLocalProduct();
 		} else {
-			ARTUS_LOG_FATAL("Consumer with id " + id + " not found");
+			LOG(FATAL) << "Consumer with id " << id << " not found!";
 		}
 
 		return ARTUS_CPP11_NULLPTR;
@@ -67,7 +67,7 @@ public:
 		} else if (TestGlobalFilter2().GetFilterId() == id) {
 			return new TestGlobalFilter2();
 		} else {
-			ARTUS_LOG_FATAL("Filter with id " + id + " not found");
+			LOG(FATAL) << "Filter with id " << id << " not found!";
 		}
 
 		return ARTUS_CPP11_NULLPTR;

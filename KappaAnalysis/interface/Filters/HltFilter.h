@@ -31,7 +31,7 @@ public:
 
 	virtual void InitGlobal(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE
 	{
-		ARTUS_LOG_FATAL("Filter \"" + GetFilterId() + "\" cannot run as a global pre-filter, since it needs data from the product.")
+		LOG(FATAL) << "Filter \"" << GetFilterId() << "\" cannot run as a global pre-filter, since it needs data from the product!";
 	}
 
 	virtual bool DoesEventPassLocal(event_type const& event,
@@ -44,7 +44,7 @@ public:
 		}
 
 		// TODO: Report that we changed the HLT, if we did
-		// std::cout << "using trigger " << curName << std::endl;
+		// LOG(DEBUG) << "Using trigger " << curName << ".";
 		return event.m_eventMetadata->hltFired(product.selectedHltName, event.m_lumiMetadata);
 	}
 };

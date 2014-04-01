@@ -79,14 +79,16 @@ protected:
 	template<typename T>
 	T* SecureFileInterfaceGet(const std::string &name, const bool check = true, const bool def = false) {
 		T* result = this->m_fi.template Get<T>(name, check, def);
-		if(result == 0) ARTUS_LOG_FATAL("Requested branch not found!");
+		if(result == 0)
+			LOG(FATAL) << "Requested branch not found!";
 		return result;
 	}
 	
 	template<typename T>
 	T* SecureFileInterfaceGetMeta(const std::string &name, const bool check = true, const bool def = false) {
 		T* result = this->m_fi.template GetMeta<T>(name, check, def);
-		if(result == 0) ARTUS_LOG_FATAL("Requested branch not found!");
+		if(result == 0)
+			LOG(FATAL) << "Requested branch not found!";
 		return result;
 	}
 

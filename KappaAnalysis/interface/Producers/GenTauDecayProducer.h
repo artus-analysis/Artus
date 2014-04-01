@@ -34,25 +34,25 @@ public:
 	}
 
 	virtual void ProduceGlobal(event_type const& event,
-	                           product_type& product,
-	                           global_setting_type const& globalSettings) const
+							   product_type& product,
+							   global_setting_type const& globalSettings) const
 	{
 		for (KGenParticles::iterator part = event.m_genParticles->begin();
 			 part != event.m_genParticles->end(); ++part)
 		{
-		        if (abs(part->pdgId()) == 15)
+			if (abs(part->pdgId()) == 15)
 			{
-			        product.m_genTauDecay.push_back(&(*part));
+				product.m_genTauDecay.push_back(&(*part));
 				for (unsigned int d=0; d<part->daughterIndices.size(); ++d)
 				{
-				        if (part->daughterIndex(d) < event.m_genParticles->size())
-				        {
-				                product.m_genTauDecay.push_back(&(event.m_genParticles->at(part->daughterIndex(d))));
+					if (part->daughterIndex(d) < event.m_genParticles->size())
+					{
+						product.m_genTauDecay.push_back(&(event.m_genParticles->at(part->daughterIndex(d))));
 					}
 					else
 					{
-					  ARTUS_LOG("Daughter index larger than size of gen particle vector:" 
-					      << part->daughterIndex(d) << ">" << event.m_genParticles->size() << ".");
+						LOG(ERROR) << "Daughter index larger than size of gen particle vector: " 
+								   << part->daughterIndex(d) << ">" << event.m_genParticles->size() << "!";
 					}
 				}
 			}

@@ -39,7 +39,7 @@ public:
 
 	virtual void Finish() ARTUS_CPP11_OVERRIDE {
 		// todo: print pipeline name here
-		std::cout << "Track mean Pt is " << m_mean << " [GeV]" << std::endl;
+		LOG(INFO) << "Track mean Pt is " << m_mean << " [GeV].";
 	}
 
 private:
