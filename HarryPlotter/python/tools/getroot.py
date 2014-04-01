@@ -188,9 +188,6 @@ def rootdivision(rootobjects):
 			rootobjects[1].ClassName() != 'TH1D'):
 		rootobjects[0] = ROOT.TH1D(rootobjects[0].ProjectionX())
 		rootobjects[1] = ROOT.TH1D(rootobjects[1].ProjectionX())
-	else:
-		rootobjects[1].Scale(rootobjects[0].Integral() /
-			rootobjects[1].Integral())
 	rootobjects[0].Divide(rootobjects[1])
 
 	#account for error in empty bins:
