@@ -1,3 +1,9 @@
+# -*- coding: utf8 -*-
+
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
+
 import Artus.HarryPlotter.tools.getroot as getroot
 
 import numpy as np

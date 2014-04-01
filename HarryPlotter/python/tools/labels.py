@@ -1,6 +1,13 @@
-import time
+# -*- coding: utf-8 -*-
 
 """This module contains functions to add various labels to the plot."""
+
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
+
+import time
+
 
 def add_labels(plotdict):
 	"""This function prints all labels and captions in a plot.

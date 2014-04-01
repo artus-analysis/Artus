@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
+
 import Artus.HarryPlotter.harrycore as harrycore
 import Artus.HarryPlotter.plot1d as plot1d
 import Artus.HarryPlotter.tools.utils as utils

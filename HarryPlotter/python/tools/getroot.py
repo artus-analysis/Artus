@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 """ interaction with ROOT
 
 	file open, reading of histograms and converting to a Histo class
@@ -20,6 +21,11 @@
 			name in the root file (analysis specific)
 	getobject yields a root object
 """
+
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
+
 import ROOT
 import cPickle as pickle
 import copy

@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
+
 #### todo: re-enable live plotting
 #### todo: allow push to webserver
 #### todo: enable 2D plotting with stacked inputs

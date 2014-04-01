@@ -1,5 +1,8 @@
-#!/usr/bin/env python
 # -*- coding: utf8 -*-
+
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
 
 import numpy as np
 import matplotlib

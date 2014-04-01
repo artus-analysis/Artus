@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
 
 import array
 import collections
@@ -112,7 +117,6 @@ def bkgRejVsSigEffPlot(plotdict, invertCutX=False, invertCutY=True,
 	
 	plot1d.get_root_histos(plotdict)
 	_perpareUserargsForScaleFactors(plotdict)
-	pprint.pprint(plotdict)
 	
 	# determine indices for multiple plots
 	plots = {}
