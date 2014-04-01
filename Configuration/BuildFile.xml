@@ -1,6 +1,7 @@
-<use   name="boost"/>
-<use   name="Artus/Core"/>
-<use   name="Artus/Utility"/>
+<use name="boost"/>
+<use name="boost_program_options"/>
+<use name="Artus/Core"/>
+<use name="Artus/Utility"/>
 <flags ADD_SUBDIR="1"/>
 <export>
    <lib   name="1"/>

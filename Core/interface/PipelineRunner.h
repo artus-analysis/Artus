@@ -99,7 +99,7 @@ public:
 				static_cast<filter_base_type&> ( *it ) . InitGlobal(globalSettings);
 			}
 			else {
-				LOG_FATAL( "ProcessNodeType not supported by the pipeline runner" );
+				LOG(FATAL) << "ProcessNodeType not supported by the pipeline runner!";
 			}
 		}
 
@@ -137,7 +137,7 @@ public:
 					globalFilterResult.SetFilterDecision( flt.GetFilterId(), filterResult );
 				}
 				else {
-					LOG_FATAL( "ProcessNodeType not supported by the pipeline runner" );
+					LOG(FATAL) << "ProcessNodeType not supported by the pipeline runner!";
 				}
 			}
 

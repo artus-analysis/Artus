@@ -68,7 +68,10 @@ public:
 	static NodeTypePair ParseProcessNode ( std::string const& sInp );
 
 private:
-	void InitConfig();
+
+	void InitConfig( bool configPreLoaded = false );
+
+	std::pair < bool, el::Level> parseLogLevel(std::string const& inpString) const;
 
 	// load the global produce list from configuration and
 	// use the factory object to add these producers to the pipeline runner
@@ -90,7 +93,7 @@ private:
 				producer_base_type * gProd = factory.createProducer ( ntype.second );
 
 				if ( gProd == ARTUS_CPP11_NULLPTR ){
-					LOG_FATAL( "Error: Global producer with id " + ntype.second + " not found" );
+					LOG(FATAL) << "Global producer with id " << ntype.second << " not found!";
 				} else {
 					runner.AddGlobalProducer( gProd );
 				}
@@ -98,7 +101,7 @@ private:
 				filter_base_type * gProd = factory.createFilter ( ntype.second );
 
 				if ( gProd == ARTUS_CPP11_NULLPTR ){
-					LOG_FATAL( "Error: Global filter with id " + ntype.second + " not found" );
+					LOG(FATAL) << "Global filter with id " << ntype.second << " not found!";
 				} else {
 					runner.AddGlobalFilter( gProd );
 				}
@@ -150,7 +153,7 @@ private:
 						producer_base_type * pProducer = factory.createProducer ( ntype.second );
 
 						if ( pProducer == ARTUS_CPP11_NULLPTR ){
-							 LOG_FATAL( "Error: Local Producer with id " + ntype.second + " not found" );
+							 LOG(FATAL) << "Local Producer with id " << ntype.second << " not found!";
 						} else {
 							pLine->AddProducer ( pProducer );
 						}
@@ -158,7 +161,7 @@ private:
 						filter_base_type * pProducer = factory.createFilter ( ntype.second );
 
 						if ( pProducer == ARTUS_CPP11_NULLPTR ){
-							 LOG_FATAL( "Error: Local Filter with id " + ntype.second + " not found" );
+							 LOG(FATAL) << "Local Filter with id " << ntype.second << " not found!";
 						} else {
 							pLine->AddFilter ( pProducer );
 						}
@@ -189,5 +192,8 @@ private:
 	std::string m_outputPath;
 	stringvector m_fileNames;
 	boost::property_tree::ptree m_propTreeRoot;
+
+	std::string m_minimumLogLevelString;
+
 };
 

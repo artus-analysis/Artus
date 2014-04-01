@@ -49,8 +49,7 @@ void Hist1D::Init() {
 
 void Hist1D::Store(TFile* pRootFile) {
 	assert(pRootFile);
-	LOG( "Storing Histogram " + this->GetRootFileFolder() + "/"
-					+ this->GetName())
+	LOG(INFO) << "Storing Histogram " << this->GetRootFileFolder() << "/" << this->GetName() << ".";
 
 	RootFileHelper::SafeCd(pRootFile, GetRootFileFolder());
 	m_hist->Write((this->GetName()).c_str());

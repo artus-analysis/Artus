@@ -22,6 +22,9 @@
 
 #include "Artus/Example/interface/PtCorrectionProducer.h"
 
+#include "Artus/Utility/interface/ArtusLogging.h"
+
+
 /*
 	This example implements a simple dummy anaylsis which
 	reads entries from a root file and produces various pt plots

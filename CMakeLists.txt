@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 project (Artus)
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wfatal-errors -std=c++0x -Wall -O2 -g")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wfatal-errors -std=c++0x -fpic -Wall -O2 -g")
 
 # to compile with clang, use: cmake . -DCMAKE_CXX_COMPILER=/usr/bin/clang++ -DCMAKE_C_COMPILER=/usr/bin/clang
 
@@ -24,33 +24,37 @@ ${ROOT_LIBRARY_DIR}
 
 include_directories( ${closure_SOURCE_DIR}../ )
 
-add_library(artus_core STATIC
+add_library(artus_core SHARED
 	Core/src/CutFlow.cc
 	Core/src/FilterResult.cc
 	Core/src/Mutation.cc
 	Core/src/ProgressReport.cc
 )
 
-add_library(artus_configuration STATIC
+add_library(artus_configuration SHARED
 	Configuration/src/ArtusConfig.cc
 	Configuration/src/PropertyTreeSupport.cc
 	Configuration/src/RootEnvironment.cc
 	Configuration/src/SettingsBase.cc
 )
 
-add_library(artus_consumer STATIC
+target_link_libraries( artus_configuration 	
+    boost_program_options)
+
+add_library(artus_consumer SHARED
 	Consumer/src/Hist1D.cc
 	Consumer/src/Profile2D.cc
 	Consumer/src/ValueModifier.cc
 )
 
-add_library(artus_provider STATIC
+add_library(artus_provider SHARED
 	Provider/src/ArtusProvider.cc
 )
 
-add_library(artus_utility STATIC
+add_library(artus_utility SHARED
 	Utility/src/RootFileHelper.cc
 	Utility/src/Utility.cc
+	Utility/src/ArtusEasyLoggingDecl.cc
 )
 
 add_executable(artus_core_test

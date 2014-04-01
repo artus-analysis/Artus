@@ -20,6 +20,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "Artus/Utility/interface/easylogging++.h"
+
 //extern std::ofstream * g_logFile;
 
 // value indicating that variable is not defined
@@ -27,13 +29,6 @@
 
 /// compare floats
 #define FLOAT_COMPARE(first, second) (std::abs((first - second) / second) < 0.02)
-
-/// stdout makros
-#define LOG(out) { std::cout << out << std::endl; }
-#define LOG_FILE(out) { std::cout << out << std::endl;/* (*g_logFile) << out << std::endl;*/ }
-#define LOG_FATAL(out) { std::cout << "FATAL: " << out << std::endl;   \
-        /*(*g_logFile) << "FATAL:" << out << std::endl;*/                        \
-        /*g_logFile->close();*/ std::cout.flush(); assert(false); throw 23; }
 
 // vectors
 typedef std::vector<std::string> stringvector;
