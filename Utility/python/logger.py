@@ -103,7 +103,7 @@ def configureModule(argParserArgs=None, printKWArgs=None, logKWArgs=None):
 	printKWArgs
 	                Defaults for print initialization using Namespace notation
 	logKWArgs
-	                Defaults for logging initialization using Namespace notation
+	                Defaults for logging initialization
 	"""
 	printKWArgs = printKWArgs or {}
 	logKWArgs   = logKWArgs or {}
