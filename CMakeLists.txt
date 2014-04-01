@@ -38,6 +38,9 @@ add_library(artus_configuration SHARED
 	Configuration/src/SettingsBase.cc
 )
 
+target_link_libraries( artus_configuration 	
+    boost_program_options)
+
 add_library(artus_consumer SHARED
 	Consumer/src/Hist1D.cc
 	Consumer/src/Profile2D.cc
