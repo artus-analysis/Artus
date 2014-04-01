@@ -1,15 +1,20 @@
+# -*- coding: utf-8 -*-
+
 #### todo: adjust to dictionary plotdict to save root files
 #### todo: allow interaction with external modules
 #### todo: save root histograms for import/export
 #### todo: save command-line settings to reproduce the plot later/ plotfromdict
 #### todo: enable ratiosubplot
 
-
-# -*- coding: utf-8 -*-
 """Plot quantities from data and MC.
 
 	This module is dedicated to the creating 1D plots.
 """
+
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
+
 import numpy
 import math
 import ROOT

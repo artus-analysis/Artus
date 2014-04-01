@@ -1,9 +1,14 @@
-#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """Basic plot formatting and helper module.
 
 This module contains all the often used plotting tools
-
 """
+
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
+
 import os
 import ROOT
 import inspect

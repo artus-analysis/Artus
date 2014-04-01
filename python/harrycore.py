@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
+
 """This module selects which plot function to use
 - a predefined function from
 """
+
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
 
 import socket
 import getpass
@@ -140,12 +145,18 @@ def get_basic_parser(
 		root=False,
 		normalize=False,
 		
-		userargs = None
+		userargs = None,
+		userArgParsers=None
 	
 	):
 	"""This is the basic parser that reads the Harry options from the command line."""
 
-	parser = argparse.ArgumentParser(epilog="Have fun.")
+	if userArgParsers is None:
+		userArgParsers = []
+	
+	parser = argparse.ArgumentParser(epilog="Have fun.",
+	                                 fromfile_prefix_chars="@",
+	                                 parents=[logger.loggingParser] + userArgParsers)
 
 	#plotname
 	parser.add_argument('--plot', '-p', type=str, default=plot,
@@ -281,8 +292,8 @@ def get_basic_parser(
 
 	# Other options
 	group = parser.add_argument_group('Other options')
-	group.add_argument('-v', '--verbose', action='store_true', default=verbose,
-		help="Increased verbosity")
+	#group.add_argument('-v', '--verbose', action='store_true', default=verbose,
+	#	help="Increased verbosity")
 	group.add_argument('--listfunctions', action='store_true', default=listfunctions,
 		help="Show a list of the available functions with docstrings")
 	group.add_argument('--quantities', action='store_true',
@@ -304,6 +315,7 @@ def create_dictionary_from_parser(parser):
 	"""This function creates the Harry-compliant dictionary from an argparse object."""
 
 	opt = parser.parse_args()
+	logger.initLogger(opt)
 
 	if opt.listfunctions:
 		return opt.__dict__

@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
+
 import time
 import numpy as np
 import ROOT
