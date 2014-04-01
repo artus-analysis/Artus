@@ -33,7 +33,7 @@ import Artus.HarryPlotter.tools.fit as fit
 def plot1d(plotdict):
 	"""Function for all data/MC comparison plots for basic quantities."""
 
-	print "A %s plot is created" % (plotdict["plot"])
+	log.info("A 1D %s plot is created" % (plotdict["plot"]))
 
 	get_root_histos(plotdict)
 

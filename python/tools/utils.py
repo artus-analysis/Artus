@@ -17,28 +17,28 @@ import matplotlib.pyplot as plt
 import Artus.HarryPlotter.tools.labels as labels
 
 
+# TODO: delete this obsolete function
 def debug(string):
 	"""Print a string and the line number + file of function call."""
-	frame, filename, line_number, function_name, lines, index =\
-		inspect.getouterframes(inspect.currentframe())[1]
-	print "%s  (line %s in %s)" % (string, line_number, filename)
+	log.debug(string)
 
 
+# TODO: delete this obsolete function
 def fail(fail_message):
-	print fail_message
-	exit(0)
+	log.critical(fail_message)
+	exit(1)
 
 
-def printfunctions(module_list):
+def printfunctions(module_list, logLevel=logging.INFO):
 	"""This function prints the list of functions present in a list of modules,
 	along with their docstrings.
 	"""
 	for module in module_list:
-		print '%s' % module.__name__
+		log.log(logLevel, '%s' % module.__name__)
 		for elem in inspect.getmembers(module, inspect.isfunction):
-			print "  %s" % elem[0]
+			log.log(logLevel, "  %s" % elem[0])
 			if (elem[1].__doc__ is not None):
-				print "	 ", elem[1].__doc__
+				log.log(logLevel, "	 ", elem[1].__doc__)
 
 
 def printquantities(plotdict):
@@ -48,7 +48,7 @@ def printquantities(plotdict):
 	quantities = {}
 
 	for f, name, folder in zip(plotdict['rootfiles'], plotdict['labels'], plotdict['folder']):
-		print "Looking into folder", folder
+		log.info("Looking into folder " + folder)
 		quantities[name] = []
 
 		# Get the ntuple
@@ -62,10 +62,10 @@ def printquantities(plotdict):
 			string = "Ntuple-variables"
 			func = "GetListOfBranches"
 		else:
-			print "Cannot access folder with name '%s'" % folder
-			print "Available folders are:", 
+			log.warning("Cannot access folder with name '%s'!" % folder)
+			log.info("Available folders are:")
 			for i in f.GetListOfKeys():
-				print i.GetName()
+				log.info("\t" + i.GetName())
 			return
 
 		# Get the list of quantities from the object
@@ -75,29 +75,28 @@ def printquantities(plotdict):
 		quantities[name] = set(quantities[name])
 
 	if len(quantities) == 0:
-		print "Could not determine any quantites in this file."
+		log.warning("Could not determine any quantites in this file.")
 		if len(plotdict['rootfiles']) == 0:
-			print "Please specify a file!"
+			log.info("Please specify a file!")
 		if len(plotdict['folder']) == 0:
-			print "Please specify a folder!"
+			log.info("Please specify a folder!")
 		return
 
 	# Print the list of quantities present in ALL objects
 	common_set = quantities[quantities.keys()[0]]
 	for name in quantities.keys()[1:]:
 		common_set = common_set.intersection(quantities[name])
-	print '%s in ALL files:' % string
+	log.info('%s in ALL files:' % string)
 	for q in sorted(common_set, key=lambda v: (v.upper(), v[0].islower())):
-		print "  %s" % q
+		log.info("  %s" % q)
 
 	# Print the list of quantities that are present only in specific files
 	for name in quantities.keys():
 		quantities[name] = quantities[name].difference(common_set)
 		if len(quantities[name]) > 0:
-			print "Quantities only in '%s' file:" % name
-			for q in sorted(quantities[name], key=lambda v: (
-					v.upper(), v[0].islower())):
-				print "  %s" % q
+			log.info("Quantities only in '%s' file:" % name)
+			for q in sorted(quantities[name], key=lambda v: (v.upper(), v[0].islower())):
+				log.info("  %s" % q)
 
 # remove complete plot entries from the plot dict
 def removeplots(plotdict, plotIndices,
@@ -159,10 +158,10 @@ def save(plotdict, figure=None):
 		if plotdict['figure']:
 			figure = plotdict['figure']
 		else:
-			print "No figure object to save!"
+			log.warning("No figure object to save!")
 
 	if not plotdict:
-		print "Please use mpl savefig if no settings are given - Saving as plot.png"
+		log.info("Please use mpl savefig if no settings are given - Saving as plot.png")
 		figure.savefig("plot.png")
 		return
 	if not os.path.exists(plotdict['out']):
@@ -175,16 +174,12 @@ def save(plotdict, figure=None):
 		title = plotdict['figure'].suptitle(plotdict['title'])
 
 	name = plotdict['out'] + '/' + plotdict['filename']
-	print ' -> Saving as',
-	first = True
+	log.info(' -> Saving as')
 	for f in plotdict['formats']:
 		if f in ['pdf', 'png', 'ps', 'eps', 'svg']:
-			if not first:
-				print ",",
-			else:
-				first = False
-			print '%s.%s' % (name, f)
+			log.info('\t%s.%s' % (name, f))
 			figure.savefig(name + '.' + f, bbox_inches='tight', bbox_extra_artists=[title])
 			plt.close(figure)
 		else:
-			print f, "failed. Output type is unknown or not supported."
+			log.error("Failed! Output type is unknown or not supported.")
+

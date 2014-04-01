@@ -98,8 +98,8 @@ def fit(rootobject, plotdict):
 			qstr = xdict.get(quantity.split('_')[-1], "x")
 			plotdict['axes'].text(0.05, 0.950 - (index / 15.), r"$f({3:s}) = {0:.3f} {1:+.3f}\,{3:s} {2:+.3f}\,{3:s}^2$".format(pa, pb, pc, qstr),
 			  va='top', ha='left', transform=plotdict['axes'].transAxes, color=color)
-			print pa, pb, pc
-			print paerr, pberr, pcerr
+			log.debug(pa + " " + pb + " " + pc)
+			log.debug(paerr + " " + pberr + " " + pcerr)
 		if "chi2" in plotdict['fit']:
 			plotdict['axes'].text(0.05, 0.20 - (index / 10.), r"$\chi^2$ / n.d.f. = {0:.2f} / {1:.0f} ".format(chi2, ndf),
 			  va='top', ha='left', transform=plotdict['axes'].transAxes, color=color)

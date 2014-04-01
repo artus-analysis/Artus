@@ -20,7 +20,7 @@ import Artus.HarryPlotter.plot1d as plot1d
 def plot_2d(plotdict):
 	""" """
 	# if no plotdict are given, create:
-	print "A 2D %s plot is created" % (plotdict['plot'])
+	log.info("A 2D %s plot is created" % (plotdict['plot']))
 
 	plot1d.get_root_histos(plotdict)
 	plot1d.get_mpl_histos(plotdict)
