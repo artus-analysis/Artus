@@ -1,5 +1,6 @@
 
 import array
+import collections
 import copy
 import numpy
 import pprint
@@ -23,12 +24,14 @@ class CutEfficiency(object):
 		# calculate efficiencies
 		self._cut_efficiencies = self.get_cut_efficiencies(update=True)
 	
-	def get_cut_efficiencies(self, invertCut=False, update=False):
+	def get_cut_efficiencies(self, invertCut=False, scaleFactor=1.0, update=False):
 		"""
 		Calculate efficiencies for sliding cut thresholds (bin edges)
 		
 		invertCut = True: Select events above cut
 		invertCut = False: Select events below cut
+		
+		scaleFactor for scaling the efficiencies
 		
 		update = True: calculate the efficiencies
 		update = False: use cached efficiencies
@@ -48,6 +51,9 @@ class CutEfficiency(object):
 		if invertCut:
 			cut_efficiencies = (1.0 - self._cut_efficiencies)
 		
+		if scaleFactor != 1.0:
+			cut_efficiencies = (scaleFactor * self._cut_efficiencies)
+		
 		return cut_efficiencies
 	
 	def get_cut_values(self):
@@ -55,17 +61,32 @@ class CutEfficiency(object):
 		return [self._histogram.GetBinLowEdge(xBin) for xBin in xrange(1, self._histogram.GetNbinsX()+2)]
 
 
+def _perpareUserargsForScaleFactors(plotdict):
+	""" Prepare userargs to be treated as scale factors. """
+	if plotdict["userargs"] == None:
+		plotdict["userargs"] = 1.0
+	if isinstance(plotdict["userargs"], basestring) or not isinstance(plotdict["userargs"], collections.Iterable):
+		plotdict["userargs"] = [plotdict["userargs"]]
+	if len(plotdict["userargs"]) == 1:
+		plotdict["userargs"] = len(plotdict["roothistos"]) * plotdict["userargs"]
+	plotdict["userargs"] = [float(arg) for arg in plotdict["userargs"]]
+
+
 def cutEffPlot(plotdict, invertCut=False, yName="Efficiency"):
-	""" Plot cut efficiencies for 1D histograms. """
+	""" Plot cut efficiencies for all 1D histograms.
+	    --userargs can be used for scaling the efficiencies
+	"""
 	
 	plot1d.get_root_histos(plotdict)
+	_perpareUserargsForScaleFactors(plotdict)
 	
 	# replace ROOT histograms by efficiency graphs
-	for index, roothisto in enumerate(plotdict["roothistos"]):
+	for index, roothisto, scaleFactor in enumerate(zip(plotdict["roothistos"], plotdict["userargs"])):
 		cutEfficiency = CutEfficiency(roothisto)
 		efficiencyGraph = ROOT.TGraph(roothisto.GetNbinsX()+1,
 		                              array.array("d", cutEfficiency.get_cut_values()),
-		                              array.array("d", cutEfficiency.get_cut_efficiencies(invertCut=invertCut)))
+		                              array.array("d", cutEfficiency.get_cut_efficiencies(invertCut=invertCut,
+		                                                                                  scaleFactor=scaleFactor)))
 		plotdict["roothistos"][index] = efficiencyGraph
 	
 	plotdict["yname"] = yName
@@ -75,15 +96,23 @@ def cutEffPlot(plotdict, invertCut=False, yName="Efficiency"):
 	utils.save(plotdict)
 
 def invCutEffPlot(plotdict):
-	""" Plot inverted cut efficiencies for 1D histograms. """
+	""" Plot inverted cut efficiencies for all 1D histograms.
+	    --userargs can be used for scaling the efficiencies
+	"""
 	cutEffPlot(plotdict, invertCut=True, yName="1 - Efficiency")
 
 
 def bkgRejVsSigEffPlot(plotdict, invertCutX=False, invertCutY=True,
                        xName="Signal Efficiency", yName="Background Rejection"):
-	""" Plot background rejection vs. signal efficiency for 1D histograms. """
+	""" Plot background rejection vs. signal efficiency for 1D histograms.
+	    Pairs of signal and background histograms are specified by --groups (keywords are sig and bkg)
+	    i.e. --groups sig_1 bgk_1 sig2 bkg2 provides 2 graphs in case four histograms are read in
+	    --userargs can be used for scaling the efficiencies
+	"""
 	
 	plot1d.get_root_histos(plotdict)
+	_perpareUserargsForScaleFactors(plotdict)
+	pprint.pprint(plotdict)
 	
 	# determine indices for multiple plots
 	plots = {}
@@ -99,9 +128,14 @@ def bkgRejVsSigEffPlot(plotdict, invertCutX=False, invertCutY=True,
 		sigCutEfficiency = CutEfficiency(plotdict["roothistos"][plotIndices["sig"]])
 		bkgCutEfficiency = CutEfficiency(plotdict["roothistos"][plotIndices["bkg"]])
 		
+		scaleFactorX = plotdict["userargs"][plotIndices["sig"]]
+		scaleFactorY = plotdict["userargs"][plotIndices["bkg"]]
+		
 		efficiencyGraph = ROOT.TGraph(plotdict["roothistos"][plotIndices["sig"]].GetNbinsX()+1,
-		                              array.array("d", sigCutEfficiency.get_cut_efficiencies(invertCut=invertCutX)),
-		                              array.array("d", bkgCutEfficiency.get_cut_efficiencies(invertCut=invertCutY)))
+		                              array.array("d", sigCutEfficiency.get_cut_efficiencies(invertCut=invertCutX,
+		                                                                                     scaleFactor=scaleFactorX)),
+		                              array.array("d", bkgCutEfficiency.get_cut_efficiencies(invertCut=invertCutY,
+		                                                                                     scaleFactor=scaleFactorY)))
 		
 		plotdict["roothistos"][plotIndices["sig"]] = efficiencyGraph
 	
@@ -118,19 +152,31 @@ def bkgRejVsSigEffPlot(plotdict, invertCutX=False, invertCutY=True,
 
 def bkgRejVsSigRejPlot(plotdict, invertCutX=True, invertCutY=True,
                        xName="Signal Rejection", yName="Background Rejection"):
-	""" Plot background rejection vs. signal rejection for 1D histograms. """
+	""" Plot background rejection vs. signal rejection for 1D histograms.
+	    Pairs of signal and background histograms are specified by --groups (keywords are sig and bkg)
+	    i.e. --groups sig_1 bgk_1 sig2 bkg2 provides 2 graphs in case four histograms are read in
+	    --userargs can be used for scaling the efficiencies
+	"""
 	bkgRejVsSigEffPlot(plotdict, invertCutX=invertCutX, invertCutY=invertCutY,
                        xName=xName, yName=yName)
 
-def bkgEffVsSigRejPlot(plotdict, invertCutX=True, invertCutY=False,
-                       xName="Signal Rejection", yName="Background Efficiency"):
-	""" Plot background efficiency vs. signal rejection for 1D histograms. """
+def fakeRateVsSigRejPlot(plotdict, invertCutX=True, invertCutY=False,
+                       xName="Signal Rejection", yName="Fake Rate"):
+	""" Plot fake rate vs. signal rejection for 1D histograms.
+	    Pairs of signal and background histograms are specified by --groups (keywords are sig and bkg)
+	    i.e. --groups sig_1 bgk_1 sig2 bkg2 provides 2 graphs in case four histograms are read in
+	    --userargs can be used for scaling the efficiencies
+	"""
 	bkgRejVsSigEffPlot(plotdict, invertCutX=invertCutX, invertCutY=invertCutY,
                        xName=xName, yName=yName)
 
-def bkgEffVsSigEffPlot(plotdict, invertCutX=False, invertCutY=False,
-                       xName="Signal Efficiency", yName="Background Efficiency"):
-	""" Plot background efficiency vs. signal efficiency for 1D histograms. """
+def fakeRateVsSigEffPlot(plotdict, invertCutX=False, invertCutY=False,
+                       xName="Signal Efficiency", yName="Fake Rate"):
+	""" Plot fake rate vs. signal efficiency for 1D histograms.
+	    Pairs of signal and background histograms are specified by --groups (keywords are sig and bkg)
+	    i.e. --groups sig_1 bgk_1 sig2 bkg2 provides 2 graphs in case four histograms are read in
+	    --userargs can be used for scaling the efficiencies
+	"""
 	bkgRejVsSigEffPlot(plotdict, invertCutX=invertCutX, invertCutY=invertCutY,
                        xName=xName, yName=yName)
 
