@@ -48,7 +48,7 @@ public:
 			 part != event.m_genParticles->end(); ++part)
 		{
 			// Filling Higgs, its daughter & granddaughter particles
-		        if ((abs(part->pdgId()) == bosonPdgId)&&(part->status()==3))// only Higgs with status 3 are needed
+		        if ((abs(part->pdgId()) == bosonPdgId)&&(part->status()==3))// only Boson with status 3 are considered
 			{ 
 				product.m_genHiggs.push_back(&(*part));
 
@@ -56,8 +56,8 @@ public:
 				std::vector<std::vector<KGenParticle*>> gdaughters; 
 				for (unsigned int i=0; i<part->daughterIndices.size(); ++i) 
 				{
-					// Higgs with Status 2 is also considered as Higgs status 3 daughter. We do not need this Particles, because it does not decay in products.
-					// This leads to the condition, that we search only for Higgs status 3 daughters with PdgId != 25.
+					// Higgs with Status 2 is also considered as Higgs status 3 daughter, what leads to the condition, 
+					// that we search only for Higgs daughters with PdgId != 25.
 					unsigned int indDaughter = part->daughterIndex(i);
 				        if ( (indDaughter < event.m_genParticles->size()) && ( abs((event.m_genParticles->at(indDaughter)).pdgId()) != bosonPdgId) )
 				        {      
