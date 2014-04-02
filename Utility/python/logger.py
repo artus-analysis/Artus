@@ -230,7 +230,7 @@ def initLogger(argParserArgs=None, name="", logLevel="debug", logFiles=[], logSt
 	for logFile in logFiles:
 		loggingHandlers.append(logging.FileHandler(logFile))
 	# Fallback: logging enabled but no target, use STDOUT
-	if _thisLogger.getEffectiveLevel() > 0 and not loggingHandlers:
+	if not loggingHandlers:
 		loggingHandlers.append(logging.StreamHandler(sys.stdout))
 	if reinitialize:
 		_thisLogger.handlers = []
