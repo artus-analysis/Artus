@@ -58,7 +58,7 @@ def getLoggingParser(parserErrorLevels=[]):
 
 	_loggingOptionsGroup = _loggingParser.add_argument_group("Logging options")
 	_loggingOptionsGroup.add_argument("--log-level",
-	                                 default = "critical",
+	                                 default = "info",
 	                                 choices = _parserErrorLevels,
 	                                 help    = "Detail level of logging. [Default: %(default)s]")
 	_loggingOptionsGroup.add_argument("--log-files",
