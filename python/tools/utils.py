@@ -129,7 +129,7 @@ def setaxislimits(plotdict):
 	else:
 		plotdict['axes'].set_xlim(plotdict['xlims'][:2])
 	if plotdict['xlog']:
-		plotdict['axes'].set_xscale('log')
+		plotdict['axes'].set_xscale('log', nonposx='mask')
 
 	# y:
 	if 'y' in plotdict and plotdict['ylims'] is not None:
@@ -142,7 +142,7 @@ def setaxislimits(plotdict):
 		plotdict['axes'].set_ylim(top= 1.2 * max(d.ymax() for d in plotdict['mplhistos']), bottom = bottom)
 
 	if plotdict['log']:
-		plotdict['axes'].set_yscale('log')
+		plotdict['axes'].set_yscale('log', nonposy='mask')
 
 	if plotdict['grid']:
 		plotdict['axes'].grid(True)
