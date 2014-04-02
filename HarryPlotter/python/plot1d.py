@@ -111,8 +111,10 @@ def plot1d_mpl(plotdict):
 			ax.bar(histo.x, histo.y, widths, bottom=bottom, yerr=yerr, 
 					ecolor=color, label=label, fill=True, facecolor=color, edgecolor=color, alpha=0.8)
 			stack[group] = [x + y for x, y in zip(histo.y, stack[group])]
-		else: 
-			ax.errorbar(histo.xc, histo.y, yerr, drawstyle='steps-mid', color=color, fmt=marker, capsize=0, label=label, zorder=10)
+		else:
+			print histo.classname
+			ax.errorbar(histo.xc, histo.y, yerr, color=color, fmt=marker, capsize=0, label=label, zorder=10,
+			            drawstyle='default' if "TGraph" in histo.classname else 'steps-mid')
 		fit.fit(rootobject, plotdict)
 
 def add_ratiosubplot(plotdict):
@@ -139,7 +141,7 @@ def add_ratiosubplot(plotdict):
 	# This should be done automatically by MPL because of the shared axis;
 	# I dont know why it doesnt:
 	if plotdict['xlog']: 
-		plotdict['ratiosubplotaxes'].set_xscale('log')
+		plotdict['ratiosubplotaxes'].set_xscale('log', nonposx='mask')
 
 
 def plot1d_root(plotdict):

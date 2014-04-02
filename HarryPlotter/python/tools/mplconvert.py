@@ -49,6 +49,7 @@ def root2histo(histo, rootfile='', rebin=1):
 		histo.RebinY(rebin)
 		hst.source = rootfile
 		hst.name = histo.GetName()
+		hst.classname = histo.ClassName()
 		hst.title = histo.GetTitle()
 		hst.xlabel = histo.GetXaxis().GetTitle()
 		hst.ylabel = histo.GetYaxis().GetTitle()
@@ -75,6 +76,7 @@ def root2histo(histo, rootfile='', rebin=1):
 		# histo is a graph, read it
 		hst.source = rootfile
 		hst.name = histo.GetName()
+		hst.classname = histo.ClassName()
 		hst.title = histo.GetTitle()
 		hst.xlabel = histo.GetXaxis().GetTitle()
 		hst.ylabel = histo.GetYaxis().GetTitle()
