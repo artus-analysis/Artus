@@ -19,8 +19,8 @@ class CutFlowConsumer: public CutFlowConsumerBase< TraxTypes > {
 public:
 
 	virtual void Finish() ARTUS_CPP11_OVERRIDE {
-		std::cout << "Cut Flow for pipeline: " << m_pipelineName << std::endl;
-		std::cout << m_flow.ToString() << std::endl;
+		LOG(INFO) << "Cut Flow for pipeline" << m_pipelineName << ":";
+		LOG(INFO) << m_flow.ToString();
 	}
 
 };

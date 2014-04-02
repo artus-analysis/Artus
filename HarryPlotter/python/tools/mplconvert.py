@@ -1,5 +1,12 @@
+# -*- coding: utf-8 -*-
+
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
+
 import time
 import numpy as np
+import ROOT
 
 
 def root2histo(histo, rootfile='', rebin=1):
@@ -7,8 +14,8 @@ def root2histo(histo, rootfile='', rebin=1):
 	hst = Histo()
 
 	if not hasattr(histo, 'ClassName'):
-		print histo, "is no TObject. It could not be converted."
-		exit(0)
+		log.critical(histo + " is no TObject. It could not be converted.")
+		exit(1)
 	# Detect if it is a histogram or a graph
 	if histo.ClassName() == 'TH1D' or histo.ClassName() == 'TH1F' or \
 			histo.ClassName() == 'TProfile':
@@ -38,10 +45,11 @@ def root2histo(histo, rootfile='', rebin=1):
 		hst.meanerr = histo.GetMeanError()
 	elif histo.ClassName() == 'TH2D' or histo.ClassName() == 'TH2F' or histo.ClassName() == 'TProfile2D':
 		hst = Histo2D()
-		histo.RebinX(rebin[0])
-		histo.RebinY(rebin[1])
+		histo.RebinX(rebin)
+		histo.RebinY(rebin)
 		hst.source = rootfile
 		hst.name = histo.GetName()
+		hst.classname = histo.ClassName()
 		hst.title = histo.GetTitle()
 		hst.xlabel = histo.GetXaxis().GetTitle()
 		hst.ylabel = histo.GetYaxis().GetTitle()
@@ -68,6 +76,7 @@ def root2histo(histo, rootfile='', rebin=1):
 		# histo is a graph, read it
 		hst.source = rootfile
 		hst.name = histo.GetName()
+		hst.classname = histo.ClassName()
 		hst.title = histo.GetTitle()
 		hst.xlabel = histo.GetXaxis().GetTitle()
 		hst.ylabel = histo.GetYaxis().GetTitle()
@@ -77,19 +86,22 @@ def root2histo(histo, rootfile='', rebin=1):
 			histo.GetPoint(i, a, b)
 			x = float(a)
 			y = float(b)
+			xerr = histo.GetErrorX(i)
+			yerr = histo.GetErrorY(i)
 			hst.x.append(x)
 			hst.xc.append(x)
 			hst.y.append(y)
-			hst.xerr.append(histo.GetErrorX(i))
-			hst.yerr.append(histo.GetErrorY(i))
+			hst.xerr.append(xerr if xerr > 0.0 else 0.0)
+			hst.yerr.append(yerr if yerr > 0.0 else 0.0)
 	else:
 		# histo is of unknown type
-		print "The object '" + str(histo) + "' is no histogram, no graph and no profile!",
-		print "It could not be converted."
-		exit(0)
+		log.critical("The object '" + str(histo) + "' is no histogram, no graph and no profile! It could not be converted!")
+		exit(1)
 	return hst
 
 
+# TODO: remove functions modifying the histograms, since these functions are better checked in ROOT histogram classes
+# TODO: I.e. Sum of error squares missing for correct modification of histograms
 class Histo:
 	"""Reduced Histogramm or Graph
 
@@ -165,10 +177,10 @@ class Histo:
 
 	def __div__(self, other):
 		#if 0 in other.y:
-		#	print "Division by zero!"
+		#	log.error("Division by zero!")
 		#	return None
 		if len(self) != len(other):
-			print "Histos of different lengths! The shorter is taken."
+			log.error("Histos of different lengths! The shorter is taken.")
 		res = Histo()
 		res.x = [0.5 * (a + b) for a, b in zip(self.x, other.x)]
 		res.xc = [0.5 * (a + b) for a, b in zip(self.xc, other.xc)]
@@ -238,7 +250,7 @@ class Histo:
 		text += "\n#  i	 x		xmid	  y			   ynorm"
 		text += "		   yerr			ynormerr\n"
 		if len(self.y) != len(self.x):
-			print "This will fail because x and y have not the same length."
+			log.error("This will fail because x and y have not the same length!")
 		if self.xc == []:
 			self.xc = self.x
 		for i in range(len(self.y)):
@@ -255,7 +267,7 @@ class Histo:
 			f = file(filename, 'w')
 			pickle.dump(self, f)
 		except:
-			print "File " + filename + " could not be written."
+			log.error("File " + filename + " could not be written!")
 		finally:
 			f.close()
 
@@ -312,13 +324,13 @@ class Histo2D(Histo):
 def histo2root(plot):
 	"""Convert a Histo object to a root histogram (TH1D)"""
 	title = plot.title + ";"  # + plot.xlabel() + ";" + plot.ylabel()
-	print len(plot), title
-	print min(plot.x), max(plot.x)
+	log.info(len(plot) + " " + title)
+	log.info(min(plot.x) + " " + max(plot.x))
 	th1d = ROOT.TH1D(plot.name, title, len(plot), min(plot.x), max(plot.x))
 
 	if not hasattr(plot, 'dropbin'):
-		print histo, "is no Histo. It could not be converted."
-		exit(0)
+		log.critical(histo + " is no Histo. It could not be converted!")
+		exit(1)
 	for i in range(0, len(plot)):
 			th1d.SetBinContent(i + 1, plot.y[i])
 			th1d.SetBinError(i + 1, plot.yerr[i])
@@ -331,8 +343,8 @@ def histo2root(plot):
 def writePlotToRootfile(plot, filename, plotname=None):
 	if hasattr(plot, 'dropbin'):
 		histo = histo2root(plot)
-		print "File", filename
-		print "plot", plotname
+		log.info("File" + " " + filename)
+		log.info("Plot" + " " + plotname)
 		f = ROOT.TFile("file.root", "RECREATE")
 		histo.Write()
 		f.Close()

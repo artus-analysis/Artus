@@ -35,8 +35,8 @@ public:
 	}
 
 	virtual void ProduceGlobal(event_type const& event,
-	                           product_type& product,
-	                           global_setting_type const& globalSettings) const
+							   product_type& product,
+							   global_setting_type const& globalSettings) const
 	{
 		// Reading Boson PdgId from TauSpinnerSettings.json
 		stringvector bosonPdgIdVector = globalSettings.GetBosonPdgId();
@@ -77,16 +77,16 @@ public:
 							}
 							else
 							{
-					  			LOG("Granddaughter index larger than size of gen particle vector:" 
-					      			<< indGranddaughter << ">" << event.m_genParticles->size() << ".");
+					  			LOG (ERROR) << "Granddaughter index larger than size of gen particle vector:" 
+					      			<< indGranddaughter << ">" << event.m_genParticles->size() << ".";
 							}						
 						}
 						gdaughters.push_back(granddaughters);					
 					}
 					else if (!(indDaughter < event.m_genParticles->size()))
 					{
-					  LOG("Daughter index larger than size of gen particle vector:" 
-					      << indDaughter << ">" << event.m_genParticles->size() << ".");
+					  LOG(ERROR) << "Daughter index larger than size of gen particle vector:" 
+					      << indDaughter << ">" << event.m_genParticles->size() << ".";
 					}
 				}
 				product.m_genHiggsDaughters.push_back(daughters);

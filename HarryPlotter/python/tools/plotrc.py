@@ -1,8 +1,15 @@
-# -*- cod
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """Matplotlib rc specs
 
    here everything is set, columns can be added
 """
+
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
+
 import sys
 
 
@@ -70,8 +77,7 @@ def getstyle(style='generic', tab=rctable):
 	try:
 		col = tab.index(style)
 	except ValueError:
-		print repr(style), "is no valid style from", tab[1:maxcol]
-		print repr(tab[1]), "is used instead."
+		lor.warning(repr(style) + " is no valid style from " + tab[1:maxcol] + "! " + repr(tab[1]) + " is used instead!")
 		col = 1
 	# check table
 	assert len(tab) % maxcol == 0, "Wrong table format."
@@ -87,10 +93,12 @@ def getstyle(style='generic', tab=rctable):
 
 
 if __name__ == "__main__":
+	logger.initLogger()
+
 	if len(sys.argv) > 1:
 		d = getstyle(sys.argv[1])
 	else:
 		d = get_style()
 	for k, v in d.items():
-		print k, ":", v
+		log.info(k + " : " + v)
 

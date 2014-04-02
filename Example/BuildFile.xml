@@ -1,0 +1,13 @@
+<use name="root"/>
+<use name="rootmath"/>
+<use name="boost"/>
+<use name="boost_regex"/>
+<use name="Artus/Configuration"/>
+<use name="Artus/Consumer"/>
+<use name="Artus/Utility"/>
+
+<flags ADD_SUBDIR="1"/>
+
+<export>
+   <lib   name="1"/>
+</export>

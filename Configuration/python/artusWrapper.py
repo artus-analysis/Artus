@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
+
 import argparse
 import glob
-import logging
 import os
 import sys
 import tempfile
@@ -10,7 +13,6 @@ import hashlib
 import json
 import subprocess
 
-import Artus.Utility.logger as logger
 import Artus.Utility.tools as tools
 import Artus.Configuration.jsonTools as jsonTools
 
@@ -21,7 +23,6 @@ class ArtusWrapper(object):
 
 		self._config = jsonTools.JsonDict()
 		self._executable = executable
-		self._logger = logging.getLogger(__name__)
 
 		self._parser = None
 		#Load default argument parser
@@ -44,7 +45,7 @@ class ArtusWrapper(object):
 		# save final config
 		self.saveConfig()
 		if self._args.print_config:
-			print self._config
+			log.info(self._config)
 
 		#Run Artus if desired
 		if not self._args.no_run:
@@ -108,7 +109,7 @@ class ArtusWrapper(object):
 			filepath = os.path.join(tempfile.gettempdir(), basename)
 		self._configFilename = filepath
 		self._config.save(filepath)
-		logging.getLogger(__name__).info("Saved JSON config \"%s\" for temporary usage." % self._configFilename)
+		log.info("Saved JSON config \"%s\" for temporary usage." % self._configFilename)
 	
 	def expandConfig(self):
 
@@ -129,9 +130,19 @@ class ArtusWrapper(object):
 				pipelineJsonDict.append(jsonTools.JsonDict.expandAll(*map(lambda pipelineConfig: jsonTools.JsonDict.mergeAll(*pipelineConfig.split()), pipelineConfigs)))
 			pipelineJsonDict = jsonTools.JsonDict.mergeAll(*pipelineJsonDict)
 			pipelineJsonDict = jsonTools.JsonDict({"Pipelines": pipelineJsonDict})
+		pipelineJsonDict = jsonTools.JsonDict(pipelineJsonDict)
+		
+		# treat pipeline base configs
+		pipelineBaseJsonDict = jsonTools.JsonDict()
+		if self._args.pipeline_base_configs and len(self._args.pipeline_base_configs) > 0:
+			pipelineBaseJsonDict = jsonTools.JsonDict({
+				"Pipelines" : {
+					pipeline : jsonTools.JsonDict(*self._args.pipeline_base_configs) for pipeline in pipelineJsonDict["Pipelines"].keys()
+				}
+			})
 		
 		# merge resulting pipeline config into the main config
-		self._config += jsonTools.JsonDict(pipelineJsonDict)
+		self._config += (pipelineBaseJsonDict + pipelineJsonDict)
 		
 		# treat includes
 		self._config = self._config.doIncludes()
@@ -158,6 +169,8 @@ class ArtusWrapper(object):
 		configOptionsGroup = self._parser.add_argument_group("Config options")
 		configOptionsGroup.add_argument("-c", "--base-configs", nargs="+", required=False, default={},
 	                                 help="JSON base configurations. All configs are merged.")
+		configOptionsGroup.add_argument("-C", "--pipeline-base-configs", nargs="+",
+	                                 help="JSON pipeline base configurations. All pipeline configs will be merged with these common configs.")
 		configOptionsGroup.add_argument("-p", "--pipeline-configs", nargs="+", action="append",
 	                                 help="JSON pipeline configurations. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")
 		configOptionsGroup.add_argument("--add-repo-versions", default=True, action="store_true",
@@ -208,13 +221,14 @@ class ArtusWrapper(object):
 				os.makedirs(outputDir)
 	
 			# call C++ executable locally
-			command = [self._executable, self._configFilename]
-			logging.getLogger(__name__).info("Execute \"%s\"." % command)
-			exitCode = subprocess.call(command)
+			command = self._executable + " " + self._configFilename
+			log.info("Execute \"%s\"." % command)
+			exitCode = logger.subprocessCall(command.split())
+			
 			if exitCode != 0:
-				logging.getLogger(__name__).error("Exit with code %s.\n\n" % exitCode)
-				logging.getLogger(__name__).info("Dump configuration:\n")
-				print self._configFilename # TODO
+				log.error("Exit with code %s.\n\n" % exitCode)
+				log.info("Dump configuration:\n")
+				log.info(self._configFilename) # TODO
 	
 		# remove tmp. config
 		# logging.getLogger(__name__).info("Remove temporary config file.")

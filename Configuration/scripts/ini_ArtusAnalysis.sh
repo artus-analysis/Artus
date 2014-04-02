@@ -16,3 +16,6 @@ elif [[ `hostname` == *cern* ]]; then
 	export ARTUS_WORK_BASE="/afs/cern.ch/work/${USER:0:1}/${USER}/artus/"
 fi
 
+# init HarryPlotter
+source $CMSSW_BASE/src/Artus/HarryPlotter/scripts/ini_harry.sh
+

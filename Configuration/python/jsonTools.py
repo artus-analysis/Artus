@@ -1,10 +1,13 @@
 
 # -*- coding: utf-8 -*-
 
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
+
 import collections
 import copy
 import json
-import logging
 import os
 import pprint
 import ROOT
@@ -116,7 +119,7 @@ class JsonDict(dict):
 	def readJsonDict(fileName):
 		fileName = os.path.expandvars(fileName)
 		if not os.path.exists(fileName):
-			logging.getLogger(__name__).critical("File \"%s\" does not exist!" % fileName)
+			log.critical("File \"%s\" does not exist!" % fileName)
 			sys.exit(1)
 
 		jsonString = ""
@@ -124,7 +127,7 @@ class JsonDict(dict):
 			rootFile = ROOT.TFile(fileName, "READ")
 			jsonString = rootFile.Get(JsonDict.PATH_TO_ROOT_CONFIG)
 			if not jsonString:
-				logging.getLogger(__name__).critical("Could not read \"%s\" from file \"%s\"!" % (JsonDict.PATH_TO_ROOT_CONFIG, rootFileName))
+				log.critical("Could not read \"%s\" from file \"%s\"!" % (JsonDict.PATH_TO_ROOT_CONFIG, rootFileName))
 				sys.exit(1)
 			jsonString = str(jsonString.GetString())
 			rootFile.Close()
@@ -136,8 +139,8 @@ class JsonDict(dict):
 		try:
 			jsonDict = json.loads(jsonString)
 		except ValueError, e:
-			logging.getLogger(__name__).critical("Invalid JSON syntax in file \"%s\"." % fileName)
-			logging.getLogger(__name__).critical(str(e))
+			log.critical("Invalid JSON syntax in file \"%s\"." % fileName)
+			log.critical(str(e))
 			sys.exit(1)
 		return JsonDict(jsonDict)
 

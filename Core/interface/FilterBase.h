@@ -53,7 +53,7 @@ public:
 	virtual bool DoesEventPassGlobal(event_type const& event,
 			product_type const& product, global_setting_type const& globalSettings) const
 	{
-		LOG_FATAL("DoesEventPassGlobal for filter " << this->GetFilterId() << " is not implemented");
+		LOG(FATAL) << "DoesEventPassGlobal for filter " << this->GetFilterId() << " is not implemented!";
 		return false;
 	}
 
@@ -61,7 +61,7 @@ public:
 	virtual bool DoesEventPassLocal(event_type const& event,
 			product_type const& product, setting_type const& settings) const
 	{
-		LOG_FATAL("DoesEventPassLocal for filter " << this->GetFilterId() << " is not implemented");
+		LOG(FATAL) << "DoesEventPassLocal for filter " << this->GetFilterId() << " is not implemented!";
 		return false;
 	}
 

@@ -25,7 +25,7 @@ public:
 		T ob = (T) pDir->Get(objName.c_str());
 
 		if (ob == NULL) {
-			LOG_FATAL("Cant load " + objName + " from directory " + pDir->GetName());
+			LOG(FATAL) << "Cant load " << objName << " from directory " << pDir->GetName() << "!";
 		}
 		return ob;
 	}

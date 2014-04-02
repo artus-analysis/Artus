@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
+
 import argparse
 import json
-import logging
 import pprint
 import sys
 
 import ROOT
 
-import Artus.Utility.logger as logger
 import Artus.Configuration.jsonTools as jsonTools
 
 
@@ -38,21 +40,21 @@ def main():
 	minFiles = 1
 	maxFiles = 2 if args.compare else 1
 	if len(args.files) < minFiles:
-		logging.getLogger(__name__).critical("Need a mininum number of %d input files!" % minFiles)
+		log.critical("Need a mininum number of %d input files!" % minFiles)
 		sys.exit(1)
 	if len(args.files) > maxFiles:
-		logging.getLogger(__name__).warning("Only the first %d file(s) are taken as input." % maxFiles)
+		log.warning("Only the first %d file(s) are taken as input." % maxFiles)
 	
 	if args.compare:
 		diffDictA, diffDictB = jsonTools.JsonDict(args.files[0]) - jsonTools.JsonDict(args.files[1])
 		
-		logging.getLogger(__name__).info("Diff in file \"%s\":\n" % args.files[0])
-		print jsonTools.JsonDict(diffDictA)
+		log.info("Diff in file \"%s\":\n" % args.files[0])
+		log.info(jsonTools.JsonDict(diffDictA))
 		
-		logging.getLogger(__name__).info("\n\n")
+		log.info("\n\n")
 		
-		logging.getLogger(__name__).info("Diff in file \"%s\":\n" % args.files[1])
-		print jsonTools.JsonDict(diffDictB)
+		log.info("Diff in file \"%s\":\n" % args.files[1])
+		log.info(jsonTools.JsonDict(diffDictB))
 	
 	elif args.compare_pipelines:
 		jsonDict = jsonTools.JsonDict(args.files[0])
@@ -74,19 +76,19 @@ def main():
 			for pipelineName2, pipeline2 in pipelines2.items():
 				if pipelineName1 == pipelineName2: continue
 				
-				logging.getLogger(__name__).info("Comparison of pipeline \"%s\" with pipeline \"%s\":\n" % (pipelineName1, pipelineName2))
+				log.info("Comparison of pipeline \"%s\" with pipeline \"%s\":\n" % (pipelineName1, pipelineName2))
 				
 				diffDictA, diffDictB = jsonTools.JsonDict(pipeline1) - jsonTools.JsonDict(pipeline2)
 		
-				logging.getLogger(__name__).info("Diff in pipeline \"%s\":\n" % pipelineName1)
-				print jsonTools.JsonDict(diffDictA)
+				log.info("Diff in pipeline \"%s\":\n" % pipelineName1)
+				log.info(jsonTools.JsonDict(diffDictA))
 		
-				logging.getLogger(__name__).info("\n\n")
+				log.info("\n\n")
 		
-				logging.getLogger(__name__).info("Diff in pipeline \"%s\":\n" % pipelineName2)
-				print jsonTools.JsonDict(diffDictB)
+				log.info("Diff in pipeline \"%s\":\n" % pipelineName2)
+				log.info(jsonTools.JsonDict(diffDictB))
 				
-				logging.getLogger(__name__).info((50*"-") + "\n")
+				log.info((50*"-") + "\n")
 				
 	
 	else:
