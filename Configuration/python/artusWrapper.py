@@ -100,7 +100,7 @@ class ArtusWrapper(object):
 		return self._config
 
 	def setConfig(self, config):
-		self._config = config
+		self._config = jsonTools.JsonDict(config)
 
 	def saveConfig(self, filepath=None):
 		"""Save Config to File"""
