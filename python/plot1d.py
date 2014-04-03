@@ -109,7 +109,6 @@ def plot1d_mpl(plotdict):
 					ecolor=color, label=label, fill=True, facecolor=color, edgecolor=color, alpha=0.8)
 			stack[group] = [x + y for x, y in zip(histo.y, stack[group])]
 		else:
-			print histo.classname
 			ax.errorbar(histo.xc, histo.y, yerr, color=color, fmt=marker, capsize=0, label=label, zorder=10,
 			            drawstyle='default' if "TGraph" in histo.classname else 'steps-mid')
 		fit.fit(rootobject, plotdict)
