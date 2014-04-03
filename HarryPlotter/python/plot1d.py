@@ -40,6 +40,7 @@ def plot1d(plotdict):
 	if plotdict['backend'] == 'root':
 		plot1d_root(plotdict)
 	elif plotdict['backend'] == 'mpl':
+		get_mpl_histos(plotdict)
 		plot1d_mpl(plotdict)
 		if plotdict['ratiosubplot']:
 			add_ratiosubplot(plotdict)
@@ -67,11 +68,7 @@ def get_mpl_histos(plotdict):
 
 
 def plot1d_mpl(plotdict):
-	"""Create Matplotlib plots from the ROOT histograms."""
-
-	# convert histograms
-	# TODO: convert just before plotting to avoid editing MPL histograms, because ROOT histograms are better tested
-	get_mpl_histos(plotdict)
+	"""Create Matplotlib plots from the MPL histograms."""
 
 	# use the given fig/axis or create new one:
 	if not plotdict['axes'] and not plotdict['figure']:
