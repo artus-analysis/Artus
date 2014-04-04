@@ -3,6 +3,7 @@
 #include <cstdlib>
 
 #include <boost/program_options.hpp>
+#include <boost/algorithm/string/trim.hpp>
 
 #include "TObjString.h"
 
@@ -143,6 +144,8 @@ ArtusConfig::NodeTypePair ArtusConfig::ParseProcessNode(std::string const& sInp)
 {
 	std::vector < std::string > splitted;
 	boost::algorithm::split(splitted, sInp, boost::algorithm::is_any_of(":"));
+	transform(splitted.begin(), splitted.end(), splitted.begin(),
+	          [](std::string s) { return boost::algorithm::trim_copy(s); });
 
 	if (splitted.size() != 2)
 	{
