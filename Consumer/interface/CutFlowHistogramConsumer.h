@@ -1,9 +1,13 @@
 
 #pragma once
 
+//#include <boost/scoped_ptr.hpp>
+
 #include <TH1.h>
+#include "TROOT.h"
 
 #include "Artus/Core/interface/Cpp11Support.h"
+#include "Artus/Utility/interface/RootFileHelper.h"
 
 #include "Artus/Consumer/interface/CutFlowConsumerBase.h"
 
@@ -82,10 +86,13 @@ public:
 		CutFlowConsumerBase<TTypes>::Finish();
 		
 		// save histograms
-		m_cutFlowUnweightedHist->Write();
+		RootFileHelper::SafeCd(this->GetPipelineSettings().GetRootOutFile(),
+		                       this->GetPipelineSettings().GetRootFileFolder());
+		
+		m_cutFlowUnweightedHist->Write(m_cutFlowUnweightedHist->GetName());
 	
 		if(m_addWeightedCutFlow) {
-			m_cutFlowWeightedHist->Write();
+			m_cutFlowWeightedHist->Write(m_cutFlowWeightedHist->GetName());
 		}
 	}
 
@@ -104,19 +111,20 @@ private:
 		// filters
 		std::vector<std::string> filterNames = filterResult.GetFilterNames();
 		int nFilters = filterNames.size();
-
-		// title and names for histograms
-		std::string cutFlowHistTitle("Cut Flow for Pipeline \"" + this->GetPipelineSettings().GetName() + "\"");
-		std::string cutFlowUnweightedHistName(this->GetPipelineSettings().GetName() + "_cutFlowUnweighted");
-		std::string cutFlowWeightedHistName(this->GetPipelineSettings().GetName() + "_cutFlowWeighted");
 	
 		// histograms
-		// TODO: select right directory in ROOT output file?
-		m_cutFlowUnweightedHist = new TH1F(cutFlowUnweightedHistName.c_str(), cutFlowHistTitle.c_str(),
+		RootFileHelper::SafeCd(this->GetPipelineSettings().GetRootOutFile(),
+		                       this->GetPipelineSettings().GetRootFileFolder());
+		
+		std::string cutFlowHistTitle("Cut Flow for Pipeline \"" + this->GetPipelineSettings().GetName() + "\"");
+		
+		m_cutFlowUnweightedHist = new TH1F("cutFlowUnweighted",
+		                                   cutFlowHistTitle.c_str(),
 		                                   nFilters+1, 0.0, nFilters+1.0);
 	
 		if(m_addWeightedCutFlow) {
-			m_cutFlowWeightedHist = new TH1F(cutFlowWeightedHistName.c_str(), cutFlowHistTitle.c_str(),
+			m_cutFlowWeightedHist = new TH1F("cutFlowWeighted",
+			                                 cutFlowHistTitle.c_str(),
 			                                 nFilters+1, 0.0, nFilters+1.0);
 		}
 	

@@ -12,6 +12,7 @@
 
 #include "Artus/Core/interface/ConsumerBase.h"
 #include "Artus/Core/interface/GlobalInclude.h"
+#include "Artus/Utility/interface/RootFileHelper.h"
 
 /*
 Base class for all Consumers which output some form of Ntuple
@@ -37,9 +38,12 @@ public:
 		m_quantitiesVector = pset->GetSettings().GetQuantities();
 		m_quantities = boost::algorithm::join(m_quantitiesVector, ":");
 
-		m_ntuple = new TNtuple(this->GetPipelineSettings().GetName().c_str(),
-							 this->GetPipelineSettings().GetName().c_str(),
-							 m_quantities.c_str());
+		RootFileHelper::SafeCd(this->GetPipelineSettings().GetRootOutFile(),
+		                       this->GetPipelineSettings().GetRootFileFolder());
+		
+		m_ntuple = new TNtuple("ntuple",
+							   ("Ntuple for Pipeline \"" + this->GetPipelineSettings().GetName() + "\"").c_str(),
+							   m_quantities.c_str());
 	}
 
 	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE
@@ -68,7 +72,10 @@ public:
 
 	virtual void Finish() ARTUS_CPP11_OVERRIDE
 	{
-		m_ntuple->Write(this->GetPipelineSettings().GetName().c_str());
+		RootFileHelper::SafeCd(this->GetPipelineSettings().GetRootOutFile(),
+		                       this->GetPipelineSettings().GetRootFileFolder());
+		
+		m_ntuple->Write(m_ntuple->GetName());
 	}
 
 
