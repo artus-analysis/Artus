@@ -50,10 +50,15 @@ public:
 			// Filling Higgs, its daughter & granddaughter particles
 		        if ((abs(part->pdgId()) == bosonPdgId)&&(part->status()==3))// only Boson with status 3 are considered
 			{ 
-				product.m_genHiggs.push_back(&(*part));
+				//product.m_genHiggs.push_back(&(*part));
 
-				std::vector<KGenParticle*> daughters;
-				std::vector<std::vector<KGenParticle*>> gdaughters; 
+                std::list<MotherDaughterBundle> & rootList = GetTargetList ( product );
+
+                rootList.push_back( MotherDaughterBundle ( &(*part) );
+                MotherDaughterBundle & higgsRef = rootList.back();
+
+				//std::vector<KGenParticle*> daughters;
+				//std::vector<std::vector<KGenParticle*>> gdaughters; 
 				for (unsigned int i=0; i<part->daughterIndices.size(); ++i) 
 				{
 					// Higgs with Status 2 is also considered as Higgs status 3 daughter, what leads to the condition, 
@@ -63,10 +68,18 @@ public:
 				        {      
 						// Taus with status 2 are the only daughters of Taus with status 3. We are not interested in status 2 Taus and thats the reason, why we should  
                                 		// skip them and consider the formal granddaughters of status 3 Taus as real daughters of status 3 Taus. This means, we must skip one generation,
-						// what's done in the following for-loop.
-				                daughters.push_back(&(event.m_genParticles->at(indDaughter)));
-                                  		std::vector<KGenParticle*> granddaughters;
-						unsigned int indDaughterStat2 = (event.m_genParticles->at(indDaughter)).daughterIndex(0);
+	   					// what's done in the following for-loop.
+
+				        //daughters.push_back(&(event.m_genParticles->at(indDaughter)));
+                        //       		std::vector<KGenParticle*> granddaughters;
+
+                        higgs.Daughters.push_back( MotherDaughterBundle ( &(event.m_genParticles->at(indDaughter)) );
+                        MotherDaughterBundle & higgsDaughtersRef = higgs.Daughters.back();
+
+                        higgsDaughtersRef.Daughters->push_back( ... );
+                        -> you understand the idea
+
+					/*	unsigned int indDaughterStat2 = (event.m_genParticles->at(indDaughter)).daughterIndex(0);
 						for (unsigned int j=0; j<(event.m_genParticles->at(indDaughterStat2)).daughterIndices.size();++j)
 						{	
 							unsigned int indGranddaughter = (event.m_genParticles->at(indDaughterStat2)).daughterIndex(j);
@@ -81,7 +94,7 @@ public:
 					      			<< indGranddaughter << ">" << event.m_genParticles->size() << ".";
 							}						
 						}
-						gdaughters.push_back(granddaughters);					
+						gdaughters.push_back(granddaughters);		*/			
 					}
 					else if (!(indDaughter < event.m_genParticles->size()))
 					{
@@ -89,11 +102,20 @@ public:
 					      << indDaughter << ">" << event.m_genParticles->size() << ".";
 					}
 				}
-				product.m_genHiggsDaughters.push_back(daughters);
-				product.m_genHiggsGranddaughters.push_back(gdaughters);				
+//				product.m_genHiggsDaughters.push_back(daughters);
+//				product.m_genHiggsGranddaughters.push_back(gdaughters);				
 			}
 
 		}
 	}
+
+private:
+
+    // can be overwritten by other users to not write into the Higgs list but
+    // into another one
+    virtual void GetTargetList( product_type& product ) const {
+        return product.m_genHiggs;
+    }
+
 };
 
