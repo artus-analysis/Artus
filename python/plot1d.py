@@ -60,6 +60,8 @@ def get_root_histos(plotdict):
 	for rootfile, folder in zip(plotdict["rootfiles"], plotdict['folder']):
 		rootobject = getroot.histofromfile(rootfile, plotdict['plot'], folder, plotdict)
 		plotdict["roothistos"].append(rootobject)
+		if log.isEnabledFor(logging.DEBUG):
+			rootobject.Print()
 
 def get_mpl_histos(plotdict):
 	"""Convert ROOT histograms to MPL and add to the dictionary."""
