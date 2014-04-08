@@ -54,10 +54,10 @@ class CutEfficiency(object):
 		
 		# invert direction of cut if requested
 		if invertCut:
-			cut_efficiencies = (1.0 - self._cut_efficiencies)
+			cut_efficiencies = (1.0 - cut_efficiencies)
 		
 		if scaleFactor != 1.0:
-			cut_efficiencies = (scaleFactor * self._cut_efficiencies)
+			cut_efficiencies = (scaleFactor * cut_efficiencies)
 		
 		return cut_efficiencies
 	
