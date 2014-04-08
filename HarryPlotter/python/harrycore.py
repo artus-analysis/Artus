@@ -376,6 +376,8 @@ def create_dictionary_from_parser(parser):
 				log.warning("Not enough arguments for %s! Only %s arguments provided! We need %s or 1" % (i, len(getattr(opt, i)), maximum))
 	if len(opt.groups) == 0:
 		opt.groups = opt.labels
+	
+	opt.markers = [marker.strip() for marker in opt.markers]
 
 	return opt.__dict__
 
