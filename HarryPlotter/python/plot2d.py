@@ -65,19 +65,21 @@ def plot_2d(plotdict):
 		if plotdict['fit'] and "profile" in plotdict['fit']:
 			cmap1 = matplotlib.cm.get_cmap('Blues')  # Blues
 			ctext = 'black'
-		if "zlog" in plotdict and plotdict["zlog"]:  # TODO
+		if "zlog" in plotdict and plotdict["zlog"]:
 			thenorm = matplotlib.colors.LogNorm()
-			plotdict['z'][0] = min(plotdict['z'], 1)
+			vmin = max(plotdict['zlims'][0], 1)
 		else:
 			thenorm = None
+			vmin = plotdict['zlims'][0]
 		image = ax.imshow(plot.BinContents,
 			interpolation='nearest',
 			cmap=cmap1,
 			origin='lower',
 			aspect='auto',
 			extent=[plot.xborderlow, plot.xborderhigh, plot.yborderlow, plot.yborderhigh],
-			vmin=plotdict['zlims'][0],
-			vmax=plotdict['zlims'][1],)  # norm=matplotlib.colors.LogNorm())
+			vmin=vmin,
+			vmax=plotdict['zlims'][1],
+			norm=thenorm)
 
 		# profiles in plot:
 		if plotdict['fit'] and "profile" in plotdict['fit']:
