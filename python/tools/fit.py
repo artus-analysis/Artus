@@ -5,6 +5,7 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import Artus.HarryPlotter.tools.getroot as getroot
+import Artus.HarryPlotter.tools.mplconvert as mplconvert
 
 import numpy as np
 import array
@@ -20,33 +21,28 @@ def fit(rootobject, plotdict):
 		return
 
 	index = plotdict['roothistos'].index(rootobject)
+	color = plotdict['colors'][index]
 
 	if plotdict['fit'] == 'vertical':
-
-		if 'fitlabel_offset' in plotdict:
-			offset += plotdict['fitlabel_offset']
-
-		plotdict['axes'].axvline(rootobject.GetMean(), color=plotdict['colors'][index], linestyle='-')
+		plotdict['axes'].axvline(rootobject.GetMean(), color=color, linestyle='-')
 		plotdict['axes'].axvspan(rootobject.GetMean() - rootobject.GetMeanError(), 
 				rootobject.GetMean() + rootobject.GetMeanError(),
-				color=plotdict['colors'][index], alpha=0.1)
+				color=color, alpha=0.1)
 		plotdict['axes'].text(0.5, 0.97 - (index / 20.),
 			r"$\langle \mathrm{%s} \rangle = %1.4f\pm%1.4f$" % (plotdict['labels'][index],
 				rootobject.GetMean(), rootobject.GetMeanError()),
 			 va='top', ha='right', transform=plotdict['axes'].transAxes,
-			 color=plotdict['colors'][index])
+			 color=color)
 
 		plotdict['axes'].text(0.97, 0.97 - (index / 20.), 
 			r"$\mathrm{RMS (%s)} = %1.3f$" % (plotdict['labels'][index],
 			rootobject.GetRMS()), va='top', ha='right', 
 			transform=plotdict['axes'].transAxes,
-			color=plotdict['colors'][index])
+			color=color)
 
 	elif plotdict['fit'] == 'chi2':
 		# fit a horizontal line
-		intercept, ierr, chi2, ndf = fitline(rootobject, limits)
-		#account for scaling and rebinning:
-		intercept = scalefactor * intercept
+		intercept, ierr, chi2, ndf = fitline(rootobject, plotdict['xlims'])
 		plotdict['axes'].axhline(intercept, color=color, linestyle='--')
 		plotdict['axes'].axhspan(intercept + ierr, intercept - ierr, color=color, alpha=0.2)
 
@@ -57,42 +53,40 @@ def fit(rootobject, plotdict):
 		va='top', ha='right', transform=plotdict['axes'].transAxes, color=color)
 
 	elif plotdict['fit'] == 'gauss':
-		p0, p0err, p1, p1err, p2, p2err, chi2, ndf, conf_intervals = fitline2(rootobject, gauss=True, limits=plotdict['x'])
+		p0, p0err, p1, p1err, p2, p2err, chi2, ndf, conf_intervals = fitline2(rootobject, gauss=True, limits=plotdict['xlims'])
 
-		x = numpy.linspace(plotdict['x'][0], plotdict['x'][1], 500)
+		x = numpy.linspace(plotdict['xlims'][0], plotdict['xlims'][1], 500)
 		ymax = max(mlab.normpdf(x, p1, p2))
 
-		plotdict['axes'].plot(x, p0 / ymax * mlab.normpdf(x, p1, p2), color=plotdict['colors'][index])
+		plotdict['axes'].plot(x, p0 / ymax * mlab.normpdf(x, p1, p2), color=color)
 
 		plotdict['axes'].text(0.03, 0.97 - (index / 20.), r"$\mathrm{%s:}$" % plotdict['labels'][index],
-			   va='top', ha='left', transform=plotdict['axes'].transAxes, color=plotdict['colors'][index])
+			   va='top', ha='left', transform=plotdict['axes'].transAxes, color=color)
 		plotdict['axes'].text(0.25, 0.97 - (index / 20.), r"$\mu = %1.2f\pm%1.2f$" % (p1, p1err),
-			   va='top', ha='left', transform=plotdict['axes'].transAxes, color=plotdict['colors'][index])
+			   va='top', ha='left', transform=plotdict['axes'].transAxes, color=color)
 		plotdict['axes'].text(0.60, 0.97 - (index / 20.), r"$\sigma = %1.2f\pm%1.2f$" % (p2, p2err),
-			   va='top', ha='left', transform=plotdict['axes'].transAxes, color=plotdict['colors'][index])
+			   va='top', ha='left', transform=plotdict['axes'].transAxes, color=color)
 	elif type(plotdict['fit']) == str and 'quadratic' in plotdict['fit']:
 		pa, paerr, pb, pberr, pc, pcerr, chi2, ndf, conf_intervals = fitline2(rootobject, quadratic=True)
 
 		def func(x):
 			return pc * x * x + pb * x + pa
 		mean = rootobject.GetMean()
-		#intercept -= offset
+
 		conf_intervals = [conf_intervals[0]] + conf_intervals + [conf_intervals[-1]]
-		#print conf_intervals
-		#exit()
 
 		# insert a (0, 0) bin because the conf_intervals list also contains an additional (0., conf)-point
-		plot = getroot.root2histo(rootobject)
+		plot = mplconvert.root2histo(rootobject)
 		plot.xc.insert(0, 0.)
 
 		# fit line:
-		xvals = [limits[0]] + plot.xc + [limits[1]]
+		xvals = [plotdict['xlims'][0]] + plot.xc + [plotdict['xlims'][1]]
 
-		line_fit = plotdict['axes'].plot(xvals, [func(x) * scalefactor for x in xvals], color=color, linestyle='-')
+		line_fit = plotdict['axes'].plot(xvals, [func(x) for x in xvals], color=color, linestyle='-')
 		# display confidence intervals
 		plotdict['axes'].fill_between(xvals,
-			  [(func(x) - c) * scalefactor for x, c in zip(xvals, conf_intervals)],
-			  [(func(x) + c)*scalefactor for x, c in zip(xvals, conf_intervals)],
+			  [(func(x) - c) for x, c in zip(xvals, conf_intervals)],
+			  [(func(x) + c) for x, c in zip(xvals, conf_intervals)],
 			  facecolor=color, edgecolor=color, interpolate=True, alpha=0.2)
 		if "labels" in plotdict['fit']:
 			qstr = xdict.get(quantity.split('_')[-1], "x")
@@ -103,32 +97,24 @@ def fit(rootobject, plotdict):
 		if "chi2" in plotdict['fit']:
 			plotdict['axes'].text(0.05, 0.20 - (index / 10.), r"$\chi^2$ / n.d.f. = {0:.2f} / {1:.0f} ".format(chi2, ndf),
 			  va='top', ha='left', transform=plotdict['axes'].transAxes, color=color)
-			#plotdict['axes'].text(0.05, 0.65-(index/10.), r"y average: %1.3f$\pm$%1.3f" % (pc, pb),
-			#  va='top', ha='left', transform=plotdict['axes'].transAxes, color=color)
-			#plotdict['axes'].text(0.05, 0.60-(index/10.), r"$\chi^2$ / n.d.f. = {0:.2f} / {1:.0f} ".format(chi2, ndf),
-			#  va='top', ha='left', transform=plotdict['axes'].transAxes, color=color)
 
-	elif label != "Ratio":
+	else:
 		intercept, ierr, slope, serr,  chi2, ndf, conf_intervals = fitline2(rootobject, quadratic=(plotdict['fit']=='quadratic'))
 		mean = rootobject.GetMean()
-		intercept -= offset
 
 		# fit line:
-		line_fit = plotdict['axes'].plot(limits[:2],[(intercept + limits[0] * slope) * scalefactor, 
-			(intercept+limits[1]*slope)*scalefactor], color=color, linestyle='--')
+		line_fit = plotdict['axes'].plot(plotdict['xlims'][:2],[(intercept + plotdict['xlims'][0] * slope), 
+			(intercept+plotdict['xlims'][1]*slope)], color=color, linestyle='--')
 
 		# insert a (0, 0) bin because the conf_intervals list also contains an additional (0., conf)-point
-		plot = getroot.root2histo(rootobject)
+		plot = mplconvert.root2histo(rootobject)
 		plot.xc.insert(0, 0.)
 
 		# display confidence intervals
 		plotdict['axes'].fill_between(plot.xc,
-			  [(intercept + x * slope + c) * scalefactor for x, c in zip(plot.xc, conf_intervals)],
-			  [(intercept+x*slope - c)*scalefactor for x, c in zip(plot.xc, conf_intervals)],
+			  [(intercept + x * slope + c) for x, c in zip(plot.xc, conf_intervals)],
+			  [(intercept+x*slope - c) for x, c in zip(plot.xc, conf_intervals)],
 			  facecolor=color, edgecolor=color, interpolate=True, alpha=0.2)
-
-		if 'fitlabel_offset' in plotdict:
-			offset += plotdict['fitlabel_offset']
 
 		#display slope:
 		if plotdict['fit'] == 'slope':
@@ -140,22 +126,17 @@ def fit(rootobject, plotdict):
 					plotdict['fit_slope_exponent'] = fit_slope_exponent
 				except:
 					return
-			plotdict['axes'].text(0.97, 0.95 - (index / 10.) + offset, r"$\mathrm{Fit\/slope} = (%1.2f\pm%1.2f) \times 10^{%g}$" % (slope/(10**fit_slope_exponent), serr/(10**fit_slope_exponent), fit_slope_exponent),
+			plotdict['axes'].text(0.97, 0.95 - (index / 10.), r"$\mathrm{Fit\/slope} = (%1.2f\pm%1.2f) \times 10^{%g}$" % (slope/(10**fit_slope_exponent), serr/(10**fit_slope_exponent), fit_slope_exponent),
 			   va='top', ha='right', transform=plotdict['axes'].transAxes, color=color,
 			   size='x-large')
 		elif plotdict['fit'] == 'intercept':
 			#display intercept ...
-			plotdict['axes'].text(0.97, 0.35 - (index / 10.) + offset, r"$\mathrm{y(0)} = %1.4f\pm%1.4f$" % (intercept, conf_intervals[0]),
+			plotdict['axes'].text(0.97, 0.35 - (index / 10.), r"$\mathrm{y(0)} = %1.4f\pm%1.4f$" % (intercept, conf_intervals[0]),
 			   va='top', ha='right', transform=plotdict['axes'].transAxes, color=color, size='x-large')
 
 			# ... and chi2 (smaller)
-			plotdict['axes'].text(0.97, 0.30 - (index / 10.) + offset, r"$\chi^2$ / n.d.f. = {0:.2f} / {1:.0f} ".format(chi2, ndf),
+			plotdict['axes'].text(0.97, 0.30 - (index / 10.), r"$\chi^2$ / n.d.f. = {0:.2f} / {1:.0f} ".format(chi2, ndf),
 				va='top', ha='right', transform=plotdict['axes'].transAxes, color=color, size='small')
-		elif plotdict['fit'] == 'chi2_linear':
-			pass
-			# display chi2
-			#plotdict['axes'].text(0.97, 0.20-(index/10.)+offset, r"$\chi^2$ / n.d.f. = {0:.2f} / {1:.0f} ".format(chi2, ndf),
-			#	va='top', ha='right', transform=plotdict['axes'].transAxes, color=color)#, size='x-large')
 
 
 def fitline(rootgraph, limits=[0, 1]):
