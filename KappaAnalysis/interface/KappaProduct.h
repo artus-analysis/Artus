@@ -25,10 +25,10 @@ public:
 
 	struct MotherDaughterBundle {
 
-        MotherDaughterBundle( KGenParticle* newnod ) : nod( newnod ) {}
+        MotherDaughterBundle( KGenParticle* newnode ) : node( newnode ) {}
  
         // must be != null;
-        KGenParticle* nod;
+        KGenParticle* node;
         // will have 0 entries, if there are no daughters
         std::vector<MotherDaughterBundle> Daughters;
    	};

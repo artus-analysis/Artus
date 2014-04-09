@@ -94,6 +94,7 @@ public:
 		return m_fi.eventdata.GetEntries();
 	}
 
+
 protected:
 
 	long m_prevRun, m_prevLumi;
@@ -103,5 +104,22 @@ protected:
 	boost::scoped_ptr<ProgressMonitor> m_mon;
 
 	FileInterface2 & m_fi;
+
+	template<typename T>
+	T* SecureFileInterfaceGet(const std::string &name, const bool check = true, const bool def = false)
+	{
+		T* result = this->m_fi.template Get<T>(name, check, def);
+		if(result == 0)
+			LOG(FATAL) << "Requested branch not found!";
+		return result;
+	}
+	
+	template<typename T>
+	T* SecureFileInterfaceGetMeta(const std::string &name, const bool check = true, const bool def = false) 	{
+		T* result = this->m_fi.template GetMeta<T>(name, check, def);
+		if(result == 0)
+			LOG(FATAL) << "Requested branch not found!";
+		return result;
+	}
 };
 

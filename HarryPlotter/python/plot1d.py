@@ -40,6 +40,7 @@ def plot1d(plotdict):
 	if plotdict['backend'] == 'root':
 		plot1d_root(plotdict)
 	elif plotdict['backend'] == 'mpl':
+		get_mpl_histos(plotdict)
 		plot1d_mpl(plotdict)
 		if plotdict['ratiosubplot']:
 			add_ratiosubplot(plotdict)
@@ -59,6 +60,8 @@ def get_root_histos(plotdict):
 	for rootfile, folder in zip(plotdict["rootfiles"], plotdict['folder']):
 		rootobject = getroot.histofromfile(rootfile, plotdict['plot'], folder, plotdict)
 		plotdict["roothistos"].append(rootobject)
+		if log.isEnabledFor(logging.DEBUG):
+			rootobject.Print()
 
 def get_mpl_histos(plotdict):
 	"""Convert ROOT histograms to MPL and add to the dictionary."""
@@ -67,11 +70,7 @@ def get_mpl_histos(plotdict):
 
 
 def plot1d_mpl(plotdict):
-	"""Create Matplotlib plots from the ROOT histograms."""
-
-	# convert histograms
-	# TODO: convert just before plotting to avoid editing MPL histograms, because ROOT histograms are better tested
-	get_mpl_histos(plotdict)
+	"""Create Matplotlib plots from the MPL histograms."""
 
 	# use the given fig/axis or create new one:
 	if not plotdict['axes'] and not plotdict['figure']:
@@ -112,7 +111,6 @@ def plot1d_mpl(plotdict):
 					ecolor=color, label=label, fill=True, facecolor=color, edgecolor=color, alpha=0.8)
 			stack[group] = [x + y for x, y in zip(histo.y, stack[group])]
 		else:
-			print histo.classname
 			ax.errorbar(histo.xc, histo.y, yerr, color=color, fmt=marker, capsize=0, label=label, zorder=10,
 			            drawstyle='default' if "TGraph" in histo.classname else 'steps-mid')
 		fit.fit(rootobject, plotdict)

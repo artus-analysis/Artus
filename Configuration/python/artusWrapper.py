@@ -43,7 +43,11 @@ class ArtusWrapper(object):
 		exitCode = 0
 		
 		# save final config
-		self.saveConfig()
+		if self._args.save_config:
+			self.saveConfig(self._args.save_config)
+		else:
+			self.saveConfig()
+
 		if self._args.print_config:
 			log.info(self._config)
 
@@ -58,8 +62,11 @@ class ArtusWrapper(object):
 
 	def setInputFilenames(self, files):
 		if isinstance(files, basestring):
-			files = [files,]
-		self._config["InputFiles"] = reduce(lambda a, b: a+b, map(lambda inputFile: glob.glob(os.path.expandvars(inputFile)), files))
+			files = [files]
+		files = [item for filename in files for item in glob.glob(os.path.expandvars(filename))]
+		if self._args.fast:
+			files = files[0:self._args.fast]
+		self._config["InputFiles"] = files
 
 	def setOutputFilename(self, output_filename):
 		self._config["OutputPath"] = output_filename
@@ -100,7 +107,7 @@ class ArtusWrapper(object):
 		return self._config
 
 	def setConfig(self, config):
-		self._config = config
+		self._config = jsonTools.JsonDict(config)
 
 	def saveConfig(self, filepath=None):
 		"""Save Config to File"""
@@ -108,7 +115,7 @@ class ArtusWrapper(object):
 			basename = "artus_{0}.json".format(hashlib.md5(str(self._config)).hexdigest())
 			filepath = os.path.join(tempfile.gettempdir(), basename)
 		self._configFilename = filepath
-		self._config.save(filepath)
+		self._config.save(filepath, indent=4)
 		log.info("Saved JSON config \"%s\" for temporary usage." % self._configFilename)
 	
 	def expandConfig(self):
@@ -181,6 +188,10 @@ class ArtusWrapper(object):
 	                                 help="Depth of repositories scran. [Default: 2")
 		configOptionsGroup.add_argument("-P", "--print-config", default=False, action="store_true",
 	                                 help="Print out the JSON config before running Artus.")
+		configOptionsGroup.add_argument("-s", "--save-config", default="",
+	                                 help="Save the JSON config to FILENAME.")
+		configOptionsGroup.add_argument('-f', '--fast', type=int, default=False,
+	                                 help="limit number of input files. 3=files[0:3].")
 
 		runningOptionsGroup = self._parser.add_argument_group("Running options")
 		runningOptionsGroup.add_argument("--no-run", default=False, action="store_true",
