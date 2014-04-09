@@ -7,6 +7,7 @@
 
 #include "Artus/Core/interface/ProducerBase.h"
 #include "Artus/Core/interface/GlobalInclude.h"
+#include "Artus/KappaAnalysis/interface/KappaProduct.h"
 
 /**
    \brief GlobalProducer, for tau decays on generator level.
@@ -49,11 +50,11 @@ public:
 		{
 			// Filling Higgs, its daughter & granddaughter particles
 		        if ((abs(part->pdgId()) == bosonPdgId)&&(part->status()==3))// only Boson with status 3 are considered
-			{ 
-				product.m_genHiggs.push_back(&(*part));
+			{
+				
+				product.m_genBoson.push_back( KappaProduct::MotherDaughterBundle(&(*part)) );
+				KappaProduct::MotherDaughterBundle & lastBosonRef = product.m_genBoson.back();
 
-				std::vector<KGenParticle*> daughters;
-				std::vector<std::vector<KGenParticle*>> gdaughters; 
 				for (unsigned int i=0; i<part->daughterIndices.size(); ++i) 
 				{
 					// Higgs with Status 2 is also considered as Higgs status 3 daughter, what leads to the condition, 
@@ -64,8 +65,10 @@ public:
 						// Taus with status 2 are the only daughters of Taus with status 3. We are not interested in status 2 Taus and thats the reason, why we should  
                                 		// skip them and consider the formal granddaughters of status 3 Taus as real daughters of status 3 Taus. This means, we must skip one generation,
 						// what's done in the following for-loop.
-				                daughters.push_back(&(event.m_genParticles->at(indDaughter)));
-                                  		std::vector<KGenParticle*> granddaughters;
+
+						lastBosonRef.Daughters.push_back(KappaProduct::MotherDaughterBundle( &(event.m_genParticles->at(indDaughter)) ));
+						KappaProduct::MotherDaughterBundle & lastDaughterRef = lastBosonRef.Daughters.back();
+
 						unsigned int indDaughterStat2 = (event.m_genParticles->at(indDaughter)).daughterIndex(0);
 						for (unsigned int j=0; j<(event.m_genParticles->at(indDaughterStat2)).daughterIndices.size();++j)
 						{	
@@ -73,26 +76,22 @@ public:
 							if (indGranddaughter < event.m_genParticles->size())
 							{
 							
-								granddaughters.push_back(&(event.m_genParticles->at(indGranddaughter)));
+								lastDaughterRef.Daughters.push_back(KappaProduct::MotherDaughterBundle( &(event.m_genParticles->at(indGranddaughter)) ));
 							}
 							else
 							{
 					  			LOG (ERROR) << "Granddaughter index larger than size of gen particle vector:" 
 					      			<< indGranddaughter << ">" << event.m_genParticles->size() << ".";
 							}						
-						}
-						gdaughters.push_back(granddaughters);					
+						}					
 					}
 					else if (!(indDaughter < event.m_genParticles->size()))
 					{
 					  LOG(ERROR) << "Daughter index larger than size of gen particle vector:" 
 					      << indDaughter << ">" << event.m_genParticles->size() << ".";
 					}
-				}
-				product.m_genHiggsDaughters.push_back(daughters);
-				product.m_genHiggsGranddaughters.push_back(gdaughters);				
-			}
-
+				}			
+			} 
 		}
 	}
 };

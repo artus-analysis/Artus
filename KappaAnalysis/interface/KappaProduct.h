@@ -23,6 +23,17 @@ public:
 	std::vector<std::vector<KGenParticle*>> m_genHiggsDaughters; 
 	std::vector<KGenParticle*> m_genHiggs;
 
+	struct MotherDaughterBundle {
+
+        MotherDaughterBundle( KGenParticle* newnod ) : nod( newnod ) {}
+ 
+        // must be != null;
+        KGenParticle* nod;
+        // will have 0 entries, if there are no daughters
+        std::vector<MotherDaughterBundle> Daughters;
+   	};
+	std::vector<MotherDaughterBundle> m_genBoson;
+
 	/// added by ValidElectronsProducer
 	std::vector<KDataElectron*> m_validElectrons;
 	std::vector<KDataElectron*> m_invalidElectrons;
