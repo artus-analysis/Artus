@@ -86,7 +86,7 @@ def cutEffPlot(plotdict, invertCut=False, yName="Efficiency"):
 	_perpareUserargsForScaleFactors(plotdict)
 	
 	# replace ROOT histograms by efficiency graphs
-	for index, roothisto, scaleFactor in enumerate(zip(plotdict["roothistos"], plotdict["userargs"])):
+	for index, (roothisto, scaleFactor) in enumerate(zip(plotdict["roothistos"], plotdict["userargs"])):
 		cutEfficiency = CutEfficiency(roothisto)
 		efficiencyGraph = ROOT.TGraph(roothisto.GetNbinsX()+1,
 		                              array.array("d", cutEfficiency.get_cut_values()),
