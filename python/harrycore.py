@@ -130,7 +130,7 @@ def get_basic_parser(
 		axes=None,
 		x=None, y=None, z=None, xview=None, xbins=[], ybins=[], xname=None,
 		yname=None, xticks=None, yticks=None, log=None, xlog=None, xlims=None,
-		ylims=None, zname=None, zlims=None,
+		ylims=None, zname=None, zlims=None, zlog=None,
 
 		save=None,
 		verbose=None,
@@ -263,6 +263,8 @@ def get_basic_parser(
 		 help="logarithmic y-axis")
 	axis.add_argument('--xlog', action='store_true', default=xlog,
 		 help="logarithmic x-axis")
+	axis.add_argument('--zlog', action='store_true', default=zlog,
+		 help="logarithmic z-axis")
 	axis.add_argument('--ylims', type=float, nargs='+', default=ylims,
 		help="upper and lower limit for y-axis. Specify four values to also\
 			set the y-axis values for a (ratio-)subplot.")
