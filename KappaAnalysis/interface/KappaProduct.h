@@ -18,24 +18,11 @@ public:
 	KappaProduct() {};
 	~KappaProduct() {};
 
-    typedef std::list<KGenParticle*> KGenParticlePtrList;
-
-    struct MotherDaughterBundle {
-
-        MotherDaughterBundle( KGenParticle* newMother ) : newMother( Mother ) {}
-
-        // must be != null;
-        KGenParticle* Mother;
-        // will have 0 entries, if there are no daughters
-        KGenParticlePtrList Daughters;
-    }
-
-	std::list<MotherDaughterBundle> m_genHiggs;
-
 	/// added by GenTauDecayProducer
-/*	std::vector<std::vector<std::vector<KGenParticle*>>>	m_genHiggsGranddaughters;
-	std::vector<std::vector<KGenParticle*>> m_genHiggsDaughters; */
-    
+	std::vector<std::vector<std::vector<KGenParticle*>>>	m_genHiggsGranddaughters;
+	std::vector<std::vector<KGenParticle*>> m_genHiggsDaughters; 
+	std::vector<KGenParticle*> m_genHiggs;
+
 	/// added by ValidElectronsProducer
 	std::vector<KDataElectron*> m_validElectrons;
 	std::vector<KDataElectron*> m_invalidElectrons;
