@@ -19,10 +19,6 @@ public:
 	~KappaProduct() {};
 
 	/// added by GenTauDecayProducer
-	std::vector<std::vector<std::vector<KGenParticle*>>>	m_genHiggsGranddaughters;
-	std::vector<std::vector<KGenParticle*>> m_genHiggsDaughters; 
-	std::vector<KGenParticle*> m_genHiggs;
-
 	struct MotherDaughterBundle {
 
         MotherDaughterBundle( KGenParticle* newnode ) : node( newnode ) {}

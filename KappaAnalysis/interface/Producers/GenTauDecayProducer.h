@@ -13,11 +13,9 @@
    \brief GlobalProducer, for tau decays on generator level.
    
    This producers has the GenParticles as input and will extract the following information from 
-   this collection:
+   this collection :
 
-   - list of pointers to Higgs particles
-   - list of pointers to tau particles as daughters of a certain Higgs
-   - list of pointers to tau decay products as daughters of a certain Tau of a certain Higgs 
+   - tree with three generations of decay products : Boson, Bosondaughters, Bosongranddaughters  
 */
 
 template<class TTypes>
@@ -41,7 +39,6 @@ public:
 	{
 		// Reading Boson PdgId from TauSpinnerSettings.json
 		stringvector bosonPdgIdVector = globalSettings.GetBosonPdgId();
-		//std::cout << "Boson PdgId:             " << bosonPdgIdVector[0] << std::endl;
 		int bosonPdgId;
 		std::istringstream(bosonPdgIdVector[0]) >> bosonPdgId;
 
