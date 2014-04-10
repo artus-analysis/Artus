@@ -64,7 +64,7 @@ public:
 					if ( (indDaughter < event.m_genParticles->size()) && ( abs((event.m_genParticles->at(indDaughter)).pdgId()) != bosonPdgId) )
 					{
 						// Taus with status 2 are the only daughters of Taus with status 3. We are not interested in status 2 Taus and thats the reason, why we should  
-                                		// skip them and consider the formal granddaughters of status 3 Taus as real daughters of status 3 Taus. This means, we must skip one generation,
+						// skip them and consider the formal granddaughters of status 3 Taus as real daughters of status 3 Taus. This means, we must skip one generation,
 						// what's done in the following for-loop.
 
 						lastBosonRef.Daughters.push_back(KappaProduct::MotherDaughterBundle( &(event.m_genParticles->at(indDaughter)) ));
