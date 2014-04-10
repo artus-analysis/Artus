@@ -21,13 +21,14 @@ public:
 	/// added by GenTauDecayProducer
 	struct MotherDaughterBundle {
 
-        MotherDaughterBundle( KGenParticle* newnode ) : node( newnode ) {}
- 
-        // must be != null;
-        KGenParticle* node;
-        // will have 0 entries, if there are no daughters
-        std::vector<MotherDaughterBundle> Daughters;
-   	};
+	MotherDaughterBundle( KGenParticle* newnode ) : node( newnode ) {}
+
+	// must be != null;
+	KGenParticle* node;
+	// will have 0 entries, if there are no daughters
+	std::vector<MotherDaughterBundle> Daughters;
+	};
+
 	std::vector<MotherDaughterBundle> m_genBoson;
 
 	/// added by ValidElectronsProducer

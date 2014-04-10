@@ -7,6 +7,7 @@
 
 #include "Artus/Core/interface/ProducerBase.h"
 #include "Artus/Core/interface/GlobalInclude.h"
+
 #include "Artus/KappaAnalysis/interface/KappaProduct.h"
 
 /**
@@ -46,7 +47,7 @@ public:
 			 part != event.m_genParticles->end(); ++part)
 		{
 			// Filling Higgs, its daughter & granddaughter particles
-		        if ((abs(part->pdgId()) == bosonPdgId)&&(part->status()==3))// only Boson with status 3 are considered
+			if ((abs(part->pdgId()) == bosonPdgId)&&(part->status()==3))// only Boson with status 3 are considered
 			{
 				
 				product.m_genBoson.push_back( KappaProduct::MotherDaughterBundle(&(*part)) );
@@ -57,8 +58,8 @@ public:
 					// Higgs with Status 2 is also considered as Higgs status 3 daughter, what leads to the condition, 
 					// that we search only for Higgs daughters with PdgId != 25.
 					unsigned int indDaughter = part->daughterIndex(i);
-				        if ( (indDaughter < event.m_genParticles->size()) && ( abs((event.m_genParticles->at(indDaughter)).pdgId()) != bosonPdgId) )
-				        {      
+					if ( (indDaughter < event.m_genParticles->size()) && ( abs((event.m_genParticles->at(indDaughter)).pdgId()) != bosonPdgId) )
+					{
 						// Taus with status 2 are the only daughters of Taus with status 3. We are not interested in status 2 Taus and thats the reason, why we should  
                                 		// skip them and consider the formal granddaughters of status 3 Taus as real daughters of status 3 Taus. This means, we must skip one generation,
 						// what's done in the following for-loop.
@@ -77,18 +78,16 @@ public:
 							}
 							else
 							{
-					  			LOG (ERROR) << "Granddaughter index larger than size of gen particle vector:" 
-					      			<< indGranddaughter << ">" << event.m_genParticles->size() << ".";
-							}						
-						}					
+								LOG (ERROR) << "Granddaughter index larger than size of gen particle vector:" << indGranddaughter << ">" << event.m_genParticles->size() << ".";
+							}
+						}
 					}
 					else if (!(indDaughter < event.m_genParticles->size()))
 					{
-					  LOG(ERROR) << "Daughter index larger than size of gen particle vector:" 
-					      << indDaughter << ">" << event.m_genParticles->size() << ".";
+					LOG(ERROR) << "Daughter index larger than size of gen particle vector:" << indDaughter << ">" << event.m_genParticles->size() << ".";
 					}
-				}			
-			} 
+				}
+			}
 		}
 	}
 };
