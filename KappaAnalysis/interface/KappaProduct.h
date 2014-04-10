@@ -19,14 +19,15 @@ public:
 	~KappaProduct() {};
 
 	/// added by GenTauDecayProducer
+	// can store an arbitrary decay tree
 	struct MotherDaughterBundle {
+		MotherDaughterBundle( KGenParticle* newnode ) : node( newnode )
+		{}
 
-	MotherDaughterBundle( KGenParticle* newnode ) : node( newnode ) {}
-
-	// must be != null;
-	KGenParticle* node;
-	// will have 0 entries, if there are no daughters
-	std::vector<MotherDaughterBundle> Daughters;
+		// must be != null;
+		KGenParticle* node;
+		// will have 0 entries, if there are no daughters
+		std::vector<MotherDaughterBundle> Daughters;
 	};
 
 	std::vector<MotherDaughterBundle> m_genBoson;

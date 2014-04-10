@@ -17,6 +17,9 @@
    this collection :
 
    - tree with three generations of decay products : Boson, Bosondaughters, Bosongranddaughters  
+
+   If need arises to store other decay trees, this code can be made more general and
+   configurable.
 */
 
 template<class TTypes>
