@@ -95,6 +95,7 @@ def cutEffPlot(plotdict, invertCut=False, yName="Efficiency"):
 		plotdict["roothistos"][index] = efficiencyGraph
 	
 	plotdict["yname"] = yName
+	plot1d.get_mpl_histos(plotdict)
 	plot1d.plot1d_mpl(plotdict)
 	utils.setaxislimits(plotdict)
 	labels.add_labels(plotdict)
@@ -149,6 +150,7 @@ def bkgRejVsSigEffPlot(plotdict, invertCutX=False, invertCutY=True,
 	plotdict["xname"] = xName
 	plotdict["yname"] = yName
 	plotdict["xlims"] = [0.0, 1.0] # TODO
+	plot1d.get_mpl_histos(plotdict)
 	plot1d.plot1d_mpl(plotdict)
 	utils.setaxislimits(plotdict)
 	labels.add_labels(plotdict)
