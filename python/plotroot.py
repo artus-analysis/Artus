@@ -7,10 +7,10 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
-import Artus.HarryPlotter.processor as PlotBase
+import Artus.HarryPlotter.plotbase as plotbase
 
 
-class PlotRoot(processor.PlotBase):
+class PlotRoot(plotbase.PlotBase):
 	def __init__(self):
-		processor.PlotBase.__init__(self)
+		plotbase.PlotBase.__init__(self)
 

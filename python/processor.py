@@ -15,7 +15,7 @@ class Processor(object):
 	def modify_argument_parser(self, parser):
 		pass
 	
-	def run(self):
+	def run(self, plotdict=None):
 		log.debug("Running processor " + self.__class__.__name__ + "...")
 	
 	@classmethod

@@ -14,6 +14,6 @@ class AnalysisBase(processor.Processor):
 	def __init__(self):
 		processor.Processor.__init__(self)
 	
-	def run(self):
-		processor.Processor.run(self)
+	def run(self, plotdict=None):
+		processor.Processor.run(self, plotdict)
 

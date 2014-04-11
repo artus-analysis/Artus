@@ -9,15 +9,15 @@ log = logging.getLogger(__name__)
 
 import abc
 
-import Artus.HarryPlotter.processor as Processor
+import Artus.HarryPlotter.processor as processor
 
 
 class PlotBase(processor.Processor):
 	def __init__(self):
 		processor.Processor.__init__(self)
 	
-	def run(self):
-		processor.Processor.run(self)
+	def run(self, plotdict=None):
+		processor.Processor.run(self, plotdict)
 	
 	@abc.abstractmethod
 	def create_canvas(self):
