@@ -23,6 +23,8 @@ public:
 	KDataPFTaus* m_taus = 0;
 	/// pointer to jet collection
 	KDataPFJets* m_jets = 0;
+	/// pointer to tagged jet collection
+	KDataPFTaggedJets* m_tjets = 0;
 	/// pointer to jet area collection
 	KJetArea* m_jetArea = 0;
 	/// pointer to MET collection

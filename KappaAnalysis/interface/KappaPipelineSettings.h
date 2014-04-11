@@ -76,6 +76,8 @@ public:
 	IMPL_SETTING_DEFAULT(std::string, Taus, "");
 	/// name of jet collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, Jets, "");
+	/// name of tagged jet collection in kappa tuple
+	IMPL_SETTING_DEFAULT(std::string, TaggedJets, "");
 	/// name of jet area collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, JetArea, "");
 	/// name of MET collection in kappa tuple

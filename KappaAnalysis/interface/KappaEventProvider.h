@@ -41,6 +41,8 @@ public:
 		// Jets
 		if(! globalSettings.GetJets().empty())
 			this->m_event.m_jets = this->template SecureFileInterfaceGet<KDataPFJets>(globalSettings.GetJets());
+		if(! globalSettings.GetTaggedJets().empty())
+			this->m_event.m_tjets = this->template SecureFileInterfaceGet<KDataPFTaggedJets>(globalSettings.GetTaggedJets());
 		if(! globalSettings.GetJetArea().empty())
 			this->m_event.m_jetArea = this->template SecureFileInterfaceGet<KJetArea>(globalSettings.GetJetArea());
 	
