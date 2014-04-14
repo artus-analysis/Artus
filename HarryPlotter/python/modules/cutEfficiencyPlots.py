@@ -22,7 +22,8 @@ class CutEfficiency(object):
 		
 		# prepare histogram
 		self._histogram = copy.deepcopy(rootHistogram)
-		self._histogram.Scale(1.0 / self._histogram.Integral())
+		if  self._histogram.Integral() > 0.0:
+			self._histogram.Scale(1.0 / self._histogram.Integral())
 		self._histogram.SetBinContent(0, 0.0)
 		self._histogram.SetBinContent(self._histogram.GetNbinsX()+1, 0.0)
 		
