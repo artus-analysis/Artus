@@ -150,9 +150,11 @@ def setaxislimits(plotdict):
 	else:
 		if plotdict['log']:
 			bottom = 1
+			top = 10 * max(d.ymax() for d in plotdict['mplhistos'])
 		else:
 			bottom = 0
-		plotdict['axes'].set_ylim(top= 1.2 * max(d.ymax() for d in plotdict['mplhistos']), bottom = bottom)
+			top = 1.2 * max(d.ymax() for d in plotdict['mplhistos'])
+		plotdict['axes'].set_ylim(top = top, bottom = bottom)
 
 	if plotdict['log']:
 		plotdict['axes'].set_yscale('log', nonposy='mask')
