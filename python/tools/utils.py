@@ -41,6 +41,19 @@ def printfunctions(module_list, logLevel=logging.INFO):
 				log.log(logLevel, "	 ", elem[1].__doc__)
 
 
+# TODO: Make this a member function of a custom plotdict class
+def copyplotdict(plotdict):
+	"""Make a deep copy of plotdict. This doesnt work naturally because of
+	some keys like 'rootfiles' or 'analysismodules'."""
+	new_plotdict =  {}
+	for key in plotdict.keys():
+		if key == 'analysismodules' or key =='rootfiles':
+			new_plotdict[key] = copy.copy(plotdict[key])
+		else:
+			new_plotdict[key] = copy.deepcopy(plotdict[key])
+	return new_plotdict
+
+
 def printquantities(plotdict):
 	"""This functions prints a list of histograms or quantites present in one 
 	folder or NTuple in the input files.
