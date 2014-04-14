@@ -13,6 +13,7 @@ import os
 import ROOT
 import inspect
 import matplotlib.pyplot as plt
+import copy
 
 import Artus.HarryPlotter.tools.labels as labels
 
