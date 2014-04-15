@@ -12,6 +12,7 @@ import Artus.HarryPlotter.harryparser as harryparser
 import Artus.HarryPlotter.inputbase as inputbase
 import Artus.HarryPlotter.inputroot as inputroot
 import Artus.HarryPlotter.plotbase as plotbase
+import Artus.HarryPlotter.plotdata as plotdata
 import Artus.HarryPlotter.plotmpl as plotmpl
 import Artus.HarryPlotter.plotroot as plotroot
 import Artus.HarryPlotter.processor as processor
@@ -83,9 +84,9 @@ class HarryCore(object):
 		args = parser.parse_args()
 		
 		# run all processors
-		plotdict = {}
+		plotData = plotdata.PlotData()
 		for processor in self.processors.values():
-			processor.run(plotdict)
+			processor.run(plotData)
 	
 	def register_processor(processor_name, processor):
 		self.available_processors[processor_name] = processor
