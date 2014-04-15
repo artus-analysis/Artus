@@ -23,11 +23,12 @@ class HarryParser(argparse.ArgumentParser):
 		self.add_argument("-h", "--help", default=False, action="store_true",
 		                  help="show this help message and exit")
 		
-		self.add_argument("--input-module", default="InputRoot",
+		module_options = self.add_argument_group('Modules')
+		module_options.add_argument("--input-module", default="InputRoot",
 		                  help="Input Module. [Default: %(default)s]")
-		self.add_argument("--analysis-modules", default=None, nargs="*",
+		module_options.add_argument("--analysis-modules", default=None, nargs="*",
 		                  help="Analysis Modules. [Default: %(default)s]")
-		self.add_argument("--plot-modules", default="PlotMpl", nargs="*",
+		module_options.add_argument("--plot-modules", default="PlotMpl", nargs="*",
 		                  help="Plot Modules. [Default: %(default)s]")
 		                  
 		self._n_parse_args_calls = 0
@@ -36,8 +37,17 @@ class HarryParser(argparse.ArgumentParser):
 		args = argparse.ArgumentParser.parse_args(self, args=args, namespace=namespace)
 		logger.initLogger(args)
 		self._n_parse_args_calls += 1
-		if args.help and self._n_parse_args_calls > 1:
+		if self._n_parse_args_calls > 1 and (args.help or len(sys.argv) <= 1):
 			self.print_help()
 			sys.exit(0)
 		return args
+	
+	def parse_known_args(self, args=None, namespace=None):
+		args, unknown_args = argparse.ArgumentParser.parse_known_args(self, args=args, namespace=namespace)
+		logger.initLogger(args)
+		self._n_parse_args_calls += 1
+		if self._n_parse_args_calls > 1 and (args.help or len(sys.argv) <= 1):
+			self.print_help()
+			sys.exit(0)
+		return args, unknown_args
 

@@ -9,9 +9,6 @@ log = logging.getLogger(__name__)
 
 import hashlib
 
-import ROOT
-ROOT.TH1.SetDefaultSumw2(True)
-
 import Artus.HarryPlotter.inputbase as inputbase
 
 

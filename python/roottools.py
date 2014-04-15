@@ -13,7 +13,6 @@ import collections
 import hashlib
 
 import ROOT
-ROOT.TH1.SetDefaultSumw2(True)
 
 
 def histogram_from_file(root_file_names, path_to_histogram, name=None):

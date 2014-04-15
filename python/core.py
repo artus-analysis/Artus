@@ -7,6 +7,8 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
+import ROOT
+
 import Artus.HarryPlotter.analysisbase as analysisbase
 import Artus.HarryPlotter.harryparser as harryparser
 import Artus.HarryPlotter.inputbase as inputbase
@@ -29,18 +31,19 @@ class HarryCore(object):
 			plotmpl.PlotMpl.name() : plotmpl.PlotMpl(),
 		}
 		self.available_processors.update(user_processors)
+		self.processors = []
 	
 	def run(self):
 		parser = harryparser.HarryParser()
-		args = parser.parse_args()
+		args, unknown_args = parser.parse_known_args()
 		
-		processors = []
+		self.processors = []
 		
 		# handle input modules (first)
 		if args.input_module not in self.available_processors.keys():
 			log.warning("Input module \"" + args.input_module + "\" not found! Fall back to default!")
 			args.input_module = parser.get_default("input-module")
-		processors.append(self.available_processors[args.input_module])
+		self.processors.append(self.available_processors[args.input_module])
 		
 		# handle analysis modules (second)
 		if args.analysis_modules == None:
@@ -49,7 +52,7 @@ class HarryCore(object):
 		available_modules = [module for module in args.analysis_modules
 		                     if module in self.available_processors.keys() and
 		                     isinstance(self.available_processors[module], analysisbase.AnalysisBase)]
-		processors.extend(available_modules)
+		self.processors.extend([self.available_processors[module] for module in available_modules])
 		
 		missing_modules = [module for module in args.analysis_modules
 		                   if module not in self.available_processors.keys() or
@@ -68,7 +71,7 @@ class HarryCore(object):
 		if len(available_modules) == 0:
 			log.warning("No registered plot module specified! Fall back to default!")
 			available_modules = [parser.get_default("plot-modules")]
-		processors.extend(available_modules)
+		self.processors.extend([self.available_processors[module] for module in available_modules])
 		
 		missing_modules = [module for module in args.plot_modules
 		                   if module not in self.available_processors.keys() or
@@ -83,9 +86,14 @@ class HarryCore(object):
 			processor.modify_argument_parser(parser)
 		args = parser.parse_args()
 		
+		# general ROOT settings
+		ROOT.TH1.SetDefaultSumw2(True)
+		ROOT.gROOT.SetBatch(True)
+		
 		# run all processors
 		plotData = plotdata.PlotData()
-		for processor in self.processors.values():
+		
+		for processor in self.processors:
 			processor.run(plotData)
 	
 	def register_processor(processor_name, processor):
