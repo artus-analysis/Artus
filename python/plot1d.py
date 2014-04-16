@@ -60,6 +60,12 @@ def get_root_histos(plotdict):
 	for rootfile, folder in zip(plotdict["rootfiles"], plotdict['folder']):
 		rootobject = getroot.histofromfile(rootfile, plotdict['plot'], folder, plotdict)
 		plotdict["roothistos"].append(rootobject)
+
+		if plotdict.get('scale', None) is not None:
+			rootobject.Scale(plotdict['scale']/rootobject.Integral())
+		if plotdict.get('scalefactor', None) is not None:
+			rootobject.Scale(plotdict['scalefactor'])
+
 		if log.isEnabledFor(logging.DEBUG):
 			rootobject.Print()
 

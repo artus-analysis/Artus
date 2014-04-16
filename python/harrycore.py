@@ -144,6 +144,8 @@ def get_basic_parser(
 		listfunctions=False,
 		root=False,
 		normalize=False,
+		scale=None,
+		scalefactor=None,
 		
 		userargs = None,
 		userArgParsers=None
@@ -183,6 +185,10 @@ def get_basic_parser(
 	source.add_argument('--normalize', '-n', action='store_true',
 		default=normalize,
 		help="Normalize all histograms to the same number of events.")
+	source.add_argument('--scalefactor', type=float, default=scalefactor,
+		help="Scale the input histograms by a certain factor.")
+	source.add_argument('--scale', type=float, default=scale,
+		help="Scale the input histograms to a certain number of events.")
 
 	# more general options
 	general = parser.add_argument_group('General options')
