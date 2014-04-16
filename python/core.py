@@ -82,7 +82,7 @@ class HarryCore(object):
 				log.warning("\t" + module)
 		
 		# let processors modify the parser and then parse the arguments again
-		for processor in self.available_processors.values():
+		for processor in self.processors:
 			processor.modify_argument_parser(parser)
 		args = parser.parse_args()
 		
