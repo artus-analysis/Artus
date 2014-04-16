@@ -58,6 +58,7 @@ private:
 				LOG(DEBUG) << *it;
 			}
 		}
+		product.m_hltInfo->setLumiMetadata(event.m_lumiMetadata);
 
 		bool unprescaledPathFound = false;
 		std::string bestHltName, curName;

@@ -29,16 +29,24 @@ public:
 	
 	HltFilter() : FilterBase<TTypes>() {};
 
-	virtual void InitGlobal(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE
+	virtual bool DoesEventPassLocal(event_type const& event,
+			product_type const& product, setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
-		LOG(FATAL) << "Filter \"" << GetFilterId() << "\" cannot run as a global pre-filter, since it needs data from the product!";
+		return DoesEventPass(event, product);
 	}
 
-	virtual bool DoesEventPassLocal(event_type const& event,
-			product_type const& product,
-            setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	virtual bool DoesEventPassGlobal(event_type const& event, product_type const& product,
+			global_setting_type const& globalSettings) const ARTUS_CPP11_OVERRIDE
 	{
-		if (product.selectedHltName.empty()) {
+		return DoesEventPass(event, product);
+	}
+
+private:
+
+	virtual bool DoesEventPass(event_type const& event, product_type const& product) const
+	{
+		if (product.selectedHltName.empty())
+		{
 			// no HLT found
 			return false;
 		}
@@ -47,5 +55,8 @@ public:
 		// LOG(DEBUG) << "Using trigger " << curName << ".";
 		return event.m_eventMetadata->hltFired(product.selectedHltName, event.m_lumiMetadata);
 	}
+
+
+
 };
 
