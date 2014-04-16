@@ -91,7 +91,7 @@ class HarryCore(object):
 		ROOT.gROOT.SetBatch(True)
 		
 		# run all processors
-		plotData = plotdata.PlotData()
+		plotData = plotdata.PlotData(args)
 		
 		for processor in self.processors:
 			processor.run(plotData)

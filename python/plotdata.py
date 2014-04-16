@@ -9,6 +9,14 @@ log = logging.getLogger(__name__)
 
 
 class PlotData(object):
-	def __init__(self):
-		self.plots = {}
+	"""
+	Up to now, this is just a wrapper of the plotdict.
+	
+	One could think about structuring the memebers a bit more. Ideas are
+	- one container for one plots (including files, histograms, plotting settings, ...)
+	- Formatter classes
+	"""
+
+	def __init__(self, args):
+		self.plotdict = vars(args)
 
