@@ -21,6 +21,9 @@ class InputRoot(inputbase.InputBase):
 		self.input_options.add_argument("--root-objects", type=str, nargs='*',
 		                                help="Path(s) to ROOT objects")
 	
-	def run(self, plotdict=None):
-		inputbase.InputBase.run(self, plotdict)
+	def prepare_args(self, plotData):
+		inputbase.InputBase.prepare_args(self, plotData)
+	
+	def run(self, plotData):
+		inputbase.InputBase.run(self, plotData)
 

@@ -85,14 +85,17 @@ class HarryCore(object):
 		for processor in self.processors:
 			processor.modify_argument_parser(parser)
 		args = parser.parse_args()
+		plotData = plotdata.PlotData(args)
 		
 		# general ROOT settings
 		ROOT.TH1.SetDefaultSumw2(True)
 		ROOT.gROOT.SetBatch(True)
 		
-		# run all processors
-		plotData = plotdata.PlotData(args)
+		# prepare aguments for all processors
+		for processor in self.processors:
+			processor.prepare_args(plotData)
 		
+		# run all processors
 		for processor in self.processors:
 			processor.run(plotData)
 	

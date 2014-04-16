@@ -8,6 +8,7 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import abc
+import collections
 
 import Artus.HarryPlotter.processor as processor
 
@@ -20,25 +21,45 @@ class InputBase(processor.Processor):
 		self.input_options = parser.add_argument_group("Input options")
 		self.input_options.add_argument("-i", "--files", type=str, nargs="*",
 		                                 help="Input root file(s).")
-		self.input_options.add_argument("--nick", type=str, nargs="*",
+		self.input_options.add_argument("--nicks", type=str, nargs="*",
 		                                 help="Defines nick names for inputs. Inputs with the same nick name will be merged. By default, every input gets a unique nick name.")
 
-		self.input_options.add_argument("-x", "-x-expressions", type=str, nargs="*",
+		self.input_options.add_argument("-x", "--x-expressions", type=str, nargs="*",
 		                                help="x-axis variable expression(s)")
-		self.input_options.add_argument("-y", "-y-expressions", type=str, nargs="*",
+		self.input_options.add_argument("-y", "--y-expressions", type=str, nargs="*",
 		                                help="y-axis variable expression(s)")
-		self.input_options.add_argument("-z", "-z-expressions", type=str, nargs="*",
+		self.input_options.add_argument("-z", "--z-expressions", type=str, nargs="*",
 		                                help="z-axis variable expression(s)")
 		self.input_options.add_argument("-w", "--weights", type=str, nargs="+", default="1.0",
 		                                help="Weight (cut) expression(s)")
 
 		self.input_options.add_argument("--type", type=str, # TODO: default
 		                                help="Type of plot.")
-		self.input_options.add_argument("-n", "--normalize", type=str, nargs="*",
+		self.input_options.add_argument("-n", "--norm-references", type=str, nargs="*",
 		                                help="Nick names of inputs or float values to normalise to. One parameter can contain a whitespace separated list of multiple nick names, that are summed up before the normalisation.")
 	
-	def run(self, plotdict=None):
-		processor.Processor.run(self, plotdict)
+	def prepare_args(self, plotData):
+		processor.Processor.prepare_args(self, plotData)
+		
+		# prepare lists
+		listArgs = ["files", "nicks", "x_expressions", "y_expressions",
+		            "z_expressions", "weights", "norm_references"]
+		for listArg in listArgs:
+			if not isinstance(plotData.plotdict[listArg], collections.Iterable) or isinstance(plotData.plotdict[listArg], basestring):
+				plotData.plotdict[listArg] = [plotData.plotdict[listArg]]
+		
+		# complete lists that are too short
+		n_inputs = max([len(plotData.plotdict[listArg]) for listArg in listArgs])
+		for listArg, plotList in [(listArg, plotData.plotdict[listArg]) for listArg in listArgs]:
+			lenPlotList = len(plotList)
+			if lenPlotList < n_inputs:
+				plotList += [None] * (n_inputs - lenPlotList)
+				log.warning("Argument \"" + listArg + "\" needs " + str(n_inputs) + " values! These are filled up by repeating the current values.")
+			for index in range(n_inputs):
+				plotList[index] = plotList[index % lenPlotList]
+	
+	def run(self, plotData):
+		processor.Processor.run(self, plotData)
 
 	@abc.abstractmethod
 	def read_root_objects(self):
