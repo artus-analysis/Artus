@@ -13,6 +13,7 @@ import os
 import ROOT
 import inspect
 import matplotlib.pyplot as plt
+import copy
 
 import Artus.HarryPlotter.tools.labels as labels
 
@@ -39,6 +40,19 @@ def printfunctions(module_list, logLevel=logging.INFO):
 			log.log(logLevel, "  %s" % elem[0])
 			if (elem[1].__doc__ is not None):
 				log.log(logLevel, "	 ", elem[1].__doc__)
+
+
+# TODO: Make this a member function of a custom plotdict class
+def copyplotdict(plotdict):
+	"""Make a deep copy of plotdict. This doesnt work naturally because of
+	some keys like 'rootfiles' or 'analysismodules'."""
+	new_plotdict =  {}
+	for key in plotdict.keys():
+		if key == 'analysismodules' or key =='rootfiles':
+			new_plotdict[key] = copy.copy(plotdict[key])
+		else:
+			new_plotdict[key] = copy.deepcopy(plotdict[key])
+	return new_plotdict
 
 
 def printquantities(plotdict):
@@ -137,9 +151,11 @@ def setaxislimits(plotdict):
 	else:
 		if plotdict['log']:
 			bottom = 1
+			top = 10 * max(d.ymax() for d in plotdict['mplhistos'])
 		else:
 			bottom = 0
-		plotdict['axes'].set_ylim(top= 1.2 * max(d.ymax() for d in plotdict['mplhistos']), bottom = bottom)
+			top = 1.2 * max(d.ymax() for d in plotdict['mplhistos'])
+		plotdict['axes'].set_ylim(top = top, bottom = bottom)
 
 	if plotdict['log']:
 		plotdict['axes'].set_yscale('log', nonposy='mask')
