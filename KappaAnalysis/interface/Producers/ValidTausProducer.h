@@ -32,6 +32,22 @@ public:
 	                           product_type& product,
 	                           global_setting_type const& globalSettings) const ARTUS_CPP11_OVERRIDE
 	{
+		Produce(event, product);
+	}
+
+	virtual void ProduceLocal(event_type const& event,
+	                          product_type& product,
+	                          setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	{
+		Produce(event, product);
+	}
+
+
+private:
+
+	// function that lets this producer work as both a global and a local producer
+	void Produce(event_type const& event, product_type& product) const
+	{
 		for (KDataPFTaus::iterator tau = event.m_taus->begin();
 			 tau != event.m_taus->end(); tau++)
 		{
