@@ -51,9 +51,8 @@ private:
 		for (KDataPFTaus::iterator tau = event.m_taus->begin();
 			 tau != event.m_taus->end(); tau++)
 		{
-			bool validTau = true;
-			
-			// TODO
+			// filter on decay mode
+			bool validTau = (tau->hpsDecayMode < 3);
 			
 			if (validTau)
 				product.m_validTaus.push_back(&(*tau));
