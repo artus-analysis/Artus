@@ -68,36 +68,53 @@ public:
 class KappaGlobalSettings: public GlobalSettingsBase {
 
 public:
+
 	/// name of electron collection in kappa tuple	
 	IMPL_SETTING_DEFAULT(std::string, Electrons, "");
+
 	/// name of muon collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, Muons, "");
+
 	/// name of tau collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, Taus, "");
+	IMPL_SETTING_DEFAULT(std::string, TauDiscriminatorMetadata, "");
+
 	/// name of jet collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, Jets, "");
+
 	/// name of tagged jet collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, TaggedJets, "");
+
 	/// name of jet area collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, JetArea, "");
+
 	/// name of MET collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, Met, "");
+
 	/// name of beamspot collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, BeamSpot, "");
+
 	/// name of vertexSummary collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, VertexSummary, "");
+
 	/// name of genParticle collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, GenParticles, "");
+
 	/// name of lumiMetaData in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, LumiMetadata, ""); // TODO: Default value, move to Artus/Provider
+
 	/// name of genLumiMetaData in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, GenLumiMetadata, ""); // TODO: Default value, move to Artus/Provider
+
 	/// name of eventMetaData in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, EventMetadata, ""); // TODO: Default value, move to Artus/Provider
+
 	/// name of genEventMetaData in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, GenEventMetadata, ""); // TODO: Default value, move to Artus/Provider
+
 	/// name of filterMetaData in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, FilterMetadata, ""); // TODO: Default value, move to Artus/Provider
+
 	/// name of filterSummary in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, FilterSummary, ""); // TODO: Default value, move to Artus/Provider
 

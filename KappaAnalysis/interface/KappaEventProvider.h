@@ -37,6 +37,8 @@ public:
 		// Taus
 		if(! globalSettings.GetTaus().empty())
 			this->m_event.m_taus = this->template SecureFileInterfaceGet<KDataPFTaus>(globalSettings.GetTaus());
+		if(! globalSettings.GetTauDiscriminatorMetadata().empty())
+			this->m_event.m_tauDiscriminatorMetadata = this->template SecureFileInterfaceGetMeta<KTauDiscriminatorMetadata>(globalSettings.GetTauDiscriminatorMetadata());
 
 		// Jets
 		if(! globalSettings.GetJets().empty())

@@ -15,26 +15,38 @@ class KappaEvent : public KappaEventBase
 {
 public:
 	KappaEvent() : KappaEventBase() {};
+
 	/// pointer to electron collection
 	KDataElectrons* m_electrons = 0;
+
 	/// pointer to muon collection
 	KDataMuons* m_muons = 0;
+
 	/// pointer to tau collection
 	KDataPFTaus* m_taus = 0;
+	KTauDiscriminatorMetadata* m_tauDiscriminatorMetadata = 0;
+
 	/// pointer to jet collection
 	KDataPFJets* m_jets = 0;
+
 	/// pointer to tagged jet collection
 	KDataPFTaggedJets* m_tjets = 0;
+
 	/// pointer to jet area collection
 	KJetArea* m_jetArea = 0;
+
 	/// pointer to MET collection
 	KDataPFMET* m_met = 0;
+
 	/// pointer to beamspot collection
 	KDataBeamSpot* m_beamSpot = 0;
-        /// pointer to primary vertex summary
+
+	/// pointer to primary vertex summary
 	KVertexSummary* m_vertexSummary = 0;
+
 	/// pointer to generator particles
 	KGenParticles* m_genParticles = 0;
+
 	/// pointer to metadata // TODO: move to Artus/Provider
 	KLumiMetadata* m_lumiMetadata = 0;
 	KGenLumiMetadata* m_genLumiMetadata = 0;
