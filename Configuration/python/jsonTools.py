@@ -154,6 +154,8 @@ class JsonDict(dict):
 				newTarget = dictWithHigherPriority.setdefault(key, {})
 				if newTarget == None: dictWithHigherPriority.pop(key)
 				else: JsonDict.deepmerge(newTarget, value)
+			elif isinstance(value, collections.Iterable) and not isinstance(value, basestring):
+				dictWithHigherPriority.setdefault(key, []).extend(value)
 			elif dictWithHigherPriority != None and key not in dictWithHigherPriority:
 				dictWithHigherPriority[key] = value
 		return dictWithHigherPriority
