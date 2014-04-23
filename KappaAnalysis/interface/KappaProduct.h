@@ -48,7 +48,7 @@ public:
 	std::vector<KDataPFJet*> m_validJets;
 	std::vector<KDataPFJet*> m_invalidJets;
 	
-	HLTTools* m_hltInfo = 0;
+	HLTTools* m_hltInfo = new HLTTools();
 	std::string selectedHltName = "";
 
 private:
