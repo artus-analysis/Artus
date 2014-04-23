@@ -64,6 +64,7 @@ public:
 
 		if (m_prevLumi != m_event.m_eventMetadata->nLumi) {
 			m_prevLumi = m_event.m_eventMetadata->nLumi;
+			m_fi.GetMetaEntry();
 
 			// load the correct lumi information
 			if (m_inpType == McInput) {
