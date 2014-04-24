@@ -19,4 +19,5 @@
 #include "Pipeline_t.h"
 #include "PipelineRunner_t.h"
 #include "ArtusConfig_t.h"
+#include "SafeMap_t.h"
 
