@@ -25,7 +25,6 @@ BOOST_AUTO_TEST_CASE( test_safemap )
         myMap [42] = "42";
 
         std::string const & rr = SafeMap::Get ( myMap, 42 );
-        SafeMap::Get ( myMap, 43 );
         BOOST_CHECK( rr == "42" );
     }
     {
