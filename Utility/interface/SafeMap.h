@@ -1,7 +1,10 @@
+
 #pragma once
 	
 #include <map>
-#include <boost/ptr_container/ptr_map.hpp>
+
+#include "Artus/Core/interface/GlobalInclude.h"
+#include "Artus/Core/interface/Cpp11Support.h"
 	
 /*
 Can be used to retrieve a key from a map and get a solid message which key was not found:
@@ -18,34 +21,73 @@ class SafeMap
 {
 public:
 
-    // const version
-    template < class TMap >
-    static typename TMap::mapped_type const& Get( TMap const& m, typename TMap::key_type const& k)
-    {        
-        typename TMap::const_iterator it = m.find(k);
-        if (it == m.end())
-            LOG(FATAL) << "Item " << k << " can not be found in dictionary.";
-        return it->second;
-    }
+	// get value from generic associative containers with default value
+	// (const version)
+	template <template<class, class, class...> class Container, typename Key, typename Value, typename... Args>
+	static Value const& GetWithDefault(const Container<Key, Value, Args...>& m, Key const& key, const Value & defaultValue)
+	{
+		typename Container<Key, Value, Args...>::const_iterator it = m.find(key);
+		if (it == m.end())
+		    return defaultValue;
+		return it->second;
+	}
 
-    // non-const version
-    template < class TMap >
-    static typename TMap::mapped_type & Get( TMap & m, typename TMap::key_type const& k)
-    {
-        typename TMap::iterator it = m.find(k);
-        if (it == m.end())
-            LOG(FATAL) << "Item " << k << " can not be found in dictionary.";
-        return it->second;
-    }
+	// get value from generic associative containers with default value
+	template <template<class, class, class...> class Container, typename Key, typename Value, typename... Args>
+	static Value & GetWithDefault(Container<Key, Value, Args...>& m, Key const& key, Value & defaultValue)
+	{
+		typename Container<Key, Value, Args...>::iterator it = m.find(key);
+		if (it == m.end())
+		    return defaultValue;
+		return it->second;
+	}
 
-    // for use with boost::ptr_map
-    template < class TMap >
-    static typename TMap::const_mapped_reference  GetPtrMap(TMap const& m, typename TMap::key_type const& k)
-    {
-        typename TMap::const_iterator it = m.find(k);
-        if (it == m.end())
-                LOG(FATAL) << "Item " << k << " can not be found in dictionary.";
-        return *it->second;
-    }
+	// get value from generic associative containers with default value
+	// (boost::ptr_map version)
+	template <template<class, class, class...> class Container, typename Key, typename Value, typename... Args>
+	static Value const& GetPtrMapWithDefault(const Container<Key, Value, Args...>& m, Key const& key, const Value & defaultValue)
+	{
+		typename Container<Key, Value, Args...>::const_iterator it = m.find(key);
+		if (it == m.end())
+		    return *defaultValue;
+		return *it->second;
+	}
+
+	// get value from generic associative containers without default value
+	// fails if key is not available
+	// (const version)
+	template <template<class, class, class...> class Container, typename Key, typename Value, typename... Args>
+	static Value const& Get(const Container<Key, Value, Args...>& m, Key const& key)
+	{
+		typename Container<Key, Value, Args...>::const_iterator it = m.find(key);
+		if (it == m.end())
+		    LOG(FATAL) << "Key \"" << key << "\" can not be found in map.";
+		return it->second;
+	}
+
+	// get value from generic associative containers without default value
+	// fails if key is not available
+	template <template<class, class, class...> class Container, typename Key, typename Value, typename... Args>
+	static Value & Get(
+	
+	Container<Key, Value, Args...>& m, Key const& key)
+	{
+		typename Container<Key, Value, Args...>::iterator it = m.find(key);
+		if (it == m.end())
+		    LOG(FATAL) << "Key \"" << key << "\" can not be found in map.";
+		return it->second;
+	}
+
+	// get value from generic associative containers without default value
+	// fails if key is not available
+	// (boost::ptr_map version)
+	template <template<class, class, class...> class Container, typename Key, typename Value, typename... Args>
+	static Value const& GetPtrMap(const Container<Key, Value, Args...>& m, Key const& key)
+	{
+		typename Container<Key, Value, Args...>::const_iterator it = m.find(key);
+		if (it == m.end())
+		    LOG(FATAL) << "Key \"" << key << "\" can not be found in map.";
+		return *it->second;
+	}
 };	
 
