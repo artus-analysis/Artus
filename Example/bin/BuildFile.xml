@@ -1,9 +1,10 @@
 <bin   name="artusExample" file="ArtusExample.cc">
-   <use   name="Artus/Core"/>
-   <use   name="Artus/Provider"/>
-   <use   name="Artus/Configuration"/>
-   <use   name="Artus/Consumer"/>
-   <use   name="Artus/Example"/>
+	<use   name="Artus/Core"/>
+	<use   name="Artus/Provider"/>
+	<use   name="Artus/Configuration"/>
+	<use   name="Artus/Consumer"/>
+	<use   name="Artus/Example"/>
+	<Flags CXXFLAGS="-g" />
 </bin>
 
 <!-- this example is not complete neither working but can optionally 

@@ -1,3 +1,5 @@
+<Flags CXXFLAGS="-g" />
+
 <use   name="boost"/>
 <use   name="root"/>
 <flags ADD_SUBDIR="1"/>
