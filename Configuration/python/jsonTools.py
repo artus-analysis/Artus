@@ -13,6 +13,8 @@ import pprint
 import ROOT
 import sys
 
+import Artus.Utility.tools as tools
+
 
 # Class that stores python dicts and offers some additional JSON functionality
 class JsonDict(dict):
@@ -95,6 +97,10 @@ class JsonDict(dict):
 	# resolves the includes and returns a new object
 	def doIncludes(self):
 		return JsonDict(JsonDict.deepinclude(self))
+	
+	# resolves the nicks and returns a new object
+	def doNicks(self, nick="default"):
+		return JsonDict(JsonDict.deepresolvenicks(self, nick))
 	
 	# resolves the comments and returns a new object
 	def doComments(self):
@@ -215,6 +221,27 @@ class JsonDict(dict):
 			result = copy.deepcopy(jsonDict)
 		return result
 
+	# resolves/replaces nick options in JSON dictionaries
+	# "nick" is a protected property name which is followed by a dict with nick name regexs as keys
+	# if no matching nick name is found, it is looked for "default".
+	@staticmethod
+	def deepresolvenicks(jsonDict, nick="default"):
+		result = None
+		if isinstance(jsonDict, dict):
+			result = JsonDict()
+			for key, value in jsonDict.items():
+				if isinstance(value, dict) and isinstance(value.get("nick"), dict):
+					nickDict = value["nick"]
+					tmpValue = nickDict.get(tools.matchingItem(nickDict.keys(), nick),
+					                        nickDict.get("default"))
+					if tmpValue != None:
+						result[key] = JsonDict.deepresolvenicks(tmpValue, nick=nick)
+				else:
+					result[key] = JsonDict.deepresolvenicks(value, nick=nick)
+		else:
+			result = copy.deepcopy(jsonDict)
+		return result
+	
 	# remove all comments from this JSON dictionary
 	# comments are keys, values and list entries starting with #
 	# editing in place

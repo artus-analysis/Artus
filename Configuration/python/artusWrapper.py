@@ -152,7 +152,7 @@ class ArtusWrapper(object):
 		self._config += (pipelineBaseJsonDict + pipelineJsonDict)
 		
 		# treat includes
-		self._config = self._config.doIncludes()
+		self._config = self._config.doNicks(self._args.nick).doIncludes()
 
 
 	def _initArgumentParser(self, userArgParsers=None):
@@ -180,6 +180,9 @@ class ArtusWrapper(object):
 	                                 help="JSON pipeline base configurations. All pipeline configs will be merged with these common configs.")
 		configOptionsGroup.add_argument("-p", "--pipeline-configs", nargs="+", action="append",
 	                                 help="JSON pipeline configurations. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")
+		configOptionsGroup.add_argument("--nick", default="default",
+	                                    help="Nick name (regex) that can be used for switch between sample-dependent settings.")
+		
 		configOptionsGroup.add_argument("--add-repo-versions", default=True, action="store_true",
 	                                 help="Add repository versions to the JSON config.")
 		configOptionsGroup.add_argument("--repo-scan-base-dirs", nargs="+", required=False, default="$CMSSW_BASE/src/",
