@@ -13,16 +13,13 @@
 
 #include "Artus/Configuration/interface/ArtusConfig.h"
 #include "Artus/Configuration/interface/RootEnvironment.h"
-
+#include "Artus/Utility/interface/ArtusDefineLogging.h"
 
 #include "Artus/Example/interface/TraxFactory.h"
-
 #include "Artus/Example/interface/TraxTypes.h"
 #include "Artus/Example/interface/TraxEventProvider.h"
 #include "Artus/Example/interface/TraxPipelineInitializer.h"
-
 #include "Artus/Example/interface/PtCorrectionProducer.h"
-
 
 /*
 	This example implements a simple dummy anaylsis which
