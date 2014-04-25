@@ -13,6 +13,7 @@
 
 #include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/ProcessNodeBase.h"
+#include "Artus/Utility/interface/ArtusLogging.h"
 
 // forward define to be able to use the event pipeline here
 template<class TTypes>

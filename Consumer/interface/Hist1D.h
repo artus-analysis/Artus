@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <boost/scoped_ptr.hpp>
+
 #include <TH1D.h>
 #include <TFile.h>
 

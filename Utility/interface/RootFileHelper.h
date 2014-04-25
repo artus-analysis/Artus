@@ -15,7 +15,7 @@
 #include <TDirectory.h>
 #include <TGraphErrors.h>
 
-#include "ArtusLog.h"
+#include "ArtusLogging.h"
 
 class RootFileHelper {
 public:

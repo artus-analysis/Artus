@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <Artus/Configuration/interface/PropertyMacros.h>
+
 /*
 
 Base class for all Plotting-related classes. Stores
@@ -38,6 +40,6 @@ private:
 	std::string m_sName;
 	std::string m_sCaption;
 
-IMPL_PROPERTY(std::string, RootFileFolder)
+	IMPL_PROPERTY(std::string, RootFileFolder)
 
 };
