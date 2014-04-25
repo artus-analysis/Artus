@@ -10,7 +10,6 @@
 #include <TChain.h>
 
 #include "Artus/Core/interface/EventProviderBase.h"
-#include "Artus/Core/interface/GlobalInclude.h"
 
 template<class TTypes>
 class RootEventProvider: public EventProviderBase<TTypes> {

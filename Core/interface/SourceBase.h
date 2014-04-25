@@ -7,8 +7,6 @@
 #ifndef SOURCEBASE_H_
 #define SOURCEBASE_H_
 
-#include "GlobalInclude.h"
-
 template < class TEvent, class TProduct, class TSettings >
 class SourceBase
 {

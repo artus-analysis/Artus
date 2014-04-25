@@ -4,9 +4,7 @@
 #include <string>
 #include <type_traits>
 
-#include "Artus/Core/interface/GlobalInclude.h"
 #include "Artus/Core/interface/Cpp11Support.h"
-
 
 namespace Utility {
 
@@ -22,7 +20,7 @@ namespace Utility {
 
 	// convert underlying (int) value to enum class type
 	template< typename Enum , typename T>
-	constexpr inline typename std::enable_if<std::is_enum<Enum>::value && std::is_integral<T>::value, Enum>::type ToEnum(T value) noexcept 
+	constexpr inline typename std::enable_if<std::is_enum<Enum>::value && std::is_integral<T>::value, Enum>::type ToEnum(T value) noexcept
 	{
 		return static_cast<Enum>( value );
 	}

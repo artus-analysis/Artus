@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "Artus/Core/interface/GlobalInclude.h"
-
 /*
 
 Base class for all Plotting-related classes. Stores

@@ -1,6 +1,8 @@
 
 #include "Artus/Utility/interface/RootFileHelper.h"
 
+#include <cassert>
+
 
 void RootFileHelper::SafeCd(TDirectory * pDir, std::string const& dirName) {
 	assert(pDir);

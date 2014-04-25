@@ -9,15 +9,14 @@
 #include "Artus/Core/interface/Cpp11Support.h"
 
 #include "Artus/Consumer/interface/NtupleConsumerBase.h"
+#include "Artus/Utility/interface/DefaultValues.h"
 
 #include "TraxTypes.h"
-
 
 class TraxNtupleConsumer: public NtupleConsumerBase<TraxTypes> {
 
 public:
-	virtual std::string GetConsumerId() const
-		ARTUS_CPP11_OVERRIDE
+	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE
 	{
 		return "ntuple";
 	}
@@ -25,17 +24,19 @@ public:
 private:
 
 	float returnvalue(std::string string, TraxEvent const& event,
-			TraxProduct const& product ) ARTUS_CPP11_OVERRIDE
-	{
-		if (string == "pt")
+			TraxProduct const& product) ARTUS_CPP11_OVERRIDE
+			{
+		if (string == "pt") {
 			return event.m_floatPtSim;
-		else if (string == "pt_corr")
+		} else if (string == "pt_corr") {
 			return product.m_floatPtSim_corrected;
-		else if (string == "theta")
+		} else if (string == "theta") {
 			return event.m_floatTheSim;
-		else
-			LOG(FATAL) << "The quantity " << string << " could not be added to the Ntuple!";
-			return UNDEFINED_VALUE;
+		} else {
+			LOG(FATAL)<< "The quantity " << string << " could not be added to the Ntuple!";
+			// the log fatal call will stop the execution of the program
+			// this is to satisfy the compiler with a return value
+			return DefaultValues::UndefinedFloat;
+		}
 	}
-
 };

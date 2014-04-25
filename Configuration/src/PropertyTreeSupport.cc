@@ -4,6 +4,7 @@
 #include <boost/foreach.hpp>
 
 #include "Artus/Configuration/interface/PropertyTreeSupport.h"
+#include "Artus/Utility/interface/ArtusLogging.h"
 
 
 stringvector PropertyTreeSupport::GetAsStringList(boost::property_tree::ptree * propTree,

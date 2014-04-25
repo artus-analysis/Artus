@@ -15,8 +15,6 @@
 #include <TDirectory.h>
 #include <TGraphErrors.h>
 
-#include "Artus/Core/interface/GlobalInclude.h"
-
 class RootFileHelper {
 public:
 

@@ -9,9 +9,9 @@
 #include "TFile.h"
 
 #include "Artus/Core/interface/Cpp11Support.h"
-#include "Artus/Core/interface/GlobalInclude.h"
 #include "Artus/Configuration/interface/PropertyTreeSupport.h"
 #include "Artus/Configuration/interface/SettingMacros.h"
+#include "Artus/Configuration/interface/PropertyMacros.h"
 
 /**
    \brief Reads setting of local parts of PipelineRunner from a prepared json configuration file.

@@ -6,7 +6,6 @@
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "Artus/Core/interface/ProducerBase.h"
-#include "Artus/Core/interface/GlobalInclude.h"
 
 #include "Artus/KappaAnalysis/interface/KappaProduct.h"
 

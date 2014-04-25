@@ -3,7 +3,6 @@
 
 #include <boost/noncopyable.hpp>
 
-#include "Artus/Core/interface/GlobalInclude.h"
 #include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/ProcessNodeBase.h"
 

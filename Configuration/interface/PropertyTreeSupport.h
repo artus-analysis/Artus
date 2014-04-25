@@ -7,7 +7,7 @@
 #pragma once
 #include <boost/property_tree/ptree.hpp>
 
-#include "Artus/Core/interface/GlobalInclude.h"
+#include "Artus/Utility/interface/Collections.h"
 
 /*
  * This class provides various convinience functions when working with Boost PropertyTrees.

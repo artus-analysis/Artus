@@ -9,8 +9,6 @@
 #include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>
 
-#include "GlobalInclude.h"
-
 /**
    Enum to store whether the input data is MC or Data
 */

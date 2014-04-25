@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Artus/Consumer/interface/NtupleConsumerBase.h"
+#include "Artus/Utility/interface/DefaultValues.h"
 
 /*
  * Fills NTuples with valueExtractors defined as lambda functions
@@ -35,7 +36,7 @@ public:
 	virtual void Init(Pipeline<TTypes> * pset) ARTUS_CPP11_OVERRIDE {
 		NtupleConsumerBase<TTypes>::Init(pset);
 		
-		float_extractor_lambda defaultExtractor = [](event_type const&, product_type const&) { return UNDEFINED_VALUE; };
+		float_extractor_lambda defaultExtractor = [](event_type const&, product_type const&) { return DefaultValues::UndefinedFloat; };
 		
 		// construct extractors vector
 		m_valueExtractors.clear();

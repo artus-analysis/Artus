@@ -11,7 +11,6 @@
 #include <TNtuple.h>
 
 #include "Artus/Core/interface/ConsumerBase.h"
-#include "Artus/Core/interface/GlobalInclude.h"
 #include "Artus/Utility/interface/RootFileHelper.h"
 
 /*
@@ -87,8 +86,7 @@ protected:
 
 private:
 	virtual float returnvalue(std::string string, event_type const& event,
-			product_type const& product )
-	{return UNDEFINED_VALUE;}
+			product_type const& product ) = 0;
 };
 
 

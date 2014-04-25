@@ -17,8 +17,9 @@
 #include <boost/property_tree/ptree.hpp>
 
 #include "Artus/Core/interface/Cpp11Support.h"
-#include "Artus/Core/interface/GlobalInclude.h"
 #include "Artus/Core/interface/ProcessNodeBase.h"
+#include "Artus/Utility/interface/Collections.h"
+#include "Artus/Utility/interface/ArtusLogging.h"
 
 class ArtusConfig {
 public:

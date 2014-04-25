@@ -25,8 +25,16 @@
 rm -rf CMakeFiles/
 rm CMakeCache.txt
 cmake .
+if [ $? -ne 0 ]; then
+        echo "cmake failed"
+        exit 1
+fi
 make clean 
 make
+if [ $? -ne 0 ]; then
+        echo "make"
+        exit 1
+fi
 ./artus_core_test
 # git bisect needs error codes in this range
 if [ $? -gt 126 ]; then

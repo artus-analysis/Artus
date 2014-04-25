@@ -7,9 +7,10 @@
 #pragma once
 
 #include <list>
+#include <vector>
 
 #include "Artus/Core/interface/Cpp11Support.h"
-#include "Artus/Core/interface/GlobalInclude.h"
+#include "Artus/Utility/interface/ArtusLogging.h"
 
 class FilterResult {
 public:

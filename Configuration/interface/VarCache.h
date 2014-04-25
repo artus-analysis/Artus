@@ -8,8 +8,6 @@
 
 #include <assert.h>
 
-#include "Artus/Core/interface/GlobalInclude.h"
-
 /*
  * Convenience class to implement for an arbitrary type TData. This class is useful
  * in conjunction with reading from a Boost PropertyTree or similar
