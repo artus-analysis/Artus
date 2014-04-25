@@ -12,6 +12,8 @@
 
 #include "Artus/Core/interface/ConsumerBase.h"
 #include "Artus/Utility/interface/RootFileHelper.h"
+#include "Artus/Utility/interface/Collections.h"
+#include "Artus/Utility/interface/DefaultValues.h"
 
 /*
 Base class for all Consumers which output some form of Ntuple
@@ -86,7 +88,7 @@ protected:
 
 private:
 	virtual float returnvalue(std::string string, event_type const& event,
-			product_type const& product ) = 0;
+			product_type const& product ) { return DefaultValues::UndefinedFloat; };
 };
 
 

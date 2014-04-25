@@ -1,7 +1,11 @@
 
 #pragma once
 
+#include <string>
 #include <boost/noncopyable.hpp>
+
+
+#include "Artus/Utility/interface/ArtusLogging.h"
 
 #include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/ProcessNodeBase.h"
