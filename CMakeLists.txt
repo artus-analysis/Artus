@@ -39,7 +39,7 @@ add_library(artus_configuration SHARED
 )
 
 target_link_libraries( artus_configuration 	
-    boost_program_options)
+        boost_program_options)
 
 add_library(artus_consumer SHARED
 	Consumer/src/Hist1D.cc
