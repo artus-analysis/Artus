@@ -1,7 +1,8 @@
 #pragma once
 
 #include <boost/noncopyable.hpp>
-#include "Artus/Utility/interface/easylogging++.h"
+
+#include "Artus/Core/interface/GlobalInclude.h"
 
 /*
  * Staticly creates the easy logging system. Don't use this

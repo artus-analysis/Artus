@@ -20,6 +20,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define _ELPP_NO_DEFAULT_LOG_FILE
+#define _ELPP_DISABLE_VERBOSE_LOGS
+#define _ELPP_DISABLE_TRACE_LOGS
+#define _ELPP_STACKTRACE_ON_CRASH
 #include "Artus/Utility/interface/easylogging++.h"
 
 //extern std::ofstream * g_logFile;

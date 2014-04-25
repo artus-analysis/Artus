@@ -1,11 +1,9 @@
 
-#include "Artus/Utility/interface/ArtusEasyLoggingDecl.h"
-
 #define _ELPP_NO_DEFAULT_LOG_FILE
 #define _ELPP_DISABLE_VERBOSE_LOGS
 #define _ELPP_DISABLE_TRACE_LOGS
 
-#include "Artus/Utility/interface/easylogging++.h"
+#include "Artus/Utility/interface/ArtusEasyLoggingDecl.h"
 _INITIALIZE_EASYLOGGINGPP
 
 int ArtusEasyLoggingDecl::runOnceHelper = runOnce();

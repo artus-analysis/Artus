@@ -3,6 +3,7 @@
  *   Joram Berger  <Joram.Berger@cern.ch>
  *   Dominik Haitz <Dominik.Haitz@kit.edu>
  */
+#include "Artus/Utility/interface/ArtusLogging.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/property_tree/json_parser.hpp>
@@ -21,8 +22,6 @@
 #include "Artus/Example/interface/TraxPipelineInitializer.h"
 
 #include "Artus/Example/interface/PtCorrectionProducer.h"
-
-#include "Artus/Utility/interface/ArtusLogging.h"
 
 
 /*
