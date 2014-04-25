@@ -5,6 +5,7 @@
 // never a good idea and the outcome can depend of compile and platform
 class DefaultValues {
 public:
-    constexpr static float  UndefinedFloat = -999.0;
-    constexpr static double UndefinedDouble = -999.0;
+	// values set in .cc file
+    static const float  UndefinedFloat ;
+    static const double UndefinedDouble  ;
 };

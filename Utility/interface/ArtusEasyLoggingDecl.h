@@ -2,7 +2,7 @@
 
 #include <boost/noncopyable.hpp>
 
-#include "Artus/Core/interface/GlobalInclude.h"
+#include "ArtusLogging.h"
 
 /*
  * Staticly creates the easy logging system. Don't use this
