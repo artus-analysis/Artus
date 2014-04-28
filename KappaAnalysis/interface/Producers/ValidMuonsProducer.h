@@ -64,12 +64,6 @@ private:
 		{
 			bool validMuon = true;
 
-			// Own loose cuts on muons and muon isolation
-			validMuon = validMuon
-						&& muon->p4.Pt() > 12.0
-						&& std::abs(muon->p4.Eta()) < 5.0
-						&& muon->trackIso03 < 3.0;
-
 			// Muon ID according to Muon POG definitions
 			if (tmpMuonID == "tight") {
 				if (year == 2012)
@@ -95,7 +89,17 @@ private:
 	// Can be overwritten for analysis-specific use cases
 	bool AdditionalCriteria(KDataMuon* muon, event_type const& event, product_type& product) const
 	{
-		return true;
+		bool validMuon = true;
+		
+		/* TODO
+		// Own loose cuts on muons and muon isolation
+		validMuon = validMuon
+					&& muon->p4.Pt() > 12.0
+					&& std::abs(muon->p4.Eta()) < 5.0
+					&& muon->trackIso03 < 3.0;
+		*/
+		
+		return validMuon;
 	}
 	
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon_selection

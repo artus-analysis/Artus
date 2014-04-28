@@ -99,12 +99,23 @@ private:
 				validJet = validJet && puID;
 			}
 			*/
+			
+			// check possible analysis-specific criteria
+			validJet = validJet && AdditionalCriteria(&(*jet), event, product);
 
 			if (validJet)
 				product.m_validJets.push_back(&(*jet));
 			else
 				product.m_invalidJets.push_back(&(*jet));
 		}
+	}
+	
+	// Can be overwritten for analysis-specific use cases
+	bool AdditionalCriteria(TJet* jet, event_type const& event, product_type& product) const
+	{
+		bool validJet = true;
+		
+		return validJet;
 	}
 };
 
