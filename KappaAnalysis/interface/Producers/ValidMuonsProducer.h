@@ -1,6 +1,9 @@
 
 #pragma once
 
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/trim.hpp>
+
 #include <Math/VectorUtil.h>
 
 #include "Kappa/DataFormats/interface/Kappa.h"
@@ -35,22 +38,26 @@ public:
 	                           product_type& product,
 	                           global_setting_type const& globalSettings) const ARTUS_CPP11_OVERRIDE
 	{
-		Produce(event, product);
+		Produce(event, product, globalSettings.GetMuonID(), globalSettings.GetYear());
 	}
 
 	virtual void ProduceLocal(event_type const& event,
 	                          product_type& product,
 	                          setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
-		Produce(event, product);
+		Produce(event, product, settings.GetMuonID(), settings.GetYear());
 	}
 
 
 private:
 
 	// function that lets this producer work as both a global and a local producer
-	void Produce(event_type const& event, product_type& product) const
+	void Produce(event_type const& event, product_type& product
+	             std::string const& muonID, int const& year) const
 	{
+		// prepare settings
+		std::string tmpMuonID = boost::algorithm::to_lower(boost::algorithm::trim_copy(muonID));
+	
 		// Apply muon isolation and MuonID
 		for (KDataMuons::iterator muon = event.m_muons->begin();
 			 muon != event.m_muons->end(); muon++)
@@ -63,35 +70,60 @@ private:
 						&& std::abs(muon->p4.Eta()) < 5.0
 						&& muon->trackIso03 < 3.0;
 
-			// Tight MuonID 2012
-			// [twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon)
-			// The comments describe, how CMSSW treats the recoMu.
-			/// version of MuonID
-			bool is2011 = false; //globalSettings.Global()->GetMuonID2011();
-			validMuon = validMuon
-						&& muon->isGlobalMuon()
-						// use PF muons
-						&& muon->isPFMuon()
-						// normalizedChi2
-						&& muon->globalTrack.chi2 / muon->globalTrack.nDOF < 10.
-						// hitPattern().numberOfValidMuonHits
-						&& muon->globalTrack.nValidMuonHits > 0
-						// numberOfMatchedStations
-						//&& muon->nMatches > 1 // TODO
-						// fabs(muonBestTrack()->dxy(vertex->position))
-						&& std::abs(muon->bestTrack.getDxy(&event.m_vertexSummary->pv)) < 0.2
-						// fabs(muonBestTrack()->dz(vertex->position)) // not in 2011
-						&& std::abs(muon->bestTrack.getDz(&event.m_vertexSummary->pv)) < 0.5 + 99999. * is2011
-						// hitPattern().numberOfValidPixelHits()
-						&& muon->innerTrack.nValidPixelHits > 0
-						// hitPattern().trackerLayersWithMeasurement() // 8 in 2011
-						&& muon->track.nPixelLayers + muon->track.nStripLayers > 5 + 3 * is2011;
+			// Muon ID according to Muon POG definitions
+			if (tmpMuonID == "tight") {
+				if (year == 2012)
+					validMuon = validMuon && IsTightMuon2012(&(*muon), event, product)
+				else if (year == 2011)
+					validMuon = validMuon && IsTightMuon2011(&(*muon), event, product)
+				else
+					LOG(FATAL) << "Tight muon ID for year " << year << " not yet implemented!"
+			}
+			else
+				LOG(FATAL) << "Muon ID of type " << muonID << " not yet implemented!"
 			
 			if (validMuon)
 				product.m_validMuons.push_back(&(*muon));
 			else
 				product.m_invalidMuons.push_back(&(*muon));
 		}
+	}
+	
+	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon_selection
+	bool IsTightMuon2011(KDataMuon* muon, event_type const& event, product_type& product)
+	{
+		bool validMuon = true;
+		
+		validMuon = validMuon
+					&& muon->isGlobalMuon()
+					&& muon->isPFMuon()
+					&& muon->globalTrack.chi2 / muon->globalTrack.nDOF < 10.0
+					&& muon->globalTrack.nValidMuonHits > 0
+					&& muon->nMatches > 1
+					&& std::abs(muon->bestTrack.getDxy(&event.m_vertexSummary->pv)) < 0.2
+					&& muon->innerTrack.nValidPixelHits > 0
+					&& muon->track.nPixelLayers + muon->track.nStripLayers > 8
+		
+		return validMuon;
+	}
+	
+	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon
+	bool IsTightMuon2012(KDataMuon* muon, event_type const& event, product_type& product)
+	{
+		bool validMuon = true;
+		
+		validMuon = validMuon
+					&& muon->isGlobalMuon()
+					&& muon->isPFMuon()
+					&& muon->globalTrack.chi2 / muon->globalTrack.nDOF < 10.0
+					&& muon->globalTrack.nValidMuonHits > 0
+					&& muon->nMatches > 1
+					&& std::abs(muon->bestTrack.getDxy(&event.m_vertexSummary->pv)) < 0.2
+					&& std::abs(muon->bestTrack.getDz(&event.m_vertexSummary->pv)) < 0.5
+					&& muon->innerTrack.nValidPixelHits > 0
+					&& muon->track.nPixelLayers + muon->track.nStripLayers > 5
+		
+		return validMuon;
 	}
 };
 

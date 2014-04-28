@@ -44,6 +44,10 @@ public:
 	{
 		RETURN_CACHED(hltPaths, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".HltPaths"))
 	}
+	
+	IMPL_SETTING_DEFAULT(int, Year, 2012);
+	
+	IMPL_SETTING_DEFAULT(int, MuonID, "Tight");
 
 };
 
@@ -140,4 +144,8 @@ public:
 	{
 		RETURN_CACHED(BosonPdgId, PropertyTreeSupport::GetAsStringList(GetPropTree(), "BosonPdgId"))
 	}
+	
+	IMPL_SETTING_DEFAULT(int, Year, 2012);
+	
+	IMPL_SETTING_DEFAULT(int, MuonID, "Tight");
 };
