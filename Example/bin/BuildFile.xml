@@ -5,6 +5,7 @@
 	<use   name="Artus/Consumer"/>
 	<use   name="Artus/Example"/>
 	<Flags CXXFLAGS="-g" />
+	<Flags LDFLAGS="-rdynamic" />
 </bin>
 
 <!-- this example is not complete neither working but can optionally 

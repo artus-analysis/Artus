@@ -1,4 +1,5 @@
 <Flags CXXFLAGS="-g" />
+<Flags LDFLAGS="-rdynamic" />
 
 <use   name="boost"/>
 <use   name="root"/>
