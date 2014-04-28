@@ -47,7 +47,7 @@ public:
 	
 	IMPL_SETTING_DEFAULT(int, Year, 2012);
 	
-	IMPL_SETTING_DEFAULT(int, MuonID, "Tight");
+	IMPL_SETTING_DEFAULT(std::string, MuonID, "Tight");
 
 };
 
@@ -147,5 +147,5 @@ public:
 	
 	IMPL_SETTING_DEFAULT(int, Year, 2012);
 	
-	IMPL_SETTING_DEFAULT(int, MuonID, "Tight");
+	IMPL_SETTING_DEFAULT(std::string, MuonID, "Tight");
 };

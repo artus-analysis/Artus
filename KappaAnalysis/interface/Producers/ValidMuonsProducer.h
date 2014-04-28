@@ -52,11 +52,11 @@ public:
 private:
 
 	// function that lets this producer work as both a global and a local producer
-	void Produce(event_type const& event, product_type& product
-	             std::string const& muonID, int const& year) const
+	virtual void Produce(event_type const& event, product_type& product,
+	                     std::string const& muonID, int const& year) const
 	{
 		// prepare settings
-		std::string tmpMuonID = boost::algorithm::to_lower(boost::algorithm::trim_copy(muonID));
+		std::string tmpMuonID = boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(muonID));
 	
 		// Apply muon isolation and MuonID
 		for (KDataMuons::iterator muon = event.m_muons->begin();
@@ -73,14 +73,14 @@ private:
 			// Muon ID according to Muon POG definitions
 			if (tmpMuonID == "tight") {
 				if (year == 2012)
-					validMuon = validMuon && IsTightMuon2012(&(*muon), event, product)
+					validMuon = validMuon && IsTightMuon2012(&(*muon), event, product);
 				else if (year == 2011)
-					validMuon = validMuon && IsTightMuon2011(&(*muon), event, product)
+					validMuon = validMuon && IsTightMuon2011(&(*muon), event, product);
 				else
-					LOG(FATAL) << "Tight muon ID for year " << year << " not yet implemented!"
+					LOG(FATAL) << "Tight muon ID for year " << year << " not yet implemented!";
 			}
 			else
-				LOG(FATAL) << "Muon ID of type " << muonID << " not yet implemented!"
+				LOG(FATAL) << "Muon ID of type " << muonID << " not yet implemented!";
 			
 			if (validMuon)
 				product.m_validMuons.push_back(&(*muon));
@@ -90,7 +90,7 @@ private:
 	}
 	
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon_selection
-	bool IsTightMuon2011(KDataMuon* muon, event_type const& event, product_type& product)
+	bool IsTightMuon2011(KDataMuon* muon, event_type const& event, product_type& product) const
 	{
 		bool validMuon = true;
 		
@@ -102,13 +102,13 @@ private:
 					&& muon->nMatches > 1
 					&& std::abs(muon->bestTrack.getDxy(&event.m_vertexSummary->pv)) < 0.2
 					&& muon->innerTrack.nValidPixelHits > 0
-					&& muon->track.nPixelLayers + muon->track.nStripLayers > 8
+					&& muon->track.nPixelLayers + muon->track.nStripLayers > 8;
 		
 		return validMuon;
 	}
 	
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon
-	bool IsTightMuon2012(KDataMuon* muon, event_type const& event, product_type& product)
+	bool IsTightMuon2012(KDataMuon* muon, event_type const& event, product_type& product) const
 	{
 		bool validMuon = true;
 		
@@ -121,7 +121,7 @@ private:
 					&& std::abs(muon->bestTrack.getDxy(&event.m_vertexSummary->pv)) < 0.2
 					&& std::abs(muon->bestTrack.getDz(&event.m_vertexSummary->pv)) < 0.5
 					&& muon->innerTrack.nValidPixelHits > 0
-					&& muon->track.nPixelLayers + muon->track.nStripLayers > 5
+					&& muon->track.nPixelLayers + muon->track.nStripLayers > 5;
 		
 		return validMuon;
 	}
