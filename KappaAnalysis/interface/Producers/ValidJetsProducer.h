@@ -8,14 +8,17 @@
 #include "Artus/Core/interface/ProducerBase.h"
 
 /**
-   \brief GlobalProducer, for valid jets.
+   \brief Producer for valid jets.
    
    Valid jets pass the partivle flow tight jetId by JetMET. There are not pileupJetId requirments 
    applied.
+   
+   This is a templated base version. Use the actual versions at the end of this file.
 */
 
-template<class TTypes>
-class ValidJetsProducer: public ProducerBase<TTypes>
+
+template<class TTypes, class TJet>
+class ValidJetsProducerBase: public ProducerBase<TTypes>
 {
 
 public:
@@ -24,9 +27,8 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::global_setting_type global_setting_type;
 	typedef typename TTypes::setting_type setting_type;
-
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "valid_jets";
+	
+	ValidJetsProducerBase(std::vector<TJet>* event_type::*jets) : m_jetsMember(jets) {
 	}
 
 	virtual void ProduceGlobal(event_type const& event,
@@ -45,12 +47,13 @@ public:
 
 
 private:
+	std::vector<TJet>* event_type::*m_jetsMember;
 
 	// function that lets this producer work as both a global and a local producer
 	void Produce(event_type const& event, product_type& product) const
 	{
-		for (KDataPFJets::iterator jet = event.m_jets->begin();
-		     jet != event.m_jets->end(); ++jet)
+		for (typename std::vector<TJet>::iterator jet = (event.*m_jetsMember)->begin();
+		     jet != (event.*m_jetsMember)->end(); ++jet)
 		{
 			bool validJet = true;
 
@@ -103,8 +106,42 @@ private:
 				product.m_invalidJets.push_back(&(*jet));
 		}
 	}
-	
-	//bool tagged;
-	//bool muonIso;
 };
+
+
+
+/**
+   \brief Producer for valid jets (simple PF jets).
+   
+   Operates on the vector event.m_tjets.
+*/
+template<class TTypes>
+class ValidJetsProducer: public ValidJetsProducerBase<TTypes, KDataPFJet>
+{
+public:
+	ValidJetsProducer() : ValidJetsProducerBase<TTypes, KDataPFJet>(&TTypes::event_type::m_jets) {};
+	
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
+		return "valid_jets";
+	}
+};
+
+
+
+/**
+   \brief Producer for valid jets (tagged PF jets).
+   
+   Operates on the vector event.m_tjets.
+*/
+template<class TTypes>
+class ValidTaggedJetsProducer: public ValidJetsProducerBase<TTypes, KDataPFJet>
+{
+public:
+	ValidTaggedJetsProducer() : ValidJetsProducerBase<TTypes, KDataPFTaggedJet>(&TTypes::event_type::m_tjets) {};
+	
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
+		return "valid_tagged_jets";
+	}
+};
+
 
