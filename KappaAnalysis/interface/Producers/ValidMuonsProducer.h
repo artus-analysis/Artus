@@ -82,11 +82,20 @@ private:
 			else
 				LOG(FATAL) << "Muon ID of type " << muonID << " not yet implemented!";
 			
+			// check possible analysis-specific criteria
+			validMuon = validMuon && AdditionalCriteria(&(*muon), event, product);
+			
 			if (validMuon)
 				product.m_validMuons.push_back(&(*muon));
 			else
 				product.m_invalidMuons.push_back(&(*muon));
 		}
+	}
+	
+	// Can be overwritten for analysis-specific use cases
+	bool AdditionalCriteria(KDataMuon* muon, event_type const& event, product_type& product) const
+	{
+		return true;
 	}
 	
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon_selection
