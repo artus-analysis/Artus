@@ -9,6 +9,7 @@
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/Utility/interface/Utility.h"
 
 
 /**
@@ -30,34 +31,53 @@ public:
 	typedef typename TTypes::global_setting_type global_setting_type;
 	typedef typename TTypes::setting_type setting_type;
 
+	enum class MuonID : int
+	{
+		NONE  = -1,
+		TIGHT = 0,
+	};
+	static MuonID ToMuonID(std::string const& muonID)
+	{
+		if (muonID == "tight") return MuonID::TIGHT;
+		else return MuonID::NONE;
+	}
+
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "valid_muons";
+	}
+
+	virtual void InitGlobal(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
+		muonID = ToMuonID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetMuonID())));
+		year = globalSettings.GetYear();
+	}
+
+	virtual void InitLocal(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+		muonID = ToMuonID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonID())));
+		year = settings.GetYear();
 	}
 
 	virtual void ProduceGlobal(event_type const& event,
 	                           product_type& product,
 	                           global_setting_type const& globalSettings) const ARTUS_CPP11_OVERRIDE
 	{
-		Produce(event, product, globalSettings.GetMuonID(), globalSettings.GetYear());
+		Produce(event, product);
 	}
 
 	virtual void ProduceLocal(event_type const& event,
 	                          product_type& product,
 	                          setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
-		Produce(event, product, settings.GetMuonID(), settings.GetYear());
+		Produce(event, product);
 	}
 
 
 private:
+	MuonID muonID;
+	int year;
 
 	// function that lets this producer work as both a global and a local producer
-	virtual void Produce(event_type const& event, product_type& product,
-	                     std::string const& muonID, int const& year) const
+	virtual void Produce(event_type const& event, product_type& product) const
 	{
-		// prepare settings
-		std::string tmpMuonID = boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(muonID));
-	
 		// Apply muon isolation and MuonID
 		for (KDataMuons::iterator muon = event.m_muons->begin();
 			 muon != event.m_muons->end(); muon++)
@@ -65,7 +85,7 @@ private:
 			bool validMuon = true;
 
 			// Muon ID according to Muon POG definitions
-			if (tmpMuonID == "tight") {
+			if (muonID == MuonID::TIGHT) {
 				if (year == 2012)
 					validMuon = validMuon && IsTightMuon2012(&(*muon), event, product);
 				else if (year == 2011)
@@ -74,7 +94,7 @@ private:
 					LOG(FATAL) << "Tight muon ID for year " << year << " not yet implemented!";
 			}
 			else
-				LOG(FATAL) << "Muon ID of type " << muonID << " not yet implemented!";
+				LOG(FATAL) << "Muon ID of type " << Utility::ToUnderlyingValue(muonID) << " not yet implemented!";
 			
 			// check possible analysis-specific criteria
 			validMuon = validMuon && AdditionalCriteria(&(*muon), event, product);
