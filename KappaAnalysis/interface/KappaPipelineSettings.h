@@ -123,7 +123,7 @@ public:
 
 	/// name of TaggerMetaData in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, TaggerMetadata, ""); // TODO: Default value, move to Artus/Provider
-
+	IMPL_SETTING_DEFAULT(std::string, TriggerObjects, "")
 
 	VarCache<std::vector<std::string>> jsonFiles;
 	stringvector GetJsonFiles() const

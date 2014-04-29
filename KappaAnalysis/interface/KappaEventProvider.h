@@ -77,6 +77,9 @@ public:
 			this->m_event.m_filterSummary = this->template SecureFileInterfaceGetMeta<KFilterSummary>(globalSettings.GetFilterSummary()); // TODO: Check
 		if(! globalSettings.GetTaggerMetadata().empty())
 			this->m_event.m_taggermetadata = this->template SecureFileInterfaceGetMeta<KTaggerMetadata>(globalSettings.GetTaggerMetadata());
+		if(! globalSettings.GetTriggerObjects().empty())
+			this->m_event.m_triggerObjects = this->template SecureFileInterfaceGet<KTriggerObjects>(globalSettings.GetTriggerObjects());
+
 	}
 
 };
