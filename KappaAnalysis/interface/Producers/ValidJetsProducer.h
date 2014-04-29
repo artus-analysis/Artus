@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/trim.hpp>
 #include <Math/VectorUtil.h>
 
 #include "Kappa/DataFormats/interface/Kappa.h"
@@ -31,6 +33,16 @@ public:
 	ValidJetsProducerBase(std::vector<TJet>* event_type::*jets) : m_jetsMember(jets) {
 	}
 
+	virtual void InitGlobal(global_setting_type const& globalSettings)
+	{
+		GetMaxNeutralFraction(globalSettings.GetJetID());
+	}
+
+	virtual void InitLocal(setting_type const& pipelineSettings)
+	{
+		GetMaxNeutralFraction(pipelineSettings.GetJetID());
+	}
+
 	virtual void ProduceGlobal(event_type const& event,
 	                           product_type& product,
 	                           global_setting_type const& globalSettings) const ARTUS_CPP11_OVERRIDE
@@ -45,9 +57,22 @@ public:
 		Produce(event, product);
 	}
 
-
 private:
 	std::vector<TJet>* event_type::*m_jetsMember;
+	float max_neutral_fraction;
+
+	virtual void GetMaxNeutralFraction(std::string jetid)
+	{
+		std::string tmpjetid = boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(jetid));
+		if (tmpjetid == "tight")
+			max_neutral_fraction = 0.90;
+		else if (tmpjetid == "medium")
+			max_neutral_fraction = 0.95;
+		else if (tmpjetid == "loose")
+			max_neutral_fraction = 0.99;
+		else
+			LOG(FATAL) << "Jet ID " << jetid << " not implemented!";
+	}
 
 	// function that lets this producer work as both a global and a local producer
 	void Produce(event_type const& event, product_type& product) const
@@ -57,31 +82,12 @@ private:
 		{
 			bool validJet = true;
 
-			/* TODO
-			// Muon isolation DeltaR > 0.5
-			if (muonIso)
-			{
-				float dr1, dr2;
-				dr1 = 99999.0f;
-				dr2 = 99999.0f;
-
-				if (product.HasValidZ())
-				{
-					dr1 = ROOT::Math::VectorUtil::DeltaR(jet->p4,
-														 product.GetValidMuons().at(0).p4);
-					dr2 = ROOT::Math::VectorUtil::DeltaR(jet->p4,
-														 product.GetValidMuons().at(1).p4);
-				}
-				validJet = validJet && (dr1 > 0.5) && (dr2 > 0.5);
-			}
-			*/
-
 			// JetID
 			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
 			// jets, all eta
 			validJet = validJet
-					   && jet->neutralHadFraction + jet->HFHadFraction < 0.99
-					   && jet->neutralEMFraction < 0.99
+					   && jet->neutralHadFraction + jet->HFHadFraction < max_neutral_fraction
+					   && jet->neutralEMFraction < max_neutral_fraction
 					   && jet->nConst > 1;
 			// jets, |eta| < 2.4 (tracker)
 			if (std::abs(jet->p4.eta()) < 2.4)
@@ -117,6 +123,7 @@ private:
 		
 		return validJet;
 	}
+
 };
 
 

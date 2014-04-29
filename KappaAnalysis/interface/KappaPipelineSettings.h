@@ -48,6 +48,7 @@ public:
 	IMPL_SETTING_DEFAULT(int, Year, 2012);
 	
 	IMPL_SETTING_DEFAULT(std::string, MuonID, "Tight");
+	IMPL_SETTING_DEFAULT(std::string, JetID, "Tight");
 
 };
 
@@ -148,4 +149,6 @@ public:
 	IMPL_SETTING_DEFAULT(int, Year, 2012);
 	
 	IMPL_SETTING_DEFAULT(std::string, MuonID, "Tight");
+	IMPL_SETTING_DEFAULT(std::string, JetID, "Tight");
+
 };
