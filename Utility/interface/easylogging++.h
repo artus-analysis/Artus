@@ -736,16 +736,16 @@ namespace consts {
         const char* detail;
     } kCrashSignals[kMaxCrashSignals] = {
         // NOTE: Do not re-order, if you do please check CrashHandler(bool) constructor and CrashHandler::setHandler(..)
-        { SIGABRT, "SIGABRT", "Abnormal termination",
-                "Program was abnormally terminated." },
-        { SIGFPE, "SIGFPE", "Erroneous arithmetic operation",
-                "Arithemetic operation issue such as division by zero or operation resulting in overflow." },
-        { SIGILL, "SIGILL", "Illegal instruction",
-                "Generally due to a corruption in the code or to an attempt to execute data."},
-        { SIGSEGV, "SIGSEGV", "Invalid access to memory",
-                "Program is trying to read an invalid (unallocated, deleted or corrupted) or inaccessible memory." },
-        { SIGINT, "SIGINT", "Interactive attention signal",
-                 "Interruption generated (generally) by user or operating system." },
+//        { SIGABRT, "SIGABRT", "Abnormal termination",
+//                "Program was abnormally terminated." },
+//        { SIGFPE, "SIGFPE", "Erroneous arithmetic operation",
+//                "Arithemetic operation issue such as division by zero or operation resulting in overflow." },
+//        { SIGILL, "SIGILL", "Illegal instruction",
+//                "Generally due to a corruption in the code or to an attempt to execute data."},
+//        { SIGSEGV, "SIGSEGV", "Invalid access to memory",
+//                "Program is trying to read an invalid (unallocated, deleted or corrupted) or inaccessible memory." },
+//        { SIGINT, "SIGINT", "Interactive attention signal",
+//                 "Interruption generated (generally) by user or operating system." },
     };
 }  // namespace consts
 }  // namespace base
