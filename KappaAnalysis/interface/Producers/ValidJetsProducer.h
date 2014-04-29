@@ -124,7 +124,7 @@ private:
 /**
    \brief Producer for valid jets (simple PF jets).
    
-   Operates on the vector event.m_tjets.
+   Operates on the vector event.m_jets.
 */
 template<class TTypes>
 class ValidJetsProducer: public ValidJetsProducerBase<TTypes, KDataPFJet>
@@ -145,7 +145,7 @@ public:
    Operates on the vector event.m_tjets.
 */
 template<class TTypes>
-class ValidTaggedJetsProducer: public ValidJetsProducerBase<TTypes, KDataPFJet>
+class ValidTaggedJetsProducer: public ValidJetsProducerBase<TTypes, KDataPFTaggedJet>
 {
 public:
 	ValidTaggedJetsProducer() : ValidJetsProducerBase<TTypes, KDataPFTaggedJet>(&TTypes::event_type::m_tjets) {};
