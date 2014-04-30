@@ -15,9 +15,12 @@
 /**
    \brief GlobalProducer, for valid muons.
    
-   Valid muons pass the tightId requirement of the muon POG. In addition there is a loose 
-   isolation requirement. Two collectons are written into the KappaProduct for valid and 
+   Valid muons pass the tightId requirement of the muon POG. In addition there is a loose
+   isolation requirement. Two collectons are written into the KappaProduct for valid and
    invalid muons. 
+
+   This Producer needs the MuonID (only "tight" is currently implemented) and the
+   Year (2011 or 2012) config tags.
 */
 
 template<class TTypes>

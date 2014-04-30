@@ -12,10 +12,13 @@
 /**
    \brief Producer for valid jets.
    
-   Valid jets pass the partivle flow tight jetId by JetMET. There are not pileupJetId requirments 
-   applied.
+   Valid jets pass the particle flow JetID ("tight", "medium" or "loose") by JetMET. There are no
+   pileupJetID requirements applied at the moment.
+
+   This producer requires the "JetID" config tag to be set to "tight", "medium" or "loose".
    
-   This is a templated base version. Use the actual versions at the end of this file.
+   This is a templated base version. Use the actual versions for KDataPFJets or KDataPFTaggedJets
+   at the end of this file.
 */
 
 
