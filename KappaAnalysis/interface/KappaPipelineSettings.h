@@ -45,10 +45,10 @@ public:
 		RETURN_CACHED(hltPaths, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".HltPaths"))
 	}
 	
-	IMPL_SETTING_DEFAULT(int, Year, 0);
+	IMPL_SETTING(int, Year);
 	
-	IMPL_SETTING_DEFAULT(std::string, MuonID, "");
-	IMPL_SETTING_DEFAULT(std::string, JetID, "");
+	IMPL_SETTING(std::string, MuonID);
+	IMPL_SETTING(std::string, JetID);
 
 };
 
@@ -146,9 +146,9 @@ public:
 		RETURN_CACHED(BosonPdgId, PropertyTreeSupport::GetAsStringList(GetPropTree(), "BosonPdgId"))
 	}
 	
-	IMPL_SETTING_DEFAULT(int, Year, 0);
+	IMPL_SETTING(int, Year);
 	
-	IMPL_SETTING_DEFAULT(std::string, MuonID, "");
-	IMPL_SETTING_DEFAULT(std::string, JetID, "");
+	IMPL_SETTING(std::string, MuonID);
+	IMPL_SETTING(std::string, JetID);
 
 };
