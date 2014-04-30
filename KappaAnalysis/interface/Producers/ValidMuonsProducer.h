@@ -110,7 +110,7 @@ private:
 	}
 	
 	// Can be overwritten for analysis-specific use cases
-	bool AdditionalCriteria(KDataMuon* muon, event_type const& event, product_type& product) const
+	virtual bool AdditionalCriteria(KDataMuon* muon, event_type const& event, product_type& product) const
 	{
 		bool validMuon = true;
 		

@@ -64,7 +64,7 @@ private:
 	std::vector<TJet>* event_type::*m_jetsMember;
 	float max_neutral_fraction;
 
-	virtual void GetMaxNeutralFraction(std::string jetid)
+	void GetMaxNeutralFraction(std::string jetid)
 	{
 		std::string tmpjetid = boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(jetid));
 		if (tmpjetid == "tight")
@@ -78,7 +78,7 @@ private:
 	}
 
 	// function that lets this producer work as both a global and a local producer
-	void Produce(event_type const& event, product_type& product) const
+	virtual void Produce(event_type const& event, product_type& product) const
 	{
 		for (typename std::vector<TJet>::iterator jet = (event.*m_jetsMember)->begin();
 		     jet != (event.*m_jetsMember)->end(); ++jet)
@@ -120,7 +120,7 @@ private:
 	}
 	
 	// Can be overwritten for analysis-specific use cases
-	bool AdditionalCriteria(TJet* jet, event_type const& event, product_type& product) const
+	virtual bool AdditionalCriteria(TJet* jet, event_type const& event, product_type& product) const
 	{
 		bool validJet = true;
 		
