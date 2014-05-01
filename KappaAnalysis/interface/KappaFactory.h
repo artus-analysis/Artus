@@ -43,6 +43,8 @@ public:
 			return new ValidTausProducer<TTypes>();
 		else if(id == ValidJetsProducer<TTypes>().GetProducerId())
 			return new ValidJetsProducer<TTypes>();
+		else if(id == ValidTaggedJetsProducer<TTypes>().GetProducerId())
+			return new ValidTaggedJetsProducer<TTypes>();
 		else
 			return FactoryBase<TTypes>::createProducer( id );	
 	}
