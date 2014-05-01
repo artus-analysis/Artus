@@ -54,7 +54,7 @@ public:
 				
 				product.m_genBoson.push_back( KappaProduct::MotherDaughterBundle(&(*part)) );
 				KappaProduct::MotherDaughterBundle & lastBosonRef = product.m_genBoson.back();
-
+				lastBosonRef.parent = &lastBosonRef;
 				for (unsigned int i=0; i<part->daughterIndices.size(); ++i) 
 				{
 					// Higgs with Status 2 is also considered as Higgs status 3 daughter, what leads to the condition, 
@@ -68,7 +68,7 @@ public:
 
 						lastBosonRef.Daughters.push_back(KappaProduct::MotherDaughterBundle( &(event.m_genParticles->at(indDaughter)) ));
 						KappaProduct::MotherDaughterBundle & lastDaughterRef = lastBosonRef.Daughters.back();
-
+						lastDaughterRef.parent = &lastBosonRef;
 						unsigned int indDaughterStat2 = (event.m_genParticles->at(indDaughter)).daughterIndex(0);
 						for (unsigned int j=0; j<(event.m_genParticles->at(indDaughterStat2)).daughterIndices.size();++j)
 						{	
@@ -77,6 +77,15 @@ public:
 							{
 							
 								lastDaughterRef.Daughters.push_back(KappaProduct::MotherDaughterBundle( &(event.m_genParticles->at(indGranddaughter)) ));
+								KappaProduct::MotherDaughterBundle & lastGranddaughterRef = lastDaughterRef.Daughters.back();
+								lastGranddaughterRef.parent = &lastDaughterRef;
+								
+								for(unsigned int k = 0;k<(event.m_genParticles->at(indGranddaughter)).daughterIndices.size();++k)
+								{
+									unsigned int indGrandGranddaughter = (event.m_genParticles->at(indGranddaughter)).daughterIndex(k);
+									lastGranddaughterRef.Daughters.push_back(KappaProduct::MotherDaughterBundle( &event.m_genParticles->at(indGrandGranddaughter)));
+								lastGranddaughterRef.parent = &lastGranddaughterRef;
+								}
 							}
 							else
 							{

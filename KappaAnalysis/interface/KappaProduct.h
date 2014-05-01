@@ -21,9 +21,10 @@ public:
 	/// added by GenTauDecayProducer
 	// can store an arbitrary decay tree
 	struct MotherDaughterBundle {
-		MotherDaughterBundle( KGenParticle* newnode ) : node( newnode )
+		MotherDaughterBundle( KGenParticle* newnode ) : node( newnode ) 
 		{}
-
+		// pointer to the parent
+		MotherDaughterBundle * parent = 0;
 		// must be != null;
 		KGenParticle* node;
 		// will have 0 entries, if there are no daughters
