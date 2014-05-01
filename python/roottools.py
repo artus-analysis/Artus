@@ -11,16 +11,40 @@ log = logging.getLogger(__name__)
 import array
 import collections
 import hashlib
+import os
 
 import ROOT
 
+def check_type(root_file_names, path_to_objects):
+	if isinstance(root_file_names, basestring):
+		root_file_names = [root_file_names]
+	if isinstance(path_to_objects, basestring):
+		path_to_objects = [path_to_objects]
+	
+	if path_to_objects[0] == "":
+		return ROOT.TH1
+	
+	root_file = ROOT.TFile(root_file_names[0], "READ")
+	root_object = root_file.Get(path_to_objects[0])
+	if root_object:
+		if isinstance(root_object, ROOT.TTree):
+			return ROOT.TTree
+		elif isinstance(root_object, ROOT.TDirectory):
+			return ROOT.TH1
+		else:
+			log.error("Usage of ROOT objects of Type \"" + root_objects[0].ClassName() + "\" is not yet implemented!")
+			return None
+	else:
+		log.error("Could not find ROOT object \"" + path_to_objects[0] + "\" in file \"" + root_file_names[0] + "\"!")
+		return None
 
-def histogram_from_file(root_file_names, path_to_histogram, name=None):
+
+def histogram_from_file(root_file_names, path_to_histograms, name=None):
 	"""
 	Read histograms from files
 	
-	root_file_names: string or list of strings
-	path_to_histogram: string of path to root histogram in root file
+	root_file_names: string (or list of strings)
+	path_to_histograms: string (or list of strings) of path to root histogram in root file
 	
 	This function looks for the same histograms in all files and sums them up
 	The name (string) of the resulting histogram can be passed as a parameter
@@ -28,30 +52,34 @@ def histogram_from_file(root_file_names, path_to_histogram, name=None):
 
 	if isinstance(root_file_names, basestring):
 		root_file_names = [root_file_names]
+	if isinstance(path_to_histograms, basestring):
+		path_to_histograms = [path_to_histograms]
 	
 	# prepare unique histogram name
 	if name == None:
 		name = "histogram_{0}.json".format(hashlib.md5("_".join([str(root_file_names),
-		                                                         path_to_histogram])).hexdigest())
+		                                                         str(path_to_histograms)])).hexdigest())
 	
 	# loop over files and try to read histograms
 	root_histogram = None
 	for root_file_name in root_file_names:
 		root_file = ROOT.TFile(root_file_name, "READ")
-		tmp_root_histogram = root_file.Get(path_to_histogram)
-		if tmp_root_histogram == None:
-			log.error("Could not find histogram \"" + path_to_histogram + "\" in file \"" + root_file_name + "\"!")
-		else:
-			if root_histogram:
-				root_histogram.Add(tmp_root_histogram)
+		
+		for path_to_histogram in path_to_histograms:
+			tmp_root_histogram = root_file.Get(path_to_histogram)
+			if tmp_root_histogram == None:
+				log.error("Could not find histogram \"" + path_to_histogram + "\" in file \"" + root_file_name + "\"!")
 			else:
-				root_histogram = tmp_root_histogram
-				root_histogram.SetName(name)
+				if root_histogram:
+					root_histogram.Add(tmp_root_histogram)
+				else:
+					root_histogram = tmp_root_histogram
+					root_histogram.SetName(name)
 	
 	root_histogram.SetDirectory(0)
 	return root_histogram
 
-def histogram_from_tree(root_file_names, path_to_tree, variable_expression,
+def histogram_from_tree(root_file_names, path_to_trees, variable_expression,
                         binning=None, weight_selection="", option="", name=None):
 	"""
 	Read histograms from trees
@@ -71,6 +99,8 @@ def histogram_from_tree(root_file_names, path_to_tree, variable_expression,
 
 	if isinstance(root_file_names, basestring):
 		root_file_names = [root_file_names]
+	if isinstance(path_to_trees, basestring):
+		path_to_trees = [path_to_trees]
 
 	# prepare binning string for TTree::Draw
 	if binning == None:
@@ -88,15 +118,16 @@ def histogram_from_tree(root_file_names, path_to_tree, variable_expression,
 	# prepare unique histogram name
 	if name == None:
 		name = "histogram_{0}.json".format(hashlib.md5("_".join([str(root_file_names),
-		                                                         path_to_tree,
+		                                                         str(path_to_trees),
 		                                                         variable_expression,
 		                                                         binning,
 		                                                         str(weight_selection)])).hexdigest())
 	
 	# prepare TChain
-	tree = ROOT.TChain(path_to_tree)
+	tree = ROOT.TChain()
 	for root_file_name in root_file_names:
-		tree.Add(root_file_name)
+		for path_to_tree in path_to_trees:
+			tree.Add(os.path.join(root_file_name, path_to_tree))
 	
 	# draw histogram
 	tree.Draw(variable_expression + ">>" + name + binning, str(weight_selection), option + " GOFF")

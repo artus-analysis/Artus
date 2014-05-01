@@ -41,22 +41,10 @@ class InputBase(processor.Processor):
 	def prepare_args(self, plotData):
 		processor.Processor.prepare_args(self, plotData)
 		
-		# prepare lists
-		listArgs = ["files", "nicks", "x_expressions", "y_expressions",
-		            "z_expressions", "weights", "norm_references"]
-		for listArg in listArgs:
-			if not isinstance(plotData.plotdict[listArg], collections.Iterable) or isinstance(plotData.plotdict[listArg], basestring):
-				plotData.plotdict[listArg] = [plotData.plotdict[listArg]]
-		
-		# complete lists that are too short
-		n_inputs = max([len(plotData.plotdict[listArg]) for listArg in listArgs])
-		for listArg, plotList in [(listArg, plotData.plotdict[listArg]) for listArg in listArgs]:
-			lenPlotList = len(plotList)
-			if lenPlotList < n_inputs:
-				plotList += [None] * (n_inputs - lenPlotList)
-				log.warning("Argument \"" + listArg + "\" needs " + str(n_inputs) + " values! These are filled up by repeating the current values.")
-			for index in range(n_inputs):
-				plotList[index] = plotList[index % lenPlotList]
+		self.prepare_list_args(plotData, ["files", "nicks", "x_expressions", "y_expressions",
+		                                  "z_expressions", "weights", "norm_references"])
+		plotData.plotdict["files"] = [files.split() for files in plotData.plotdict["files"]]
+		plotData.plotdict["nicks"] = [nick if nick != None else ("nick%d" % index) for index, nick in enumerate(plotData.plotdict["nicks"])]
 	
 	def run(self, plotData):
 		processor.Processor.run(self, plotData)
