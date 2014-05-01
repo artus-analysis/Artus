@@ -19,22 +19,32 @@ class PlotBase(processor.Processor):
 	def prepare_args(self, plotData):
 		processor.Processor.prepare_args(self, plotData)
 	
-	def run(self, plotdict=None):
-		processor.Processor.run(self, plotdict)
+	def run(self, plotData):
+		processor.Processor.run(self, plotData)
+		
+		self.create_canvas(plotData)
+		self.make_plots(plotData)
+		self.modify_axes(plotData)
+		self.add_texts(plotData)
+		self.save_canvas(plotData)
 	
 	@abc.abstractmethod
-	def create_canvas(self):
-		return
+	def create_canvas(self, plotData):
+		pass
 	
 	@abc.abstractmethod
-	def make_plots(self):
-		return
+	def make_plots(self, plotData):
+		pass
 	
 	@abc.abstractmethod
-	def modify_axes(self):
-		return
+	def modify_axes(self, plotData):
+		pass
 	
 	@abc.abstractmethod
-	def add_texts(self):
-		return
+	def add_texts(self, plotData):
+		pass
+	
+	@abc.abstractmethod
+	def save_canvas(self, plotData):
+		pass
 

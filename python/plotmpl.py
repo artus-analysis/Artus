@@ -17,6 +17,6 @@ class PlotMpl(plotbase.PlotBase):
 	def prepare_args(self, plotData):
 		plotbase.PlotBase.prepare_args(self, plotData)
 	
-	def run(self, plotdict=None):
-		plotbase.PlotBase.run(self, plotdict)
+	def run(self, plotData):
+		plotbase.PlotBase.run(self, plotData)
 
