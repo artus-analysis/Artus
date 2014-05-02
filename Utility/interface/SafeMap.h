@@ -68,9 +68,7 @@ public:
 	// get value from generic associative containers without default value
 	// fails if key is not available
 	template <template<class, class, class...> class Container, typename Key, typename Value, typename... Args>
-	static Value & Get(
-	
-	Container<Key, Value, Args...>& m, Key const& key)
+	static Value & Get(Container<Key, Value, Args...>& m, Key const& key)
 	{
 		typename Container<Key, Value, Args...>::iterator it = m.find(key);
 		if (it == m.end())
