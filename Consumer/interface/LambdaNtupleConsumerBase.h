@@ -41,8 +41,18 @@ public:
 		// construct extractors vector
 		m_valueExtractors.clear();
 		m_valueExtractors.resize(this->m_quantitiesVector.size());
-		transform(this->m_quantitiesVector.begin(), this->m_quantitiesVector.end(), m_valueExtractors.begin(),
-		          [&](std::string quantity) { return(m_valueExtractorMap.count(quantity) > 0 ? m_valueExtractorMap[quantity] : defaultExtractor); });
+		transform(this->m_quantitiesVector.begin(), this->m_quantitiesVector.end(),
+		        m_valueExtractors.begin(), [&](std::string quantity)
+			{
+				if (m_valueExtractorMap.count(quantity) > 0)
+					return m_valueExtractorMap[quantity];
+				else
+				{
+					LOG(FATAL)<<"Quantity '" << quantity << "' is not defined in the LambdaNtupleConsumer!";
+					return defaultExtractor;
+				}
+			}
+		);
 
 	}
 
