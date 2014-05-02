@@ -19,7 +19,7 @@
    *mvanontrig* working point for non-triggering MVA is implemented.
 
    This Producer needs the following config tags:
-     Electron ID
+     ElectronID
 */
 
 template<class TTypes>
@@ -38,7 +38,6 @@ public:
 		NONE  = -1,
 		MVANONTRIG = 0,
 	};
-
 	static ElectronID ToElectronID(std::string const& electronID)
 	{
 		if (electronID == "mvanontrig")
@@ -87,7 +86,7 @@ protected:
 			if (electronID == ElectronID::MVANONTRIG)
 				validElectron = validElectron && IsMVANonTrigElectron(&(*electron), event, product);
 			else if (electronID != ElectronID::NONE)
-				LOG(FATAL) << "electron ID of type " << Utility::ToUnderlyingValue(electronID) << " not yet implemented!";
+				LOG(FATAL) << "Electron ID of type " << Utility::ToUnderlyingValue(electronID) << " not yet implemented!";
 
 			// check possible analysis-specific criteria
 			validElectron = validElectron && AdditionalCriteria(&(*electron), event, product);
