@@ -43,10 +43,10 @@ public:
 	}
 
 
-private:
+protected:
 
 	// function that lets this producer work as both a global and a local producer
-	void Produce(event_type const& event, product_type& product) const
+	virtual void Produce(event_type const& event, product_type& product) const
 	{
 		for (KDataPFTaus::iterator tau = event.m_taus->begin();
 			 tau != event.m_taus->end(); tau++)
@@ -54,11 +54,21 @@ private:
 			// filter on decay mode
 			bool validTau = (tau->hpsDecayMode < 3);
 			
+			// check possible analysis-specific criteria
+			validTau = validTau && AdditionalCriteria(&(*tau), event, product);
+			
 			if (validTau)
 				product.m_validTaus.push_back(&(*tau));
 			else
 				product.m_invalidTaus.push_back(&(*tau));
 		}
+	}
+	
+	// Can be overwritten for analysis-specific use cases
+	virtual bool AdditionalCriteria(KDataPFTau* tau, event_type const& event, product_type& product) const
+	{
+		bool validTau = true;
+		return validTau;
 	}
 };
 

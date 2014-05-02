@@ -107,11 +107,7 @@ public:
 	}
 
 
-private:
-	int year;
-	MuonID muonID;
-	MuonIsoType muonIsoType;
-	MuonIso muonIso;
+protected:
 
 	// function that lets this producer work as both a global and a local producer
 	virtual void Produce(event_type const& event, product_type& product) const
@@ -170,17 +166,16 @@ private:
 	virtual bool AdditionalCriteria(KDataMuon* muon, event_type const& event, product_type& product) const
 	{
 		bool validMuon = true;
-		
-		/* TODO
-		// Own loose cuts on muons and muon isolation
-		validMuon = validMuon
-					&& muon->p4.Pt() > 12.0
-					&& std::abs(muon->p4.Eta()) < 5.0
-					&& muon->trackIso03 < 3.0;
-		*/
-		
 		return validMuon;
 	}
+
+
+private:
+
+	int year;
+	MuonID muonID;
+	MuonIsoType muonIsoType;
+	MuonIso muonIso;
 	
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon_selection
 	bool IsTightMuon2011(KDataMuon* muon, event_type const& event, product_type& product) const

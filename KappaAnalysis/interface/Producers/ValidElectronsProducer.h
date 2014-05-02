@@ -44,10 +44,10 @@ public:
 	}
 
 
-private:
+protected:
 
 	// function that lets this producer work as both a global and a local producer
-	void Produce(event_type const& event, product_type& product) const
+	virtual void Produce(event_type const& event, product_type& product) const
 	{
 		for (KDataElectrons::iterator electron = event.m_electrons->begin();
 			 electron != event.m_electrons->end(); electron++)
@@ -56,11 +56,21 @@ private:
 			
 			// TODO
 			
+			// check possible analysis-specific criteria
+			validElectron = validElectron && AdditionalCriteria(&(*electron), event, product);
+			
 			if (validElectron)
 				product.m_validElectrons.push_back(&(*electron));
 			else
 				product.m_invalidElectrons.push_back(&(*electron));
 		}
+	}
+	
+	// Can be overwritten for analysis-specific use cases
+	virtual bool AdditionalCriteria(KDataElectron* electron, event_type const& event, product_type& product) const
+	{
+		bool validElectron = true;
+		return validElectron;
 	}
 };
 
