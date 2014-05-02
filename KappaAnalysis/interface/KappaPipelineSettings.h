@@ -100,6 +100,12 @@ public:
 	/// name of MET collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, Met, "");
 
+	/// names of PF candidate collections in kappa tuple
+	IMPL_SETTING_DEFAULT(std::string, PFChargedHadronsPileUp, "");
+	IMPL_SETTING_DEFAULT(std::string, PFChargedHadronsNoPileUp, "");
+	IMPL_SETTING_DEFAULT(std::string, PFNeutralHadronsNoPileUp, "");
+	IMPL_SETTING_DEFAULT(std::string, PFPhotonsNoPileUp, "");
+
 	/// name of beamspot collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, BeamSpot, "");
 

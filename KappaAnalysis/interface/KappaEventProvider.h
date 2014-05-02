@@ -51,6 +51,16 @@ public:
 		// MET info
 		if(! globalSettings.GetMet().empty())
 			this->m_event.m_met = this->template SecureFileInterfaceGet<KDataPFMET>(globalSettings.GetMet());
+	
+		// PF candidates info
+		if(! globalSettings.GetPFChargedHadronsPileUp().empty())
+			this->m_event.m_pfChargedHadronsPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(globalSettings.GetPFChargedHadronsPileUp());
+		if(! globalSettings.GetPFChargedHadronsNoPileUp().empty())
+			this->m_event.m_pfNeutralHadronsNoPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(globalSettings.GetPFChargedHadronsNoPileUp());
+		if(! globalSettings.GetPFNeutralHadronsNoPileUp().empty())
+			this->m_event.m_pfNeutralHadronsNoPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(globalSettings.GetPFNeutralHadronsNoPileUp());
+		if(! globalSettings.GetPFPhotonsNoPileUp().empty())
+			this->m_event.m_pfPhotonsNoPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(globalSettings.GetPFPhotonsNoPileUp());
 		
 		// Generator info
 		if(! globalSettings.GetGenParticles().empty())

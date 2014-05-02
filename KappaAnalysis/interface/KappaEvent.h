@@ -37,6 +37,12 @@ public:
 
 	/// pointer to MET collection
 	KDataPFMET* m_met = 0;
+	
+	/// pointers to PF candidates
+	KPFCandidates* m_pfChargedHadronsPileUp = 0;
+	KPFCandidates* m_pfChargedHadronsNoPileUp = 0;
+	KPFCandidates* m_pfNeutralHadronsNoPileUp = 0;
+	KPFCandidates* m_pfPhotonsNoPileUp = 0;
 
 	/// pointer to beamspot collection
 	KDataBeamSpot* m_beamSpot = 0;
