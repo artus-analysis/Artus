@@ -33,12 +33,12 @@ public:
 
 	// initialise global pre-filters
 	virtual void InitGlobal(global_setting_type const& globalSettings) {
-		LOG(DEBUG) << "Initialize global Filter \"" << this->GetFilterId() << "\".";
+		LOG(INFO) << "Initialize global Filter \"" << this->GetFilterId() << "\".";
 	}
 
 	// initialise local (pre-) filters
 	virtual void InitLocal(setting_type const& settings) {
-		LOG(DEBUG) << "Initialize local Filter \"" << this->GetFilterId() << "\" for pipeline \"" << settings.GetName() << "\".";
+		LOG(INFO) << "Initialize local Filter \"" << this->GetFilterId() << "\" for pipeline \"" << settings.GetName() << "\".";
 	}
 
 	/*

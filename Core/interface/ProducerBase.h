@@ -33,11 +33,11 @@ public:
 	}
 
 	virtual void InitGlobal(global_setting_type const& globalSettings) {
-		LOG(DEBUG) << "Initialize global Producer \"" << this->GetProducerId() << "\".";
+		LOG(INFO) << "Initialize global Producer \"" << this->GetProducerId() << "\".";
 	}
 
-	virtual void InitLocal(setting_type const& pipelineSettings) {
-		LOG(DEBUG) << "Initialize local Producer \"" << this->GetProducerId() << "\" for pipeline \"" << settings.GetName() << "\".";
+	virtual void InitLocal(setting_type const& settings) {
+		LOG(INFO) << "Initialize local Producer \"" << this->GetProducerId() << "\" for pipeline \"" << settings.GetName() << "\".";
 	}
 
 	// called once per event before the pipelines are split

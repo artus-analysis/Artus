@@ -153,6 +153,9 @@ class ArtusWrapper(object):
 		
 		# treat includes
 		self._config = self._config.doNicks(self._args.nick).doIncludes()
+		
+		# set log level
+		self._config["LogLevel"] = self._args.log_level
 
 
 	def _initArgumentParser(self, userArgParsers=None):

@@ -102,7 +102,7 @@ public:
 	/// can create specific Filters and Consumers
 	virtual void InitPipeline(setting_type pset,
 			PipelineInitilizerBase<TTypes> const& initializer) {
-		LOG(DEBUG) << "Initialize pipeline \"" << pset.GetName() << "\".";
+		LOG(INFO) << "Initialize pipeline \"" << pset.GetName() << "\".";
 		
 		m_pipelineSettings = pset;
 		initializer.InitPipeline(this, pset);
