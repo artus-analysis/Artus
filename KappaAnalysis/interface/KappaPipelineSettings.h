@@ -51,6 +51,8 @@ public:
 	IMPL_SETTING(std::string, MuonIsoType);
 	IMPL_SETTING(std::string, MuonIso);
 	
+	IMPL_SETTING(std::string, ElectronID);
+
 	IMPL_SETTING(std::string, JetID);
 
 };
@@ -155,6 +157,8 @@ public:
 	IMPL_SETTING(std::string, MuonIsoType);
 	IMPL_SETTING(std::string, MuonIso);
 	
+	IMPL_SETTING(std::string, ElectronID);
+
 	IMPL_SETTING(std::string, JetID);
 
 };
