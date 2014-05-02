@@ -3,6 +3,7 @@
 
 #include "Artus/Consumer/interface/NtupleConsumerBase.h"
 #include "Artus/Utility/interface/DefaultValues.h"
+#include "Artus/Utility/interface/SafeMap.h"
 
 /*
  * Fills NTuples with valueExtractors defined as lambda functions
@@ -36,24 +37,16 @@ public:
 	virtual void Init(Pipeline<TTypes> * pset) ARTUS_CPP11_OVERRIDE {
 		NtupleConsumerBase<TTypes>::Init(pset);
 		
-		float_extractor_lambda defaultExtractor = [](event_type const&, product_type const&) { return DefaultValues::UndefinedFloat; };
+		//float_extractor_lambda defaultExtractor = [](event_type const&, product_type const&) { return DefaultValues::UndefinedFloat; };
 		
 		// construct extractors vector
 		m_valueExtractors.clear();
-		m_valueExtractors.resize(this->m_quantitiesVector.size());
-		transform(this->m_quantitiesVector.begin(), this->m_quantitiesVector.end(),
-		        m_valueExtractors.begin(), [&](std::string quantity)
-			{
-				if (m_valueExtractorMap.count(quantity) > 0)
-					return m_valueExtractorMap[quantity];
-				else
-				{
-					LOG(FATAL)<<"Quantity '" << quantity << "' is not defined in the LambdaNtupleConsumer!";
-					return defaultExtractor;
-				}
-			}
-		);
-
+		for (std::vector<std::string>::iterator quantity = this->m_quantitiesVector.begin();
+		     quantity != this->m_quantitiesVector.end(); ++quantity)
+		{
+			//m_valueExtractors.push_back(SafeMap::GetDefault(m_valueExtractorMap, *quantity, defaultExtractor));
+			m_valueExtractors.push_back(SafeMap::Get(m_valueExtractorMap, *quantity));
+		}
 	}
 
 	virtual void ProcessFilteredEvent(event_type const& event, product_type const& product ) ARTUS_CPP11_OVERRIDE
