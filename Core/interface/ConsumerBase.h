@@ -42,6 +42,7 @@ public:
 	 * Called before the first Event is passed to this consumer
 	 */
 	virtual void Init(Pipeline<TTypes> * pipeline) {
+		LOG(DEBUG) << "Initialize Consumer \"" << this->GetConsumerId() << "\" for pipeline \"" << settings.GetName() << "\".";
 		m_pipeline = pipeline;
 	}
 

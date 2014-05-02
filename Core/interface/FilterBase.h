@@ -33,10 +33,12 @@ public:
 
 	// initialise global pre-filters
 	virtual void InitGlobal(global_setting_type const& globalSettings) {
+		LOG(DEBUG) << "Initialize global Filter \"" << this->GetFilterId() << "\".";
 	}
 
 	// initialise local (pre-) filters
-	virtual void InitLocal(setting_type const& pipelineSettings) {
+	virtual void InitLocal(setting_type const& settings) {
+		LOG(DEBUG) << "Initialize local Filter \"" << this->GetFilterId() << "\" for pipeline \"" << settings.GetName() << "\".";
 	}
 
 	/*
@@ -53,7 +55,7 @@ public:
 	virtual bool DoesEventPassGlobal(event_type const& event,
 			product_type const& product, global_setting_type const& globalSettings) const
 	{
-		LOG(FATAL) << "DoesEventPassGlobal for filter " << this->GetFilterId() << " is not implemented!";
+		LOG(FATAL) << "DoesEventPassGlobal function for filter \"" << this->GetFilterId() << "\" is not implemented!";
 		return false;
 	}
 
@@ -61,7 +63,7 @@ public:
 	virtual bool DoesEventPassLocal(event_type const& event,
 			product_type const& product, setting_type const& settings) const
 	{
-		LOG(FATAL) << "DoesEventPassLocal for filter " << this->GetFilterId() << " is not implemented!";
+		LOG(FATAL) << "DoesEventPassLocal function for filter \"" << this->GetFilterId() << "\" is not implemented!";
 		return false;
 	}
 

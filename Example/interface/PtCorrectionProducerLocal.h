@@ -18,6 +18,16 @@ public:
 	{
 		return "pt_correction_local";
 	}
+	
+	virtual void InitGlobal(global_setting_type const& globalSettings)  ARTUS_CPP11_OVERRIDE
+	{
+		ProducerBase<TraxTypes>::InitGlobal(globalSettings);
+	}
+	
+	virtual void InitLocal(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
+	{
+		ProducerBase<TraxTypes>::InitLocal(settings);
+	}
 
 	virtual void ProduceLocal(TraxEvent const& event,
 			TraxProduct & product,

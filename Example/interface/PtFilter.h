@@ -19,6 +19,16 @@ public:
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "filter_pt";
 	}
+	
+	virtual void InitGlobal(global_setting_type const& globalSettings)  ARTUS_CPP11_OVERRIDE
+	{
+		FilterBase<TraxTypes>::InitGlobal(globalSettings);
+	}
+	
+	virtual void InitLocal(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
+	{
+		FilterBase<TraxTypes>::InitLocal(settings);
+	}
 
 	virtual bool DoesEventPassLocal(TraxEvent const& event,
 			TraxProduct const& product,

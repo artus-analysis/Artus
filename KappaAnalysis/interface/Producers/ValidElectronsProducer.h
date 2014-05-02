@@ -50,10 +50,14 @@ public:
 	}
 
 	virtual void InitGlobal(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
+		ProducerBase<TTypes>::InitGlobal(globalSettings);
+		
 		electronID = ToElectronID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetElectronID())));
 	}
 
 	virtual void InitLocal(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+		ProducerBase<TTypes>::InitLocal(settings);
+		
 		electronID = ToElectronID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronID())));
 	}
 

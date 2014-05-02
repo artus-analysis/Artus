@@ -35,6 +35,16 @@ public:
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "gen_taudecay";
 	}
+	
+	virtual void InitGlobal(global_setting_type const& globalSettings)  ARTUS_CPP11_OVERRIDE
+	{
+		ProducerBase<TTypes>::InitGlobal(globalSettings);
+	}
+	
+	virtual void InitLocal(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
+	{
+		ProducerBase<TTypes>::InitLocal(settings);
+	}
 
 	virtual void ProduceGlobal(event_type const& event,
 							   product_type& product,

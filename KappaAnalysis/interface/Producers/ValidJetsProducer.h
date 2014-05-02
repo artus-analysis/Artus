@@ -38,12 +38,16 @@ public:
 
 	virtual void InitGlobal(global_setting_type const& globalSettings)
 	{
+		ProducerBase<TTypes>::InitGlobal(globalSettings);
+		
 		GetMaxNeutralFraction(globalSettings.GetJetID());
 	}
 
-	virtual void InitLocal(setting_type const& pipelineSettings)
+	virtual void InitLocal(setting_type const& settings)
 	{
-		GetMaxNeutralFraction(pipelineSettings.GetJetID());
+		ProducerBase<TTypes>::InitLocal(settings);
+		
+		GetMaxNeutralFraction(settings.GetJetID());
 	}
 
 	virtual void ProduceGlobal(event_type const& event,

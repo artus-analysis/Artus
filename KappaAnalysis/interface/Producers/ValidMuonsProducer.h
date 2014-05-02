@@ -79,6 +79,8 @@ public:
 	}
 
 	virtual void InitGlobal(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
+		ProducerBase<TTypes>::InitGlobal(globalSettings);
+		
 		year = globalSettings.GetYear();
 		muonID = ToMuonID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetMuonID())));
 		muonIsoType = ToMuonIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetMuonIsoType())));
@@ -86,6 +88,8 @@ public:
 	}
 
 	virtual void InitLocal(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+		ProducerBase<TTypes>::InitLocal(settings);
+		
 		year = settings.GetYear();
 		muonID = ToMuonID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonID())));
 		muonIsoType = ToMuonIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonIsoType())));

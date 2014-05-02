@@ -30,6 +30,8 @@ public:
 
 	virtual void InitGlobal(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE
 	{
+		FilterBase<TTypes>::InitGlobal(globalSettings);
+		
 		m_runLumiSelector = RunLumiSelector(globalSettings.GetJsonFiles(),
 		                                    globalSettings.GetPassRunLow(),
 		                                    globalSettings.GetPassRunHigh());
@@ -37,6 +39,8 @@ public:
 
 	virtual void InitLocal(setting_type const& settings) ARTUS_CPP11_OVERRIDE
 	{
+		FilterBase<TTypes>::InitLocal(settings);
+		
 		m_runLumiSelector = RunLumiSelector(settings.GetJsonFiles(),
 		                                    settings.GetPassRunLow(),
 		                                    settings.GetPassRunHigh());

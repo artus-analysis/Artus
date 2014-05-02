@@ -27,7 +27,15 @@ public:
 		return "hlt_filter";
 	}
 	
-	HltFilter() : FilterBase<TTypes>() {};
+	virtual void InitGlobal(global_setting_type const& globalSettings)  ARTUS_CPP11_OVERRIDE
+	{
+		FilterBase<TTypes>::InitGlobal(globalSettings);
+	}
+	
+	virtual void InitLocal(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
+	{
+		FilterBase<TTypes>::InitLocal(settings);
+	}
 
 	virtual bool DoesEventPassLocal(event_type const& event,
 			product_type const& product, setting_type const& settings) const ARTUS_CPP11_OVERRIDE

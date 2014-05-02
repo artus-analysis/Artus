@@ -19,4 +19,8 @@ class DrawConsumerBase: public ConsumerBase<TTypes> {
 public:
 	DrawConsumerBase() : ConsumerBase<TTypes>() {}
 	virtual ~DrawConsumerBase() {}
+	virtual void Init(Pipeline<TTypes> * pipeline) ARTUS_CPP11_OVERRIDE
+	{
+		ConsumerBase<TTypes>::Init(pipeline);
+	}
 };
