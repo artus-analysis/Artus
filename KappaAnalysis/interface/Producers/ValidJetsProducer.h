@@ -81,6 +81,8 @@ private:
 			LOG(FATAL) << "Jet ID " << jetid << " not implemented!";
 	}
 
+protected:
+
 	// function that lets this producer work as both a global and a local producer
 	virtual void Produce(event_type const& event, product_type& product) const
 	{
