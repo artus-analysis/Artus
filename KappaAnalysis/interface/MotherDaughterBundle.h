@@ -24,21 +24,21 @@ public:
 	KGenParticle* node;
 	// will have 0 entries, if there are no daughters
 	std::vector<MotherDaughterBundle> Daughters;
-	void createFinalStates()
+	void createFinalStates(MotherDaughterBundle* root)
 	{
-		if (this->finalState == true) this->finalStates.push_back(this);
+		if (this->finalState == true) root->finalStates.push_back(this);
 		if (this->Daughters.size() != 0)
 		{
 			for(unsigned int i = 0; i<this->Daughters.size(); ++i)
 			{
-				this->Daughters[i].createFinalStates();
+				this->Daughters[i].createFinalStates(root);
 			}
 		}
 	}
-	void createFinalStateProngs()
+	void createFinalStateProngs(MotherDaughterBundle* root)
 	{
 		int chargedParticles = 0;
-		this->createFinalStates();
+		this->createFinalStates(root);
 		for(unsigned int i = 0; i<this->finalStates.size(); ++i)
 		{
 			if (this->finalStates[i]->getCharge() == 1 || this->finalStates[i]->getCharge() == -1)
