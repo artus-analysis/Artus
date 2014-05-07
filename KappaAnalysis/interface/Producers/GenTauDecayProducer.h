@@ -62,9 +62,11 @@ public:
 			if ((abs(part->pdgId()) == bosonPdgId)&&(part->status()==3))// only Boson with status 3 are considered as root of the tree.
 			{
 				
-				product.m_genBoson.push_back( KappaProduct::MotherDaughterBundle(&(*part)) );
-				KappaProduct::MotherDaughterBundle & lastBosonRef = product.m_genBoson.back();
+				product.m_genBoson.push_back( MotherDaughterBundle(&(*part)) );
+				MotherDaughterBundle & lastBosonRef = product.m_genBoson.back();
 				lastBosonRef.parent = &lastBosonRef;
+				lastBosonRef.setCharge();
+				if (part->daughterIndices.size() == 0) lastBosonRef.finalState = true;
 				for (unsigned int i=0; i<part->daughterIndices.size() && part->daughterIndices.size() != 0; ++i) 
 				{
 					// Higgs with Status 2 is also considered as Higgs status 3 daughter, what leads to the condition, 
@@ -75,14 +77,16 @@ public:
 						// Taus with status 2 are the only daughters of Taus with status 3. We are not interested in status 2 Taus and thats the reason, why we should  
 						// skip them and consider the formal granddaughters of status 3 Taus as real daughters of status 3 Taus. This means, we must skip one generation,
 						// what's done in the following lines.
-						lastBosonRef.Daughters.push_back(KappaProduct::MotherDaughterBundle( &(event.m_genParticles->at(indDaughter)) ));
-						KappaProduct::MotherDaughterBundle & lastDaughterRef = lastBosonRef.Daughters.back();
-						lastDaughterRef.parent = &lastBosonRef;
+						lastBosonRef.Daughters.push_back(MotherDaughterBundle( &(event.m_genParticles->at(indDaughter)) ));
+						MotherDaughterBundle & lastBosonDaughterRef = lastBosonRef.Daughters.back();
+						lastBosonDaughterRef.parent = &lastBosonRef;
+						lastBosonDaughterRef.setCharge();
 						if ( (event.m_genParticles->at(indDaughter)).daughterIndices.size() != 0)
 						{
 							unsigned int indDaughterStat2 = (event.m_genParticles->at(indDaughter)).daughterIndex(0);
-							buildDecayTree(lastDaughterRef, indDaughterStat2, event);
+							buildDecayTree(lastBosonDaughterRef, indDaughterStat2, event);
 						}
+						else lastBosonDaughterRef.finalState = true;
 					}
 					else if (!(indDaughter < event.m_genParticles->size()))
 					{
@@ -91,18 +95,19 @@ public:
 				}
 			}
 		}
-		//std::cout << product.m_genBoson[0].Daughters.size() << std::endl;
 	}
-	void buildDecayTree(KappaProduct::MotherDaughterBundle & lastProductParentRef, unsigned int lastEventParentIndex, event_type const& event) const
+	void buildDecayTree(MotherDaughterBundle & lastProductParentRef, unsigned int lastEventParentIndex, event_type const& event) const
 	{
 		for (unsigned int j=0; j<(event.m_genParticles->at(lastEventParentIndex)).daughterIndices.size() && (event.m_genParticles->at(lastEventParentIndex)).daughterIndices.size() != 0; ++j)
 		{
 			unsigned int DaughterIndex = (event.m_genParticles->at(lastEventParentIndex)).daughterIndex(j);
 			if (DaughterIndex < event.m_genParticles->size())
 			{
-				lastProductParentRef.Daughters.push_back(KappaProduct::MotherDaughterBundle( &(event.m_genParticles->at(DaughterIndex)) ));
-				KappaProduct::MotherDaughterBundle & lastDaughterRef = lastProductParentRef.Daughters.back();
+				lastProductParentRef.Daughters.push_back(MotherDaughterBundle( &(event.m_genParticles->at(DaughterIndex)) ));
+				MotherDaughterBundle & lastDaughterRef = lastProductParentRef.Daughters.back();
 				lastDaughterRef.parent = &lastProductParentRef;
+				lastDaughterRef.setCharge();
+				if ( (event.m_genParticles->at(DaughterIndex)).daughterIndices.size() == 0) lastDaughterRef.finalState = true;
 				buildDecayTree(lastDaughterRef, DaughterIndex, event);
 			}
 			else

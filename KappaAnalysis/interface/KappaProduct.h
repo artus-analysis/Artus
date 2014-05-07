@@ -4,7 +4,7 @@
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "KappaTools/RootTools/HLTTools.h"
-
+#include "MotherDaughterBundle.h"
 /**
    \brief Container class for everything that can be produced in pipeline.
 
@@ -17,22 +17,6 @@ class KappaProduct {
 public:
 	KappaProduct() {};
 	~KappaProduct() {};
-
-	/// added by GenTauDecayProducer
-	// can store an arbitrary decay tree
-	struct MotherDaughterBundle {
-		MotherDaughterBundle( KGenParticle* newnode ) : node( newnode ) 
-		{}
-		// pointer to the parent
-		MotherDaughterBundle * parent = 0;
-		int generation = 1;
-		bool finalState = false;
-		// must be != null;
-		KGenParticle* node;
-		// will have 0 entries, if there are no daughters
-		std::vector<MotherDaughterBundle> Daughters;
-	};
-
 	std::vector<MotherDaughterBundle> m_genBoson;
 
 	/// added by ValidElectronsProducer
