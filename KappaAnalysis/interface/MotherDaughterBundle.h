@@ -29,7 +29,7 @@ public:
 		if (this->finalState == true) this->finalStates.push_back(this);
 		if (this->Daughters.size() != 0)
 		{
-			for(unsigned int i; i<this->Daughters.size(); ++i)
+			for(unsigned int i = 0; i<this->Daughters.size(); ++i)
 			{
 				this->Daughters[i].createFinalStates();
 			}
@@ -39,7 +39,7 @@ public:
 	{
 		int chargedParticles = 0;
 		this->createFinalStates();
-		for(unsigned int i; i<this->finalStates.size(); ++i)
+		for(unsigned int i = 0; i<this->finalStates.size(); ++i)
 		{
 			if (this->finalStates[i]->getCharge() == 1 || this->finalStates[i]->getCharge() == -1)
 			{
