@@ -25,6 +25,8 @@ public:
 		{}
 		// pointer to the parent
 		MotherDaughterBundle * parent = 0;
+		int generation = 1;
+		bool finalState = false;
 		// must be != null;
 		KGenParticle* node;
 		// will have 0 entries, if there are no daughters
