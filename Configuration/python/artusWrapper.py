@@ -241,22 +241,24 @@ class ArtusWrapper(object):
 			# zurueckkopieren von output und logfiles
 			pass
 	
-		else:
+		#else:
 	
 			# check output directory
-			outputDir = os.path.dirname(self._args.output_file)
-			if outputDir and not os.path.exists(outputDir):
-				os.makedirs(outputDir)
+		#	outputDir = os.path.dirname(self._args.output_file)
+		#	if outputDir and not os.path.exists(outputDir):
+		#		os.makedirs(outputDir)
 	
 			# call C++ executable locally
-			command = self._executable + " " + self._configFilename
-			log.info("Execute \"%s\"." % command)
-			exitCode = logger.subprocessCall(command.split())
+		#	command = self._executable + " " + self._configFilename
+		#	print "Commando, das ausgefuehrt werden soll:"
+		#	print command
+		#	log.info("Execute \"%s\"." % command)
+		#	exitCode = logger.subprocessCall(command.split())
 			
-			if exitCode != 0:
-				log.error("Exit with code %s.\n\n" % exitCode)
-				log.info("Dump configuration:\n")
-				log.info(self._configFilename) # TODO
+		#	if exitCode != 0:
+		#		log.error("Exit with code %s.\n\n" % exitCode)
+		#		log.info("Dump configuration:\n")
+		#		log.info(self._configFilename) # TODO
 	
 		# remove tmp. config
 		# logging.getLogger(__name__).info("Remove temporary config file.")
