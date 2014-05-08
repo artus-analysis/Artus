@@ -186,7 +186,7 @@ class ArtusWrapper(object):
 		configOptionsGroup.add_argument("--nick", default="default",
 	                                    help="Nick name (regex) that can be used for switch between sample-dependent settings.")
 		
-		configOptionsGroup.add_argument("--add-repo-versions", default=True, action="store_true",
+		configOptionsGroup.add_argument("--add-repo-versions", default=False, action="store_true",
 	                                 help="Add repository versions to the JSON config.")
 		configOptionsGroup.add_argument("--repo-scan-base-dirs", nargs="+", required=False, default="$CMSSW_BASE/src/",
 	                                 help="Base directories for repositories scran. [Default: $CMSSW_BASE/src/]")
