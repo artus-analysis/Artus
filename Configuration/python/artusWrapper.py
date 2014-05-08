@@ -206,6 +206,8 @@ class ArtusWrapper(object):
 	                                  help="Open output file in ROOT TBrowser after completion.")
 		runningOptionsGroup.add_argument("-b", "--batch", default=False, action="store_true",
 	                                  help="Run with grid-control.")
+		configOptionsGroup.add_argument("--dbs",
+	                                    help="path to dbs file that contains a list of input files for grid-control")
 		runningOptionsGroup.add_argument("-R", "--resume", default=False, action="store_true",
 	                                  help="Resume the grid-control run and hadd after interrupting it.")
 
@@ -226,8 +228,17 @@ class ArtusWrapper(object):
 			self._args.work = os.path.expandvars(self._args.work)
 			if not os.path.exists(self._args.work):
 				os.makedirs(self._args.work)
-	
-			# run Artus with grid-control
+			## introduce parameter to prevent from actually doing something -> Configure only
+			jsonFileName = self._args.dbs
+			dbsDictionary = jsonTools.JsonDict.readJsonDict(jsonFileName)
+			print dbsDictionary
+
+			# erstellen von gc config file
+			# evtl. Moeglichkeit zum expliziten angeben von Nicknames, auf denen operiert wird
+			# wie Weitergabe von Argumenten an grid-control regeln?
+			# starten von go.py -> checkout von gc in repository?
+			# aufruf von remoteExecutable.sh um Umgebungsvariablen zu setzen etc
+			# zurueckkopieren von output und logfiles
 			pass
 	
 		else:
