@@ -206,6 +206,8 @@ class ArtusWrapper(object):
 	                                  help="Open output file in ROOT TBrowser after completion.")
 		runningOptionsGroup.add_argument("-b", "--batch", default=False, action="store_true",
 	                                  help="Run with grid-control.")
+		runningOptionsGroup.add_argument("--grid-control-path", default="~/grid-control/",
+	                                  help="path to grid-control environment")
 		configOptionsGroup.add_argument("--dbs",
 	                                    help="path to dbs file that contains a list of input files for grid-control")
 		runningOptionsGroup.add_argument("-R", "--resume", default=False, action="store_true",
@@ -228,17 +230,26 @@ class ArtusWrapper(object):
 			self._args.work = os.path.expandvars(self._args.work)
 			if not os.path.exists(self._args.work):
 				os.makedirs(self._args.work)
-			## introduce parameter to prevent from actually doing something -> Configure only
-			jsonFileName = self._args.dbs
-			dbsDictionary = jsonTools.JsonDict.readJsonDict(jsonFileName)
-			print dbsDictionary
+			## todo: introduce parameter to prevent from actually doing something -> Configure only
+			## todo: introduce parameter to submit only a few jobs for testing
 
+			# todo: automatische Anpassung des grid-control configs
+
+#			jsonFileName = self._args.dbs
+#			dbsDictionary = jsonTools.JsonDict.readJsonDict(jsonFileName)
+#			print dbsDictionary
+			# wie go.py finden? Parameter?
+			command = self._args.grid_control_path + "/go.py " + "HiggsAnalysis/KITHiggsToTauTau/data/ArtusWrapperConfigs/gc_sample_config.conf" + " -Gc -m 0"
+			log.info("Execute \"%s\"." % command)
+			exitCode = logger.subprocessCall(command.split())
+			
+			if exitCode != 0:
+				log.error("Exit with code %s.\n\n" % exitCode)
+				log.info("Dump configuration:\n")
+				log.info(self._configFilename) # TODO
 			# erstellen von gc config file
-			# evtl. Moeglichkeit zum expliziten angeben von Nicknames, auf denen operiert wird
-			# wie Weitergabe von Argumenten an grid-control regeln?
-			# starten von go.py -> checkout von gc in repository?
-			# aufruf von remoteExecutable.sh um Umgebungsvariablen zu setzen etc
-			# zurueckkopieren von output und logfiles
+
+			# aufruf von parallelem hadd, evtl auch über grid-control?
 			pass
 	
 		else:
