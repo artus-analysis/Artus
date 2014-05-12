@@ -21,7 +21,8 @@ def add_labels(plotdict):
 	add_datelabel(plotdict)
 	add_eventnumberlabel(plotdict)
 	add_textlabel(plotdict)
-	plotdict['axes'].legend(loc=plotdict['legloc'], numpoints=1, fancybox=True, shadow=True)
+	if plotdict['legloc'] not in [None, 'None']:
+		plotdict['axes'].legend(loc=plotdict['legloc'], numpoints=1, fancybox=True, shadow=True)
 
 
 def add_textlabel(plotdict, x=0.02, y=0.02):
