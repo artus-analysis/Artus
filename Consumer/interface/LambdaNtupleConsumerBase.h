@@ -5,6 +5,8 @@
 #include "Artus/Utility/interface/DefaultValues.h"
 #include "Artus/Utility/interface/SafeMap.h"
 
+#include <cassert>
+
 /*
  * Fills NTuples with valueExtractors defined as lambda functions
  * This removes the string operations from its base class
@@ -51,6 +53,8 @@ public:
 
 	virtual void ProcessFilteredEvent(event_type const& event, product_type const& product ) ARTUS_CPP11_OVERRIDE
 	{
+		assert(m_valueExtractors.size() == this->m_quantitiesVector.size());
+
 		// do not call NtupleConsumerBase<TTypes>::ProcessFilteredEvent due to different filling logic
 		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product);
 		
@@ -66,7 +70,7 @@ public:
 		}
 
 		// add the array to the ntuple
-		this->m_ntuple->Fill(&array[0]);
+		this->m_ntuple->Fill(&array.front());
 	}
 
 
