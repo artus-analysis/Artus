@@ -22,7 +22,7 @@
    This Producer needs the following config tags:
    Year (2011 and 2012 implemented)
    MuonID (only "tight" is currently implemented)
-   MuonIsoType (pf and detector implemented)
+   MuonIsoType (pf and detector implemented, type user is intended to be used in derived code)
    MuonIso (tight and loose implemented)
 */
 
@@ -53,11 +53,13 @@ public:
 		NONE  = -1,
 		PF = 0,
 		DETECTOR = 1,
+		USER = 2,
 	};
 	static MuonIsoType ToMuonIsoType(std::string const& muonIsoType)
 	{
 		if (muonIsoType == "pf") return MuonIsoType::PF;
 		else if (muonIsoType == "detector") return MuonIsoType::DETECTOR;
+		else if (muonIsoType == "user") return MuonIsoType::USER;
 		else return MuonIsoType::NONE;
 	}
 	

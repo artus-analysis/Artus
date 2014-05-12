@@ -20,6 +20,7 @@
 
    This Producer needs the following config tags:
      ElectronID
+     ElectronIsoType (no iso implemented yet in KappaAnalysis)
 */
 
 template<class TTypes>
@@ -44,6 +45,17 @@ public:
 			return ElectronID::MVANONTRIG;
 		else return ElectronID::NONE;
 	}
+	
+	enum class ElectronIsoType : int
+	{
+		NONE  = -1,
+		USER = 0,
+	};
+	static ElectronIsoType ToElectronIsoType(std::string const& electronIsoType)
+	{
+		if (electronIsoType == "user") return ElectronIsoType::USER;
+		else return ElectronIsoType::NONE;
+	}
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "valid_electrons";
@@ -53,12 +65,14 @@ public:
 		ProducerBase<TTypes>::InitGlobal(globalSettings);
 		
 		electronID = ToElectronID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetElectronID())));
+		electronIsoType = ToElectronIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetElectronIsoType())));
 	}
 
 	virtual void InitLocal(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
 		ProducerBase<TTypes>::InitLocal(settings);
 		
 		electronID = ToElectronID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronID())));
+		electronIsoType = ToElectronIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronIsoType())));
 	}
 
 	virtual void ProduceGlobal(event_type const& event,
@@ -112,6 +126,7 @@ protected:
 
 private:
 	ElectronID electronID;
+	ElectronIsoType electronIsoType;
 
 	bool IsMVANonTrigElectron(KDataElectron* electron, event_type const& event, product_type& product) const
 	{
