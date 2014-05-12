@@ -21,7 +21,7 @@ def matchingItem(stringList, regexForItem):
 	returns None in case no matching item is found
 	"""
 	for item in stringList:
-		if re.search(item, regexForItem) != None:
+		if re.search(regexForItem, item) != None:
 			return item
 	return None
 
