@@ -10,6 +10,7 @@
 
 #include "Artus/Core/interface/ProducerBase.h"
 #include "Artus/Utility/interface/Utility.h"
+#include "Artus/Utility/interface/DefaultValues.h"
 
 
 /**
@@ -142,8 +143,8 @@ private:
 					&&
 					(
 						(abs(electron->p4.Eta()) < 0.8 && electron->idMvaNonTrigV0 > 0.47)
-						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < 1.479 && electron->idMvaNonTrigV0 > 0.004)
-						|| (abs(electron->p4.Eta()) > 1.479 && abs(electron->p4.Eta()) < 2.5 && electron->idMvaNonTrigV0 > 0.295)
+						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->idMvaNonTrigV0 > 0.004)
+						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->idMvaNonTrigV0 > 0.295)
 					)
 				)
 				||
@@ -151,8 +152,8 @@ private:
 					(electron->p4.Pt() > 10) &&
 					(
 						(abs(electron->p4.Eta()) < 0.8 && electron->idMvaNonTrigV0 > -0.34)
-						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < 1.479 && electron->idMvaNonTrigV0 > -0.65)
-						|| (abs(electron->p4.Eta()) > 1.479 && abs(electron->p4.Eta()) < 2.5 && electron->idMvaNonTrigV0 > 0.6)
+						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->idMvaNonTrigV0 > -0.65)
+						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->idMvaNonTrigV0 > 0.6)
 					)
 				)
 			);
