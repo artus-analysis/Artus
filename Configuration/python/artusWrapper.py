@@ -12,6 +12,7 @@ import tempfile
 import hashlib
 import json
 import subprocess
+import re
 
 import Artus.Utility.tools as tools
 import Artus.Configuration.jsonTools as jsonTools
@@ -60,13 +61,29 @@ class ArtusWrapper(object):
 		else:
 			return 1 # Artus sometimes returns exit codes >255 that are not supported
 
-	def setInputFilenames(self, files):
-		if isinstance(files, basestring):
-			files = [files]
-		files = [item for filename in files for item in glob.glob(os.path.expandvars(filename))]
-		if self._args.fast:
-			files = files[0:self._args.fast]
-		self._config["InputFiles"] = files
+	def setInputFilenames(self, filelist):
+		if not (isinstance(self._config["InputFiles"], list)):
+			self._config["InputFiles"] = []
+		for entry in filelist:
+			if os.path.splitext(entry)[1] == ".root":
+				if entry.find("*") != -1:
+					print "stern gefunden in " + entry
+					self.setInputFilenames(glob.glob(os.path.expandvars(entry)))
+				else:
+					self._config["InputFiles"].append(entry)
+			elif os.path.isdir(entry):
+				filesInFolder = os.listdir(entry)
+				for i in range(len(filesInFolder)):
+					filesInFolder[i] = os.path.join(entry, filesInFolder[i])
+				self.setInputFilenames(filesInFolder)
+			elif (os.path.splitext(entry))[1] == ".dbs":
+				dbsFile = open(entry, 'r')
+				dbsFileContent = []
+				for line in dbsFile:
+					dbsFileContent.append(line.replace("\n", ""))
+				self.setInputFilenames(dbsFileContent)
+			else:
+				log.debug("Found file in input search path that is not further considered: " + entry + "\n")
 
 	def setOutputFilename(self, output_filename):
 		self._config["OutputPath"] = output_filename
