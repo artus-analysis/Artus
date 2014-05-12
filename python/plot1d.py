@@ -147,6 +147,9 @@ def add_ratiosubplot(plotdict):
 	if plotdict['xlog']: 
 		plotdict['ratiosubplotaxes'].set_xscale('log', nonposx='mask')
 
+	if plotdict['grid']:
+		plotdict['ratiosubplotaxes'].grid(True)
+
 
 def plot1d_root(plotdict):
 	"""Create ROOT histograms from ROOT plots."""
