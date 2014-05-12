@@ -92,6 +92,8 @@ public:
 
 
 protected:
+	ElectronID electronID;
+	ElectronIsoType electronIsoType;
 
 	// function that lets this producer work as both a global and a local producer
 	virtual void Produce(event_type const& event, product_type& product) const
@@ -126,8 +128,6 @@ protected:
 
 
 private:
-	ElectronID electronID;
-	ElectronIsoType electronIsoType;
 
 	bool IsMVANonTrigElectron(KDataElectron* electron, event_type const& event, product_type& product) const
 	{

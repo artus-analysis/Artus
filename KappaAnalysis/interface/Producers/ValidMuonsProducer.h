@@ -114,6 +114,10 @@ public:
 
 
 protected:
+	int year;
+	MuonID muonID;
+	MuonIsoType muonIsoType;
+	MuonIso muonIso;
 
 	// function that lets this producer work as both a global and a local producer
 	virtual void Produce(event_type const& event, product_type& product) const
@@ -177,11 +181,6 @@ protected:
 
 
 private:
-
-	int year;
-	MuonID muonID;
-	MuonIsoType muonIsoType;
-	MuonIso muonIso;
 	
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon_selection
 	bool IsTightMuon2011(KDataMuon* muon, event_type const& event, product_type& product) const
