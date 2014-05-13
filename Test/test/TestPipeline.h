@@ -14,7 +14,7 @@ class TestPipelineInstr: public Pipeline<TestTypes> {
 public:
 
 	TestPipelineInstr() : iRunEvent(0), iRun(0), iFinish(0), bCheckProducer(false), bFullyRun(true) {
-
+		lmdRunEventCheck = [](TestProduct const& globalProduct ){};
 	}
 
 	virtual bool RunEvent( TestEvent const& event,

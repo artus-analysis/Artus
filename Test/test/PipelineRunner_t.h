@@ -167,7 +167,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_result )
 	tline1->bFullyRun = true;
 
 	TestPipelineInstr * tline2 = new TestPipelineInstr;
-	tline2->bFullyRun = true;
+	tline2->bFullyRun = false;
 
 	TestPipelineInstr * tline3 = new TestPipelineInstr;
 	tline3->lmdRunEventCheck = [] ( TestProduct const& globalProduct )
