@@ -159,7 +159,7 @@ protected:
 				else if (muonIso != MuonIso::NONE)
 					LOG(FATAL) << "Muon isolation of type " << Utility::ToUnderlyingValue(muonIso) << " not yet implemented!";
 			}
-			else if (muonIsoType != MuonIsoType::NONE)
+			else if (muonIsoType != MuonIsoType::USER && muonIsoType != MuonIsoType::NONE)
 				LOG(FATAL) << "Muon isolation type of type " << Utility::ToUnderlyingValue(muonIsoType) << " not yet implemented!";
 			
 			// check possible analysis-specific criteria
