@@ -53,29 +53,34 @@ class ArtusWrapper(object):
 			log.info(self._config)
 
 		#Run Artus if desired
-		if not self._args.no_run:
-			exitCode = self.callExecutable()
-		
+		if self._args.batch:
+			exitCode = self.sendToBatchSystem()
+		else:
+			if not self._args.no_run:
+				exitCode = self.callExecutable()
+
+
 		if exitCode < 256:
 			return exitCode
 		else:
 			return 1 # Artus sometimes returns exit codes >255 that are not supported
 
 	def setInputFilenames(self, filelist):
+		print "setInputFilenames"
+		print filelist
 		if not (isinstance(self._config["InputFiles"], list)):
 			self._config["InputFiles"] = []
 		for entry in filelist:
 			if os.path.splitext(entry)[1] == ".root":
 				if entry.find("*") != -1:
-					print "stern gefunden in " + entry
-					self.setInputFilenames(glob.glob(os.path.expandvars(entry)))
+					filelist = glob.glob(os.path.expandvars(entry))
+					self._config["GridControlInputFiles"].append(self.extractNickname(filelist[0]) + ":scan:" + entry)
+					self.setInputFilenames(filelist)
 				else:
 					self._config["InputFiles"].append(entry)
+#					self._config["GridControlInputFiles"].append(self.extractNickname(entry) + ":file:" + entry)
 			elif os.path.isdir(entry):
-				filesInFolder = os.listdir(entry)
-				for i in range(len(filesInFolder)):
-					filesInFolder[i] = os.path.join(entry, filesInFolder[i])
-				self.setInputFilenames(filesInFolder)
+				self.setInputFilenames([os.path.join(entry, "*.root")])
 			elif (os.path.splitext(entry))[1] == ".dbs":
 				dbsFile = open(entry, 'r')
 				dbsFileContent = []
@@ -132,6 +137,8 @@ class ArtusWrapper(object):
 			basename = "artus_{0}.json".format(hashlib.md5(str(self._config)).hexdigest())
 			filepath = os.path.join(tempfile.gettempdir(), basename)
 		self._configFilename = filepath
+		if self._args.batch:  # shrink config by inputFiles since this is replaced anyway in batch mode
+			self._config["InputFiles"] = [""]
 		self._config.save(filepath, indent=4)
 		log.info("Saved JSON config \"%s\" for temporary usage." % self._configFilename)
 	
@@ -142,6 +149,8 @@ class ArtusWrapper(object):
 
 		#Set Input Filenames
 		if self._args.input_files:
+			self._config["InputFiles"] = [] #overwrite settings from config file by command line
+			self._config["GridControlInputFiles"] = []
 			self.setInputFilenames(self._args.input_files)
 		if self._args.output_file:
 			self.setOutputFilename(self._args.output_file)
@@ -169,11 +178,36 @@ class ArtusWrapper(object):
 		self._config += (pipelineBaseJsonDict + pipelineJsonDict)
 		
 		# treat includes
-		self._config = self._config.doNicks(self._args.nick).doIncludes()
+		nickname = self.determineNickname(self._args.nick)
+		self._config = self._config.doNicks(nickname).doIncludes()
 		
 		# set log level
 		self._config["LogLevel"] = self._args.log_level
 
+	def determineNickname(self, nickname):
+		if nickname.find("auto") != -1: # automatic determination of nicknames
+			nickname = self.extractNickname(self._config["InputFiles"][0])
+			for path in self._config["InputFiles"]:
+				tmpNick = self.extractNickname(path)
+				if tmpNick != nickname:
+					log.error("Input files do have different nicknames, which would cause errors. Aborting.")
+					sys.exit(1)
+		return nickname
+
+	def extractNickname(self, string):
+		filename = string.split("/")[-1]
+		nickname = filename[filename.find("_")+1:filename.rfind("_")]
+		return nickname
+
+	def modifyLine(self, inputList, key, value):
+		for line in range(len(inputList)):
+			if inputList[line].startswith(key):
+				inputList[line] = key + " = " + value + "\n"
+
+	def addLine(self, inputList, key, value):
+		for line in range(len(inputList)):
+			if inputList[line].startswith(key):
+				inputList.insert(line+1, "\t" + value + "\n")
 
 	def _initArgumentParser(self, userArgParsers=None):
 
@@ -200,8 +234,8 @@ class ArtusWrapper(object):
 	                                 help="JSON pipeline base configurations. All pipeline configs will be merged with these common configs.")
 		configOptionsGroup.add_argument("-p", "--pipeline-configs", nargs="+", action="append",
 	                                 help="JSON pipeline configurations. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")
-		configOptionsGroup.add_argument("--nick", default="default",
-	                                    help="Nick name (regex) that can be used for switch between sample-dependent settings.")
+		configOptionsGroup.add_argument("--nick", default="auto",
+	                                    help="Kappa nickname name that can be used for switch between sample-dependent settings.")
 		
 		configOptionsGroup.add_argument("--add-repo-versions", default=False, action="store_true",
 	                                 help="Add repository versions to the JSON config.")
@@ -223,10 +257,6 @@ class ArtusWrapper(object):
 	                                  help="Open output file in ROOT TBrowser after completion.")
 		runningOptionsGroup.add_argument("-b", "--batch", default=False, action="store_true",
 	                                  help="Run with grid-control.")
-		runningOptionsGroup.add_argument("--grid-control-path", default="~/grid-control/",
-	                                  help="path to grid-control environment")
-		configOptionsGroup.add_argument("--dbs",
-	                                    help="path to dbs file that contains a list of input files for grid-control")
 		runningOptionsGroup.add_argument("-R", "--resume", default=False, action="store_true",
 	                                  help="Resume the grid-control run and hadd after interrupting it.")
 
@@ -234,60 +264,74 @@ class ArtusWrapper(object):
 			self._parser.add_argument("-x", "--executable", help="Artus executable. [Default: %s]" % str(self._executable), default=self._executable)
 		else:
 			self._parser.add_argument("-x", "--executable", help="Artus executable.", required=True)
-	
+
+	def sendToBatchSystem(self):
+
+		artuspath = os.environ["ARTUSPATH"]
+		gcConfigFilePath = os.path.join(artuspath, "Configuration/data/grid-control_base_config.conf")
+		gcConfigFile = open(gcConfigFilePath,"r")
+		tmpGcConfigFileBasename = "grid-control_base_config_{0}.conf".format(hashlib.md5(str(self._config)).hexdigest())
+		tmpGcConfigFileBasepath = os.path.join(tempfile.gettempdir(), tmpGcConfigFileBasename)
+
+		# open base file and save it to a list
+		tmpGcConfigFile = open(tmpGcConfigFileBasepath,"w")
+		gcConfigFileContent = []
+
+		for line in gcConfigFile:
+			gcConfigFileContent.append(line)
+
+		# modify base file
+		self.modifyLine(gcConfigFileContent, "JSON_CONFIG", self._configFilename.split("/")[-1])
+		self.modifyLine(gcConfigFileContent, "EXECUTABLE", self._executable)
+		self.modifyLine(gcConfigFileContent, "se path", os.environ["ARTUS_WORK_BASE"])
+		self.addLine(gcConfigFileContent, "input files", self._configFilename)
+
+		if self._args.fast:
+			self.modifyLine(gcConfigFileContent, "jobs", str(self._args.fast))
+
+		for inputEntry in self._config["GridControlInputFiles"]:
+			gcConfigFileContent.append("\t" + inputEntry + "\n")
+
+		# save it
+		for line in gcConfigFileContent:
+			tmpGcConfigFile.write(line)
+		tmpGcConfigFile.close()
+
+		command = "go.py " + tmpGcConfigFileBasepath + " -Gc -m 0"
+		if self._args.no_run:
+			command += " -s"
+		log.info("Execute \"%s\"." % command)
+		exitCode = logger.subprocessCall(command.split())
+
+		if exitCode != 0:
+			log.error("Exit with code %s.\n\n" % exitCode)
+			log.info("Dump configuration:\n")
+			log.info(self._configFilename)
+
+		return exitCode
 
 
 	def callExecutable(self):
 		"""run Artus analysis (C++ executable)"""
-	
 		exitCode = 0
-	
-		if self._args.batch:
-			# check work directory
-			self._args.work = os.path.expandvars(self._args.work)
-			if not os.path.exists(self._args.work):
-				os.makedirs(self._args.work)
-			## todo: introduce parameter to prevent from actually doing something -> Configure only
-			## todo: introduce parameter to submit only a few jobs for testing
 
-			# todo: automatische Anpassung des grid-control configs
+		# check output directory
+		outputDir = os.path.dirname(self._args.output_file)
+		if outputDir and not os.path.exists(outputDir):
+			os.makedirs(outputDir)
 
-#			jsonFileName = self._args.dbs
-#			dbsDictionary = jsonTools.JsonDict.readJsonDict(jsonFileName)
-#			print dbsDictionary
-			# wie go.py finden? Parameter?
-			command = self._args.grid_control_path + "/go.py " + "HiggsAnalysis/KITHiggsToTauTau/data/ArtusWrapperConfigs/gc_sample_config.conf" + " -Gc -m 0"
-			log.info("Execute \"%s\"." % command)
-			exitCode = logger.subprocessCall(command.split())
-			
-			if exitCode != 0:
-				log.error("Exit with code %s.\n\n" % exitCode)
-				log.info("Dump configuration:\n")
-				log.info(self._configFilename) # TODO
-			# erstellen von gc config file
+		# call C++ executable locally
+		command = self._executable + " " + self._configFilename
+		log.info("Execute \"%s\"." % command)
+		exitCode = logger.subprocessCall(command.split())
+	
+		if exitCode != 0:
+			log.error("Exit with code %s.\n\n" % exitCode)
+			log.info("Dump configuration:\n")
+			log.info(self._configFilename) # TODO
 
-			# aufruf von parallelem hadd, evtl auch über grid-control?
-			pass
-	
-		else:
-	
-			# check output directory
-			outputDir = os.path.dirname(self._args.output_file)
-			if outputDir and not os.path.exists(outputDir):
-				os.makedirs(outputDir)
-	
-			# call C++ executable locally
-			command = self._executable + " " + self._configFilename
-			log.info("Execute \"%s\"." % command)
-			exitCode = logger.subprocessCall(command.split())
-			
-			if exitCode != 0:
-				log.error("Exit with code %s.\n\n" % exitCode)
-				log.info("Dump configuration:\n")
-				log.info(self._configFilename) # TODO
-	
 		# remove tmp. config
 		# logging.getLogger(__name__).info("Remove temporary config file.")
 		# os.system("rm " + self._configFilename)
-	
+
 		return exitCode
