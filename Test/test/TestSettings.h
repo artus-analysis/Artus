@@ -12,8 +12,10 @@
 class TestSettings : public SettingsBase {
 public:
 
-	TestSettings() :
-			m_Level(1) {
+	TestSettings() : SettingsBase(), m_Level( 1) {
+	}
+
+	TestSettings( std::string lineName ) : SettingsBase( lineName ), m_Level( 1) {
 
 	}
 

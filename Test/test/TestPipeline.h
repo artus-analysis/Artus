@@ -6,22 +6,27 @@
 
 #pragma once
 
+#include <functional>
+
 #include "TestTypes.h"
 
 class TestPipelineInstr: public Pipeline<TestTypes> {
 public:
 
-	TestPipelineInstr() : iRunEvent(0), iRun(0), iFinish(0), bCheckProducer(false) {
+	TestPipelineInstr() : iRunEvent(0), iRun(0), iFinish(0), bCheckProducer(false), bFullyRun(true) {
 
 	}
 
-	virtual void RunEvent( TestEvent const& event, 
+	virtual bool RunEvent( TestEvent const& event,
                            TestProduct const& globalProduct,
                            FilterResult const& globalFilterResult) ARTUS_CPP11_OVERRIDE {
 		iRunEvent++;
 		//if (bCheckProducer) {
 		//BOOST_CHECK(globalProduct.iGlobalProduct == 1);
 		//}
+		lmdRunEventCheck( globalProduct );
+
+		return bFullyRun;
 	}
 
 	virtual void Run() ARTUS_CPP11_OVERRIDE {
@@ -42,6 +47,8 @@ public:
 	int iRun;
 	int iFinish;
 	bool bCheckProducer;
+	bool bFullyRun;
+	std::function< void ( TestProduct const& globalProduct ) > lmdRunEventCheck;
 };
 
 typedef Pipeline<TestTypes> TestPipeline;
