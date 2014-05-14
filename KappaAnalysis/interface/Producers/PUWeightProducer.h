@@ -73,7 +73,7 @@ protected:
 		const std::string s = "pileup";
 		LOG(INFO) << "Loading pile-up weights (" << s << "):\n  " << weightfile;
 		TFile file(weightfile.c_str(), "READONLY");
-		TH1D* pileuphisto = (TH1D*) file.Get(s);
+		TH1D* pileuphisto = (TH1D*) file.Get(s.c_str());
 
 		m_pileupweights.clear();
 		for (int i = 1; i <= pileuphisto->GetNbinsX(); ++i)
