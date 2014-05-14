@@ -53,6 +53,12 @@ public:
 	
 	IMPL_SETTING(std::string, ElectronID);
 	IMPL_SETTING(std::string, ElectronIsoType);
+	
+	VarCache<std::vector<std::string>> tauDiscriminators;
+	stringvector GetTauDiscriminators() const
+	{
+		RETURN_CACHED(tauDiscriminators, PropertyTreeSupport::GetAsStringList(GetPropTree(), "TauDiscriminators"))
+	}
 
 	IMPL_SETTING(std::string, JetID);
 
@@ -168,6 +174,12 @@ public:
 	
 	IMPL_SETTING(std::string, ElectronID);
 	IMPL_SETTING(std::string, ElectronIsoType);
+	
+	VarCache<std::vector<std::string>> tauDiscriminators;
+	stringvector GetTauDiscriminators() const
+	{
+		RETURN_CACHED(tauDiscriminators, PropertyTreeSupport::GetAsStringList(GetPropTree(), "TauDiscriminators"))
+	}
 
 	IMPL_SETTING(std::string, JetID);
 
