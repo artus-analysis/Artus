@@ -96,6 +96,9 @@ def histofromntuple(rootfile, objectname, ntuple, plotdict):
 
 	if plotdict['xbins'] == []:
 		plotdict['xbins'] = np.linspace(plotdict['xlims'][0], plotdict['xlims'][1], plotdict['nbins']+1)
+		xbins = plotdict['xbins']
+	else:
+		xbins = np.array(plotdict['xbins'], 'd')
 
 	if plotdict['type'] == '2D':
 		if plotdict['ylims'] == None:
@@ -116,14 +119,14 @@ def histofromntuple(rootfile, objectname, ntuple, plotdict):
 
 	# determine the type of histogram to be created
 	if len(variables.split(":")) == 1:
-		roothisto = ROOT.TH1D(name, objectname, len(plotdict['xbins']) - 1, plotdict['xbins'])
+		roothisto = ROOT.TH1D(name, objectname, len(xbins) - 1, xbins)
 	elif len(variables.split(":")) == 2 and not plotdict['type'] == '2D':
-		roothisto = ROOT.TProfile(name, objectname, len(plotdict['xbins']) - 1, plotdict['xbins'])
+		roothisto = ROOT.TProfile(name, objectname, len(xbins) - 1, xbins)
 	elif len(variables.split(":")) == 2 and plotdict['type'] == '2D':
-		roothisto = ROOT.TH2D(name, objectname, len(plotdict['xbins']) - 1, plotdict['xbins'],
+		roothisto = ROOT.TH2D(name, objectname, len(xbins) - 1, xbins,
 			len(plotdict['ybins']) - 1, plotdict['ybins'])
 	elif len(variables.split(":")) == 3:
-		roothisto = ROOT.TProfile2D(name, objectname, len(plotdict['xbins']) - 1, plotdict['xbins'],
+		roothisto = ROOT.TProfile2D(name, objectname, len(xbins) - 1, xbins,
 			len(plotdict['ybins']) - 1, plotdict['ybins'])
 
 	log.debug("Creating a %s with the following weight:\n   %s" % (roothisto.ClassName(), plotdict['weights'][index]))

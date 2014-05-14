@@ -292,6 +292,8 @@ def get_basic_parser(
 		help='y-axis variable quantity')
 	axis.add_argument('-z', type=str, default=z, nargs='*',
 		help='z-axis variable quantity')
+	axis.add_argument('--xbins', type=float, default=xbins, nargs='*',
+		help='x axis bin borders')
 
 	axis.add_argument('--xticks', type=float, nargs='+', default=xticks,
 		help="add custom xticks")
