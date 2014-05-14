@@ -63,9 +63,9 @@ protected:
 		assert(event.m_genEventMetadata != NULL);
 		double npu = event.m_genEventMetadata->numPUInteractionsTruth;
 		if (npu < m_pileupweights.size())
-			product.m_puweight = m_pileupweights.at(int(npu * m_bins));
+			product.m_weights["puWeight"] = m_pileupweights.at(int(npu * m_bins));
 		else
-			product.m_puweight = 0;
+			product.m_weights["puWeight"] = 0.0;
 	}
 
 	virtual void Init(std::string weightfile)
