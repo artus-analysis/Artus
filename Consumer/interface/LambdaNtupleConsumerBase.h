@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include <boost/algorithm/string/predicate.hpp>
+
 #include "Artus/Consumer/interface/NtupleConsumerBase.h"
 #include "Artus/Utility/interface/DefaultValues.h"
 #include "Artus/Utility/interface/SafeMap.h"
@@ -40,6 +42,23 @@ public:
 		NtupleConsumerBase<TTypes>::Init(pset);
 		
 		//float_extractor_lambda defaultExtractor = [](event_type const&, product_type const&) { return DefaultValues::UndefinedFloat; };
+		
+		// loop over all quantities containing "weight" (case-insensitive)
+		// and try to find them in the weights map to write them out
+		for (auto const & quantity : pset->GetSettings().GetQuantities())
+		{
+			if (boost::algorithm::icontains(quantity, "weight"))
+			{
+				if (m_valueExtractorMap.count(quantity) > 0) {
+					LOG(WARNING) << "Quantity \"" << quantity << "\" has multiple definitions on how to be calculated for the LambdaNtupleConsumer.";
+				}
+			
+				m_valueExtractorMap[quantity] = [quantity](event_type const & event, product_type const & product)
+				{
+					return SafeMap::GetWithDefault(product.m_weights, quantity, 1.0);
+				};
+			}
+		}
 		
 		// construct extractors vector
 		m_valueExtractors.clear();

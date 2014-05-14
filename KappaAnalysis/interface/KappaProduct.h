@@ -17,6 +17,11 @@ class KappaProduct {
 public:
 	KappaProduct() {};
 	~KappaProduct() {};
+
+	// all weights are collected in a map
+	// and multiplied into one "eventWeight" by the EventWeightProducer
+	std::map<std::string, double> m_weights;
+	
 	std::vector<MotherDaughterBundle> m_genBoson;
 
 	/// added by ValidElectronsProducer
