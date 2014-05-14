@@ -56,6 +56,8 @@ public:
 
 	IMPL_SETTING(std::string, JetID);
 
+	IMPL_SETTING(std::string, PileupWeightFile);
+
 };
 
 /**
@@ -168,5 +170,7 @@ public:
 	IMPL_SETTING(std::string, ElectronIsoType);
 
 	IMPL_SETTING(std::string, JetID);
+
+	IMPL_SETTING(std::string, PileupWeightFile);
 
 };

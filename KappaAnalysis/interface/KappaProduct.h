@@ -38,6 +38,8 @@ public:
 	HLTTools* m_hltInfo = new HLTTools();
 	std::string selectedHltName = "";
 
+	float m_puweight;
+
 private:
 	
 };

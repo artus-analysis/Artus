@@ -11,6 +11,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/ValidMuonsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidTausProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidJetsProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/PUWeightProducer.h"
 
 // filter
 #include "Artus/KappaAnalysis/interface/Filters/JsonFilter.h"
@@ -45,6 +46,8 @@ public:
 			return new ValidJetsProducer<TTypes>();
 		else if(id == ValidTaggedJetsProducer<TTypes>().GetProducerId())
 			return new ValidTaggedJetsProducer<TTypes>();
+		else if(id == PUWeightProducer<TTypes>().GetProducerId())
+			return new PUWeightProducer<TTypes>();
 		else
 			return FactoryBase<TTypes>::createProducer( id );	
 	}
