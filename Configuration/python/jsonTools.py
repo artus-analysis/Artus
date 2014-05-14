@@ -228,10 +228,14 @@ class JsonDict(dict):
 						tmpResult = JsonDict.deepinclude(JsonDict(includeFile))
 						if isinstance(tmpResult, dict):
 							result += JsonDict(tmpResult)
+						elif isinstance(tmpResult, collections.Iterable) and not isinstance(tmpResult, basestring):
+							if result == JsonDict():
+								result = []
+							result.extend(tmpResult)
 						else:
 							result = tmpResult
 				elif key == "property":
-					result = copy.deepcopy(value)
+					result = JsonDict.deepinclude(value)
 				else:
 					result[key] = JsonDict.deepinclude(value)
 		elif isinstance(jsonDict, collections.Iterable) and not isinstance(jsonDict, basestring):
