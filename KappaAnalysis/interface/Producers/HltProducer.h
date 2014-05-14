@@ -43,7 +43,8 @@ public:
 	                           global_setting_type const& globalSettings) const ARTUS_CPP11_OVERRIDE
 	{
 		std::vector<std::string> hltPaths = globalSettings.GetHltPaths();
-		Produce(event, product, hltPaths);
+		bool allowPrescaledTrigger = globalSettings.GetAllowPrescaledTrigger();
+		Produce(event, product, hltPaths, allowPrescaledTrigger);
 	}
 
 	virtual void ProduceLocal(event_type const& event,
@@ -51,14 +52,16 @@ public:
 	                          setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		std::vector<std::string> hltPaths = settings.GetHltPaths();
-		Produce(event, product, hltPaths);
+		bool allowPrescaledTrigger = settings.GetAllowPrescaledTrigger();
+		Produce(event, product, hltPaths, allowPrescaledTrigger);
 	}
 
 
 private:
 
 	// function that lets this producer work as both a global and a local producer
-	void Produce(event_type const& event, product_type& product, std::vector<std::string> hltPaths) const
+	void Produce(event_type const& event, product_type& product,
+	             std::vector<std::string> hltPaths, bool allowPrescaledTrigger) const
 	{
 		if (hltPaths.size() == 0)
 			LOG(FATAL) << "No Hlt Trigger path list (tag \"HltPaths\") configured!";
@@ -67,14 +70,12 @@ private:
 		product.m_hltInfo->setLumiMetadata(event.m_lumiMetadata);
 
 		// search trigger with lowest prescale
-		bool unprescaledPathFound = false;
 		std::string bestHltName;
 		int bestHltPrescale = std::numeric_limits<int>::max();
+		bool unprescaledPathFound = false;
 		for (stringvector::const_iterator hltPath = hltPaths.begin(); hltPath != hltPaths.end(); ++hltPath)
 		{
 			std::string hltName = product.m_hltInfo->getHLTName(*hltPath);
-			LOG(DEBUG) << *hltPath << " becomes " << hltName << ".";
-
 			if (! hltName.empty() && product.m_hltInfo->getPrescale(hltName) < bestHltPrescale)
 			{
 				bestHltName = hltName;
@@ -86,32 +87,15 @@ private:
 				}
 			}
 		}
-		product.selectedHltName = bestHltName;
 		
-		// logging output
-		if (bestHltName.empty()) {
-			LOG(INFO) << "Looking for trigger paths";
-			for (stringvector::const_iterator hltPath = hltPaths.begin(); hltPath != hltPaths.end(); ++hltPath)
-			{
-				LOG(INFO) << "\t" << (*hltPath);
-			}
-			LOG(INFO) << "Available triggers:";
+		product.selectedHltName = bestHltName;
+		product.m_weights["hltWeight"] = float(bestHltPrescale);
+		
+		if((!unprescaledPathFound) && (!allowPrescaledTrigger)) {
+			LOG(FATAL) << "No unprescaled trigger found for event " << event.m_eventMetadata->nRun
+			           << "! Lowest prescale: " << bestHltPrescale << " (\"" << bestHltName << "\").";
 
-			for (std::vector<std::string>::const_iterator hltName = event.m_lumiMetadata->hltNames.begin();
-				 hltName != event.m_lumiMetadata->hltNames.end(); ++ hltName)
-			{
-				LOG(INFO) << "\t" << (*hltName) << ", prescale: " << product.m_hltInfo->getPrescale(*hltName);
-			}
-			LOG(FATAL) << "No trigger found for event " << event.m_eventMetadata->nRun << "!";
 		}
-
-		if (! unprescaledPathFound)
-		{
-			LOG(WARNING) << "No unprescaled trigger found for event " << event.m_eventMetadata->nRun
-			             << "! Selected \"" << bestHltName << "\" (prescale " << bestHltPrescale << ").";
-		}
-
-		LOG(DEBUG) << "Selected " << bestHltName << " as best HLT, prescale: " << product.m_hltInfo->getPrescale(bestHltName) << ".";
 	}
 
 };

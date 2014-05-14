@@ -44,6 +44,7 @@ public:
 	{
 		RETURN_CACHED(hltPaths, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".HltPaths"))
 	}
+	IMPL_SETTING_DEFAULT(bool, AllowPrescaledTrigger, true);
 	
 	IMPL_SETTING(int, Year);
 	
@@ -159,6 +160,8 @@ public:
 	{
 		RETURN_CACHED(hltPaths, PropertyTreeSupport::GetAsStringList(GetPropTree(), "HltPaths"))
 	}
+	IMPL_SETTING_DEFAULT(bool, AllowPrescaledTrigger, true);
+	
 	//Reading Boson PdgId for GenTauDecayProducer studies.
 	VarCache<stringvector> BosonPdgId;
 	stringvector GetBosonPdgId() const
