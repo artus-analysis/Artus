@@ -14,7 +14,7 @@ import json
 import subprocess
 import re
 from string import Template
-
+from datetime import datetime
 
 import Artus.Utility.tools as tools
 import Artus.Configuration.jsonTools as jsonTools
@@ -40,7 +40,10 @@ class ArtusWrapper(object):
 
 		#Expand Config
 		self.expandConfig()
-		
+		if self._args.batch:
+			global projectPath
+			projectPath = os.path.join(os.path.expandvars(self._args.work), self._args.project_name + datetime.now().strftime("_%Y-%m-%d"))
+
 	def run(self):
 	
 		exitCode = 0
@@ -50,7 +53,8 @@ class ArtusWrapper(object):
 			self.saveConfig(self._args.save_config)
 		elif self._args.batch:
 			basename = "artus_{0}.json".format(hashlib.md5(str(self._config)).hexdigest())
-			filepath = os.path.join(os.path.expandvars(self._args.work), basename)
+			filepath = os.path.join(projectPath, basename)
+			if not os.path.exists(projectPath): os.makedirs(projectPath)
 			self.saveConfig(filepath)
 		else:
 			self.saveConfig()
@@ -72,8 +76,6 @@ class ArtusWrapper(object):
 			return 1 # Artus sometimes returns exit codes >255 that are not supported
 
 	def setInputFilenames(self, filelist, alreadyInGridControl = False):
-		print "setInputFilenames"
-		print filelist
 		if not (isinstance(self._config["InputFiles"], list)):
 			self._config["InputFiles"] = []
 		for entry in filelist:
@@ -158,6 +160,9 @@ class ArtusWrapper(object):
 		if self._args.input_files:
 			self._config["InputFiles"] = [] #overwrite settings from config file by command line
 			self._config["GridControlInputFiles"] = []
+			inputFileList = self._args.input_files
+			for entry in range(len(inputFileList)):
+				inputFileList[entry] = inputFileList[entry].replace('"', '').replace("'", '').replace(',', '')
 			self.setInputFilenames(self._args.input_files)
 		if self._args.output_file:
 			self.setOutputFilename(self._args.output_file)
@@ -277,7 +282,7 @@ class ArtusWrapper(object):
 		gcConfigFilePath = os.path.expandvars("$ARTUSPATH/Configuration/data/grid-control_base_config.conf")
 		gcConfigFile = open(gcConfigFilePath,"r")
 		tmpGcConfigFileBasename = "grid-control_base_config_{0}.conf".format(hashlib.md5(str(self._config)).hexdigest())
-		tmpGcConfigFileBasepath = os.path.join(os.path.expandvars(self._args.work), tmpGcConfigFileBasename)
+		tmpGcConfigFileBasepath = os.path.join(projectPath, tmpGcConfigFileBasename)
 
 		# open base file and save it to a list
 		tmpGcConfigFile = open(tmpGcConfigFileBasepath,"w")
@@ -293,13 +298,22 @@ class ArtusWrapper(object):
 
 		epilogArguments  = r"epilog arguments = "
 		epilogArguments += r"--disable-repo-versions "
+		epilogArguments += r"--log-files log.txt "
 		epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
-		epilogArguments += r"--nick $DATASETNICK "
-		epilogArguments += r'-i ${FILE_NAMES//[,\"]/}'
+		epilogArguments += "--nick $DATASETNICK "
+		epilogArguments += '-i $FILE_NAMES '
 
-		replacingDict = dict(#JSON_CONFIG="JSON_CONFIG = " + os.path.basename(self._configFilename),
-										epilogexecutable = "epilog executable = $CMSSW_BASE/bin/$SCRAM_ARCH/"+ self._executable + ".py",
-										sepath = "se path = " + os.path.join(os.path.expandvars(self._args.work), "output"),
+		#projectPath = os.path.join(os.path.expandvars(self._args.work), projectName)
+
+		sepath = "se path = " + os.path.join(projectPath, "output")
+		workdir = "workdir = " + os.path.join(projectPath, "workdir")
+
+#		if not os.path.exists(sepath): os.makedirs(sepath)
+#		if not os.path.exists(workdir): os.makedirs(workdir)
+
+		replacingDict = dict(	epilogexecutable = "epilog executable = $CMSSW_BASE/bin/$SCRAM_ARCH/"+ self._executable + ".py",
+										sepath = sepath,
+										workdir = workdir,
 										jobs= "" if not self._args.fast else "jobs = " + str(self._args.fast),
 										inputfiles= "input files = \n\t" + self._configFilename,
 										dataset = "dataset = \n " + datasetString,
