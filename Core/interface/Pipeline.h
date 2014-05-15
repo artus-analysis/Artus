@@ -163,7 +163,7 @@ public:
 
 	/// Run the pipeline with one specific event as input. GlobalProduct are products which are 
 	/// common for all pipelines and have therefore been created only once.
-	virtual void RunEvent(event_type const& evt,
+	virtual bool RunEvent(event_type const& evt,
 			product_type const& globalProduct,
 			FilterResult const& globalFilterResult) {
 
@@ -208,6 +208,8 @@ public:
 
 			itcons->ProcessEvent(evt, localProduct, localFilterResult);
 		}
+
+		return localFilterResult.HasPassed();
 	}
 
 	/// Find and return a Filter by it's id in this pipeline.

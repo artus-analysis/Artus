@@ -7,6 +7,7 @@
 #pragma once
 
 #include <vector>
+#include <algorithm>
 
 #include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_list.hpp>
@@ -14,6 +15,7 @@
 #include "Pipeline.h"
 #include "EventProviderBase.h"
 #include "ProgressReport.h"
+#include "FilterResult.h"
 
 /**
    \brief Class to manage all registered Pipelines and to connect them to the event.
@@ -105,6 +107,27 @@ public:
 
 		const stringvector globlalFilterIds = globalSettings.GetGlobalFilters();
 
+		// initilize pline filter decision
+		FilterResult::FilterNames pipelineResultNames(m_pipelines.size());
+		std::transform(m_pipelines.begin(), m_pipelines.end(),
+				pipelineResultNames.begin(),
+				[] ( pipeline_type const& p ) -> std::string
+				{	return p.GetSettings().GetName();});
+
+		{
+			auto pipelineResultNamesSorted = pipelineResultNames;
+			// must be sorted to perform the unique option
+			// but don't use the sorted strings later on
+			std::sort(pipelineResultNamesSorted.begin(),
+					pipelineResultNamesSorted.end());
+
+			auto itUnq = std::unique(pipelineResultNamesSorted.begin(),
+					pipelineResultNamesSorted.end());
+			if (itUnq != pipelineResultNamesSorted.end())
+			{
+				LOG(FATAL)<< "Pipeline name '" << *itUnq << "' is not unique, but pipeline names must be unique";
+			}
+		}
 		for (long long i = firstEvent; i < nEvents; ++i) {
 
 			for (ProgressReportIterator it = m_progressReport.begin();
@@ -142,11 +165,18 @@ public:
 			}
 
 			// run the pipelines
+			FilterResult pipelineFilterRes(pipelineResultNames);
+
 			for (PipelinesIterator it = m_pipelines.begin();
 					it != m_pipelines.end(); it++) {
 				if (it->GetSettings().GetLevel() == 1)
-					it->RunEvent(evtProvider.GetCurrentEvent(), productGlobal,
-					             globalFilterResult);
+				{
+					productGlobal.PreviousPipelinesResult = pipelineFilterRes;
+					bool result = it->RunEvent(evtProvider.GetCurrentEvent(),
+							productGlobal, globalFilterResult);
+					pipelineFilterRes.SetFilterDecision(
+							it->GetSettings().GetName(), result);
+				}
 			}
 		}
 

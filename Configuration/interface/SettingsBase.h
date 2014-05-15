@@ -32,6 +32,10 @@ public:
 			m_RootOutFile(ARTUS_CPP11_NULLPTR) {
 	}
 
+	SettingsBase( std::string const& name ) : m_Name ( name ),
+			m_RootOutFile(ARTUS_CPP11_NULLPTR){
+	}
+
 	virtual ~SettingsBase() {
 	}
 
