@@ -139,7 +139,7 @@ private:
 		validElectron = validElectron &&
 			(
 				(
-					(electron->p4.Pt() < 10)
+					(electron->p4.Pt() < 10.0)
 					&&
 					(
 						(abs(electron->p4.Eta()) < 0.8 && electron->idMvaNonTrigV0 > 0.47)
@@ -149,7 +149,7 @@ private:
 				)
 				||
 				(
-					(electron->p4.Pt() > 10) &&
+					(electron->p4.Pt() >= 10.0) &&
 					(
 						(abs(electron->p4.Eta()) < 0.8 && electron->idMvaNonTrigV0 > -0.34)
 						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->idMvaNonTrigV0 > -0.65)
@@ -160,6 +160,7 @@ private:
 		validElectron = validElectron
 						&& electron->track.nInnerHits <= 1
 						&& (electron->trackIso04 / electron->p4.Pt()) < 0.4;
+						// && sip is the significance of impact parameter in 3D of the electron GSF track < 4 TODO
 
 		return validElectron;
 	}
