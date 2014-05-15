@@ -49,14 +49,14 @@ public:
 		{
 			if (boost::algorithm::icontains(quantity, "weight"))
 			{
-				if (m_valueExtractorMap.count(quantity) > 0) {
-					LOG(WARNING) << "Quantity \"" << quantity << "\" has multiple definitions on how to be calculated for the LambdaNtupleConsumer.";
-				}
-			
-				m_valueExtractorMap[quantity] = [quantity](event_type const & event, product_type const & product)
+				if (m_valueExtractorMap.count(quantity) == 0)
 				{
-					return SafeMap::GetWithDefault(product.m_weights, quantity, 1.0);
-				};
+					LOG(INFO) << "Quantity \"" << quantity << "\" is not defined in the NtupleConsumer, therefore the values are directly taken from product.m_weights.";
+					m_valueExtractorMap[quantity] = [quantity](event_type const & event, product_type const & product)
+					{
+						return SafeMap::GetWithDefault(product.m_weights, quantity, 1.0);
+					};
+				}
 			}
 		}
 		
