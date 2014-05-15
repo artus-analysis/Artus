@@ -47,6 +47,10 @@ add_library(artus_consumer SHARED
 	Consumer/src/ValueModifier.cc
 )
 
+add_library(artus_filter SHARED
+	Provider/src/ArtusFilter.cc
+)
+
 add_library(artus_provider SHARED
 	Provider/src/ArtusProvider.cc
 )
