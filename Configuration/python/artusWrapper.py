@@ -291,12 +291,19 @@ class ArtusWrapper(object):
 		for inputEntry in self._config["GridControlInputFiles"]:
 			datasetString += "\t" + inputEntry + "\n"
 
-		replacingDict = dict(JSON_CONFIG="JSON_CONFIG = " + os.path.basename(self._configFilename),
-										EXECUTABLE = "EXECUTABLE = "+ self._executable,
+		epilogArguments  = r"epilog arguments = "
+		epilogArguments += r"--disable-repo-versions "
+		epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
+		epilogArguments += r"--nick $DATASETNICK "
+		epilogArguments += r'-i ${FILE_NAMES//[,\"]/}'
+
+		replacingDict = dict(#JSON_CONFIG="JSON_CONFIG = " + os.path.basename(self._configFilename),
+										epilogexecutable = "epilog executable = $CMSSW_BASE/bin/$SCRAM_ARCH/"+ self._executable + ".py",
 										sepath = "se path = " + os.path.join(os.path.expandvars(self._args.work), "output"),
 										jobs= "" if not self._args.fast else "jobs = " + str(self._args.fast),
 										inputfiles= "input files = \n\t" + self._configFilename,
-										dataset = "dataset = \n " + datasetString
+										dataset = "dataset = \n " + datasetString,
+										epilogarguments = epilogArguments
 										)
 
 		self.replaceLines(gcConfigFileContent, replacingDict)
@@ -310,7 +317,7 @@ class ArtusWrapper(object):
 		if self._args.no_run:
 			command += " -s"
 		log.info("Execute \"%s\"." % command)
-		#exitCode = logger.subprocessCall(command.split())
+		exitCode = logger.subprocessCall(command.split())
 
 		if exitCode != 0:
 			log.error("Exit with code %s.\n\n" % exitCode)
