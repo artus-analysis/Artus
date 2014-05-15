@@ -5,6 +5,9 @@
 
 #include "KappaTools/RootTools/HLTTools.h"
 #include "MotherDaughterBundle.h"
+
+#include "Artus/Core/interface/ProductBase.h"
+
 /**
    \brief Container class for everything that can be produced in pipeline.
 
@@ -13,7 +16,7 @@
    chain will be passed on to subsequent Producers, Filters and Consumers.
 */
 
-class KappaProduct {
+class KappaProduct : public ProductBase {
 public:
 	KappaProduct() {};
 	~KappaProduct() {};
