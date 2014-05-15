@@ -1,9 +1,13 @@
 
 #pragma once
 
+#include <boost/algorithm/string/predicate.hpp>
+
 #include "Artus/Consumer/interface/NtupleConsumerBase.h"
 #include "Artus/Utility/interface/DefaultValues.h"
 #include "Artus/Utility/interface/SafeMap.h"
+
+#include <cassert>
 
 /*
  * Fills NTuples with valueExtractors defined as lambda functions
@@ -39,6 +43,23 @@ public:
 		
 		//float_extractor_lambda defaultExtractor = [](event_type const&, product_type const&) { return DefaultValues::UndefinedFloat; };
 		
+		// loop over all quantities containing "weight" (case-insensitive)
+		// and try to find them in the weights map to write them out
+		for (auto const & quantity : pset->GetSettings().GetQuantities())
+		{
+			if (boost::algorithm::icontains(quantity, "weight"))
+			{
+				if (m_valueExtractorMap.count(quantity) == 0)
+				{
+					LOG(INFO) << "Quantity \"" << quantity << "\" is not defined in the NtupleConsumer, therefore the values are directly taken from product.m_weights.";
+					m_valueExtractorMap[quantity] = [quantity](event_type const & event, product_type const & product)
+					{
+						return SafeMap::GetWithDefault(product.m_weights, quantity, 1.0);
+					};
+				}
+			}
+		}
+		
 		// construct extractors vector
 		m_valueExtractors.clear();
 		for (std::vector<std::string>::iterator quantity = this->m_quantitiesVector.begin();
@@ -51,6 +72,8 @@ public:
 
 	virtual void ProcessFilteredEvent(event_type const& event, product_type const& product ) ARTUS_CPP11_OVERRIDE
 	{
+		assert(m_valueExtractors.size() == this->m_quantitiesVector.size());
+
 		// do not call NtupleConsumerBase<TTypes>::ProcessFilteredEvent due to different filling logic
 		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product);
 		
@@ -66,7 +89,7 @@ public:
 		}
 
 		// add the array to the ntuple
-		this->m_ntuple->Fill(&array[0]);
+		this->m_ntuple->Fill(&array.front());
 	}
 
 

@@ -55,6 +55,7 @@ add_library(artus_utility SHARED
 	Utility/src/RootFileHelper.cc
 	Utility/src/Utility.cc
 	Utility/src/ArtusEasyLoggingDecl.cc
+	Utility/src/DefaultValues.cc
 )
 
 add_executable(artus_core_test

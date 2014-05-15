@@ -10,6 +10,7 @@
 
 #include "Artus/Core/interface/ProducerBase.h"
 #include "Artus/Utility/interface/Utility.h"
+#include "Artus/Utility/interface/DefaultValues.h"
 
 
 /**
@@ -20,6 +21,7 @@
 
    This Producer needs the following config tags:
      ElectronID
+     ElectronIsoType (no iso implemented yet in KappaAnalysis)
 */
 
 template<class TTypes>
@@ -44,6 +46,17 @@ public:
 			return ElectronID::MVANONTRIG;
 		else return ElectronID::NONE;
 	}
+	
+	enum class ElectronIsoType : int
+	{
+		NONE  = -1,
+		USER = 0,
+	};
+	static ElectronIsoType ToElectronIsoType(std::string const& electronIsoType)
+	{
+		if (electronIsoType == "user") return ElectronIsoType::USER;
+		else return ElectronIsoType::NONE;
+	}
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "valid_electrons";
@@ -53,12 +66,14 @@ public:
 		ProducerBase<TTypes>::InitGlobal(globalSettings);
 		
 		electronID = ToElectronID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetElectronID())));
+		electronIsoType = ToElectronIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetElectronIsoType())));
 	}
 
 	virtual void InitLocal(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
 		ProducerBase<TTypes>::InitLocal(settings);
 		
 		electronID = ToElectronID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronID())));
+		electronIsoType = ToElectronIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronIsoType())));
 	}
 
 	virtual void ProduceGlobal(event_type const& event,
@@ -77,6 +92,8 @@ public:
 
 
 protected:
+	ElectronID electronID;
+	ElectronIsoType electronIsoType;
 
 	// function that lets this producer work as both a global and a local producer
 	virtual void Produce(event_type const& event, product_type& product) const
@@ -111,7 +128,6 @@ protected:
 
 
 private:
-	ElectronID electronID;
 
 	bool IsMVANonTrigElectron(KDataElectron* electron, event_type const& event, product_type& product) const
 	{
@@ -127,8 +143,8 @@ private:
 					&&
 					(
 						(abs(electron->p4.Eta()) < 0.8 && electron->idMvaNonTrigV0 > 0.47)
-						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < 1.479 && electron->idMvaNonTrigV0 > 0.004)
-						|| (abs(electron->p4.Eta()) > 1.479 && abs(electron->p4.Eta()) < 2.5 && electron->idMvaNonTrigV0 > 0.295)
+						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->idMvaNonTrigV0 > 0.004)
+						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->idMvaNonTrigV0 > 0.295)
 					)
 				)
 				||
@@ -136,8 +152,8 @@ private:
 					(electron->p4.Pt() > 10) &&
 					(
 						(abs(electron->p4.Eta()) < 0.8 && electron->idMvaNonTrigV0 > -0.34)
-						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < 1.479 && electron->idMvaNonTrigV0 > -0.65)
-						|| (abs(electron->p4.Eta()) > 1.479 && abs(electron->p4.Eta()) < 2.5 && electron->idMvaNonTrigV0 > 0.6)
+						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->idMvaNonTrigV0 > -0.65)
+						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->idMvaNonTrigV0 > 0.6)
 					)
 				)
 			);

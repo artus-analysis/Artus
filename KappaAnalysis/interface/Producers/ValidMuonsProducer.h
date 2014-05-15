@@ -22,7 +22,7 @@
    This Producer needs the following config tags:
    Year (2011 and 2012 implemented)
    MuonID (only "tight" is currently implemented)
-   MuonIsoType (pf and detector implemented)
+   MuonIsoType (pf and detector implemented, type user is intended to be used in derived code)
    MuonIso (tight and loose implemented)
 */
 
@@ -53,11 +53,13 @@ public:
 		NONE  = -1,
 		PF = 0,
 		DETECTOR = 1,
+		USER = 2,
 	};
 	static MuonIsoType ToMuonIsoType(std::string const& muonIsoType)
 	{
 		if (muonIsoType == "pf") return MuonIsoType::PF;
 		else if (muonIsoType == "detector") return MuonIsoType::DETECTOR;
+		else if (muonIsoType == "user") return MuonIsoType::USER;
 		else return MuonIsoType::NONE;
 	}
 	
@@ -112,6 +114,10 @@ public:
 
 
 protected:
+	int year;
+	MuonID muonID;
+	MuonIsoType muonIsoType;
+	MuonIso muonIso;
 
 	// function that lets this producer work as both a global and a local producer
 	virtual void Produce(event_type const& event, product_type& product) const
@@ -153,7 +159,7 @@ protected:
 				else if (muonIso != MuonIso::NONE)
 					LOG(FATAL) << "Muon isolation of type " << Utility::ToUnderlyingValue(muonIso) << " not yet implemented!";
 			}
-			else if (muonIsoType != MuonIsoType::NONE)
+			else if (muonIsoType != MuonIsoType::USER && muonIsoType != MuonIsoType::NONE)
 				LOG(FATAL) << "Muon isolation type of type " << Utility::ToUnderlyingValue(muonIsoType) << " not yet implemented!";
 			
 			// check possible analysis-specific criteria
@@ -175,11 +181,6 @@ protected:
 
 
 private:
-
-	int year;
-	MuonID muonID;
-	MuonIsoType muonIsoType;
-	MuonIso muonIso;
 	
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon_selection
 	bool IsTightMuon2011(KDataMuon* muon, event_type const& event, product_type& product) const

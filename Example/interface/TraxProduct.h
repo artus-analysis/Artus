@@ -3,12 +3,11 @@
  *   Joram Berger  <Joram.Berger@cern.ch>
  *   Dominik Haitz <Dominik.Haitz@kit.edu>
  */
-
-
 #pragma once
 
-struct TraxProduct {
+#include <Artus/Core/interface/ProductBase.h>
 
+struct TraxProduct: ProductBase
+{
 	float m_floatPtSim_corrected;
-
 };

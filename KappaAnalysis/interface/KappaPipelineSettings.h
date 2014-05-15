@@ -44,6 +44,7 @@ public:
 	{
 		RETURN_CACHED(hltPaths, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".HltPaths"))
 	}
+	IMPL_SETTING_DEFAULT(bool, AllowPrescaledTrigger, true);
 	
 	IMPL_SETTING(int, Year);
 	
@@ -52,8 +53,17 @@ public:
 	IMPL_SETTING(std::string, MuonIso);
 	
 	IMPL_SETTING(std::string, ElectronID);
+	IMPL_SETTING(std::string, ElectronIsoType);
+	
+	VarCache<std::vector<std::string>> tauDiscriminators;
+	stringvector GetTauDiscriminators() const
+	{
+		RETURN_CACHED(tauDiscriminators, PropertyTreeSupport::GetAsStringList(GetPropTree(), "TauDiscriminators"))
+	}
 
 	IMPL_SETTING(std::string, JetID);
+
+	IMPL_SETTING(std::string, PileupWeightFile);
 
 };
 
@@ -150,6 +160,8 @@ public:
 	{
 		RETURN_CACHED(hltPaths, PropertyTreeSupport::GetAsStringList(GetPropTree(), "HltPaths"))
 	}
+	IMPL_SETTING_DEFAULT(bool, AllowPrescaledTrigger, true);
+	
 	//Reading Boson PdgId for GenTauDecayProducer studies.
 	VarCache<stringvector> BosonPdgId;
 	stringvector GetBosonPdgId() const
@@ -164,7 +176,16 @@ public:
 	IMPL_SETTING(std::string, MuonIso);
 	
 	IMPL_SETTING(std::string, ElectronID);
+	IMPL_SETTING(std::string, ElectronIsoType);
+	
+	VarCache<std::vector<std::string>> tauDiscriminators;
+	stringvector GetTauDiscriminators() const
+	{
+		RETURN_CACHED(tauDiscriminators, PropertyTreeSupport::GetAsStringList(GetPropTree(), "TauDiscriminators"))
+	}
 
 	IMPL_SETTING(std::string, JetID);
+
+	IMPL_SETTING(std::string, PileupWeightFile);
 
 };
