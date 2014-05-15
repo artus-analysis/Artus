@@ -236,7 +236,7 @@ class ArtusWrapper(object):
 	                               help="Output root file. [Default: output.root]")
 		fileOptionsGroup.add_argument("-w", "--work", default="$ARTUS_WORK_BASE",
 	                               help="Work directory base. [Default: $ARTUS_WORK_BASE]")
-		fileOptionsGroup.add_argument("-n", "--project-name",
+		fileOptionsGroup.add_argument("-n", "--project-name", default="analysis",
 	                               help="Name for this Artus project specifies the name of the work subdirectory.")
 
 		configOptionsGroup = self._parser.add_argument_group("Config options")
@@ -328,10 +328,12 @@ class ArtusWrapper(object):
 		tmpGcConfigFile.close()
 
 		command = "go.py " + tmpGcConfigFileBasepath + " -Gc -m 0"
-		if self._args.no_run:
-			command += " -s"
 		log.info("Execute \"%s\"." % command)
-		exitCode = logger.subprocessCall(command.split())
+		if not self._args.no_run:
+			exitCode = logger.subprocessCall(command.split())
+		else:
+			exitCode=0
+
 
 		if exitCode != 0:
 			log.error("Exit with code %s.\n\n" % exitCode)
