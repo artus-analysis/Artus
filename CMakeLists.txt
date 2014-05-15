@@ -56,6 +56,7 @@ add_library(artus_utility SHARED
 	Utility/src/Utility.cc
 	Utility/src/ArtusEasyLoggingDecl.cc
 	Utility/src/DefaultValues.cc
+	Utility/src/CutRange.cc
 )
 
 add_executable(artus_core_test
