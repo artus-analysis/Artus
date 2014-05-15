@@ -11,6 +11,8 @@
 # construct command
 COMMAND=$EXECUTABLE".py" #Auslesen
 COMMAND=$COMMAND" "
+COMMAND=$COMMAND"--disable-repo-versions"
+COMMAND=$COMMAND" "
 COMMAND=$COMMAND"-c "$JSON_CONFIG
 COMMAND=$COMMAND" "
 COMMAND=$COMMAND"--nick "$DATASETNICK
@@ -33,8 +35,7 @@ LD_LIBRARY_PATH="$CMSSW_BASE/src/KappaTools/lib/:$CMSSW_BASE/src/Kappa/lib/:$LD_
 
 echo "start wrapper with the command:">>$LOGFILE
 eval $COMMAND>>$LOGFILE
-echo "wrapper ended with status:"$?>>$LOGFILE
+RETURN_VALUE=$?
+echo "wrapper ended with status:"$RETURN_VALUE>>$LOGFILE
 
-exit 0
-
-
+exit $RETURN_VALUE

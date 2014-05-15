@@ -13,6 +13,8 @@ import hashlib
 import json
 import subprocess
 import re
+from string import Template
+
 
 import Artus.Utility.tools as tools
 import Artus.Configuration.jsonTools as jsonTools
@@ -33,7 +35,7 @@ class ArtusWrapper(object):
 		logger.initLogger(self._args)
 
 		# write repository revisions to the config
-		if self._args.add_repo_versions:
+		if not self._args.disable_repo_versions:
 			self.setRepositoryRevisions()
 
 		#Expand Config
@@ -46,6 +48,10 @@ class ArtusWrapper(object):
 		# save final config
 		if self._args.save_config:
 			self.saveConfig(self._args.save_config)
+		elif self._args.batch:
+			basename = "artus_{0}.json".format(hashlib.md5(str(self._config)).hexdigest())
+			filepath = os.path.join(os.path.expandvars(self._args.work), basename)
+			self.saveConfig(filepath)
 		else:
 			self.saveConfig()
 
@@ -65,7 +71,7 @@ class ArtusWrapper(object):
 		else:
 			return 1 # Artus sometimes returns exit codes >255 that are not supported
 
-	def setInputFilenames(self, filelist):
+	def setInputFilenames(self, filelist, alreadyInGridControl = False):
 		print "setInputFilenames"
 		print filelist
 		if not (isinstance(self._config["InputFiles"], list)):
@@ -75,10 +81,11 @@ class ArtusWrapper(object):
 				if entry.find("*") != -1:
 					filelist = glob.glob(os.path.expandvars(entry))
 					self._config["GridControlInputFiles"].append(self.extractNickname(filelist[0]) + ":scan:" + entry)
-					self.setInputFilenames(filelist)
+					self.setInputFilenames(filelist, True)
 				else:
 					self._config["InputFiles"].append(entry)
-#					self._config["GridControlInputFiles"].append(self.extractNickname(entry) + ":file:" + entry)
+					if not alreadyInGridControl:
+						self._config["GridControlInputFiles"].append(self.extractNickname(entry) + ":file:" + entry + "|1")
 			elif os.path.isdir(entry):
 				self.setInputFilenames([os.path.join(entry, "*.root")])
 			elif (os.path.splitext(entry))[1] == ".dbs":
@@ -190,19 +197,19 @@ class ArtusWrapper(object):
 			for path in self._config["InputFiles"]:
 				tmpNick = self.extractNickname(path)
 				if tmpNick != nickname:
-					log.error("Input files do have different nicknames, which would cause errors. Aborting.")
-					sys.exit(1)
+					log.fatal("Input files do have different nicknames, which would cause errors. Aborting.")
 		return nickname
 
 	def extractNickname(self, string):
-		filename = string.split("/")[-1]
+		filename = os.path.basename(string)
 		nickname = filename[filename.find("_")+1:filename.rfind("_")]
 		return nickname
 
-	def modifyLine(self, inputList, key, value):
+
+	def replaceLines(self, inputList, replacingDict):
 		for line in range(len(inputList)):
-			if inputList[line].startswith(key):
-				inputList[line] = key + " = " + value + "\n"
+			inputList[line] = Template(inputList[line]).safe_substitute(replacingDict)
+
 
 	def addLine(self, inputList, key, value):
 		for line in range(len(inputList)):
@@ -237,10 +244,10 @@ class ArtusWrapper(object):
 		configOptionsGroup.add_argument("--nick", default="auto",
 	                                    help="Kappa nickname name that can be used for switch between sample-dependent settings.")
 		
-		configOptionsGroup.add_argument("--add-repo-versions", default=False, action="store_true",
+		configOptionsGroup.add_argument("--disable-repo-versions", default=False, action="store_true",
 	                                 help="Add repository versions to the JSON config.")
 		configOptionsGroup.add_argument("--repo-scan-base-dirs", nargs="+", required=False, default="$CMSSW_BASE/src/",
-	                                 help="Base directories for repositories scran. [Default: $CMSSW_BASE/src/]")
+	                                 help="Base directories for repositories scan. [Default: $CMSSW_BASE/src/]")
 		configOptionsGroup.add_argument("--repo-scan-depth", required=False, type=int, default=2,
 	                                 help="Depth of repositories scran. [Default: 2")
 		configOptionsGroup.add_argument("-P", "--print-config", default=False, action="store_true",
@@ -267,11 +274,10 @@ class ArtusWrapper(object):
 
 	def sendToBatchSystem(self):
 
-		artuspath = os.environ["ARTUSPATH"]
-		gcConfigFilePath = os.path.join(artuspath, "Configuration/data/grid-control_base_config.conf")
+		gcConfigFilePath = os.path.expandvars("$ARTUSPATH/Configuration/data/grid-control_base_config.conf")
 		gcConfigFile = open(gcConfigFilePath,"r")
 		tmpGcConfigFileBasename = "grid-control_base_config_{0}.conf".format(hashlib.md5(str(self._config)).hexdigest())
-		tmpGcConfigFileBasepath = os.path.join(tempfile.gettempdir(), tmpGcConfigFileBasename)
+		tmpGcConfigFileBasepath = os.path.join(os.path.expandvars(self._args.work), tmpGcConfigFileBasename)
 
 		# open base file and save it to a list
 		tmpGcConfigFile = open(tmpGcConfigFileBasepath,"w")
@@ -281,16 +287,19 @@ class ArtusWrapper(object):
 			gcConfigFileContent.append(line)
 
 		# modify base file
-		self.modifyLine(gcConfigFileContent, "JSON_CONFIG", self._configFilename.split("/")[-1])
-		self.modifyLine(gcConfigFileContent, "EXECUTABLE", self._executable)
-		self.modifyLine(gcConfigFileContent, "se path", os.environ["ARTUS_WORK_BASE"])
-		self.addLine(gcConfigFileContent, "input files", self._configFilename)
-
-		if self._args.fast:
-			self.modifyLine(gcConfigFileContent, "jobs", str(self._args.fast))
-
+		datasetString = ""
 		for inputEntry in self._config["GridControlInputFiles"]:
-			gcConfigFileContent.append("\t" + inputEntry + "\n")
+			datasetString += "\t" + inputEntry + "\n"
+
+		replacingDict = dict(JSON_CONFIG="JSON_CONFIG = " + os.path.basename(self._configFilename),
+										EXECUTABLE = "EXECUTABLE = "+ self._executable,
+										sepath = "se path = " + os.path.join(os.path.expandvars(self._args.work), "output"),
+										jobs= "" if not self._args.fast else "jobs = " + str(self._args.fast),
+										inputfiles= "input files = \n\t" + self._configFilename,
+										dataset = "dataset = \n " + datasetString
+										)
+
+		self.replaceLines(gcConfigFileContent, replacingDict)
 
 		# save it
 		for line in gcConfigFileContent:
@@ -301,7 +310,7 @@ class ArtusWrapper(object):
 		if self._args.no_run:
 			command += " -s"
 		log.info("Execute \"%s\"." % command)
-		exitCode = logger.subprocessCall(command.split())
+		#exitCode = logger.subprocessCall(command.split())
 
 		if exitCode != 0:
 			log.error("Exit with code %s.\n\n" % exitCode)
