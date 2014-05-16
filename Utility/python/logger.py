@@ -295,7 +295,7 @@ class LogPipe(threading.Thread):
 # wrapper for subprocess.call with connects with the logger and outputs everything
 def subprocessCall(args, **kwargs):
 	logPipe = None
-	if len(logging.root.handlers) > 1:
+	if len(logging.root.handlers) >= 1:
 		logPipe = LogPipe(100)
 		kwargs["stdout"] = logPipe
 		kwargs["stderr"] = logPipe
