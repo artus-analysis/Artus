@@ -21,7 +21,9 @@
 
    This Producer needs the following config tags:
      ElectronID
-     ElectronIsoType (no iso implemented yet in KappaAnalysis)
+     ElectronIsoType
+     ElectronIso
+     ElectronReco
 */
 
 template<class TTypes>
@@ -39,23 +41,56 @@ public:
 	{
 		NONE  = -1,
 		MVANONTRIG = 0,
+		MVATRIG = 1,
+		USER  = 2,
 	};
 	static ElectronID ToElectronID(std::string const& electronID)
 	{
-		if (electronID == "mvanontrig")
-			return ElectronID::MVANONTRIG;
+		if (electronID == "mvanontrig") return ElectronID::MVANONTRIG;
+		else if (electronID == "mvatrig") return ElectronID::MVATRIG;
+		else if (electronID == "user") return ElectronID::USER;
 		else return ElectronID::NONE;
 	}
 	
 	enum class ElectronIsoType : int
 	{
 		NONE  = -1,
-		USER = 0,
+		PF = 0,
+		USER = 1,
 	};
 	static ElectronIsoType ToElectronIsoType(std::string const& electronIsoType)
 	{
-		if (electronIsoType == "user") return ElectronIsoType::USER;
+		if (electronIsoType == "pf") return ElectronIsoType::PF;
+		else if (electronIsoType == "user") return ElectronIsoType::USER;
 		else return ElectronIsoType::NONE;
+	}
+	
+	enum class ElectronIso : int
+	{
+		NONE  = -1,
+		MVANONTRIG = 0,
+		MVATRIG = 1,
+	};
+	static ElectronIso ToElectronIso(std::string const& electronIso)
+	{
+		if (electronIso == "mvanontrig") return ElectronIso::MVANONTRIG;
+		else if (electronIso == "mvatrig") return ElectronIso::MVATRIG;
+		else return ElectronIso::NONE;
+	}
+	
+	enum class ElectronReco : int
+	{
+		NONE  = -1,
+		MVANONTRIG = 0,
+		MVATRIG = 1,
+		USER = 2,
+	};
+	static ElectronReco ToElectronReco(std::string const& electronReco)
+	{
+		if (electronReco == "mvanontrig") return ElectronReco::MVANONTRIG;
+		else if (electronReco == "mvatrig") return ElectronReco::MVATRIG;
+		else if (electronReco == "user") return ElectronReco::USER;
+		else return ElectronReco::NONE;
 	}
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
@@ -67,6 +102,8 @@ public:
 		
 		electronID = ToElectronID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetElectronID())));
 		electronIsoType = ToElectronIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetElectronIsoType())));
+		electronIso = ToElectronIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetElectronIso())));
+		electronReco = ToElectronReco(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetElectronReco())));
 	}
 
 	virtual void InitLocal(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
@@ -74,6 +111,8 @@ public:
 		
 		electronID = ToElectronID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronID())));
 		electronIsoType = ToElectronIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronIsoType())));
+		electronIso = ToElectronIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronIso())));
+		electronReco = ToElectronReco(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronReco())));
 	}
 
 	virtual void ProduceGlobal(event_type const& event,
@@ -94,6 +133,8 @@ public:
 protected:
 	ElectronID electronID;
 	ElectronIsoType electronIsoType;
+	ElectronIso electronIso;
+	ElectronReco electronReco;
 
 	// function that lets this producer work as both a global and a local producer
 	virtual void Produce(event_type const& event, product_type& product) const
@@ -102,13 +143,47 @@ protected:
 			 electron != event.m_electrons->end(); electron++)
 		{
 			bool validElectron = true;
+			
+			// POG recommondations
+			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentification#Non_triggering_MVA
+			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentification#Triggering_MVA
 
 			// Electron IDs
 			if (electronID == ElectronID::MVANONTRIG)
 				validElectron = validElectron && IsMVANonTrigElectron(&(*electron), event, product);
-			else if (electronID != ElectronID::NONE)
+			else if (electronID == ElectronID::MVATRIG)
+				validElectron = validElectron && IsMVATrigElectron(&(*electron), event, product);
+			else if (electronID != ElectronID::USER && electronID != ElectronID::NONE)
 				LOG(FATAL) << "Electron ID of type " << Utility::ToUnderlyingValue(electronID) << " not yet implemented!";
 
+			// Electron Isolation
+			if (electronIsoType == ElectronIsoType::PF) {
+				if (electronIso == ElectronIso::MVANONTRIG)
+					validElectron = validElectron && (electron->trackIso04 / electron->p4.Pt()) < 0.4;
+				else if (electronIso == ElectronIso::MVATRIG)
+					validElectron = validElectron && (electron->trackIso04 / electron->p4.Pt()) < 0.15;
+				else if (electronIso != ElectronIso::NONE)
+					LOG(FATAL) << "Electron isolation of type " << Utility::ToUnderlyingValue(electronIso) << " not yet implemented!";
+			}
+			else if (electronIsoType != ElectronIsoType::USER && electronIsoType != ElectronIsoType::NONE)
+				LOG(FATAL) << "Electron isolation type of type " << Utility::ToUnderlyingValue(electronIsoType) << " not yet implemented!";
+
+			// Electron reconstruction
+			if (electronReco == ElectronReco::MVANONTRIG) {
+				validElectron = validElectron
+				                && (electron->track.nInnerHits <= 1);
+				                // && sip is the significance of impact parameter in 3D of the electron GSF track < 4 TODO
+			}
+			else if (electronReco == ElectronReco::MVATRIG) {
+				validElectron = validElectron
+				                && (electron->track.nInnerHits == 0);
+			}
+			else if (electronReco != ElectronReco::USER && electronReco != ElectronReco::NONE)
+				LOG(FATAL) << "Electron reconstruction of type " << Utility::ToUnderlyingValue(electronReco) << " not yet implemented!";
+			
+			// conversion veto per default
+			validElectron = validElectron && electron->hasConversionMatch;
+			
 			// check possible analysis-specific criteria
 			validElectron = validElectron && AdditionalCriteria(&(*electron), event, product);
 
@@ -158,9 +233,45 @@ private:
 				)
 			);
 		validElectron = validElectron
-						&& electron->track.nInnerHits <= 1
-						&& (electron->trackIso04 / electron->p4.Pt()) < 0.4;
+						&& electron->track.nInnerHits <= 1;
 						// && sip is the significance of impact parameter in 3D of the electron GSF track < 4 TODO
+
+		return validElectron;
+	}
+
+	bool IsMVATrigElectron(KDataElectron* electron, event_type const& event, product_type& product) const
+	{
+		bool validElectron = true;
+
+		// Electron ID mva trig
+		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentification#Triggering_MVA
+		// different thresholds depending on electron pT, eta
+		validElectron = validElectron &&
+			(
+				(
+					(electron->p4.Pt() >= 10.0)
+					&&
+					(electron->p4.Pt() < 20.0)
+					&&
+					(
+						(abs(electron->p4.Eta()) < 0.8 && electron->idMvaTrigV0 > 0.0)
+						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->idMvaTrigV0 > 0.1)
+						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->idMvaTrigV0 > 0.62)
+					)
+				)
+				||
+				(
+					(electron->p4.Pt() >= 20.0) &&
+					(
+						(abs(electron->p4.Eta()) < 0.8 && electron->idMvaTrigV0 > 0.94)
+						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->idMvaTrigV0 > 0.85)
+						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->idMvaTrigV0 > 0.92)
+					)
+				)
+			);
+		validElectron = validElectron
+						&& electron->track.nInnerHits == 0;
+						// 
 
 		return validElectron;
 	}

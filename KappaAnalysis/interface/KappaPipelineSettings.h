@@ -54,6 +54,8 @@ public:
 	
 	IMPL_SETTING(std::string, ElectronID);
 	IMPL_SETTING(std::string, ElectronIsoType);
+	IMPL_SETTING(std::string, ElectronIso);
+	IMPL_SETTING(std::string, ElectronReco);
 	
 	VarCache<std::vector<std::string>> tauDiscriminators;
 	stringvector GetTauDiscriminators() const
@@ -177,6 +179,8 @@ public:
 	
 	IMPL_SETTING(std::string, ElectronID);
 	IMPL_SETTING(std::string, ElectronIsoType);
+	IMPL_SETTING(std::string, ElectronIso);
+	IMPL_SETTING(std::string, ElectronReco);
 	
 	VarCache<std::vector<std::string>> tauDiscriminators;
 	stringvector GetTauDiscriminators() const
