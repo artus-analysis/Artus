@@ -216,11 +216,6 @@ class ArtusWrapper(object):
 			inputList[line] = Template(inputList[line]).safe_substitute(replacingDict)
 
 
-	def addLine(self, inputList, key, value):
-		for line in range(len(inputList)):
-			if inputList[line].startswith(key):
-				inputList.insert(line+1, "\t" + value + "\n")
-
 	def _initArgumentParser(self, userArgParsers=None):
 
 		if userArgParsers is None:
@@ -269,8 +264,6 @@ class ArtusWrapper(object):
 	                                  help="Open output file in ROOT TBrowser after completion.")
 		runningOptionsGroup.add_argument("-b", "--batch", default=False, action="store_true",
 	                                  help="Run with grid-control.")
-		runningOptionsGroup.add_argument("-R", "--resume", default=False, action="store_true",
-	                                  help="Resume the grid-control run and hadd after interrupting it.")
 
 		if self._executable:
 			self._parser.add_argument("-x", "--executable", help="Artus executable. [Default: %s]" % str(self._executable), default=self._executable)
