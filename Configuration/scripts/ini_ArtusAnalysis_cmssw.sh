@@ -8,6 +8,10 @@ export LD_LIBRARY_PATH="$CMSSW_BASE/src/KappaTools/lib/:$CMSSW_BASE/src/Kappa/li
 export USERPC=`who am i | sed 's/.*(\([^]]*\)).*/\1/g'`
 
 # set the environment
+export KAPPAPATH=$CMSSW_BASE/src/Kappa
+export KAPPATOOLSPATH=$CMSSW_BASE/KappaTools
+export ARTUSPATH=$CMSSW_BASE/src/Artus
+
 if [[ `hostname` == *naf* ]]; then
 	export ARTUS_WORK_BASE="/nfs/dust/cms/user/${USER}/artus/"
 elif [[ `hostname` == *ekp* ]]; then
