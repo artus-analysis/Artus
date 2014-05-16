@@ -150,9 +150,9 @@ protected:
 
 			// Electron IDs
 			if (electronID == ElectronID::MVANONTRIG)
-				validElectron = validElectron && IsMVANonTrigElectron(&(*electron), event, product);
+				validElectron = validElectron && IsMVANonTrigElectron(&(*electron));
 			else if (electronID == ElectronID::MVATRIG)
-				validElectron = validElectron && IsMVATrigElectron(&(*electron), event, product);
+				validElectron = validElectron && IsMVATrigElectron(&(*electron));
 			else if (electronID != ElectronID::USER && electronID != ElectronID::NONE)
 				LOG(FATAL) << "Electron ID of type " << Utility::ToUnderlyingValue(electronID) << " not yet implemented!";
 
@@ -204,7 +204,7 @@ protected:
 
 private:
 
-	bool IsMVANonTrigElectron(KDataElectron* electron, event_type const& event, product_type& product) const
+	bool IsMVANonTrigElectron(KDataElectron* electron) const
 	{
 		bool validElectron = true;
 
@@ -232,14 +232,11 @@ private:
 					)
 				)
 			);
-		validElectron = validElectron
-						&& electron->track.nInnerHits <= 1;
-						// && sip is the significance of impact parameter in 3D of the electron GSF track < 4 TODO
 
 		return validElectron;
 	}
 
-	bool IsMVATrigElectron(KDataElectron* electron, event_type const& event, product_type& product) const
+	bool IsMVATrigElectron(KDataElectron* electron) const
 	{
 		bool validElectron = true;
 
@@ -269,9 +266,6 @@ private:
 					)
 				)
 			);
-		validElectron = validElectron
-						&& electron->track.nInnerHits == 0;
-						// 
 
 		return validElectron;
 	}
