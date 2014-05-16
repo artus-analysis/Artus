@@ -41,8 +41,7 @@ class ArtusWrapper(object):
 		#Expand Config
 		self.expandConfig()
 		if self._args.batch:
-			global projectPath
-			projectPath = os.path.join(os.path.expandvars(self._args.work), self._args.project_name + datetime.now().strftime("_%Y-%m-%d"))
+			self.projectPath = os.path.join(os.path.expandvars(self._args.work), self._args.project_name + datetime.now().strftime("_%Y-%m-%d_%H-%M"))
 
 	def run(self):
 	
@@ -53,8 +52,8 @@ class ArtusWrapper(object):
 			self.saveConfig(self._args.save_config)
 		elif self._args.batch:
 			basename = "artus_{0}.json".format(hashlib.md5(str(self._config)).hexdigest())
-			filepath = os.path.join(projectPath, basename)
-			if not os.path.exists(projectPath): os.makedirs(projectPath)
+			filepath = os.path.join(self.projectPath, basename)
+			if not os.path.exists(self.projectPath): os.makedirs(self.projectPath)
 			self.saveConfig(filepath)
 		else:
 			self.saveConfig()
@@ -65,9 +64,8 @@ class ArtusWrapper(object):
 		#Run Artus if desired
 		if self._args.batch:
 			exitCode = self.sendToBatchSystem()
-		else:
-			if not self._args.no_run:
-				exitCode = self.callExecutable()
+		elif not self._args.no_run:
+			exitCode = self.callExecutable()
 
 
 		if exitCode < 256:
@@ -76,25 +74,29 @@ class ArtusWrapper(object):
 			return 1 # Artus sometimes returns exit codes >255 that are not supported
 
 	def setInputFilenames(self, filelist, alreadyInGridControl = False):
-		if not (isinstance(self._config["InputFiles"], list)):
+		print "setInputFilenames"
+		print filelist
+		if (not (isinstance(self._config["InputFiles"], list)) and not isinstance(value, basestring)):
 			self._config["InputFiles"] = []
 		for entry in filelist:
+			print entry
 			if os.path.splitext(entry)[1] == ".root":
 				if entry.find("*") != -1:
 					filelist = glob.glob(os.path.expandvars(entry))
-					self._config["GridControlInputFiles"].append(self.extractNickname(filelist[0]) + ":scan:" + entry)
+					self.GridControlInputFiles.append(self.extractNickname(entry) + ":scan:" + entry)
 					self.setInputFilenames(filelist, True)
 				else:
 					self._config["InputFiles"].append(entry)
 					if not alreadyInGridControl:
-						self._config["GridControlInputFiles"].append(self.extractNickname(entry) + ":file:" + entry + "|1")
+						self.GridControlInputFiles.append(self.extractNickname(entry) + ":file:" + entry + "|1")
 			elif os.path.isdir(entry):
 				self.setInputFilenames([os.path.join(entry, "*.root")])
-			elif (os.path.splitext(entry))[1] == ".dbs":
+			elif (os.path.splitext(entry))[1] == ".txt":
 				dbsFile = open(entry, 'r')
-				dbsFileContent = []
-				for line in dbsFile:
-					dbsFileContent.append(line.replace("\n", ""))
+				dbsFileContent = dbsFile.readlines()
+				for line in range(len(dbsFileContent)):
+					dbsFileContent[line] = dbsFileContent[line].replace("\n", "")
+				dbsFile.close()
 				self.setInputFilenames(dbsFileContent)
 			else:
 				log.debug("Found file in input search path that is not further considered: " + entry + "\n")
@@ -150,20 +152,26 @@ class ArtusWrapper(object):
 			self._config["InputFiles"] = [""]
 		self._config.save(filepath, indent=4)
 		log.info("Saved JSON config \"%s\" for temporary usage." % self._configFilename)
-	
+
+
 	def expandConfig(self):
 
 		# merge all base configs into the main config
 		self._config += jsonTools.JsonDict.mergeAll(self._args.base_configs)
+		self.GridControlInputFiles = []
 
 		#Set Input Filenames
 		if self._args.input_files:
 			self._config["InputFiles"] = [] #overwrite settings from config file by command line
-			self._config["GridControlInputFiles"] = []
 			inputFileList = self._args.input_files
 			for entry in range(len(inputFileList)):
 				inputFileList[entry] = inputFileList[entry].replace('"', '').replace("'", '').replace(',', '')
 			self.setInputFilenames(self._args.input_files)
+		else:
+			tmpInputFiles = self._config["InputFiles"]
+			self._config["InputFiles"] = []
+			self.setInputFilenames(tmpInputFiles)
+
 		if self._args.output_file:
 			self.setOutputFilename(self._args.output_file)
 
@@ -255,7 +263,10 @@ class ArtusWrapper(object):
 		configOptionsGroup.add_argument("-s", "--save-config", default="",
 	                                 help="Save the JSON config to FILENAME.")
 		configOptionsGroup.add_argument('-f', '--fast', type=int, default=False,
-	                                 help="limit number of input files. 3=files[0:3].")
+	                                 help="limit number of input files or grid-control jobs. 3=files[0:3].")
+		configOptionsGroup.add_argument("--gcConfigFilePath", default="$ARTUSPATH/Configuration/data/grid-control_base_config.conf",
+	                                 help="path to grid-control base config that is replace by the wrapper")
+
 
 		runningOptionsGroup = self._parser.add_argument_group("Running options")
 		runningOptionsGroup.add_argument("--no-run", default=False, action="store_true",
@@ -272,21 +283,19 @@ class ArtusWrapper(object):
 
 	def sendToBatchSystem(self):
 
-		gcConfigFilePath = os.path.expandvars("$ARTUSPATH/Configuration/data/grid-control_base_config.conf")
+		gcConfigFilePath = os.path.expandvars(self._args.gcConfigFilePath)
 		gcConfigFile = open(gcConfigFilePath,"r")
 		tmpGcConfigFileBasename = "grid-control_base_config_{0}.conf".format(hashlib.md5(str(self._config)).hexdigest())
-		tmpGcConfigFileBasepath = os.path.join(projectPath, tmpGcConfigFileBasename)
+		tmpGcConfigFileBasepath = os.path.join(self.projectPath, tmpGcConfigFileBasename)
 
 		# open base file and save it to a list
 		tmpGcConfigFile = open(tmpGcConfigFileBasepath,"w")
-		gcConfigFileContent = []
-
-		for line in gcConfigFile:
-			gcConfigFileContent.append(line)
+		gcConfigFileContent = gcConfigFile.readlines()
+		gcConfigFile.close()
 
 		# modify base file
 		datasetString = ""
-		for inputEntry in self._config["GridControlInputFiles"]:
+		for inputEntry in self.GridControlInputFiles:
 			datasetString += "\t" + inputEntry + "\n"
 
 		epilogArguments  = r"epilog arguments = "
@@ -296,22 +305,17 @@ class ArtusWrapper(object):
 		epilogArguments += "--nick $DATASETNICK "
 		epilogArguments += '-i $FILE_NAMES '
 
-		#projectPath = os.path.join(os.path.expandvars(self._args.work), projectName)
+		sepath = "se path = " + os.path.join(self.projectPath, "output")
+		workdir = "workdir = " + os.path.join(self.projectPath, "workdir")
 
-		sepath = "se path = " + os.path.join(projectPath, "output")
-		workdir = "workdir = " + os.path.join(projectPath, "workdir")
-
-#		if not os.path.exists(sepath): os.makedirs(sepath)
-#		if not os.path.exists(workdir): os.makedirs(workdir)
-
-		replacingDict = dict(	epilogexecutable = "epilog executable = $CMSSW_BASE/bin/$SCRAM_ARCH/"+ self._executable + ".py",
-										sepath = sepath,
-										workdir = workdir,
-										jobs= "" if not self._args.fast else "jobs = " + str(self._args.fast),
-										inputfiles= "input files = \n\t" + self._configFilename,
-										dataset = "dataset = \n " + datasetString,
-										epilogarguments = epilogArguments
-										)
+		replacingDict = dict( epilogexecutable = "epilog executable = $CMSSW_BASE/bin/" + os.path.join(os.path.expandvars("$SCRAM_ARCH"), os.path.basename(sys.argv[0])),
+		                      sepath = sepath,
+		                      workdir = workdir,
+		                      jobs= "" if not self._args.fast else "jobs = " + str(self._args.fast),
+		                      inputfiles= "input files = \n\t" + self._configFilename,
+		                      dataset = "dataset = \n " + datasetString,
+		                      epilogarguments = epilogArguments
+		                      )
 
 		self.replaceLines(gcConfigFileContent, replacingDict)
 
