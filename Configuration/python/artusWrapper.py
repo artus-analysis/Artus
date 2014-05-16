@@ -321,7 +321,7 @@ class ArtusWrapper(object):
 			tmpGcConfigFile.write(line)
 		tmpGcConfigFile.close()
 
-		command = "go.py " + tmpGcConfigFileBasepath + " -Gc -m 0"
+		command = "go.py " + tmpGcConfigFileBasepath
 		log.info("Execute \"%s\"." % command)
 		if not self._args.no_run:
 			exitCode = logger.subprocessCall(command.split())
