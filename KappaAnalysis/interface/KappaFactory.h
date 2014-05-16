@@ -17,6 +17,8 @@
 // filter
 #include "Artus/KappaAnalysis/interface/Filters/JsonFilter.h"
 #include "Artus/KappaAnalysis/interface/Filters/HltFilter.h"
+#include "Artus/KappaAnalysis/interface/Filters/ValidObjectsFilters.h"
+#include "Artus/KappaAnalysis/interface/Filters/ObjectsCountFilters.h"
 
 // consumer
 
@@ -62,6 +64,22 @@ public:
 			return new JsonFilter<TTypes>();
 		else if(id == HltFilter<TTypes>().GetFilterId())
 			return new HltFilter<TTypes>();
+		else if(id == ValidElectronsFilter<TTypes>().GetFilterId())
+			return new ValidElectronsFilter<TTypes>();
+		else if(id == ValidMuonsFilter<TTypes>().GetFilterId())
+			return new ValidMuonsFilter<TTypes>();
+		else if(id == ValidTausFilter<TTypes>().GetFilterId())
+			return new ValidTausFilter<TTypes>();
+		else if(id == ValidJetsFilter<TTypes>().GetFilterId())
+			return new ValidJetsFilter<TTypes>();
+		else if(id == ElectronsCountFilter<TTypes>().GetFilterId())
+			return new ElectronsCountFilter<TTypes>();
+		else if(id == MuonsCountFilter<TTypes>().GetFilterId())
+			return new MuonsCountFilter<TTypes>();
+		else if(id == TausCountFilter<TTypes>().GetFilterId())
+			return new TausCountFilter<TTypes>();
+		else if(id == JetsCountFilter<TTypes>().GetFilterId())
+			return new JetsCountFilter<TTypes>();
 		else
 			return FactoryBase<TTypes>::createFilter( id );
 	}

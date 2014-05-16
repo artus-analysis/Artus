@@ -64,6 +64,11 @@ public:
 	}
 
 	IMPL_SETTING(std::string, JetID);
+	
+	IMPL_SETTING(int, NElectrons);
+	IMPL_SETTING(int, NMuons);
+	IMPL_SETTING(int, NTaus);
+	IMPL_SETTING(int, NJets);
 
 	IMPL_SETTING(std::string, PileupWeightFile);
 
@@ -189,6 +194,11 @@ public:
 	}
 
 	IMPL_SETTING(std::string, JetID);
+	
+	IMPL_SETTING(int, NElectrons);
+	IMPL_SETTING(int, NMuons);
+	IMPL_SETTING(int, NTaus);
+	IMPL_SETTING(int, NJets);
 
 	IMPL_SETTING(std::string, PileupWeightFile);
 
