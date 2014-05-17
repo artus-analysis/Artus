@@ -154,6 +154,10 @@ class ArtusWrapper(object):
 		# treat includes
 		self._config = self._config.doNicks(self._args.nick).doIncludes()
 		
+		# treat environment variables
+		if self._args.envvar_expansion:
+			self._config = self._config.doExpandvars()
+		
 		# set log level
 		self._config["LogLevel"] = self._args.log_level
 
@@ -192,6 +196,10 @@ class ArtusWrapper(object):
 	                                 help="Base directories for repositories scran. [Default: $CMSSW_BASE/src/]")
 		configOptionsGroup.add_argument("--repo-scan-depth", required=False, type=int, default=2,
 	                                 help="Depth of repositories scran. [Default: 2")
+		configOptionsGroup.add_argument("--enable-envvar-expansion", dest="envvar_expansion", default=True, action="store_true",
+	                                 help="Enable expansion of environment variables in config.")
+		configOptionsGroup.add_argument("--disable-envvar-expansion", dest="envvar_expansion", action="store_false",
+	                                 help="Disable expansion of environment variables in config.")
 		configOptionsGroup.add_argument("-P", "--print-config", default=False, action="store_true",
 	                                 help="Print out the JSON config before running Artus.")
 		configOptionsGroup.add_argument("-s", "--save-config", default="",

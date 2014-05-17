@@ -119,6 +119,10 @@ class JsonDict(dict):
 		""" resolves the comments and returns a new object """
 		return JsonDict.deepuncomment(JsonDict(copy.deepcopy(self)))
 	
+	def doExpandvars(self):
+		""" expands environment variables in dictionary values """
+		return JsonDict(JsonDict.deepexpandvars(self))
+	
 	def __str__(self):
 		""" converts JSON dict to a string """
 		return self.toString()
@@ -296,4 +300,25 @@ class JsonDict(dict):
 					if isinstance(value, dict):
 						JsonDict.deepuncomment(value)
 		return jsonDict
+
+	@staticmethod
+	def deepexpandvars(jsonDict):
+		"""
+		call os.path.expandvars recursively for each string-type value in this dictionary
+		"""
+		
+		result = None
+		if isinstance(jsonDict, dict):
+			result = JsonDict()
+			for key, value in jsonDict.items():
+				result[key] = JsonDict.deepexpandvars(value)
+		elif isinstance(jsonDict, collections.Iterable) and not isinstance(jsonDict, basestring):
+			result = []
+			for item in jsonDict:
+				result.append(JsonDict.deepexpandvars(item))
+		elif isinstance(jsonDict, basestring):
+			result = os.path.expandvars(jsonDict)
+		else:
+			result = jsonDict
+		return result
 
