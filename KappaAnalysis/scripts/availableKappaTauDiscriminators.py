@@ -24,9 +24,15 @@ def main():
 	lumis = root_file.Get("Lumis")
 	lumis.GetEntry(0)
 	
-	binaryDiscriminators = lumis.hpsPFTaus.discriminatorNames
-	for discriminator in binaryDiscriminators:
-		log.info(discriminator)
+	log.info("\nNames of available binary discriminators:")
+	binaryDiscriminators = lumis.hpsPFTaus.binaryDiscriminatorNames
+	for binaryDiscriminator in binaryDiscriminators:
+		log.info("\t" + binaryDiscriminator)
+	
+	log.info("\nNames of available floating-point-type discriminators:")
+	floatDiscriminators = lumis.hpsPFTaus.floatDiscriminatorNames
+	for floatDiscriminator in floatDiscriminators:
+		log.info("\t" + floatDiscriminator)
 
 
 if __name__ == "__main__":
