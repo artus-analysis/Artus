@@ -15,7 +15,7 @@ public:
 	~MotherDaughterBundle() {};
 	// pointer to the parent
 	MotherDaughterBundle * parent = 0;
-	bool finalState = false; 
+	bool finalState = false;
 	std::vector<MotherDaughterBundle*> finalStates;
 	std::vector<MotherDaughterBundle*> finalStateOneProngs;
 	std::vector<MotherDaughterBundle*> finalStateThreeProngs;
@@ -69,9 +69,22 @@ public:
 	{
 		return this->charge;
 	}
+	void setDetectable()
+	{
+		for (unsigned int i=0; i<detectableParticlePdgIds.size(); ++i)
+		{
+			if (this->node->pdgId()==detectableParticlePdgIds[i]) this->detectable = true;
+		}
+	}
+	bool isDetectable() const
+	{
+		return this->detectable;
+	}
 private:
 	int charge = 5;
+	bool detectable = false;
 	std::vector<int> positiveChargedParticlePdgIds = {-11, -13, -15, 24, 211, 213, 321, 323, 20213};
 	std::vector<int> negativeChargedParticlePdgIds = {11, 13, 15, -24, -211, -213, -321, -323, -20213};
 	std::vector<int> notChargedParticlePdgIds = {12, -12, 14, -14, 16, -16, 22, 111, 130, 221, 310};
+	std::vector<int> detectableParticlePdgIds = {22, 111, 211, -211, 11, -11, 13, -13, 15, -15};
 };

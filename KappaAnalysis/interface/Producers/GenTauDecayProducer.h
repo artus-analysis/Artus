@@ -66,6 +66,7 @@ public:
 				MotherDaughterBundle & lastBosonRef = product.m_genBoson.back();
 				lastBosonRef.parent = &lastBosonRef;
 				lastBosonRef.setCharge();
+				lastBosonRef.setDetectable();
 				if (part->daughterIndices.size() == 0) lastBosonRef.finalState = true;
 				for (unsigned int i=0; i<part->daughterIndices.size() && part->daughterIndices.size() != 0; ++i) 
 				{
@@ -81,6 +82,7 @@ public:
 						MotherDaughterBundle & lastBosonDaughterRef = lastBosonRef.Daughters.back();
 						lastBosonDaughterRef.parent = &lastBosonRef;
 						lastBosonDaughterRef.setCharge();
+						lastBosonDaughterRef.setDetectable();
 						if ( (event.m_genParticles->at(indDaughter)).daughterIndices.size() != 0)
 						{
 							unsigned int indDaughterStat2 = (event.m_genParticles->at(indDaughter)).daughterIndex(0);
@@ -107,6 +109,7 @@ public:
 				MotherDaughterBundle & lastDaughterRef = lastProductParentRef.Daughters.back();
 				lastDaughterRef.parent = &lastProductParentRef;
 				lastDaughterRef.setCharge();
+				lastDaughterRef.setDetectable();
 				if ( (event.m_genParticles->at(DaughterIndex)).daughterIndices.size() == 0) lastDaughterRef.finalState = true;
 				buildDecayTree(lastDaughterRef, DaughterIndex, event);
 			}
