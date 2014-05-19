@@ -23,6 +23,12 @@ public:
 	static doublevector GetAsDoubleList(boost::property_tree::ptree & propTree,
 	                                    std::string path);
 
+	static floatvector GetAsFloatList(boost::property_tree::ptree * propTree,
+	                                    std::string path);
+
+	static floatvector GetAsFloatList(boost::property_tree::ptree & propTree,
+	                                    std::string path);
+
 	static intvector GetAsIntList(boost::property_tree::ptree & propTree,
 	                              std::string path);
 
