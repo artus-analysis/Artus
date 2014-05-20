@@ -6,9 +6,11 @@
 
 /**
    \brief EventWeightProducer (can only run locally)
+   Config tags:
+   - EventWeight, e.g. "eventWeight"
    
    Multiplies all entries in the map product.m_weights
-   and writes the result to product.m_weights["eventWeight"]
+   and writes the result to product.m_weights[settings.GetEventWeight()]
    
    By adding the weight quantity names to the Quantity config setting,
    they will be individually written to the ntuple by the LambdaNtupleConsumer
@@ -25,11 +27,6 @@ public:
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "event_weight";
-	}
-	
-	virtual void InitGlobal(global_setting_type const& globalSettings)  ARTUS_CPP11_OVERRIDE
-	{
-		ProducerBase<TTypes>::InitGlobal(globalSettings);
 	}
 	
 	virtual void InitLocal(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
@@ -49,7 +46,7 @@ public:
 			eventWeight *= weight->second;
 		}
 	
-		product.m_weights["eventWeight"] = eventWeight;
+		product.m_weights[settings.GetEventWeight()] = eventWeight;
 	}
 };
 

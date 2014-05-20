@@ -71,6 +71,8 @@ public:
 	IMPL_SETTING(int, NJets);
 
 	IMPL_SETTING(std::string, PileupWeightFile);
+	
+	IMPL_SETTING(std::string, EventWeight);
 
 };
 
@@ -201,5 +203,7 @@ public:
 	IMPL_SETTING(int, NJets);
 
 	IMPL_SETTING(std::string, PileupWeightFile);
+	
+	IMPL_SETTING(std::string, EventWeight);
 
 };
