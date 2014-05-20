@@ -61,6 +61,9 @@ public:
 	/// application
 	IMPL_PROPERTY(TFile *, RootOutFile)
 
+	/// detemine whether this is data or MC
+	IMPL_GLOBAL_SETTING(bool, InputIsData);
+
 	virtual std::string ToString() const {
 		return "SettingsBase - Pipeline name: " + GetName();
 	}
@@ -102,6 +105,9 @@ public:
 	IMPL_PROPERTY(std::string, PropTreePath)
 	/// pointer to the global, loaded property tree
 	IMPL_PROPERTY(boost::property_tree::ptree*, PropTree)
+
+	/// detemine whether this is data or MC
+	IMPL_SETTING(bool, InputIsData);
 
 	/// get list of all global Processors ( filters & producer )
 	VarCache<stringvector> m_globalProcessors;
