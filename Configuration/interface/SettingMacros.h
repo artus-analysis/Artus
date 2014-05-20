@@ -13,7 +13,7 @@
    You can access the value via myObject.GetSNAME
 */
 
-#define IMPL_SETTING(TYPE, SNAME) \
+#define IMPL_SETTING_PRIVATE(TYPE, SNAME, READGLOBAL) \
 private: \
 	TYPE m_##SNAME; \
 public: \
@@ -21,7 +21,7 @@ public: \
 		return (#SNAME); \
 	} \
 	std::string FullKey##SNAME () const { \
-		if ( GetPropTreePath() == "" ) { \
+		if ( READGLOBAL || GetPropTreePath() == "" ) { \
 			return #SNAME; \
 		} else { \
 			return GetPropTreePath() + "." + #SNAME; \
@@ -48,7 +48,7 @@ public: \
    You can access the value via myObject.GetSNAME
 */
 
-#define IMPL_SETTING_DEFAULT(TYPE, SNAME, DEFAULT_VAL) \
+#define IMPL_SETTING_DEFAULT_PRIVATE(TYPE, SNAME, DEFAULT_VAL, READGLOBAL) \
 private: \
 	TYPE m_##SNAME; \
 public: \
@@ -56,7 +56,7 @@ public: \
 		return (#SNAME); \
 	} \
 	std::string FullKey##SNAME () const { \
-		if ( GetPropTreePath() == "" ) { \
+		if ( READGLOBAL || GetPropTreePath() == "" ) { \
 			return #SNAME; \
 		} else { \
 			return GetPropTreePath() + "." + #SNAME; \
@@ -71,3 +71,11 @@ public: \
 		Cache##SNAME.SetCache( val ); \
 		return val; \
 	}
+
+
+#define IMPL_SETTING(TYPE, SNAME) IMPL_SETTING_PRIVATE(TYPE, SNAME, false)
+#define IMPL_SETTING_DEFAULT(TYPE, SNAME, DEFAULT_VAL) IMPL_SETTING_DEFAULT_PRIVATE(TYPE, SNAME, DEFAULT_VAL, false)
+
+#define IMPL_GLOBAL_SETTING(TYPE, SNAME) IMPL_SETTING_PRIVATE(TYPE, SNAME, true)
+#define IMPL_GLOBAL_SETTING_DEFAULT(TYPE, SNAME, DEFAULT_VAL) IMPL_SETTING_DEFAULT_PRIVATE(TYPE, SNAME, DEFAULT_VAL, true)
+
