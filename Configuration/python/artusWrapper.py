@@ -147,6 +147,8 @@ class ArtusWrapper(object):
 		self._configFilename = filepath
 		if self._args.batch:  # shrink config by inputFiles since this is replaced anyway in batch mode
 			self._config["InputFiles"] = [""]
+		elif self._args.fast:
+			self._config["InputFiles"] = self._config["InputFiles"][:min(len(self._config["InputFiles"]), self._args.fast)]
 		self._config.save(filepath, indent=4)
 		log.info("Saved JSON config \"%s\" for temporary usage." % self._configFilename)
 
