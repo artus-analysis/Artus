@@ -1,7 +1,10 @@
 
 #pragma once
 
+#include "Kappa/DataFormats/interface/Kappa.h"
+
 #include "Artus/Core/interface/Cpp11Support.h"
+#include "Artus/Utility/interface/DefaultValues.h"
 
 #include "Artus/Consumer/interface/LambdaNtupleConsumerBase.h"
 
@@ -29,6 +32,11 @@ public:
 		this->m_valueExtractorMap["event"] = [](event_type const& event, product_type const& product) { return event.m_eventMetadata->nEvent; };
 		
 		this->m_valueExtractorMap["npv"] = [](event_type const& event, product_type const& product) { return event.m_vertexSummary->nVertices; };
+		this->m_valueExtractorMap["npu"] = [pipeline](event_type const& event, product_type const& product) {
+			return (pipeline->GetSettings().GetInputIsData() ?
+			        DefaultValues::UndefinedFloat :
+			        static_cast<KGenEventMetadata*>(event.m_eventMetadata)->numPUInteractionsTruth);
+		};
 	
 		// need to be called at last
 		LambdaNtupleConsumerBase<TTypes>::Init(pipeline);
