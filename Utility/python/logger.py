@@ -306,15 +306,22 @@ def subprocessCall(args, **kwargs):
 	if logPipe:
 		logPipe.close()
 	"""
-	kwargs["stdout"] = subprocess.PIPE
-	kwargs["stderr"] = subprocess.STDOUT
-	kwargs["universal_newlines"] = True
 	
-	process = subprocess.Popen(args, **kwargs)
-	for line in iter(process.stdout.readline, ""):
-		log.log(100, line.strip("\n"))
-	process.communicate()
-	exitCode = process.returncode
+	if len(logging.root.handlers) == 1 and isinstance(logging.root.handlers[0], logging.StreamHandler):
+		exitCode = subprocess.call(args, **kwargs)
+	
+	else:
+		kwargs["stdout"] = subprocess.PIPE
+		kwargs["stderr"] = subprocess.STDOUT
+		kwargs["universal_newlines"] = True
+		
+		process = subprocess.Popen(args, **kwargs)
+		
+		for line in iter(process.stdout.readline, ""):
+			log.log(100, line.strip("\n"))
+		
+		process.communicate()
+		exitCode = process.returncode
 
 	return exitCode
 
