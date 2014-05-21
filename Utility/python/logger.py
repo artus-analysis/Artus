@@ -294,16 +294,27 @@ class LogPipe(threading.Thread):
 
 # wrapper for subprocess.call with connects with the logger and outputs everything
 def subprocessCall(args, **kwargs):
+	"""
 	logPipe = None
 	if len(logging.root.handlers) >= 1:
 		logPipe = LogPipe(100)
 		kwargs["stdout"] = logPipe
-		kwargs["stderr"] = logPipe
+		kwargs["stderr"] = subprocess.STDOUT
 	
 	exitCode = subprocess.call(args, **kwargs)
 
 	if logPipe:
 		logPipe.close()
+	"""
+	kwargs["stdout"] = subprocess.PIPE
+	kwargs["stderr"] = subprocess.STDOUT
+	kwargs["universal_newlines"] = True
+	
+	process = subprocess.Popen(args, **kwargs)
+	for line in iter(process.stdout.readline, ""):
+		log.log(100, line.strip("\n"))
+	process.communicate()
+	exitCode = process.returncode
 
 	return exitCode
 
