@@ -41,8 +41,8 @@ class HarryCore(object):
 		
 		# handle input modules (first)
 		if args.input_module not in self.available_processors.keys():
-			log.warning("Input module \"" + args.input_module + "\" not found! Fall back to default!")
-			args.input_module = parser.get_default("input-module")
+			log.warning("Input module \"" + args.input_module + "\" not found! Fall back to default \"%s\"!" % (parser.get_default("input_modules")))
+			args.input_module = parser.get_default("input_module")
 		self.processors.append(self.available_processors[args.input_module])
 		
 		# handle analysis modules (second)
@@ -69,8 +69,8 @@ class HarryCore(object):
 		                     if module in self.available_processors.keys() and
 		                     isinstance(self.available_processors[module], plotbase.PlotBase)]
 		if len(available_modules) == 0:
-			log.warning("No registered plot module specified! Fall back to default!")
-			available_modules = [parser.get_default("plot-modules")]
+			log.warning("No plot module found! Fall back to default \"%s\"!" % (parser.get_default("plot_modules")))
+			available_modules = [parser.get_default("plot_modules")]
 		self.processors.extend([self.available_processors[module] for module in available_modules])
 		
 		missing_modules = [module for module in args.plot_modules
@@ -78,7 +78,7 @@ class HarryCore(object):
 		                   not isinstance(self.available_processors[module], plotbase.PlotBase)]
 		if len(missing_modules) > 0:
 			log.warning("Some requested plot modules have not been registered!")
-			for module in missing_module:
+			for module in missing_modules:
 				log.warning("\t" + module)
 		
 		# let processors modify the parser and then parse the arguments again
