@@ -7,6 +7,7 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
+import os
 import ROOT
 
 import Artus.HarryPlotter.plotbase as plotbase
@@ -38,5 +39,9 @@ class PlotRoot(plotbase.PlotBase):
 		pass
 	
 	def save_canvas(self, plotData):
-		self.canvas.SaveAs("test.png")
+		for plot_format in plotData.plotdict["formats"]:
+			filename = os.path.join(plotData.plotdict["output_dir"],
+			                        plotData.plotdict["filename"]+"."+plot_format)
+			self.canvas.SaveAs(filename)
+			log.info("Created plot \"%s\"." % filename)
 
