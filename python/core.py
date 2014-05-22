@@ -99,6 +99,6 @@ class HarryCore(object):
 		for processor in self.processors:
 			processor.run(plotData)
 	
-	def register_processor(processor_name, processor):
+	def register_processor(self, processor_name, processor):
 		self.available_processors[processor_name] = processor
 
