@@ -14,6 +14,8 @@ import ROOT
 import Artus.HarryPlotter.inputbase as inputbase
 import Artus.HarryPlotter.roottools as roottools
 
+ROOT.PyConfig.IgnoreCommandLineOptions = True
+
 
 class InputRoot(inputbase.InputBase):
 	def __init__(self):

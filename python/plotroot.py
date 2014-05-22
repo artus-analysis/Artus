@@ -12,6 +12,8 @@ import ROOT
 
 import Artus.HarryPlotter.plotbase as plotbase
 
+ROOT.PyConfig.IgnoreCommandLineOptions = True
+
 
 class PlotRoot(plotbase.PlotBase):
 	def __init__(self):
