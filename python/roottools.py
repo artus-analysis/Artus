@@ -234,3 +234,17 @@ def get_binning(root_histogram, axisNumber=0):
 		axis = root_histogram.GetZaxis()
 	return array.array("d", [axis.GetBinLowEdge(binIndex) for binIndex in xrange(1, axis.GetNbins()+2)])
 
+def add_root_histograms(*root_histograms, **kwargs):
+	"""
+	Sums up all histograms in the list of args.
+	The returned histogram will have the name kwargs.get("name", args[0].GetName()+"_sum")
+	"""
+	
+	histogram_sum = None
+	for histogram in root_histograms:
+		if histogram_sum == None:
+			histogram_sum = histogram.Clone(kwargs.get("name", root_histograms[0].GetName()+"_sum"))
+		else:
+			histogram_sum.Add(histogram)
+	return histogram_sum
+	

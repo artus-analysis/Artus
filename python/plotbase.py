@@ -8,10 +8,12 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import abc
+import hashlib
 import os
 import re
 
 import Artus.HarryPlotter.processor as processor
+import Artus.HarryPlotter.roottools as roottools
 
 
 class PlotBase(processor.Processor):
@@ -21,6 +23,15 @@ class PlotBase(processor.Processor):
 	
 	def modify_argument_parser(self, parser):
 		processor.Processor.modify_argument_parser(self, parser)
+		
+		# plotting settings
+		self.plotting_options = parser.add_argument_group("Plotting options")
+		self.plotting_options.add_argument("--ratio", default=False, action="store_true",
+		                                   help="Show ratio subplot.")
+		self.plotting_options.add_argument("--ratio-num", nargs="+",
+		                                   help="Nick names for numerators of ratio. Multiple nicks in one argument (ws-separated) are summed. [Default: first nick]")
+		self.plotting_options.add_argument("--ratio-denom", nargs="+",
+		                                   help="Nick names for denominators of ratio. Multiple nicks in one argument (ws-separated) are summed. [Default: all but first nick]")
 		
 		# axis settings
 		self.axis_options = parser.add_argument_group("Axis options")
@@ -41,6 +52,8 @@ class PlotBase(processor.Processor):
 		                               help="Lower and Upper limit for y-axis of a possible ratio subplot.")
 		self.axis_options.add_argument("--y-label", type=str, default="Events",
 		                               help="Y-axis label name. [Default: %(default)s]")
+		self.axis_options.add_argument("--y-ratio-label", type=str, default="Ratio",
+		                               help="Y-axis label name of a possible ratio subplot. [Default: %(default)s]")
 		self.axis_options.add_argument("--y-log", action="store_true", default=False,
 		                               help="Logarithmic y-axis.")
 		self.axis_options.add_argument("--y-ticks", type=float, nargs="+",
@@ -82,6 +95,22 @@ class PlotBase(processor.Processor):
 	def prepare_args(self, plotData):
 		processor.Processor.prepare_args(self, plotData)
 		
+		# prepare nick names for ratio subplot
+		if plotData.plotdict["ratio_num"] == None: plotData.plotdict["ratio_num"] = [plotData.plotdict["nicks"][0]]
+		if plotData.plotdict["ratio_denom"] == None: plotData.plotdict["ratio_denom"] = [" ".join(plotData.plotdict["nicks"][1:])]
+		problems_with_ratio_nicks = False
+		for ratio_nicks_key in ["ratio_num", "ratio_denom"]:
+			plotData.plotdict[ratio_nicks_key] = [nicks.split() for nicks in plotData.plotdict[ratio_nicks_key]]
+			for nicks in plotData.plotdict[ratio_nicks_key]:
+				for nick in nicks:
+					if nick not in plotData.plotdict["nicks"]:
+						log.warning("Nick name \"%s\" of argument --%s does not exist in argument --nicks!" % (nick, ratio_nicks_key.replace("_", "-")))
+						problems_with_ratio_nicks = True
+		if problems_with_ratio_nicks:
+			log.warning("Continue without ratio subplot!")
+			plotData.plotdict["ratio"] = False
+		self.prepare_list_args(plotData, ["ratio_num", "ratio_denom"])
+		
 		# construct labels from x/y/z expressions if not specified by user
 		for labelKey, expressionKey in zip(["x_label", "y_label", "z_label"],
 		                                   ["x_expressions", "y_expressions", "z_expressions"]):
@@ -113,6 +142,7 @@ class PlotBase(processor.Processor):
 	def run(self, plotData):
 		processor.Processor.run(self, plotData)
 		
+		self.calculate_ratios(plotData)
 		self.create_canvas(plotData)
 		self.prepare_histograms(plotData)
 		self.make_plots(plotData)
@@ -120,6 +150,19 @@ class PlotBase(processor.Processor):
 		self.add_labels(plotData)
 		self.add_texts(plotData)
 		self.save_canvas(plotData)
+	
+	def calculate_ratios(self, plotData):
+		if plotData.plotdict["ratio"]:
+			for numerator_nicks, denominator_nicks in zip(plotData.plotdict["ratio_num"],
+			                                              plotData.plotdict["ratio_denom"]):
+				name = hashlib.md5("_".join(numerator_nicks+denominator_nicks)).hexdigest()
+				numerator_histogram = roottools.add_root_histograms(*[plotData.plotdict["root_histos"][nick] for nick in numerator_nicks],
+				                                                    name=name+"_numerator")
+				denominator_histogram = roottools.add_root_histograms(*[plotData.plotdict["root_histos"][nick] for nick in denominator_nicks],
+				                                                      name=name+"_denominator")
+				ratio_histogram = numerator_histogram.Clone(name + "_ratio")
+				ratio_histogram.Divide(denominator_histogram)
+				plotData.plotdict.setdefault("root_ratio_histos", []).append(ratio_histogram)
 	
 	@abc.abstractmethod
 	def create_canvas(self, plotData):
