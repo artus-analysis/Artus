@@ -56,7 +56,7 @@ class Processor(object):
 			len_plot_list = len(plot_list)
 			if len_plot_list < max_n_inputs:
 				plot_list += [None] * (max_n_inputs - len_plot_list)
-				log.warning("Argument \"" + key + "\" needs " + str(max_n_inputs) + " values! These are filled up by repeating the current values.")
+				log.warning("Argument --" + key.replace("_", "-") + " needs " + str(max_n_inputs) + " values! These are filled up by repeating the current values.")
 			for index in range(max_n_inputs):
 				plot_list[index] = plot_list[index % len_plot_list]
 	
