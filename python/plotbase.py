@@ -16,11 +16,6 @@ import Artus.HarryPlotter.processor as processor
 
 class PlotBase(processor.Processor):
 	
-	@staticmethod
-	def expressions_to_string(expressions):
-		expression_string = reduce(lambda a, b: "%s__%s" % (str(a), str(b)), set(expressions))
-		expression_string = re.sub("[^a-zA-Z0-9]", "_", expression_string)
-	
 	def __init__(self):
 		processor.Processor.__init__(self)
 	
