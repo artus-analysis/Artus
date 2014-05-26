@@ -312,7 +312,8 @@ class ArtusWrapper(object):
 		epilogArguments += "--nick $DATASETNICK "
 		epilogArguments += '-i $FILE_NAMES '
 
-		sepath = "se path = " + os.path.join(self.projectPath, "output")
+		sepathRaw = os.path.join(self.projectPath, "output")
+		sepath = "se path = " + sepathRaw
 		workdir = "workdir = " + os.path.join(self.projectPath, "workdir")
 
 		replacingDict = dict( epilogexecutable = "epilog executable = $CMSSW_BASE/bin/" + os.path.join(os.path.expandvars("$SCRAM_ARCH"), os.path.basename(sys.argv[0])),
@@ -331,13 +332,13 @@ class ArtusWrapper(object):
 			tmpGcConfigFile.write(line)
 		tmpGcConfigFile.close()
 
+		exitCode = 0
 		command = "go.py " + tmpGcConfigFileBasepath
 		log.info("Execute \"%s\"." % command)
 		if not self._args.no_run:
 			exitCode = logger.subprocessCall(command.split())
-		else:
-			exitCode=0
-
+		
+		log.info("Output is written to directory \"%s\"" % sepathRaw)
 
 		if exitCode != 0:
 			log.error("Exit with code %s.\n\n" % exitCode)
