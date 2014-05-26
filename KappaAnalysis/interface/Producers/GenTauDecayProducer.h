@@ -65,6 +65,7 @@ public:
 				product.m_genBoson.push_back( MotherDaughterBundle(&(*part)) );
 				MotherDaughterBundle & lastBosonRef = product.m_genBoson.back();
 				lastBosonRef.parent = &lastBosonRef;
+				//std::cout << lastBosonRef.parent->node->pdgId() << std::endl;
 				lastBosonRef.setCharge();
 				lastBosonRef.setDetectable();
 				if (part->daughterIndices.size() == 0) lastBosonRef.finalState = true;
@@ -81,6 +82,7 @@ public:
 						lastBosonRef.Daughters.push_back(MotherDaughterBundle( &(event.m_genParticles->at(indDaughter)) ));
 						MotherDaughterBundle & lastBosonDaughterRef = lastBosonRef.Daughters.back();
 						lastBosonDaughterRef.parent = &lastBosonRef;
+						//std::cout << lastBosonDaughterRef.parent->node->pdgId() << std::endl;
 						lastBosonDaughterRef.setCharge();
 						lastBosonDaughterRef.setDetectable();
 						if ( (event.m_genParticles->at(indDaughter)).daughterIndices.size() != 0)
@@ -97,6 +99,9 @@ public:
 				}
 			}
 		}
+	//std::cout << "parent selbst: " << &(product.m_genBoson[0].Daughters[0]) << std::endl;
+	//std::cout << "parent ueber Daughter: " << product.m_genBoson[0].Daughters[0].Daughters[0].parent << std::endl;
+	//std::cout << std::endl;
 	}
 	void buildDecayTree(MotherDaughterBundle & lastProductParentRef, unsigned int lastEventParentIndex, event_type const& event) const
 	{
@@ -108,10 +113,12 @@ public:
 				lastProductParentRef.Daughters.push_back(MotherDaughterBundle( &(event.m_genParticles->at(DaughterIndex)) ));
 				MotherDaughterBundle & lastDaughterRef = lastProductParentRef.Daughters.back();
 				lastDaughterRef.parent = &lastProductParentRef;
+				//std::cout << "parent selbst im product: " << &lastProductParentRef << std::endl;
+				//std::cout << "parent über Daughter im product: " << lastDaughterRef.parent << std::endl;
 				lastDaughterRef.setCharge();
 				lastDaughterRef.setDetectable();
 				if ( (event.m_genParticles->at(DaughterIndex)).daughterIndices.size() == 0) lastDaughterRef.finalState = true;
-				buildDecayTree(lastDaughterRef, DaughterIndex, event);
+				else buildDecayTree(lastDaughterRef, DaughterIndex, event);
 			}
 			else
 			{

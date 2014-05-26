@@ -27,7 +27,7 @@ public:
 	void createFinalStates(MotherDaughterBundle* root)
 	{
 		if (this->finalState == true) root->finalStates.push_back(this);
-		if (this->Daughters.size() != 0)
+		else if (this->Daughters.size() != 0)
 		{
 			for(unsigned int i = 0; i<this->Daughters.size(); ++i)
 			{
@@ -86,5 +86,5 @@ private:
 	std::vector<int> positiveChargedParticlePdgIds = {-11, -13, -15, 24, 211, 213, 321, 323, 20213};
 	std::vector<int> negativeChargedParticlePdgIds = {11, 13, 15, -24, -211, -213, -321, -323, -20213};
 	std::vector<int> notChargedParticlePdgIds = {12, -12, 14, -14, 16, -16, 22, 111, 130, 221, 310};
-	std::vector<int> detectableParticlePdgIds = {22, 111, 211, -211, 11, -11, 13, -13, 15, -15};
+	std::vector<int> detectableParticlePdgIds = {22, 211, -211, 11, -11, 13, -13, 15, -15};
 };
