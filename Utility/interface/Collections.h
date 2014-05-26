@@ -11,5 +11,6 @@
 // vectors
 typedef std::vector<std::string> stringvector;
 typedef std::vector<double> doublevector;
+typedef std::vector<float> floatvector;
 typedef std::vector<int> intvector;
 
