@@ -91,12 +91,9 @@ class HarryCore(object):
 		ROOT.TH1.SetDefaultSumw2(True)
 		ROOT.gROOT.SetBatch(True)
 		
-		# prepare aguments for all processors
+		# prepare aguments for all processors before running them
 		for processor in self.processors:
 			processor.prepare_args(plotData)
-		
-		# run all processors
-		for processor in self.processors:
 			processor.run(plotData)
 	
 	def register_processor(self, processor_name, processor):
