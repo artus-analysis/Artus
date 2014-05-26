@@ -33,6 +33,10 @@ class ArtusWrapper(object):
 		#Parse command line arguments and return dict
 		self._args = self._parser.parse_args()
 		logger.initLogger(self._args)
+		
+		# expand the environment variables only at the batch node
+		if self._args.batch:
+			self._args.envvar_expansion = False
 
 		# write repository revisions to the config
 		if not self._args.disable_repo_versions:
