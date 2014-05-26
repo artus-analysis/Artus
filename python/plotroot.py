@@ -24,8 +24,31 @@ class PlotRoot(plotbase.PlotBase):
 		self.plot_pad = None
    		self.ratio_pad = None
 	
+	def modify_argument_parser(self, parser):
+		plotbase.PlotBase.modify_argument_parser(self, parser)
+		
+		self.formatting_options.add_argument("--x-grid", action='store_true', default=False,
+		                                     help="Place an x-axes grid on the plot.")
+		self.formatting_options.add_argument("--y-grid", action='store_true', default=False,
+		                                     help="Place an y-axes grid on the plot.")
+		self.formatting_options.add_argument("--z-grid", action='store_true', default=False,
+		                                     help="Place an z-axes grid on the plot.")
+		
 	def prepare_args(self, plotData):
+		
 		plotbase.PlotBase.prepare_args(self, plotData)
+		
+		# defaults for colors
+		for index, color in enumerate(plotData.plotdict["colors"]):
+			if color == None:
+				plotData.plotdict["colors"][index] = index + 1
+			else:
+				plotData.plotdict["colors"][index] = getattr(ROOT, color) if color.startswith("k") else eval(color)
+		
+		# defaults for markers
+		for index, marker in enumerate(plotData.plotdict["markers"]):
+			if marker == None:
+				plotData.plotdict["markers"][index] = "E" if index == 0 else "HIST"
 	
 	def run(self, plotData):
 		plotbase.PlotBase.run(self, plotData)
@@ -53,7 +76,14 @@ class PlotRoot(plotbase.PlotBase):
 			
 
 	def prepare_histograms(self, plotData):
-		pass
+		for root_histogram, color in zip(plotData.plotdict["root_histos"].values(),
+		                                 plotData.plotdict["colors"]):
+			root_histogram.SetLineColor(color)
+			root_histogram.SetFillColor(color)
+			root_histogram.SetFillStyle(1)
+			root_histogram.SetMarkerColor(color)
+		
+		plotbase.PlotBase.prepare_histograms(self, plotData)
 	
 	def make_plots(self, plotData):
 	
@@ -66,8 +96,11 @@ class PlotRoot(plotbase.PlotBase):
 		self.z_min = sys.float_info.max
 		self.z_max = -sys.float_info.max
 		
-		for index, root_histogram in enumerate(plotData.plotdict["root_histos"].values()):
-			option = "" if index == 0 else "same"
+		root_histograms_markers = zip(plotData.plotdict["root_histos"].values(), plotData.plotdict["markers"])
+		root_histograms_markers.sort(key=lambda root_histograms_marker: "e" in root_histograms_marker[1].lower())
+		for index, root_histogram_marker in enumerate(root_histograms_markers):
+			root_histogram, marker = root_histogram_marker
+			option = marker + ("" if index == 0 else " same")
 			root_histogram.Draw(option)
 			if index == 0: self.first_plotted_histogram = root_histogram
 			
@@ -94,7 +127,7 @@ class PlotRoot(plotbase.PlotBase):
 			self.ratio_y_max = -sys.float_info.max
 		
 			for index, root_histogram in enumerate(plotData.plotdict["root_ratio_histos"]):
-				option = "" if index == 0 else "same"
+				option = "e" if index == 0 else "e same"
 				root_histogram.Draw(option)
 				if index == 0: self.first_plotted_ratio_histogram = root_histogram
 			
@@ -111,8 +144,7 @@ class PlotRoot(plotbase.PlotBase):
 		self.first_plotted_histogram.GetZaxis().SetTitle(plotData.plotdict["z_label"])
 		if plotData.plotdict["ratio"]:
 			self.first_plotted_ratio_histogram.GetXaxis().SetTitle(plotData.plotdict["x_label"])
-			self.first_plotted_ratio_histogram.GetYaxis().SetTitle(plotData.plotdict["y_label"])
-			self.first_plotted_ratio_histogram.GetZaxis().SetTitle(plotData.plotdict["z_label"])
+			self.first_plotted_ratio_histogram.GetYaxis().SetTitle(plotData.plotdict["y_ratio_label"])
 	
 		# logaritmic axis
 		if plotData.plotdict["x_log"]: self.plot_pad.SetLogx()

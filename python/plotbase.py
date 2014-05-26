@@ -68,6 +68,31 @@ class PlotBase(processor.Processor):
 		self.axis_options.add_argument("--z-ticks", type=float, nargs="+",
 		                               help="Custom ticks for the Z-axis")
 
+		#plot formatting
+		self.formatting_options = parser.add_argument_group("Formatting options")
+		self.formatting_options.add_argument("-C", "--colors", type=str, nargs="+",
+		                                     help="Colors for the plots.")
+		self.formatting_options.add_argument("--ratio-colors", type=str, nargs="+",
+		                                     help="Colors for the ratio subplots.")
+		self.formatting_options.add_argument("-L", "--labels", type=str, nargs="+",
+		                                     help="Labels for the plots.")
+		self.formatting_options.add_argument("--ratio-labels", type=str, nargs="+",
+		                                     help="Labels for the ratio subplots.")
+		self.formatting_options.add_argument("-m", "--markers", type=str, nargs="+",
+		                                     help="Style for the plots.")
+		self.formatting_options.add_argument("--ratio-markers", type=str, nargs="+",
+		                                     help="Style for the ratio subplots.")
+		self.formatting_options.add_argument("--errorbars", type=bool, nargs="+",
+		                                     help="Errorbars for the plots. [Default: True for first plot, False otherwise]")
+		self.formatting_options.add_argument("--ratio-errorbars", type=bool, nargs="+", default=[True],
+		                                     help="Errorbars for the ratio subplots. [Default: True]")
+		self.formatting_options.add_argument("-g", "--legloc", type=str, nargs="?",
+		                                     help="Location of the legend.")
+		self.formatting_options.add_argument("-G", "--grid", action="store_true", default=False,
+		                                     help="Place an axes grid on the plot.")
+		self.formatting_options.add_argument("--ratio-grid", action="store_true", default=False,
+		                                     help="Place an axes grid on the ratio subplot.")
+
 		# plot labelling
 		self.labelling_options = parser.add_argument_group("Labelling options")
 		self.labelling_options.add_argument("-t", "--title", type=str,
@@ -82,6 +107,8 @@ class PlotBase(processor.Processor):
 		                                    help="Show the date in the top left corner. \"iso\" is YYYY-MM-DD, \"today\" is DD Mon YYYY and \"now\" is DD Mon YYYY HH:MM.")
 		self.labelling_options.add_argument("-E", "--event-number-label", action="store_true", default=False,
 		                                    help="Add event number label")
+		self.formatting_options.add_argument("--text", type=str,
+		                                     help="Place a text at a certain location. Syntax is --text=\"abc\" or --text=\"abc,0.5,0.9\"")
 		
 		# output settings
 		self.output_options = parser.add_argument_group("Output options")
@@ -109,7 +136,7 @@ class PlotBase(processor.Processor):
 		if problems_with_ratio_nicks:
 			log.warning("Continue without ratio subplot!")
 			plotData.plotdict["ratio"] = False
-		self.prepare_list_args(plotData, ["ratio_num", "ratio_denom"])
+		self.prepare_list_args(plotData, ["ratio_num", "ratio_denom", "ratio_colors", "ratio_labels", "ratio_markers", "ratio_errorbars"])
 		
 		# construct labels from x/y/z expressions if not specified by user
 		for labelKey, expressionKey in zip(["x_label", "y_label", "z_label"],
@@ -117,6 +144,13 @@ class PlotBase(processor.Processor):
 			if plotData.plotdict[labelKey] == None:
 				plotData.plotdict[labelKey] = reduce(lambda a, b: "%s, %s" % (str(a), str(b)), set(plotData.plotdict[expressionKey]))
 			if plotData.plotdict[labelKey] == None: plotData.plotdict[labelKey] = ""
+		
+		# formatting options
+		self.prepare_list_args(plotData, ["colors", "labels", "markers", "errorbars"], len(plotData.plotdict["root_histos"]))
+		
+		for index, errorbar in enumerate(plotData.plotdict["errorbars"]):
+			if errorbar == None:
+				plotData.plotdict["errorbars"][index] = True if index == 0 else False
 		
 		# create output directory if not exisiting
 		if not os.path.exists(plotData.plotdict["output_dir"]):
@@ -191,4 +225,14 @@ class PlotBase(processor.Processor):
 	@abc.abstractmethod
 	def save_canvas(self, plotData):
 		pass
+	
+	def set_default_ratio_colors(self, plotData):
+		
+		
+		# defaults for colors
+		for index, color_ratio_color in enumerate(zip(plotData.plotdict["colors"],
+		                                              plotData.plotdict["ratio_colors"])):
+			color, ratio_color = color_ratio_color
+			if ratio_color == None:
+				plotData.plotdict["colors"][index] = index + 1
 
