@@ -26,26 +26,20 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 	
 	typedef typename std::function<float(event_type const&, product_type const&)> float_extractor_lambda;
-
-	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE
-	{
-		return "lambda_ntuple";
-	}
-
 	LambdaNtupleConsumerBase() : NtupleConsumerBase<TTypes>() {
 	}
 
 	virtual ~LambdaNtupleConsumerBase() {
 	}
 
-	virtual void Init(Pipeline<TTypes> * pset) ARTUS_CPP11_OVERRIDE {
-		NtupleConsumerBase<TTypes>::Init(pset);
+	virtual void Init(Pipeline<TTypes> * pipeline) ARTUS_CPP11_OVERRIDE {
+		NtupleConsumerBase<TTypes>::Init(pipeline);
 		
 		//float_extractor_lambda defaultExtractor = [](event_type const&, product_type const&) { return DefaultValues::UndefinedFloat; };
 		
 		// loop over all quantities containing "weight" (case-insensitive)
 		// and try to find them in the weights map to write them out
-		for (auto const & quantity : pset->GetSettings().GetQuantities())
+		for (auto const & quantity : pipeline->GetSettings().GetQuantities())
 		{
 			if (boost::algorithm::icontains(quantity, "weight"))
 			{

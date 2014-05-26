@@ -15,13 +15,13 @@ def flattenList(listOfLists):
 	"""
 	return [item for subList in listOfLists for item in subList]
 
-def matchingItem(stringList, regexForItem):
+def matchingItem(regexItems, string):
 	"""
 	find/return item in string list that matches the given regex
 	returns None in case no matching item is found
 	"""
-	for item in stringList:
-		if re.search(regexForItem, item) != None:
+	for item in regexItems:
+		if re.search(item, string) != None:
 			return item
 	return None
 

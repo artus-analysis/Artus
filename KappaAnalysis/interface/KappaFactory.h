@@ -21,6 +21,8 @@
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsCountFilters.h"
 
 // consumer
+#include "Artus/KappaAnalysis/interface/Consumers/KappaCutFlowHistogramConsumer.h"
+#include "Artus/KappaAnalysis/interface/Consumers/KappaLambdaNtupleConsumer.h"
 
 
 template<class TTypes>
@@ -87,7 +89,12 @@ public:
 	virtual ConsumerBase<TTypes> * createConsumer ( std::string const& id )
 		ARTUS_CPP11_OVERRIDE
 	{
-		return FactoryBase<TTypes>::createConsumer( id );
+		if(id == KappaCutFlowHistogramConsumer<TTypes>().GetConsumerId())
+			return new KappaCutFlowHistogramConsumer<TTypes>();
+		else if(id == KappaLambdaNtupleConsumer<TTypes>().GetConsumerId())
+			return new KappaLambdaNtupleConsumer<TTypes>();
+		else
+			return FactoryBase<TTypes>::createConsumer( id );
 	}
 
 };

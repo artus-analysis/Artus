@@ -265,45 +265,25 @@ class LevelDependentFormatter(logging.Formatter):
 		return logging.Formatter.format(self, record)
 
 
-# Pipe class that can be used to redirect output of subprocess to a logger
-class LogPipe(threading.Thread):
-
-	# setup the object with a logger and a loglevel and start the thread
-	def __init__(self, level=100):
-		threading.Thread.__init__(self)
-		self.daemon = False
-		self.level = level
-		self.fdRead, self.fdWrite = os.pipe()
-		self.pipeReader = os.fdopen(self.fdRead)
-		self.start()
-
-	# return the write file descriptor of the pipe
-	def fileno(self):
-		return self.fdWrite
-
-	# run the thread, logging everything
-	def run(self):
-		for line in iter(self.pipeReader.readline, ''):
-			log.log(self.level, line.strip('\n'))
-		self.pipeReader.close()
-
-	# close the write end of the pipe.
-	def close(self):
-		os.close(self.fdWrite)
-
-
 # wrapper for subprocess.call with connects with the logger and outputs everything
 def subprocessCall(args, **kwargs):
-	logPipe = None
-	if len(logging.root.handlers) >= 1:
-		logPipe = LogPipe(100)
-		kwargs["stdout"] = logPipe
-		kwargs["stderr"] = logPipe
 	
-	exitCode = subprocess.call(args, **kwargs)
-
-	if logPipe:
-		logPipe.close()
+	if len(logging.root.handlers) == 1 and isinstance(logging.root.handlers[0], logging.StreamHandler):
+		kwargs["universal_newlines"] = True
+		exitCode = subprocess.call(args, **kwargs)
+	
+	else:
+		kwargs["stdout"] = subprocess.PIPE
+		kwargs["stderr"] = subprocess.STDOUT
+		kwargs["universal_newlines"] = True
+		
+		process = subprocess.Popen(args, **kwargs)
+		
+		for line in iter(process.stdout.readline, ""):
+			log.log(100, line.strip("\n"))
+		
+		process.communicate()
+		exitCode = process.returncode
 
 	return exitCode
 
