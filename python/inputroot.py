@@ -34,6 +34,8 @@ class InputRoot(inputbase.InputBase):
 	
 	def run(self, plotData):
 		inputbase.InputBase.run(self, plotData)
+		
+		binning = None
 		for root_files, folders, x_expression, y_expression, z_expression, weight, nick in zip(*
 			[plotData.plotdict[key] for key in ["files", "folders", "x_expressions", "y_expressions", "z_expressions", "weights", "nicks"]]):
 			
@@ -46,8 +48,8 @@ class InputRoot(inputbase.InputBase):
 				                                  y_expression + ":" if y_expression else "",
 				                                  x_expression)
 				
-				root_histogram = roottools.histogram_from_tree(root_files, folders, variable_expression,
-				                                               binning=None, weight_selection=weight, option="", name=None)
+				root_histogram, binning = roottools.histogram_from_tree(root_files, folders, variable_expression,
+				                                                        binning=binning, weight_selection=weight, option="", name=None)
 				
 			elif root_object_type == ROOT.TH1:
 				root_objects = [os.path.join(folder, x_expression) for folder in folders]

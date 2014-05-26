@@ -134,7 +134,21 @@ def histogram_from_tree(root_file_names, path_to_trees, variable_expression,
 	root_histogram = ROOT.gDirectory.Get(name)
 	root_histogram.SetDirectory(0)
 	
-	return root_histogram
+	# prepare binning return value
+	if binning == "()":
+		binning = ("%d" % root_histogram.GetNbinsX())
+		binning += (",%f" % root_histogram.GetXaxis().GetXmin())
+		binning += (",%f" % root_histogram.GetXaxis().GetXmax())
+		if root_histogram.GetDimension() > 1:
+			binning += (",%d" % root_histogram.GetNbinsY())
+			binning += (",%f" % root_histogram.GetYaxis().GetXmin())
+			binning += (",%f" % root_histogram.GetYaxis().GetXmax())
+			if root_histogram.GetDimension() > 2:
+				binning += (",%d" % root_histogram.GetNbinsZ())
+				binning += (",%f" % root_histogram.GetZaxis().GetXmin())
+				binning += (",%f" % root_histogram.GetZaxis().GetXmax())
+	
+	return root_histogram, binning
 
 def rebin_root_histogram(root_histogram, rebinningX=1, rebinningY=1, rebinningZ=1, name=None):
 	"""
