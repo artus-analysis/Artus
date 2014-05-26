@@ -39,19 +39,18 @@ class Processor(object):
 		"""
 		log.debug("Running processor " + self.__class__.__name__ + "...")
 	
-	def prepare_list_args(self, plotData, keys_of_list_args):
+	def prepare_list_args(self, plotData, keys_of_list_args, n_items=None):
 		"""
 		Prepare list-type entries in plotData. All values for given keys are casted into lists
 		and then the lists are filled up by repeating existing items until all lists have the same size.
 		"""
-		
 		# prepare lists
 		for key in keys_of_list_args:
 			if not isinstance(plotData.plotdict[key], collections.Iterable) or isinstance(plotData.plotdict[key], basestring):
 				plotData.plotdict[key] = [plotData.plotdict[key]]
 		
 		# complete lists that are too short
-		max_n_inputs = max([len(plotData.plotdict[key]) for key in keys_of_list_args])
+		max_n_inputs = n_items if n_items != None else max([len(plotData.plotdict[key]) for key in keys_of_list_args])
 		for key, plot_list in [(key, plotData.plotdict[key]) for key in keys_of_list_args]:
 			len_plot_list = len(plot_list)
 			if len_plot_list < max_n_inputs:
