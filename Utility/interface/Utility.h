@@ -1,8 +1,10 @@
 
 #pragma once
 
-#include <string>
+#include <map>
 #include <type_traits>
+#include <string>
+#include <vector>
 
 #include "Artus/Core/interface/Cpp11Support.h"
 
@@ -26,5 +28,8 @@ namespace Utility {
 	}
 
 	std::string ReadStringFromFile(std::string fileName);
+
+	std::map<std::string, std::vector<std::string> > ParseVectorToMap(std::vector<std::string> const& vectorToParse,
+	                                                                  std::string const& delimiters=":");
 }
 
