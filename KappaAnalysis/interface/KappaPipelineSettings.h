@@ -34,7 +34,7 @@ public:
 	VarCache<std::vector<std::string>> jsonFiles;
 	stringvector GetJsonFiles() const
 	{
-		RETURN_CACHED(jsonFiles, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + "JsonFiles"))
+		RETURN_CACHED(jsonFiles, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".JsonFiles"))
 	}
 	IMPL_SETTING_DEFAULT(int, PassRunLow, 1);
 	IMPL_SETTING_DEFAULT(int, PassRunHigh, 0);
@@ -60,7 +60,7 @@ public:
 	VarCache<std::vector<std::string>> tauDiscriminators;
 	stringvector GetTauDiscriminators() const
 	{
-		RETURN_CACHED(tauDiscriminators, PropertyTreeSupport::GetAsStringList(GetPropTree(), "TauDiscriminators"))
+		RETURN_CACHED(tauDiscriminators, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".TauDiscriminators"))
 	}
 
 	IMPL_SETTING(std::string, JetID);
@@ -73,43 +73,43 @@ public:
 	VarCache<std::vector<std::string>> electronLowerPtCuts;
 	stringvector GetElectronLowerPtCuts() const
 	{
-		RETURN_CACHED(electronLowerPtCuts, PropertyTreeSupport::GetAsStringList(GetPropTree(), "ElectronLowerPtCuts"))
+		RETURN_CACHED(electronLowerPtCuts, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".ElectronLowerPtCuts"))
 	}
 	VarCache<std::vector<std::string>> muonLowerPtCuts;
 	stringvector GetMuonLowerPtCuts() const
 	{
-		RETURN_CACHED(muonLowerPtCuts, PropertyTreeSupport::GetAsStringList(GetPropTree(), "MuonLowerPtCuts"))
+		RETURN_CACHED(muonLowerPtCuts, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".MuonLowerPtCuts"))
 	}
 	VarCache<std::vector<std::string>> tauLowerPtCuts;
 	stringvector GetTauLowerPtCuts() const
 	{
-		RETURN_CACHED(tauLowerPtCuts, PropertyTreeSupport::GetAsStringList(GetPropTree(), "TauLowerPtCuts"))
+		RETURN_CACHED(tauLowerPtCuts, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".TauLowerPtCuts"))
 	}
 	VarCache<std::vector<std::string>> jetLowerPtCuts;
 	stringvector GetJetLowerPtCuts() const
 	{
-		RETURN_CACHED(jetLowerPtCuts, PropertyTreeSupport::GetAsStringList(GetPropTree(), "JetLowerPtCuts"))
+		RETURN_CACHED(jetLowerPtCuts, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".JetLowerPtCuts"))
 	}
 	
 	VarCache<std::vector<std::string>> electronUpperAbsEtaCuts;
 	stringvector GetElectronUpperAbsEtaCuts() const
 	{
-		RETURN_CACHED(electronUpperAbsEtaCuts, PropertyTreeSupport::GetAsStringList(GetPropTree(), "ElectronUpperAbsEtaCuts"))
+		RETURN_CACHED(electronUpperAbsEtaCuts, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".ElectronUpperAbsEtaCuts"))
 	}
 	VarCache<std::vector<std::string>> muonUpperAbsEtaCuts;
 	stringvector GetMuonUpperAbsEtaCuts() const
 	{
-		RETURN_CACHED(muonUpperAbsEtaCuts, PropertyTreeSupport::GetAsStringList(GetPropTree(), "MuonUpperAbsEtaCuts"))
+		RETURN_CACHED(muonUpperAbsEtaCuts, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".MuonUpperAbsEtaCuts"))
 	}
 	VarCache<std::vector<std::string>> tauUpperAbsEtaCuts;
 	stringvector GetTauUpperAbsEtaCuts() const
 	{
-		RETURN_CACHED(tauUpperAbsEtaCuts, PropertyTreeSupport::GetAsStringList(GetPropTree(), "TauUpperAbsEtaCuts"))
+		RETURN_CACHED(tauUpperAbsEtaCuts, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".TauUpperAbsEtaCuts"))
 	}
 	VarCache<std::vector<std::string>> jetUpperAbsEtaCuts;
 	stringvector GetJetUpperAbsEtaCuts() const
 	{
-		RETURN_CACHED(jetUpperAbsEtaCuts, PropertyTreeSupport::GetAsStringList(GetPropTree(), "JetUpperAbsEtaCuts"))
+		RETURN_CACHED(jetUpperAbsEtaCuts, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".JetUpperAbsEtaCuts"))
 	}
 
 	IMPL_SETTING(std::string, PileupWeightFile);
