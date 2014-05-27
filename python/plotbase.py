@@ -7,7 +7,6 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
-import abc
 import hashlib
 import os
 import re
@@ -198,41 +197,33 @@ class PlotBase(processor.Processor):
 				ratio_histogram.Divide(denominator_histogram)
 				plotData.plotdict.setdefault("root_ratio_histos", []).append(ratio_histogram)
 	
-	@abc.abstractmethod
 	def create_canvas(self, plotData):
 		pass
 	
-	@abc.abstractmethod
 	def prepare_histograms(self, plotData):
 		pass
 	
-	@abc.abstractmethod
 	def make_plots(self, plotData):
 		pass
 	
-	@abc.abstractmethod
 	def modify_axes(self, plotData):
 		pass
 	
-	@abc.abstractmethod
 	def add_labels(self, plotData):
 		pass
 	
-	@abc.abstractmethod
 	def add_texts(self, plotData):
 		pass
 	
-	@abc.abstractmethod
 	def save_canvas(self, plotData):
 		pass
 	
 	def set_default_ratio_colors(self, plotData):
-		
 		
 		# defaults for colors
 		for index, color_ratio_color in enumerate(zip(plotData.plotdict["colors"],
 		                                              plotData.plotdict["ratio_colors"])):
 			color, ratio_color = color_ratio_color
 			if ratio_color == None:
-				plotData.plotdict["colors"][index] = index + 1
+				plotData.plotdict["colors"][index] = index + 1 # TODO
 

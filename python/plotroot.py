@@ -33,9 +33,10 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Place an y-axes grid on the plot.")
 		self.formatting_options.add_argument("--z-grid", action='store_true', default=False,
 		                                     help="Place an z-axes grid on the plot.")
+		self.formatting_options.add_argument("-g", "--legloc", type=float, nargs=2, default=[0.6, 0.6],
+		                                     help="Location (x/y coordinates) of the legend. [Default: %(default)s]")
 		
 	def prepare_args(self, plotData):
-		
 		plotbase.PlotBase.prepare_args(self, plotData)
 		
 		# defaults for colors
@@ -44,6 +45,7 @@ class PlotRoot(plotbase.PlotBase):
 				plotData.plotdict["colors"][index] = index + 1
 			else:
 				plotData.plotdict["colors"][index] = getattr(ROOT, color) if color.startswith("k") else eval(color)
+		self.set_default_ratio_colors(plotData)
 		
 		# defaults for markers
 		for index, marker in enumerate(plotData.plotdict["markers"]):
@@ -54,38 +56,42 @@ class PlotRoot(plotbase.PlotBase):
 		plotbase.PlotBase.run(self, plotData)
 
 	def create_canvas(self, plotData):
+		plotbase.PlotBase.create_canvas(self, plotData)
+		
 		if self.canvas == None:
 			self.canvas = ROOT.TCanvas()
 		
 		if plotData.plotdict["ratio"]:
-			plot_ratio_slider_y = 0.35
+			self.plot_ratio_slider_y = 0.35
 			self.canvas.cd()
 			if self.plot_pad == None:
-				self.plot_pad = ROOT.TPad("plot_pad", "", 0.0, plot_ratio_slider_y, 1.0, 1.0)
+				self.plot_pad = ROOT.TPad("plot_pad", "", 0.0, self.plot_ratio_slider_y, 1.0, 1.0)
 				self.plot_pad.SetNumber(1)
 				self.plot_pad.Draw()
 			if self.ratio_pad == None:
-		   		self.ratio_pad = ROOT.TPad("ratio_pad", "", 0.0, 0.0, 1.0, plot_ratio_slider_y)
+		   		self.ratio_pad = ROOT.TPad("ratio_pad", "", 0.0, 0.0, 1.0, self.plot_ratio_slider_y)
 				self.ratio_pad.SetNumber(2)
 				self.ratio_pad.Draw()
 			
-			self.plot_pad.SetBottomMargin(0.02);
+			self.plot_pad.SetBottomMargin(0.02)
+			self.ratio_pad.SetBottomMargin(0.35);
 		
 		else:
 			self.plot_pad = self.canvas
 			
 
 	def prepare_histograms(self, plotData):
+		plotbase.PlotBase.prepare_histograms(self, plotData)
+		
 		for root_histogram, color in zip(plotData.plotdict["root_histos"].values(),
 		                                 plotData.plotdict["colors"]):
 			root_histogram.SetLineColor(color)
 			root_histogram.SetFillColor(color)
 			root_histogram.SetFillStyle(1)
 			root_histogram.SetMarkerColor(color)
-		
-		plotbase.PlotBase.prepare_histograms(self, plotData)
 	
 	def make_plots(self, plotData):
+		plotbase.PlotBase.make_plots(self, plotData)
 	
 		self.plot_pad.cd()
 		
@@ -96,10 +102,11 @@ class PlotRoot(plotbase.PlotBase):
 		self.z_min = sys.float_info.max
 		self.z_max = -sys.float_info.max
 		
-		root_histograms_markers = zip(plotData.plotdict["root_histos"].values(), plotData.plotdict["markers"])
-		root_histograms_markers.sort(key=lambda root_histograms_marker: "e" in root_histograms_marker[1].lower())
-		for index, root_histogram_marker in enumerate(root_histograms_markers):
-			root_histogram, marker = root_histogram_marker
+		self.plot_sequence_indices = range(len(plotData.plotdict["root_histos"]))
+		self.plot_sequence_indices.sort(key=lambda index: "e" in plotData.plotdict["markers"][index].lower())
+		for index, plot_index in enumerate(self.plot_sequence_indices):
+			root_histogram = plotData.plotdict["root_histos"].values()[plot_index]
+			marker = plotData.plotdict["markers"][plot_index]
 			option = marker + ("" if index == 0 else " same")
 			root_histogram.Draw(option)
 			if index == 0: self.first_plotted_histogram = root_histogram
@@ -137,6 +144,7 @@ class PlotRoot(plotbase.PlotBase):
 			
 	
 	def modify_axes(self, plotData):
+		plotbase.PlotBase.modify_axes(self, plotData)
 	
 		# axis labels
 		self.first_plotted_histogram.GetXaxis().SetTitle(plotData.plotdict["x_label"])
@@ -187,16 +195,43 @@ class PlotRoot(plotbase.PlotBase):
 			                                                     plotData.plotdict["z_lims"][1])
 		
 		if plotData.plotdict["ratio"]:
-			   self.first_plotted_histogram.GetXaxis().SetLabelSize(0)
-			   self.first_plotted_histogram.GetXaxis().SetTitleSize(0)
+			self.first_plotted_histogram.GetXaxis().SetLabelSize(0)
+			self.first_plotted_histogram.GetXaxis().SetTitleSize(0)
+			self.first_plotted_histogram.GetYaxis().SetLabelSize(self.first_plotted_histogram.GetYaxis().GetLabelSize() / (1.0 - self.plot_ratio_slider_y))
+			self.first_plotted_histogram.GetYaxis().SetTitleSize(self.first_plotted_histogram.GetYaxis().GetTitleSize() / (1.0 - self.plot_ratio_slider_y))
+			
+			self.first_plotted_histogram.GetYaxis().SetTitleOffset(self.first_plotted_histogram.GetYaxis().GetTitleOffset() * (1.0 - self.plot_ratio_slider_y))
+			
+			self.first_plotted_ratio_histogram.GetXaxis().SetLabelSize(self.first_plotted_ratio_histogram.GetXaxis().GetLabelSize() / self.plot_ratio_slider_y)
+			self.first_plotted_ratio_histogram.GetXaxis().SetTitleSize(self.first_plotted_ratio_histogram.GetXaxis().GetTitleSize() / self.plot_ratio_slider_y)
+			self.first_plotted_ratio_histogram.GetYaxis().SetLabelSize(self.first_plotted_ratio_histogram.GetYaxis().GetLabelSize() / self.plot_ratio_slider_y)
+			self.first_plotted_ratio_histogram.GetYaxis().SetTitleSize(self.first_plotted_ratio_histogram.GetYaxis().GetTitleSize() / self.plot_ratio_slider_y)
+			
+			self.first_plotted_ratio_histogram.GetXaxis().SetTitleOffset(2.0 * self.first_plotted_ratio_histogram.GetXaxis().GetTitleOffset() * self.plot_ratio_slider_y)
+			self.first_plotted_ratio_histogram.GetYaxis().SetTitleOffset(self.first_plotted_ratio_histogram.GetYaxis().GetTitleOffset() * self.plot_ratio_slider_y)
+			
+			self.first_plotted_ratio_histogram.GetYaxis().SetNdivisions(5, 0, 0)
+			
 		
 	def add_labels(self, plotData):
-		pass
+		plotbase.PlotBase.add_labels(self, plotData)
+		
+		self.plot_pad.cd()
+		self.legend = ROOT.TLegend(plotData.plotdict["legloc"][0], plotData.plotdict["legloc"][1], 0.9, 0.9);
+		for plot_index in self.plot_sequence_indices[::-1]:
+			root_histogram = plotData.plotdict["root_histos"].values()[plot_index]
+			marker = plotData.plotdict["markers"][plot_index]
+			label = plotData.plotdict["labels"][plot_index]
+			if label != None:
+				self.legend.AddEntry(root_histogram, label, "LP" if "e" in marker.lower() else "F");
+		self.legend.Draw()
 	
 	def add_texts(self, plotData):
-		pass
+		plotbase.PlotBase.add_texts(self, plotData)
 	
 	def save_canvas(self, plotData):
+		plotbase.PlotBase.save_canvas(self, plotData)
+		
 		for plot_format in plotData.plotdict["formats"]:
 			filename = os.path.join(plotData.plotdict["output_dir"],
 			                        plotData.plotdict["filename"]+"."+plot_format)

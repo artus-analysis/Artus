@@ -16,6 +16,11 @@ class PlotMpl(plotbase.PlotBase):
 	
 	def prepare_args(self, plotData):
 		plotbase.PlotBase.prepare_args(self, plotData)
+		
+		# defaults for colors
+		for index, color in enumerate(plotData.plotdict["colors"]):
+			pass # TODO
+		self.set_default_ratio_colors(plotData)
 	
 	def run(self, plotData):
 		plotbase.PlotBase.run(self, plotData)
