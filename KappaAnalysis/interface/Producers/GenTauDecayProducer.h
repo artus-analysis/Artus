@@ -65,7 +65,7 @@ public:
 				product.m_genBoson.push_back( MotherDaughterBundle(&(*part)) );
 				MotherDaughterBundle & lastBosonRef = product.m_genBoson.back();
 				lastBosonRef.parent = &lastBosonRef;
-				//std::cout << lastBosonRef.parent->node->pdgId() << std::endl;
+				//std::cout << &(lastBosonRef) << std::endl;
 				lastBosonRef.setCharge();
 				lastBosonRef.setDetectable();
 				if (part->daughterIndices.size() == 0) lastBosonRef.finalState = true;
@@ -81,8 +81,8 @@ public:
 						// what's done in the following lines.
 						lastBosonRef.Daughters.push_back(MotherDaughterBundle( &(event.m_genParticles->at(indDaughter)) ));
 						MotherDaughterBundle & lastBosonDaughterRef = lastBosonRef.Daughters.back();
+						//std::cout << &(lastBosonDaughterRef) << std::endl;
 						lastBosonDaughterRef.parent = &lastBosonRef;
-						//std::cout << lastBosonDaughterRef.parent->node->pdgId() << std::endl;
 						lastBosonDaughterRef.setCharge();
 						lastBosonDaughterRef.setDetectable();
 						if ( (event.m_genParticles->at(indDaughter)).daughterIndices.size() != 0)
@@ -99,9 +99,9 @@ public:
 				}
 			}
 		}
-	//std::cout << "parent selbst: " << &(product.m_genBoson[0].Daughters[0]) << std::endl;
+	std::cout << "Tau1: " << &(product.m_genBoson[0].Daughters[0]) << std::endl;
 	//std::cout << "parent ueber Daughter: " << product.m_genBoson[0].Daughters[0].Daughters[0].parent << std::endl;
-	//std::cout << std::endl;
+	std::cout << std::endl;
 	}
 	void buildDecayTree(MotherDaughterBundle & lastProductParentRef, unsigned int lastEventParentIndex, event_type const& event) const
 	{

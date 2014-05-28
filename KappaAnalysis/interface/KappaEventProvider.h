@@ -51,7 +51,11 @@ public:
 		// MET info
 		if(! globalSettings.GetMet().empty())
 			this->m_event.m_met = this->template SecureFileInterfaceGet<KDataPFMET>(globalSettings.GetMet());
-	
+
+		//GenMET info
+		if(! globalSettings.GetGenMet().empty())
+			this->m_event.m_genMet = this->template SecureFileInterfaceGet<KDataPFMET>(globalSettings.GetMet());
+
 		// PF candidates info
 		if(! globalSettings.GetPFChargedHadronsPileUp().empty())
 			this->m_event.m_pfChargedHadronsPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(globalSettings.GetPFChargedHadronsPileUp());

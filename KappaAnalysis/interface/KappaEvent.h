@@ -37,7 +37,10 @@ public:
 
 	/// pointer to MET collection
 	KDataPFMET* m_met = 0;
-	
+
+	/// pointer to GenMET collection
+	KDataMET* m_genMet = 0;
+
 	/// pointers to PF candidates
 	KPFCandidates* m_pfChargedHadronsPileUp = 0;
 	KPFCandidates* m_pfChargedHadronsNoPileUp = 0;
