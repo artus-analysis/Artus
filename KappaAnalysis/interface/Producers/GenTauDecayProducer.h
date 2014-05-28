@@ -99,9 +99,9 @@ public:
 				}
 			}
 		}
-	std::cout << "Tau1: " << &(product.m_genBoson[0].Daughters[0]) << std::endl;
+	//std::cout << "Tau1: " << &(product.m_genBoson[0].Daughters[0]) << std::endl;
 	//std::cout << "parent ueber Daughter: " << product.m_genBoson[0].Daughters[0].Daughters[0].parent << std::endl;
-	std::cout << std::endl;
+	//std::cout << std::endl;
 	}
 	void buildDecayTree(MotherDaughterBundle & lastProductParentRef, unsigned int lastEventParentIndex, event_type const& event) const
 	{
