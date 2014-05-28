@@ -182,7 +182,7 @@ protected:
 				LOG(FATAL) << "Electron reconstruction of type " << Utility::ToUnderlyingValue(electronReco) << " not yet implemented!";
 			
 			// conversion veto per default
-			validElectron = validElectron && electron->hasConversionMatch;
+			validElectron = validElectron && !electron->hasConversionMatch;
 			
 			// check possible analysis-specific criteria
 			validElectron = validElectron && AdditionalCriteria(&(*electron), event, product);
