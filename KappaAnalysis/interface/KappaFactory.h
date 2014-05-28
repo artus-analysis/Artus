@@ -19,6 +19,8 @@
 #include "Artus/KappaAnalysis/interface/Filters/HltFilter.h"
 #include "Artus/KappaAnalysis/interface/Filters/ValidObjectsFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsCountFilters.h"
+#include "Artus/KappaAnalysis/interface/Filters/ObjectsLowerPtCutFilters.h"
+#include "Artus/KappaAnalysis/interface/Filters/ObjectsUpperAbsEtaCutFilters.h"
 
 // consumer
 #include "Artus/KappaAnalysis/interface/Consumers/KappaCutFlowHistogramConsumer.h"
@@ -82,6 +84,22 @@ public:
 			return new TausCountFilter<TTypes>();
 		else if(id == JetsCountFilter<TTypes>().GetFilterId())
 			return new JetsCountFilter<TTypes>();
+		else if(id == ElectronLowerPtCutsFilter<TTypes>().GetFilterId())
+			return new ElectronLowerPtCutsFilter<TTypes>();
+		else if(id == MuonLowerPtCutsFilter<TTypes>().GetFilterId())
+			return new MuonLowerPtCutsFilter<TTypes>();
+		else if(id == TauLowerPtCutsFilter<TTypes>().GetFilterId())
+			return new TauLowerPtCutsFilter<TTypes>();
+		else if(id == JetLowerPtCutsFilter<TTypes>().GetFilterId())
+			return new JetLowerPtCutsFilter<TTypes>();
+		else if(id == ElectronUpperAbsEtaCutsFilter<TTypes>().GetFilterId())
+			return new ElectronUpperAbsEtaCutsFilter<TTypes>();
+		else if(id == MuonUpperAbsEtaCutsFilter<TTypes>().GetFilterId())
+			return new MuonUpperAbsEtaCutsFilter<TTypes>();
+		else if(id == TauUpperAbsEtaCutsFilter<TTypes>().GetFilterId())
+			return new TauUpperAbsEtaCutsFilter<TTypes>();
+		else if(id == JetUpperAbsEtaCutsFilter<TTypes>().GetFilterId())
+			return new JetUpperAbsEtaCutsFilter<TTypes>();
 		else
 			return FactoryBase<TTypes>::createFilter( id );
 	}

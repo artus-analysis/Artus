@@ -1,13 +1,11 @@
 
 #pragma once
 
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/trim.hpp>
-
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "Artus/Core/interface/ProducerBase.h"
 #include "Artus/Utility/interface/SafeMap.h"
+#include "Artus/Utility/interface/Utility.h"
 
 /**
    \brief GlobalProducer, for valid taus.
@@ -36,7 +34,7 @@ public:
 		ProducerBase<TTypes>::InitGlobal(globalSettings);
 	
 		// parse additional config tags
-		discriminators = ValidTausProducer::ParseTauDiscriminators(globalSettings.GetTauDiscriminators());
+		discriminators = Utility::ParseVectorToMap(globalSettings.GetTauDiscriminators());
 	}
 	
 	virtual void InitLocal(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
@@ -44,7 +42,7 @@ public:
 		ProducerBase<TTypes>::InitLocal(settings);
 	
 		// parse additional config tags
-		discriminators = ValidTausProducer::ParseTauDiscriminators(settings.GetTauDiscriminators());
+		discriminators = Utility::ParseVectorToMap(settings.GetTauDiscriminators());
 	}
 
 	virtual void ProduceGlobal(event_type const& event,
@@ -61,33 +59,6 @@ public:
 		Produce(event, product);
 	}
 
-	static std::map<int, std::vector<std::string> > ParseTauDiscriminators(std::vector<std::string> discriminatorsToParse)
-	{
-		std::vector<std::string> defaultDiscriminators;
-		std::map<int, std::vector<std::string> > parsedDiscriminators;
-	
-		for (std::vector<std::string>::iterator discriminator = discriminatorsToParse.begin();
-			 discriminator != discriminatorsToParse.end(); ++discriminator)
-		{
-			std::vector<std::string> splitted;
-			boost::algorithm::split(splitted, *discriminator, boost::algorithm::is_any_of(":"));
-			transform(splitted.begin(), splitted.end(), splitted.begin(),
-					  [](std::string s) { return boost::algorithm::trim_copy(s); });
-		
-			int index = -1;
-			if (splitted.size() > 1) {
-				index = std::stoi(splitted[0]);
-			}
-		
-			if (parsedDiscriminators.count(index) == 0) {
-				parsedDiscriminators[index] = std::vector<std::string>();
-			}
-			parsedDiscriminators[index].push_back(splitted[1]);
-		}
-	
-		return parsedDiscriminators;
-	}
-
 
 protected:
 
@@ -100,9 +71,10 @@ protected:
 			bool validTau = true;
 	
 			// get pt-dependent discriminators
-			int index = product.m_validTaus.size();
+			std::string index = std::to_string(product.m_validTaus.size());
+			std::string defaultIndex("default");
 			std::vector<std::string> discriminatorNames = SafeMap::GetWithDefault(discriminators, index,
-					                                      SafeMap::GetWithDefault(discriminators, -1, std::vector<std::string>()));
+					                                      SafeMap::GetWithDefault(discriminators, defaultIndex, std::vector<std::string>()));
 	
 			// check discriminators
 			for (std::vector<std::string>::iterator discriminatorName = discriminatorNames.begin();
@@ -130,6 +102,6 @@ protected:
 
 
 private:
-	std::map<int, std::vector<std::string> > discriminators;
+	std::map<std::string, std::vector<std::string> > discriminators;
 };
 

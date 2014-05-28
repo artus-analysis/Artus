@@ -268,7 +268,7 @@ class LevelDependentFormatter(logging.Formatter):
 # wrapper for subprocess.call with connects with the logger and outputs everything
 def subprocessCall(args, **kwargs):
 	
-	if len(logging.root.handlers) == 1 and isinstance(logging.root.handlers[0], logging.StreamHandler):
+	if len(logging.root.handlers) == 1 and not isinstance(logging.root.handlers[0], logging.FileHandler):
 		kwargs["universal_newlines"] = True
 		exitCode = subprocess.call(args, **kwargs)
 	
