@@ -63,39 +63,72 @@ private:
 	void Produce(event_type const& event, product_type& product,
 	             std::vector<std::string> hltPaths, bool allowPrescaledTrigger) const
 	{
-		if (hltPaths.size() == 0)
+		if (hltPaths.size() == 0) {
 			LOG(FATAL) << "No Hlt Trigger path list (tag \"HltPaths\") configured!";
+		}
 
 		// set LumiMetadat, needs to be done here for the case running over multiple files
 		product.m_hltInfo->setLumiMetadata(event.m_lumiMetadata);
 
 		// search trigger with lowest prescale
-		std::string bestHltName;
-		int bestHltPrescale = std::numeric_limits<int>::max();
+		std::string lowestPrescaleHltName;
+		int lowestPrescale = std::numeric_limits<int>::max();
+		std::string firedTriggerName;
+		int prescaleFiredHlt = std::numeric_limits<int>::max();
 		bool unprescaledPathFound = false;
 		for (stringvector::const_iterator hltPath = hltPaths.begin(); hltPath != hltPaths.end(); ++hltPath)
 		{
 			std::string hltName = product.m_hltInfo->getHLTName(*hltPath);
-			if (! hltName.empty() && product.m_hltInfo->getPrescale(hltName) < bestHltPrescale)
+			if (! hltName.empty())
 			{
-				bestHltName = hltName;
-				bestHltPrescale = product.m_hltInfo->getPrescale(hltName);
+				// look for trigger with lowest prescale
+				int prescale = product.m_hltInfo->getPrescale(hltName);
+				if (prescale < lowestPrescale)
+				{
+					lowestPrescaleHltName = prescale;
+					lowestPrescaleHltName = hltName;
+				}
+				
 				if (! product.m_hltInfo->isPrescaled(hltName))
 				{
 					unprescaledPathFound = true;
+				}
+				
+				// look for fired trigger
+				if (event.m_eventMetadata->hltFired(hltName, event.m_lumiMetadata))
+				{
+					if (prescale < prescaleFiredHlt) {
+						firedTriggerName = hltName;
+						prescaleFiredHlt = prescale;
+					}
+				}
+				
+				// stop searching when unprescaled and fired trigger is found
+				if (unprescaledPathFound && prescaleFiredHlt == lowestPrescaleHltName)
+				{
 					break;
 				}
 			}
 		}
 		
-		product.selectedHltName = bestHltName;
-		product.m_weights["hltWeight"] = float(bestHltPrescale);
-		
-		if((!unprescaledPathFound) && (!allowPrescaledTrigger)) {
-			LOG(FATAL) << "No unprescaled trigger found for event " << event.m_eventMetadata->nRun
-			           << "! Lowest prescale: " << bestHltPrescale << " (\"" << bestHltName << "\").";
-
+		if (unprescaledPathFound || (allowPrescaledTrigger && (! lowestPrescaleHltName.empty())))
+		{
+			if (prescaleFiredHlt == lowestPrescaleHltName || allowPrescaledTrigger)
+			{
+				product.selectedHltName = firedTriggerName;
+				product.m_weights["hltPrescaleWeight"] = prescaleFiredHlt;
+			}
+			else
+			{
+				product.selectedHltName = lowestPrescaleHltName;
+				product.m_weights["hltPrescaleWeight"] = lowestPrescale;
+			}
 		}
+		else
+		{
+			product.m_weights["hltPrescaleWeight"] = 1.0;
+		}
+		
 	}
 
 };

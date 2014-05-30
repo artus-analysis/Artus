@@ -30,11 +30,13 @@ public:
 	virtual void InitGlobal(global_setting_type const& globalSettings)  ARTUS_CPP11_OVERRIDE
 	{
 		FilterBase<TTypes>::InitGlobal(globalSettings);
+		allowPrescaledTrigger = globalSettings.GetAllowPrescaledTrigger();
 	}
 	
 	virtual void InitLocal(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
 	{
 		FilterBase<TTypes>::InitLocal(settings);
+		allowPrescaledTrigger = settings.GetAllowPrescaledTrigger();
 	}
 
 	virtual bool DoesEventPassLocal(event_type const& event,
@@ -49,7 +51,8 @@ public:
 		return DoesEventPass(event, product);
 	}
 
-private:
+
+protected:
 
 	virtual bool DoesEventPass(event_type const& event, product_type const& product) const
 	{
@@ -58,13 +61,24 @@ private:
 			// no HLT found
 			return false;
 		}
-
-		// TODO: Report that we changed the HLT, if we did
-		// LOG(DEBUG) << "Using trigger " << curName << ".";
-		return event.m_eventMetadata->hltFired(product.selectedHltName, event.m_lumiMetadata);
+		else if (product.m_weights.at("hltPrescaleWeight") < 1.01)
+		{
+			return event.m_eventMetadata->hltFired(product.selectedHltName, event.m_lumiMetadata);;
+		}
+		else
+		{
+			if (! allowPrescaledTrigger)
+			{
+				LOG(FATAL) << "No unprescaled trigger found for event " << event.m_eventMetadata->nEvent
+					       << "! Lowest prescale: " << product.m_weights.at("hltPrescaleWeight") << " (\"" << product.selectedHltName << "\").";
+			}
+			return (allowPrescaledTrigger && event.m_eventMetadata->hltFired(product.selectedHltName, event.m_lumiMetadata));
+		}
 	}
 
 
+private:
+	bool allowPrescaledTrigger;
 
 };
 
