@@ -57,7 +57,9 @@ class ArtusWrapper(object):
 		elif self._args.batch:
 			basename = "artus_{0}.json".format(hashlib.md5(str(self._config)).hexdigest())
 			filepath = os.path.join(self.projectPath, basename)
-			if not os.path.exists(self.projectPath): os.makedirs(self.projectPath)
+			if not os.path.exists(self.projectPath):
+				os.makedirs(self.projectPath)
+				os.makedirs(os.path.join(self.projectPath, "output"))
 			self.saveConfig(filepath)
 		else:
 			self.saveConfig()
@@ -217,7 +219,9 @@ class ArtusWrapper(object):
 			for path in self._config["InputFiles"]:
 				tmpNick = self.extractNickname(path)
 				if tmpNick != nickname:
-					log.fatal("Input files do have different nicknames, which would cause errors. Aborting.")
+					if not self._args.batch:
+						log.fatal("Input files do have different nicknames, which would cause errors. Aborting.")
+						sys.exit(1)
 		return nickname
 
 	def extractNickname(self, string):
@@ -286,6 +290,8 @@ class ArtusWrapper(object):
 	                                  help="Open output file in ROOT TBrowser after completion.")
 		runningOptionsGroup.add_argument("-b", "--batch", default=False, action="store_true",
 	                                  help="Run with grid-control.")
+		runningOptionsGroup.add_argument("--no-log-to-se", default=False, action="store_true",
+	                                  help="Do not write logfile in batch mode directly to SE.")
 
 		if self._executable:
 			self._parser.add_argument("-x", "--executable", help="Artus executable. [Default: %s]" % str(self._executable), default=self._executable)
@@ -311,7 +317,10 @@ class ArtusWrapper(object):
 
 		epilogArguments  = r"epilog arguments = "
 		epilogArguments += r"--disable-repo-versions "
-		epilogArguments += r"--log-files log.txt "
+		if self._args.no_log_to_se:
+			epilogArguments += r"--log-files log.txt "
+		else:
+			epilogArguments += r"--log-files " + os.path.join(self.projectPath, "output/") + "${DATASETNICK}_job_${MY_JOBID}_log.txt "
 		epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
 		epilogArguments += "--nick $DATASETNICK "
 		epilogArguments += '-i $FILE_NAMES '
@@ -326,7 +335,8 @@ class ArtusWrapper(object):
 		                      jobs= "" if not self._args.fast else "jobs = " + str(self._args.fast),
 		                      inputfiles= "input files = \n\t" + self._configFilename,
 		                      dataset = "dataset = \n " + datasetString,
-		                      epilogarguments = epilogArguments
+		                      epilogarguments = epilogArguments,
+		                      seoutputfiles = "se output files = *.txt *.root" if self._args.no_log_to_se else "se output files = *.root"
 		                      )
 
 		self.replaceLines(gcConfigFileContent, replacingDict)
