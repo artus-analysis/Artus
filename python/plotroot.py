@@ -176,14 +176,14 @@ class PlotRoot(plotbase.PlotBase):
 					                                                       plotData.plotdict["x_lims"][1])
 		if plotData.plotdict["y_lims"] == None:
 			self.first_plotted_histogram.GetYaxis().SetRangeUser(self.y_min,
-			                                                     self.y_max)
+			                                                     self.y_max * 1.1)
 		else:
 			self.first_plotted_histogram.GetYaxis().SetRangeUser(plotData.plotdict["y_lims"][0],
 			                                                     plotData.plotdict["y_lims"][1])
 		if plotData.plotdict["ratio"]:
 			if plotData.plotdict["y_ratio_lims"] == None:
 				self.first_plotted_ratio_histogram.GetYaxis().SetRangeUser(self.ratio_y_min,
-					                                                       self.ratio_y_max)
+					                                                       self.ratio_y_max * 1.1)
 			else:
 				self.first_plotted_ratio_histogram.GetYaxis().SetRangeUser(plotData.plotdict["y_ratio_lims"][0],
 					                                                       plotData.plotdict["y_ratio_lims"][1])

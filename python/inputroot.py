@@ -35,7 +35,7 @@ class InputRoot(inputbase.InputBase):
 	def run(self, plotData):
 		inputbase.InputBase.run(self, plotData)
 		
-		binning = None
+		binning = "25"
 		for root_files, folders, x_expression, y_expression, z_expression, weight, nick in zip(*
 			[plotData.plotdict[key] for key in ["files", "folders", "x_expressions", "y_expressions", "z_expressions", "weights", "nicks"]]):
 			
