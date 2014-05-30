@@ -84,7 +84,7 @@ class ArtusWrapper(object):
 			if os.path.splitext(entry)[1] == ".root":
 				if entry.find("*") != -1:
 					filelist = glob.glob(os.path.expandvars(entry))
-					self._gridControlInputFiles.append(self.extractNickname(entry) + ":scan:" + entry)
+					self._gridControlInputFiles.append(self.extractNickname(filelist[0]) + ":scan:" + entry)
 					self.setInputFilenames(filelist, True)
 				else:
 					self._config["InputFiles"].append(entry)
