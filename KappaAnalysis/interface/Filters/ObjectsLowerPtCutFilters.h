@@ -1,14 +1,18 @@
 
 #pragma once
 
+#include <limits>
+
+#include <boost/lexical_cast.hpp>
+
 #include "Artus/Filter/interface/CutFilterBase.h"
 #include "Artus/Utility/interface/Utility.h"
 
 
-/** Electron Pt Filter
+/** Abstract Lepton Pt Filter
  */
-template<class TTypes>
-class ElectronLowerPtCutsFilter: public CutRangeFilterBase<TTypes> {
+template<class TTypes, class TLepton>
+class LeptonLowerPtCutsFilter: public CutRangeFilterBase<TTypes> {
 public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
@@ -17,46 +21,95 @@ public:
 	
 	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
 	
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "electron_lower_pt_cuts";
-	}
-	virtual void InitGlobal(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
-		Init(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()));
-	}
-	virtual void InitLocal(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		Init(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()));
+	LeptonLowerPtCutsFilter(std::vector<TLepton*> product_type::*validLeptons) :
+		CutRangeFilterBase<TTypes>(),
+		m_validLeptonsMember(validLeptons)
+	{
 	}
 
-private:
-	void Init(std::map<std::string, std::vector<std::string> > const& leptonLowerPtCuts) {
+
+protected:
+
+	void Init(std::vector<std::string> const& leptonLowerPtCutsVector) {
+		std::map<std::string, std::vector<std::string> > leptonLowerPtCuts = Utility::ParseVectorToMap(leptonLowerPtCutsVector);
+	
+		std::vector<int> defaultIndices = {0, 1, 2};
 		for (std::map<std::string, std::vector<std::string> >::const_iterator leptonLowerPtCut = leptonLowerPtCuts.begin();
 		     leptonLowerPtCut != leptonLowerPtCuts.end(); ++leptonLowerPtCut)
 		{
 			std::vector<int> indices;
+			std::vector<std::string> hltNames;
 			if (leptonLowerPtCut->first == "default") {
-				indices = {0, 1, 2};
-				LOG(WARNING) << "No lepton index for the Filter \"" << GetFilterId() << "\" specified. Check the possible 3 hardest leptons.";
+				indices = defaultIndices;
+				LOG(WARNING) << "No lepton index for the Filter \"" << this->GetFilterId() << "\" specified. Check the possible 3 hardest leptons.";
 			}
 			else {
-				indices.push_back(std::stoi(leptonLowerPtCut->first));
+				try {
+					indices.push_back(boost::lexical_cast<int>(leptonLowerPtCut->first));
+				}
+				catch (boost::bad_lexical_cast const& exception) {
+					hltNames.push_back(leptonLowerPtCut->first);
+				}
 			}
 			
 			for (std::vector<std::string>::const_iterator ptCut = leptonLowerPtCut->second.begin();
 			     ptCut != leptonLowerPtCut->second.end(); ++ptCut)
 			{
+				double ptCutValue = std::stod(*ptCut);
+				
 				for (std::vector<int>::iterator index = indices.begin(); index != indices.end(); ++index)
 				{
-					size_t tmpIndex(*index);
+					size_t tmpIndex(*index); // TODO
 					this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-							[tmpIndex](event_type const& event, product_type const& product) {
-								return ((product.m_validElectrons.size() > tmpIndex) ? product.m_validElectrons.at(tmpIndex)->p4.Pt() : -1.0);
+							[this, tmpIndex](event_type const& event, product_type const& product) -> double {
+								return (((product.*m_validLeptonsMember).size() > tmpIndex) ? (product.*m_validLeptonsMember).at(tmpIndex)->p4.Pt() : -1.0);
 							},
-							CutRange::LowerThresholdCut(std::stod(*ptCut))
+							CutRange::LowerThresholdCut(ptCutValue)
 					));
 				}
+				
+				for (std::vector<std::string>::iterator hltName = hltNames.begin(); hltName != hltNames.end(); ++hltName)
+				{
+					std::string tmpHltName(*hltName); // TODO
+					boost::regex pattern(tmpHltName, boost::regex::icase | boost::regex::extended);
+					for (std::vector<int>::iterator index = defaultIndices.begin(); index != defaultIndices.end(); ++index)
+					{
+						size_t tmpIndex(*index);
+						this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
+								[this, tmpHltName, pattern, tmpIndex](event_type const& event, product_type const& product) -> double {
+									return ((product.*m_validLeptonsMember).size() > tmpIndex && boost::regex_search(product.selectedHltName, pattern) ? (product.*m_validLeptonsMember).at(tmpIndex)->p4.Pt() : std::numeric_limits<double>::max());
+								},
+								CutRange::LowerThresholdCut(ptCutValue)
+						));
+					}
+				}
 			}
-		}
-		
+		}	
+	}
+
+
+private:
+	std::vector<TLepton*> product_type::*m_validLeptonsMember;
+};
+
+
+/** Electron Pt Filter
+ */
+template<class TTypes>
+class ElectronLowerPtCutsFilter: public LeptonLowerPtCutsFilter<TTypes, KDataElectron> {
+public:
+	
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
+		return "electron_lower_pt_cuts";
+	}
+	
+	ElectronLowerPtCutsFilter() : LeptonLowerPtCutsFilter<TTypes, KDataElectron>(&TTypes::product_type::m_validElectrons) {}
+	
+	virtual void InitGlobal(typename TTypes::global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
+		this->Init(globalSettings.GetElectronLowerPtCuts());
+	}
+	virtual void InitLocal(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+		this->Init(settings.GetElectronLowerPtCuts());
 	}
 };
 
@@ -64,55 +117,20 @@ private:
 /** Muon Pt Filter
  */
 template<class TTypes>
-class MuonLowerPtCutsFilter: public CutRangeFilterBase<TTypes> {
+class MuonLowerPtCutsFilter: public LeptonLowerPtCutsFilter<TTypes, KDataMuon> {
 public:
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::global_setting_type global_setting_type;
-	typedef typename TTypes::setting_type setting_type;
-	
-	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "muon_lower_pt_cuts";
 	}
-	virtual void InitGlobal(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
-		Init(Utility::ParseVectorToMap(globalSettings.GetMuonLowerPtCuts()));
+	
+	MuonLowerPtCutsFilter() : LeptonLowerPtCutsFilter<TTypes, KDataMuon>(&TTypes::product_type::m_validMuons) {}
+	
+	virtual void InitGlobal(typename TTypes::global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
+		this->Init(globalSettings.GetMuonLowerPtCuts());
 	}
-	virtual void InitLocal(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		Init(Utility::ParseVectorToMap(settings.GetMuonLowerPtCuts()));
-	}
-
-private:
-	void Init(std::map<std::string, std::vector<std::string> > const& leptonLowerPtCuts) {
-		for (std::map<std::string, std::vector<std::string> >::const_iterator leptonLowerPtCut = leptonLowerPtCuts.begin();
-		     leptonLowerPtCut != leptonLowerPtCuts.end(); ++leptonLowerPtCut)
-		{
-			std::vector<int> indices;
-			if (leptonLowerPtCut->first == "default") {
-				indices = {0, 1, 2};
-				LOG(WARNING) << "No lepton index for the Filter \"" << GetFilterId() << "\" specified. Check the possible 3 hardest leptons.";
-			}
-			else {
-				indices.push_back(std::stoi(leptonLowerPtCut->first));
-			}
-			
-			for (std::vector<std::string>::const_iterator ptCut = leptonLowerPtCut->second.begin();
-			     ptCut != leptonLowerPtCut->second.end(); ++ptCut)
-			{
-				for (std::vector<int>::iterator index = indices.begin(); index != indices.end(); ++index)
-				{
-					size_t tmpIndex(*index);
-					this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-							[tmpIndex](event_type const& event, product_type const& product) {
-								return ((product.m_validMuons.size() > tmpIndex) ? product.m_validMuons.at(tmpIndex)->p4.Pt() : -1.0);
-							},
-							CutRange::LowerThresholdCut(std::stod(*ptCut))
-					));
-				}
-			}
-		}
-		
+	virtual void InitLocal(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+		this->Init(settings.GetMuonLowerPtCuts());
 	}
 };
 
@@ -120,111 +138,41 @@ private:
 /** Tau Pt Filter
  */
 template<class TTypes>
-class TauLowerPtCutsFilter: public CutRangeFilterBase<TTypes> {
+class TauLowerPtCutsFilter: public LeptonLowerPtCutsFilter<TTypes, KDataPFTau> {
 public:
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::global_setting_type global_setting_type;
-	typedef typename TTypes::setting_type setting_type;
-	
-	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "tau_lower_pt_cuts";
 	}
-	virtual void InitGlobal(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
-		Init(Utility::ParseVectorToMap(globalSettings.GetTauLowerPtCuts()));
+	
+	TauLowerPtCutsFilter() : LeptonLowerPtCutsFilter<TTypes, KDataPFTau>(&TTypes::product_type::m_validTaus) {}
+	
+	virtual void InitGlobal(typename TTypes::global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
+		this->Init(globalSettings.GetTauLowerPtCuts());
 	}
-	virtual void InitLocal(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		Init(Utility::ParseVectorToMap(settings.GetTauLowerPtCuts()));
-	}
-
-private:
-	void Init(std::map<std::string, std::vector<std::string> > const& leptonLowerPtCuts) {
-		for (std::map<std::string, std::vector<std::string> >::const_iterator leptonLowerPtCut = leptonLowerPtCuts.begin();
-		     leptonLowerPtCut != leptonLowerPtCuts.end(); ++leptonLowerPtCut)
-		{
-			std::vector<int> indices;
-			if (leptonLowerPtCut->first == "default") {
-				indices = {0, 1, 2};
-				LOG(WARNING) << "No lepton index for the Filter \"" << GetFilterId() << "\" specified. Check the possible 3 hardest leptons.";
-			}
-			else {
-				indices.push_back(std::stoi(leptonLowerPtCut->first));
-			}
-			
-			for (std::vector<std::string>::const_iterator ptCut = leptonLowerPtCut->second.begin();
-			     ptCut != leptonLowerPtCut->second.end(); ++ptCut)
-			{
-				for (std::vector<int>::iterator index = indices.begin(); index != indices.end(); ++index)
-				{
-					size_t tmpIndex(*index);
-					this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-							[tmpIndex](event_type const& event, product_type const& product) {
-								return ((product.m_validTaus.size() > tmpIndex) ? product.m_validTaus.at(tmpIndex)->p4.Pt() : -1.0);
-							},
-							CutRange::LowerThresholdCut(std::stod(*ptCut))
-					));
-				}
-			}
-		}
-		
+	virtual void InitLocal(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+		this->Init(settings.GetTauLowerPtCuts());
 	}
 };
 
 
-/** Jets Pt Filter
+/** Jet Pt Filter
  */
 template<class TTypes>
-class JetLowerPtCutsFilter: public CutRangeFilterBase<TTypes> {
+class JetLowerPtCutsFilter: public LeptonLowerPtCutsFilter<TTypes, KDataPFJet> {
 public:
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::global_setting_type global_setting_type;
-	typedef typename TTypes::setting_type setting_type;
-	
-	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "jet_lower_pt_cuts";
 	}
-	virtual void InitGlobal(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
-		Init(Utility::ParseVectorToMap(globalSettings.GetJetLowerPtCuts()));
+	
+	JetLowerPtCutsFilter() : LeptonLowerPtCutsFilter<TTypes, KDataPFJet>(&TTypes::product_type::m_validJets) {}
+	
+	virtual void InitGlobal(typename TTypes::global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
+		this->Init(globalSettings.GetJetLowerPtCuts());
 	}
-	virtual void InitLocal(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		Init(Utility::ParseVectorToMap(settings.GetJetLowerPtCuts()));
-	}
-
-private:
-	void Init(std::map<std::string, std::vector<std::string> > const& leptonLowerPtCuts) {
-		for (std::map<std::string, std::vector<std::string> >::const_iterator leptonLowerPtCut = leptonLowerPtCuts.begin();
-		     leptonLowerPtCut != leptonLowerPtCuts.end(); ++leptonLowerPtCut)
-		{
-			std::vector<int> indices;
-			if (leptonLowerPtCut->first == "default") {
-				indices = {0, 1, 2};
-				LOG(WARNING) << "No lepton index for the Filter \"" << GetFilterId() << "\" specified. Check the possible 3 hardest leptons.";
-			}
-			else {
-				indices.push_back(std::stoi(leptonLowerPtCut->first));
-			}
-			
-			for (std::vector<std::string>::const_iterator ptCut = leptonLowerPtCut->second.begin();
-			     ptCut != leptonLowerPtCut->second.end(); ++ptCut)
-			{
-				for (std::vector<int>::iterator index = indices.begin(); index != indices.end(); ++index)
-				{
-					size_t tmpIndex(*index);
-					this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-							[tmpIndex](event_type const& event, product_type const& product) {
-								return ((product.m_validJets.size() > tmpIndex) ? product.m_validJets.at(tmpIndex)->p4.Pt() : -1.0);
-							},
-							CutRange::LowerThresholdCut(std::stod(*ptCut))
-					));
-				}
-			}
-		}
-		
+	virtual void InitLocal(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+		this->Init(settings.GetJetLowerPtCuts());
 	}
 };
 
