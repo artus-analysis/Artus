@@ -34,6 +34,51 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::global_setting_type global_setting_type;
 	typedef typename TTypes::setting_type setting_type;
+	
+	static bool LeptonHasMatched(event_type const& event, product_type const& product, KLepton* lepton, size_t const& index)
+	{
+		auto positionElectron = std::find(product.m_triggerMatchedElectrons.begin(), product.m_triggerMatchedElectrons.end(), lepton);
+		if (positionElectron != product.m_triggerMatchedElectrons.end())
+		{
+			index = std::distance(product.m_triggerMatchedElectrons.begin(), positionElectron);
+			return true;
+		}
+		
+		auto positionMuon = std::find(product.m_triggerMatchedMuons.begin(), product.m_triggerMatchedMuons.end(), lepton);
+		if (positionMuon != product.m_triggerMatchedMuons.end())
+		{
+			index = std::distance(product.m_triggerMatchedMuons.begin(), positionMuon);
+			return true;
+		}
+		
+		auto positionTau = std::find(product.m_triggerMatchedTaus.begin(), product.m_triggerMatchedTaus.end(), lepton);
+		if (positionTau != product.m_triggerMatchedTaus.end())
+		{
+			index = std::distance(product.m_triggerMatchedTaus.begin(), positionTau);
+			return true;
+		}
+		
+		return false;
+	}
+	
+	static bool JetHasMatched(event_type const& event, product_type const& product, KDataPFJet* jet, size_t const& index)
+	{
+		auto positionJet = std::find(product.m_triggerMatchedJets.begin(), product.m_triggerMatchedJets.end(), jet);
+		if (positionJet != product.m_triggerMatchedJets.end())
+		{
+			index = std::distance(product.m_triggerMatchedJets.begin(), positionJet);
+			return true;
+		}
+		
+		auto positionTaggedJet = std::find(product.m_triggerMatchedTaggedJets.begin(), product.m_triggerMatchedTaggedJets.end(), jet);
+		if (positionTaggedJet != product.m_triggerMatchedTaggedJets.end())
+		{
+			index = std::distance(product.m_triggerMatchedTaggedJets.begin(), positionTaggedJet);
+			return true;
+		}
+		
+		return false;
+	}
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "trigger_matching";
