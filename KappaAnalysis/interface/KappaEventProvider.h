@@ -92,7 +92,7 @@ public:
 		if(! globalSettings.GetTaggerMetadata().empty())
 			this->m_event.m_taggermetadata = this->template SecureFileInterfaceGetMeta<KTaggerMetadata>(globalSettings.GetTaggerMetadata());
 		if(! globalSettings.GetTriggerObjects().empty())
-			this->m_event.m_triggerObjects = this->template SecureFileInterfaceGet<KTriggerObjects>(globalSettings.GetTriggerObjects());
+			this->m_event.m_triggerObjects = this->template SecureFileInterfaceGet<KTriggerObjects>(globalSettings.GetTriggerObjects(), false);
 
 	}
 

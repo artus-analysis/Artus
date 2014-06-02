@@ -46,6 +46,11 @@ public:
 	}
 	IMPL_SETTING_DEFAULT(bool, AllowPrescaledTrigger, true);
 	
+	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingElectron, 0.5);
+	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingMuon, 0.5);
+	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingTau, 0.5);
+	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingJet, 0.5);
+	
 	IMPL_SETTING(int, Year);
 	
 	IMPL_SETTING(std::string, MuonID);
@@ -215,6 +220,11 @@ public:
 		RETURN_CACHED(hltPaths, PropertyTreeSupport::GetAsStringList(GetPropTree(), "HltPaths"))
 	}
 	IMPL_SETTING_DEFAULT(bool, AllowPrescaledTrigger, true);
+	
+	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingElectron, 0.5);
+	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingMuon, 0.5);
+	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingTau, 0.5);
+	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingJet, 0.5);
 	
 	//Reading Boson PdgId for GenTauDecayProducer studies.
 	VarCache<stringvector> BosonPdgId;

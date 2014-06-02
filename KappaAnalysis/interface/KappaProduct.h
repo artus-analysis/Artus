@@ -46,4 +46,11 @@ public:
 	HLTTools* m_hltInfo = new HLTTools();
 	std::string selectedHltName = "";
 
+	/// added by TriggerMatchingProducer
+	std::vector<KDataElectron*> m_triggerMatchedElectrons;
+	std::vector<KDataMuon*> m_triggerMatchedMuons;
+	std::vector<KDataPFTau*> m_triggerMatchedTaus;
+	std::vector<KDataPFJet*> m_triggerMatchedJets;
+	std::vector<KDataPFTaggedJet*> m_triggerMatchedTaggedJets;
+
 };
