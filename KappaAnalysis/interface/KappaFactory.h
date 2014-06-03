@@ -16,6 +16,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/EventWeightProducer.h"
 
 // filter
+#include "Artus/KappaAnalysis/interface/Filters/RunLumiEventFilter.h"
 #include "Artus/KappaAnalysis/interface/Filters/JsonFilter.h"
 #include "Artus/KappaAnalysis/interface/Filters/HltFilter.h"
 #include "Artus/KappaAnalysis/interface/Filters/ValidObjectsFilters.h"
@@ -67,7 +68,9 @@ public:
 	virtual FilterBase<TTypes> * createFilter ( std::string const& id )
 		ARTUS_CPP11_OVERRIDE
 	{
-		if(id == JsonFilter<TTypes>().GetFilterId())
+		if(id == RunLumiEventFilter<TTypes>().GetFilterId())
+			return new RunLumiEventFilter<TTypes>();
+		else if(id == JsonFilter<TTypes>().GetFilterId())
 			return new JsonFilter<TTypes>();
 		else if(id == HltFilter<TTypes>().GetFilterId())
 			return new HltFilter<TTypes>();

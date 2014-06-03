@@ -39,6 +39,37 @@ public:
 	IMPL_SETTING_DEFAULT(int, PassRunLow, 1);
 	IMPL_SETTING_DEFAULT(int, PassRunHigh, 0);
 	
+	VarCache<std::vector<int> > runWhitelist;
+	std::vector<int> GetRunWhitelist() const
+	{
+		RETURN_CACHED(runWhitelist, PropertyTreeSupport::GetAsIntList(GetPropTree(), "Pipelines." + GetName() + ".RunWhitelist"))
+	}
+	VarCache<std::vector<int> > runBlacklist;
+	std::vector<int> GetRunBlacklist() const
+	{
+		RETURN_CACHED(runBlacklist, PropertyTreeSupport::GetAsIntList(GetPropTree(), "Pipelines." + GetName() + ".RunBlacklist"))
+	}
+	VarCache<std::vector<int> > lumiWhitelist;
+	std::vector<int> GetLumiWhitelist() const
+	{
+		RETURN_CACHED(lumiWhitelist, PropertyTreeSupport::GetAsIntList(GetPropTree(), "Pipelines." + GetName() + ".LumiWhitelist"))
+	}
+	VarCache<std::vector<int> > lumiBlacklist;
+	std::vector<int> GetLumiBlacklist() const
+	{
+		RETURN_CACHED(lumiBlacklist, PropertyTreeSupport::GetAsIntList(GetPropTree(), "Pipelines." + GetName() + ".LumiBlacklist"))
+	}
+	VarCache<std::vector<int> > eventWhitelist;
+	std::vector<int> GetEventWhitelist() const
+	{
+		RETURN_CACHED(eventWhitelist, PropertyTreeSupport::GetAsIntList(GetPropTree(), "Pipelines." + GetName() + ".EventWhitelist"))
+	}
+	VarCache<std::vector<int> > eventBlacklist;
+	std::vector<int> GetEventBlacklist() const
+	{
+		RETURN_CACHED(eventBlacklist, PropertyTreeSupport::GetAsIntList(GetPropTree(), "Pipelines." + GetName() + ".EventBlacklist"))
+	}
+	
 	VarCache<std::vector<std::string>> hltPaths;
 	stringvector GetHltPaths() const
 	{
@@ -213,6 +244,37 @@ public:
 	}
 	IMPL_SETTING_DEFAULT(int, PassRunLow, 0);
 	IMPL_SETTING_DEFAULT(int, PassRunHigh, 0);
+	
+	VarCache<std::vector<int> > runWhitelist;
+	std::vector<int> GetRunWhitelist() const
+	{
+		RETURN_CACHED(runWhitelist, PropertyTreeSupport::GetAsIntList(GetPropTree(), "RunWhitelist"))
+	}
+	VarCache<std::vector<int> > runBlacklist;
+	std::vector<int> GetRunBlacklist() const
+	{
+		RETURN_CACHED(runBlacklist, PropertyTreeSupport::GetAsIntList(GetPropTree(), "RunBlacklist"))
+	}
+	VarCache<std::vector<int> > lumiWhitelist;
+	std::vector<int> GetLumiWhitelist() const
+	{
+		RETURN_CACHED(lumiWhitelist, PropertyTreeSupport::GetAsIntList(GetPropTree(), "LumiWhitelist"))
+	}
+	VarCache<std::vector<int> > lumiBlacklist;
+	std::vector<int> GetLumiBlacklist() const
+	{
+		RETURN_CACHED(lumiBlacklist, PropertyTreeSupport::GetAsIntList(GetPropTree(), "LumiBlacklist"))
+	}
+	VarCache<std::vector<int> > eventWhitelist;
+	std::vector<int> GetEventWhitelist() const
+	{
+		RETURN_CACHED(eventWhitelist, PropertyTreeSupport::GetAsIntList(GetPropTree(), "EventWhitelist"))
+	}
+	VarCache<std::vector<int> > eventBlacklist;
+	std::vector<int> GetEventBlacklist() const
+	{
+		RETURN_CACHED(eventBlacklist, PropertyTreeSupport::GetAsIntList(GetPropTree(), "EventBlacklist"))
+	}
 	
 	VarCache<std::vector<std::string>> hltPaths;
 	stringvector GetHltPaths() const
