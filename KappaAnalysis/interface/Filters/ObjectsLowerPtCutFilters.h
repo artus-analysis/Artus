@@ -62,7 +62,9 @@ protected:
 					size_t tmpIndex(*index); // TODO
 					this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 							[this, tmpIndex](event_type const& event, product_type const& product) -> double {
-								return (((product.*m_validLeptonsMember).size() > tmpIndex) ? (product.*m_validLeptonsMember).at(tmpIndex)->p4.Pt() : -1.0);
+								return (((product.*m_validLeptonsMember).size() > tmpIndex) ?
+								        (product.*m_validLeptonsMember).at(tmpIndex)->p4.Pt() :
+								        0.99*std::numeric_limits<double>::max());
 							},
 							CutRange::LowerThresholdCut(ptCutValue)
 					));
@@ -77,7 +79,9 @@ protected:
 						size_t tmpIndex(*index);
 						this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 								[this, tmpHltName, pattern, tmpIndex](event_type const& event, product_type const& product) -> double {
-									return ((product.*m_validLeptonsMember).size() > tmpIndex && boost::regex_search(product.selectedHltName, pattern) ? (product.*m_validLeptonsMember).at(tmpIndex)->p4.Pt() : std::numeric_limits<double>::max());
+									return (((product.*m_validLeptonsMember).size() > tmpIndex && boost::regex_search(product.selectedHltName, pattern)) ?
+									        (product.*m_validLeptonsMember).at(tmpIndex)->p4.Pt() :
+									        0.99*std::numeric_limits<double>::max());
 								},
 								CutRange::LowerThresholdCut(ptCutValue)
 						));
