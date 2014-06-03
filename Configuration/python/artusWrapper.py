@@ -145,16 +145,18 @@ class ArtusWrapper(object):
 	def setConfig(self, config):
 		self._config = jsonTools.JsonDict(config)
 
+	def removeUnwantedInputFiles(self):
+		if self._args.batch:  # shrink config by inputFiles since this is replaced anyway in batch mode
+			self._config["InputFiles"] = [""]
+		elif self._args.fast:
+			self._config["InputFiles"] = self._config["InputFiles"][:min(len(self._config["InputFiles"]), self._args.fast)]
+
 	def saveConfig(self, filepath=None):
 		"""Save Config to File"""
 		if not filepath:
 			basename = "artus_{0}.json".format(hashlib.md5(str(self._config)).hexdigest())
 			filepath = os.path.join(tempfile.gettempdir(), basename)
 		self._configFilename = filepath
-		if self._args.batch:  # shrink config by inputFiles since this is replaced anyway in batch mode
-			self._config["InputFiles"] = [""]
-		elif self._args.fast:
-			self._config["InputFiles"] = self._config["InputFiles"][:min(len(self._config["InputFiles"]), self._args.fast)]
 		self._config.save(filepath, indent=4)
 		log.info("Saved JSON config \"%s\" for temporary usage." % self._configFilename)
 
@@ -201,7 +203,10 @@ class ArtusWrapper(object):
 		
 		# merge resulting pipeline config into the main config
 		self._config += (pipelineBaseJsonDict + pipelineJsonDict)
-		
+
+		# shrink Input Files to requested Number
+		self.removeUnwantedInputFiles()
+
 		# treat includes
 		nickname = self.determineNickname(self._args.nick)
 		self._config = self._config.doNicks(nickname).doIncludes()
