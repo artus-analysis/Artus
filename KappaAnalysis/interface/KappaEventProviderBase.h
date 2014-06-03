@@ -31,7 +31,7 @@ public:
 
 	KappaEventProviderBase(FileInterface2 & fi, InputTypeEnum inpType) :
 			EventProviderBase<TTypes>(),
-			m_prevRun(-1), m_prevLumi(-1), m_inpType(inpType), m_fi(fi)
+			m_prevRun(-1), m_prevLumi(-1), m_prevTree(-1), m_inpType(inpType), m_fi(fi)
 	{
 		// setup pointer to collections
 		m_event.m_eventMetadata = fi.Get<KEventMetadata>();
@@ -56,6 +56,11 @@ public:
 		if (!m_mon->Update())
 			return false;
 		m_fi.eventdata.GetEntry(lEvent);
+		
+		if (m_prevTree != m_fi.eventdata.GetTreeNumber()) {
+			m_prevTree = m_fi.eventdata.GetTreeNumber();
+			LOG(INFO) << "\nProcessing " << m_fi.eventdata.GetFile()->GetName() << " ...";
+		}
 
 		if (m_prevRun != m_event.m_eventMetadata->nRun) {
 			m_prevRun = m_event.m_eventMetadata->nRun;
@@ -99,6 +104,7 @@ public:
 protected:
 
 	long m_prevRun, m_prevLumi;
+	int m_prevTree;
 	event_type m_event;
 
 	InputTypeEnum m_inpType;
