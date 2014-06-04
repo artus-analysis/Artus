@@ -33,7 +33,7 @@ protected:
 	void Init(std::vector<std::string> const& leptonLowerPtCutsVector) {
 		std::map<std::string, std::vector<std::string> > leptonLowerPtCuts = Utility::ParseVectorToMap(leptonLowerPtCutsVector);
 	
-		std::vector<int> defaultIndices = {0, 1, 2};
+		std::vector<int> defaultIndices = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
 		for (std::map<std::string, std::vector<std::string> >::const_iterator leptonLowerPtCut = leptonLowerPtCuts.begin();
 		     leptonLowerPtCut != leptonLowerPtCuts.end(); ++leptonLowerPtCut)
 		{
