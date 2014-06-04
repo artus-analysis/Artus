@@ -30,10 +30,6 @@ public:
 
 	IMPL_SETTING( float, ProducerPtCorrectionFactorLocal )
 
-	VarCache<stringvector> quantities;
-	stringvector GetQuantities() const
-	{
-		RETURN_CACHED(quantities, PropertyTreeSupport::GetAsStringList(GetPropTree(), GetPipelinePrefix() + "Quantities"))
-	}
+	IMPL_SETTING_STRINGLIST( Quantities )
 
 };

@@ -79,3 +79,28 @@ public: \
 #define IMPL_GLOBAL_SETTING(TYPE, SNAME) IMPL_SETTING_PRIVATE(TYPE, SNAME, true)
 #define IMPL_GLOBAL_SETTING_DEFAULT(TYPE, SNAME, DEFAULT_VAL) IMPL_SETTING_DEFAULT_PRIVATE(TYPE, SNAME, DEFAULT_VAL, true)
 
+
+#define IMPL_SETTING_STRINGLIST( SNAME ) \
+VarCache<stringvector> m_##SNAME; 		  \
+stringvector Get##SNAME () const {  		  \
+	RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsStringList(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
+}
+
+#define IMPL_SETTING_DOUBLELIST( SNAME ) \
+VarCache<doublevector> m_##SNAME; 		  \
+doublevector Get##SNAME () const {  		  \
+	RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsDoubleList(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
+}
+
+#define IMPL_SETTING_FLOATLIST( SNAME ) \
+VarCache<floatvector> m_##SNAME; 		  \
+floatvector Get##SNAME () const {  		  \
+	RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsFloatList(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
+}
+
+#define IMPL_SETTING_INTLIST( SNAME ) \
+VarCache<intvector> m_##SNAME; 		  \
+intvector Get##SNAME () const {  		  \
+	RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsIntList(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
+}
+
