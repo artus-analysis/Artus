@@ -19,19 +19,14 @@ public:
 		return "pt_correction_local";
 	}
 	
-	virtual void InitGlobal(global_setting_type const& globalSettings)  ARTUS_CPP11_OVERRIDE
+	virtual void Init(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
 	{
-		ProducerBase<TraxTypes>::InitGlobal(globalSettings);
-	}
-	
-	virtual void InitLocal(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
-	{
-		ProducerBase<TraxTypes>::InitLocal(settings);
+		ProducerBase<TraxTypes>::Init(settings);
 	}
 
-	virtual void ProduceLocal(TraxEvent const& event,
+	virtual void Produce(TraxEvent const& event,
 			TraxProduct & product,
-			TraxPipelineSettings const& localSettings) const
+			TraxSettings const& localSettings) const
 					ARTUS_CPP11_OVERRIDE {
 
 		// m_floatPtSim_corrected has been set by the global producer before

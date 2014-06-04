@@ -19,20 +19,10 @@ public:
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "filter_theta";
 	}
-	
-	virtual void InitGlobal(global_setting_type const& globalSettings)  ARTUS_CPP11_OVERRIDE
-	{
-		FilterBase<TraxTypes>::InitGlobal(globalSettings);
-	}
-	
-	virtual void InitLocal(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
-	{
-		FilterBase<TraxTypes>::InitLocal(settings);
-	}
 
-	virtual bool DoesEventPassGlobal(TraxEvent const& event,
+	virtual bool DoesEventPass(TraxEvent const& event,
 			TraxProduct const& product,
-			TraxGlobalSettings const& globalSettings) const
+			TraxSettings const& globalSettings) const
 	ARTUS_CPP11_OVERRIDE
 	{
 		const float lowCut = globalSettings.GetFilterThetaLow();

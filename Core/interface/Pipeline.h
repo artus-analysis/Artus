@@ -110,10 +110,10 @@ public:
 		for( ProcessNodeIterator it = m_nodes.begin();
 				it != m_nodes.end(); it ++ ) {
 			if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
-				static_cast< ProducerForThisPipeline &> ( *it ) . InitLocal( pset );
+				static_cast< ProducerForThisPipeline &> ( *it ) . Init ( pset );
 			}
 			else if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
-				static_cast< FilterForThisPipeline &> ( *it ) . InitLocal ( pset );
+				static_cast< FilterForThisPipeline &> ( *it ) . Init ( pset );
 			}
 			else {
 				LOG(FATAL) << "ProcessNodeType not supported by the pipeline!";
@@ -185,12 +185,12 @@ public:
 				break;
 			
 			if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
-				static_cast< ProducerForThisPipeline &> ( *it ) . ProduceLocal(evt, localProduct,
+				static_cast< ProducerForThisPipeline &> ( *it ) . Produce(evt, localProduct,
 						m_pipelineSettings);
 			}
 			else if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
 				FilterForThisPipeline & flt = static_cast<FilterForThisPipeline &> ( *it );
-				const bool filterResult = flt . DoesEventPassLocal(evt, localProduct,
+				const bool filterResult = flt . DoesEventPass(evt, localProduct,
 				                                                   m_pipelineSettings);
 				localFilterResult.SetFilterDecision( flt.GetFilterId(), filterResult );
 			}

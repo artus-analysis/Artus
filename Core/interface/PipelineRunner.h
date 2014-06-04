@@ -41,7 +41,6 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
-	typedef typename TTypes::global_setting_type global_setting_type;
 
 	typedef ProducerBase< TTypes > producer_base_type;
 	typedef FilterBase< TTypes > filter_base_type;
@@ -88,24 +87,24 @@ public:
 	template<class TEventProvider>
 	void RunPipelines(
 			TEventProvider & evtProvider,
-			global_setting_type const& globalSettings) {
+			setting_type const& globalSettings) {
 		long long firstEvent = 0;
 		long long nEvents = evtProvider.GetEntries();
 
 		for( ProcessNodesIterator it = m_globalNodes.begin();
 				it != m_globalNodes.end(); it ++ ) {
 			if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
-				static_cast<producer_base_type&> ( *it ) . InitGlobal(globalSettings);
+				static_cast<producer_base_type&> ( *it ) . Init(globalSettings);
 			}
 			else if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
-				static_cast<filter_base_type&> ( *it ) . InitGlobal(globalSettings);
+				static_cast<filter_base_type&> ( *it ) . Init(globalSettings);
 			}
 			else {
 				LOG(FATAL) << "ProcessNodeType not supported by the pipeline runner!";
 			}
 		}
 
-		const stringvector globlalFilterIds = globalSettings.GetGlobalFilters();
+		const stringvector globlalFilterIds = globalSettings.GetFilters();
 
 		// initilize pline filter decision
 		FilterResult::FilterNames pipelineResultNames(m_pipelines.size());
@@ -150,12 +149,12 @@ public:
 					break;
 				
 				if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
-					static_cast<producer_base_type&> ( *it ) . ProduceGlobal(evtProvider.GetCurrentEvent(),
+					static_cast<producer_base_type&> ( *it ) . Produce(evtProvider.GetCurrentEvent(),
 							productGlobal, globalSettings);
 				}
 				else if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
 					filter_base_type & flt = static_cast<filter_base_type&> ( *it );
-					const bool filterResult = flt . DoesEventPassGlobal(evtProvider.GetCurrentEvent(),
+					const bool filterResult = flt . DoesEventPass(evtProvider.GetCurrentEvent(),
 					                                                    productGlobal, globalSettings);
 					globalFilterResult.SetFilterDecision( flt.GetFilterId(), filterResult );
 				}
@@ -222,7 +221,7 @@ public:
 		return m_pipelines;
 	}
 
-	ProcessNodes & GetGlobalNodes() {
+	ProcessNodes & GetNodes() {
 		return m_globalNodes;
 	}
 

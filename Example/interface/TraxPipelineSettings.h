@@ -10,8 +10,20 @@
 #include "Artus/Configuration/interface/SettingMacros.h"
 #include "Artus/Configuration/interface/PropertyTreeSupport.h"
 
+/*
 class TraxPipelineSettings: public SettingsBase {
 public:
+
+
+};
+*/
+class TraxSettings: public SettingsBase {
+public:
+
+	IMPL_SETTING( float, FilterThetaLow )
+	IMPL_SETTING( float, FilterThetaHigh )
+
+	IMPL_SETTING( float, ProducerPtCorrectionFactor )
 
 	IMPL_SETTING( float, FilterPtLow )
 	IMPL_SETTING( float, FilterPtHigh )
@@ -21,17 +33,7 @@ public:
 	VarCache<stringvector> quantities;
 	stringvector GetQuantities() const
 	{
-		RETURN_CACHED(quantities, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".Quantities"))
+		RETURN_CACHED(quantities, PropertyTreeSupport::GetAsStringList(GetPropTree(), GetPipelinePrefix() + "Quantities"))
 	}
-
-};
-
-class TraxGlobalSettings: public GlobalSettingsBase {
-public:
-
-	IMPL_SETTING( float, FilterThetaLow )
-	IMPL_SETTING( float, FilterThetaHigh )
-
-	IMPL_SETTING( float, ProducerPtCorrectionFactor )
 
 };

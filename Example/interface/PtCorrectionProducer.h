@@ -10,28 +10,23 @@
 
 #include "TraxTypes.h"
 
-class PtCorrectionProducer: public TraxProducerBase {
+class PtCorrectionProducer: public TraxProducerBase
+{
 public:
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE
 	{
 		return "pt_correction";
 	}
-	
-	virtual void InitGlobal(global_setting_type const& globalSettings)  ARTUS_CPP11_OVERRIDE
+
+	virtual void Init(TraxSettings const& globalSettings) ARTUS_CPP11_OVERRIDE
 	{
-		ProducerBase<TraxTypes>::InitGlobal(globalSettings);
-	}
-	
-	virtual void InitLocal(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
-	{
-		ProducerBase<TraxTypes>::InitLocal(settings);
+		ProducerBase<TraxTypes>::Init(globalSettings);
 	}
 
-	virtual void ProduceGlobal(TraxEvent const& event,
-			TraxProduct & product,
-			TraxGlobalSettings const& globalSettings) const
-					ARTUS_CPP11_OVERRIDE {
+	virtual void Produce(TraxEvent const& event, TraxProduct & product,
+			TraxSettings const& globalSettings) const ARTUS_CPP11_OVERRIDE
+	{
 
 		product.m_floatPtSim_corrected = event.m_floatPtSim
 				* globalSettings.GetProducerPtCorrectionFactor();

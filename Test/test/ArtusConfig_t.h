@@ -13,6 +13,7 @@
 
 #include "TestTypes.h"
 #include "TestPipelineRunner.h"
+#include "TestEventProvider.h"
 
 BOOST_AUTO_TEST_CASE( test_parse_config )
 {
@@ -20,7 +21,7 @@ BOOST_AUTO_TEST_CASE( test_parse_config )
 
 	configStream
 	<<	"{"
-	<<	    "\"GlobalProcessors\": ["
+	<<	    "\"Processors\": ["
 	<<	    "    \"filter:testglobalfilter\", \"producer:test_global_producer\""
 	<<	    "],"
 	<<	    "\"InputFiles\": ["
@@ -56,7 +57,7 @@ BOOST_AUTO_TEST_CASE( test_parse_config )
 	// load the pipeline with their configuration from the config file
 	cfg.LoadConfiguration( pInit, runner, factory, ARTUS_CPP11_NULLPTR);
 
-	auto & pList = runner.GetGlobalNodes();
+	auto & pList = runner.GetNodes();
 
 	BOOST_CHECK_EQUAL( pList.size(), size_t(2) );
 	BOOST_CHECK( pList.begin()->GetProcessNodeType() == ProcessNodeType::Filter );

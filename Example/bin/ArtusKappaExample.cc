@@ -20,19 +20,19 @@
 #include "Artus/Example/interface/PtCorrectionProducer.h"
 
 /*
-	This example implements a simple dummy anaylsis which
-	reads entries from a root file and produces various pt plots
+ This example implements a simple dummy anaylsis which
+ reads entries from a root file and produces various pt plots
 
-	It can be run with the config file data/exampleConfig.json
-*/
+ It can be run with the config file data/exampleConfig.json
+ */
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
 
 	// parse the command line and load the
 	ArtusConfig myConfig(argc, argv);
-        // load the global settings from the config file
-        TraxGlobalSettings global_settings = myConfig.GetGlobalSettings<
-                        TraxGlobalSettings>();
+	// load the global settings from the config file
+	TraxSettings global_settings = myConfig.GetGlobalSettings<TraxSettings>();
 
 	// create the output root environment, automatically saves the config into the root file
 	RootEnvironment rootEnv(myConfig);
@@ -40,8 +40,8 @@ int main(int argc, char** argv) {
 	// will load the Ntuples from the root file
 	// this must be modified if you want to load more/new quantities
 	FileInterface2 fileInterface(myConfig.GetInputFiles());
-	TraxKappaEventProvider evtProvider( fileInterface, McInput );
-	evtProvider.WireEvent( global_settings );
+	TraxKappaEventProvider evtProvider(fileInterface, McInput);
+	evtProvider.WireEvent(global_settings);
 
 	// the pipeline initializer will setup the pipeline, with
 	// all the attached Producer, Filer and Consumer

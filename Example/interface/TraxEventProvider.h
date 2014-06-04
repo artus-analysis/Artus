@@ -25,7 +25,7 @@ public:
 					"ec") {
 	}
 
-	virtual void WireEvent( TraxTypes::global_setting_type const& )
+	virtual void WireEvent( TraxSettings const& )
 		ARTUS_CPP11_OVERRIDE
 	{
 		// set up the ROOT pointers to our local memory regions

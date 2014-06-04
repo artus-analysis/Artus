@@ -38,7 +38,7 @@ public:
 		return m_rootChain->GetEntries();
 	}
 
-	virtual void WireEvent( TraxTypes::global_setting_type const& ) = 0;
+	virtual void WireEvent( TraxSettings const& ) = 0;
 
 
 protected:

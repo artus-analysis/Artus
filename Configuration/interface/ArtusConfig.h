@@ -44,16 +44,16 @@ public:
 			TFactory & factory,
 			TFile * outputFile)
 	{
-		typedef typename TPipelineRunner::global_setting_type global_setting_type;
+		typedef typename TPipelineRunner::setting_type setting_type;
 
-		LoadGlobalProducer <TPipelineRunner,TFactory, global_setting_type > (runner, factory);
+		LoadGlobalProducer <TPipelineRunner,TFactory, setting_type > (runner, factory);
 		LoadPipelines< TPipelineInitializer, TPipelineRunner>(pInit, runner, factory, outputFile);
 	}
 
-	template<class TGlobalSettings>
-	TGlobalSettings GetGlobalSettings()
+	template<class TSettings>
+	TSettings GetSettings()
 	{
-		TGlobalSettings pset;
+		TSettings pset;
 		pset.SetPropTreePath("");
 		pset.SetPropTree(&m_propTreeRoot);
 		return pset;
@@ -83,8 +83,8 @@ private:
 		typedef typename TPipelineRunner::producer_base_type producer_base_type;
 		typedef typename TPipelineRunner::filter_base_type filter_base_type;
 
-		TGlobalSettings gSettings = GetGlobalSettings< TGlobalSettings >();
-		stringvector globalProds = gSettings.GetGlobalProcessors();
+		TGlobalSettings gSettings = GetSettings< TGlobalSettings >();
+		stringvector globalProds = gSettings.GetProcessors();
 		for ( stringvector::const_iterator it = globalProds.begin();
 			it != globalProds.end(); it ++ ) {
 

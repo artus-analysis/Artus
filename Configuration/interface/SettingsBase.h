@@ -57,6 +57,13 @@ public:
 		return GetName();
 	}
 
+	std::string GetPipelinePrefix() const {
+		if ( GetName() == "")
+			return "";
+		else
+			return  "Pipelines." + GetName() + ".";
+	}
+
 	/// a pointer to the root file where all the output will be stored must be set by the 
 	/// application
 	IMPL_PROPERTY(TFile *, RootOutFile)
@@ -70,9 +77,10 @@ public:
 
 	/// get list of all local producers
 	VarCache<stringvector> m_processors;
-	stringvector GetProcessors() const
+	virtual stringvector GetProcessors() const
 	{
-		RETURN_CACHED(m_processors, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".Processors"))
+		std::cout << "Get Proc" << std::endl;
+		RETURN_CACHED(m_processors, PropertyTreeSupport::GetAsStringList(GetPropTree(), GetPipelinePrefix() + "Processors"))
 	}
 
 	virtual stringvector GetFilters () const {
@@ -81,9 +89,9 @@ public:
 
 	/// get list of all consumers
 	VarCache<stringvector> m_consumers;
-	stringvector GetConsumers() const
+	virtual stringvector GetConsumers() const
 	{
-		RETURN_CACHED(m_consumers, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Pipelines." + GetName() + ".Consumers"))
+		RETURN_CACHED(m_consumers, PropertyTreeSupport::GetAsStringList(GetPropTree(),  GetPipelinePrefix() + "Consumers"))
 	}
 
 };
@@ -94,7 +102,7 @@ public:
    Defines what is needed to read configurations for Artus event processing from a prepared json 
    file and passes it on to GlobalProducers.
 */
-
+/*
 class GlobalSettingsBase {
 public:
 
@@ -121,3 +129,4 @@ public:
 	}
 
 };
+*/

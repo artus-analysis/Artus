@@ -10,30 +10,26 @@
 
 #include "TraxTypes.h"
 
-class PtFilter: public TraxFilterBase {
+class PtFilter: public TraxFilterBase
+{
 public:
 
-	virtual ~PtFilter() {
+	virtual ~PtFilter()
+	{
 	}
 
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE
+	{
 		return "filter_pt";
 	}
-	
-	virtual void InitGlobal(global_setting_type const& globalSettings)  ARTUS_CPP11_OVERRIDE
+
+	virtual void Init(TraxSettings const& globalSettings) ARTUS_CPP11_OVERRIDE
 	{
-		FilterBase<TraxTypes>::InitGlobal(globalSettings);
-	}
-	
-	virtual void InitLocal(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
-	{
-		FilterBase<TraxTypes>::InitLocal(settings);
+		FilterBase<TraxTypes>::Init(globalSettings);
 	}
 
-	virtual bool DoesEventPassLocal(TraxEvent const& event,
-			TraxProduct const& product,
-            TraxPipelineSettings const& settings ) const
-		ARTUS_CPP11_OVERRIDE
+	virtual bool DoesEventPass(TraxEvent const& event,
+			TraxProduct const& product, TraxSettings const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 
 		const float lowCut = settings.GetFilterPtLow();
@@ -44,5 +40,4 @@ public:
 		return ((lowCut <= event.m_floatPtSim) && (highCut > event.m_floatPtSim));
 	}
 };
-
 

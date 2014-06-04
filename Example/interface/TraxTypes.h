@@ -18,8 +18,7 @@
 struct TraxTypes {
 	typedef TraxEvent event_type;
 	typedef TraxProduct product_type;
-	typedef TraxPipelineSettings setting_type;
-	typedef TraxGlobalSettings global_setting_type;
+	typedef TraxSettings setting_type;
 };
 
 // Pass the template parameters for the Producers
