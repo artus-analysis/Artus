@@ -209,7 +209,7 @@ class ArtusWrapper(object):
 
 		# treat includes
 		nickname = self.determineNickname(self._args.nick)
-		self._config = self._config.doNicks(nickname).doIncludes()
+		self._config = self._config.doIncludes().doNicks(nickname)
 		
 		# treat environment variables
 		if self._args.envvar_expansion:
