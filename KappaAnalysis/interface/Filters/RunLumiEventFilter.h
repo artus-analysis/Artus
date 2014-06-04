@@ -72,9 +72,10 @@ protected:
 
 	virtual bool DoesEventPass(event_type const& event, product_type const& product) const
 	{
-		return (MatchWhiteBlackLists(event.m_eventMetadata->nRun, runWhitelist, runBlacklist) &&
-		        MatchWhiteBlackLists(event.m_eventMetadata->nLumi, lumiWhitelist, lumiBlacklist) &&
-		        MatchWhiteBlackLists(event.m_eventMetadata->nEvent, eventWhitelist, eventBlacklist));
+		bool match = (MatchWhiteBlackLists(event.m_eventMetadata->nRun, runWhitelist, runBlacklist) &&
+		              MatchWhiteBlackLists(event.m_eventMetadata->nLumi, lumiWhitelist, lumiBlacklist) &&
+		              MatchWhiteBlackLists(event.m_eventMetadata->nEvent, eventWhitelist, eventBlacklist));
+		return match;
 	}
 
 
