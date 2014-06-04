@@ -12,7 +12,7 @@
 class TestSettings : public SettingsBase {
 public:
 
-	TestSettings() : SettingsBase(), m_Level( 1) {
+	TestSettings() : SettingsBase(), m_Level( 1), m_Offset(23) {
 	}
 
 	TestSettings( std::string lineName ) : SettingsBase( lineName ), m_Level( 1) {
@@ -34,25 +34,7 @@ public:
 	{
 		return stringvector();
 	}
-};
-
-class TestGlobalSettings : public GlobalSettingsBase {
-public:
-
-	TestGlobalSettings() :
-			m_Offset(23) {
-
-	}
 
 	IMPL_PROPERTY(unsigned int, Offset)
-
-	// needs to be overwritte here, because the test
-	// cases don't have a json file loaded and
-	// the code would fail if a lookup to the json file
-	// would happen
-	virtual stringvector GetGlobalFilters () const
-		ARTUS_CPP11_OVERRIDE
-	{
-		return stringvector();
-	}
 };
+

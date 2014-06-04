@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_product )
 	tline4->bCheckProducer = true;
 	tline5->bCheckProducer = true;
 
-	TestGlobalSettings global_tset;
+	TestSettings global_tset;
 	tline1->InitPipeline( TestSettings("1"), TestPipelineInitializer() );
 	tline2->InitPipeline( TestSettings("2"), TestPipelineInitializer() );
 	tline3->InitPipeline( TestSettings("3"), TestPipelineInitializer() );
@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_producer_filter )
 	tline1->bCheckProducer = true;
 
 	TestSettings tset("1");
-	TestGlobalSettings global_tset;
+	TestSettings global_tset;
 	tset.SetLevel(1);
 	tline1->InitPipeline( tset, TestPipelineInitializer() );
 
@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_producer_filter_pass )
 	tline1->bCheckProducer = true;
 
 	TestSettings tset("1");
-	TestGlobalSettings global_tset;
+	TestSettings global_tset;
 	tset.SetLevel(1);
 	tline1->InitPipeline( tset, TestPipelineInitializer() );
 
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner )
 	TestPipelineInstr * tline4 = new TestPipelineInstr;
 	TestPipelineInstr * tline5 = new TestPipelineInstr;
 
-	TestGlobalSettings global_tset;
+	TestSettings global_tset;
 	tline1->InitPipeline( TestSettings("1"), TestPipelineInitializer() );
 	tline2->InitPipeline( TestSettings("2"), TestPipelineInitializer() );
 	tline3->InitPipeline( TestSettings("3"), TestPipelineInitializer() );
@@ -180,7 +180,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_result )
 						== FilterResult::Decision::Undefined );
 	};
 
-	TestGlobalSettings global_tset;
+	TestSettings global_tset;
 	tline1->InitPipeline( TestSettings("line1"), TestPipelineInitializer() );
 	tline2->InitPipeline( TestSettings("line2"), TestPipelineInitializer() );
 	tline3->InitPipeline( TestSettings("line3"), TestPipelineInitializer() );
@@ -210,7 +210,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_multi_level )
 	TestSettings tset_lvl1_a( "lvl1a");
 	TestSettings tset_lvl1_b( "lvl1b");
 	TestSettings tset_lvl2("lvl2");
-	TestGlobalSettings global_tset_lvl2;
+	TestSettings global_tset_lvl2;
 	tset_lvl1_a.SetLevel(1);
 	tset_lvl2.SetLevel(2);
 	tline1->InitPipeline( tset_lvl1_a, TestPipelineInitializer() );

@@ -20,7 +20,7 @@ public:
 	}
 
 	// for each pipeline
-	virtual void ProduceLocal(TestEvent const& event,
+	virtual void Produce(TestEvent const& event,
 			TestProduct & product,
 			TestSettings const& m_pipelineSettings) const
             ARTUS_CPP11_OVERRIDE {
@@ -37,7 +37,7 @@ public:
 	}
 
 	// for each pipeline
-	virtual void ProduceLocal(TestEvent const& event,
+	virtual void Produce(TestEvent const& event,
 			TestProduct & product,
 			TestSettings const& m_pipelineSettings) const
             ARTUS_CPP11_OVERRIDE {

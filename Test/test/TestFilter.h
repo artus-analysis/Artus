@@ -16,7 +16,7 @@ public:
 		return "testfilter";
 	}
 
-	virtual bool DoesEventPassLocal(const TestEvent & event,
+	virtual bool DoesEventPass(const TestEvent & event,
 			TestProduct const& product, TestSettings const& settings)  const
 	ARTUS_CPP11_OVERRIDE
 	{
@@ -31,7 +31,7 @@ public:
 		return "testfilter2";
 	}
 
-	virtual bool DoesEventPassLocal(const TestEvent & event,
+	virtual bool DoesEventPass(const TestEvent & event,
 			TestProduct const& product, TestSettings const& settings) const
 	ARTUS_CPP11_OVERRIDE
 	{
@@ -46,7 +46,7 @@ public:
 		return "testfilter3";
 	}
 
-	virtual bool DoesEventPassLocal(const TestEvent & event,
+	virtual bool DoesEventPass(const TestEvent & event,
 			TestProduct const& product, TestSettings const& settings) const
 	ARTUS_CPP11_OVERRIDE
 	{
@@ -62,8 +62,8 @@ public:
 		return "testglobalfilter";
 	}
 
-	virtual bool DoesEventPassGlobal(const TestEvent & event,
-			TestProduct const& product, TestGlobalSettings const& settings) const
+	virtual bool DoesEventPass(const TestEvent & event,
+			TestProduct const& product, TestSettings const& settings) const
 	ARTUS_CPP11_OVERRIDE
 	{
 		return (event.iVal == 0);
@@ -77,8 +77,8 @@ public:
 		return "testglobalfilter2";
 	}
 
-	virtual bool DoesEventPassGlobal(const TestEvent & event,
-			TestProduct const& product, TestGlobalSettings const& settings) const
+	virtual bool DoesEventPass(const TestEvent & event,
+			TestProduct const& product, TestSettings const& settings) const
 	ARTUS_CPP11_OVERRIDE
 	{
 		return ( product.iGlobalProduct2 == 1 );
