@@ -1,13 +1,18 @@
 
 #pragma once
 
+#include <algorithm>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/trim.hpp>
+#include <boost/regex.hpp>
+
 #include <Math/VectorUtil.h>
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/Utility/interface/Utility.h"
 
 /**
    \brief Producer for valid jets.
@@ -41,6 +46,11 @@ public:
 		ProducerBase<TTypes>::InitGlobal(globalSettings);
 		
 		GetMaxNeutralFraction(globalSettings.GetJetID());
+		
+		lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetJetLowerPtCuts()),
+		                                                           lowerPtCutsByHltName);
+		upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetJetLowerPtCuts()),
+		                                                               upperAbsEtaCutsByHltName);
 	}
 
 	virtual void InitLocal(setting_type const& settings)
@@ -48,6 +58,11 @@ public:
 		ProducerBase<TTypes>::InitLocal(settings);
 		
 		GetMaxNeutralFraction(settings.GetJetID());
+		
+		lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetJetLowerPtCuts()),
+		                                                           lowerPtCutsByHltName);
+		upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetJetLowerPtCuts()),
+		                                                               upperAbsEtaCutsByHltName);
 	}
 
 	virtual void ProduceGlobal(event_type const& event,
@@ -115,6 +130,9 @@ protected:
 			}
 			*/
 			
+			// kinematic cuts
+			validJet = validJet && PassKinematicCuts(&(*jet), event, product);
+			
 			// check possible analysis-specific criteria
 			validJet = validJet && AdditionalCriteria(&(*jet), event, product);
 
@@ -130,6 +148,72 @@ protected:
 	{
 		bool validJet = true;
 		
+		return validJet;
+	}
+
+
+private:
+	std::map<size_t, std::vector<float> > lowerPtCutsByIndex;
+	std::map<std::string, std::vector<float> > lowerPtCutsByHltName;
+	std::map<size_t, std::vector<float> > upperAbsEtaCutsByIndex;
+	std::map<std::string, std::vector<float> > upperAbsEtaCutsByHltName;
+	
+	bool PassKinematicCuts(TJet* jet, event_type const& event, product_type& product) const
+	{
+		bool validJet = true;
+		
+		for (std::map<size_t, std::vector<float> >::const_iterator lowerPtCutByIndex = lowerPtCutsByIndex.begin();
+		     lowerPtCutByIndex != lowerPtCutsByIndex.end() && validJet; ++lowerPtCutByIndex)
+		{
+			if ((jet->p4.Pt() < *std::max_element(lowerPtCutByIndex->second.begin(), lowerPtCutByIndex->second.end()))
+			    && (lowerPtCutByIndex->first == product.m_validJets.size()))
+			{
+				validJet = false;
+			}
+		}
+		
+		for (std::map<size_t, std::vector<float> >::const_iterator upperAbsEtaCutByIndex = upperAbsEtaCutsByIndex.begin();
+		     upperAbsEtaCutByIndex != upperAbsEtaCutsByIndex.end() && validJet; ++upperAbsEtaCutByIndex)
+		{
+			if ((std::abs(jet->p4.Eta()) > *std::min_element(upperAbsEtaCutByIndex->second.begin(), upperAbsEtaCutByIndex->second.end()))
+			    && (upperAbsEtaCutByIndex->first == product.m_validJets.size()))
+			{
+				validJet = false;
+			}
+		}
+		
+		for (std::map<std::string, std::vector<float> >::const_iterator lowerPtCutByHltName = lowerPtCutsByHltName.begin();
+		     lowerPtCutByHltName != lowerPtCutsByHltName.end() && validJet; ++lowerPtCutByHltName)
+		{
+			if ((jet->p4.Pt() < *std::max_element(lowerPtCutByHltName->second.begin(), lowerPtCutByHltName->second.end()))
+			    &&
+			    (
+			    	(lowerPtCutByHltName->first == "default")
+			    	||
+			    	boost::regex_search(product.selectedHltName, boost::regex(lowerPtCutByHltName->first, boost::regex::icase | boost::regex::extended))
+			    )
+			   )
+			{
+				validJet = false;
+			}
+		}
+		
+		for (std::map<std::string, std::vector<float> >::const_iterator upperAbsEtaCutByHltName = upperAbsEtaCutsByHltName.begin();
+		     upperAbsEtaCutByHltName != upperAbsEtaCutsByHltName.end() && validJet; ++upperAbsEtaCutByHltName)
+		{
+			if ((std::abs(jet->p4.Eta()) > *std::min_element(upperAbsEtaCutByHltName->second.begin(), upperAbsEtaCutByHltName->second.end()))
+			    &&
+			    (
+			    	(upperAbsEtaCutByHltName->first == "default")
+			    	||
+			    	boost::regex_search(product.selectedHltName, boost::regex(upperAbsEtaCutByHltName->first, boost::regex::icase | boost::regex::extended))
+			    )
+			   )
+			{
+				validJet = false;
+			}
+		}
+
 		return validJet;
 	}
 
