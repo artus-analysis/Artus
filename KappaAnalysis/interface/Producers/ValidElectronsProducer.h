@@ -1,8 +1,11 @@
 
 #pragma once
 
+#include <algorithm>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/trim.hpp>
+#include <boost/regex.hpp>
 
 #include <Math/VectorUtil.h>
 
@@ -24,6 +27,8 @@
      ElectronIsoType
      ElectronIso
      ElectronReco
+     ElectronLowerPtCuts
+     ElectronUpperAbsEtaCuts
 */
 
 template<class TTypes>
@@ -104,6 +109,11 @@ public:
 		electronIsoType = ToElectronIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetElectronIsoType())));
 		electronIso = ToElectronIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetElectronIso())));
 		electronReco = ToElectronReco(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetElectronReco())));
+		
+		lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
+		                                                           lowerPtCutsByHltName);
+		upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
+		                                                               upperAbsEtaCutsByHltName);
 	}
 
 	virtual void InitLocal(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
@@ -113,6 +123,11 @@ public:
 		electronIsoType = ToElectronIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronIsoType())));
 		electronIso = ToElectronIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronIso())));
 		electronReco = ToElectronReco(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronReco())));
+		
+		lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
+		                                                           lowerPtCutsByHltName);
+		upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
+		                                                               upperAbsEtaCutsByHltName);
 	}
 
 	virtual void ProduceGlobal(event_type const& event,
@@ -184,6 +199,9 @@ protected:
 			// conversion veto per default
 			validElectron = validElectron && !electron->hasConversionMatch;
 			
+			// kinematic cuts
+			validElectron = validElectron && PassKinematicCuts(&(*electron), event, product);
+			
 			// check possible analysis-specific criteria
 			validElectron = validElectron && AdditionalCriteria(&(*electron), event, product);
 
@@ -203,6 +221,10 @@ protected:
 
 
 private:
+	std::map<size_t, std::vector<float> > lowerPtCutsByIndex;
+	std::map<std::string, std::vector<float> > lowerPtCutsByHltName;
+	std::map<size_t, std::vector<float> > upperAbsEtaCutsByIndex;
+	std::map<std::string, std::vector<float> > upperAbsEtaCutsByHltName;
 
 	bool IsMVANonTrigElectron(KDataElectron* electron) const
 	{
@@ -266,6 +288,65 @@ private:
 					)
 				)
 			);
+
+		return validElectron;
+	}
+	
+	bool PassKinematicCuts(KDataElectron* electron, event_type const& event, product_type& product) const
+	{
+		bool validElectron = true;
+		
+		for (std::map<size_t, std::vector<float> >::const_iterator lowerPtCutByIndex = lowerPtCutsByIndex.begin();
+		     lowerPtCutByIndex != lowerPtCutsByIndex.end() && validElectron; ++lowerPtCutByIndex)
+		{
+			if ((electron->p4.Pt() < *std::max_element(lowerPtCutByIndex->second.begin(), lowerPtCutByIndex->second.end()))
+			    && (lowerPtCutByIndex->first == product.m_validElectrons.size()))
+			{
+				validElectron = false;
+			}
+		}
+		
+		for (std::map<size_t, std::vector<float> >::const_iterator upperAbsEtaCutByIndex = upperAbsEtaCutsByIndex.begin();
+		     upperAbsEtaCutByIndex != upperAbsEtaCutsByIndex.end() && validElectron; ++upperAbsEtaCutByIndex)
+		{
+			if ((std::abs(electron->p4.Eta()) > *std::min_element(upperAbsEtaCutByIndex->second.begin(), upperAbsEtaCutByIndex->second.end()))
+			    && (upperAbsEtaCutByIndex->first == product.m_validElectrons.size()))
+			{
+				validElectron = false;
+			}
+		}
+		
+		for (std::map<std::string, std::vector<float> >::const_iterator lowerPtCutByHltName = lowerPtCutsByHltName.begin();
+		     lowerPtCutByHltName != lowerPtCutsByHltName.end() && validElectron; ++lowerPtCutByHltName)
+		{
+			if ((electron->p4.Pt() < *std::max_element(lowerPtCutByHltName->second.begin(), lowerPtCutByHltName->second.end()))
+			    &&
+			    (
+			    	(lowerPtCutByHltName->first == "default")
+			    	||
+			    	boost::regex_search(product.selectedHltName, boost::regex(lowerPtCutByHltName->first, boost::regex::icase | boost::regex::extended))
+			    )
+			   )
+			{
+				validElectron = false;
+			}
+		}
+		
+		for (std::map<std::string, std::vector<float> >::const_iterator upperAbsEtaCutByHltName = upperAbsEtaCutsByHltName.begin();
+		     upperAbsEtaCutByHltName != upperAbsEtaCutsByHltName.end() && validElectron; ++upperAbsEtaCutByHltName)
+		{
+			if ((std::abs(electron->p4.Eta()) > *std::min_element(upperAbsEtaCutByHltName->second.begin(), upperAbsEtaCutByHltName->second.end()))
+			    &&
+			    (
+			    	(upperAbsEtaCutByHltName->first == "default")
+			    	||
+			    	boost::regex_search(product.selectedHltName, boost::regex(upperAbsEtaCutByHltName->first, boost::regex::icase | boost::regex::extended))
+			    )
+			   )
+			{
+				validElectron = false;
+			}
+		}
 
 		return validElectron;
 	}
