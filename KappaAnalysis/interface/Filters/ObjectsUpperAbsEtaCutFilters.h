@@ -4,6 +4,7 @@
 #include <limits>
 
 #include <boost/lexical_cast.hpp>
+#include <boost/regex.hpp>
 
 #include "Artus/Filter/interface/CutFilterBase.h"
 #include "Artus/Utility/interface/Utility.h"
