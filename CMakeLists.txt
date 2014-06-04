@@ -48,7 +48,7 @@ add_library(artus_consumer SHARED
 )
 
 add_library(artus_filter SHARED
-	Provider/src/ArtusFilter.cc
+	Filter/src/ArtusFilter.cc
 )
 
 add_library(artus_provider SHARED
