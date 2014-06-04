@@ -12,6 +12,7 @@
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
 #include "Artus/Utility/interface/Utility.h"
 
 /**
@@ -27,8 +28,8 @@
 */
 
 
-template<class TTypes, class TJet>
-class ValidJetsProducerBase: public ProducerBase<TTypes>
+template<class TTypes, class TJet, class TValidJet>
+class ValidJetsProducerBase: public ProducerBase<TTypes>, public ValidPhysicsObjectTools<TTypes, TValidJet>
 {
 
 public:
@@ -38,7 +39,11 @@ public:
 	typedef typename TTypes::global_setting_type global_setting_type;
 	typedef typename TTypes::setting_type setting_type;
 	
-	ValidJetsProducerBase(std::vector<TJet>* event_type::*jets) : m_jetsMember(jets) {
+	ValidJetsProducerBase(std::vector<TJet>* event_type::*jets, std::vector<TValidJet*> product_type::*validJets) :
+		ProducerBase<TTypes>(),
+		ValidPhysicsObjectTools<TTypes, TValidJet>(validJets),
+		m_jetsMember(jets)
+	{
 	}
 
 	virtual void InitGlobal(global_setting_type const& globalSettings)
@@ -47,10 +52,10 @@ public:
 		
 		GetMaxNeutralFraction(globalSettings.GetJetID());
 		
-		lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetJetLowerPtCuts()),
-		                                                           lowerPtCutsByHltName);
-		upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetJetLowerPtCuts()),
-		                                                               upperAbsEtaCutsByHltName);
+		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
+		                                                                 this->lowerPtCutsByHltName);
+		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
+		                                                                     this->upperAbsEtaCutsByHltName);
 	}
 
 	virtual void InitLocal(setting_type const& settings)
@@ -59,10 +64,10 @@ public:
 		
 		GetMaxNeutralFraction(settings.GetJetID());
 		
-		lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetJetLowerPtCuts()),
-		                                                           lowerPtCutsByHltName);
-		upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetJetLowerPtCuts()),
-		                                                               upperAbsEtaCutsByHltName);
+		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
+		                                                                 this->lowerPtCutsByHltName);
+		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
+		                                                                     this->upperAbsEtaCutsByHltName);
 	}
 
 	virtual void ProduceGlobal(event_type const& event,
@@ -131,7 +136,7 @@ protected:
 			*/
 			
 			// kinematic cuts
-			validJet = validJet && PassKinematicCuts(&(*jet), event, product);
+			validJet = validJet && this->PassKinematicCuts(&(*jet), event, product);
 			
 			// check possible analysis-specific criteria
 			validJet = validJet && AdditionalCriteria(&(*jet), event, product);
@@ -151,72 +156,6 @@ protected:
 		return validJet;
 	}
 
-
-private:
-	std::map<size_t, std::vector<float> > lowerPtCutsByIndex;
-	std::map<std::string, std::vector<float> > lowerPtCutsByHltName;
-	std::map<size_t, std::vector<float> > upperAbsEtaCutsByIndex;
-	std::map<std::string, std::vector<float> > upperAbsEtaCutsByHltName;
-	
-	bool PassKinematicCuts(TJet* jet, event_type const& event, product_type& product) const
-	{
-		bool validJet = true;
-		
-		for (std::map<size_t, std::vector<float> >::const_iterator lowerPtCutByIndex = lowerPtCutsByIndex.begin();
-		     lowerPtCutByIndex != lowerPtCutsByIndex.end() && validJet; ++lowerPtCutByIndex)
-		{
-			if ((jet->p4.Pt() < *std::max_element(lowerPtCutByIndex->second.begin(), lowerPtCutByIndex->second.end()))
-			    && (lowerPtCutByIndex->first == product.m_validJets.size()))
-			{
-				validJet = false;
-			}
-		}
-		
-		for (std::map<size_t, std::vector<float> >::const_iterator upperAbsEtaCutByIndex = upperAbsEtaCutsByIndex.begin();
-		     upperAbsEtaCutByIndex != upperAbsEtaCutsByIndex.end() && validJet; ++upperAbsEtaCutByIndex)
-		{
-			if ((std::abs(jet->p4.Eta()) > *std::min_element(upperAbsEtaCutByIndex->second.begin(), upperAbsEtaCutByIndex->second.end()))
-			    && (upperAbsEtaCutByIndex->first == product.m_validJets.size()))
-			{
-				validJet = false;
-			}
-		}
-		
-		for (std::map<std::string, std::vector<float> >::const_iterator lowerPtCutByHltName = lowerPtCutsByHltName.begin();
-		     lowerPtCutByHltName != lowerPtCutsByHltName.end() && validJet; ++lowerPtCutByHltName)
-		{
-			if ((jet->p4.Pt() < *std::max_element(lowerPtCutByHltName->second.begin(), lowerPtCutByHltName->second.end()))
-			    &&
-			    (
-			    	(lowerPtCutByHltName->first == "default")
-			    	||
-			    	boost::regex_search(product.selectedHltName, boost::regex(lowerPtCutByHltName->first, boost::regex::icase | boost::regex::extended))
-			    )
-			   )
-			{
-				validJet = false;
-			}
-		}
-		
-		for (std::map<std::string, std::vector<float> >::const_iterator upperAbsEtaCutByHltName = upperAbsEtaCutsByHltName.begin();
-		     upperAbsEtaCutByHltName != upperAbsEtaCutsByHltName.end() && validJet; ++upperAbsEtaCutByHltName)
-		{
-			if ((std::abs(jet->p4.Eta()) > *std::min_element(upperAbsEtaCutByHltName->second.begin(), upperAbsEtaCutByHltName->second.end()))
-			    &&
-			    (
-			    	(upperAbsEtaCutByHltName->first == "default")
-			    	||
-			    	boost::regex_search(product.selectedHltName, boost::regex(upperAbsEtaCutByHltName->first, boost::regex::icase | boost::regex::extended))
-			    )
-			   )
-			{
-				validJet = false;
-			}
-		}
-
-		return validJet;
-	}
-
 };
 
 
@@ -227,10 +166,13 @@ private:
    Operates on the vector event.m_jets.
 */
 template<class TTypes>
-class ValidJetsProducer: public ValidJetsProducerBase<TTypes, KDataPFJet>
+class ValidJetsProducer: public ValidJetsProducerBase<TTypes, KDataPFJet, KDataPFJet>
 {
 public:
-	ValidJetsProducer() : ValidJetsProducerBase<TTypes, KDataPFJet>(&TTypes::event_type::m_jets) {};
+	ValidJetsProducer() : ValidJetsProducerBase<TTypes, KDataPFJet, KDataPFJet>(&TTypes::event_type::m_jets,
+	                                                                            &TTypes::product_type::m_validJets)
+	{
+	};
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "valid_jets";
@@ -245,10 +187,13 @@ public:
    Operates on the vector event.m_tjets.
 */
 template<class TTypes>
-class ValidTaggedJetsProducer: public ValidJetsProducerBase<TTypes, KDataPFTaggedJet>
+class ValidTaggedJetsProducer: public ValidJetsProducerBase<TTypes, KDataPFTaggedJet, KDataPFJet>
 {
 public:
-	ValidTaggedJetsProducer() : ValidJetsProducerBase<TTypes, KDataPFTaggedJet>(&TTypes::event_type::m_tjets) {};
+	ValidTaggedJetsProducer() : ValidJetsProducerBase<TTypes, KDataPFTaggedJet, KDataPFJet>(&TTypes::event_type::m_tjets,
+	                                                                                        &TTypes::product_type::m_validJets)
+	{
+	};
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "valid_tagged_jets";

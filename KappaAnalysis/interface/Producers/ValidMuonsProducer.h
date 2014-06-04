@@ -12,6 +12,7 @@
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
 #include "Artus/Utility/interface/Utility.h"
 
 
@@ -30,7 +31,7 @@
 */
 
 template<class TTypes>
-class ValidMuonsProducer: public ProducerBase<TTypes>
+class ValidMuonsProducer: public ProducerBase<TTypes>, public ValidPhysicsObjectTools<TTypes, KDataMuon>
 {
 
 public:
@@ -82,6 +83,12 @@ public:
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "valid_muons";
 	}
+	
+	ValidMuonsProducer() :
+		ProducerBase<TTypes>(),
+		ValidPhysicsObjectTools<TTypes, KDataMuon>(&product_type::m_validMuons)
+	{
+	}
 
 	virtual void InitGlobal(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
 		ProducerBase<TTypes>::InitGlobal(globalSettings);
@@ -91,10 +98,10 @@ public:
 		muonIsoType = ToMuonIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetMuonIsoType())));
 		muonIso = ToMuonIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetMuonIso())));
 		
-		lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetMuonLowerPtCuts()),
-		                                                           lowerPtCutsByHltName);
-		upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetMuonLowerPtCuts()),
-		                                                               upperAbsEtaCutsByHltName);
+		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
+		                                                                 this->lowerPtCutsByHltName);
+		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
+		                                                                     this->upperAbsEtaCutsByHltName);
 	}
 
 	virtual void InitLocal(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
@@ -105,10 +112,10 @@ public:
 		muonIsoType = ToMuonIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonIsoType())));
 		muonIso = ToMuonIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonIso())));
 		
-		lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetMuonLowerPtCuts()),
-		                                                           lowerPtCutsByHltName);
-		upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetMuonLowerPtCuts()),
-		                                                               upperAbsEtaCutsByHltName);
+		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
+		                                                                 this->lowerPtCutsByHltName);
+		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
+		                                                                     this->upperAbsEtaCutsByHltName);
 	}
 
 	virtual void ProduceGlobal(event_type const& event,
@@ -176,7 +183,7 @@ protected:
 				LOG(FATAL) << "Muon isolation type of type " << Utility::ToUnderlyingValue(muonIsoType) << " not yet implemented!";
 			
 			// kinematic cuts
-			validMuon = validMuon && PassKinematicCuts(&(*muon), event, product);
+			validMuon = validMuon && this->PassKinematicCuts(&(*muon), event, product);
 			
 			// check possible analysis-specific criteria
 			validMuon = validMuon && AdditionalCriteria(&(*muon), event, product);
@@ -197,10 +204,6 @@ protected:
 
 
 private:
-	std::map<size_t, std::vector<float> > lowerPtCutsByIndex;
-	std::map<std::string, std::vector<float> > lowerPtCutsByHltName;
-	std::map<size_t, std::vector<float> > upperAbsEtaCutsByIndex;
-	std::map<std::string, std::vector<float> > upperAbsEtaCutsByHltName;
 	
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon_selection
 	bool IsTightMuon2011(KDataMuon* muon, event_type const& event, product_type& product) const
@@ -238,64 +241,6 @@ private:
 		
 		return validMuon;
 	}
-	
-	bool PassKinematicCuts(KDataMuon* muon, event_type const& event, product_type& product) const
-	{
-		bool validMuon = true;
-		
-		for (std::map<size_t, std::vector<float> >::const_iterator lowerPtCutByIndex = lowerPtCutsByIndex.begin();
-		     lowerPtCutByIndex != lowerPtCutsByIndex.end() && validMuon; ++lowerPtCutByIndex)
-		{
-			if ((muon->p4.Pt() < *std::max_element(lowerPtCutByIndex->second.begin(), lowerPtCutByIndex->second.end()))
-			    && (lowerPtCutByIndex->first == product.m_validMuons.size()))
-			{
-				validMuon = false;
-			}
-		}
-		
-		for (std::map<size_t, std::vector<float> >::const_iterator upperAbsEtaCutByIndex = upperAbsEtaCutsByIndex.begin();
-		     upperAbsEtaCutByIndex != upperAbsEtaCutsByIndex.end() && validMuon; ++upperAbsEtaCutByIndex)
-		{
-			if ((std::abs(muon->p4.Eta()) > *std::min_element(upperAbsEtaCutByIndex->second.begin(), upperAbsEtaCutByIndex->second.end()))
-			    && (upperAbsEtaCutByIndex->first == product.m_validMuons.size()))
-			{
-				validMuon = false;
-			}
-		}
-		
-		for (std::map<std::string, std::vector<float> >::const_iterator lowerPtCutByHltName = lowerPtCutsByHltName.begin();
-		     lowerPtCutByHltName != lowerPtCutsByHltName.end() && validMuon; ++lowerPtCutByHltName)
-		{
-			if ((muon->p4.Pt() < *std::max_element(lowerPtCutByHltName->second.begin(), lowerPtCutByHltName->second.end()))
-			    &&
-			    (
-			    	(lowerPtCutByHltName->first == "default")
-			    	||
-			    	boost::regex_search(product.selectedHltName, boost::regex(lowerPtCutByHltName->first, boost::regex::icase | boost::regex::extended))
-			    )
-			   )
-			{
-				validMuon = false;
-			}
-		}
-		
-		for (std::map<std::string, std::vector<float> >::const_iterator upperAbsEtaCutByHltName = upperAbsEtaCutsByHltName.begin();
-		     upperAbsEtaCutByHltName != upperAbsEtaCutsByHltName.end() && validMuon; ++upperAbsEtaCutByHltName)
-		{
-			if ((std::abs(muon->p4.Eta()) > *std::min_element(upperAbsEtaCutByHltName->second.begin(), upperAbsEtaCutByHltName->second.end()))
-			    &&
-			    (
-			    	(upperAbsEtaCutByHltName->first == "default")
-			    	||
-			    	boost::regex_search(product.selectedHltName, boost::regex(upperAbsEtaCutByHltName->first, boost::regex::icase | boost::regex::extended))
-			    )
-			   )
-			{
-				validMuon = false;
-			}
-		}
 
-		return validMuon;
-	}
 };
 

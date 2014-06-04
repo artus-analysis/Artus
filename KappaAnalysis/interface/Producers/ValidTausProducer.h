@@ -8,6 +8,7 @@
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
 #include "Artus/Utility/interface/SafeMap.h"
 #include "Artus/Utility/interface/Utility.h"
 
@@ -19,7 +20,7 @@
 */
 
 template<class TTypes>
-class ValidTausProducer: public ProducerBase<TTypes>
+class ValidTausProducer: public ProducerBase<TTypes>, public ValidPhysicsObjectTools<TTypes, KDataPFTau>
 {
 
 public:
@@ -33,6 +34,12 @@ public:
 		return "valid_taus";
 	}
 	
+	ValidTausProducer() :
+		ProducerBase<TTypes>(),
+		ValidPhysicsObjectTools<TTypes, KDataPFTau>(&product_type::m_validTaus)
+	{
+	}
+	
 	virtual void InitGlobal(global_setting_type const& globalSettings)  ARTUS_CPP11_OVERRIDE
 	{
 		ProducerBase<TTypes>::InitGlobal(globalSettings);
@@ -40,10 +47,10 @@ public:
 		// parse additional config tags
 		discriminators = Utility::ParseVectorToMap(globalSettings.GetTauDiscriminators());
 		
-		lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetTauLowerPtCuts()),
-		                                                           lowerPtCutsByHltName);
-		upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetTauLowerPtCuts()),
-		                                                               upperAbsEtaCutsByHltName);
+		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
+		                                                                 this->lowerPtCutsByHltName);
+		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
+		                                                                     this->upperAbsEtaCutsByHltName);
 	}
 	
 	virtual void InitLocal(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
@@ -53,10 +60,10 @@ public:
 		// parse additional config tags
 		discriminators = Utility::ParseVectorToMap(settings.GetTauDiscriminators());
 		
-		lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetTauLowerPtCuts()),
-		                                                           lowerPtCutsByHltName);
-		upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetTauLowerPtCuts()),
-		                                                               upperAbsEtaCutsByHltName);
+		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
+		                                                                 this->lowerPtCutsByHltName);
+		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
+		                                                                     this->upperAbsEtaCutsByHltName);
 	}
 
 	virtual void ProduceGlobal(event_type const& event,
@@ -98,7 +105,7 @@ protected:
 			}
 			
 			// kinematic cuts
-			validTau = validTau && PassKinematicCuts(&(*tau), event, product);
+			validTau = validTau && this->PassKinematicCuts(&(*tau), event, product);
 			
 			// check possible analysis-specific criteria
 			validTau = validTau && AdditionalCriteria(&(*tau), event, product);
@@ -120,70 +127,6 @@ protected:
 
 private:
 	std::map<std::string, std::vector<std::string> > discriminators;
-	
-	std::map<size_t, std::vector<float> > lowerPtCutsByIndex;
-	std::map<std::string, std::vector<float> > lowerPtCutsByHltName;
-	std::map<size_t, std::vector<float> > upperAbsEtaCutsByIndex;
-	std::map<std::string, std::vector<float> > upperAbsEtaCutsByHltName;
-	
-	bool PassKinematicCuts(KDataPFTau* tau, event_type const& event, product_type& product) const
-	{
-		bool validTau = true;
-		
-		for (std::map<size_t, std::vector<float> >::const_iterator lowerPtCutByIndex = lowerPtCutsByIndex.begin();
-		     lowerPtCutByIndex != lowerPtCutsByIndex.end() && validTau; ++lowerPtCutByIndex)
-		{
-			LOG(INFO) << tau->p4.Pt() << ", " << *std::max_element(lowerPtCutByIndex->second.begin(), lowerPtCutByIndex->second.end());
-			if ((tau->p4.Pt() < *std::max_element(lowerPtCutByIndex->second.begin(), lowerPtCutByIndex->second.end()))
-			    && (lowerPtCutByIndex->first == product.m_validTaus.size()))
-			{
-				validTau = false;
-			}
-		}
-		
-		for (std::map<size_t, std::vector<float> >::const_iterator upperAbsEtaCutByIndex = upperAbsEtaCutsByIndex.begin();
-		     upperAbsEtaCutByIndex != upperAbsEtaCutsByIndex.end() && validTau; ++upperAbsEtaCutByIndex)
-		{
-			if ((std::abs(tau->p4.Eta()) > *std::min_element(upperAbsEtaCutByIndex->second.begin(), upperAbsEtaCutByIndex->second.end()))
-			    && (upperAbsEtaCutByIndex->first == product.m_validTaus.size()))
-			{
-				validTau = false;
-			}
-		}
-		
-		for (std::map<std::string, std::vector<float> >::const_iterator lowerPtCutByHltName = lowerPtCutsByHltName.begin();
-		     lowerPtCutByHltName != lowerPtCutsByHltName.end() && validTau; ++lowerPtCutByHltName)
-		{
-			if ((tau->p4.Pt() < *std::max_element(lowerPtCutByHltName->second.begin(), lowerPtCutByHltName->second.end()))
-			    &&
-			    (
-			    	(lowerPtCutByHltName->first == "default")
-			    	||
-			    	boost::regex_search(product.selectedHltName, boost::regex(lowerPtCutByHltName->first, boost::regex::icase | boost::regex::extended))
-			    )
-			   )
-			{
-				validTau = false;
-			}
-		}
-		
-		for (std::map<std::string, std::vector<float> >::const_iterator upperAbsEtaCutByHltName = upperAbsEtaCutsByHltName.begin();
-		     upperAbsEtaCutByHltName != upperAbsEtaCutsByHltName.end() && validTau; ++upperAbsEtaCutByHltName)
-		{
-			if ((std::abs(tau->p4.Eta()) > *std::min_element(upperAbsEtaCutByHltName->second.begin(), upperAbsEtaCutByHltName->second.end()))
-			    &&
-			    (
-			    	(upperAbsEtaCutByHltName->first == "default")
-			    	||
-			    	boost::regex_search(product.selectedHltName, boost::regex(upperAbsEtaCutByHltName->first, boost::regex::icase | boost::regex::extended))
-			    )
-			   )
-			{
-				validTau = false;
-			}
-		}
 
-		return validTau;
-	}
 };
 
