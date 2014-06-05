@@ -12,6 +12,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/ValidMuonsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidTausProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidJetsProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/ValidBTaggedJetsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/PUWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/EventWeightProducer.h"
 
@@ -57,6 +58,8 @@ public:
 			return new ValidJetsProducer<TTypes>();
 		else if(id == ValidTaggedJetsProducer<TTypes>().GetProducerId())
 			return new ValidTaggedJetsProducer<TTypes>();
+		else if(id == ValidBTaggedJetsProducer<TTypes>().GetProducerId())
+			return new ValidBTaggedJetsProducer<TTypes>();
 		else if(id == PUWeightProducer<TTypes>().GetProducerId())
 			return new PUWeightProducer<TTypes>();
 		else if(id == EventWeightProducer<TTypes>().GetProducerId())

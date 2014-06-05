@@ -43,6 +43,10 @@ public:
 	std::vector<KDataPFJet*> m_validJets;
 	std::vector<KDataPFJet*> m_invalidJets;
 	
+	/// added by ValidBTaggedJetsProducer
+	std::vector<KDataPFTaggedJet*> m_bTaggedJets;
+	std::vector<KDataPFTaggedJet*> m_nonBTaggedJets;
+	
 	HLTTools* m_hltInfo = new HLTTools();
 	std::string selectedHltName = "";
 
