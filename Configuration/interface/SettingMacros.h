@@ -81,26 +81,26 @@ public: \
 
 
 #define IMPL_SETTING_STRINGLIST( SNAME ) \
-VarCache<stringvector> m_##SNAME; 		  \
-stringvector Get##SNAME () const {  		  \
+VarCache<stringvector> m_##SNAME; \
+stringvector& Get##SNAME () const { \
 	RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsStringList(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
 }
 
 #define IMPL_SETTING_DOUBLELIST( SNAME ) \
-VarCache<doublevector> m_##SNAME; 		  \
-doublevector Get##SNAME () const {  		  \
+VarCache<doublevector> m_##SNAME; \
+doublevector& Get##SNAME () const { \
 	RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsDoubleList(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
 }
 
 #define IMPL_SETTING_FLOATLIST( SNAME ) \
-VarCache<floatvector> m_##SNAME; 		  \
-floatvector Get##SNAME () const {  		  \
+VarCache<floatvector> m_##SNAME; \
+floatvector& Get##SNAME () const { \
 	RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsFloatList(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
 }
 
 #define IMPL_SETTING_INTLIST( SNAME ) \
-VarCache<intvector> m_##SNAME; 		  \
-intvector Get##SNAME () const {  		  \
+VarCache<intvector> m_##SNAME; \
+intvector& Get##SNAME () const { \
 	RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsIntList(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
 }
 

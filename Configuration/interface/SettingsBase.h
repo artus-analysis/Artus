@@ -76,23 +76,14 @@ public:
 	}
 
 	/// get list of all local producers
-	VarCache<stringvector> m_processors;
-	virtual stringvector GetProcessors() const
-	{
-		std::cout << "Get Proc" << std::endl;
-		RETURN_CACHED(m_processors, PropertyTreeSupport::GetAsStringList(GetPropTree(), GetPipelinePrefix() + "Processors"))
-	}
+	IMPL_SETTING_STRINGLIST(Processors)
 
 	virtual stringvector GetFilters () const {
-		return SettingsUtil::ExtractFilters(GetProcessors() );
+		return SettingsUtil::ExtractFilters(GetProcessors());
 	}
 
 	/// get list of all consumers
-	VarCache<stringvector> m_consumers;
-	virtual stringvector GetConsumers() const
-	{
-		RETURN_CACHED(m_consumers, PropertyTreeSupport::GetAsStringList(GetPropTree(),  GetPipelinePrefix() + "Consumers"))
-	}
+	IMPL_SETTING_STRINGLIST(Consumers)
 
 };
 

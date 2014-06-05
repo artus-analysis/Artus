@@ -31,7 +31,7 @@ public:
 	/*
 	 * Returns the cached value
 	 */
-	inline TData GetValue() const {
+	inline TData& GetValue() const {
 		if (! m_isCached)
 			LOG(FATAL) << "Non-cached variable used!";
 
@@ -54,6 +54,10 @@ private:
  * Implements a implicit caching using the VarCache class
  */
 #define RETURN_CACHED(CACHE_MEMBER,VALUEPATH) \
-{ if (! CACHE_MEMBER.IsCached() ) \
-  {             CACHE_MEMBER.SetCache( VALUEPATH );} \
-return CACHE_MEMBER.GetValue(); }
+{ \
+	if (! CACHE_MEMBER.IsCached()) \
+	{ \
+		CACHE_MEMBER.SetCache( VALUEPATH ); \
+	} \
+	return CACHE_MEMBER.GetValue(); \
+}
