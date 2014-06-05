@@ -17,7 +17,6 @@ class LeptonLowerPtCutsFilter: public CutRangeFilterBase<TTypes> {
 public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::global_setting_type global_setting_type;
 	typedef typename TTypes::setting_type setting_type;
 	
 	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
@@ -31,7 +30,7 @@ public:
 
 protected:
 
-	void Init(std::vector<std::string> const& leptonLowerPtCutsVector) {
+	void Initialise(std::vector<std::string> const& leptonLowerPtCutsVector) {
 		std::map<std::string, std::vector<std::string> > leptonLowerPtCuts = Utility::ParseVectorToMap(leptonLowerPtCutsVector);
 	
 		std::vector<int> defaultIndices = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
@@ -110,11 +109,9 @@ public:
 	
 	ElectronLowerPtCutsFilter() : LeptonLowerPtCutsFilter<TTypes, KDataElectron>(&TTypes::product_type::m_validElectrons) {}
 	
-	virtual void InitGlobal(typename TTypes::global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
-		this->Init(globalSettings.GetElectronLowerPtCuts());
-	}
-	virtual void InitLocal(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		this->Init(settings.GetElectronLowerPtCuts());
+	
+	virtual void Init(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+		this->Initialise(settings.GetElectronLowerPtCuts());
 	}
 };
 
@@ -131,11 +128,8 @@ public:
 	
 	MuonLowerPtCutsFilter() : LeptonLowerPtCutsFilter<TTypes, KDataMuon>(&TTypes::product_type::m_validMuons) {}
 	
-	virtual void InitGlobal(typename TTypes::global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
-		this->Init(globalSettings.GetMuonLowerPtCuts());
-	}
-	virtual void InitLocal(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		this->Init(settings.GetMuonLowerPtCuts());
+	virtual void Init(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+		this->Initialise(settings.GetMuonLowerPtCuts());
 	}
 };
 
@@ -152,11 +146,8 @@ public:
 	
 	TauLowerPtCutsFilter() : LeptonLowerPtCutsFilter<TTypes, KDataPFTau>(&TTypes::product_type::m_validTaus) {}
 	
-	virtual void InitGlobal(typename TTypes::global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
-		this->Init(globalSettings.GetTauLowerPtCuts());
-	}
-	virtual void InitLocal(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		this->Init(settings.GetTauLowerPtCuts());
+	virtual void Init(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+		this->Initialise(settings.GetTauLowerPtCuts());
 	}
 };
 
@@ -173,11 +164,8 @@ public:
 	
 	JetLowerPtCutsFilter() : LeptonLowerPtCutsFilter<TTypes, KDataPFJet>(&TTypes::product_type::m_validJets) {}
 	
-	virtual void InitGlobal(typename TTypes::global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
-		this->Init(globalSettings.GetJetLowerPtCuts());
-	}
-	virtual void InitLocal(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		this->Init(settings.GetJetLowerPtCuts());
+	virtual void Init(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+		this->Initialise(settings.GetJetLowerPtCuts());
 	}
 };
 

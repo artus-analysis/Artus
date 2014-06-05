@@ -36,7 +36,6 @@ public:
 
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::global_setting_type global_setting_type;
 	typedef typename TTypes::setting_type setting_type;
 	
 	ValidJetsProducerBase(std::vector<TJet>* event_type::*jets, std::vector<TValidJet*> product_type::*validJets) :
@@ -46,23 +45,11 @@ public:
 	{
 	}
 
-	virtual void InitGlobal(global_setting_type const& globalSettings)
+	virtual void Init(setting_type const& settings)
 	{
-		ProducerBase<TTypes>::InitGlobal(globalSettings);
+		ProducerBase<TTypes>::Init(settings);
 		
-		GetMaxNeutralFraction(globalSettings.GetJetID());
-		
-		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
-		                                                                 this->lowerPtCutsByHltName);
-		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
-		                                                                     this->upperAbsEtaCutsByHltName);
-	}
-
-	virtual void InitLocal(setting_type const& settings)
-	{
-		ProducerBase<TTypes>::InitLocal(settings);
-		
-		GetMaxNeutralFraction(settings.GetJetID());
+		maxNeutralFraction = GetMaxNeutralFraction(settings.GetJetID());
 		
 		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
 		                                                                 this->lowerPtCutsByHltName);
@@ -70,41 +57,8 @@ public:
 		                                                                     this->upperAbsEtaCutsByHltName);
 	}
 
-	virtual void ProduceGlobal(event_type const& event,
-	                           product_type& product,
-	                           global_setting_type const& globalSettings) const ARTUS_CPP11_OVERRIDE
-	{
-		Produce(event, product);
-	}
-
-	virtual void ProduceLocal(event_type const& event,
-	                          product_type& product,
-	                          setting_type const& settings) const ARTUS_CPP11_OVERRIDE
-	{
-		Produce(event, product);
-	}
-
-private:
-	std::vector<TJet>* event_type::*m_jetsMember;
-	float max_neutral_fraction;
-
-	void GetMaxNeutralFraction(std::string jetid)
-	{
-		std::string tmpjetid = boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(jetid));
-		if (tmpjetid == "tight")
-			max_neutral_fraction = 0.90;
-		else if (tmpjetid == "medium")
-			max_neutral_fraction = 0.95;
-		else if (tmpjetid == "loose")
-			max_neutral_fraction = 0.99;
-		else
-			LOG(FATAL) << "Jet ID " << jetid << " not implemented!";
-	}
-
-protected:
-
-	// function that lets this producer work as both a global and a local producer
-	virtual void Produce(event_type const& event, product_type& product) const
+	virtual void Produce(event_type const& event, product_type& product,
+	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		for (typename std::vector<TJet>::iterator jet = (event.*m_jetsMember)->begin();
 		     jet != (event.*m_jetsMember)->end(); ++jet)
@@ -115,8 +69,8 @@ protected:
 			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
 			// jets, all eta
 			validJet = validJet
-					   && jet->neutralHadFraction + jet->HFHadFraction < max_neutral_fraction
-					   && jet->neutralEMFraction < max_neutral_fraction
+					   && jet->neutralHadFraction + jet->HFHadFraction < maxNeutralFraction
+					   && jet->neutralEMFraction < maxNeutralFraction
 					   && jet->nConst > 1;
 			// jets, |eta| < 2.4 (tracker)
 			if (std::abs(jet->p4.eta()) < 2.4)
@@ -139,7 +93,7 @@ protected:
 			validJet = validJet && this->PassKinematicCuts(&(*jet), event, product);
 			
 			// check possible analysis-specific criteria
-			validJet = validJet && AdditionalCriteria(&(*jet), event, product);
+			validJet = validJet && AdditionalCriteria(&(*jet), event, product, settings);
 
 			if (validJet)
 				product.m_validJets.push_back(&(*jet));
@@ -147,9 +101,34 @@ protected:
 				product.m_invalidJets.push_back(&(*jet));
 		}
 	}
+
+private:
+	std::vector<TJet>* event_type::*m_jetsMember;
+	float maxNeutralFraction;
+
+	float GetMaxNeutralFraction(std::string jetid)
+	{
+		std::string tmpjetid = boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(jetid));
+		maxNeutralFraction = 0.0;
+		
+		if (tmpjetid == "tight")
+			maxNeutralFraction = 0.90;
+		else if (tmpjetid == "medium")
+			maxNeutralFraction = 0.95;
+		else if (tmpjetid == "loose")
+			maxNeutralFraction = 0.99;
+		else
+			LOG(FATAL) << "Jet ID " << jetid << " not implemented!";
+		
+		return maxNeutralFraction;
+	}
+
+
+protected:
 	
 	// Can be overwritten for analysis-specific use cases
-	virtual bool AdditionalCriteria(TJet* jet, event_type const& event, product_type& product) const
+	virtual bool AdditionalCriteria(TJet* jet, event_type const& event,
+	                                product_type& product, setting_type const& settings) const
 	{
 		bool validJet = true;
 		

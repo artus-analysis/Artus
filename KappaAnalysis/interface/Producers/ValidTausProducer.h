@@ -27,7 +27,6 @@ public:
 
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::global_setting_type global_setting_type;
 	typedef typename TTypes::setting_type setting_type;
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
@@ -40,22 +39,9 @@ public:
 	{
 	}
 	
-	virtual void InitGlobal(global_setting_type const& globalSettings)  ARTUS_CPP11_OVERRIDE
+	virtual void Init(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
 	{
-		ProducerBase<TTypes>::InitGlobal(globalSettings);
-	
-		// parse additional config tags
-		discriminators = Utility::ParseVectorToMap(globalSettings.GetTauDiscriminators());
-		
-		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
-		                                                                 this->lowerPtCutsByHltName);
-		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
-		                                                                     this->upperAbsEtaCutsByHltName);
-	}
-	
-	virtual void InitLocal(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
-	{
-		ProducerBase<TTypes>::InitLocal(settings);
+		ProducerBase<TTypes>::Init(settings);
 	
 		// parse additional config tags
 		discriminators = Utility::ParseVectorToMap(settings.GetTauDiscriminators());
@@ -66,25 +52,8 @@ public:
 		                                                                     this->upperAbsEtaCutsByHltName);
 	}
 
-	virtual void ProduceGlobal(event_type const& event,
-	                           product_type& product,
-	                           global_setting_type const& globalSettings) const ARTUS_CPP11_OVERRIDE
-	{
-		Produce(event, product);
-	}
-
-	virtual void ProduceLocal(event_type const& event,
-	                          product_type& product,
-	                          setting_type const& settings) const ARTUS_CPP11_OVERRIDE
-	{
-		Produce(event, product);
-	}
-
-
-protected:
-
-	// function that lets this producer work as both a global and a local producer
-	virtual void Produce(event_type const& event, product_type& product) const
+	virtual void Produce(event_type const& event, product_type& product,
+	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		for (KDataPFTaus::iterator tau = event.m_taus->begin();
 			 tau != event.m_taus->end(); tau++)
@@ -108,7 +77,7 @@ protected:
 			validTau = validTau && this->PassKinematicCuts(&(*tau), event, product);
 			
 			// check possible analysis-specific criteria
-			validTau = validTau && AdditionalCriteria(&(*tau), event, product);
+			validTau = validTau && AdditionalCriteria(&(*tau), event, product, settings);
 			
 			if (validTau)
 				product.m_validTaus.push_back(&(*tau));
@@ -116,9 +85,13 @@ protected:
 				product.m_invalidTaus.push_back(&(*tau));
 		}
 	}
+
+
+protected:
 	
 	// Can be overwritten for analysis-specific use cases
-	virtual bool AdditionalCriteria(KDataPFTau* tau, event_type const& event, product_type& product) const
+	virtual bool AdditionalCriteria(KDataPFTau* tau, event_type const& event,
+	                                product_type& product, setting_type const& settings) const
 	{
 		bool validTau = true;
 		return validTau;

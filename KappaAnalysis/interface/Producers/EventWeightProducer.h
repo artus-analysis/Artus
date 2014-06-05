@@ -22,20 +22,14 @@ public:
 
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::global_setting_type global_setting_type;
 	typedef typename TTypes::setting_type setting_type;
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "event_weight";
 	}
 	
-	virtual void InitLocal(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
-	{
-		ProducerBase<TTypes>::InitLocal(settings);
-	}
-
-	virtual void ProduceLocal(event_type const& event, product_type& product,
-	                          setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	virtual void Produce(event_type const& event, product_type& product,
+	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		double eventWeight = 1.0;
 	

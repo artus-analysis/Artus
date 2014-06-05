@@ -38,7 +38,6 @@ public:
 
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::global_setting_type global_setting_type;
 	typedef typename TTypes::setting_type setting_type;
 
 	enum class MuonID : int
@@ -90,24 +89,9 @@ public:
 	{
 	}
 
-	virtual void InitGlobal(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
-		ProducerBase<TTypes>::InitGlobal(globalSettings);
+	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+		ProducerBase<TTypes>::Init(settings);
 		
-		year = globalSettings.GetYear();
-		muonID = ToMuonID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetMuonID())));
-		muonIsoType = ToMuonIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetMuonIsoType())));
-		muonIso = ToMuonIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetMuonIso())));
-		
-		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
-		                                                                 this->lowerPtCutsByHltName);
-		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
-		                                                                     this->upperAbsEtaCutsByHltName);
-	}
-
-	virtual void InitLocal(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		ProducerBase<TTypes>::InitLocal(settings);
-		
-		year = settings.GetYear();
 		muonID = ToMuonID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonID())));
 		muonIsoType = ToMuonIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonIsoType())));
 		muonIso = ToMuonIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonIso())));
@@ -118,29 +102,8 @@ public:
 		                                                                     this->upperAbsEtaCutsByHltName);
 	}
 
-	virtual void ProduceGlobal(event_type const& event,
-	                           product_type& product,
-	                           global_setting_type const& globalSettings) const ARTUS_CPP11_OVERRIDE
-	{
-		Produce(event, product);
-	}
-
-	virtual void ProduceLocal(event_type const& event,
-	                          product_type& product,
-	                          setting_type const& settings) const ARTUS_CPP11_OVERRIDE
-	{
-		Produce(event, product);
-	}
-
-
-protected:
-	int year;
-	MuonID muonID;
-	MuonIsoType muonIsoType;
-	MuonIso muonIso;
-
-	// function that lets this producer work as both a global and a local producer
-	virtual void Produce(event_type const& event, product_type& product) const
+	virtual void Produce(event_type const& event, product_type& product,
+	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		// Apply muon isolation and MuonID
 		for (KDataMuons::iterator muon = event.m_muons->begin();
@@ -150,12 +113,12 @@ protected:
 
 			// Muon ID according to Muon POG definitions
 			if (muonID == MuonID::TIGHT) {
-				if (year == 2012)
+				if (settings.GetYear() == 2012)
 					validMuon = validMuon && IsTightMuon2012(&(*muon), event, product);
-				else if (year == 2011)
+				else if (settings.GetYear() == 2011)
 					validMuon = validMuon && IsTightMuon2011(&(*muon), event, product);
 				else
-					LOG(FATAL) << "Tight muon ID for year " << year << " not yet implemented!";
+					LOG(FATAL) << "Tight muon ID for year " << settings.GetYear() << " not yet implemented!";
 			}
 			else if (muonID != MuonID::NONE)
 				LOG(FATAL) << "Muon ID of type " << Utility::ToUnderlyingValue(muonID) << " not yet implemented!";
@@ -186,7 +149,7 @@ protected:
 			validMuon = validMuon && this->PassKinematicCuts(&(*muon), event, product);
 			
 			// check possible analysis-specific criteria
-			validMuon = validMuon && AdditionalCriteria(&(*muon), event, product);
+			validMuon = validMuon && AdditionalCriteria(&(*muon), event, product, settings);
 			
 			if (validMuon)
 				product.m_validMuons.push_back(&(*muon));
@@ -194,9 +157,16 @@ protected:
 				product.m_invalidMuons.push_back(&(*muon));
 		}
 	}
+
+
+protected:
+	MuonID muonID;
+	MuonIsoType muonIsoType;
+	MuonIso muonIso;
 	
 	// Can be overwritten for analysis-specific use cases
-	virtual bool AdditionalCriteria(KDataMuon* muon, event_type const& event, product_type& product) const
+	virtual bool AdditionalCriteria(KDataMuon* muon, event_type const& event,
+	                                product_type& product, setting_type const& settings) const
 	{
 		bool validMuon = true;
 		return validMuon;

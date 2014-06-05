@@ -29,29 +29,17 @@ public:
 
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::global_setting_type global_setting_type;
 	typedef typename TTypes::setting_type setting_type;
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "gen_taudecay";
 	}
-	
-	virtual void InitGlobal(global_setting_type const& globalSettings)  ARTUS_CPP11_OVERRIDE
-	{
-		ProducerBase<TTypes>::InitGlobal(globalSettings);
-	}
-	
-	virtual void InitLocal(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
-	{
-		ProducerBase<TTypes>::InitLocal(settings);
-	}
 
-	virtual void ProduceGlobal(event_type const& event,
-							   product_type& product,
-							   global_setting_type const& globalSettings) const
+	virtual void Produce(event_type const& event, product_type& product,
+	                     setting_type const& settings) const
 	{
 		// Reading Boson PdgId from TauSpinnerSettings.json
-		stringvector bosonPdgIdVector = globalSettings.GetBosonPdgId();
+		stringvector bosonPdgIdVector = settings.GetBosonPdgId();
 		int bosonPdgId;
 		std::istringstream(bosonPdgIdVector[0]) >> bosonPdgId;
 
@@ -88,7 +76,7 @@ public:
 						if ( (event.m_genParticles->at(indDaughter)).daughterIndices.size() != 0)
 						{
 							unsigned int indDaughterStat2 = (event.m_genParticles->at(indDaughter)).daughterIndex(0);
-							buildDecayTree(lastBosonDaughterRef, indDaughterStat2, event);
+							BuildDecayTree(lastBosonDaughterRef, indDaughterStat2, event);
 						}
 						else lastBosonDaughterRef.finalState = true;
 					}
@@ -103,7 +91,10 @@ public:
 	//std::cout << "parent ueber Daughter: " << product.m_genBoson[0].Daughters[0].Daughters[0].parent << std::endl;
 	//std::cout << std::endl;
 	}
-	void buildDecayTree(MotherDaughterBundle & lastProductParentRef, unsigned int lastEventParentIndex, event_type const& event) const
+	
+
+private:
+	void BuildDecayTree(MotherDaughterBundle & lastProductParentRef, unsigned int lastEventParentIndex, event_type const& event) const
 	{
 		for (unsigned int j=0; j<(event.m_genParticles->at(lastEventParentIndex)).daughterIndices.size() && (event.m_genParticles->at(lastEventParentIndex)).daughterIndices.size() != 0; ++j)
 		{
@@ -118,7 +109,7 @@ public:
 				lastDaughterRef.setCharge();
 				lastDaughterRef.setDetectable();
 				if ( (event.m_genParticles->at(DaughterIndex)).daughterIndices.size() == 0) lastDaughterRef.finalState = true;
-				else buildDecayTree(lastDaughterRef, DaughterIndex, event);
+				else BuildDecayTree(lastDaughterRef, DaughterIndex, event);
 			}
 			else
 			{
@@ -126,5 +117,6 @@ public:
 			}
 		}
 	}
+
 };
 

@@ -12,7 +12,6 @@ class ElectronsCountFilter: public CutRangeFilterBase<TTypes> {
 public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::global_setting_type global_setting_type;
 	typedef typename TTypes::setting_type setting_type;
 	
 	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
@@ -20,20 +19,13 @@ public:
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "n_electrons";
 	}
-	virtual void InitGlobal(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
-		Init(globalSettings.GetNElectrons());
-	}
-	virtual void InitLocal(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		Init(settings.GetNElectrons());
-	}
-
-private:
-	void Init(int nElectrons) {
+	
+	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
 		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 				[](event_type const& event, product_type const& product) {
 					return product.m_validElectrons.size();
 				},
-				CutRange::EqualsCut(double(nElectrons))
+				CutRange::EqualsCut(double(settings.GetNElectrons()))
 		));
 	}
 };
@@ -47,7 +39,6 @@ class MuonsCountFilter: public CutRangeFilterBase<TTypes> {
 public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::global_setting_type global_setting_type;
 	typedef typename TTypes::setting_type setting_type;
 	
 	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
@@ -55,20 +46,13 @@ public:
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "n_muons";
 	}
-	virtual void InitGlobal(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
-		Init(globalSettings.GetNMuons());
-	}
-	virtual void InitLocal(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		Init(settings.GetNMuons());
-	}
-
-private:
-	void Init(int nMuons) {
+	
+	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
 		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 				[](event_type const& event, product_type const& product) {
 					return product.m_validMuons.size();
 				},
-				CutRange::EqualsCut(double(nMuons))
+				CutRange::EqualsCut(double(settings.GetNMuons()))
 		));
 	}
 };
@@ -82,7 +66,6 @@ class TausCountFilter: public CutRangeFilterBase<TTypes> {
 public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::global_setting_type global_setting_type;
 	typedef typename TTypes::setting_type setting_type;
 	
 	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
@@ -90,20 +73,13 @@ public:
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "n_taus";
 	}
-	virtual void InitGlobal(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
-		Init(globalSettings.GetNTaus());
-	}
-	virtual void InitLocal(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		Init(settings.GetNTaus());
-	}
-
-private:
-	void Init(int nTaus) {
+	
+	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
 		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 				[](event_type const& event, product_type const& product) {
 					return product.m_validTaus.size();
 				},
-				CutRange::EqualsCut(double(nTaus))
+				CutRange::EqualsCut(double(settings.GetNTaus()))
 		));
 	}
 };
@@ -117,7 +93,6 @@ class JetsCountFilter: public CutRangeFilterBase<TTypes> {
 public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::global_setting_type global_setting_type;
 	typedef typename TTypes::setting_type setting_type;
 	
 	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
@@ -125,20 +100,13 @@ public:
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "n_jets";
 	}
-	virtual void InitGlobal(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
-		Init(globalSettings.GetNJets());
-	}
-	virtual void InitLocal(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		Init(settings.GetNJets());
-	}
-
-private:
-	void Init(int nJets) {
+	
+	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
 		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 				[](event_type const& event, product_type const& product) {
 					return product.m_validJets.size();
 				},
-				CutRange::EqualsCut(double(nJets))
+				CutRange::EqualsCut(double(settings.GetNJets()))
 		));
 	}
 };

@@ -17,7 +17,6 @@ class LeptonUpperAbsEtaCutsFilter: public CutRangeFilterBase<TTypes> {
 public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::global_setting_type global_setting_type;
 	typedef typename TTypes::setting_type setting_type;
 	
 	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
@@ -31,7 +30,7 @@ public:
 
 protected:
 
-	void Init(std::vector<std::string> const& leptonUpperAbsEtaCutsVector) {
+	void Initialise(std::vector<std::string> const& leptonUpperAbsEtaCutsVector) {
 		std::map<std::string, std::vector<std::string> > leptonUpperAbsEtaCuts = Utility::ParseVectorToMap(leptonUpperAbsEtaCutsVector);
 	
 		std::vector<int> defaultIndices = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
@@ -110,11 +109,8 @@ public:
 	
 	ElectronUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<TTypes, KDataElectron>(&TTypes::product_type::m_validElectrons) {}
 	
-	virtual void InitGlobal(typename TTypes::global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
-		this->Init(globalSettings.GetElectronUpperAbsEtaCuts());
-	}
-	virtual void InitLocal(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		this->Init(settings.GetElectronUpperAbsEtaCuts());
+	virtual void Init(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+		this->Initialise(settings.GetElectronUpperAbsEtaCuts());
 	}
 };
 
@@ -131,11 +127,8 @@ public:
 	
 	MuonUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<TTypes, KDataMuon>(&TTypes::product_type::m_validMuons) {}
 	
-	virtual void InitGlobal(typename TTypes::global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
-		this->Init(globalSettings.GetMuonUpperAbsEtaCuts());
-	}
-	virtual void InitLocal(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		this->Init(settings.GetMuonUpperAbsEtaCuts());
+	virtual void Init(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+		this->Initialise(settings.GetMuonUpperAbsEtaCuts());
 	}
 };
 
@@ -152,11 +145,8 @@ public:
 	
 	TauUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<TTypes, KDataPFTau>(&TTypes::product_type::m_validTaus) {}
 	
-	virtual void InitGlobal(typename TTypes::global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
-		this->Init(globalSettings.GetTauUpperAbsEtaCuts());
-	}
-	virtual void InitLocal(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		this->Init(settings.GetTauUpperAbsEtaCuts());
+	virtual void Init(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+		this->Initialise(settings.GetTauUpperAbsEtaCuts());
 	}
 };
 
@@ -173,11 +163,8 @@ public:
 	
 	JetUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<TTypes, KDataPFJet>(&TTypes::product_type::m_validJets) {}
 	
-	virtual void InitGlobal(typename TTypes::global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
-		this->Init(globalSettings.GetJetUpperAbsEtaCuts());
-	}
-	virtual void InitLocal(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		this->Init(settings.GetJetUpperAbsEtaCuts());
+	virtual void Init(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+		this->Initialise(settings.GetJetUpperAbsEtaCuts());
 	}
 };
 

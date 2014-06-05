@@ -32,7 +32,6 @@ public:
 
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::global_setting_type global_setting_type;
 	typedef typename TTypes::setting_type setting_type;
 	
 	static bool LeptonHasMatched(event_type const& event, product_type const& product, KLepton* lepton, size_t const& index)
@@ -84,47 +83,8 @@ public:
 		return "trigger_matching";
 	}
 
-	virtual void InitGlobal(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
-		ProducerBase<TTypes>::InitGlobal(globalSettings);
-		
-		deltaRTriggerMatchingElectron = globalSettings.GetDeltaRTriggerMatchingElectron();
-		deltaRTriggerMatchingMuon = globalSettings.GetDeltaRTriggerMatchingMuon();
-		deltaRTriggerMatchingTau = globalSettings.GetDeltaRTriggerMatchingTau();
-		deltaRTriggerMatchingJet = globalSettings.GetDeltaRTriggerMatchingJet();
-	}
-
-	virtual void InitLocal(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		ProducerBase<TTypes>::InitLocal(settings);
-		
-		deltaRTriggerMatchingElectron = settings.GetDeltaRTriggerMatchingElectron();
-		deltaRTriggerMatchingMuon = settings.GetDeltaRTriggerMatchingMuon();
-		deltaRTriggerMatchingTau = settings.GetDeltaRTriggerMatchingTau();
-		deltaRTriggerMatchingJet = settings.GetDeltaRTriggerMatchingJet();
-	}
-
-	virtual void ProduceGlobal(event_type const& event,
-	                           product_type& product,
-	                           global_setting_type const& globalSettings) const ARTUS_CPP11_OVERRIDE
-	{
-		Produce(event, product);
-	}
-
-	virtual void ProduceLocal(event_type const& event,
-	                          product_type& product,
-	                          setting_type const& settings) const ARTUS_CPP11_OVERRIDE
-	{
-		Produce(event, product);
-	}
-
-
-protected:
-	float deltaRTriggerMatchingElectron = 0.0;
-	float deltaRTriggerMatchingMuon = 0.0;
-	float deltaRTriggerMatchingTau = 0.0;
-	float deltaRTriggerMatchingJet = 0.0;
-
-	// function that lets this producer work as both a global and a local producer
-	virtual void Produce(event_type const& event, product_type& product) const
+	virtual void Produce(event_type const& event, product_type& product,
+	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		assert(event.m_triggerObjects);
 		
@@ -136,30 +96,30 @@ protected:
 			{
 				KDataLV triggerObject = event.m_triggerObjects->trgObjects.at(*hltIndex);
 			
-				if (event.m_electrons && deltaRTriggerMatchingElectron > 0.0)
+				if (event.m_electrons && settings.GetDeltaRTriggerMatchingElectron() > 0.0)
 				{
-					product.m_triggerMatchedElectrons = MatchRecoObjects(event.m_electrons, triggerObject, deltaRTriggerMatchingElectron);
+					product.m_triggerMatchedElectrons = MatchRecoObjects(event.m_electrons, triggerObject, settings.GetDeltaRTriggerMatchingElectron());
 				}
 			
-				if (event.m_muons && deltaRTriggerMatchingMuon > 0.0)
+				if (event.m_muons && settings.GetDeltaRTriggerMatchingMuon() > 0.0)
 				{
-					product.m_triggerMatchedMuons = MatchRecoObjects(event.m_muons, triggerObject, deltaRTriggerMatchingMuon);
+					product.m_triggerMatchedMuons = MatchRecoObjects(event.m_muons, triggerObject, settings.GetDeltaRTriggerMatchingMuon());
 				}
 			
-				if (event.m_taus && deltaRTriggerMatchingTau > 0.0)
+				if (event.m_taus && settings.GetDeltaRTriggerMatchingTau() > 0.0)
 				{
-					product.m_triggerMatchedTaus = MatchRecoObjects(event.m_taus, triggerObject, deltaRTriggerMatchingTau);
+					product.m_triggerMatchedTaus = MatchRecoObjects(event.m_taus, triggerObject, settings.GetDeltaRTriggerMatchingTau());
 				}
 			
-				if (deltaRTriggerMatchingJet > 0.0)
+				if (settings.GetDeltaRTriggerMatchingJet() > 0.0)
 				{
 					if (event.m_jets)
 					{
-						product.m_triggerMatchedJets = MatchRecoObjects(event.m_jets, triggerObject, deltaRTriggerMatchingJet);
+						product.m_triggerMatchedJets = MatchRecoObjects(event.m_jets, triggerObject, settings.GetDeltaRTriggerMatchingJet());
 					}
 					if (event.m_tjets)
 					{
-						product.m_triggerMatchedTaggedJets = MatchRecoObjects(event.m_tjets, triggerObject, deltaRTriggerMatchingJet);
+						product.m_triggerMatchedTaggedJets = MatchRecoObjects(event.m_tjets, triggerObject, settings.GetDeltaRTriggerMatchingJet());
 					}
 				}
 			}

@@ -21,49 +21,16 @@ public:
 
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::global_setting_type global_setting_type;
 	typedef typename TTypes::setting_type setting_type;
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "hlt_selector";
 	}
-	
-	virtual void InitGlobal(global_setting_type const& globalSettings)  ARTUS_CPP11_OVERRIDE
-	{
-		ProducerBase<TTypes>::InitGlobal(globalSettings);
-	}
-	
-	virtual void InitLocal(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
-	{
-		ProducerBase<TTypes>::InitLocal(settings);
-	}
 
-	virtual void ProduceGlobal(event_type const& event,
-	                           product_type& product,
-	                           global_setting_type const& globalSettings) const ARTUS_CPP11_OVERRIDE
+	virtual void Produce(event_type const& event, product_type& product,
+	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
-		std::vector<std::string> hltPaths = globalSettings.GetHltPaths();
-		bool allowPrescaledTrigger = globalSettings.GetAllowPrescaledTrigger();
-		Produce(event, product, hltPaths, allowPrescaledTrigger);
-	}
-
-	virtual void ProduceLocal(event_type const& event,
-	                          product_type& product,
-	                          setting_type const& settings) const ARTUS_CPP11_OVERRIDE
-	{
-		std::vector<std::string> hltPaths = settings.GetHltPaths();
-		bool allowPrescaledTrigger = settings.GetAllowPrescaledTrigger();
-		Produce(event, product, hltPaths, allowPrescaledTrigger);
-	}
-
-
-private:
-
-	// function that lets this producer work as both a global and a local producer
-	void Produce(event_type const& event, product_type& product,
-	             std::vector<std::string> hltPaths, bool allowPrescaledTrigger) const
-	{
-		if (hltPaths.size() == 0) {
+		if (settings.GetHltPaths().size() == 0) {
 			LOG(FATAL) << "No Hlt Trigger path list (tag \"HltPaths\") configured!";
 		}
 
@@ -76,7 +43,7 @@ private:
 		std::string firedTriggerName;
 		int prescaleFiredHlt = std::numeric_limits<int>::max();
 		bool unprescaledPathFound = false;
-		for (stringvector::const_iterator hltPath = hltPaths.begin(); hltPath != hltPaths.end(); ++hltPath)
+		for (stringvector::const_iterator hltPath = settings.GetHltPaths().begin(); hltPath != settings.GetHltPaths().end(); ++hltPath)
 		{
 			std::string hltName = product.m_hltInfo->getHLTName(*hltPath);
 			if (! hltName.empty())
@@ -111,9 +78,9 @@ private:
 			}
 		}
 		
-		if (unprescaledPathFound || (allowPrescaledTrigger && (! lowestPrescaleHltName.empty())))
+		if (unprescaledPathFound || (settings.GetAllowPrescaledTrigger() && (! lowestPrescaleHltName.empty())))
 		{
-			if (prescaleFiredHlt == lowestPrescaleHltName || allowPrescaledTrigger)
+			if (prescaleFiredHlt == lowestPrescaleHltName || settings.GetAllowPrescaledTrigger())
 			{
 				product.selectedHltName = firedTriggerName;
 				product.m_weights["hltPrescaleWeight"] = prescaleFiredHlt;

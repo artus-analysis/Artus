@@ -27,7 +27,7 @@ template<class TTypes>
 class KappaEventProviderBase: public EventProviderBase<TTypes> {
 public:
 	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::global_setting_type global_setting_type;
+	typedef typename TTypes::setting_type setting_type;
 
 	KappaEventProviderBase(FileInterface2 & fi, InputTypeEnum inpType) :
 			EventProviderBase<TTypes>(),
@@ -49,7 +49,7 @@ public:
 
 	/// overwrite and load the Kappa products into your event structure call yourself after 
 	/// creating the provider
-	virtual void WireEvent( global_setting_type const& ) = 0;
+	virtual void WireEvent( setting_type const& ) = 0;
 
 	virtual bool GetEntry(long long lEvent ) ARTUS_CPP11_OVERRIDE {
 

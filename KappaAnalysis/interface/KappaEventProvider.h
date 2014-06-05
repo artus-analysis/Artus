@@ -16,7 +16,7 @@ template<class TTypes>
 class KappaEventProvider: public KappaEventProviderBase<TTypes> {
 public:
 	
-	typedef typename TTypes::global_setting_type global_setting_type;
+	typedef typename TTypes::setting_type setting_type;
 	
 	KappaEventProvider(FileInterface2 & fi, InputTypeEnum inpType) :
 		KappaEventProviderBase<TTypes>(fi, inpType)
@@ -24,75 +24,75 @@ public:
 
 	}
 
-	virtual void WireEvent(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
+	virtual void WireEvent(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
 		
 		// Electrons
-		if(! globalSettings.GetElectrons().empty())
-			this->m_event.m_electrons = this->template SecureFileInterfaceGet<KDataElectrons>(globalSettings.GetElectrons());
+		if(! settings.GetElectrons().empty())
+			this->m_event.m_electrons = this->template SecureFileInterfaceGet<KDataElectrons>(settings.GetElectrons());
 
 		// Muons
-		if(! globalSettings.GetMuons().empty())
-			this->m_event.m_muons = this->template SecureFileInterfaceGet<KDataMuons>(globalSettings.GetMuons());
+		if(! settings.GetMuons().empty())
+			this->m_event.m_muons = this->template SecureFileInterfaceGet<KDataMuons>(settings.GetMuons());
 
 		// Taus
-		if(! globalSettings.GetTaus().empty())
-			this->m_event.m_taus = this->template SecureFileInterfaceGet<KDataPFTaus>(globalSettings.GetTaus());
-		if(! globalSettings.GetTauDiscriminatorMetadata().empty())
-			this->m_event.m_tauDiscriminatorMetadata = this->template SecureFileInterfaceGetMeta<KTauDiscriminatorMetadata>(globalSettings.GetTauDiscriminatorMetadata());
+		if(! settings.GetTaus().empty())
+			this->m_event.m_taus = this->template SecureFileInterfaceGet<KDataPFTaus>(settings.GetTaus());
+		if(! settings.GetTauDiscriminatorMetadata().empty())
+			this->m_event.m_tauDiscriminatorMetadata = this->template SecureFileInterfaceGetMeta<KTauDiscriminatorMetadata>(settings.GetTauDiscriminatorMetadata());
 
 		// Jets
-		if(! globalSettings.GetJets().empty())
-			this->m_event.m_jets = this->template SecureFileInterfaceGet<KDataPFJets>(globalSettings.GetJets());
-		if(! globalSettings.GetTaggedJets().empty())
-			this->m_event.m_tjets = this->template SecureFileInterfaceGet<KDataPFTaggedJets>(globalSettings.GetTaggedJets());
-		if(! globalSettings.GetJetArea().empty())
-			this->m_event.m_jetArea = this->template SecureFileInterfaceGet<KJetArea>(globalSettings.GetJetArea());
+		if(! settings.GetJets().empty())
+			this->m_event.m_jets = this->template SecureFileInterfaceGet<KDataPFJets>(settings.GetJets());
+		if(! settings.GetTaggedJets().empty())
+			this->m_event.m_tjets = this->template SecureFileInterfaceGet<KDataPFTaggedJets>(settings.GetTaggedJets());
+		if(! settings.GetJetArea().empty())
+			this->m_event.m_jetArea = this->template SecureFileInterfaceGet<KJetArea>(settings.GetJetArea());
 	
 		// MET info
-		if(! globalSettings.GetMet().empty())
-			this->m_event.m_met = this->template SecureFileInterfaceGet<KDataPFMET>(globalSettings.GetMet());
+		if(! settings.GetMet().empty())
+			this->m_event.m_met = this->template SecureFileInterfaceGet<KDataPFMET>(settings.GetMet());
 
 		//GenMET info
-		if(! globalSettings.GetGenMet().empty())
-			this->m_event.m_genMet = this->template SecureFileInterfaceGet<KDataPFMET>(globalSettings.GetMet());
+		if(! settings.GetGenMet().empty())
+			this->m_event.m_genMet = this->template SecureFileInterfaceGet<KDataPFMET>(settings.GetMet());
 
 		// PF candidates info
-		if(! globalSettings.GetPFChargedHadronsPileUp().empty())
-			this->m_event.m_pfChargedHadronsPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(globalSettings.GetPFChargedHadronsPileUp());
-		if(! globalSettings.GetPFChargedHadronsNoPileUp().empty())
-			this->m_event.m_pfChargedHadronsNoPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(globalSettings.GetPFChargedHadronsNoPileUp());
-		if(! globalSettings.GetPFNeutralHadronsNoPileUp().empty())
-			this->m_event.m_pfNeutralHadronsNoPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(globalSettings.GetPFNeutralHadronsNoPileUp());
-		if(! globalSettings.GetPFPhotonsNoPileUp().empty())
-			this->m_event.m_pfPhotonsNoPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(globalSettings.GetPFPhotonsNoPileUp());
+		if(! settings.GetPFChargedHadronsPileUp().empty())
+			this->m_event.m_pfChargedHadronsPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(settings.GetPFChargedHadronsPileUp());
+		if(! settings.GetPFChargedHadronsNoPileUp().empty())
+			this->m_event.m_pfChargedHadronsNoPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(settings.GetPFChargedHadronsNoPileUp());
+		if(! settings.GetPFNeutralHadronsNoPileUp().empty())
+			this->m_event.m_pfNeutralHadronsNoPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(settings.GetPFNeutralHadronsNoPileUp());
+		if(! settings.GetPFPhotonsNoPileUp().empty())
+			this->m_event.m_pfPhotonsNoPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(settings.GetPFPhotonsNoPileUp());
 		
 		// Generator info
-		if(! globalSettings.GetGenParticles().empty())
-			this->m_event.m_genParticles = this->template SecureFileInterfaceGet<KGenParticles>(globalSettings.GetGenParticles());
+		if(! settings.GetGenParticles().empty())
+			this->m_event.m_genParticles = this->template SecureFileInterfaceGet<KGenParticles>(settings.GetGenParticles());
 	
 		// Vertex info
-		if(! globalSettings.GetBeamSpot().empty())
-			this->m_event.m_beamSpot = this->template SecureFileInterfaceGet<KDataBeamSpot>(globalSettings.GetBeamSpot());
-		if(! globalSettings.GetVertexSummary().empty())
-			this->m_event.m_vertexSummary = this->template SecureFileInterfaceGet<KVertexSummary>(globalSettings.GetVertexSummary());
+		if(! settings.GetBeamSpot().empty())
+			this->m_event.m_beamSpot = this->template SecureFileInterfaceGet<KDataBeamSpot>(settings.GetBeamSpot());
+		if(! settings.GetVertexSummary().empty())
+			this->m_event.m_vertexSummary = this->template SecureFileInterfaceGet<KVertexSummary>(settings.GetVertexSummary());
 
 		// Meta data // TODO: move to KappaEventProviderBase?
-		if(! globalSettings.GetLumiMetadata().empty())
-			this->m_event.m_lumiMetadata = this->template SecureFileInterfaceGetMeta<KLumiMetadata>(globalSettings.GetLumiMetadata());
-		if(! globalSettings.GetGenLumiMetadata().empty())
-			this->m_event.m_genLumiMetadata = this->template SecureFileInterfaceGetMeta<KGenLumiMetadata>(globalSettings.GetGenLumiMetadata());
-		if(! globalSettings.GetEventMetadata().empty())
-			this->m_event.m_eventMetadata = this->template SecureFileInterfaceGet<KEventMetadata>(globalSettings.GetEventMetadata());
-		if(! globalSettings.GetGenEventMetadata().empty())
-			this->m_event.m_genEventMetadata = this->template SecureFileInterfaceGet<KGenEventMetadata>(globalSettings.GetGenEventMetadata());
-		if(! globalSettings.GetFilterMetadata().empty())
-			this->m_event.m_filterMetadata = this->template SecureFileInterfaceGetMeta<KFilterMetadata>(globalSettings.GetFilterMetadata()); // TODO: Check
-		if(! globalSettings.GetFilterSummary().empty())
-			this->m_event.m_filterSummary = this->template SecureFileInterfaceGetMeta<KFilterSummary>(globalSettings.GetFilterSummary()); // TODO: Check
-		if(! globalSettings.GetTaggerMetadata().empty())
-			this->m_event.m_taggermetadata = this->template SecureFileInterfaceGetMeta<KTaggerMetadata>(globalSettings.GetTaggerMetadata());
-		if(! globalSettings.GetTriggerObjects().empty())
-			this->m_event.m_triggerObjects = this->template SecureFileInterfaceGet<KTriggerObjects>(globalSettings.GetTriggerObjects(), false);
+		if(! settings.GetLumiMetadata().empty())
+			this->m_event.m_lumiMetadata = this->template SecureFileInterfaceGetMeta<KLumiMetadata>(settings.GetLumiMetadata());
+		if(! settings.GetGenLumiMetadata().empty())
+			this->m_event.m_genLumiMetadata = this->template SecureFileInterfaceGetMeta<KGenLumiMetadata>(settings.GetGenLumiMetadata());
+		if(! settings.GetEventMetadata().empty())
+			this->m_event.m_eventMetadata = this->template SecureFileInterfaceGet<KEventMetadata>(settings.GetEventMetadata());
+		if(! settings.GetGenEventMetadata().empty())
+			this->m_event.m_genEventMetadata = this->template SecureFileInterfaceGet<KGenEventMetadata>(settings.GetGenEventMetadata());
+		if(! settings.GetFilterMetadata().empty())
+			this->m_event.m_filterMetadata = this->template SecureFileInterfaceGetMeta<KFilterMetadata>(settings.GetFilterMetadata()); // TODO: Check
+		if(! settings.GetFilterSummary().empty())
+			this->m_event.m_filterSummary = this->template SecureFileInterfaceGetMeta<KFilterSummary>(settings.GetFilterSummary()); // TODO: Check
+		if(! settings.GetTaggerMetadata().empty())
+			this->m_event.m_taggermetadata = this->template SecureFileInterfaceGetMeta<KTaggerMetadata>(settings.GetTaggerMetadata());
+		if(! settings.GetTriggerObjects().empty())
+			this->m_event.m_triggerObjects = this->template SecureFileInterfaceGet<KTriggerObjects>(settings.GetTriggerObjects(), false);
 
 	}
 
