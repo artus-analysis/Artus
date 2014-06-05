@@ -1,13 +1,19 @@
 
 #pragma once
 
+#include <algorithm>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/trim.hpp>
+#include <boost/regex.hpp>
+
 #include <Math/VectorUtil.h>
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
+#include "Artus/Utility/interface/Utility.h"
 
 /**
    \brief Producer for valid jets.
@@ -22,8 +28,8 @@
 */
 
 
-template<class TTypes, class TJet>
-class ValidJetsProducerBase: public ProducerBase<TTypes>
+template<class TTypes, class TJet, class TValidJet>
+class ValidJetsProducerBase: public ProducerBase<TTypes>, public ValidPhysicsObjectTools<TTypes, TValidJet>
 {
 
 public:
@@ -33,7 +39,11 @@ public:
 	typedef typename TTypes::global_setting_type global_setting_type;
 	typedef typename TTypes::setting_type setting_type;
 	
-	ValidJetsProducerBase(std::vector<TJet>* event_type::*jets) : m_jetsMember(jets) {
+	ValidJetsProducerBase(std::vector<TJet>* event_type::*jets, std::vector<TValidJet*> product_type::*validJets) :
+		ProducerBase<TTypes>(),
+		ValidPhysicsObjectTools<TTypes, TValidJet>(validJets),
+		m_jetsMember(jets)
+	{
 	}
 
 	virtual void InitGlobal(global_setting_type const& globalSettings)
@@ -41,6 +51,11 @@ public:
 		ProducerBase<TTypes>::InitGlobal(globalSettings);
 		
 		GetMaxNeutralFraction(globalSettings.GetJetID());
+		
+		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
+		                                                                 this->lowerPtCutsByHltName);
+		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
+		                                                                     this->upperAbsEtaCutsByHltName);
 	}
 
 	virtual void InitLocal(setting_type const& settings)
@@ -48,6 +63,11 @@ public:
 		ProducerBase<TTypes>::InitLocal(settings);
 		
 		GetMaxNeutralFraction(settings.GetJetID());
+		
+		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
+		                                                                 this->lowerPtCutsByHltName);
+		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
+		                                                                     this->upperAbsEtaCutsByHltName);
 	}
 
 	virtual void ProduceGlobal(event_type const& event,
@@ -115,6 +135,9 @@ protected:
 			}
 			*/
 			
+			// kinematic cuts
+			validJet = validJet && this->PassKinematicCuts(&(*jet), event, product);
+			
 			// check possible analysis-specific criteria
 			validJet = validJet && AdditionalCriteria(&(*jet), event, product);
 
@@ -143,10 +166,13 @@ protected:
    Operates on the vector event.m_jets.
 */
 template<class TTypes>
-class ValidJetsProducer: public ValidJetsProducerBase<TTypes, KDataPFJet>
+class ValidJetsProducer: public ValidJetsProducerBase<TTypes, KDataPFJet, KDataPFJet>
 {
 public:
-	ValidJetsProducer() : ValidJetsProducerBase<TTypes, KDataPFJet>(&TTypes::event_type::m_jets) {};
+	ValidJetsProducer() : ValidJetsProducerBase<TTypes, KDataPFJet, KDataPFJet>(&TTypes::event_type::m_jets,
+	                                                                            &TTypes::product_type::m_validJets)
+	{
+	};
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "valid_jets";
@@ -161,10 +187,13 @@ public:
    Operates on the vector event.m_tjets.
 */
 template<class TTypes>
-class ValidTaggedJetsProducer: public ValidJetsProducerBase<TTypes, KDataPFTaggedJet>
+class ValidTaggedJetsProducer: public ValidJetsProducerBase<TTypes, KDataPFTaggedJet, KDataPFJet>
 {
 public:
-	ValidTaggedJetsProducer() : ValidJetsProducerBase<TTypes, KDataPFTaggedJet>(&TTypes::event_type::m_tjets) {};
+	ValidTaggedJetsProducer() : ValidJetsProducerBase<TTypes, KDataPFTaggedJet, KDataPFJet>(&TTypes::event_type::m_tjets,
+	                                                                                        &TTypes::product_type::m_validJets)
+	{
+	};
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "valid_tagged_jets";

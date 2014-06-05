@@ -1,14 +1,18 @@
 
 #pragma once
 
+#include <algorithm>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/trim.hpp>
+#include <boost/regex.hpp>
 
 #include <Math/VectorUtil.h>
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
 #include "Artus/Utility/interface/Utility.h"
 #include "Artus/Utility/interface/DefaultValues.h"
 
@@ -24,10 +28,12 @@
      ElectronIsoType
      ElectronIso
      ElectronReco
+     ElectronLowerPtCuts
+     ElectronUpperAbsEtaCuts
 */
 
 template<class TTypes>
-class ValidElectronsProducer: public ProducerBase<TTypes>
+class ValidElectronsProducer: public ProducerBase<TTypes>, public ValidPhysicsObjectTools<TTypes, KDataElectron>
 {
 
 public:
@@ -96,6 +102,12 @@ public:
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "valid_electrons";
 	}
+	
+	ValidElectronsProducer() :
+		ProducerBase<TTypes>(),
+		ValidPhysicsObjectTools<TTypes, KDataElectron>(&product_type::m_validElectrons)
+	{
+	}
 
 	virtual void InitGlobal(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
 		ProducerBase<TTypes>::InitGlobal(globalSettings);
@@ -104,6 +116,11 @@ public:
 		electronIsoType = ToElectronIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetElectronIsoType())));
 		electronIso = ToElectronIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetElectronIso())));
 		electronReco = ToElectronReco(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetElectronReco())));
+		
+		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
+		                                                                 this->lowerPtCutsByHltName);
+		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
+		                                                                     this->upperAbsEtaCutsByHltName);
 	}
 
 	virtual void InitLocal(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
@@ -113,6 +130,11 @@ public:
 		electronIsoType = ToElectronIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronIsoType())));
 		electronIso = ToElectronIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronIso())));
 		electronReco = ToElectronReco(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronReco())));
+		
+		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
+		                                                                 this->lowerPtCutsByHltName);
+		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
+		                                                                     this->upperAbsEtaCutsByHltName);
 	}
 
 	virtual void ProduceGlobal(event_type const& event,
@@ -183,6 +205,9 @@ protected:
 			
 			// conversion veto per default
 			validElectron = validElectron && !electron->hasConversionMatch;
+			
+			// kinematic cuts
+			validElectron = validElectron && this->PassKinematicCuts(&(*electron), event, product);
 			
 			// check possible analysis-specific criteria
 			validElectron = validElectron && AdditionalCriteria(&(*electron), event, product);
@@ -269,5 +294,6 @@ private:
 
 		return validElectron;
 	}
+
 };
 

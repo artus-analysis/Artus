@@ -1,14 +1,18 @@
 
 #pragma once
 
+#include <algorithm>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/trim.hpp>
+#include <boost/regex.hpp>
 
 #include <Math/VectorUtil.h>
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
 #include "Artus/Utility/interface/Utility.h"
 
 
@@ -27,7 +31,7 @@
 */
 
 template<class TTypes>
-class ValidMuonsProducer: public ProducerBase<TTypes>
+class ValidMuonsProducer: public ProducerBase<TTypes>, public ValidPhysicsObjectTools<TTypes, KDataMuon>
 {
 
 public:
@@ -79,6 +83,12 @@ public:
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "valid_muons";
 	}
+	
+	ValidMuonsProducer() :
+		ProducerBase<TTypes>(),
+		ValidPhysicsObjectTools<TTypes, KDataMuon>(&product_type::m_validMuons)
+	{
+	}
 
 	virtual void InitGlobal(global_setting_type const& globalSettings) ARTUS_CPP11_OVERRIDE {
 		ProducerBase<TTypes>::InitGlobal(globalSettings);
@@ -87,6 +97,11 @@ public:
 		muonID = ToMuonID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetMuonID())));
 		muonIsoType = ToMuonIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetMuonIsoType())));
 		muonIso = ToMuonIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(globalSettings.GetMuonIso())));
+		
+		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
+		                                                                 this->lowerPtCutsByHltName);
+		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
+		                                                                     this->upperAbsEtaCutsByHltName);
 	}
 
 	virtual void InitLocal(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
@@ -96,6 +111,11 @@ public:
 		muonID = ToMuonID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonID())));
 		muonIsoType = ToMuonIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonIsoType())));
 		muonIso = ToMuonIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonIso())));
+		
+		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
+		                                                                 this->lowerPtCutsByHltName);
+		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
+		                                                                     this->upperAbsEtaCutsByHltName);
 	}
 
 	virtual void ProduceGlobal(event_type const& event,
@@ -162,6 +182,9 @@ protected:
 			else if (muonIsoType != MuonIsoType::USER && muonIsoType != MuonIsoType::NONE)
 				LOG(FATAL) << "Muon isolation type of type " << Utility::ToUnderlyingValue(muonIsoType) << " not yet implemented!";
 			
+			// kinematic cuts
+			validMuon = validMuon && this->PassKinematicCuts(&(*muon), event, product);
+			
 			// check possible analysis-specific criteria
 			validMuon = validMuon && AdditionalCriteria(&(*muon), event, product);
 			
@@ -218,5 +241,6 @@ private:
 		
 		return validMuon;
 	}
+
 };
 

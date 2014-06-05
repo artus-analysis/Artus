@@ -1,9 +1,14 @@
 
 #pragma once
 
+#include <algorithm>
+
+#include <boost/regex.hpp>
+
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
 #include "Artus/Utility/interface/SafeMap.h"
 #include "Artus/Utility/interface/Utility.h"
 
@@ -15,7 +20,7 @@
 */
 
 template<class TTypes>
-class ValidTausProducer: public ProducerBase<TTypes>
+class ValidTausProducer: public ProducerBase<TTypes>, public ValidPhysicsObjectTools<TTypes, KDataPFTau>
 {
 
 public:
@@ -29,12 +34,23 @@ public:
 		return "valid_taus";
 	}
 	
+	ValidTausProducer() :
+		ProducerBase<TTypes>(),
+		ValidPhysicsObjectTools<TTypes, KDataPFTau>(&product_type::m_validTaus)
+	{
+	}
+	
 	virtual void InitGlobal(global_setting_type const& globalSettings)  ARTUS_CPP11_OVERRIDE
 	{
 		ProducerBase<TTypes>::InitGlobal(globalSettings);
 	
 		// parse additional config tags
 		discriminators = Utility::ParseVectorToMap(globalSettings.GetTauDiscriminators());
+		
+		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
+		                                                                 this->lowerPtCutsByHltName);
+		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(globalSettings.GetElectronLowerPtCuts()),
+		                                                                     this->upperAbsEtaCutsByHltName);
 	}
 	
 	virtual void InitLocal(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
@@ -43,6 +59,11 @@ public:
 	
 		// parse additional config tags
 		discriminators = Utility::ParseVectorToMap(settings.GetTauDiscriminators());
+		
+		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
+		                                                                 this->lowerPtCutsByHltName);
+		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
+		                                                                     this->upperAbsEtaCutsByHltName);
 	}
 
 	virtual void ProduceGlobal(event_type const& event,
@@ -83,6 +104,9 @@ protected:
 				validTau = validTau && tau->hasID(*discriminatorName, event.m_tauDiscriminatorMetadata);
 			}
 			
+			// kinematic cuts
+			validTau = validTau && this->PassKinematicCuts(&(*tau), event, product);
+			
 			// check possible analysis-specific criteria
 			validTau = validTau && AdditionalCriteria(&(*tau), event, product);
 			
@@ -103,5 +127,6 @@ protected:
 
 private:
 	std::map<std::string, std::vector<std::string> > discriminators;
+
 };
 
