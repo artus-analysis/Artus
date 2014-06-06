@@ -128,6 +128,9 @@ public:
 	IMPL_SETTING_STRINGLIST(TauUpperAbsEtaCuts);
 	IMPL_SETTING_STRINGLIST(JetUpperAbsEtaCuts);
 	
+	IMPL_SETTING_DEFAULT(float, BTaggedJetAbsEtaCut, 0.0);
+	IMPL_SETTING_DEFAULT(float, BTaggedJetCombinedSecondaryVertexMediumWP, 0.0);
+	
 	//Reading Boson PdgId for GenTauDecayProducer studies.
 	IMPL_SETTING_STRINGLIST(BosonPdgId);
 
