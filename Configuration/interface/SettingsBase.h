@@ -76,48 +76,11 @@ public:
 	}
 
 	/// get list of all local producers
-	IMPL_SETTING_STRINGLIST(Processors)
+	IMPL_SETTING_STRINGLIST( Processors )
+	IMPL_SETTING_STRINGLIST( Consumers )
 
 	virtual stringvector GetFilters () const {
 		return SettingsUtil::ExtractFilters(GetProcessors());
 	}
-
-	/// get list of all consumers
-	IMPL_SETTING_STRINGLIST(Consumers)
-
 };
 
-/**
-   \brief Reads settings for global parts of PipelineRunner from a prepared json configuration file.
-
-   Defines what is needed to read configurations for Artus event processing from a prepared json 
-   file and passes it on to GlobalProducers.
-*/
-/*
-class GlobalSettingsBase {
-public:
-
-	virtual ~GlobalSettingsBase() {
-	}
-
-	/// path in the config file to reach the settings for this pipeline
-	IMPL_PROPERTY(std::string, PropTreePath)
-	/// pointer to the global, loaded property tree
-	IMPL_PROPERTY(boost::property_tree::ptree*, PropTree)
-
-	/// detemine whether this is data or MC
-	IMPL_SETTING(bool, InputIsData);
-
-	/// get list of all global Processors ( filters & producer )
-	VarCache<stringvector> m_globalProcessors;
-	stringvector GetGlobalProcessors() const
-	{
-		RETURN_CACHED(m_globalProcessors, PropertyTreeSupport::GetAsStringList(GetPropTree(), "GlobalProcessors"))
-	}
-
-	virtual stringvector GetGlobalFilters () const {
-		return SettingsUtil::ExtractFilters(GetGlobalProcessors() );
-	}
-
-};
-*/
