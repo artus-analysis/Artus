@@ -58,7 +58,7 @@ public:
    Contain all specifics for the behaviour of this pipeline. The Settings object of type TSettings 
    must be used to steer the behaviour of the Producers, Filters and Consumers.
    
-   - LocalProducers
+   - Producers
    Create additional, pipeline-specific, data for an event and stores this information in a TProduct 
    object.
    

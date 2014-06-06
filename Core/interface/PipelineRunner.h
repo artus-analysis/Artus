@@ -22,8 +22,8 @@
    
    The PipelineRunner utilizes a user-provided EventProvider to load events and passes them to all 
    registered Pipelines. The EventProvider is passed to the function PipelineRunner::RunPipelines 
-   as an argument. Furthermore, GlobalProducers can be registered, which can generate Pipeline-
-   independet products of the event. These GlobalProducers are run before any pipeline is started 
+   as an argument. Furthermore, Producers can be registered, which can generate Pipeline-
+   independet products of the event. These Producers are run before any pipeline is started
    and the generated data is passed on to the pipelines.
 */
 template<typename TPipeline, typename TTypes>
@@ -60,17 +60,17 @@ public:
 		m_pipelines.push_back(pline);
 	}
 
-	/// Add a global filter. The object is destroyed in the destructor of the PipelineRunner.
+	/// Add a filter. The object is destroyed in the destructor of the PipelineRunner.
 	// the execution order of AddGlobalFilter and AddGlobalProducer is defined by the order
 	// this methods are called
-	void AddGlobalFilter(filter_base_type* filter) {
+	void AddFilter(filter_base_type* filter) {
 		m_globalNodes.push_back(filter);
 	}
 
 	/// Add a GlobalProducer. The object is destroyed in the destructor of the PipelineRunner.
 	// the execution order of AddGlobalFilter and AddGlobalProducer is defined by the order
 	// this methods are called
-	void AddGlobalProducer(producer_base_type* prod) {
+	void AddProducer(producer_base_type* prod) {
 		m_globalNodes.push_back(prod);
 	}
 
@@ -82,29 +82,29 @@ public:
 		}
 	}
 
-	/// Run the GlobalProducers and all pipelines. Give any pipeline setting here: only the 
-	/// global producer will read from the global settings ...
+	/// Run the Producers and all pipelines. Give any pipeline setting here: only the
+	/// producer will read from the settings ...
 	template<class TEventProvider>
 	void RunPipelines(
 			TEventProvider & evtProvider,
-			setting_type const& globalSettings) {
+			setting_type const& settings) {
 		long long firstEvent = 0;
 		long long nEvents = evtProvider.GetEntries();
 
 		for( ProcessNodesIterator it = m_globalNodes.begin();
 				it != m_globalNodes.end(); it ++ ) {
 			if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
-				static_cast<producer_base_type&> ( *it ) . Init(globalSettings);
+				static_cast<producer_base_type&> ( *it ) . Init(settings);
 			}
 			else if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
-				static_cast<filter_base_type&> ( *it ) . Init(globalSettings);
+				static_cast<filter_base_type&> ( *it ) . Init(settings);
 			}
 			else {
 				LOG(FATAL) << "ProcessNodeType not supported by the pipeline runner!";
 			}
 		}
 
-		const stringvector globlalFilterIds = globalSettings.GetFilters();
+		const stringvector globlalFilterIds = settings.GetFilters();
 
 		// initilize pline filter decision
 		FilterResult::FilterNames pipelineResultNames(m_pipelines.size());
@@ -137,7 +137,7 @@ public:
 				break;
 
 			product_type productGlobal;
-			// use the lit of global filters to bootstrap the filter list names
+			// use the lit of filters to bootstrap the filter list names
 			FilterResult globalFilterResult ( globlalFilterIds );
 
 			for( ProcessNodesIterator it = m_globalNodes.begin();
@@ -150,12 +150,12 @@ public:
 				
 				if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
 					static_cast<producer_base_type&> ( *it ) . Produce(evtProvider.GetCurrentEvent(),
-							productGlobal, globalSettings);
+							productGlobal, settings);
 				}
 				else if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
 					filter_base_type & flt = static_cast<filter_base_type&> ( *it );
 					const bool filterResult = flt . DoesEventPass(evtProvider.GetCurrentEvent(),
-					                                                    productGlobal, globalSettings);
+					                                                    productGlobal, settings);
 					globalFilterResult.SetFilterDecision( flt.GetFilterId(), filterResult );
 				}
 				else {

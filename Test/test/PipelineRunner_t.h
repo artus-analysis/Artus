@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_product )
 	prunner.AddPipeline( tline1 );
 	prunner.AddPipeline( tline2 );
 
-	prunner.AddGlobalProducer( new TestGlobalProducer() );
+	prunner.AddProducer( new TestGlobalProducer() );
 
 	std::vector<TestPipelineInstr *> vPipes;
 	vPipes.push_back( tline3 );
@@ -81,9 +81,9 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_producer_filter )
 
 	prunner.AddPipeline( tline1 );
 
-	prunner.AddGlobalProducer( new TestGlobalProducer() );
+	prunner.AddProducer( new TestGlobalProducer() );
 	// this filter will be false for all events
-	prunner.AddGlobalFilter( new TestGlobalFilter2() );
+	prunner.AddFilter( new TestGlobalFilter2() );
 
 	TestEventProvider evtProvider;
 	prunner.RunPipelines ( evtProvider, global_tset );
@@ -110,11 +110,11 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_producer_filter_pass )
 
 	prunner.AddPipeline( tline1 );
 
-	prunner.AddGlobalProducer( new TestGlobalProducer() );
-	prunner.AddGlobalFilter( new TestGlobalFilter() );
+	prunner.AddProducer( new TestGlobalProducer() );
+	prunner.AddFilter( new TestGlobalFilter() );
 	// this filter will drop all events
-	prunner.AddGlobalProducer( new TestGlobalProducer2() );
-	prunner.AddGlobalFilter( new TestGlobalFilter2() );
+	prunner.AddProducer( new TestGlobalProducer2() );
+	prunner.AddFilter( new TestGlobalFilter2() );
 
 	TestEventProvider evtProvider;
 	prunner.RunPipelines ( evtProvider, global_tset );
