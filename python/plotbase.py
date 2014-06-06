@@ -189,10 +189,10 @@ class PlotBase(processor.Processor):
 			for numerator_nicks, denominator_nicks in zip(plotData.plotdict["ratio_num"],
 			                                              plotData.plotdict["ratio_denom"]):
 				name = hashlib.md5("_".join(numerator_nicks+denominator_nicks)).hexdigest()
-				numerator_histogram = roottools.add_root_histograms(*[plotData.plotdict["root_histos"][nick] for nick in numerator_nicks],
-				                                                    name=name+"_numerator")
-				denominator_histogram = roottools.add_root_histograms(*[plotData.plotdict["root_histos"][nick] for nick in denominator_nicks],
-				                                                      name=name+"_denominator")
+				numerator_histogram = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_histos"][nick] for nick in numerator_nicks],
+				                                                              name=name+"_numerator")
+				denominator_histogram = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_histos"][nick] for nick in denominator_nicks],
+				                                                                name=name+"_denominator")
 				ratio_histogram = numerator_histogram.Clone(name + "_ratio")
 				ratio_histogram.Divide(denominator_histogram)
 				plotData.plotdict.setdefault("root_ratio_histos", []).append(ratio_histogram)
