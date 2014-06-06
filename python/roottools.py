@@ -38,6 +38,25 @@ def check_type(root_file_names, path_to_objects):
 		log.error("Could not find ROOT object \"" + path_to_objects[0] + "\" in file \"" + root_file_names[0] + "\"!")
 		return None
 
+def prepare_binning(binning):
+	prepared_binning = binning
+	if prepared_binning == None:
+		prepared_binning = ""
+	if isinstance(prepared_binning, basestring):
+		if not prepared_binning.startswith("("):
+			prepared_binning = "(" + prepared_binning
+		if not prepared_binning.endswith(")"):
+			prepared_binning = prepared_binning + ")"
+	return prepared_binning
+
+def binning_to_bin_edges(binning):
+	if isinstance(binning, collections.Iterable) and isinstance(binning, basestring):
+		parsed_binnig = binning.split(",")[:3]
+		if len(parsed_binnig) != 3:
+			log.warning("Specified binning \"%s\" does not contain enough information! Take \"25, 0.0, 1.0\"." % binning)
+			
+	else:
+		return array.array("d", binning)
 
 def histogram_from_file(root_file_names, path_to_histograms, name=None):
 	"""
@@ -80,7 +99,8 @@ def histogram_from_file(root_file_names, path_to_histograms, name=None):
 	return root_histogram
 
 def histogram_from_tree(root_file_names, path_to_trees, variable_expression,
-                        binning=None, weight_selection="", option="", name=None):
+                        x_bins=None, y_bins=None, z_bins=None,
+                        weight_selection="", option="", name=None):
 	"""
 	Read histograms from trees
 	
@@ -101,26 +121,29 @@ def histogram_from_tree(root_file_names, path_to_trees, variable_expression,
 		root_file_names = [root_file_names]
 	if isinstance(path_to_trees, basestring):
 		path_to_trees = [path_to_trees]
+	
+	if not isinstance(binning, collections.Iterable) or isinstance(binning, basestring):
+		binning = [binning]
+	if not len(binning) == 3:
+		binning = (binning*3)[:3]
 
-	# prepare binning string for TTree::Draw
-	if binning == None:
-		binning = ""
+	# prepare binning TTree::Draw/Project
+	x_bins = prepare_binning(x_bins)
+	y_bins = prepare_binning(y_bins)
+	z_bins = prepare_binning(z_bins)
+			
 	elif isinstance(binning, collections.Iterable) and not isinstance(binning, basestring):
 		binning = ",".join([str(binningItem) for binningItem in binning])
 	else:
 		binning = str(binning)
 	binning = binning.strip()
-	if not binning.startswith("("):
-		binning = "(" + binning
-	if not binning.endswith(")"):
-		binning = binning + ")"
 	
 	# prepare unique histogram name
 	if name == None:
 		name = "histogram_{0}.json".format(hashlib.md5("_".join([str(root_file_names),
 		                                                         str(path_to_trees),
 		                                                         variable_expression,
-		                                                         binning,
+		                                                         x_bins, y_bins, z_bins,
 		                                                         str(weight_selection)])).hexdigest())
 	
 	# prepare TChain

@@ -25,6 +25,13 @@ class InputRoot(inputbase.InputBase):
 		inputbase.InputBase.modify_argument_parser(self, parser)
 		self.input_options.add_argument("--folders", type=str, nargs='*',
 		                                help="Path(s) to ROOT objects.")
+		
+		self.input_options.add_argument("--x-bins", type=str, nargs='+', default=["25"],
+		                                help="Bining for x-axis. In case only one argument is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [Default: %(default)s]")
+		self.input_options.add_argument("--y-bins", type=str, nargs='+', default=["25"],
+		                                help="Bining for y-axis of 2D/3D histograms. In case only one argument is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [Default: %(default)s]")
+		self.input_options.add_argument("--z-bins", type=str, nargs='+', default=["25"],
+		                                help="Bining for z-axis of 3D histograms. In case only one argument is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [Default: %(default)s]")
 	
 	def prepare_args(self, plotData):
 		inputbase.InputBase.prepare_args(self, plotData)
@@ -35,7 +42,9 @@ class InputRoot(inputbase.InputBase):
 	def run(self, plotData):
 		inputbase.InputBase.run(self, plotData)
 		
-		binning = "25"
+		x_bins = copy.deepcopy(plotData.plotdict["x_bins"])
+		y_bins = copy.deepcopy(plotData.plotdict["y_bins"])
+		z_bins = copy.deepcopy(plotData.plotdict["z_bins"])
 		for root_files, folders, x_expression, y_expression, z_expression, weight, nick in zip(*
 			[plotData.plotdict[key] for key in ["files", "folders", "x_expressions", "y_expressions", "z_expressions", "weights", "nicks"]]):
 			
@@ -48,8 +57,9 @@ class InputRoot(inputbase.InputBase):
 				                                  y_expression + ":" if y_expression else "",
 				                                  x_expression)
 				
-				root_histogram, binning = roottools.histogram_from_tree(root_files, folders, variable_expression,
-				                                                        binning=binning, weight_selection=weight, option="", name=None)
+				root_histogram, x_bins, y_bins, z_bins = roottools.histogram_from_tree(root_files, folders, variable_expression,
+				                                                                       x_bins=x_bins, y_bins=y_bins, z_bins=z_bins,
+				                                                                       weight_selection=weight, option="", name=None)
 				
 			elif root_object_type == ROOT.TH1:
 				root_objects = [os.path.join(folder, x_expression) for folder in folders]
