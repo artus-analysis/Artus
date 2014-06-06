@@ -12,7 +12,7 @@
    Defines settings that can be obtained from the json configuration file.
 */
 
-class KappaPipelineSettings: public SettingsBase {
+class KappaSettings: public SettingsBase {
 public:
 
 	/// name of electron collection in kappa tuple	
