@@ -289,7 +289,8 @@ class JsonDict(dict):
 		if isinstance(jsonDict, dict):
 			for key, value in jsonDict.items():
 				if key.strip().startswith("#"):
-					del jsonDict[key]
+					pass
+					#del jsonDict[key]
 				else:
 					if isinstance(value, basestring) and value.strip().startswith("#"):
 						del jsonDict[key]
