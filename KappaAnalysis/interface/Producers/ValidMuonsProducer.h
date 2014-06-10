@@ -98,7 +98,6 @@ public:
 		
 		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetMuonLowerPtCuts()),
 		                                                                 this->lowerPtCutsByHltName);
-		LOG(INFO) << settings.GetMuonLowerPtCuts().size() << ", " << this->lowerPtCutsByIndex.size() << ", " << this->lowerPtCutsByHltName.size();
 		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetMuonUpperAbsEtaCuts()),
 		                                                                 this->upperAbsEtaCutsByHltName);
 	}
