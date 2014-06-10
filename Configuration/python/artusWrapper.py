@@ -38,14 +38,17 @@ class ArtusWrapper(object):
 		if self._args.batch:
 			self._args.envvar_expansion = False
 
+		date_now = datetime.now().strftime("%Y-%m-%d_%H-%M")
+
 		# write repository revisions to the config
 		if not self._args.disable_repo_versions:
 			self.setRepositoryRevisions()
+			self._config["Date"] = date_now
 
 		#Expand Config
 		self.expandConfig()
 		if self._args.batch:
-			self.projectPath = os.path.join(os.path.expandvars(self._args.work), self._args.project_name + datetime.now().strftime("_%Y-%m-%d_%H-%M"))
+			self.projectPath = os.path.join(os.path.expandvars(self._args.work), self._args.project_name+"_"+date_now)
 
 	def run(self):
 	
