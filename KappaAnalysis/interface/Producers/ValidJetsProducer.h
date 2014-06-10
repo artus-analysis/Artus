@@ -53,8 +53,8 @@ public:
 		
 		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetJetLowerPtCuts()),
 		                                                                 this->lowerPtCutsByHltName);
-		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetJetLowerPtCuts()),
-		                                                                     this->upperAbsEtaCutsByHltName);
+		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetJetUpperAbsEtaCuts()),
+		                                                                 this->upperAbsEtaCutsByHltName);
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
