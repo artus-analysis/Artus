@@ -51,9 +51,9 @@ public:
 		
 		maxNeutralFraction = GetMaxNeutralFraction(settings.GetJetID());
 		
-		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
+		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetJetLowerPtCuts()),
 		                                                                 this->lowerPtCutsByHltName);
-		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
+		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetJetLowerPtCuts()),
 		                                                                     this->upperAbsEtaCutsByHltName);
 	}
 

@@ -46,9 +46,9 @@ public:
 		// parse additional config tags
 		discriminators = Utility::ParseVectorToMap(settings.GetTauDiscriminators());
 		
-		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
+		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetTauLowerPtCuts()),
 		                                                                 this->lowerPtCutsByHltName);
-		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
+		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetTauLowerPtCuts()),
 		                                                                     this->upperAbsEtaCutsByHltName);
 	}
 
