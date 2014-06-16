@@ -52,7 +52,7 @@ public:
 				int prescale = product.m_hltInfo->getPrescale(hltName);
 				if (prescale < lowestPrescale)
 				{
-					lowestPrescaleHltName = prescale;
+					lowestPrescale = prescale;
 					lowestPrescaleHltName = hltName;
 				}
 				
