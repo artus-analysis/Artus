@@ -39,9 +39,7 @@ public:
 	                     setting_type const& settings) const
 	{
 		// Reading Boson PdgId from TauSpinnerSettings.json
-		stringvector bosonPdgIdVector = settings.GetBosonPdgId();
-		int bosonPdgId;
-		std::istringstream(bosonPdgIdVector[0]) >> bosonPdgId;
+		int bosonPdgId = settings.GetBosonPdgId();
 
 		for (KGenParticles::iterator part = event.m_genParticles->begin();
 			 part != event.m_genParticles->end(); ++part)

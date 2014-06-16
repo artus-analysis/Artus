@@ -132,7 +132,7 @@ public:
 	IMPL_SETTING_DEFAULT(float, BTaggedJetCombinedSecondaryVertexMediumWP, 0.0);
 	
 	//Reading Boson PdgId for GenTauDecayProducer studies.
-	IMPL_SETTING_STRINGLIST(BosonPdgId);
+	IMPL_SETTING(int, BosonPdgId);
 
 	IMPL_SETTING(std::string, PileupWeightFile);
 	
