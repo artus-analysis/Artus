@@ -7,6 +7,7 @@
 #include "KappaTools/RootTools/RunLumiReader.h"
 
 #include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/Utility/interface/DefaultValues.h"
 
 
 /** 
@@ -40,7 +41,7 @@ public:
 		// search trigger with lowest prescale
 		std::string lowestPrescaleHltName;
 		int lowestPrescale = std::numeric_limits<int>::max();
-		std::string firedTriggerName;
+		std::string firedHltName;
 		int prescaleFiredHlt = std::numeric_limits<int>::max();
 		bool unprescaledPathFound = false;
 		for (stringvector::const_iterator hltPath = settings.GetHltPaths().begin(); hltPath != settings.GetHltPaths().end(); ++hltPath)
@@ -65,8 +66,8 @@ public:
 				if (event.m_eventMetadata->hltFired(hltName, event.m_lumiMetadata))
 				{
 					if (prescale < prescaleFiredHlt) {
-						firedTriggerName = hltName;
 						prescaleFiredHlt = prescale;
+						firedHltName = hltName;
 					}
 				}
 				
@@ -78,24 +79,45 @@ public:
 			}
 		}
 		
-		if (unprescaledPathFound || (settings.GetAllowPrescaledTrigger() && (! lowestPrescaleHltName.empty())))
+		std::string selectedHltName;
+		double hltPrescaleWeight = 1.0;
+		
+		if (unprescaledPathFound)
 		{
-			if (prescaleFiredHlt == lowestPrescaleHltName || settings.GetAllowPrescaledTrigger())
+			if (prescaleFiredHlt == lowestPrescaleHltName)
 			{
-				product.selectedHltName = firedTriggerName;
-				product.m_weights["hltPrescaleWeight"] = prescaleFiredHlt;
+				selectedHltName = firedHltName;
+				hltPrescaleWeight = prescaleFiredHlt;
 			}
 			else
 			{
-				product.selectedHltName = lowestPrescaleHltName;
-				product.m_weights["hltPrescaleWeight"] = lowestPrescale;
+				selectedHltName = lowestPrescaleHltName;
+				hltPrescaleWeight = lowestPrescale;
 			}
+		}
+		
+		if (settings.GetAllowPrescaledTrigger() && prescaleFiredHlt > lowestPrescaleHltName && (! firedHltName.empty()))
+		{
+			selectedHltName = firedHltName;
+			hltPrescaleWeight = prescaleFiredHlt;
+		}
+		
+		if (hltPrescaleWeight <= 0.0)
+		{
+			hltPrescaleWeight = 1.0;
+		}
+		
+		product.m_selectedHltName = selectedHltName;
+		product.m_weights["hltPrescaleWeight"] = hltPrescaleWeight;
+		
+		if (! selectedHltName.empty())
+		{
+			product.m_selectedHltPosition = (int) product.m_hltInfo->getHLTPosition(selectedHltName);
 		}
 		else
 		{
-			product.m_weights["hltPrescaleWeight"] = 1.0;
+			product.m_selectedHltPosition = DefaultValues::UndefinedInt;
 		}
-		
 	}
 
 };

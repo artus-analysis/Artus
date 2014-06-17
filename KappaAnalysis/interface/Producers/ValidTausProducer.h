@@ -77,7 +77,7 @@ public:
 				 validTau && (discriminatorByHltName != discriminatorsByHltName.end()); ++discriminatorByHltName)
 			{
 				if ((discriminatorByHltName->first == "default") ||
-					boost::regex_search(product.selectedHltName, boost::regex(discriminatorByHltName->first, boost::regex::icase | boost::regex::extended)))
+					boost::regex_search(product.m_selectedHltName, boost::regex(discriminatorByHltName->first, boost::regex::icase | boost::regex::extended)))
 				{
 					validTau = validTau && ApplyDiscriminators(&(*tau), discriminatorByHltName->second, event);
 				}

@@ -88,11 +88,10 @@ public:
 	{
 		assert(event.m_triggerObjects);
 		
-		if (! product.selectedHltName.empty())
+		if (! product.m_selectedHltName.empty())
 		{
-			size_t hltPosition = product.m_hltInfo->getHLTPosition(product.selectedHltName);
-			for (std::vector<size_t>::iterator hltIndex = event.m_triggerObjects->toIdxHLT.at(hltPosition).begin();
-				 hltIndex != event.m_triggerObjects->toIdxHLT.at(hltPosition).end(); ++hltIndex)
+			for (std::vector<size_t>::iterator hltIndex = event.m_triggerObjects->toIdxHLT.at(product.m_selectedHltPosition).begin();
+				 hltIndex != event.m_triggerObjects->toIdxHLT.at(product.m_selectedHltPosition).end(); ++hltIndex)
 			{
 				KDataLV triggerObject = event.m_triggerObjects->trgObjects.at(*hltIndex);
 			

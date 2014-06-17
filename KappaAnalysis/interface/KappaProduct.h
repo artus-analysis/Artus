@@ -48,7 +48,8 @@ public:
 	std::vector<KDataPFTaggedJet*> m_nonBTaggedJets;
 	
 	HLTTools* m_hltInfo = new HLTTools();
-	std::string selectedHltName = "";
+	std::string m_selectedHltName;
+	int m_selectedHltPosition;
 
 	/// added by TriggerMatchingProducer
 	std::vector<KDataElectron*> m_triggerMatchedElectrons;
