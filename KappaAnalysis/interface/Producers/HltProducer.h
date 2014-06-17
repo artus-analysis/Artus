@@ -72,7 +72,7 @@ public:
 				}
 				
 				// stop searching when unprescaled and fired trigger is found
-				if (unprescaledPathFound && prescaleFiredHlt == lowestPrescaleHltName)
+				if (unprescaledPathFound && prescaleFiredHlt == lowestPrescale)
 				{
 					break;
 				}
@@ -84,7 +84,7 @@ public:
 		
 		if (unprescaledPathFound)
 		{
-			if (prescaleFiredHlt == lowestPrescaleHltName)
+			if (prescaleFiredHlt == lowestPrescale)
 			{
 				selectedHltName = firedHltName;
 				hltPrescaleWeight = prescaleFiredHlt;
@@ -96,7 +96,7 @@ public:
 			}
 		}
 		
-		if (settings.GetAllowPrescaledTrigger() && prescaleFiredHlt > lowestPrescaleHltName && (! firedHltName.empty()))
+		if (settings.GetAllowPrescaledTrigger() && prescaleFiredHlt > lowestPrescale && (! firedHltName.empty()))
 		{
 			selectedHltName = firedHltName;
 			hltPrescaleWeight = prescaleFiredHlt;
