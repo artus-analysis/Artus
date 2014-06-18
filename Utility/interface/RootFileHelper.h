@@ -16,6 +16,8 @@
 #include <TFile.h>
 #include <TGraphErrors.h>
 
+#include "KappaTools/Toolbox/String.h"
+
 #include "ArtusLogging.h"
 
 
@@ -34,6 +36,7 @@ public:
 		if (detachFromDirectory)
 		{
 			object->SetDirectory(0);
+			object->SetName(randomstr(object->GetName()));
 		}
 		return object;
 	}
