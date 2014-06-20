@@ -148,27 +148,32 @@ class JsonDict(dict):
 			log.critical("File \"%s\" does not exist!" % fileName)
 			sys.exit(1)
 
-		jsonString = ""
+		jsonStrings = []
+		# read all cycles of JsonDict.PATH_TO_ROOT_CONFIG from ROOT file and merge them
 		if os.path.splitext(fileName)[1] == ".root":
 			rootFile = ROOT.TFile(fileName, "READ")
-			jsonString = rootFile.Get(JsonDict.PATH_TO_ROOT_CONFIG)
-			if not jsonString:
+			listOfKeys = rootFile.GetListOfKeys()
+			for keyIndex in range(listOfKeys.GetSize()):
+				namecycle = "%s;%d" % (listOfKeys.At(keyIndex).GetName(), listOfKeys.At(keyIndex).GetCycle())
+				if namecycle.startswith(JsonDict.PATH_TO_ROOT_CONFIG):
+					jsonStrings.append(str(rootFile.Get(namecycle).GetString()))
+			rootFile.Close()
+			if len(jsonStrings) == 0:
 				log.critical("Could not read \"%s\" from file \"%s\"!" % (JsonDict.PATH_TO_ROOT_CONFIG, rootFileName))
 				sys.exit(1)
-			jsonString = str(jsonString.GetString())
-			rootFile.Close()
 		else:
 			with open(fileName, "r") as jsonFile:
-				jsonString = jsonFile.read()
+				jsonString.append(jsonFile.read())
 	
-		jsonDict = {}
+		jsonDict = JsonDict()
 		try:
-			jsonDict = json.loads(jsonString)
+			for jsonString in [jsonStrings[-1]]: #jsonStrings[::-1]: # TODO need cmore careful merging of lists
+				jsonDict += JsonDict(json.loads(jsonString))
 		except ValueError, e:
 			log.critical("Invalid JSON syntax in file \"%s\"." % fileName)
 			log.critical(str(e))
 			sys.exit(1)
-		return JsonDict(jsonDict)
+		return jsonDict
 
 	@staticmethod
 	def deepmerge(dictWithHigherPriority, dictWithLowerPriority):
