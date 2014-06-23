@@ -163,7 +163,7 @@ class JsonDict(dict):
 				sys.exit(1)
 		else:
 			with open(fileName, "r") as jsonFile:
-				jsonString.append(jsonFile.read())
+				jsonStrings.append(jsonFile.read())
 	
 		jsonDict = JsonDict()
 		try:
