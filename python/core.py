@@ -19,6 +19,8 @@ import Artus.HarryPlotter.plotmpl as plotmpl
 import Artus.HarryPlotter.plotroot as plotroot
 import Artus.HarryPlotter.processor as processor
 
+import Artus.Configuration.jsonTools as json_tools
+
 
 class HarryCore(object):
 	def __init__(self, user_processors=None):
@@ -39,6 +41,9 @@ class HarryCore(object):
 		parser = harryparser.HarryParser()
 		args, unknown_args = parser.parse_known_args()
 		args = vars(args)
+		
+		if args["json_defaults"] != None:
+			args.update(json_tools.JsonDict(args["json_defaults"]))
 		
 		self.processors = []
 		
@@ -87,6 +92,11 @@ class HarryCore(object):
 		# let processors modify the parser and then parse the arguments again
 		for processor in self.processors:
 			processor.modify_argument_parser(parser, args)
+		
+		# overwrite defaults by defaults from json files
+		if args["json_defaults"] != None:
+			parser.set_defaults(**(json_tools.JsonDict(args["json_defaults"])))
+		
 		args = vars(parser.parse_args())
 		plotData = plotdata.PlotData(args)
 		
@@ -94,10 +104,14 @@ class HarryCore(object):
 		ROOT.TH1.SetDefaultSumw2(True)
 		ROOT.gROOT.SetBatch(True)
 		
-		# prepare aguments for all processors before running them
-		for processor in self.processors:
-			processor.prepare_args(parser, plotData)
-			processor.run(plotData)
+		if args["export_json"] != None:
+			pass # TODO
+		
+		else:
+			# prepare aguments for all processors before running them
+			for processor in self.processors:
+				processor.prepare_args(parser, plotData)
+				processor.run(plotData)
 	
 	def register_processor(self, processor_name, processor):
 		self.available_processors[processor_name] = processor

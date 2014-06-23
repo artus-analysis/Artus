@@ -23,13 +23,19 @@ class HarryParser(argparse.ArgumentParser):
 		self.add_argument("-h", "--help", default=False, action="store_true",
 		                  help="show this help message and exit")
 		
-		module_options = self.add_argument_group('Modules')
-		module_options.add_argument("--input-module", default="InputRoot",
-		                  help="Input Module. [Default: %(default)s]")
-		module_options.add_argument("--analysis-modules", default=None, nargs="*",
-		                  help="Analysis Modules. [Default: %(default)s]")
-		module_options.add_argument("--plot-modules", default="PlotMpl", nargs="*",
-		                  help="Plot Modules. [Default: %(default)s]")
+		self.module_options = self.add_argument_group('Modules')
+		self.module_options.add_argument("--input-module", default="InputRoot",
+		                                 help="Input Module. [Default: %(default)s]")
+		self.module_options.add_argument("--analysis-modules", default=None, nargs="+",
+		                                 help="Analysis Modules. [Default: %(default)s]")
+		self.module_options.add_argument("--plot-modules", default="PlotMpl", nargs="+",
+		                                 help="Plot Modules. [Default: %(default)s]")
+		
+		self.json_options = self.add_argument_group('JSON Configs')
+		self.json_options.add_argument("-j", "--json-defaults", nargs="+",
+		                               help="JSON config file(s) containing default settings (for a certain plot).")
+		self.json_options.add_argument("--export-json",
+		                               help="Export arguments to specified JSON config file.")
 		                  
 		self._n_parse_args_calls = 0
 	
