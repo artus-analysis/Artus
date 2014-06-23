@@ -36,8 +36,8 @@ class PlotRoot(plotbase.PlotBase):
 		self.formatting_options.add_argument("-g", "--legloc", type=float, nargs=2, default=[0.6, 0.6],
 		                                     help="Location (x/y coordinates) of the legend. [Default: %(default)s]")
 		
-	def prepare_args(self, plotData):
-		super(PlotRoot, self).prepare_args(plotData)
+	def prepare_args(self, parser, plotData):
+		super(PlotRoot, self).prepare_args(parser, plotData)
 		
 		# defaults for colors
 		for index, color in enumerate(plotData.plotdict["colors"]):

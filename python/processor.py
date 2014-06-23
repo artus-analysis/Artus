@@ -27,7 +27,7 @@ class Processor(object):
 		"""
 		pass
 	
-	def prepare_args(self, plotData):
+	def prepare_args(self, parser, plotData):
 		"""
 		Function that checks the syntax of the arguments and prepares them to have the needed format.
 		"""

@@ -33,8 +33,8 @@ class InputRoot(inputbase.InputBase):
 		self.input_options.add_argument("--z-bins", type=str, nargs='+', default=["25"],
 		                                help="Bining for z-axis of 3D histograms. In case only one argument is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [Default: %(default)s]")
 	
-	def prepare_args(self, plotData):
-		super(InputRoot, self).prepare_args(plotData)
+	def prepare_args(self, parser, plotData):
+		super(InputRoot, self).prepare_args(parser, plotData)
 		
 		self.prepare_list_args(plotData, ["files", "folders"])
 		plotData.plotdict["folders"] = [folders.split() if folders else [""] for folders in plotData.plotdict["folders"]]

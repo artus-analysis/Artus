@@ -118,8 +118,8 @@ class PlotBase(processor.Processor):
 		self.output_options.add_argument("-f", "--formats", nargs="+", default=["png"],
 		                                 help="Format of the plots. [Default: %(default)s]")
 	
-	def prepare_args(self, plotData):
-		super(PlotBase, self).prepare_args(plotData)
+	def prepare_args(self, parser, plotData):
+		super(PlotBase, self).prepare_args(parser, plotData)
 		
 		# prepare nick names for ratio subplot
 		if plotData.plotdict["ratio_num"] == None: plotData.plotdict["ratio_num"] = [plotData.plotdict["nicks"][0]]

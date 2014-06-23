@@ -14,8 +14,8 @@ class PlotMpl(plotbase.PlotBase):
 	def __init__(self):
 		super(PlotMpl, self).__init__()
 	
-	def prepare_args(self, plotData):
-		super(PlotMpl, self).prepare_args(plotData)
+	def prepare_args(self, parser, plotData):
+		super(PlotMpl, self).prepare_args(parser, plotData)
 		
 		# defaults for colors
 		for index, color in enumerate(plotData.plotdict["colors"]):

@@ -38,8 +38,8 @@ class InputBase(processor.Processor):
 		self.input_options.add_argument("-n", "--norm-references", type=str, nargs="+",
 		                                help="Nick names of inputs or float values to normalise to. One parameter can contain a whitespace separated list of multiple nick names, that are summed up before the normalisation.")
 	
-	def prepare_args(self, plotData):
-		super(InputBase, self).prepare_args(plotData)
+	def prepare_args(self, parser, plotData):
+		super(InputBase, self).prepare_args(parser, plotData)
 		
 		self.prepare_list_args(plotData, ["files", "nicks", "x_expressions", "y_expressions",
 		                                  "z_expressions", "weights", "norm_references"])

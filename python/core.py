@@ -95,7 +95,7 @@ class HarryCore(object):
 		
 		# prepare aguments for all processors before running them
 		for processor in self.processors:
-			processor.prepare_args(plotData)
+			processor.prepare_args(parser, plotData)
 			processor.run(plotData)
 	
 	def register_processor(self, processor_name, processor):

@@ -14,8 +14,8 @@ class ExportRoot(plotbase.PlotBase):
 	def __init__(self):
 		super(ExportRoot, self).__init__()
 	
-	def prepare_args(self, plotData):
-		super(ExportRoot, self).prepare_args(plotData)
+	def prepare_args(self, parser, plotData):
+		super(ExportRoot, self).prepare_args(parser, plotData)
 	
 	def run(self, plotdict=None):
 		super(ExportRoot, self).run(plotdict)
