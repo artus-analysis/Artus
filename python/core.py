@@ -37,9 +37,9 @@ class HarryCore(object):
 		self.available_processors.update(user_processors)
 		self.processors = []
 	
-	def run(self):
+	def run(self, args_from_script=None):
 		parser = harryparser.HarryParser()
-		args, unknown_args = parser.parse_known_args()
+		args, unknown_args = parser.parse_known_args(args_from_script.split() if args_from_script != None else None)
 		args = vars(args)
 		
 		if args["json_defaults"] != None:
@@ -97,7 +97,7 @@ class HarryCore(object):
 		if args["json_defaults"] != None:
 			parser.set_defaults(**(json_tools.JsonDict(args["json_defaults"])))
 		
-		args = vars(parser.parse_args())
+		args = vars(parser.parse_args(args_from_script.split() if args_from_script != None else None))
 		plotData = plotdata.PlotData(args)
 		
 		# general ROOT settings
