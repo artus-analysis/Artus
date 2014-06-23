@@ -12,11 +12,11 @@ import Artus.HarryPlotter.processor as processor
 
 class AnalysisBase(processor.Processor):
 	def __init__(self):
-		processor.Processor.__init__(self)
+		super(AnalysisBase, self).__init__()
 	
 	def prepare_args(self, plotData):
-		plotbase.PlotBase.prepare_args(self, plotData)
+		super(AnalysisBase, self).prepare_args(plotData)
 	
 	def run(self, plotdict=None):
-		processor.Processor.run(self, plotdict)
+		super(AnalysisBase, self).run(plotdict)
 

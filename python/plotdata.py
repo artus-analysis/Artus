@@ -18,5 +18,6 @@ class PlotData(object):
 	"""
 
 	def __init__(self, args):
+		super(PlotData, self).__init__()
 		self.plotdict = vars(args)
 

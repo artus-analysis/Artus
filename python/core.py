@@ -22,6 +22,8 @@ import Artus.HarryPlotter.processor as processor
 
 class HarryCore(object):
 	def __init__(self, user_processors=None):
+		super(HarryCore, self).__init__()
+		
 		if user_processors == None:
 			user_processors = {}
 		

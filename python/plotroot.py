@@ -18,14 +18,14 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 class PlotRoot(plotbase.PlotBase):
 	def __init__(self):
-		plotbase.PlotBase.__init__(self)
+		super(PlotRoot, self).__init__()
 		
 		self.canvas = None
 		self.plot_pad = None
    		self.ratio_pad = None
 	
 	def modify_argument_parser(self, parser):
-		plotbase.PlotBase.modify_argument_parser(self, parser)
+		super(PlotRoot, self).modify_argument_parser(parser)
 		
 		self.formatting_options.add_argument("--x-grid", action='store_true', default=False,
 		                                     help="Place an x-axes grid on the plot.")
@@ -37,7 +37,7 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Location (x/y coordinates) of the legend. [Default: %(default)s]")
 		
 	def prepare_args(self, plotData):
-		plotbase.PlotBase.prepare_args(self, plotData)
+		super(PlotRoot, self).prepare_args(plotData)
 		
 		# defaults for colors
 		for index, color in enumerate(plotData.plotdict["colors"]):
@@ -53,10 +53,10 @@ class PlotRoot(plotbase.PlotBase):
 				plotData.plotdict["markers"][index] = "E" if index == 0 else "HIST"
 	
 	def run(self, plotData):
-		plotbase.PlotBase.run(self, plotData)
+		super(PlotRoot, self).run(plotData)
 
 	def create_canvas(self, plotData):
-		plotbase.PlotBase.create_canvas(self, plotData)
+		super(PlotRoot, self).create_canvas(plotData)
 		
 		if self.canvas == None:
 			self.canvas = ROOT.TCanvas()
@@ -81,7 +81,7 @@ class PlotRoot(plotbase.PlotBase):
 			
 
 	def prepare_histograms(self, plotData):
-		plotbase.PlotBase.prepare_histograms(self, plotData)
+		super(PlotRoot, self).prepare_histograms(plotData)
 		
 		for root_histogram, color in zip(plotData.plotdict["root_histos"].values(),
 		                                 plotData.plotdict["colors"]):
@@ -91,7 +91,7 @@ class PlotRoot(plotbase.PlotBase):
 			root_histogram.SetMarkerColor(color)
 	
 	def make_plots(self, plotData):
-		plotbase.PlotBase.make_plots(self, plotData)
+		super(PlotRoot, self).make_plots(plotData)
 	
 		self.plot_pad.cd()
 		
@@ -144,7 +144,7 @@ class PlotRoot(plotbase.PlotBase):
 			
 	
 	def modify_axes(self, plotData):
-		plotbase.PlotBase.modify_axes(self, plotData)
+		super(PlotRoot, self).modify_axes(plotData)
 	
 		# axis labels
 		self.first_plotted_histogram.GetXaxis().SetTitle(plotData.plotdict["x_label"])
@@ -214,7 +214,7 @@ class PlotRoot(plotbase.PlotBase):
 			
 		
 	def add_labels(self, plotData):
-		plotbase.PlotBase.add_labels(self, plotData)
+		super(PlotRoot, self).add_labels(plotData)
 		
 		self.plot_pad.cd()
 		self.legend = ROOT.TLegend(plotData.plotdict["legloc"][0], plotData.plotdict["legloc"][1], 0.9, 0.9);
@@ -227,10 +227,10 @@ class PlotRoot(plotbase.PlotBase):
 		self.legend.Draw()
 	
 	def add_texts(self, plotData):
-		plotbase.PlotBase.add_texts(self, plotData)
+		super(PlotRoot, self).add_texts(plotData)
 	
 	def save_canvas(self, plotData):
-		plotbase.PlotBase.save_canvas(self, plotData)
+		super(PlotRoot, self).save_canvas(plotData)
 		
 		for plot_format in plotData.plotdict["formats"]:
 			filename = os.path.join(plotData.plotdict["output_dir"],

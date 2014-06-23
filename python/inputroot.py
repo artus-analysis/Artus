@@ -19,10 +19,10 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 class InputRoot(inputbase.InputBase):
 	def __init__(self):
-		inputbase.InputBase.__init__(self)
+		super(InputRoot, self).__init__()
 	
 	def modify_argument_parser(self, parser):
-		inputbase.InputBase.modify_argument_parser(self, parser)
+		super(InputRoot, self).modify_argument_parser(parser)
 		self.input_options.add_argument("--folders", type=str, nargs='*',
 		                                help="Path(s) to ROOT objects.")
 		
@@ -34,13 +34,13 @@ class InputRoot(inputbase.InputBase):
 		                                help="Bining for z-axis of 3D histograms. In case only one argument is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [Default: %(default)s]")
 	
 	def prepare_args(self, plotData):
-		inputbase.InputBase.prepare_args(self, plotData)
+		super(InputRoot, self).prepare_args(plotData)
 		
 		self.prepare_list_args(plotData, ["files", "folders"])
 		plotData.plotdict["folders"] = [folders.split() if folders else [""] for folders in plotData.plotdict["folders"]]
 	
 	def run(self, plotData):
-		inputbase.InputBase.run(self, plotData)
+		super(InputRoot, self).run(plotData)
 		
 		root_tools = roottools.RootTools()
 		for root_files, folders, x_expression, y_expression, z_expression, weight, nick in zip(*

@@ -12,11 +12,11 @@ import Artus.HarryPlotter.plotbase as plotbase
 
 class ExportRoot(plotbase.PlotBase):
 	def __init__(self):
-		plotbase.PlotBase.__init__(self)
+		super(ExportRoot, self).__init__()
 	
 	def prepare_args(self, plotData):
-		plotbase.PlotBase.prepare_args(self, plotData)
+		super(ExportRoot, self).prepare_args(plotData)
 	
 	def run(self, plotdict=None):
-		plotbase.PlotBase.run(self, plotdict)
+		super(ExportRoot, self).run(plotdict)
 

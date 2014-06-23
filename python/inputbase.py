@@ -15,7 +15,7 @@ import Artus.HarryPlotter.processor as processor
 
 class InputBase(processor.Processor):
 	def __init__(self):
-		processor.Processor.__init__(self)
+		super(InputBase, self).__init__()
 	
 	def modify_argument_parser(self, parser):
 		self.input_options = parser.add_argument_group("Input options")
@@ -39,7 +39,7 @@ class InputBase(processor.Processor):
 		                                help="Nick names of inputs or float values to normalise to. One parameter can contain a whitespace separated list of multiple nick names, that are summed up before the normalisation.")
 	
 	def prepare_args(self, plotData):
-		processor.Processor.prepare_args(self, plotData)
+		super(InputBase, self).prepare_args(plotData)
 		
 		self.prepare_list_args(plotData, ["files", "nicks", "x_expressions", "y_expressions",
 		                                  "z_expressions", "weights", "norm_references"])
@@ -47,7 +47,7 @@ class InputBase(processor.Processor):
 		plotData.plotdict["nicks"] = [nick if nick != None else ("nick%d" % index) for index, nick in enumerate(plotData.plotdict["nicks"])]
 	
 	def run(self, plotData):
-		processor.Processor.run(self, plotData)
+		super(InputBase, self).run(plotData)
 
 	@abc.abstractmethod
 	def read_root_objects(self):

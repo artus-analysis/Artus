@@ -12,10 +12,10 @@ import Artus.HarryPlotter.plotbase as plotbase
 
 class PlotMpl(plotbase.PlotBase):
 	def __init__(self):
-		plotbase.PlotBase.__init__(self)
+		super(PlotMpl, self).__init__()
 	
 	def prepare_args(self, plotData):
-		plotbase.PlotBase.prepare_args(self, plotData)
+		super(PlotMpl, self).prepare_args(plotData)
 		
 		# defaults for colors
 		for index, color in enumerate(plotData.plotdict["colors"]):
@@ -23,5 +23,5 @@ class PlotMpl(plotbase.PlotBase):
 		self.set_default_ratio_colors(plotData)
 	
 	def run(self, plotData):
-		plotbase.PlotBase.run(self, plotData)
+		super(PlotMpl, self).run(plotData)
 

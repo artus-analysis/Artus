@@ -18,6 +18,7 @@ import ROOT
 
 class RootTools(object):
 	def __init__(self):
+		super(RootTools, self).__init__()
 		self.binning_determined = False
 
 	@staticmethod

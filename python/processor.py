@@ -17,7 +17,7 @@ class Processor(object):
 		
 		This class serves as a base class for all object that can run on the PlotData.
 		"""
-		pass
+		super(Processor, self).__init__()
 	
 	def modify_argument_parser(self, parser):
 		"""

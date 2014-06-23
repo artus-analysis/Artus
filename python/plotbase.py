@@ -18,10 +18,10 @@ import Artus.HarryPlotter.roottools as roottools
 class PlotBase(processor.Processor):
 	
 	def __init__(self):
-		processor.Processor.__init__(self)
+		super(PlotBase, self).__init__()
 	
 	def modify_argument_parser(self, parser):
-		processor.Processor.modify_argument_parser(self, parser)
+		super(PlotBase, self).modify_argument_parser(parser)
 		
 		# plotting settings
 		self.plotting_options = parser.add_argument_group("Plotting options")
@@ -119,7 +119,7 @@ class PlotBase(processor.Processor):
 		                                 help="Format of the plots. [Default: %(default)s]")
 	
 	def prepare_args(self, plotData):
-		processor.Processor.prepare_args(self, plotData)
+		super(PlotBase, self).prepare_args(plotData)
 		
 		# prepare nick names for ratio subplot
 		if plotData.plotdict["ratio_num"] == None: plotData.plotdict["ratio_num"] = [plotData.plotdict["nicks"][0]]
@@ -173,7 +173,7 @@ class PlotBase(processor.Processor):
 			plotData.plotdict["filename"] = filename
 	
 	def run(self, plotData):
-		processor.Processor.run(self, plotData)
+		super(PlotBase, self).run(plotData)
 		
 		self.calculate_ratios(plotData)
 		self.create_canvas(plotData)

@@ -18,7 +18,7 @@ class HarryParser(argparse.ArgumentParser):
 		kwargs["fromfile_prefix_chars"] = "@"
 		kwargs.setdefault("parents", []).append(logger.loggingParser)
 		
-		argparse.ArgumentParser.__init__(self, **kwargs)
+		super(HarryParser, self).__init__(**kwargs)
 		
 		self.add_argument("-h", "--help", default=False, action="store_true",
 		                  help="show this help message and exit")
@@ -34,7 +34,7 @@ class HarryParser(argparse.ArgumentParser):
 		self._n_parse_args_calls = 0
 	
 	def parse_args(self, args=None, namespace=None):
-		args = argparse.ArgumentParser.parse_args(self, args=args, namespace=namespace)
+		args = super(HarryParser, self).parse_args(args=args, namespace=namespace)
 		logger.initLogger(args)
 		self._n_parse_args_calls += 1
 		if self._n_parse_args_calls > 1 and (args.help or len(sys.argv) <= 1):
@@ -43,7 +43,7 @@ class HarryParser(argparse.ArgumentParser):
 		return args
 	
 	def parse_known_args(self, args=None, namespace=None):
-		args, unknown_args = argparse.ArgumentParser.parse_known_args(self, args=args, namespace=namespace)
+		args, unknown_args = super(HarryParser, self).parse_known_args(args=args, namespace=namespace)
 		logger.initLogger(args)
 		self._n_parse_args_calls += 1
 		if self._n_parse_args_calls > 1 and (args.help or len(sys.argv) <= 1):
