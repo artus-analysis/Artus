@@ -21,8 +21,8 @@ class InputRoot(inputbase.InputBase):
 	def __init__(self):
 		super(InputRoot, self).__init__()
 	
-	def modify_argument_parser(self, parser):
-		super(InputRoot, self).modify_argument_parser(parser)
+	def modify_argument_parser(self, parser, args):
+		super(InputRoot, self).modify_argument_parser(parser, args)
 		self.input_options.add_argument("--folders", type=str, nargs='*',
 		                                help="Path(s) to ROOT objects.")
 		

@@ -24,8 +24,8 @@ class PlotRoot(plotbase.PlotBase):
 		self.plot_pad = None
    		self.ratio_pad = None
 	
-	def modify_argument_parser(self, parser):
-		super(PlotRoot, self).modify_argument_parser(parser)
+	def modify_argument_parser(self, parser, args):
+		super(PlotRoot, self).modify_argument_parser(parser, args)
 		
 		self.formatting_options.add_argument("--x-grid", action='store_true', default=False,
 		                                     help="Place an x-axes grid on the plot.")

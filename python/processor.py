@@ -19,7 +19,7 @@ class Processor(object):
 		"""
 		super(Processor, self).__init__()
 	
-	def modify_argument_parser(self, parser):
+	def modify_argument_parser(self, parser, args):
 		"""
 		Option to modify the HarryParser.
 		

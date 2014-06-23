@@ -20,8 +20,8 @@ class PlotBase(processor.Processor):
 	def __init__(self):
 		super(PlotBase, self).__init__()
 	
-	def modify_argument_parser(self, parser):
-		super(PlotBase, self).modify_argument_parser(parser)
+	def modify_argument_parser(self, parser, args):
+		super(PlotBase, self).modify_argument_parser(parser, args)
 		
 		# plotting settings
 		self.plotting_options = parser.add_argument_group("Plotting options")

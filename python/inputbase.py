@@ -17,7 +17,7 @@ class InputBase(processor.Processor):
 	def __init__(self):
 		super(InputBase, self).__init__()
 	
-	def modify_argument_parser(self, parser):
+	def modify_argument_parser(self, parser, args):
 		self.input_options = parser.add_argument_group("Input options")
 		self.input_options.add_argument("-i", "--files", type=str, nargs="+",
 		                                 help="Input root file(s).")

@@ -85,7 +85,7 @@ class HarryCore(object):
 		
 		# let processors modify the parser and then parse the arguments again
 		for processor in self.processors:
-			processor.modify_argument_parser(parser)
+			processor.modify_argument_parser(parser, vars(args))
 		args = parser.parse_args()
 		plotData = plotdata.PlotData(args)
 		
