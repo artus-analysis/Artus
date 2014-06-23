@@ -104,14 +104,14 @@ class HarryCore(object):
 		ROOT.TH1.SetDefaultSumw2(True)
 		ROOT.gROOT.SetBatch(True)
 		
+		# export arguments into JSON file
 		if args["export_json"] != None:
-			pass # TODO
+			json_tools.JsonDict(args).save(args.pop("export_json"), indent=4)
 		
-		else:
-			# prepare aguments for all processors before running them
-			for processor in self.processors:
-				processor.prepare_args(parser, plotData)
-				processor.run(plotData)
+		# prepare aguments for all processors before running them
+		for processor in self.processors:
+			processor.prepare_args(parser, plotData)
+			processor.run(plotData)
 	
 	def register_processor(self, processor_name, processor):
 		self.available_processors[processor_name] = processor
