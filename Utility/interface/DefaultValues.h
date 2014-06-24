@@ -6,8 +6,14 @@
 class DefaultValues {
 public:
 	// values set in .cc file
-    static const float  UndefinedFloat;
+    static const int UndefinedInt;
+    static const float UndefinedFloat;
     static const double UndefinedDouble;
     
     static const float EtaBorderEB;
+
+    static const int pdgIdPiZero;
+    static const int pdgIdW;
+    static const int pdgIdH;
+    static const int pdgIdTau;
 };

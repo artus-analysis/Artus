@@ -29,23 +29,23 @@ public:
 	virtual bool DoesEventPass(event_type const& event, product_type const& product,
 	                           setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
-		if (product.selectedHltName.empty())
+		if (product.m_selectedHltName.empty())
 		{
 			// no HLT found
 			return false;
 		}
 		else if (product.m_weights.at("hltPrescaleWeight") < 1.01)
 		{
-			return event.m_eventMetadata->hltFired(product.selectedHltName, event.m_lumiMetadata);;
+			return event.m_eventMetadata->hltFired(product.m_selectedHltName, event.m_lumiMetadata);;
 		}
 		else
 		{
 			if (! settings.GetAllowPrescaledTrigger())
 			{
 				LOG(FATAL) << "No unprescaled trigger found for event " << event.m_eventMetadata->nEvent
-					       << "! Lowest prescale: " << product.m_weights.at("hltPrescaleWeight") << " (\"" << product.selectedHltName << "\").";
+					       << "! Lowest prescale: " << product.m_weights.at("hltPrescaleWeight") << " (\"" << product.m_selectedHltName << "\").";
 			}
-			return (settings.GetAllowPrescaledTrigger() && event.m_eventMetadata->hltFired(product.selectedHltName, event.m_lumiMetadata));
+			return (settings.GetAllowPrescaledTrigger() && event.m_eventMetadata->hltFired(product.m_selectedHltName, event.m_lumiMetadata));
 		}
 	}
 

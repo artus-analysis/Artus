@@ -69,7 +69,7 @@ protected:
 			    (
 			    	(lowerPtCutByHltName->first == "default")
 			    	||
-			    	boost::regex_search(product.selectedHltName, boost::regex(lowerPtCutByHltName->first, boost::regex::icase | boost::regex::extended))
+			    	boost::regex_search(product.m_selectedHltName, boost::regex(lowerPtCutByHltName->first, boost::regex::icase | boost::regex::extended))
 			    )
 			   )
 			{
@@ -85,7 +85,7 @@ protected:
 			    (
 			    	(upperAbsEtaCutByHltName->first == "default")
 			    	||
-			    	boost::regex_search(product.selectedHltName, boost::regex(upperAbsEtaCutByHltName->first, boost::regex::icase | boost::regex::extended))
+			    	boost::regex_search(product.m_selectedHltName, boost::regex(upperAbsEtaCutByHltName->first, boost::regex::icase | boost::regex::extended))
 			    )
 			   )
 			{

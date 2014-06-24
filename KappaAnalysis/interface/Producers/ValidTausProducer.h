@@ -17,6 +17,8 @@
    
    Required config tags in addtion to the ones of the base class:
    - TauDiscriminators
+   - TauLowerPtCuts
+   - TauUpperAbsEtaCuts
 */
 
 template<class TTypes>
@@ -44,12 +46,13 @@ public:
 		ProducerBase<TTypes>::Init(settings);
 	
 		// parse additional config tags
-		discriminators = Utility::ParseVectorToMap(settings.GetTauDiscriminators());
+		discriminatorsByIndex = Utility::ParseMapTypes<size_t, std::string>(Utility::ParseVectorToMap(settings.GetTauDiscriminators()),
+		                                                                    discriminatorsByHltName);
 		
-		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
+		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetTauLowerPtCuts()),
 		                                                                 this->lowerPtCutsByHltName);
-		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
-		                                                                     this->upperAbsEtaCutsByHltName);
+		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetTauUpperAbsEtaCuts()),
+		                                                                 this->upperAbsEtaCutsByHltName);
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
@@ -59,18 +62,25 @@ public:
 			 tau != event.m_taus->end(); tau++)
 		{
 			bool validTau = true;
-	
-			// get pt-dependent discriminators
-			std::string index = std::to_string(product.m_validTaus.size());
-			std::string defaultIndex("default");
-			std::vector<std::string> discriminatorNames = SafeMap::GetWithDefault(discriminators, index,
-					                                      SafeMap::GetWithDefault(discriminators, defaultIndex, std::vector<std::string>()));
-	
+			
 			// check discriminators
-			for (std::vector<std::string>::iterator discriminatorName = discriminatorNames.begin();
-				 validTau && discriminatorName != discriminatorNames.end(); ++discriminatorName)
+			for (std::map<size_t, std::vector<std::string> >::const_iterator discriminatorByIndex = discriminatorsByIndex.begin();
+				 validTau && (discriminatorByIndex != discriminatorsByIndex.end()); ++discriminatorByIndex)
 			{
-				validTau = validTau && tau->hasID(*discriminatorName, event.m_tauDiscriminatorMetadata);
+				if (discriminatorByIndex->first == product.m_validTaus.size())
+				{
+					validTau = validTau && ApplyDiscriminators(&(*tau), discriminatorByIndex->second, event);
+				}
+			}
+			
+			for (std::map<std::string, std::vector<std::string> >::const_iterator discriminatorByHltName = discriminatorsByHltName.begin();
+				 validTau && (discriminatorByHltName != discriminatorsByHltName.end()); ++discriminatorByHltName)
+			{
+				if ((discriminatorByHltName->first == "default") ||
+					boost::regex_search(product.m_selectedHltName, boost::regex(discriminatorByHltName->first, boost::regex::icase | boost::regex::extended)))
+				{
+					validTau = validTau && ApplyDiscriminators(&(*tau), discriminatorByHltName->second, event);
+				}
 			}
 			
 			// kinematic cuts
@@ -99,7 +109,22 @@ protected:
 
 
 private:
-	std::map<std::string, std::vector<std::string> > discriminators;
+	std::map<size_t, std::vector<std::string> > discriminatorsByIndex;
+	std::map<std::string, std::vector<std::string> > discriminatorsByHltName;
+	
+	bool ApplyDiscriminators(KDataPFTau* tau, std::vector<std::string> const& discriminators,
+	                         event_type const& event) const
+	{
+		bool validTau = true;
+		
+		for (std::vector<std::string>::const_iterator discriminator = discriminators.begin();
+		     validTau && (discriminator != discriminators.end()); ++discriminator)
+		{
+			validTau = validTau && tau->hasID(*discriminator, event.m_tauDiscriminatorMetadata);
+		}
+		
+		return validTau;
+	}
 
 };
 
