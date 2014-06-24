@@ -11,4 +11,9 @@ public:
     static const double UndefinedDouble;
     
     static const float EtaBorderEB;
+
+    static const int pdgIdPiZero;
+    static const int pdgIdW;
+    static const int pdgIdH;
+    static const int pdgIdTau;
 };
