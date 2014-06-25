@@ -19,6 +19,8 @@ import Artus.HarryPlotter.plotmpl as plotmpl
 import Artus.HarryPlotter.plotroot as plotroot
 import Artus.HarryPlotter.processor as processor
 
+import Artus.HarryPlotter.modules.eventselectionoverlap as eventselectionoverlap
+
 import Artus.Configuration.jsonTools as json_tools
 
 
@@ -31,6 +33,7 @@ class HarryCore(object):
 		
 		self.available_processors = {
 			inputroot.InputRoot.name() : inputroot.InputRoot(),
+			eventselectionoverlap.EventSelectionOverlap.name() : eventselectionoverlap.EventSelectionOverlap(),
 			plotroot.PlotRoot.name() : plotroot.PlotRoot(),
 			plotmpl.PlotMpl.name() : plotmpl.PlotMpl(),
 		}

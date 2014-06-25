@@ -13,6 +13,7 @@ import re
 
 import Artus.HarryPlotter.processor as processor
 import Artus.HarryPlotter.roottools as roottools
+import Artus.HarryPlotter.modules.eventselectionoverlap as eventselectionoverlap
 
 
 class PlotBase(processor.Processor):
@@ -123,6 +124,10 @@ class PlotBase(processor.Processor):
 		                                 help="Filename of the plot without extension. By default, it is constructed from the x/y/z expressions.")
 		self.output_options.add_argument("-f", "--formats", nargs="+", default=["png"],
 		                                 help="Format of the plots. [Default: %(default)s]")
+		
+		# module specific settings # TODO
+		if eventselectionoverlap.EventSelectionOverlap.name() in args["analysis_modules"]:
+			parser.set_defaults(x_label="Event Selection Overlap")
 	
 	def prepare_args(self, parser, plotData):
 		super(PlotBase, self).prepare_args(parser, plotData)
@@ -177,6 +182,19 @@ class PlotBase(processor.Processor):
 						filename += "_VS_"
 					filename += expression_string
 			plotData.plotdict["filename"] = filename
+		
+		# module specific settings # TODO
+		if plotData.plotdict["analysis_modules"] != None and eventselectionoverlap.EventSelectionOverlap.name() in plotData.plotdict["analysis_modules"] and plotData.plotdict["x_tick_labels"] == None:
+			labels = filter(lambda label: label != None, plotData.plotdict.pop("labels"))
+			plotData.plotdict["labels"] = [None]
+			if len(labels) < 2:
+				log.warning("Argument --labels needs 2 values! These are filled up with the nick names.")
+				labels += plotData.plotdict.pop("nicks")
+			plotData.plotdict["x_tick_labels"] = [
+				"Only " + labels[0],
+				"Intersection",
+				"Only " + labels[1],
+			]
 	
 	def run(self, plotData):
 		super(PlotBase, self).run(plotData)
