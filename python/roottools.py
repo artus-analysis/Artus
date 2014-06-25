@@ -230,7 +230,7 @@ class RootTools(object):
 		self.z_bin_edges = RootTools.get_binning(root_histogram, axisNumber=2)
 		self.binning_determined = True
 	
-		return root_histogram
+		return tree, root_histogram
 
 
 	def rebin_root_histogram(self, root_histogram, rebinningX=1, rebinningY=1, rebinningZ=1, name=None):

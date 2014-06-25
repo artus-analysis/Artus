@@ -48,6 +48,7 @@ class InputRoot(inputbase.InputBase):
 			
 			# check wether to read from tree or directly from histograms
 			root_object_type = roottools.RootTools.check_type(root_files, folders)
+			root_tree_chain = None
 			root_histogram = None
 			
 			if root_object_type == ROOT.TTree:
@@ -55,17 +56,26 @@ class InputRoot(inputbase.InputBase):
 				                                  y_expression + ":" if y_expression else "",
 				                                  x_expression)
 				
-				root_histogram = root_tools.histogram_from_tree(root_files, folders,
-				                                                x_expression, y_expression, z_expression,
-				                                                x_bins=plotData.plotdict["x_bins"],
-				                                                y_bins=plotData.plotdict["y_bins"],
-				                                                z_bins=plotData.plotdict["z_bins"],
-				                                                weight_selection=weight, option="", name=None)
+				root_tree_chain, root_histogram = root_tools.histogram_from_tree(
+						root_files, folders,
+						x_expression, y_expression, z_expression,
+						x_bins=plotData.plotdict["x_bins"],
+						y_bins=plotData.plotdict["y_bins"],
+						z_bins=plotData.plotdict["z_bins"],
+						weight_selection=weight, option="", name=None
+				)
 				
 			elif root_object_type == ROOT.TH1:
 				root_objects = [os.path.join(folder, x_expression) for folder in folders]
 				
 				root_histogram = roottools.RootTools.histogram_from_file(root_files, root_objects, name=None)
+			
+			# save tree (chain) in plotData merging chains with same nick names
+			if root_tree_chain != None:
+				if nick in plotData.plotdict.setdefault("root_trees", {}):
+					plotData.plotdict["root_trees"][nick].Add(root_tree_chain)
+				else:
+					plotData.plotdict["root_trees"][nick] = root_tree_chain
 			
 			# save histogram in plotData merging histograms with same nick names
 			if nick in plotData.plotdict.setdefault("root_histos", {}):
