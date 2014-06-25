@@ -67,7 +67,7 @@ class HarryCore(object):
 		                   not isinstance(self.available_processors[module], analysisbase.AnalysisBase)]
 		if len(missing_modules) > 0:
 			log.warning("Some requested analysis modules have not been registered!")
-			for module in missing_module:
+			for module in missing_modules:
 				log.warning("\t" + module)
 		
 		# handle plot modules (third)

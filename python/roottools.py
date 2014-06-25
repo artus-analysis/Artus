@@ -157,11 +157,11 @@ class RootTools(object):
 	
 		# prepare unique histogram name
 		if name == None:
-			name = "histogram_{0}.json".format(hashlib.md5("_".join([str(root_file_names),
-				                                                     str(path_to_trees),
-				                                                     variable_expression,
-				                                                     str(x_bins), str(y_bins), str(z_bins),
-				                                                     str(weight_selection)])).hexdigest())
+			name = "histogram_{0}".format(hashlib.md5("_".join([str(root_file_names),
+				                                                str(path_to_trees),
+				                                                variable_expression,
+				                                                str(x_bins), str(y_bins), str(z_bins),
+				                                                str(weight_selection)])).hexdigest())
 		
 		
 		# prepare binning TTree::Draw/Project
@@ -245,10 +245,10 @@ class RootTools(object):
 
 		# prepare unique histogram name
 		if name == None:
-			name = "histogram_{0}.json".format(hashlib.md5("_".join([root_histogram.GetName(),
-				                                                     str(rebinningX),
-				                                                     str(rebinningY),
-				                                                     str(rebinningZ)])).hexdigest())
+			name = "histogram_{0}".format(hashlib.md5("_".join([root_histogram.GetName(),
+				                                                str(rebinningX),
+				                                                str(rebinningY),
+				                                                str(rebinningZ)])).hexdigest())
 
 		simpleRebinning = {
 			0 : rebinningX if type(rebinningX) == int and rebinningX != 1 else None,

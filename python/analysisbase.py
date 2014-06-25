@@ -17,6 +17,6 @@ class AnalysisBase(processor.Processor):
 	def prepare_args(self, parser, plotData):
 		super(AnalysisBase, self).prepare_args(parser, plotData)
 	
-	def run(self, plotdict=None):
-		super(AnalysisBase, self).run(plotdict)
+	def run(self, plotData=None):
+		super(AnalysisBase, self).run(plotData)
 
