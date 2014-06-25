@@ -89,6 +89,19 @@ class PlotRoot(plotbase.PlotBase):
 			root_histogram.SetFillColor(color)
 			root_histogram.SetFillStyle(1)
 			root_histogram.SetMarkerColor(color)
+			
+			# tick labels
+			if plotData.plotdict["x_tick_labels"] and len(plotData.plotdict["x_tick_labels"]) > 0:
+				for x_bin in range(min(root_histogram.GetNbinsX(), len(plotData.plotdict["x_tick_labels"]))):
+					root_histogram.GetXaxis().SetBinLabel(x_bin+1, plotData.plotdict["x_tick_labels"][x_bin])
+			
+			if plotData.plotdict["y_tick_labels"] and len(plotData.plotdict["y_tick_labels"]) > 0:
+				for y_bin in range(min(root_histogram.GetNbinsY(), len(plotData.plotdict["y_tick_labels"]))):
+					root_histogram.GetYaxis().SetBinLabel(y_bin+1, plotData.plotdict["y_tick_labels"][y_bin])
+			
+			if plotData.plotdict["z_tick_labels"] and len(plotData.plotdict["z_tick_labels"]) > 0:
+				for z_bin in range(min(root_histogram.GetNbinsZ(), len(plotData.plotdict["z_tick_labels"]))):
+					root_histogram.GetZaxis().SetBinLabel(z_bin+1, plotData.plotdict["z_tick_labels"][z_bin])
 	
 	def make_plots(self, plotData):
 		super(PlotRoot, self).make_plots(plotData)
