@@ -63,7 +63,7 @@ public:
 	KGenEventMetadata* m_genEventMetadata = 0;
 	KFilterMetadata* m_filterMetadata = 0;
 	KFilterSummary* m_filterSummary = 0;
-	KTaggerMetadata* m_taggermetadata = 0;
+	KTaggerMetadata* m_taggerMetadata = 0;
 	KTriggerObjects* m_triggerObjects = 0;
 };
 

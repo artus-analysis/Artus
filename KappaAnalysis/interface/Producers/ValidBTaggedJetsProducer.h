@@ -34,7 +34,7 @@ public:
 				bool validBJet = true;
 				KDataPFTaggedJet* tjet = static_cast<KDataPFTaggedJet*>(*jet);
 
-				float combinedSecondaryVertex = tjet->getTagger("CombinedSecondaryVertexBJetTags", event.m_taggermetadata);
+				float combinedSecondaryVertex = tjet->getTagger("CombinedSecondaryVertexBJetTags", event.m_taggerMetadata);
 
 				if (combinedSecondaryVertex < settings.GetBTaggedJetCombinedSecondaryVertexMediumWP() ||
 					std::abs(tjet->p4.eta()) > settings.GetBTaggedJetAbsEtaCut()) {

@@ -115,9 +115,13 @@ public:
 			validJet = validJet && AdditionalCriteria(&(*jet), event, product, settings);
 
 			if (validJet)
+			{
 				product.m_validJets.push_back(&(*jet));
+			}
 			else
+			{
 				product.m_invalidJets.push_back(&(*jet));
+			}
 		}
 	}
 
@@ -236,7 +240,7 @@ protected:
 		{
 			if (puJetIdByIndex->first == product.m_validJets.size())
 			{
-				validJet = validJet && PassPuJetIds(jet, puJetIdByIndex->second, event.m_taggermetadata);
+				validJet = validJet && PassPuJetIds(jet, puJetIdByIndex->second, event.m_taggerMetadata);
 			}
 		}
 		
@@ -245,7 +249,7 @@ protected:
 		{
 			if (puJetIdByHltName->first == "default")
 			{
-				validJet = validJet && PassPuJetIds(jet, puJetIdByHltName->second, event.m_taggermetadata);
+				validJet = validJet && PassPuJetIds(jet, puJetIdByHltName->second, event.m_taggerMetadata);
 			}
 			else
 			{

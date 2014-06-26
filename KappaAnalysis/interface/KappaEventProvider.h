@@ -90,7 +90,7 @@ public:
 		if(! settings.GetFilterSummary().empty())
 			this->m_event.m_filterSummary = this->template SecureFileInterfaceGetMeta<KFilterSummary>(settings.GetFilterSummary()); // TODO: Check
 		if(! settings.GetTaggerMetadata().empty())
-			this->m_event.m_taggermetadata = this->template SecureFileInterfaceGetMeta<KTaggerMetadata>(settings.GetTaggerMetadata());
+			this->m_event.m_taggerMetadata = this->template SecureFileInterfaceGetMeta<KTaggerMetadata>(settings.GetTaggerMetadata());
 		if(! settings.GetTriggerObjects().empty())
 			this->m_event.m_triggerObjects = this->template SecureFileInterfaceGet<KTriggerObjects>(settings.GetTriggerObjects(), false);
 
