@@ -23,6 +23,9 @@
 
    This producer requires the "JetID" config tag to be set to "tight", "medium" or "loose".
    
+   This producer should be run after the ValidElectronsProducer, ValidMuonsProducer and ValidTausProducer,
+   because it cleans the list of jets according to the valid leptons.
+   
    This is a templated base version. Use the actual versions for KDataPFJets or KDataPFTaggedJets
    at the end of this file.
 */
