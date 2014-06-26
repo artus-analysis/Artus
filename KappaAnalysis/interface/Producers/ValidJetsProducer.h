@@ -63,7 +63,7 @@ public:
 	{
 	}
 
-	virtual void Init(setting_type const& settings)
+	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
 	{
 		ProducerBase<TTypes>::Init(settings);
 		
@@ -107,14 +107,6 @@ public:
 			{
 				validJet = validJet && ROOT::Math::VectorUtil::DeltaR(jet->p4, (*lepton)->p4) > settings.GetJetLeptonLowerDeltaRCut();
 			}
-
-			/* TODO
-			if (globalSettings.Global()->GetVetoPileupJets())
-			{
-				bool puID = static_cast<KDataPFTaggedJet*>jet->getpuJetID("PUJetIDFullMedium", event.m_taggermetadata);
-				validJet = validJet && puID;
-			}
-			*/
 			
 			// kinematic cuts
 			validJet = validJet && this->PassKinematicCuts(&(*jet), event, product);
@@ -199,11 +191,19 @@ public:
    \brief Producer for valid jets (tagged PF jets).
    
    Operates on the vector event.m_tjets.
+   
+   Required config tags:
+   - PuJetIDs
 */
 template<class TTypes>
 class ValidTaggedJetsProducer: public ValidJetsProducerBase<TTypes, KDataPFTaggedJet, KDataPFJet>
 {
 public:
+
+	typedef typename TTypes::event_type event_type;
+	typedef typename TTypes::product_type product_type;
+	typedef typename TTypes::setting_type setting_type;
+	
 	ValidTaggedJetsProducer() : ValidJetsProducerBase<TTypes, KDataPFTaggedJet, KDataPFJet>(&TTypes::event_type::m_tjets,
 	                                                                                        &TTypes::product_type::m_validJets)
 	{
@@ -211,6 +211,66 @@ public:
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "valid_tagged_jets";
+	}
+
+	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
+	{
+		ValidJetsProducerBase<TTypes, KDataPFTaggedJet, KDataPFJet>::Init(settings);
+		
+		puJetIdsByIndex = Utility::ParseMapTypes<size_t, std::string>(Utility::ParseVectorToMap(settings.GetPuJetIDs()),
+		                                                              puJetIdsByHltName);
+	}
+
+
+protected:
+	
+	// Can be overwritten for analysis-specific use cases
+	virtual bool AdditionalCriteria(KDataPFTaggedJet* jet, event_type const& event,
+	                                product_type& product, setting_type const& settings) const
+	{
+		bool validJet = ValidJetsProducerBase<TTypes, KDataPFTaggedJet, KDataPFJet>::AdditionalCriteria(jet, event, product, settings);
+		
+		// PU Jet ID
+		for (std::map<size_t, std::vector<std::string> >::const_iterator puJetIdByIndex = puJetIdsByIndex.begin();
+		     puJetIdByIndex != puJetIdsByIndex.end() && validJet; ++puJetIdByIndex)
+		{
+			if (puJetIdByIndex->first == product.m_validJets.size())
+			{
+				validJet = validJet && PassPuJetIds(jet, puJetIdByIndex->second, event.m_taggermetadata);
+			}
+		}
+		
+		for (std::map<std::string, std::vector<std::string> >::const_iterator puJetIdByHltName = puJetIdsByHltName.begin();
+		     puJetIdByHltName != puJetIdsByHltName.end() && validJet; ++puJetIdByHltName)
+		{
+			if (puJetIdByHltName->first == "default")
+			{
+				validJet = validJet && PassPuJetIds(jet, puJetIdByHltName->second, event.m_taggermetadata);
+			}
+			else
+			{
+				LOG(FATAL) << "HLT name dependent PU Jet is not yet implemented!";
+			}
+		}
+		
+		return validJet;
+	}
+
+private:
+	std::map<size_t, std::vector<std::string> > puJetIdsByIndex;
+	std::map<std::string, std::vector<std::string> > puJetIdsByHltName;
+	
+	bool PassPuJetIds(KDataPFTaggedJet* jet, std::vector<std::string> const& puJetIds, KTaggerMetadata* taggerMetadata) const
+	{
+		bool validJet = true;
+		
+		for (std::vector<std::string>::const_iterator puJetId = puJetIds.begin();
+		     puJetId != puJetIds.end() && validJet; ++puJetId)
+		{
+			validJet = validJet && jet->getpuJetID(*puJetId, taggerMetadata);
+		}
+		
+		return validJet;
 	}
 };
 

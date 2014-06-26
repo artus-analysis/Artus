@@ -113,6 +113,7 @@ public:
 
 	IMPL_SETTING(std::string, JetID);
 	IMPL_SETTING_DEFAULT(float, JetLeptonLowerDeltaRCut, 0.5);
+	IMPL_SETTING_STRINGLIST(PuJetIDs);
 	
 	IMPL_SETTING(int, NElectrons);
 	IMPL_SETTING(int, NMuons);
