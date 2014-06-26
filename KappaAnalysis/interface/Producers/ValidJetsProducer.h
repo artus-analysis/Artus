@@ -97,6 +97,13 @@ public:
 						   && jet->nCharged > 0
 						   && jet->chargedEMFraction < 0.99;
 			}
+			
+			// remove leptons from list of jets via simple DeltaR isolation
+			for (std::vector<KLepton*>::const_iterator lepton = product.m_validLeptons.begin();
+			     validJet && lepton != product.m_validLeptons.end(); ++lepton)
+			{
+				validJet = validJet && ROOT::Math::VectorUtil::DeltaR(jet->p4, (*lepton)->p4) > settings.GetJetLeptonLowerDeltaRCut();
+			}
 
 			/* TODO
 			if (globalSettings.Global()->GetVetoPileupJets())
