@@ -38,6 +38,10 @@ public:
 	/// added by ValidTausProducer
 	std::vector<KDataPFTau*> m_validTaus;
 	std::vector<KDataPFTau*> m_invalidTaus;
+	
+	// added by ValidElectronsProducer, ValidMuonsProducer, ValidTausProducer
+	std::vector<KLepton*> m_validLeptons;
+	std::vector<KLepton*> m_invalidLeptons;
 
 	/// added by ValidJetsProducer
 	std::vector<KDataPFJet*> m_validJets;

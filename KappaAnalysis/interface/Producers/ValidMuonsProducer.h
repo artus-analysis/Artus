@@ -152,10 +152,24 @@ public:
 			validMuon = validMuon && AdditionalCriteria(&(*muon), event, product, settings);
 			
 			if (validMuon)
+			{
 				product.m_validMuons.push_back(&(*muon));
+				product.m_validLeptons.push_back(&(*muon));
+			}
 			else
+			{
 				product.m_invalidMuons.push_back(&(*muon));
+				product.m_invalidLeptons.push_back(&(*muon));
+			}
 		}
+		
+		// sort vectors of leptons by pt
+		std::sort(product.m_validLeptons.begin(), product.m_validLeptons.end(),
+		          [](KLepton const* lepton1, KLepton const* lepton2) -> bool
+		          { return lepton1->p4.Pt() > lepton2->p4.Pt(); });
+		std::sort(product.m_invalidLeptons.begin(), product.m_invalidLeptons.end(),
+		          [](KLepton const* lepton1, KLepton const* lepton2) -> bool
+		          { return lepton1->p4.Pt() > lepton2->p4.Pt(); });
 	}
 
 
