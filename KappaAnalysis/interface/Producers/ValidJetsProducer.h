@@ -37,6 +37,21 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
+
+	enum class JetID : int
+	{
+		NONE  = -1,
+		TIGHT = 0,
+		MEDIUM = 1,
+		LOOSE  = 2,
+	};
+	static JetID ToJetID(std::string const& jetID)
+	{
+		if (jetID == "tight") return JetID::TIGHT;
+		else if (jetID == "medium") return JetID::MEDIUM;
+		else if (jetID == "loose") return JetID::LOOSE;
+		else return JetID::NONE;
+	}
 	
 	ValidJetsProducerBase(std::vector<TJet>* event_type::*jets, std::vector<TValidJet*> product_type::*validJets) :
 		ProducerBase<TTypes>(),
@@ -49,7 +64,7 @@ public:
 	{
 		ProducerBase<TTypes>::Init(settings);
 		
-		maxNeutralFraction = GetMaxNeutralFraction(settings.GetJetID());
+		jetID = ToJetID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetJetID())));
 		
 		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetJetLowerPtCuts()),
 		                                                                 this->lowerPtCutsByHltName);
@@ -68,6 +83,8 @@ public:
 			// JetID
 			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
 			// jets, all eta
+			float maxNeutralFraction = this->GetMaxNeutralFraction();
+			
 			validJet = validJet
 					   && jet->neutralHadFraction + jet->HFHadFraction < maxNeutralFraction
 					   && jet->neutralEMFraction < maxNeutralFraction
@@ -102,27 +119,6 @@ public:
 		}
 	}
 
-private:
-	std::vector<TJet>* event_type::*m_jetsMember;
-	float maxNeutralFraction;
-
-	float GetMaxNeutralFraction(std::string jetid)
-	{
-		std::string tmpjetid = boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(jetid));
-		maxNeutralFraction = 0.0;
-		
-		if (tmpjetid == "tight")
-			maxNeutralFraction = 0.90;
-		else if (tmpjetid == "medium")
-			maxNeutralFraction = 0.95;
-		else if (tmpjetid == "loose")
-			maxNeutralFraction = 0.99;
-		else
-			LOG(FATAL) << "Jet ID " << jetid << " not implemented!";
-		
-		return maxNeutralFraction;
-	}
-
 
 protected:
 	
@@ -133,6 +129,35 @@ protected:
 		bool validJet = true;
 		
 		return validJet;
+	}
+
+
+private:
+	std::vector<TJet>* event_type::*m_jetsMember;
+	JetID jetID;
+
+	float GetMaxNeutralFraction() const
+	{
+		float maxNeutralFraction = 0.0;
+		
+		if (jetID == JetID::TIGHT)
+		{
+			maxNeutralFraction = 0.90;
+		}
+		else if (jetID == JetID::MEDIUM)
+		{
+			maxNeutralFraction = 0.95;
+		}
+		else if (jetID == JetID::LOOSE)
+		{
+			maxNeutralFraction = 0.99;
+		}
+		else if (jetID != JetID::NONE)
+		{
+			LOG(FATAL) << "Jet ID of type " << Utility::ToUnderlyingValue(jetID) << " not yet implemented!";
+		}
+		
+		return maxNeutralFraction;
 	}
 
 };
