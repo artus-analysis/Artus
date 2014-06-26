@@ -198,6 +198,7 @@ public:
    
    Required config tags:
    - PuJetIDs
+   - JetTaggerLowerCuts
 */
 template<class TTypes>
 class ValidTaggedJetsProducer: public ValidJetsProducerBase<TTypes, KDataPFTaggedJet, KDataPFJet>
@@ -221,8 +222,15 @@ public:
 	{
 		ValidJetsProducerBase<TTypes, KDataPFTaggedJet, KDataPFJet>::Init(settings);
 		
-		puJetIdsByIndex = Utility::ParseMapTypes<size_t, std::string>(Utility::ParseVectorToMap(settings.GetPuJetIDs()),
-		                                                              puJetIdsByHltName);
+		puJetIdsByIndex = Utility::ParseMapTypes<size_t, std::string>(
+				Utility::ParseVectorToMap(settings.GetPuJetIDs()),
+				puJetIdsByHltName
+		);
+		
+		jetTaggerLowerCutsByTaggerName = Utility::ParseMapTypes<std::string, float>(
+				Utility::ParseVectorToMap(settings.GetPuJetIDs()),
+				jetTaggerLowerCutsByTaggerName
+		);
 	}
 
 
@@ -257,12 +265,21 @@ protected:
 			}
 		}
 		
+		// Jet taggers
+		for (std::map<std::string, std::vector<float> >::const_iterator jetTaggerLowerCut = jetTaggerLowerCutsByTaggerName.begin();
+		     jetTaggerLowerCut != jetTaggerLowerCutsByTaggerName.end() && validJet; ++jetTaggerLowerCut)
+		{
+			float maxLowerCut = *std::max_element(jetTaggerLowerCut->second.begin(), jetTaggerLowerCut->second.end());
+			validJet = validJet && jet->getTagger(jetTaggerLowerCut->first, event.m_taggerMetadata) > maxLowerCut;
+		}
+		
 		return validJet;
 	}
 
 private:
 	std::map<size_t, std::vector<std::string> > puJetIdsByIndex;
 	std::map<std::string, std::vector<std::string> > puJetIdsByHltName;
+	std::map<std::string, std::vector<float> > jetTaggerLowerCutsByTaggerName;
 	
 	bool PassPuJetIds(KDataPFTaggedJet* jet, std::vector<std::string> const& puJetIds, KTaggerMetadata* taggerMetadata) const
 	{
