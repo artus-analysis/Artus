@@ -8,6 +8,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/HltProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/TriggerMatchingProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenTauDecayProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/GenParticleProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidElectronsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidMuonsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidTausProducer.h"
@@ -45,6 +46,8 @@ public:
 	{
 		if(id == GenTauDecayProducer<TTypes>().GetProducerId())
 	  		return new GenTauDecayProducer<TTypes>();
+		if(id == GenParticleProducer<TTypes>().GetProducerId())
+	  		return new GenParticleProducer<TTypes>();
 		else if(id == HltProducer<TTypes>().GetProducerId())
 			return new HltProducer<TTypes>();
 		else if(id == TriggerMatchingProducer<TTypes>().GetProducerId())
