@@ -231,6 +231,11 @@ public:
 				Utility::ParseVectorToMap(settings.GetJetTaggerLowerCuts()),
 				jetTaggerLowerCutsByTaggerName
 		);
+		
+		jetTaggerUpperCutsByTaggerName = Utility::ParseMapTypes<std::string, float>(
+				Utility::ParseVectorToMap(settings.GetJetTaggerUpperCuts()),
+				jetTaggerUpperCutsByTaggerName
+		);
 	}
 
 
@@ -273,6 +278,13 @@ protected:
 			validJet = validJet && jet->getTagger(jetTaggerLowerCut->first, event.m_taggerMetadata) > maxLowerCut;
 		}
 		
+		for (std::map<std::string, std::vector<float> >::const_iterator jetTaggerUpperCut = jetTaggerUpperCutsByTaggerName.begin();
+		     jetTaggerUpperCut != jetTaggerUpperCutsByTaggerName.end() && validJet; ++jetTaggerUpperCut)
+		{
+			float minUpperCut = *std::min_element(jetTaggerUpperCut->second.begin(), jetTaggerUpperCut->second.end());
+			validJet = validJet && jet->getTagger(jetTaggerUpperCut->first, event.m_taggerMetadata) < minUpperCut;
+		}
+		
 		return validJet;
 	}
 
@@ -280,6 +292,7 @@ private:
 	std::map<size_t, std::vector<std::string> > puJetIdsByIndex;
 	std::map<std::string, std::vector<std::string> > puJetIdsByHltName;
 	std::map<std::string, std::vector<float> > jetTaggerLowerCutsByTaggerName;
+	std::map<std::string, std::vector<float> > jetTaggerUpperCutsByTaggerName;
 	
 	bool PassPuJetIds(KDataPFTaggedJet* jet, std::vector<std::string> const& puJetIds, KTaggerMetadata* taggerMetadata) const
 	{
