@@ -228,7 +228,7 @@ public:
 		);
 		
 		jetTaggerLowerCutsByTaggerName = Utility::ParseMapTypes<std::string, float>(
-				Utility::ParseVectorToMap(settings.GetPuJetIDs()),
+				Utility::ParseVectorToMap(settings.GetJetTaggerLowerCuts()),
 				jetTaggerLowerCutsByTaggerName
 		);
 	}
