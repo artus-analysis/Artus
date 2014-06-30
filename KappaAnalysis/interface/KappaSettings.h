@@ -24,6 +24,7 @@ public:
 	/// name of tau collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, Taus, "");
 	IMPL_SETTING_DEFAULT(std::string, TauDiscriminatorMetadata, "");
+	IMPL_SETTING_DEFAULT(std::string, GenTaus, "");
 
 	/// name of jet collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, Jets, "");
@@ -137,7 +138,9 @@ public:
 	
 	//Reading Boson PdgId for GenTauDecayProducer studies.
 	IMPL_SETTING(int, BosonPdgId);
-	IMPL_SETTING(std::vector<std::string>, genParticles);
+	IMPL_SETTING_STRINGLIST(genParticles);
+	IMPL_SETTING_INTLIST(genParticlePdgIds);
+	IMPL_SETTING_DEFAULT(int, genParticleStatus, 0);
 
 	IMPL_SETTING(std::string, PileupWeightFile);
 	

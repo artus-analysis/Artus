@@ -56,6 +56,9 @@ public:
 	/// pointer to generator particles
 	KGenParticles* m_genParticles = 0;
 
+	/// pointer to generator particles
+	KDataGenTaus* m_genTaus = 0;
+
 	/// pointer to metadata // TODO: move to Artus/Provider
 	KLumiMetadata* m_lumiMetadata = 0;
 	KGenLumiMetadata* m_genLumiMetadata = 0;
