@@ -43,6 +43,9 @@ public:
 	std::vector<KLepton*> m_validLeptons;
 	std::vector<KLepton*> m_invalidLeptons;
 
+	/// added by JetEnergyCorrectionProducer
+	std::vector<KDataPFJet> m_correctedJets;
+	
 	/// added by ValidJetsProducer
 	std::vector<KDataPFJet*> m_validJets;
 	std::vector<KDataPFJet*> m_invalidJets;

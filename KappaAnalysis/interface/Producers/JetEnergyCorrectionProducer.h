@@ -7,15 +7,31 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/regex.hpp>
 
-#include <Math/VectorUtil.h>
+#include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 
 #include "Kappa/DataFormats/interface/Kappa.h"
+
+#define USE_JEC
+#include "KappaTools/RootTools/JECTools.h"
 
 #include "Artus/Core/interface/ProducerBase.h"
 #include "Artus/Utility/interface/Utility.h"
 
 /**
-   \brief Producer for 
+   \brief Producer for Jet Energy Correction (JEC)
+   
+   Required config tags:
+   - JetEnergyCorrectionParameters (files containing the correction parameters in the right order)
+   - JetEnergyCorrectionUncertaintyParameters (default: empty)
+   - JetEnergyCorrectionUncertaintyShift (default 0.0)
+   
+   Required packages (unfortunately, nobody knows a tag):
+   git cms-addpkg CondFormats/JetMETObjects
+   
+   Documentation:
+   https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetEnCorFWLite
 */
 
 
@@ -39,23 +55,64 @@ public:
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
 	{
 		ProducerBase<TTypes>::Init(settings);
+		
+		// load correction parameters
+		std::vector<JetCorrectorParameters> jecParameters;
+		for (std::vector<std::string>::const_iterator jecParametersFile = settings.GetJetEnergyCorrectionParameters().begin();
+		     jecParametersFile != settings.GetJetEnergyCorrectionParameters().end(); ++jecParametersFile)
+		{
+			jecParameters.push_back(JetCorrectorParameters(*jecParametersFile));
+		}
+		factorizedJetCorrector = new FactorizedJetCorrector(jecParameters);
+		
+		// initialise uncertainty calculation
+		if (! settings.GetJetEnergyCorrectionUncertaintyParameters().empty())
+		{
+			jetCorrectionUncertainty = new JetCorrectionUncertainty(settings.GetJetEnergyCorrectionUncertaintyParameters());
+			if (settings.GetJetEnergyCorrectionUncertaintyShift() > 0.0)
+			{
+				jecValueType = jec_up;
+			}
+			else if (settings.GetJetEnergyCorrectionUncertaintyShift() < 0.0)
+			{
+				jecValueType = jec_down;
+			}
+			else
+			{
+				jecValueType = jec_center;
+			}
+		}
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
 	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
+		// creates copies of jets in event
+		product.m_correctedJets.resize((event.*m_jetsMember)->size());
+		for (size_t jetIndex = 0; jetIndex < (event.*m_jetsMember)->size(); ++jetIndex)
+		{
+			product.m_correctedJets[jetIndex] = (*(event.*m_jetsMember))[jetIndex];
+		}
+		
+		// apply corrections and uncertainty shift
+		correctJets(&(product.m_correctedJets), factorizedJetCorrector, jetCorrectionUncertainty,
+		            event.m_jetArea->median, event.m_vertexSummary->nVertices, -1,
+		            jecValueType, std::abs(settings.GetJetEnergyCorrectionUncertaintyShift()));
 	}
 
 
 private:
 	std::vector<TJet>* event_type::*m_jetsMember;
-
+	
+	FactorizedJetCorrector* factorizedJetCorrector = 0;
+	JetCorrectionUncertainty* jetCorrectionUncertainty = 0;
+	JECValueType jecValueType;
 };
 
 
 
 /**
-   \brief Producer for 
+   \brief Producer for Jet Energy Correction (JEC)
    
    Operates on the vector event.m_jets.
 */
@@ -77,7 +134,7 @@ public:
 
 
 /**
-   \brief Producer for 
+   \brief Producer for Jet Energy Correction (JEC)
    
    Operates on the vector event.m_tjets.
 */

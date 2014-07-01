@@ -111,7 +111,11 @@ public:
 	IMPL_SETTING(std::string, ElectronReco);
 	
 	IMPL_SETTING_STRINGLIST(TauDiscriminators);
-
+	
+	IMPL_SETTING_STRINGLIST(JetEnergyCorrectionParameters);
+	IMPL_SETTING_DEFAULT(std::string, JetEnergyCorrectionUncertaintyParameters, "");
+	IMPL_SETTING_DEFAULT(float, JetEnergyCorrectionUncertaintyShift, 0.0);
+	
 	IMPL_SETTING(std::string, JetID);
 	IMPL_SETTING_DEFAULT(float, JetLeptonLowerDeltaRCut, 0.5);
 	IMPL_SETTING_STRINGLIST(PuJetIDs);
