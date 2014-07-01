@@ -41,6 +41,19 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 
+	enum class ValidJetsInput : int
+	{
+		AUTO = 0,
+		UNCORRECTED = 1,
+		CORRECTED = 2,
+	};
+	static ValidJetsInput ToValidJetsInput(std::string const& validJetsInput)
+	{
+		if (validJetsInput == "uncorrected") return ValidJetsInput::UNCORRECTED;
+		else if (validJetsInput == "corrected") return ValidJetsInput::CORRECTED;
+		else return ValidJetsInput::AUTO;
+	}
+
 	enum class JetID : int
 	{
 		NONE  = -1,
@@ -56,10 +69,13 @@ public:
 		else return JetID::NONE;
 	}
 	
-	ValidJetsProducerBase(std::vector<TJet>* event_type::*jets, std::vector<TValidJet*> product_type::*validJets) :
+	ValidJetsProducerBase(std::vector<TJet>* event_type::*jets,
+	                      std::vector<TJet> product_type::*correctJets,
+	                      std::vector<TValidJet*> product_type::*validJets) :
 		ProducerBase<TTypes>(),
 		ValidPhysicsObjectTools<TTypes, TValidJet>(validJets),
-		m_jetsMember(jets)
+		m_jetsMember(jets),
+		m_correctedJetsMember(correctJets)
 	{
 	}
 
@@ -67,6 +83,7 @@ public:
 	{
 		ProducerBase<TTypes>::Init(settings);
 		
+		validJetsInput = ToValidJetsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidJetsInput())));
 		jetID = ToJetID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetJetID())));
 		
 		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetJetLowerPtCuts()),
@@ -78,8 +95,14 @@ public:
 	virtual void Produce(event_type const& event, product_type& product,
 	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
-		for (typename std::vector<TJet>::iterator jet = (event.*m_jetsMember)->begin();
-		     jet != (event.*m_jetsMember)->end(); ++jet)
+		// select input source
+		std::vector<TJet>* jets = event.*m_jetsMember;
+		if ((validJetsInput == ValidJetsInput::AUTO && ((product.*m_correctedJetsMember).size() > 0)) || (validJetsInput == ValidJetsInput::CORRECTED))
+		{
+			jets = &(product.*m_correctedJetsMember);
+		}
+		
+		for (typename std::vector<TJet>::iterator jet = jets->begin(); jet != jets->end(); ++jet)
 		{
 			bool validJet = true;
 
@@ -140,6 +163,9 @@ protected:
 
 private:
 	std::vector<TJet>* event_type::*m_jetsMember;
+	std::vector<TJet> product_type::*m_correctedJetsMember;
+	
+	ValidJetsInput validJetsInput;
 	JetID jetID;
 
 	float GetMaxNeutralFraction() const
@@ -180,6 +206,7 @@ class ValidJetsProducer: public ValidJetsProducerBase<TTypes, KDataPFJet, KDataP
 {
 public:
 	ValidJetsProducer() : ValidJetsProducerBase<TTypes, KDataPFJet, KDataPFJet>(&TTypes::event_type::m_jets,
+	                                                                            &TTypes::product_type::m_correctedJets,
 	                                                                            &TTypes::product_type::m_validJets)
 	{
 	};
@@ -210,6 +237,7 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 	
 	ValidTaggedJetsProducer() : ValidJetsProducerBase<TTypes, KDataPFTaggedJet, KDataPFJet>(&TTypes::event_type::m_tjets,
+	                                                                                        &TTypes::product_type::m_correctedTaggedJets,
 	                                                                                        &TTypes::product_type::m_validJets)
 	{
 	};

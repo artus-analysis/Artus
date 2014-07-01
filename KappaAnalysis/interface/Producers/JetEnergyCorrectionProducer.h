@@ -35,8 +35,8 @@
 */
 
 
-template<class TTypes, class TJet, class TValidJet>
-class JetEnergyCorrectionProducerBase: public ProducerBase<TTypes>, public ValidPhysicsObjectTools<TTypes, TValidJet>
+template<class TTypes, class TJet>
+class JetEnergyCorrectionProducerBase: public ProducerBase<TTypes>
 {
 
 public:
@@ -45,10 +45,10 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 	
-	JetEnergyCorrectionProducerBase(std::vector<TJet>* event_type::*jets, std::vector<TValidJet*> product_type::*validJets) :
+	JetEnergyCorrectionProducerBase(std::vector<TJet>* event_type::*jets, std::vector<TJet> product_type::*correctedJets) :
 		ProducerBase<TTypes>(),
-		ValidPhysicsObjectTools<TTypes, TValidJet>(validJets),
-		m_jetsMember(jets)
+		m_jetsMember(jets),
+		m_correctedJetsMember(correctedJets)
 	{
 	}
 
@@ -88,14 +88,14 @@ public:
 	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		// creates copies of jets in event
-		product.m_correctedJets.resize((event.*m_jetsMember)->size());
+		(product.*m_correctedJetsMember).resize((event.*m_jetsMember)->size());
 		for (size_t jetIndex = 0; jetIndex < (event.*m_jetsMember)->size(); ++jetIndex)
 		{
-			product.m_correctedJets[jetIndex] = (*(event.*m_jetsMember))[jetIndex];
+			(product.*m_correctedJetsMember)[jetIndex] = (*(event.*m_jetsMember))[jetIndex];
 		}
 		
 		// apply corrections and uncertainty shift
-		correctJets(&(product.m_correctedJets), factorizedJetCorrector, jetCorrectionUncertainty,
+		correctJets(&(product.*m_correctedJetsMember), factorizedJetCorrector, jetCorrectionUncertainty,
 		            event.m_jetArea->median, event.m_vertexSummary->nVertices, -1,
 		            jecValueType, std::abs(settings.GetJetEnergyCorrectionUncertaintyShift()));
 	}
@@ -103,6 +103,7 @@ public:
 
 private:
 	std::vector<TJet>* event_type::*m_jetsMember;
+	std::vector<TJet> product_type::*m_correctedJetsMember;
 	
 	FactorizedJetCorrector* factorizedJetCorrector = 0;
 	JetCorrectionUncertainty* jetCorrectionUncertainty = 0;
@@ -114,15 +115,15 @@ private:
 /**
    \brief Producer for Jet Energy Correction (JEC)
    
-   Operates on the vector event.m_jets.
+   Operates on the vector event.m_jets and product::m_correctedJets.
 */
 template<class TTypes>
-class JetEnergyCorrectionProducer: public JetEnergyCorrectionProducerBase<TTypes, KDataPFJet, KDataPFJet>
+class JetEnergyCorrectionProducer: public JetEnergyCorrectionProducerBase<TTypes, KDataPFJet>
 {
 public:
 	JetEnergyCorrectionProducer() :
-		JetEnergyCorrectionProducerBase<TTypes, KDataPFJet, KDataPFJet>(&TTypes::event_type::m_jets,
-	                                                                    &TTypes::product_type::m_validJets)
+		JetEnergyCorrectionProducerBase<TTypes, KDataPFJet>(&TTypes::event_type::m_jets,
+	                                                        &TTypes::product_type::m_correctedJets)
 	{
 	};
 	
@@ -136,10 +137,10 @@ public:
 /**
    \brief Producer for Jet Energy Correction (JEC)
    
-   Operates on the vector event.m_tjets.
+   Operates on the vector event.m_tjets and product::m_correctedTaggedJets.
 */
 template<class TTypes>
-class TaggedJetEnergyCorrectionProducer: public JetEnergyCorrectionProducerBase<TTypes, KDataPFTaggedJet, KDataPFJet>
+class TaggedJetEnergyCorrectionProducer: public JetEnergyCorrectionProducerBase<TTypes, KDataPFTaggedJet>
 {
 public:
 
@@ -148,8 +149,8 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 	
 	TaggedJetEnergyCorrectionProducer() :
-		JetEnergyCorrectionProducerBase<TTypes, KDataPFTaggedJet, KDataPFJet>(&TTypes::event_type::m_tjets,
-		                                                                      &TTypes::product_type::m_validJets)
+		JetEnergyCorrectionProducerBase<TTypes, KDataPFTaggedJet>(&TTypes::event_type::m_tjets,
+		                                                          &TTypes::product_type::m_correctedTaggedJets)
 	{
 	};
 	

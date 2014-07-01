@@ -45,6 +45,7 @@ public:
 
 	/// added by JetEnergyCorrectionProducer
 	std::vector<KDataPFJet> m_correctedJets;
+	std::vector<KDataPFTaggedJet> m_correctedTaggedJets;
 	
 	/// added by ValidJetsProducer
 	std::vector<KDataPFJet*> m_validJets;
