@@ -13,11 +13,11 @@
    \brief GlobalProducer, to write any available generator particle to the product.
 
 
-   usage: add to your "genParticles" settings the type of Kappa Gen Particles you want to have available in your product. Currently, only genTaus and genParticles are available
+   usage: add to your "genParticles" to your settings
    if you want to use "genParticles", specify also which pdgId you want to have. These particles are then available in the map product.m_genParticlesMap
    with the config parameter genParticleStatus you can specify which status particles have to have to be written to the product. Example for a valid configuration that writes out genTaus as well was Higgs and W with status 3:
    {
-   "genParticles" : ["genTau", "genParticle"],
+   "GetGenParticleTypes" : ["genParticle"],
    "genParticlePdgIds" : [24, 25],
    "genParticleStatus" : 3
    }
@@ -39,33 +39,22 @@ public:
 
 	virtual void Init(setting_type const& settings)
 	{
-		std::vector<std::string> genParticleNamesToProduce = settings.GetgenParticles();
+		std::vector<std::string> genParticleNamesToProduce = settings.GetGenParticleTypes();
 		for(size_t i = 0; i < genParticleNamesToProduce.size(); ++i)
 		{
 			genParticleTypesToProduce.push_back(ToGenParticleType(genParticleNamesToProduce[i]));
 		}
-		std::vector<int> genParticlesPdgIds = settings.GetgenParticlePdgIds();
+		std::vector<int> genParticlesPdgIds = settings.GetGenParticlePdgIds();
 		for(size_t i = 0; i < genParticlesPdgIds.size(); ++i)
 		{
 			genParticlesPdgIdsToProduce.push_back(genParticlesPdgIds[i]);
 		}
-		genParticlesStatus = settings.GetgenParticleStatus();
+		genParticlesStatus = settings.GetGenParticleStatus();
 	}
  
 	virtual void Produce(event_type const& event, product_type& product,
 	                     setting_type const& settings) const
 	{
-		if(std::find(genParticleTypesToProduce.begin(), genParticleTypesToProduce.end(), GenParticleType::GENTAU)
-		  !=genParticleTypesToProduce.end())
-		{
-			for (KDataGenTaus::iterator genTau = event.m_genTaus->begin(); genTau != event.m_genTaus->end(); genTau++)
-			{
-				product.m_ptOrderedGenTaus.push_back(&(*genTau));
-			}
-			std::sort(product.m_ptOrderedGenTaus.begin(), product.m_ptOrderedGenTaus.end(),
-				       [](KDataGenTau const* tau1, KDataGenTau const* tau2) -> bool
-				       { return tau1->p4.Pt() > tau2->p4.Pt(); });
-		}
 		if(std::find(genParticleTypesToProduce.begin(), genParticleTypesToProduce.end(), GenParticleType::GENPARTICLE)
 		  !=genParticleTypesToProduce.end())
 		{
@@ -80,11 +69,6 @@ public:
 				}
 			}
 		}
-		for ( size_t i = 0; i < product.m_genParticlesMap[15].size(); i++)
-		{
-			std::cout << "pt" << i << ": " << product.m_genParticlesMap[15][i]->p4.Pt() << ", status: " << product.m_genParticlesMap[15][i]->status() << std::endl;
-		}
-
 	}
 
 private:

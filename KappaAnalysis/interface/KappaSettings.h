@@ -138,9 +138,10 @@ public:
 	
 	//Reading Boson PdgId for GenTauDecayProducer studies.
 	IMPL_SETTING(int, BosonPdgId);
-	IMPL_SETTING_STRINGLIST(genParticles);
-	IMPL_SETTING_INTLIST(genParticlePdgIds);
-	IMPL_SETTING_DEFAULT(int, genParticleStatus, 0);
+
+	IMPL_SETTING_STRINGLIST(GenParticleTypes);
+	IMPL_SETTING_INTLIST(GenParticlePdgIds);
+	IMPL_SETTING_DEFAULT(int, GenParticleStatus, 0);
 
 	IMPL_SETTING(std::string, PileupWeightFile);
 	

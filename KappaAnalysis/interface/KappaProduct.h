@@ -48,7 +48,6 @@ public:
 	std::vector<KDataPFJet*> m_invalidJets;
 
 	/// added by GenParticleProducer
-	std::vector<KDataGenTau*> m_ptOrderedGenTaus;
 	std::map<int, std::vector<KGenParticle*>> m_genParticlesMap;
 
 	/// added by ValidBTaggedJetsProducer
