@@ -62,6 +62,7 @@ public:
 		     jecParametersFile != settings.GetJetEnergyCorrectionParameters().end(); ++jecParametersFile)
 		{
 			jecParameters.push_back(JetCorrectorParameters(*jecParametersFile));
+			LOG(DEBUG) << "Loaded JetCorrectorParameters from \"" << *jecParametersFile << "\".";
 		}
 		factorizedJetCorrector = new FactorizedJetCorrector(jecParameters);
 		
@@ -69,18 +70,8 @@ public:
 		if (! settings.GetJetEnergyCorrectionUncertaintyParameters().empty())
 		{
 			jetCorrectionUncertainty = new JetCorrectionUncertainty(settings.GetJetEnergyCorrectionUncertaintyParameters());
-			if (settings.GetJetEnergyCorrectionUncertaintyShift() > 0.0)
-			{
-				jecValueType = jec_up;
-			}
-			else if (settings.GetJetEnergyCorrectionUncertaintyShift() < 0.0)
-			{
-				jecValueType = jec_down;
-			}
-			else
-			{
-				jecValueType = jec_center;
-			}
+			LOG(DEBUG) << "Loaded JetCorrectionUncertainty from \""
+			           << settings.GetJetEnergyCorrectionUncertaintyParameters() << "\".";
 		}
 	}
 
@@ -97,7 +88,7 @@ public:
 		// apply corrections and uncertainty shift
 		correctJets(&(product.*m_correctedJetsMember), factorizedJetCorrector, jetCorrectionUncertainty,
 		            event.m_jetArea->median, event.m_vertexSummary->nVertices, -1,
-		            jecValueType, std::abs(settings.GetJetEnergyCorrectionUncertaintyShift()));
+		            settings.GetJetEnergyCorrectionUncertaintyShift());
 	}
 
 
@@ -107,7 +98,6 @@ private:
 	
 	FactorizedJetCorrector* factorizedJetCorrector = 0;
 	JetCorrectionUncertainty* jetCorrectionUncertainty = 0;
-	JECValueType jecValueType;
 };
 
 
