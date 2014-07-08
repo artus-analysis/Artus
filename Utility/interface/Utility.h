@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include "Artus/Utility/interface/ArtusLogging.h"
+
 #include <map>
 #include <type_traits>
 #include <string>
@@ -15,6 +17,11 @@
 #include <Math/SMatrix.h>
 
 #include "Artus/Core/interface/Cpp11Support.h"
+
+
+typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > RMDataLV;
+typedef ROOT::Math::DisplacementVector3D<ROOT::Math::Cartesian3D<float>,ROOT::Math::DefaultCoordinateSystemTag> RMDataV;
+typedef ROOT::Math::SMatrix<double, 2, 2, ROOT::Math::MatRepSym<double, 2> > RMSM2x2;
 
 namespace Utility {
 
@@ -155,8 +162,19 @@ namespace Utility {
 	template<class TNumber>
 	bool ApproxEqual(TNumber value1, TNumber value2, double maxDelta=1e-5)
 	{
-		double delta = std::abs(2.0 * (value1 - value2) / (value1 + value2));
-		return (delta < maxDelta);
+		if (value1 == value2)
+		{
+			return true;
+		}
+		else
+		{
+			double delta = std::abs(value1 - value2);
+			if ((value1 + value2) != 0)
+			{
+				delta *= (2.0 / std::abs(value1 + value2));
+			}
+			return (delta < maxDelta);
+		}
 	}
 	
 	template<>
