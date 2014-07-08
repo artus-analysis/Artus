@@ -12,8 +12,20 @@ public:
     
     static const float EtaBorderEB;
 
-    static const int pdgIdPiZero;
+    static const int pdgIdGamma;
     static const int pdgIdW;
     static const int pdgIdH;
+
+    static const int pdgIdPiZero;
+    static const int pdgIdPiPlus;
+    static const int pdgIdKPlus;
+    static const int pdgIdKLong;
+    static const int pdgIdKShort;
+
+    static const int pdgIdElectron;
+    static const int pdgIdNuE;
+    static const int pdgIdMuon;
+    static const int pdgIdNuMu;
     static const int pdgIdTau;
+    static const int pdgIdNuTau;
 };
