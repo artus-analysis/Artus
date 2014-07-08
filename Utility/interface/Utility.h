@@ -8,6 +8,12 @@
 
 #include <boost/lexical_cast.hpp>
 
+#include <Math/LorentzVector.h>
+#include <Math/PtEtaPhiM4D.h>
+#include <Math/DisplacementVector3D.h>
+#include <Math/Cartesian3D.h>
+#include <Math/SMatrix.h>
+
 #include "Artus/Core/interface/Cpp11Support.h"
 
 namespace Utility {
@@ -145,5 +151,21 @@ namespace Utility {
 		
 		return ParseMapTypes(inputMap, outputMapWrongTKey, outputMapWrongTValue, outputMapWrongTKeyWrongTValue);
 	}
+	
+	template<class TNumber>
+	bool ApproxEqual(TNumber value1, TNumber value2, double maxDelta=1e-5)
+	{
+		double delta = std::abs(2.0 * (value1 - value2) / (value1 + value2));
+		return (delta < maxDelta);
+	}
+	
+	template<>
+	bool ApproxEqual<RMDataLV>(RMDataLV value1, RMDataLV value2, double maxDelta);
+	
+	template<>
+	bool ApproxEqual<RMDataV>(RMDataV value1, RMDataV value2, double maxDelta);
+	
+	template<>
+	bool ApproxEqual<RMSM2x2>(RMSM2x2 value1, RMSM2x2 value2, double maxDelta);
 }
 
