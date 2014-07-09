@@ -111,7 +111,7 @@ private:
 			}
 			else
 			{
-				LOG (ERROR) << "Index larger than size of gen particle vector:" << DaughterIndex << ">" << event.m_genParticles->size() << ".";
+				LOG(ERROR) << "Index larger than size of gen particle vector:" << DaughterIndex << ">" << event.m_genParticles->size() << ".";
 			}
 		}
 	}

@@ -57,21 +57,22 @@ public:
 		ProducerBase<TTypes>::Init(settings);
 		
 		// load correction parameters
+		LOG(DEBUG) << "\tLoading JetCorrectorParameters from files...";
 		std::vector<JetCorrectorParameters> jecParameters;
 		for (std::vector<std::string>::const_iterator jecParametersFile = settings.GetJetEnergyCorrectionParameters().begin();
 		     jecParametersFile != settings.GetJetEnergyCorrectionParameters().end(); ++jecParametersFile)
 		{
 			jecParameters.push_back(JetCorrectorParameters(*jecParametersFile));
-			LOG(DEBUG) << "Loaded JetCorrectorParameters from \"" << *jecParametersFile << "\".";
+			LOG(DEBUG) << "\t\t" << *jecParametersFile;
 		}
 		factorizedJetCorrector = new FactorizedJetCorrector(jecParameters);
 		
 		// initialise uncertainty calculation
+		LOG(DEBUG) << "\tLoading JetCorrectionUncertainty from files...";
 		if (! settings.GetJetEnergyCorrectionUncertaintyParameters().empty())
 		{
 			jetCorrectionUncertainty = new JetCorrectionUncertainty(settings.GetJetEnergyCorrectionUncertaintyParameters());
-			LOG(DEBUG) << "Loaded JetCorrectionUncertainty from \""
-			           << settings.GetJetEnergyCorrectionUncertaintyParameters() << "\".";
+			LOG(DEBUG) << "\t\t" << settings.GetJetEnergyCorrectionUncertaintyParameters();
 		}
 	}
 

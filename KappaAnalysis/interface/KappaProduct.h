@@ -15,7 +15,6 @@
    given KappaPipeline. Via the PipelineRunner the KappaProduct all extra products in the analysis 
    chain will be passed on to subsequent Producers, Filters and Consumers.
 */
-
 class KappaProduct : public ProductBase {
 public:
 	KappaProduct() {};

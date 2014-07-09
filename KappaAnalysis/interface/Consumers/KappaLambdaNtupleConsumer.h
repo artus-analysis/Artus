@@ -18,8 +18,6 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 
-	typedef std::function<float(event_type const&, product_type const&)> float_extractor_lambda;
-
 	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE
 	{
 		return "lambda_ntuple";
@@ -37,6 +35,23 @@ public:
 			        DefaultValues::UndefinedFloat :
 			        static_cast<KGenEventMetadata*>(event.m_eventMetadata)->numPUInteractionsTruth);
 		};
+		
+		// loop over all quantities containing "weight" (case-insensitive)
+		// and try to find them in the weights map to write them out
+		for (auto const & quantity : pipeline->GetSettings().GetQuantities())
+		{
+			if (boost::algorithm::icontains(quantity, "weight"))
+			{
+				if (this->m_valueExtractorMap.count(quantity) == 0)
+				{
+					LOG(DEBUG) << "\tQuantity \"" << quantity << "\" is tried to be taken from product.m_weights.";
+					this->m_valueExtractorMap[quantity] = [quantity](event_type const & event, product_type const & product)
+					{
+						return SafeMap::GetWithDefault(product.m_weights, quantity, 1.0);
+					};
+				}
+			}
+		}
 	
 		// need to be called at last
 		LambdaNtupleConsumerBase<TTypes>::Init(pipeline);

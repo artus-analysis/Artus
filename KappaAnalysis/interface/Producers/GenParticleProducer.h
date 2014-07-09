@@ -39,40 +39,37 @@ public:
 
 	virtual void Init(setting_type const& settings)
 	{
-		std::vector<std::string> genParticleNamesToProduce = settings.GetGenParticleTypes();
-		for(size_t i = 0; i < genParticleNamesToProduce.size(); ++i)
+		genParticleTypes.clear();
+		for (std::vector<std::string>::const_iterator genParticleType = settings.GetGenParticleTypes().begin();
+		     genParticleType != settings.GetGenParticleTypes().end(); ++genParticleType)
 		{
-			genParticleTypesToProduce.push_back(ToGenParticleType(genParticleNamesToProduce[i]));
+			genParticleTypes.push_back(ToGenParticleType(*genParticleType));
 		}
-		std::vector<int> genParticlesPdgIds = settings.GetGenParticlePdgIds();
-		for(size_t i = 0; i < genParticlesPdgIds.size(); ++i)
-		{
-			genParticlesPdgIdsToProduce.push_back(genParticlesPdgIds[i]);
-		}
-		genParticlesStatus = settings.GetGenParticleStatus();
 	}
  
 	virtual void Produce(event_type const& event, product_type& product,
 	                     setting_type const& settings) const
 	{
-		if(std::find(genParticleTypesToProduce.begin(), genParticleTypesToProduce.end(), GenParticleType::GENPARTICLE)
-		  !=genParticleTypesToProduce.end())
+		if (std::find(genParticleTypes.begin(), genParticleTypes.end(), GenParticleType::GENPARTICLE)
+		    != genParticleTypes.end())
 		{
 			for (KGenParticles::iterator part = event.m_genParticles->begin();
-			    part != event.m_genParticles->end(); ++part)
+			     part != event.m_genParticles->end(); ++part)
 			{
-				if(std::find(genParticlesPdgIdsToProduce.begin(), genParticlesPdgIdsToProduce.end(), part->pdgId())
-				  !=genParticlesPdgIdsToProduce.end())
+				if (std::find(settings.GetGenParticlePdgIds().begin(), settings.GetGenParticlePdgIds().end(), part->pdgId())
+				    != settings.GetGenParticlePdgIds().end())
 				{
-					if((genParticlesStatus == 0) || ( genParticlesStatus == part->status()))
+					if ((settings.GetGenParticleStatus() == 0) || ( settings.GetGenParticleStatus() == part->status()))
+					{
 						product.m_genParticlesMap[part->pdgId()].push_back(&(*part));
+					}
 				}
 			}
 		}
 	}
 
+
 private:
-	std::vector<std::string> genParticles;
 
 	enum class GenParticleType : int
 	{
@@ -90,9 +87,8 @@ private:
 		else if (genParcticleName == "genTau") return GenParticleType::GENTAU;
 		else return GenParticleType::NONE;
 	}
-	std::vector<GenParticleType> genParticleTypesToProduce;
-	std::vector<int> genParticlesPdgIdsToProduce;
-	int genParticlesStatus;
+	
+	std::vector<GenParticleType> genParticleTypes;
 
 };
 

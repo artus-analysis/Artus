@@ -33,16 +33,19 @@ public:
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
 		ProducerBase<TTypes>::Init(settings);
 		
-		const std::string s = "pileup";
-		LOG(INFO) << "Loading pile-up weights (" << s << "):\n  " << settings.GetPileupWeightFile();
+		const std::string histogramName = "pileup";
+		LOG(DEBUG) << "\tLoading pile-up weights from files...";
+		LOG(DEBUG) << "\t\t" << settings.GetPileupWeightFile() << "/" << histogramName;
 		TFile file(settings.GetPileupWeightFile().c_str(), "READONLY");
-		TH1D* pileuphisto = (TH1D*) file.Get(s.c_str());
+		TH1D* pileupHistogram = (TH1D*) file.Get(histogramName.c_str());
 
-		m_pileupweights.clear();
-		for (int i = 1; i <= pileuphisto->GetNbinsX(); ++i)
-			m_pileupweights.push_back(pileuphisto->GetBinContent(i));
-		m_bins = 1.0 / pileuphisto->GetBinWidth(1);
-		delete pileuphisto;
+		m_pileupWeights.clear();
+		for (int i = 1; i <= pileupHistogram->GetNbinsX(); ++i)
+		{
+			m_pileupWeights.push_back(pileupHistogram->GetBinContent(i));
+		}
+		m_bins = 1.0 / pileupHistogram->GetBinWidth(1);
+		delete pileupHistogram;
 		file.Close();
 	}
 
@@ -51,15 +54,15 @@ public:
 	{
 		assert(event.m_genEventMetadata != NULL);
 		double npu = event.m_genEventMetadata->numPUInteractionsTruth;
-		if (npu < m_pileupweights.size())
-			product.m_weights["puWeight"] = m_pileupweights.at(int(npu * m_bins));
+		if (npu < m_pileupWeights.size())
+			product.m_weights["puWeight"] = m_pileupWeights.at(int(npu * m_bins));
 		else
 			product.m_weights["puWeight"] = 0.0;
 	}
 
 
 private:
-		std::vector<double> m_pileupweights;
+		std::vector<double> m_pileupWeights;
 		double m_bins;
 
 };
