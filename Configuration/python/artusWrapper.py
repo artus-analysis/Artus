@@ -272,34 +272,35 @@ class ArtusWrapper(object):
 	                                    help="Kappa nickname name that can be used for switch between sample-dependent settings.")
 		
 		configOptionsGroup.add_argument("--disable-repo-versions", default=False, action="store_true",
-	                                 help="Add repository versions to the JSON config.")
+	                                    help="Add repository versions to the JSON config.")
 		configOptionsGroup.add_argument("--repo-scan-base-dirs", nargs="+", required=False, default="$CMSSW_BASE/src/",
-	                                 help="Base directories for repositories scan. [Default: $CMSSW_BASE/src/]")
+	                                    help="Base directories for repositories scan. [Default: $CMSSW_BASE/src/]")
 		configOptionsGroup.add_argument("--repo-scan-depth", required=False, type=int, default=2,
-	                                 help="Depth of repositories scran. [Default: %(default)s]")
+	                                    help="Depth of repositories scran. [Default: %(default)s]")
 		configOptionsGroup.add_argument("--enable-envvar-expansion", dest="envvar_expansion", default=True, action="store_true",
-	                                 help="Enable expansion of environment variables in config.")
+	                                    help="Enable expansion of environment variables in config.")
 		configOptionsGroup.add_argument("--disable-envvar-expansion", dest="envvar_expansion", action="store_false",
-	                                 help="Disable expansion of environment variables in config.")
+	                                    help="Disable expansion of environment variables in config.")
 		configOptionsGroup.add_argument("-P", "--print-config", default=False, action="store_true",
-	                                 help="Print out the JSON config before running Artus.")
+	                                    help="Print out the JSON config before running Artus.")
 		configOptionsGroup.add_argument("-s", "--save-config", default="",
-	                                 help="Save the JSON config to FILENAME.")
+	                                    help="Save the JSON config to FILENAME.")
 		configOptionsGroup.add_argument('-f', '--fast', type=int, default=False,
-	                                 help="limit number of input files or grid-control jobs. 3=files[0:3].")
+	                                    help="limit number of input files or grid-control jobs. 3=files[0:3].")
 		configOptionsGroup.add_argument("--gc-config", default="$ARTUSPATH/Configuration/data/grid-control_base_config.conf",
-	                                 help="path to grid-control base config that is replace by the wrapper. [Default: %(default)s]")
-
-
+	                                    help="Path to grid-control base config that is replace by the wrapper. [Default: %(default)s]")
+		configOptionsGroup.add_argument("--gc-config-includes", nargs="+",
+	                                    help="Path to grid-control configs to include in the base config.")
+		
 		runningOptionsGroup = self._parser.add_argument_group("Running options")
 		runningOptionsGroup.add_argument("--no-run", default=False, action="store_true",
-	                                  help="Exit before running Artus to only check the configs.")
+	                                      help="Exit before running Artus to only check the configs.")
 		runningOptionsGroup.add_argument("-r", "--root", default=False, action="store_true",
-	                                  help="Open output file in ROOT TBrowser after completion.")
+	                                      help="Open output file in ROOT TBrowser after completion.")
 		runningOptionsGroup.add_argument("-b", "--batch", default=False, action="store_true",
-	                                  help="Run with grid-control.")
+	                                      help="Run with grid-control.")
 		runningOptionsGroup.add_argument("--no-log-to-se", default=False, action="store_true",
-	                                  help="Do not write logfile in batch mode directly to SE.")
+	                                      help="Do not write logfile in batch mode directly to SE.")
 
 		if self._executable:
 			self._parser.add_argument("-x", "--executable", help="Artus executable. [Default: %(default)s]", default=self._executable)
@@ -338,15 +339,15 @@ class ArtusWrapper(object):
 		sepath = "se path = " + sepathRaw
 		workdir = "workdir = " + os.path.join(self.projectPath, "workdir")
 
-		replacingDict = dict( epilogexecutable = "epilog executable = $CMSSW_BASE/bin/" + os.path.join(os.path.expandvars("$SCRAM_ARCH"), os.path.basename(sys.argv[0])),
-		                      sepath = sepath,
-		                      workdir = workdir,
-		                      jobs= "" if not self._args.fast else "jobs = " + str(self._args.fast),
-		                      inputfiles= "input files = \n\t" + self._configFilename,
-		                      dataset = "dataset = \n " + datasetString,
-		                      epilogarguments = epilogArguments,
-		                      seoutputfiles = "se output files = *.txt *.root" if self._args.no_log_to_se else "se output files = *.root"
-		                      )
+		replacingDict = dict(include = (("include = " + " ".join(self._args.gc_config_includes)) if self._args.gc_config_includes else ""),
+		                     epilogexecutable = "epilog executable = $CMSSW_BASE/bin/" + os.path.join(os.path.expandvars("$SCRAM_ARCH"), os.path.basename(sys.argv[0])),
+		                     sepath = sepath,
+		                     workdir = workdir,
+		                     jobs= "" if not self._args.fast else "jobs = " + str(self._args.fast),
+		                     inputfiles= "input files = \n\t" + self._configFilename,
+		                     dataset = "dataset = \n " + datasetString,
+		                     epilogarguments = epilogArguments,
+		                     seoutputfiles = "se output files = *.txt *.root" if self._args.no_log_to_se else "se output files = *.root")
 
 		self.replaceLines(gcConfigFileContent, replacingDict)
 
