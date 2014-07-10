@@ -255,9 +255,9 @@ class ArtusWrapper(object):
 		fileOptionsGroup.add_argument("-i", "--input-files", nargs="+", required=False,
 	                               help="Input root files. Leave empty (\"\") if input files from root file should be taken.")
 		fileOptionsGroup.add_argument("-o", "--output-file", default="output.root",
-	                               help="Output root file. [Default: output.root]")
+	                               help="Output root file. [Default: %(default)s]")
 		fileOptionsGroup.add_argument("-w", "--work", default="$ARTUS_WORK_BASE",
-	                               help="Work directory base. [Default: $ARTUS_WORK_BASE]")
+	                               help="Work directory base. [Default: %(default)s]")
 		fileOptionsGroup.add_argument("-n", "--project-name", default="analysis",
 	                               help="Name for this Artus project specifies the name of the work subdirectory.")
 
@@ -276,7 +276,7 @@ class ArtusWrapper(object):
 		configOptionsGroup.add_argument("--repo-scan-base-dirs", nargs="+", required=False, default="$CMSSW_BASE/src/",
 	                                 help="Base directories for repositories scan. [Default: $CMSSW_BASE/src/]")
 		configOptionsGroup.add_argument("--repo-scan-depth", required=False, type=int, default=2,
-	                                 help="Depth of repositories scran. [Default: 2")
+	                                 help="Depth of repositories scran. [Default: %(default)s]")
 		configOptionsGroup.add_argument("--enable-envvar-expansion", dest="envvar_expansion", default=True, action="store_true",
 	                                 help="Enable expansion of environment variables in config.")
 		configOptionsGroup.add_argument("--disable-envvar-expansion", dest="envvar_expansion", action="store_false",
@@ -288,7 +288,7 @@ class ArtusWrapper(object):
 		configOptionsGroup.add_argument('-f', '--fast', type=int, default=False,
 	                                 help="limit number of input files or grid-control jobs. 3=files[0:3].")
 		configOptionsGroup.add_argument("--gc-config", default="$ARTUSPATH/Configuration/data/grid-control_base_config.conf",
-	                                 help="path to grid-control base config that is replace by the wrapper")
+	                                 help="path to grid-control base config that is replace by the wrapper. [Default: %(default)s]")
 
 
 		runningOptionsGroup = self._parser.add_argument_group("Running options")
@@ -302,9 +302,9 @@ class ArtusWrapper(object):
 	                                  help="Do not write logfile in batch mode directly to SE.")
 
 		if self._executable:
-			self._parser.add_argument("-x", "--executable", help="Artus executable. [Default: %s]" % str(self._executable), default=self._executable)
+			self._parser.add_argument("-x", "--executable", help="Artus executable. [Default: %(default)s]", default=self._executable)
 		else:
-			self._parser.add_argument("-x", "--executable", help="Artus executable.", required=True)
+			self._parser.add_argument("-x", "--executable", help="Artus executable. [Default: %(default)s]", required=True)
 
 	def sendToBatchSystem(self):
 
