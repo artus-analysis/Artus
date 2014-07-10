@@ -48,7 +48,7 @@ class ArtusWrapper(object):
 		#Expand Config
 		self.expandConfig()
 		if self._args.batch:
-			self.projectPath = os.path.join(os.path.expandvars(self._args.work), self._args.project_name+"_"+date_now)
+			self.projectPath = os.path.join(os.path.expandvars(self._args.work), date_now+"_"+self._args.project_name)
 
 	def run(self):
 	
