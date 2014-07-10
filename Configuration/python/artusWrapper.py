@@ -69,6 +69,11 @@ class ArtusWrapper(object):
 
 		if self._args.print_config:
 			log.info(self._config)
+		
+		# print environment variables
+		if self._args.print_envvars:
+			for envvar in self._args.print_envvars:
+				log.info("$%s = %s" % (envvar, os.environ.get(envvar, "")))
 
 		#Run Artus if desired
 		if self._args.batch:
@@ -283,6 +288,8 @@ class ArtusWrapper(object):
 		                                help="Disable expansion of environment variables in config.")
 		configOptionsGroup.add_argument("-P", "--print-config", default=False, action="store_true",
 		                                help="Print out the JSON config before running Artus.")
+		configOptionsGroup.add_argument("--print-envvars", nargs="+",
+		                                help="Log specified environment variables.")
 		configOptionsGroup.add_argument("-s", "--save-config", default="",
 		                                help="Save the JSON config to FILENAME.")
 		configOptionsGroup.add_argument('-f', '--fast', type=int, default=False,
@@ -331,6 +338,7 @@ class ArtusWrapper(object):
 			epilogArguments += r"--log-files log.txt "
 		else:
 			epilogArguments += r"--log-files " + os.path.join(self.projectPath, "output/") + "${DATASETNICK}_job_${MY_JOBID}_log.txt "
+		epilogArguments += r"--print-envvars ROOTSYS CMSSW_BASE DATE DATASETNICK"
 		epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
 		epilogArguments += "--nick $DATASETNICK "
 		epilogArguments += '-i $FILE_NAMES '
