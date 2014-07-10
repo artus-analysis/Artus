@@ -338,7 +338,7 @@ class ArtusWrapper(object):
 			epilogArguments += r"--log-files log.txt "
 		else:
 			epilogArguments += r"--log-files " + os.path.join(self.projectPath, "output/") + "${DATASETNICK}_job_${MY_JOBID}_log.txt "
-		epilogArguments += r"--print-envvars ROOTSYS CMSSW_BASE DATE DATASETNICK"
+		epilogArguments += r"--print-envvars ROOTSYS CMSSW_BASE DATASETNICK FILE_NAMES "
 		epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
 		epilogArguments += "--nick $DATASETNICK "
 		epilogArguments += '-i $FILE_NAMES '
