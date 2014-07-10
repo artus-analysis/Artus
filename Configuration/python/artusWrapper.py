@@ -253,54 +253,54 @@ class ArtusWrapper(object):
 
 		fileOptionsGroup = self._parser.add_argument_group("File options")
 		fileOptionsGroup.add_argument("-i", "--input-files", nargs="+", required=False,
-	                               help="Input root files. Leave empty (\"\") if input files from root file should be taken.")
+		                              help="Input root files. Leave empty (\"\") if input files from root file should be taken.")
 		fileOptionsGroup.add_argument("-o", "--output-file", default="output.root",
-	                               help="Output root file. [Default: %(default)s]")
+		                              help="Output root file. [Default: %(default)s]")
 		fileOptionsGroup.add_argument("-w", "--work", default="$ARTUS_WORK_BASE",
-	                               help="Work directory base. [Default: %(default)s]")
+		                              help="Work directory base. [Default: %(default)s]")
 		fileOptionsGroup.add_argument("-n", "--project-name", default="analysis",
-	                               help="Name for this Artus project specifies the name of the work subdirectory.")
+		                              help="Name for this Artus project specifies the name of the work subdirectory.")
 
 		configOptionsGroup = self._parser.add_argument_group("Config options")
 		configOptionsGroup.add_argument("-c", "--base-configs", nargs="+", required=False, default={},
-	                                 help="JSON base configurations. All configs are merged.")
+		                                help="JSON base configurations. All configs are merged.")
 		configOptionsGroup.add_argument("-C", "--pipeline-base-configs", nargs="+",
-	                                 help="JSON pipeline base configurations. All pipeline configs will be merged with these common configs.")
+		                                help="JSON pipeline base configurations. All pipeline configs will be merged with these common configs.")
 		configOptionsGroup.add_argument("-p", "--pipeline-configs", nargs="+", action="append",
-	                                 help="JSON pipeline configurations. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")
+		                                help="JSON pipeline configurations. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")
 		configOptionsGroup.add_argument("--nick", default="auto",
-	                                    help="Kappa nickname name that can be used for switch between sample-dependent settings.")
+		                                help="Kappa nickname name that can be used for switch between sample-dependent settings.")
 		
 		configOptionsGroup.add_argument("--disable-repo-versions", default=False, action="store_true",
-	                                    help="Add repository versions to the JSON config.")
+		                                help="Add repository versions to the JSON config.")
 		configOptionsGroup.add_argument("--repo-scan-base-dirs", nargs="+", required=False, default="$CMSSW_BASE/src/",
-	                                    help="Base directories for repositories scan. [Default: $CMSSW_BASE/src/]")
+		                                help="Base directories for repositories scan. [Default: $CMSSW_BASE/src/]")
 		configOptionsGroup.add_argument("--repo-scan-depth", required=False, type=int, default=2,
-	                                    help="Depth of repositories scran. [Default: %(default)s]")
+		                                help="Depth of repositories scran. [Default: %(default)s]")
 		configOptionsGroup.add_argument("--enable-envvar-expansion", dest="envvar_expansion", default=True, action="store_true",
-	                                    help="Enable expansion of environment variables in config.")
+		                                help="Enable expansion of environment variables in config.")
 		configOptionsGroup.add_argument("--disable-envvar-expansion", dest="envvar_expansion", action="store_false",
-	                                    help="Disable expansion of environment variables in config.")
+		                                help="Disable expansion of environment variables in config.")
 		configOptionsGroup.add_argument("-P", "--print-config", default=False, action="store_true",
-	                                    help="Print out the JSON config before running Artus.")
+		                                help="Print out the JSON config before running Artus.")
 		configOptionsGroup.add_argument("-s", "--save-config", default="",
-	                                    help="Save the JSON config to FILENAME.")
+		                                help="Save the JSON config to FILENAME.")
 		configOptionsGroup.add_argument('-f', '--fast', type=int, default=False,
-	                                    help="limit number of input files or grid-control jobs. 3=files[0:3].")
+		                                help="limit number of input files or grid-control jobs. 3=files[0:3].")
 		configOptionsGroup.add_argument("--gc-config", default="$ARTUSPATH/Configuration/data/grid-control_base_config.conf",
-	                                    help="Path to grid-control base config that is replace by the wrapper. [Default: %(default)s]")
+		                                help="Path to grid-control base config that is replace by the wrapper. [Default: %(default)s]")
 		configOptionsGroup.add_argument("--gc-config-includes", nargs="+",
-	                                    help="Path to grid-control configs to include in the base config.")
+		                                help="Path to grid-control configs to include in the base config.")
 		
 		runningOptionsGroup = self._parser.add_argument_group("Running options")
 		runningOptionsGroup.add_argument("--no-run", default=False, action="store_true",
-	                                      help="Exit before running Artus to only check the configs.")
+		                                 help="Exit before running Artus to only check the configs.")
 		runningOptionsGroup.add_argument("-r", "--root", default=False, action="store_true",
-	                                      help="Open output file in ROOT TBrowser after completion.")
+		                                 help="Open output file in ROOT TBrowser after completion.")
 		runningOptionsGroup.add_argument("-b", "--batch", default=False, action="store_true",
-	                                      help="Run with grid-control.")
+		                                 help="Run with grid-control.")
 		runningOptionsGroup.add_argument("--no-log-to-se", default=False, action="store_true",
-	                                      help="Do not write logfile in batch mode directly to SE.")
+		                                 help="Do not write logfile in batch mode directly to SE.")
 
 		if self._executable:
 			self._parser.add_argument("-x", "--executable", help="Artus executable. [Default: %(default)s]", default=self._executable)
