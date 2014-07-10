@@ -214,10 +214,13 @@ class ArtusWrapper(object):
 
 		# shrink Input Files to requested Number
 		self.removeUnwantedInputFiles()
-
+		
 		# treat includes, nicks and comments
-		nickname = self.determineNickname(self._args.nick)
-		self._config = self._config.doIncludes().doNicks(nickname).doComments()
+		if self._args.batch:
+			self._config = self._config.doIncludes().doComments()
+		else:
+			nickname = self.determineNickname(self._args.nick)
+			self._config = self._config.doIncludes().doNicks(nickname).doComments()
 		
 		# treat environment variables
 		if self._args.envvar_expansion:
