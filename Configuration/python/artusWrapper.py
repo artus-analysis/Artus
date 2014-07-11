@@ -134,7 +134,7 @@ class ArtusWrapper(object):
 		# value: command to extract the revision
 		repoVersionCommands = {
 			".git" : "git rev-parse HEAD",
-			".svn" : "svn info | grep \"Revision\" | awk '{print $2}'"
+			".svn" : "svn info"# | grep Revision | awk '{print $2}'"
 		}
 		# loop over dirs and revision control systems and write revisions to the config dict
 		for repoDir, currentRevisionCommand in repoVersionCommands.items():
