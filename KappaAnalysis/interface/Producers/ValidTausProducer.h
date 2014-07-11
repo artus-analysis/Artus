@@ -9,6 +9,7 @@
 
 #include "Artus/Core/interface/ProducerBase.h"
 #include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
+#include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
 #include "Artus/Utility/interface/SafeMap.h"
 #include "Artus/Utility/interface/Utility.h"
 
@@ -53,6 +54,11 @@ public:
 		                                                                 this->lowerPtCutsByHltName);
 		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetTauUpperAbsEtaCuts()),
 		                                                                 this->upperAbsEtaCutsByHltName);
+		
+		// add possible quantities for the lambda ntuples consumers
+		LambdaNtupleConsumer<TTypes>::Quantities["nTaus"] = [](event_type const& event, product_type const& product) {
+			return product.m_validTaus.size();
+		};
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,

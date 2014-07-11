@@ -4,6 +4,7 @@
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
 
 
 /**
@@ -23,6 +24,25 @@ public:
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "valid_btagged_jets";
+	}
+
+	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
+	{
+		ProducerBase<TTypes>::Init(settings);
+		
+		// add possible quantities for the lambda ntuples consumers
+		LambdaNtupleConsumer<TTypes>::Quantities["nBTaggedJets"] = [](event_type const& event, product_type const& product) {
+			return product.m_bTaggedJets.size();
+		};
+		LambdaNtupleConsumer<TTypes>::Quantities["bJetPt"] = [](event_type const& event, product_type const& product) {
+			return product.m_bTaggedJets.size() >= 1 ? product.m_bTaggedJets.at(0)->p4.Pt() : DefaultValues::UndefinedDouble;
+		};
+		LambdaNtupleConsumer<TTypes>::Quantities["bJetEta"] = [](event_type const& event, product_type const& product) {
+			return product.m_bTaggedJets.size() >= 1 ? product.m_bTaggedJets.at(0)->p4.Eta() : DefaultValues::UndefinedDouble;
+		};
+		LambdaNtupleConsumer<TTypes>::Quantities["bJetPhi"] = [](event_type const& event, product_type const& product) {
+			return product.m_bTaggedJets.size() >= 1 ? product.m_bTaggedJets.at(0)->p4.Phi() : DefaultValues::UndefinedDouble;
+		};
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,

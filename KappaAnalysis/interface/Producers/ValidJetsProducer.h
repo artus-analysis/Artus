@@ -13,6 +13,7 @@
 
 #include "Artus/Core/interface/ProducerBase.h"
 #include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
+#include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
 #include "Artus/Utility/interface/Utility.h"
 
 /**
@@ -90,6 +91,30 @@ public:
 		                                                                 this->lowerPtCutsByHltName);
 		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetJetUpperAbsEtaCuts()),
 		                                                                 this->upperAbsEtaCutsByHltName);
+		
+		// add possible quantities for the lambda ntuples consumers
+		LambdaNtupleConsumer<TTypes>::Quantities["nJets"] = [](event_type const& event, product_type const& product) {
+			return product.m_validJets.size();
+		};
+		LambdaNtupleConsumer<TTypes>::Quantities["leadingJetPt"] = [](event_type const& event, product_type const& product) {
+			return product.m_validJets.size() >= 1 ? product.m_validJets.at(0)->p4.Pt() : DefaultValues::UndefinedDouble;
+		};
+		LambdaNtupleConsumer<TTypes>::Quantities["leadingJetEta"] = [](event_type const& event, product_type const& product) {
+			return product.m_validJets.size() >= 1 ? product.m_validJets.at(0)->p4.Eta() : DefaultValues::UndefinedDouble;
+		};
+		LambdaNtupleConsumer<TTypes>::Quantities["leadingJetPhi"] = [](event_type const& event, product_type const& product) {
+			return product.m_validJets.size() >= 1 ? product.m_validJets.at(0)->p4.Phi() : DefaultValues::UndefinedDouble;
+		};
+		
+		LambdaNtupleConsumer<TTypes>::Quantities["trailingJetPt"] = [](event_type const& event, product_type const& product) {
+			return product.m_validJets.size() >= 2 ? product.m_validJets.at(1)->p4.Pt() : DefaultValues::UndefinedDouble;
+		};
+		LambdaNtupleConsumer<TTypes>::Quantities["trailingJetEta"] = [](event_type const& event, product_type const& product) {
+			return product.m_validJets.size() >= 2 ? product.m_validJets.at(1)->p4.Eta() : DefaultValues::UndefinedDouble;
+		};
+		LambdaNtupleConsumer<TTypes>::Quantities["trailingJetPhi"] = [](event_type const& event, product_type const& product) {
+			return product.m_validJets.size() >= 2 ? product.m_validJets.at(1)->p4.Phi() : DefaultValues::UndefinedDouble;
+		};
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
@@ -264,6 +289,21 @@ public:
 				Utility::ParseVectorToMap(settings.GetJetTaggerUpperCuts()),
 				jetTaggerUpperCutsByTaggerName
 		);
+		
+		// add possible quantities for the lambda ntuples consumers
+		LambdaNtupleConsumer<TTypes>::Quantities["leadingJetCSV"] = [](event_type const& event, product_type const& product) {
+			return product.m_validJets.size() >= 1 ? static_cast<KDataPFTaggedJet*>(product.m_validJets.at(0))->getTagger("CombinedSecondaryVertexBJetTags", event.m_taggerMetadata) : DefaultValues::UndefinedDouble;
+		};
+		LambdaNtupleConsumer<TTypes>::Quantities["leadingJetTCHE"] = [](event_type const& event, product_type const& product) {
+			return product.m_validJets.size() >= 1 ? static_cast<KDataPFTaggedJet*>(product.m_validJets.at(0))->getTagger("TrackCountingHighEffBJetTags", event.m_taggerMetadata) : DefaultValues::UndefinedDouble;
+		};
+		
+		LambdaNtupleConsumer<TTypes>::Quantities["trailingJetCSV"] = [](event_type const& event, product_type const& product) {
+			return product.m_validJets.size() >= 2 ? static_cast<KDataPFTaggedJet*>(product.m_validJets.at(1))->getTagger("CombinedSecondaryVertexBJetTags", event.m_taggerMetadata) : DefaultValues::UndefinedDouble;
+		};
+		LambdaNtupleConsumer<TTypes>::Quantities["trailingJetTCHE"] = [](event_type const& event, product_type const& product) {
+			return product.m_validJets.size() >= 2 ? static_cast<KDataPFTaggedJet*>(product.m_validJets.at(1))->getTagger("TrackCountingHighEffBJetTags", event.m_taggerMetadata) : DefaultValues::UndefinedDouble;
+		};
 	}
 
 
