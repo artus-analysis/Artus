@@ -13,10 +13,10 @@
  * Fills NTuples with valueExtractors defined as lambda functions
  * This removes the string operations from its base class
  * This consumer can only be fully initilised in the constructor of an derived class
- * where the map m_valueExtractorMap is filled with analysis specific code
+ * where the map LambdaNtupleConsumer<TTypes>::Quantities is filled with analysis specific code
  */
 template<class TTypes>
-class LambdaNtupleConsumerBase: public NtupleConsumerBase<TTypes> {
+class LambdaNtupleConsumer: public NtupleConsumerBase<TTypes> {
 
 public:
 
@@ -26,10 +26,12 @@ public:
 
 	typedef std::function<float(event_type const&, product_type const&)> float_extractor_lambda;
 	
-	LambdaNtupleConsumerBase() : NtupleConsumerBase<TTypes>() {
+	static std::map<std::string, float_extractor_lambda> Quantities;
+	
+	LambdaNtupleConsumer() : NtupleConsumerBase<TTypes>() {
 	}
 
-	virtual ~LambdaNtupleConsumerBase() {
+	virtual ~LambdaNtupleConsumer() {
 	}
 
 	virtual void Init(Pipeline<TTypes> * pipeline) ARTUS_CPP11_OVERRIDE {
@@ -41,8 +43,8 @@ public:
 		for (std::vector<std::string>::iterator quantity = this->m_quantitiesVector.begin();
 		     quantity != this->m_quantitiesVector.end(); ++quantity)
 		{
-			//m_valueExtractors.push_back(SafeMap::GetDefault(m_valueExtractorMap, *quantity, defaultExtractor));
-			m_valueExtractors.push_back(SafeMap::Get(m_valueExtractorMap, *quantity));
+			//m_valueExtractors.push_back(SafeMap::GetDefault(LambdaNtupleConsumer<TTypes>::Quantities, *quantity, defaultExtractor));
+			m_valueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::Quantities, *quantity));
 		}
 	}
 
@@ -69,12 +71,13 @@ public:
 	}
 
 
-protected:
-	std::map<std::string, float_extractor_lambda> m_valueExtractorMap;
-
 private:
 	std::vector<float_extractor_lambda> m_valueExtractors;
 
 };
+
+
+template<class TTypes>
+std::map<std::string, std::function<float(typename TTypes::event_type const&, typename TTypes::product_type const&)> > LambdaNtupleConsumer<TTypes>::Quantities = std::map<std::string, std::function<float(typename TTypes::event_type const&, typename TTypes::product_type const&)> >();
 
 
