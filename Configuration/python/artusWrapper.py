@@ -283,7 +283,7 @@ class ArtusWrapper(object):
 		                                help="Add repository versions to the JSON config.")
 		configOptionsGroup.add_argument("--repo-scan-base-dirs", nargs="+", required=False, default="$CMSSW_BASE/src/",
 		                                help="Base directories for repositories scan. [Default: $CMSSW_BASE/src/]")
-		configOptionsGroup.add_argument("--repo-scan-depth", required=False, type=int, default=2,
+		configOptionsGroup.add_argument("--repo-scan-depth", required=False, type=int, default=3,
 		                                help="Depth of repositories scran. [Default: %(default)s]")
 		configOptionsGroup.add_argument("--enable-envvar-expansion", dest="envvar_expansion", default=True, action="store_true",
 		                                help="Enable expansion of environment variables in config.")
