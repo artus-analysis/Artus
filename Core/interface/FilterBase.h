@@ -31,7 +31,7 @@ public:
 	}
 
 	// initialise global pre-filters
-	virtual void Init(setting_type const& globalSettings) {
+	virtual void Init(setting_type const& settings) {
 		LOG(INFO) << "Initialize global Filter \"" << this->GetFilterId() << "\".";
 	}
 
