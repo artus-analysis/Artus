@@ -5,6 +5,7 @@
 
 #include "Artus/Core/interface/ProducerBase.h"
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
+#include "Artus/Utility/interface/DefaultValues.h"
 
 
 /**
@@ -21,6 +22,12 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 	
 	typedef std::function<float(event_type const&, product_type const&)> float_extractor_lambda;
+	
+	static double GetMvaOutput(std::string const& methodName, std::vector<double> const& mvaOutputs)
+	{
+		auto methodNameIndex = std::find(mvaOutputs.begin(), mvaOutputs.end(), methodName);
+		return (methodNameIndex == mvaOutputs.end() ? DefaultValues::UndefinedDouble : mvaOutputs[methodNameIndex - mvaOutputs.begin()]);
+	}
 	
 	TmvaClassificationReaderBase(std::vector<std::string>& (setting_type::*GetTmvaInputQuantities)(void) const,
 	                             std::vector<std::string>& (setting_type::*GetTmvaMethods)(void) const,
@@ -56,7 +63,6 @@ public:
 			LOG(DEBUG) << "\t\tmethod: " << tmvaMethod << ", weight file: " << tmvaWeights;
 			tmvaReader.BookMVA(tmvaMethod, tmvaWeights);
 		}
-		
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
