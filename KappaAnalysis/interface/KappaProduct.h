@@ -71,4 +71,18 @@ public:
 	// MVA outputs
 	std::vector<double> m_discriminators;
 
+	// functions to count jets above pt threshold
+	template<class TJet>
+	static typename std::vector<TJet*>::const_iterator GetLastJetAbovePtThreshold(std::vector<TJet*> const& jets, float lowerPtThreshold)
+	{
+		typename std::vector<TJet*>::const_iterator lastJetPos = jets.begin();
+		for (; lastJetPos != jets.end() && (*lastJetPos)->p4.Pt() > lowerPtThreshold; ++lastJetPos) {}
+		return lastJetPos;
+	}
+	
+	template<class TJet>
+	static size_t GetNJetsAbovePtThreshold(std::vector<TJet*> const& jets, float lowerPtThreshold)
+	{
+		return (KappaProduct::GetLastJetAbovePtThreshold(jets, lowerPtThreshold) - jets.begin());
+	}
 };

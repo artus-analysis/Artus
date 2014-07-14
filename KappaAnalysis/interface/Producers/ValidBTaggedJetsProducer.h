@@ -5,6 +5,7 @@
 
 #include "Artus/Core/interface/ProducerBase.h"
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
+#include "Artus/KappaAnalysis/interface/KappaProduct.h"
 
 
 /**
@@ -31,9 +32,16 @@ public:
 		ProducerBase<TTypes>::Init(settings);
 		
 		// add possible quantities for the lambda ntuples consumers
-		LambdaNtupleConsumer<TTypes>::Quantities["nBTaggedJets"] = [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::Quantities["nBJets"] = [](event_type const& event, product_type const& product) {
 			return product.m_bTaggedJets.size();
 		};
+		LambdaNtupleConsumer<TTypes>::Quantities["nBJets20"] = [this](event_type const& event, product_type const& product) {
+			return KappaProduct::GetNJetsAbovePtThreshold(product.m_bTaggedJets, 20.0);
+		};
+		LambdaNtupleConsumer<TTypes>::Quantities["nBJets30"] = [this](event_type const& event, product_type const& product) {
+			return KappaProduct::GetNJetsAbovePtThreshold(product.m_bTaggedJets, 30.0);
+		};
+		
 		LambdaNtupleConsumer<TTypes>::Quantities["bJetPt"] = [](event_type const& event, product_type const& product) {
 			return product.m_bTaggedJets.size() >= 1 ? product.m_bTaggedJets.at(0)->p4.Pt() : DefaultValues::UndefinedDouble;
 		};

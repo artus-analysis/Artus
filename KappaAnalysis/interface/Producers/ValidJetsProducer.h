@@ -15,6 +15,7 @@
 #include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
 #include "Artus/Utility/interface/Utility.h"
+#include "Artus/KappaAnalysis/interface/KappaProduct.h"
 
 /**
    \brief Producer for valid jets.
@@ -94,6 +95,13 @@ public:
 		LambdaNtupleConsumer<TTypes>::Quantities["nJets"] = [](event_type const& event, product_type const& product) {
 			return product.m_validJets.size();
 		};
+		LambdaNtupleConsumer<TTypes>::Quantities["nJets20"] = [this](event_type const& event, product_type const& product) {
+			return KappaProduct::GetNJetsAbovePtThreshold(product.m_validJets, 20.0);
+		};
+		LambdaNtupleConsumer<TTypes>::Quantities["nJets30"] = [this](event_type const& event, product_type const& product) {
+			return KappaProduct::GetNJetsAbovePtThreshold(product.m_validJets, 30.0);
+		};
+		
 		LambdaNtupleConsumer<TTypes>::Quantities["leadingJetPt"] = [](event_type const& event, product_type const& product) {
 			return product.m_validJets.size() >= 1 ? product.m_validJets.at(0)->p4.Pt() : DefaultValues::UndefinedDouble;
 		};
