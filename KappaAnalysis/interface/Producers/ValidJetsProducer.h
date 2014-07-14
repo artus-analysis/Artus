@@ -74,7 +74,9 @@ public:
 	                      std::vector<TJet> product_type::*correctJets,
 	                      std::vector<TValidJet*> product_type::*validJets) :
 		ProducerBase<TTypes>(),
-		ValidPhysicsObjectTools<TTypes, TValidJet>(validJets),
+		ValidPhysicsObjectTools<TTypes, TValidJet>(&setting_type::GetJetLowerPtCuts,
+		                                           &setting_type::GetJetUpperAbsEtaCuts,
+		                                           validJets),
 		m_jetsMember(jets),
 		m_correctedJetsMember(correctJets)
 	{
@@ -83,14 +85,10 @@ public:
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
 	{
 		ProducerBase<TTypes>::Init(settings);
+		ValidPhysicsObjectTools<TTypes, TValidJet>::Init(settings);
 		
 		validJetsInput = ToValidJetsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidJetsInput())));
 		jetID = ToJetID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetJetID())));
-		
-		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetJetLowerPtCuts()),
-		                                                                 this->lowerPtCutsByHltName);
-		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetJetUpperAbsEtaCuts()),
-		                                                                 this->upperAbsEtaCutsByHltName);
 		
 		// add possible quantities for the lambda ntuples consumers
 		LambdaNtupleConsumer<TTypes>::Quantities["nJets"] = [](event_type const& event, product_type const& product) {

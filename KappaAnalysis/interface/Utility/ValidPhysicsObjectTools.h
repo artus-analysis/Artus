@@ -13,9 +13,7 @@
 
 
 /**
-   \brief GlobalProducer, for valid electrons.
-   
-   
+   \brief Producer for cuts on valid physics objects
 */
 template<class TTypes, class TPhysicsObject>
 class ValidPhysicsObjectTools
@@ -24,18 +22,26 @@ public:
 
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
+	typedef typename TTypes::setting_type setting_type;
 	
-	ValidPhysicsObjectTools(std::vector<TPhysicsObject*> product_type::*validPhysicsObjects) :
+	ValidPhysicsObjectTools(std::vector<std::string>& (setting_type::*GetLowerPtCuts)(void) const,
+	                        std::vector<std::string>& (setting_type::*GetUpperAbsEtaCuts)(void) const,
+	                        std::vector<TPhysicsObject*> product_type::*validPhysicsObjects) :
+		GetLowerPtCuts(GetLowerPtCuts),
+		GetUpperAbsEtaCuts(GetUpperAbsEtaCuts),
 		m_validPhysicsObjectsMember(validPhysicsObjects)
 	{
 	}
 
+	virtual void Init(setting_type const& settings) {
+		lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap((settings.*GetLowerPtCuts)()),
+		                                                           lowerPtCutsByHltName);
+		upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap((settings.*GetUpperAbsEtaCuts)()),
+		                                                               upperAbsEtaCutsByHltName);
+	}
+
 
 protected:
-	std::map<size_t, std::vector<float> > lowerPtCutsByIndex;
-	std::map<std::string, std::vector<float> > lowerPtCutsByHltName;
-	std::map<size_t, std::vector<float> > upperAbsEtaCutsByIndex;
-	std::map<std::string, std::vector<float> > upperAbsEtaCutsByHltName;
 	
 	bool PassKinematicCuts(TPhysicsObject* physicsObject, event_type const& event, product_type& product) const
 	{
@@ -96,8 +102,16 @@ protected:
 		return validObject;
 	}
 
+
 private:
+	std::vector<std::string>& (setting_type::*GetLowerPtCuts)(void) const;
+	std::vector<std::string>& (setting_type::*GetUpperAbsEtaCuts)(void) const;
 	std::vector<TPhysicsObject*> product_type::*m_validPhysicsObjectsMember;
+	
+	std::map<size_t, std::vector<float> > lowerPtCutsByIndex;
+	std::map<std::string, std::vector<float> > lowerPtCutsByHltName;
+	std::map<size_t, std::vector<float> > upperAbsEtaCutsByIndex;
+	std::map<std::string, std::vector<float> > upperAbsEtaCutsByHltName;
 
 };
 

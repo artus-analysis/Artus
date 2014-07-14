@@ -86,21 +86,19 @@ public:
 	
 	ValidMuonsProducer() :
 		ProducerBase<TTypes>(),
-		ValidPhysicsObjectTools<TTypes, KDataMuon>(&product_type::m_validMuons)
+		ValidPhysicsObjectTools<TTypes, KDataMuon>(&setting_type::GetMuonLowerPtCuts,
+		                                           &setting_type::GetMuonUpperAbsEtaCuts,
+		                                           &product_type::m_validMuons)
 	{
 	}
 
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
 		ProducerBase<TTypes>::Init(settings);
+		ValidPhysicsObjectTools<TTypes, KDataMuon>::Init(settings);
 		
 		muonID = ToMuonID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonID())));
 		muonIsoType = ToMuonIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonIsoType())));
 		muonIso = ToMuonIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonIso())));
-		
-		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetMuonLowerPtCuts()),
-		                                                                 this->lowerPtCutsByHltName);
-		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetMuonUpperAbsEtaCuts()),
-		                                                                 this->upperAbsEtaCutsByHltName);
 		
 		// add possible quantities for the lambda ntuples consumers
 		LambdaNtupleConsumer<TTypes>::Quantities["nMuons"] = [](event_type const& event, product_type const& product) {

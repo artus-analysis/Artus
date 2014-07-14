@@ -38,22 +38,20 @@ public:
 	
 	ValidTausProducer() :
 		ProducerBase<TTypes>(),
-		ValidPhysicsObjectTools<TTypes, KDataPFTau>(&product_type::m_validTaus)
+		ValidPhysicsObjectTools<TTypes, KDataPFTau>(&setting_type::GetTauLowerPtCuts,
+		                                            &setting_type::GetTauUpperAbsEtaCuts,
+		                                            &product_type::m_validTaus)
 	{
 	}
 	
 	virtual void Init(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
 	{
 		ProducerBase<TTypes>::Init(settings);
+		ValidPhysicsObjectTools<TTypes, KDataPFTau>::Init(settings);
 	
 		// parse additional config tags
 		discriminatorsByIndex = Utility::ParseMapTypes<size_t, std::string>(Utility::ParseVectorToMap(settings.GetTauDiscriminators()),
 		                                                                    discriminatorsByHltName);
-		
-		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetTauLowerPtCuts()),
-		                                                                 this->lowerPtCutsByHltName);
-		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetTauUpperAbsEtaCuts()),
-		                                                                 this->upperAbsEtaCutsByHltName);
 		
 		// add possible quantities for the lambda ntuples consumers
 		LambdaNtupleConsumer<TTypes>::Quantities["nTaus"] = [](event_type const& event, product_type const& product) {

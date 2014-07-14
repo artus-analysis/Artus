@@ -105,22 +105,20 @@ public:
 	
 	ValidElectronsProducer() :
 		ProducerBase<TTypes>(),
-		ValidPhysicsObjectTools<TTypes, KDataElectron>(&product_type::m_validElectrons)
+		ValidPhysicsObjectTools<TTypes, KDataElectron>(&setting_type::GetElectronLowerPtCuts,
+		                                               &setting_type::GetElectronUpperAbsEtaCuts,
+		                                               &product_type::m_validElectrons)
 	{
 	}
 
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
 		ProducerBase<TTypes>::Init(settings);
+		ValidPhysicsObjectTools<TTypes, KDataElectron>::Init(settings);
 		
 		electronID = ToElectronID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronID())));
 		electronIsoType = ToElectronIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronIsoType())));
 		electronIso = ToElectronIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronIso())));
 		electronReco = ToElectronReco(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronReco())));
-		
-		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronLowerPtCuts()),
-		                                                                 this->lowerPtCutsByHltName);
-		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetElectronUpperAbsEtaCuts()),
-		                                                                 this->upperAbsEtaCutsByHltName);
 		
 		// add possible quantities for the lambda ntuples consumers
 		LambdaNtupleConsumer<TTypes>::Quantities["nElectrons"] = [](event_type const& event, product_type const& product) {
