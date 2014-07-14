@@ -101,3 +101,35 @@ private:
 
 };
 
+
+/**
+   \brief Producer for general MVA discriminators
+   
+   Required config tags:
+   - TmvaInputQuantities
+   - TmvaMethods
+   - TmvaWeights (same length as for TmvaMethods required)
+*/
+template<class TTypes>
+class GeneralTmvaClassificationReader: public TmvaClassificationReaderBase<TTypes>
+{
+public:
+
+	typedef typename TTypes::event_type event_type;
+	typedef typename TTypes::product_type product_type;
+	typedef typename TTypes::setting_type setting_type;
+
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE
+	{
+		return "general_tmva_reader";
+	}
+	
+	GeneralTmvaClassificationReader() :
+		TmvaClassificationReaderBase<TTypes>(&setting_type::GetAntiTtbarTmvaInputQuantities,
+		                                     &setting_type::GetAntiTtbarTmvaMethods,
+		                                     &setting_type::GetAntiTtbarTmvaWeights,
+		                                     &product_type::m_discriminators)
+	{
+	}
+	
+};

@@ -152,4 +152,9 @@ public:
 	
 	IMPL_SETTING(std::string, EventWeight);
 
+	// TMVA reader settings
+	IMPL_SETTING_STRINGLIST(TmvaInputQuantities);
+	IMPL_SETTING_STRINGLIST(TmvaMethods);
+	IMPL_SETTING_STRINGLIST(TmvaWeights);
+
 };

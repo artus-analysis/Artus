@@ -67,5 +67,8 @@ public:
 	std::vector<KDataPFTau*> m_triggerMatchedTaus;
 	std::vector<KDataPFJet*> m_triggerMatchedJets;
 	std::vector<KDataPFTaggedJet*> m_triggerMatchedTaggedJets;
+	
+	// MVA outputs
+	std::vector<double> m_discriminators;
 
 };
