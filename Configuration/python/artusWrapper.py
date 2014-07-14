@@ -103,7 +103,7 @@ class ArtusWrapper(object):
 			elif os.path.isdir(entry):
 				self.setInputFilenames([os.path.join(entry, "*.root")])
 			elif (os.path.splitext(entry))[1] == ".txt":
-				txtFile = open(entry, 'r')
+				txtFile = open(os.path.expandvars(entry), 'r')
 				txtFileContent = txtFile.readlines()
 				for line in range(len(txtFileContent)):
 					txtFileContent[line] = txtFileContent[line].replace("\n", "")
