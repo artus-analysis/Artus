@@ -72,7 +72,7 @@ public:
 	}
 	
 	ValidJetsProducerBase(std::vector<TJet>* event_type::*jets,
-	                      std::vector<TJet> product_type::*correctJets,
+	                      std::vector<std::shared_ptr<TJet> > product_type::*correctJets,
 	                      std::vector<TValidJet*> product_type::*validJets) :
 		ProducerBase<TTypes>(),
 		ValidPhysicsObjectTools<TTypes, TValidJet>(&setting_type::GetJetLowerPtCuts,
@@ -127,13 +127,30 @@ public:
 	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		// select input source
-		std::vector<TJet>* jets = event.*m_jetsMember;
+		std::vector<TJet*> jets;
 		if ((validJetsInput == ValidJetsInput::AUTO && ((product.*m_correctedJetsMember).size() > 0)) || (validJetsInput == ValidJetsInput::CORRECTED))
 		{
-			jets = &(product.*m_correctedJetsMember);
+			jets.resize((product.*m_correctedJetsMember).size());
+			size_t jetIndex = 0;
+			for (typename std::vector<std::shared_ptr<TJet> >::iterator jet = (product.*m_correctedJetsMember).begin();
+			     jet != (product.*m_correctedJetsMember).end(); ++jet)
+			{
+				jets[jetIndex] = jet->get();
+				++jetIndex;
+			}
+		}
+		else
+		{
+			jets.resize((event.*m_jetsMember)->size());
+			size_t jetIndex = 0;
+			for (typename std::vector<TJet>::iterator jet = (event.*m_jetsMember)->begin(); jet != (event.*m_jetsMember)->end(); ++jet)
+			{
+				jets[jetIndex] = &(*jet);
+				++jetIndex;
+			}
 		}
 		
-		for (typename std::vector<TJet>::iterator jet = jets->begin(); jet != jets->end(); ++jet)
+		for (typename std::vector<TJet*>::iterator jet = jets.begin(); jet != jets.end(); ++jet)
 		{
 			bool validJet = true;
 
@@ -143,38 +160,38 @@ public:
 			float maxNeutralFraction = this->GetMaxNeutralFraction();
 			
 			validJet = validJet
-					   && jet->neutralHadFraction + jet->HFHadFraction < maxNeutralFraction
-					   && jet->neutralEMFraction < maxNeutralFraction
-					   && jet->nConst > 1;
+					   && (*jet)->neutralHadFraction + (*jet)->HFHadFraction < maxNeutralFraction
+					   && (*jet)->neutralEMFraction < maxNeutralFraction
+					   && (*jet)->nConst > 1;
 			// jets, |eta| < 2.4 (tracker)
-			if (std::abs(jet->p4.eta()) < 2.4)
+			if (std::abs((*jet)->p4.eta()) < 2.4)
 			{
 				validJet = validJet
-						   && jet->chargedHadFraction > 0.0
-						   && jet->nCharged > 0
-						   && jet->chargedEMFraction < 0.99;
+						   && (*jet)->chargedHadFraction > 0.0
+						   && (*jet)->nCharged > 0
+						   && (*jet)->chargedEMFraction < 0.99;
 			}
 			
 			// remove leptons from list of jets via simple DeltaR isolation
 			for (std::vector<KLepton*>::const_iterator lepton = product.m_validLeptons.begin();
 			     validJet && lepton != product.m_validLeptons.end(); ++lepton)
 			{
-				validJet = validJet && ROOT::Math::VectorUtil::DeltaR(jet->p4, (*lepton)->p4) > settings.GetJetLeptonLowerDeltaRCut();
+				validJet = validJet && ROOT::Math::VectorUtil::DeltaR((*jet)->p4, (*lepton)->p4) > settings.GetJetLeptonLowerDeltaRCut();
 			}
 			
 			// kinematic cuts
-			validJet = validJet && this->PassKinematicCuts(&(*jet), event, product);
+			validJet = validJet && this->PassKinematicCuts(*jet, event, product);
 			
 			// check possible analysis-specific criteria
-			validJet = validJet && AdditionalCriteria(&(*jet), event, product, settings);
+			validJet = validJet && AdditionalCriteria(*jet, event, product, settings);
 
 			if (validJet)
 			{
-				product.m_validJets.push_back(&(*jet));
+				product.m_validJets.push_back(*jet);
 			}
 			else
 			{
-				product.m_invalidJets.push_back(&(*jet));
+				product.m_invalidJets.push_back(*jet);
 			}
 		}
 	}
@@ -194,7 +211,7 @@ protected:
 
 private:
 	std::vector<TJet>* event_type::*m_jetsMember;
-	std::vector<TJet> product_type::*m_correctedJetsMember;
+	std::vector<std::shared_ptr<TJet> > product_type::*m_correctedJetsMember;
 	
 	ValidJetsInput validJetsInput;
 	JetID jetID;

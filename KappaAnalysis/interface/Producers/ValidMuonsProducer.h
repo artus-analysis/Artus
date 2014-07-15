@@ -25,6 +25,7 @@
    invalid muons. 
 
    This Producer needs the following config tags:
+   ValidMuonsInput (default: auto)
    Year (2011 and 2012 implemented)
    MuonID (only "tight" is currently implemented)
    MuonIsoType (pf and detector implemented, type user is intended to be used in derived code)
@@ -40,6 +41,19 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
+
+	enum class ValidMuonsInput : int
+	{
+		AUTO = 0,
+		UNCORRECTED = 1,
+		CORRECTED = 2,
+	};
+	static ValidMuonsInput ToValidMuonsInput(std::string const& validMuonsInput)
+	{
+		if (validMuonsInput == "uncorrected") return ValidMuonsInput::UNCORRECTED;
+		else if (validMuonsInput == "corrected") return ValidMuonsInput::CORRECTED;
+		else return ValidMuonsInput::AUTO;
+	}
 
 	enum class MuonID : int
 	{
@@ -96,6 +110,8 @@ public:
 		ProducerBase<TTypes>::Init(settings);
 		ValidPhysicsObjectTools<TTypes, KDataMuon>::Init(settings);
 		
+		validMuonsInput = ToValidMuonsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidMuonsInput())));
+		
 		muonID = ToMuonID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonID())));
 		muonIsoType = ToMuonIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonIsoType())));
 		muonIso = ToMuonIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonIso())));
@@ -109,18 +125,41 @@ public:
 	virtual void Produce(event_type const& event, product_type& product,
 	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
+		// select input source
+		std::vector<KDataMuon*> muons;
+		if ((validMuonsInput == ValidMuonsInput::AUTO && (product.m_correctedMuons.size() > 0)) || (validMuonsInput == ValidMuonsInput::CORRECTED))
+		{
+			muons.resize(product.m_correctedMuons.size());
+			size_t muonIndex = 0;
+			for (std::vector<std::shared_ptr<KDataMuon> >::iterator muon = product.m_correctedMuons.begin();
+			     muon != product.m_correctedMuons.end(); ++muon)
+			{
+				muons[muonIndex] = muon->get();
+				++muonIndex;
+			}
+		}
+		else
+		{
+			muons.resize(event.m_muons->size());
+			size_t muonIndex = 0;
+			for (KDataMuons::iterator muon = event.m_muons->begin(); muon != event.m_muons->end(); ++muon)
+			{
+				muons[muonIndex] = &(*muon);
+				++muonIndex;
+			}
+		}
+		
 		// Apply muon isolation and MuonID
-		for (KDataMuons::iterator muon = event.m_muons->begin();
-			 muon != event.m_muons->end(); muon++)
+		for (std::vector<KDataMuon*>::iterator muon = muons.begin(); muon != muons.end(); ++muon)
 		{
 			bool validMuon = true;
 
 			// Muon ID according to Muon POG definitions
 			if (muonID == MuonID::TIGHT) {
 				if (settings.GetYear() == 2012)
-					validMuon = validMuon && IsTightMuon2012(&(*muon), event, product);
+					validMuon = validMuon && IsTightMuon2012(*muon, event, product);
 				else if (settings.GetYear() == 2011)
-					validMuon = validMuon && IsTightMuon2011(&(*muon), event, product);
+					validMuon = validMuon && IsTightMuon2011(*muon, event, product);
 				else
 					LOG(FATAL) << "Tight muon ID for year " << settings.GetYear() << " not yet implemented!";
 			}
@@ -132,17 +171,17 @@ public:
 			// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Muon_Isolation_AN1
 			if (muonIsoType == MuonIsoType::PF) {
 				if (muonIso == MuonIso::TIGHT)
-					validMuon = validMuon && muon->pfIso04/muon->p4.Pt() < 0.12;
+					validMuon = validMuon && (*muon)->pfIso04 / (*muon)->p4.Pt() < 0.12;
 				else if (muonIso == MuonIso::LOOSE)
-					validMuon = validMuon && muon->pfIso04/muon->p4.Pt() < 0.20;
+					validMuon = validMuon && (*muon)->pfIso04 / (*muon)->p4.Pt() < 0.20;
 				else if (muonIso != MuonIso::NONE)
 					LOG(FATAL) << "Muon isolation of type " << Utility::ToUnderlyingValue(muonIso) << " not yet implemented!";
 			}
 			else if (muonIsoType == MuonIsoType::DETECTOR) {
 				if (muonIso == MuonIso::TIGHT)
-					validMuon = validMuon && muon->trackIso03/muon->p4.Pt() < 0.05;
+					validMuon = validMuon && (*muon)->trackIso03 / (*muon)->p4.Pt() < 0.05;
 				else if (muonIso == MuonIso::LOOSE)
-					validMuon = validMuon && muon->trackIso03/muon->p4.Pt() < 0.10;
+					validMuon = validMuon && (*muon)->trackIso03 / (*muon)->p4.Pt() < 0.10;
 				else if (muonIso != MuonIso::NONE)
 					LOG(FATAL) << "Muon isolation of type " << Utility::ToUnderlyingValue(muonIso) << " not yet implemented!";
 			}
@@ -150,20 +189,20 @@ public:
 				LOG(FATAL) << "Muon isolation type of type " << Utility::ToUnderlyingValue(muonIsoType) << " not yet implemented!";
 			
 			// kinematic cuts
-			validMuon = validMuon && this->PassKinematicCuts(&(*muon), event, product);
+			validMuon = validMuon && this->PassKinematicCuts(*muon, event, product);
 			
 			// check possible analysis-specific criteria
-			validMuon = validMuon && AdditionalCriteria(&(*muon), event, product, settings);
+			validMuon = validMuon && AdditionalCriteria(*muon, event, product, settings);
 			
 			if (validMuon)
 			{
-				product.m_validMuons.push_back(&(*muon));
-				product.m_validLeptons.push_back(&(*muon));
+				product.m_validMuons.push_back(*muon);
+				product.m_validLeptons.push_back(*muon);
 			}
 			else
 			{
-				product.m_invalidMuons.push_back(&(*muon));
-				product.m_invalidLeptons.push_back(&(*muon));
+				product.m_invalidMuons.push_back(*muon);
+				product.m_invalidLeptons.push_back(*muon);
 			}
 		}
 		
@@ -192,6 +231,7 @@ protected:
 
 
 private:
+	ValidMuonsInput validMuonsInput;
 	
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon_selection
 	bool IsTightMuon2011(KDataMuon* muon, event_type const& event, product_type& product) const

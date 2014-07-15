@@ -9,11 +9,13 @@
 #include "Artus/KappaAnalysis/interface/Producers/TriggerMatchingProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenTauDecayProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenParticleProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/ElectronCorrectionsProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/MuonCorrectionsProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/TauCorrectionsProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/JetCorrectionsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidElectronsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidMuonsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidTausProducer.h"
-#include "Artus/KappaAnalysis/interface/Producers/TauEnergyCorrectionProducer.h"
-#include "Artus/KappaAnalysis/interface/Producers/JetEnergyCorrectionProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidJetsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidBTaggedJetsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/PUWeightProducer.h"
@@ -54,18 +56,22 @@ public:
 			return new HltProducer<TTypes>();
 		else if(id == TriggerMatchingProducer<TTypes>().GetProducerId())
 			return new TriggerMatchingProducer<TTypes>();
+		else if(id == ElectronCorrectionsProducer<TTypes>().GetProducerId())
+			return new ElectronCorrectionsProducer<TTypes>();
+		else if(id == MuonCorrectionsProducer<TTypes>().GetProducerId())
+			return new MuonCorrectionsProducer<TTypes>();
+		else if(id == TauCorrectionsProducer<TTypes>().GetProducerId())
+			return new TauCorrectionsProducer<TTypes>();
+		else if(id == JetCorrectionsProducer<TTypes>().GetProducerId())
+			return new JetCorrectionsProducer<TTypes>();
+		else if(id == TaggedJetCorrectionsProducer<TTypes>().GetProducerId())
+			return new TaggedJetCorrectionsProducer<TTypes>();
 		else if(id == ValidElectronsProducer<TTypes>().GetProducerId())
 			return new ValidElectronsProducer<TTypes>();
 		else if(id == ValidMuonsProducer<TTypes>().GetProducerId())
 			return new ValidMuonsProducer<TTypes>();
 		else if(id == ValidTausProducer<TTypes>().GetProducerId())
 			return new ValidTausProducer<TTypes>();
-		else if(id == TauEnergyCorrectionProducer<TTypes>().GetProducerId())
-			return new TauEnergyCorrectionProducer<TTypes>();
-		else if(id == JetEnergyCorrectionProducer<TTypes>().GetProducerId())
-			return new JetEnergyCorrectionProducer<TTypes>();
-		else if(id == TaggedJetEnergyCorrectionProducer<TTypes>().GetProducerId())
-			return new TaggedJetEnergyCorrectionProducer<TTypes>();
 		else if(id == ValidJetsProducer<TTypes>().GetProducerId())
 			return new ValidJetsProducer<TTypes>();
 		else if(id == ValidTaggedJetsProducer<TTypes>().GetProducerId())

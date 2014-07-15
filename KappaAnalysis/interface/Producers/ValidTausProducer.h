@@ -19,6 +19,7 @@
    \brief GlobalProducer, for valid taus.
    
    Required config tags in addtion to the ones of the base class:
+   - ValidTausInput (default: auto)
    - TauDiscriminators
    - TauLowerPtCuts
    - TauUpperAbsEtaCuts
@@ -94,7 +95,7 @@ public:
 		}
 		else
 		{
-			taus.resize(product.m_correctedTaus.size());
+			taus.resize(event.m_taus->size());
 			size_t tauIndex = 0;
 			for (KDataPFTaus::iterator tau = event.m_taus->begin(); tau != event.m_taus->end(); ++tau)
 			{

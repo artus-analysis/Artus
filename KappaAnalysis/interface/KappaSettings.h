@@ -101,10 +101,12 @@ public:
 	
 	IMPL_SETTING(int, Year);
 	
+	IMPL_SETTING_DEFAULT(std::string, ValidMuonsInput, "auto");
 	IMPL_SETTING(std::string, MuonID);
 	IMPL_SETTING(std::string, MuonIsoType);
 	IMPL_SETTING(std::string, MuonIso);
 	
+	IMPL_SETTING_DEFAULT(std::string, ValidElectronsInput, "auto");
 	IMPL_SETTING(std::string, ElectronID);
 	IMPL_SETTING(std::string, ElectronIsoType);
 	IMPL_SETTING(std::string, ElectronIso);

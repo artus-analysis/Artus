@@ -25,6 +25,7 @@
    *mvanontrig* working point for non-triggering MVA is implemented.
 
    This Producer needs the following config tags:
+     ValidElectronsInput (default: auto)
      ElectronID
      ElectronIsoType
      ElectronIso
@@ -42,6 +43,19 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
+
+	enum class ValidElectronsInput : int
+	{
+		AUTO = 0,
+		UNCORRECTED = 1,
+		CORRECTED = 2,
+	};
+	static ValidElectronsInput ToValidElectronsInput(std::string const& validElectronsInput)
+	{
+		if (validElectronsInput == "uncorrected") return ValidElectronsInput::UNCORRECTED;
+		else if (validElectronsInput == "corrected") return ValidElectronsInput::CORRECTED;
+		else return ValidElectronsInput::AUTO;
+	}
 
 	enum class ElectronID : int
 	{
@@ -115,6 +129,8 @@ public:
 		ProducerBase<TTypes>::Init(settings);
 		ValidPhysicsObjectTools<TTypes, KDataElectron>::Init(settings);
 		
+		validElectronsInput = ToValidElectronsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidElectronsInput())));
+		
 		electronID = ToElectronID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronID())));
 		electronIsoType = ToElectronIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronIsoType())));
 		electronIso = ToElectronIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronIso())));
@@ -129,8 +145,31 @@ public:
 	virtual void Produce(event_type const& event, product_type& product,
 	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
-		for (KDataElectrons::iterator electron = event.m_electrons->begin();
-			 electron != event.m_electrons->end(); electron++)
+		// select input source
+		std::vector<KDataElectron*> electrons;
+		if ((validElectronsInput == ValidElectronsInput::AUTO && (product.m_correctedElectrons.size() > 0)) || (validElectronsInput == ValidElectronsInput::CORRECTED))
+		{
+			electrons.resize(product.m_correctedElectrons.size());
+			size_t electronIndex = 0;
+			for (std::vector<std::shared_ptr<KDataElectron> >::iterator electron = product.m_correctedElectrons.begin();
+			     electron != product.m_correctedElectrons.end(); ++electron)
+			{
+				electrons[electronIndex] = electron->get();
+				++electronIndex;
+			}
+		}
+		else
+		{
+			electrons.resize(event.m_electrons->size());
+			size_t electronIndex = 0;
+			for (KDataElectrons::iterator electron = event.m_electrons->begin(); electron != event.m_electrons->end(); ++electron)
+			{
+				electrons[electronIndex] = &(*electron);
+				++electronIndex;
+			}
+		}
+		
+		for (std::vector<KDataElectron*>::iterator electron = electrons.begin(); electron != electrons.end(); ++electron)
 		{
 			bool validElectron = true;
 			
@@ -140,18 +179,18 @@ public:
 
 			// Electron IDs
 			if (electronID == ElectronID::MVANONTRIG)
-				validElectron = validElectron && IsMVANonTrigElectron(&(*electron));
+				validElectron = validElectron && IsMVANonTrigElectron(*electron);
 			else if (electronID == ElectronID::MVATRIG)
-				validElectron = validElectron && IsMVATrigElectron(&(*electron));
+				validElectron = validElectron && IsMVATrigElectron(*electron);
 			else if (electronID != ElectronID::USER && electronID != ElectronID::NONE)
 				LOG(FATAL) << "Electron ID of type " << Utility::ToUnderlyingValue(electronID) << " not yet implemented!";
 
 			// Electron Isolation
 			if (electronIsoType == ElectronIsoType::PF) {
 				if (electronIso == ElectronIso::MVANONTRIG)
-					validElectron = validElectron && (electron->trackIso04 / electron->p4.Pt()) < 0.4;
+					validElectron = validElectron && ((*electron)->trackIso04 / (*electron)->p4.Pt()) < 0.4;
 				else if (electronIso == ElectronIso::MVATRIG)
-					validElectron = validElectron && (electron->trackIso04 / electron->p4.Pt()) < 0.15;
+					validElectron = validElectron && ((*electron)->trackIso04 / (*electron)->p4.Pt()) < 0.15;
 				else if (electronIso != ElectronIso::NONE)
 					LOG(FATAL) << "Electron isolation of type " << Utility::ToUnderlyingValue(electronIso) << " not yet implemented!";
 			}
@@ -161,34 +200,34 @@ public:
 			// Electron reconstruction
 			if (electronReco == ElectronReco::MVANONTRIG) {
 				validElectron = validElectron
-				                && (electron->track.nInnerHits <= 1);
+				                && ((*electron)->track.nInnerHits <= 1);
 				                // && sip is the significance of impact parameter in 3D of the electron GSF track < 4 TODO
 			}
 			else if (electronReco == ElectronReco::MVATRIG) {
 				validElectron = validElectron
-				                && (electron->track.nInnerHits == 0);
+				                && ((*electron)->track.nInnerHits == 0);
 			}
 			else if (electronReco != ElectronReco::USER && electronReco != ElectronReco::NONE)
 				LOG(FATAL) << "Electron reconstruction of type " << Utility::ToUnderlyingValue(electronReco) << " not yet implemented!";
 			
 			// conversion veto per default
-			validElectron = validElectron && !electron->hasConversionMatch;
+			validElectron = validElectron && (! (*electron)->hasConversionMatch);
 			
 			// kinematic cuts
-			validElectron = validElectron && this->PassKinematicCuts(&(*electron), event, product);
+			validElectron = validElectron && this->PassKinematicCuts(*electron, event, product);
 			
 			// check possible analysis-specific criteria
-			validElectron = validElectron && AdditionalCriteria(&(*electron), event, product, settings);
+			validElectron = validElectron && AdditionalCriteria(*electron, event, product, settings);
 
 			if (validElectron)
 			{
-				product.m_validElectrons.push_back(&(*electron));
-				product.m_validLeptons.push_back(&(*electron));
+				product.m_validElectrons.push_back(*electron);
+				product.m_validLeptons.push_back(*electron);
 			}
 			else
 			{
-				product.m_invalidElectrons.push_back(&(*electron));
-				product.m_invalidLeptons.push_back(&(*electron));
+				product.m_invalidElectrons.push_back(*electron);
+				product.m_invalidLeptons.push_back(*electron);
 			}
 		}
 		
@@ -218,6 +257,7 @@ protected:
 
 
 private:
+	ValidElectronsInput validElectronsInput;
 
 	bool IsMVANonTrigElectron(KDataElectron* electron) const
 	{

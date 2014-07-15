@@ -26,9 +26,17 @@ public:
 	
 	std::vector<MotherDaughterBundle> m_genBoson;
 
+	/// added by ElectronCorrectionProducer
+	// needs to be a shared_ptr in order to be deleted when the product is deleted
+	std::vector<std::shared_ptr<KDataElectron> > m_correctedElectrons;
+
 	/// added by ValidElectronsProducer
 	std::vector<KDataElectron*> m_validElectrons;
 	std::vector<KDataElectron*> m_invalidElectrons;
+
+	/// added by MuonCorrectionProducer
+	// needs to be a shared_ptr in order to be deleted when the product is deleted
+	std::vector<std::shared_ptr<KDataMuon> > m_correctedMuons;
 
 	/// added by ValidMuonsProducer
 	std::vector<KDataMuon*> m_validMuons;
@@ -47,8 +55,8 @@ public:
 	std::vector<KLepton*> m_invalidLeptons;
 
 	/// added by JetEnergyCorrectionProducer
-	std::vector<KDataPFJet> m_correctedJets;
-	std::vector<KDataPFTaggedJet> m_correctedTaggedJets;
+	std::vector<std::shared_ptr<KDataPFJet> > m_correctedJets;
+	std::vector<std::shared_ptr<KDataPFTaggedJet> > m_correctedTaggedJets;
 	
 	/// added by ValidJetsProducer
 	std::vector<KDataPFJet*> m_validJets;

@@ -20,7 +20,7 @@
 #include "Artus/Utility/interface/Utility.h"
 
 /**
-   \brief Producer for Jet Energy Correction (JEC)
+   \brief Producer for jet corrections (mainly JEC)
    
    Required config tags:
    - JetEnergyCorrectionParameters (files containing the correction parameters in the right order)
@@ -36,7 +36,7 @@
 
 
 template<class TTypes, class TJet>
-class JetEnergyCorrectionProducerBase: public ProducerBase<TTypes>
+class JetCorrectionsProducerBase: public ProducerBase<TTypes>
 {
 
 public:
@@ -45,7 +45,8 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 	
-	JetEnergyCorrectionProducerBase(std::vector<TJet>* event_type::*jets, std::vector<TJet> product_type::*correctedJets) :
+	JetCorrectionsProducerBase(std::vector<TJet>* event_type::*jets,
+	                           std::vector<std::shared_ptr<TJet> > product_type::*correctedJets) :
 		ProducerBase<TTypes>(),
 		m_jetsMember(jets),
 		m_correctedJetsMember(correctedJets)
@@ -79,23 +80,63 @@ public:
 	virtual void Produce(event_type const& event, product_type& product,
 	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
-		// creates copies of jets in event
-		(product.*m_correctedJetsMember).resize((event.*m_jetsMember)->size());
-		for (size_t jetIndex = 0; jetIndex < (event.*m_jetsMember)->size(); ++jetIndex)
+		
+		// create a copy of all jets in the event (first temporarily for the JEC)
+		(product.*m_correctedJetsMember).clear();
+		std::vector<TJet> correctJetsForJecTools((event.*m_jetsMember)->size());
+		size_t jetIndex = 0;
+		for (typename std::vector<TJet>::const_iterator jet = (event.*m_jetsMember)->begin();
+			 jet != (event.*m_jetsMember)->end(); ++jet)
 		{
-			(product.*m_correctedJetsMember)[jetIndex] = (*(event.*m_jetsMember))[jetIndex];
+			correctJetsForJecTools[jetIndex] = *jet;
+			++jetIndex;
 		}
 		
-		// apply corrections and uncertainty shift
-		correctJets(&(product.*m_correctedJetsMember), factorizedJetCorrector, jetCorrectionUncertainty,
+		// apply jet energy corrections and uncertainty shift
+		correctJets(&correctJetsForJecTools, factorizedJetCorrector, jetCorrectionUncertainty,
 		            event.m_jetArea->median, event.m_vertexSummary->nVertices, -1,
 		            settings.GetJetEnergyCorrectionUncertaintyShift());
+		
+		// create the shared pointers to store in the product
+		(product.*m_correctedJetsMember).clear();
+		(product.*m_correctedJetsMember).resize(correctJetsForJecTools.size());
+		jetIndex = 0;
+		for (typename std::vector<TJet>::const_iterator jet = correctJetsForJecTools.begin();
+			 jet != correctJetsForJecTools.end(); ++jet)
+		{
+			(product.*m_correctedJetsMember)[jetIndex] = std::shared_ptr<TJet>(new TJet(*jet));
+			++jetIndex;
+		}
+		
+		// perform corrections on copied jets
+		for (typename std::vector<std::shared_ptr<TJet> >::iterator jet = (product.*m_correctedJetsMember).begin();
+			 jet != (product.*m_correctedJetsMember).end(); ++jet)
+		{
+			// No general correction available
+		
+			// perform possible analysis-specific corrections
+			AdditionalCorrections(jet->get(), event, product, settings);
+		}
+		
+		// sort vectors of corrected jets by pt
+		std::sort((product.*m_correctedJetsMember).begin(), (product.*m_correctedJetsMember).end(),
+		          [](std::shared_ptr<TJet> jet1, std::shared_ptr<TJet> jet2) -> bool
+		          { return jet1->p4.Pt() > jet2->p4.Pt(); });
+	}
+
+
+protected:
+	
+	// Can be overwritten for analysis-specific use cases
+	virtual void AdditionalCorrections(TJet* jet, event_type const& event,
+	                                   product_type& product, setting_type const& settings) const
+	{
 	}
 
 
 private:
 	std::vector<TJet>* event_type::*m_jetsMember;
-	std::vector<TJet> product_type::*m_correctedJetsMember;
+	std::vector<std::shared_ptr<TJet> > product_type::*m_correctedJetsMember;
 	
 	FactorizedJetCorrector* factorizedJetCorrector = 0;
 	JetCorrectionUncertainty* jetCorrectionUncertainty = 0;
@@ -109,17 +150,17 @@ private:
    Operates on the vector event.m_jets and product::m_correctedJets.
 */
 template<class TTypes>
-class JetEnergyCorrectionProducer: public JetEnergyCorrectionProducerBase<TTypes, KDataPFJet>
+class JetCorrectionsProducer: public JetCorrectionsProducerBase<TTypes, KDataPFJet>
 {
 public:
-	JetEnergyCorrectionProducer() :
-		JetEnergyCorrectionProducerBase<TTypes, KDataPFJet>(&TTypes::event_type::m_jets,
-	                                                        &TTypes::product_type::m_correctedJets)
+	JetCorrectionsProducer() :
+		JetCorrectionsProducerBase<TTypes, KDataPFJet>(&TTypes::event_type::m_jets,
+		                                               &TTypes::product_type::m_correctedJets)
 	{
 	};
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "jet_energy_correction";
+		return "jet_corrections";
 	}
 };
 
@@ -131,7 +172,7 @@ public:
    Operates on the vector event.m_tjets and product::m_correctedTaggedJets.
 */
 template<class TTypes>
-class TaggedJetEnergyCorrectionProducer: public JetEnergyCorrectionProducerBase<TTypes, KDataPFTaggedJet>
+class TaggedJetCorrectionsProducer: public JetCorrectionsProducerBase<TTypes, KDataPFTaggedJet>
 {
 public:
 
@@ -139,14 +180,14 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 	
-	TaggedJetEnergyCorrectionProducer() :
-		JetEnergyCorrectionProducerBase<TTypes, KDataPFTaggedJet>(&TTypes::event_type::m_tjets,
-		                                                          &TTypes::product_type::m_correctedTaggedJets)
+	TaggedJetCorrectionsProducer() :
+		JetCorrectionsProducerBase<TTypes, KDataPFTaggedJet>(&TTypes::event_type::m_tjets,
+		                                                     &TTypes::product_type::m_correctedTaggedJets)
 	{
 	};
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "tagged_jet_energy_correction";
+		return "tagged_jet_corrections";
 	}
 };
 

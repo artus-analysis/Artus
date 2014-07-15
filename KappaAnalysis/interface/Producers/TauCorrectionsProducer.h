@@ -1,29 +1,18 @@
 
 #pragma once
 
-#include <algorithm>
-
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/trim.hpp>
-
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "Artus/Core/interface/ProducerBase.h"
-#include "Artus/Core/interface/ProductBase.h"
-#include "Artus/Utility/interface/SafeMap.h"
-#include "Artus/Utility/interface/Utility.h"
 
 
 /**
-   \brief Producer for tau energy scale corrections.
+   \brief Producer for tau four momentum corrections.
    
    (No correction implemented yet.)
-   
-   Required config tags
-   - TauEnergyCorrection (possible value: summer2013)
 */
 template<class TTypes>
-class TauEnergyCorrectionProducer: public ProducerBase<TTypes>
+class TauCorrectionsProducer: public ProducerBase<TTypes>
 {
 
 public:
@@ -32,26 +21,13 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 
-	enum class TauEnergyCorrection : int
-	{
-		NONE  = -1,
-		SUMMER2013 = 0,
-	};
-	static TauEnergyCorrection ToTauEnergyCorrection(std::string const& tauEnergyCorrection)
-	{
-		if (tauEnergyCorrection == "summer2013") return TauEnergyCorrection::SUMMER2013;
-		else return TauEnergyCorrection::NONE;
-	}
-
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "tau_energy_correction";
+		return "tau_corrections";
 	}
 	
 	virtual void Init(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
 	{
 		ProducerBase<TTypes>::Init(settings);
-		
-		tauEnergyCorrection = ToTauEnergyCorrection(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetTauEnergyCorrection())));
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
@@ -92,10 +68,6 @@ protected:
 	                                   product_type& product, setting_type const& settings) const
 	{
 	}
-
-
-private:
-	TauEnergyCorrection tauEnergyCorrection;
 
 };
 
