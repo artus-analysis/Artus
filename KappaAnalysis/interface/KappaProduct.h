@@ -34,6 +34,10 @@ public:
 	std::vector<KDataMuon*> m_validMuons;
 	std::vector<KDataMuon*> m_invalidMuons;
 
+	/// added by TauEnergyCorrectionProducer
+	// needs to be a shared_ptr in order to be deleted when the product is deleted
+	std::vector<std::shared_ptr<KDataPFTau> > m_correctedTaus;
+
 	/// added by ValidTausProducer
 	std::vector<KDataPFTau*> m_validTaus;
 	std::vector<KDataPFTau*> m_invalidTaus;

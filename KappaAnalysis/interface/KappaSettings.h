@@ -110,6 +110,7 @@ public:
 	IMPL_SETTING(std::string, ElectronIso);
 	IMPL_SETTING(std::string, ElectronReco);
 	
+	IMPL_SETTING_DEFAULT(std::string, ValidTausInput, "auto");
 	IMPL_SETTING_STRINGLIST(TauDiscriminators);
 	
 	IMPL_SETTING_STRINGLIST(JetEnergyCorrectionParameters);

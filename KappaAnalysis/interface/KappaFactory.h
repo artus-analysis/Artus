@@ -12,6 +12,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/ValidElectronsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidMuonsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidTausProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/TauEnergyCorrectionProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/JetEnergyCorrectionProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidJetsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidBTaggedJetsProducer.h"
@@ -59,6 +60,8 @@ public:
 			return new ValidMuonsProducer<TTypes>();
 		else if(id == ValidTausProducer<TTypes>().GetProducerId())
 			return new ValidTausProducer<TTypes>();
+		else if(id == TauEnergyCorrectionProducer<TTypes>().GetProducerId())
+			return new TauEnergyCorrectionProducer<TTypes>();
 		else if(id == JetEnergyCorrectionProducer<TTypes>().GetProducerId())
 			return new JetEnergyCorrectionProducer<TTypes>();
 		else if(id == TaggedJetEnergyCorrectionProducer<TTypes>().GetProducerId())
