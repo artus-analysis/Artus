@@ -98,6 +98,8 @@ class PlotBase(processor.Processor):
 		                                     help="Place an axes grid on the plot.")
 		self.formatting_options.add_argument("--ratio-grid", action="store_true", default=False,
 		                                     help="Place an axes grid on the ratio subplot.")
+		self.formatting_options.add_argument("--stack", type=str, nargs="+",
+		                                     help="Defines nick names for stacking. Inputs with the same nick name will be stacked. By default, every input gets a unique nick name.")
 
 		# plot labelling
 		self.labelling_options = parser.add_argument_group("Labelling options")
@@ -156,7 +158,7 @@ class PlotBase(processor.Processor):
 			if plotData.plotdict[labelKey] == None: plotData.plotdict[labelKey] = ""
 		
 		# formatting options
-		self.prepare_list_args(plotData, ["colors", "labels", "markers", "errorbars"], len(plotData.plotdict["root_histos"]))
+		self.prepare_list_args(plotData, ["colors", "labels", "markers", "errorbars", "stack"], len(plotData.plotdict["root_histos"]))
 		
 		for index, errorbar in enumerate(plotData.plotdict["errorbars"]):
 			if errorbar == None:
@@ -182,6 +184,11 @@ class PlotBase(processor.Processor):
 						filename += "_VS_"
 					filename += expression_string
 			plotData.plotdict["filename"] = filename
+
+		# prepare nicknames for stacked plots
+
+		stack = plotData.plotdict["stack"]
+		plotData.plotdict["stack"] = [stack if stack != None else ("stack%d" % index) for index, stack in enumerate(plotData.plotdict["stack"])]
 		
 		# module specific settings # TODO
 		if plotData.plotdict["analysis_modules"] != None and eventselectionoverlap.EventSelectionOverlap.name() in plotData.plotdict["analysis_modules"] and plotData.plotdict["x_tick_labels"] == None:
