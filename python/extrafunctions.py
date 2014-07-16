@@ -9,6 +9,7 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import os
+import subprocess
 
 import ROOT
 
@@ -68,3 +69,6 @@ def print_quantities(root_files=[""], root_folders=[""]):
 			for q in sorted(quantities[name], key=lambda v: (v.upper(), v[0].islower())):
 				log.info("  %s" % q)
 
+def show_plot(filename):
+	imageviewer = 'evince'
+	subprocess.Popen(["gthumb", filename])

@@ -131,6 +131,8 @@ class PlotBase(processor.Processor):
 		self.other_options = parser.add_argument_group("Other features")
 		self.other_options.add_argument("--quantities", action="store_true", default=False,
 		                                 help="Print available quantities in given folder")
+		self.other_options.add_argument("--live", action="store_true", default=False,
+		                                 help="Open plot in viewer after its creation")
 
 		# module specific settings # TODO
 		if eventselectionoverlap.EventSelectionOverlap.name() in args["analysis_modules"]:
@@ -223,7 +225,8 @@ class PlotBase(processor.Processor):
 		self.add_labels(plotData)
 		self.add_texts(plotData)
 		self.save_canvas(plotData)
-	
+		self.plot_end(plotData)
+
 	def calculate_ratios(self, plotData):
 		if plotData.plotdict["ratio"]:
 			for numerator_nicks, denominator_nicks in zip(plotData.plotdict["ratio_num"],
@@ -257,7 +260,15 @@ class PlotBase(processor.Processor):
 	
 	def save_canvas(self, plotData):
 		pass
-	
+
+	def plot_end(self, plotData):
+		if plotData.plotdict["live"]:
+			for plot_format in plotData.plotdict["formats"]:
+				filename = os.path.join(plotData.plotdict["output_dir"],
+					                     plotData.plotdict["filename"]+"."+plot_format)
+				extrafunctions.show_plot(filename)
+
+
 	def set_default_ratio_colors(self, plotData):
 		
 		# defaults for colors
