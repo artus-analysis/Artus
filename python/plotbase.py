@@ -14,7 +14,7 @@ import re
 import Artus.HarryPlotter.processor as processor
 import Artus.HarryPlotter.roottools as roottools
 import Artus.HarryPlotter.modules.eventselectionoverlap as eventselectionoverlap
-
+import Artus.HarryPlotter.extrafunctions as extrafunctions
 
 class PlotBase(processor.Processor):
 	
@@ -126,7 +126,12 @@ class PlotBase(processor.Processor):
 		                                 help="Filename of the plot without extension. By default, it is constructed from the x/y/z expressions.")
 		self.output_options.add_argument("-f", "--formats", nargs="+", default=["png"],
 		                                 help="Format of the plots. [Default: %(default)s]")
-		
+
+		# settings to increase usability
+		self.other_options = parser.add_argument_group("Other features")
+		self.other_options.add_argument("--quantities", action="store_true", default=False,
+		                                 help="Print available quantities in given folder")
+
 		# module specific settings # TODO
 		if eventselectionoverlap.EventSelectionOverlap.name() in args["analysis_modules"]:
 			parser.set_defaults(x_label="Event Selection Overlap")
@@ -134,6 +139,10 @@ class PlotBase(processor.Processor):
 	def prepare_args(self, parser, plotData):
 		super(PlotBase, self).prepare_args(parser, plotData)
 		
+		if plotData.plotdict["quantities"]:
+			extrafunctions.print_quantities(root_files=plotData.plotdict["files"], root_folders=plotData.plotdict["folders"])
+			exit()
+
 		# prepare nick names for ratio subplot
 		if plotData.plotdict["ratio_num"] == None: plotData.plotdict["ratio_num"] = [plotData.plotdict["nicks"][0]]
 		if plotData.plotdict["ratio_denom"] == None: plotData.plotdict["ratio_denom"] = [" ".join(plotData.plotdict["nicks"][1:])]
