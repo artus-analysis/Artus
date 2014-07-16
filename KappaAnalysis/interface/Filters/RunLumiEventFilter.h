@@ -36,6 +36,13 @@ public:
 		bool match = (MatchWhiteBlackLists(event.m_eventMetadata->nRun, settings.GetRunWhitelist(), settings.GetRunBlacklist()) &&
 		              MatchWhiteBlackLists(event.m_eventMetadata->nLumi, settings.GetLumiWhitelist(), settings.GetLumiBlacklist()) &&
 		              MatchWhiteBlackLists(event.m_eventMetadata->nEvent, settings.GetEventWhitelist(), settings.GetEventBlacklist()));
+		if (match)
+		{
+			LOG(DEBUG) << "Process: " <<
+			              "run = " << event.m_eventMetadata->nRun << ", " <<
+			              "lumi = " << event.m_eventMetadata->nLumi << ", " <<
+			              "event = " << event.m_eventMetadata->nEvent;
+		}
 		return match;
 	}
 
