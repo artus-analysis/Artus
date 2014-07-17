@@ -117,11 +117,22 @@ public:
 		return "valid_electrons";
 	}
 	
-	ValidElectronsProducer() :
+	ValidElectronsProducer(std::vector<KDataElectron*> product_type::*validElectrons=&product_type::m_validElectrons,
+	                       std::vector<KDataElectron*> product_type::*invalidElectrons=&product_type::m_invalidElectrons,
+	                       std::string (setting_type::*GetElectronID)(void) const=&setting_type::GetElectronID,
+	                       std::string (setting_type::*GetElectronIsoType)(void) const=&setting_type::GetElectronIsoType,
+	                       std::string (setting_type::*GetElectronIso)(void) const=&setting_type::GetElectronIso,
+	                       std::string (setting_type::*GetElectronReco)(void) const=&setting_type::GetElectronReco,
+	                       std::vector<std::string>& (setting_type::*GetLowerPtCuts)(void) const=&setting_type::GetElectronLowerPtCuts,
+	                       std::vector<std::string>& (setting_type::*GetUpperAbsEtaCuts)(void) const=&setting_type::GetElectronUpperAbsEtaCuts) :
 		ProducerBase<TTypes>(),
-		ValidPhysicsObjectTools<TTypes, KDataElectron>(&setting_type::GetElectronLowerPtCuts,
-		                                               &setting_type::GetElectronUpperAbsEtaCuts,
-		                                               &product_type::m_validElectrons)
+		ValidPhysicsObjectTools<TTypes, KDataElectron>(GetLowerPtCuts, GetUpperAbsEtaCuts, validElectrons),
+		m_validElectronsMember(validElectrons),
+		m_invalidElectronsMember(invalidElectrons),
+		GetElectronID(GetElectronID),
+		GetElectronIsoType(GetElectronIsoType),
+		GetElectronIso(GetElectronIso),
+		GetElectronReco(GetElectronReco)
 	{
 	}
 
@@ -131,10 +142,10 @@ public:
 		
 		validElectronsInput = ToValidElectronsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidElectronsInput())));
 		
-		electronID = ToElectronID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronID())));
-		electronIsoType = ToElectronIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronIsoType())));
-		electronIso = ToElectronIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronIso())));
-		electronReco = ToElectronReco(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetElectronReco())));
+		electronID = ToElectronID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetElectronID)())));
+		electronIsoType = ToElectronIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetElectronIsoType)())));
+		electronIso = ToElectronIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetElectronIso)())));
+		electronReco = ToElectronReco(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetElectronReco)())));
 		
 		// add possible quantities for the lambda ntuples consumers
 		LambdaNtupleConsumer<TTypes>::Quantities["nElectrons"] = [](event_type const& event, product_type const& product) {
@@ -221,12 +232,12 @@ public:
 
 			if (validElectron)
 			{
-				product.m_validElectrons.push_back(*electron);
+				(product.*m_validElectronsMember).push_back(*electron);
 				product.m_validLeptons.push_back(*electron);
 			}
 			else
 			{
-				product.m_invalidElectrons.push_back(*electron);
+				(product.*m_invalidElectronsMember).push_back(*electron);
 				product.m_invalidLeptons.push_back(*electron);
 			}
 		}
@@ -257,6 +268,13 @@ protected:
 
 
 private:
+	std::vector<KDataElectron*> product_type::*m_validElectronsMember;
+	std::vector<KDataElectron*> product_type::*m_invalidElectronsMember;
+	std::string (setting_type::*GetElectronID)(void) const;
+	std::string (setting_type::*GetElectronIsoType)(void) const;
+	std::string (setting_type::*GetElectronIso)(void) const;
+	std::string (setting_type::*GetElectronReco)(void) const;
+	
 	ValidElectronsInput validElectronsInput;
 
 	bool IsMVANonTrigElectron(KDataElectron* electron) const
