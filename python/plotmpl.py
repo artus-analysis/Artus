@@ -63,19 +63,17 @@ class PlotMpl(plotbase.PlotBase):
 		if plotData.plotdict["y_lims"] != None:
 			plt.ylim(plotData.plotdict["y_lims"][0],plotData.plotdict["y_lims"][1])
 
+	def prepare_histograms(self, plotData):
 		# create a dictionary with one entry for each plot that will be stacked
 		self.bottom_y_values = {}
 		for stack in plotData.plotdict["stack"]:
 			if plotData.plotdict["stack"].count(stack) > 1:
-				histo_size = plotData.plotdict["root_histos"]["nick0"].GetSize()-2
+				histo_size = plotData.plotdict["root_histos"]["nick0"].GetNbinsX()
 				if not (stack in self.bottom_y_values):
 					self.bottom_y_values[stack] = [0] * histo_size
 				else:
 					if not (len(self.bottom_y_values[stack]) == histo_size):
 						print "histograms labled with --stack " + stack + " do not have the same size and can not be stacked"
-
-	def prepare_histograms(self, plotData):
-		pass
 
 	def make_plots(self, plotData):
 
@@ -92,7 +90,7 @@ class PlotMpl(plotbase.PlotBase):
 
 			# determine bin width to allow variable binning
 			widths = []
-			for i in range(root_histogram.GetSize()-2):
+			for i in range(root_histogram.GetNBinsX()):
 				widths.append(root_histogram.GetBinWidth(i))
 			yerr=mpl_histogram.yerr if errorbar else None
 
