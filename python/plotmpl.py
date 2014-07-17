@@ -128,7 +128,5 @@ class PlotMpl(plotbase.PlotBase):
 		self.ax.legend()
 
 	def save_canvas(self, plotData):
-		for plot_format in plotData.plotdict["formats"]:
-			filename = os.path.join(plotData.plotdict["output_dir"],
-				                     plotData.plotdict["filename"]+"."+plot_format)
-			self.fig.savefig(filename)
+		for output_filename in plotData.plotdict["output_filenames"]:
+			self.fig.savefig(output_filename)

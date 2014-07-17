@@ -164,7 +164,12 @@ class PlotBase(processor.Processor):
 			if plotData.plotdict[labelKey] == None:
 				plotData.plotdict[labelKey] = reduce(lambda a, b: "%s, %s" % (str(a), str(b)), set(plotData.plotdict[expressionKey]))
 			if plotData.plotdict[labelKey] == None: plotData.plotdict[labelKey] = ""
-		
+
+		# write name of output file in dictionary
+		plotData.plotdict["output_filenames"] = []
+		for plot_format in plotData.plotdict["formats"]:
+			plotData.plotdict["output_filenames"].append(os.path.join(plotData.plotdict["output_dir"], plotData.plotdict["filename"]+"."+plot_format))
+
 		# formatting options
 		self.prepare_list_args(plotData, ["colors", "labels", "markers", "errorbars", "stack"], len(plotData.plotdict["root_histos"]))
 		
@@ -260,10 +265,8 @@ class PlotBase(processor.Processor):
 
 	def plot_end(self, plotData):
 		if not (plotData.plotdict["live"]==None) :
-			for plot_format in plotData.plotdict["formats"]:
-				filename = os.path.join(plotData.plotdict["output_dir"],
-					                     plotData.plotdict["filename"]+"."+plot_format)
-				extrafunctions.show_plot(filename, plotData.plotdict["live"])
+			for output_filename in plotData.plotdict["output_filenames"]:
+				extrafunctions.show_plot(output_filename, plotData.plotdict["live"])
 
 
 	def set_default_ratio_colors(self, plotData):

@@ -245,9 +245,7 @@ class PlotRoot(plotbase.PlotBase):
 	def save_canvas(self, plotData):
 		super(PlotRoot, self).save_canvas(plotData)
 		
-		for plot_format in plotData.plotdict["formats"]:
-			filename = os.path.join(plotData.plotdict["output_dir"],
-			                        plotData.plotdict["filename"]+"."+plot_format)
-			self.canvas.SaveAs(filename)
-			log.info("Created plot \"%s\"." % filename)
+		for output_filename in plotData.plotdict["output_filenames"]:
+			self.canvas.SaveAs(output_filename)
+			log.info("Created plot \"%s\"." % output_filename)
 
