@@ -17,14 +17,6 @@ import matplotlib.pyplot as plt
 class PlotMpl(plotbase.PlotBase):
 	def __init__(self):
 		super(PlotMpl, self).__init__()
-	
-	def prepare_args(self, parser, plotData):
-		super(PlotMpl, self).prepare_args(parser, plotData)
-		
-		# defaults for colors
-		for index, color in enumerate(plotData.plotdict["colors"]):
-			pass # TODO
-		self.set_default_ratio_colors(plotData)
 
 	def prepare_args(self, parser, plotData):
 		super(PlotMpl, self).prepare_args(parser, plotData)
@@ -77,8 +69,6 @@ class PlotMpl(plotbase.PlotBase):
 
 	def make_plots(self, plotData):
 
-		#plotData.plotdict["root_histos"]
-
 		for nick, color, label, marker, errorbar, stack in zip(plotData.plotdict["nicks"],
 		                                 plotData.plotdict["colors"],
 		                                 plotData.plotdict["labels"],
@@ -97,6 +87,8 @@ class PlotMpl(plotbase.PlotBase):
 			if stack in self.bottom_y_values:
 				bottom = self.bottom_y_values[stack]
 				self.bottom_y_values[stack] =  [sum(x) for x in zip(self.bottom_y_values[stack], mpl_histogram.y)]
+			else:
+				bottom = [0] * root_histogram.GetNbinsX()
 
 			if marker=="bar":
 				self.ax.bar(mpl_histogram.x, mpl_histogram.y, widths, yerr=yerr, bottom=bottom,
