@@ -27,7 +27,7 @@ class PlotMpl(plotbase.PlotBase):
 				plotData.plotdict["colors"][index] = index + 1
 			else:
 				plotData.plotdict["colors"][index] = color
-		#self.set_default_ratio_colors(plotData)
+		self.set_default_ratio_colors(plotData)
 		
 		# defaults for markers
 		for index, marker in enumerate(plotData.plotdict["markers"]):
@@ -40,15 +40,21 @@ class PlotMpl(plotbase.PlotBase):
 	
 	def create_canvas(self, plotData):
 		if plotData.plotdict["ratio"]:
-			self.fig = plt.figure(figsize=[4, 4])
-			self.ax1 = self.fig.add_subplot(111, position = [0.13, 0.37, 0.83, 0.58])
-			self.ax2 = self.fig.add_subplot(111, position = [0.13, 0.12, 0.83, 0.22], sharex=self.ax1)
+			self.fig = plt.figure(figsize=[5, 7])
+			self.ax = self.fig.add_subplot(111, position = [0.13, 0.35, 0.83, 0.58])
+			self.ax2 = self.fig.add_subplot(111, position = [0.13, 0.06, 0.83, 0.22], sharex=self.ax)
 			#plotdict['ratiosubplotaxes'] = ax2 # needed?
 		else:
-			self.fig = plt.figure(figsize=[7, 7])
-			self.ax = self.fig.add_subplot(111)
+			self.fig = plt.figure(figsize=[5, 5])
+			self.ax = self.fig.add_subplot(111, position = [0.13, 0.10, 0.83, 0.83])
 
-		plt.title(plotData.plotdict["title"])
+		# place labels specified from command-line
+		plt.text(0.5, 1.035, plotData.plotdict["title"], horizontalalignment='center', transform=self.ax.transAxes, fontsize=14)
+		if not (plotData.plotdict["lumi"]==None):
+			plt.text(-0.0, 1.030, "$\mathcal{L}=" + str(plotData.plotdict["lumi"]) + "\mathrm{fb^{-1}}$", transform=self.ax.transAxes, fontsize=10)
+		if not (plotData.plotdict["energy"] == None):
+			energy = "+".join(plotData.plotdict["energy"])
+			plt.text(1.0, 1.030, "$\sqrt{s}=" + energy + "\\ \mathrm{TeV}$", transform=self.ax.transAxes, fontsize=10, horizontalalignment="right")
 
 		if plotData.plotdict["x_lims"] != None:
 			plt.xlim([plotData.plotdict["x_lims"][0],plotData.plotdict["x_lims"][1]])
@@ -97,21 +103,33 @@ class PlotMpl(plotbase.PlotBase):
 				y = mpl_histogram.y if not(stack in self.bottom_y_values) else self.bottom_y_values[stack]
 			
 				self.ax.errorbar(mpl_histogram.xc, y, mpl_histogram.yerr,
-				                 color=color, fmt=marker, capsize=0, label=label, zorder=10, drawstyle='steps-mid', linestyle="-.")
+				                 color=color, fmt=marker, capsize=0, label=label, zorder=10, drawstyle='steps-mid', linestyle="-")
+		pprint.pprint(plotData.plotdict)
+		if plotData.plotdict["ratio"]:
+			for root_histogram, ratio_color, ratio_marker, in zip(plotData.plotdict["root_ratio_histos"],
+			                                      plotData.plotdict["ratio_colors"],
+			                                      plotData.plotdict["ratio_markers"]):
+				mpl_histogram = mplconvert.root2histo(root_histogram, "someFilename", 1)
+				self.ax2.errorbar(mpl_histogram.xc, mpl_histogram.y, mpl_histogram.yerr, ecolor=ratio_color, fmt=ratio_marker)
+
 
 	def modify_axes(self, plotData):
 		super(PlotMpl, self).modify_axes(plotData)
 
 		plt.grid(plotData.plotdict["grid"])
 
-		plt.xlabel(plotData.plotdict["x_label"])
-		plt.ylabel(plotData.plotdict["y_label"])
+		self.ax.set_xlabel(plotData.plotdict["x_label"])
+		self.ax.set_ylabel(plotData.plotdict["y_label"])
 
 		if plotData.plotdict["x_log"]: 
 			self.ax.set_xscale('log', nonposx='mask')
 
 		if plotData.plotdict["y_log"]: 
 			self.ax.set_yscale('log', nonposx='mask')
+
+		if plotData.plotdict["ratio"]:
+			self.ax2.set_xlabel(plotData.plotdict["x_label"])
+			self.ax2.set_ylabel(plotData.plotdict["y_ratio_label"])
 
 
 	def add_labels(self, plotData):

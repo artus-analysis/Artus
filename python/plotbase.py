@@ -107,7 +107,7 @@ class PlotBase(processor.Processor):
 		                                    help="Plot title")
 		self.labelling_options.add_argument("-l", "--lumi", type=float,
 		                                    help="Luminosity for the given data in /fb.")
-		self.labelling_options.add_argument("-e", "--energy", type=int,
+		self.labelling_options.add_argument("-e", "--energy", type=str, nargs="+",
 		                                    help="Centre-of-mass energy for the given samples in TeV.")
 		self.labelling_options.add_argument("-A", "--author", type=str,
 		                                    help="author name of the plot")
@@ -276,5 +276,4 @@ class PlotBase(processor.Processor):
 		                                              plotData.plotdict["ratio_colors"])):
 			color, ratio_color = color_ratio_color
 			if ratio_color == None:
-				plotData.plotdict["colors"][index] = index + 1 # TODO
-
+				plotData.plotdict["ratio_colors"][index] = plotData.plotdict["colors"][index + 1] # TODO
