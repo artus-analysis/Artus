@@ -98,11 +98,20 @@ public:
 		return "valid_muons";
 	}
 	
-	ValidMuonsProducer() :
+	ValidMuonsProducer(std::vector<KDataMuon*> product_type::*validMuons=&product_type::m_validMuons,
+	                   std::vector<KDataMuon*> product_type::*invalidMuons=&product_type::m_invalidMuons,
+	                   std::string (setting_type::*GetMuonID)(void) const=&setting_type::GetMuonID,
+	                   std::string (setting_type::*GetMuonIsoType)(void) const=&setting_type::GetMuonIsoType,
+	                   std::string (setting_type::*GetMuonIso)(void) const=&setting_type::GetMuonIso,
+	                   std::vector<std::string>& (setting_type::*GetLowerPtCuts)(void) const=&setting_type::GetMuonLowerPtCuts,
+	                   std::vector<std::string>& (setting_type::*GetUpperAbsEtaCuts)(void) const=&setting_type::GetMuonUpperAbsEtaCuts) :
 		ProducerBase<TTypes>(),
-		ValidPhysicsObjectTools<TTypes, KDataMuon>(&setting_type::GetMuonLowerPtCuts,
-		                                           &setting_type::GetMuonUpperAbsEtaCuts,
-		                                           &product_type::m_validMuons)
+		ValidPhysicsObjectTools<TTypes, KDataMuon>(GetLowerPtCuts, GetUpperAbsEtaCuts, validMuons),
+		m_validMuonsMember(validMuons),
+		m_invalidMuonsMember(invalidMuons),
+		GetMuonID(GetMuonID),
+		GetMuonIsoType(GetMuonIsoType),
+		GetMuonIso(GetMuonIso)
 	{
 	}
 
@@ -112,9 +121,9 @@ public:
 		
 		validMuonsInput = ToValidMuonsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidMuonsInput())));
 		
-		muonID = ToMuonID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonID())));
-		muonIsoType = ToMuonIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonIsoType())));
-		muonIso = ToMuonIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonIso())));
+		muonID = ToMuonID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetMuonID)())));
+		muonIsoType = ToMuonIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetMuonIsoType)())));
+		muonIso = ToMuonIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetMuonIso)())));
 		
 		// add possible quantities for the lambda ntuples consumers
 		LambdaNtupleConsumer<TTypes>::Quantities["nMuons"] = [](event_type const& event, product_type const& product) {
@@ -196,12 +205,12 @@ public:
 			
 			if (validMuon)
 			{
-				product.m_validMuons.push_back(*muon);
+				(product.*m_validMuonsMember).push_back(*muon);
 				product.m_validLeptons.push_back(*muon);
 			}
 			else
 			{
-				product.m_invalidMuons.push_back(*muon);
+				(product.*m_invalidMuonsMember).push_back(*muon);
 				product.m_invalidLeptons.push_back(*muon);
 			}
 		}
@@ -231,6 +240,12 @@ protected:
 
 
 private:
+	std::vector<KDataMuon*> product_type::*m_validMuonsMember;
+	std::vector<KDataMuon*> product_type::*m_invalidMuonsMember;
+	std::string (setting_type::*GetMuonID)(void) const;
+	std::string (setting_type::*GetMuonIsoType)(void) const;
+	std::string (setting_type::*GetMuonIso)(void) const;
+
 	ValidMuonsInput validMuonsInput;
 	
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon_selection
