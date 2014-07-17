@@ -131,8 +131,8 @@ class PlotBase(processor.Processor):
 		self.other_options = parser.add_argument_group("Other features")
 		self.other_options.add_argument("--quantities", action="store_true", default=False,
 		                                 help="Print available quantities in given folder")
-		self.other_options.add_argument("--live", action="store_true", default=False,
-		                                 help="Open plot in viewer after its creation")
+		self.other_options.add_argument("--live", default=None, nargs='?', const='gthumb',
+		                                 help="Open plot in viewer after its creation. Parameter is the name of your desired viewer.")
 
 		# module specific settings # TODO
 		if eventselectionoverlap.EventSelectionOverlap.name() in args["analysis_modules"]:
@@ -259,11 +259,11 @@ class PlotBase(processor.Processor):
 		pass
 
 	def plot_end(self, plotData):
-		if plotData.plotdict["live"]:
+		if not (plotData.plotdict["live"]==None) :
 			for plot_format in plotData.plotdict["formats"]:
 				filename = os.path.join(plotData.plotdict["output_dir"],
 					                     plotData.plotdict["filename"]+"."+plot_format)
-				extrafunctions.show_plot(filename)
+				extrafunctions.show_plot(filename, plotData.plotdict["live"])
 
 
 	def set_default_ratio_colors(self, plotData):

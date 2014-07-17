@@ -69,6 +69,6 @@ def print_quantities(root_files=[""], root_folders=[""]):
 			for q in sorted(quantities[name], key=lambda v: (v.upper(), v[0].islower())):
 				log.info("  %s" % q)
 
-def show_plot(filename):
-	imageviewer = 'evince'
-	subprocess.Popen(["gthumb", filename])
+def show_plot(filename, viewer):
+	log.info("Opening Plot " + filename + " with " + viewer)
+	subprocess.Popen([viewer, filename])
