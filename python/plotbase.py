@@ -140,10 +140,7 @@ class PlotBase(processor.Processor):
 	
 	def prepare_args(self, parser, plotData):
 		super(PlotBase, self).prepare_args(parser, plotData)
-		
-		if plotData.plotdict["quantities"]:
-			extrafunctions.print_quantities(root_files=plotData.plotdict["files"], root_folders=plotData.plotdict["folders"])
-			exit()
+
 
 		# prepare nick names for ratio subplot
 		if plotData.plotdict["ratio_num"] == None: plotData.plotdict["ratio_num"] = [plotData.plotdict["nicks"][0]]

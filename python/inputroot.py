@@ -13,7 +13,7 @@ import ROOT
 
 import Artus.HarryPlotter.inputbase as inputbase
 import Artus.HarryPlotter.roottools as roottools
-
+import Artus.HarryPlotter.extrafunctions as extrafunctions
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 
@@ -41,7 +41,9 @@ class InputRoot(inputbase.InputBase):
 	
 	def run(self, plotData):
 		super(InputRoot, self).run(plotData)
-		
+		if plotData.plotdict["quantities"]:
+			extrafunctions.print_quantities(root_files=plotData.plotdict["files"], root_folders=plotData.plotdict["folders"])
+			exit()
 		root_tools = roottools.RootTools()
 		for root_files, folders, x_expression, y_expression, z_expression, weight, nick in zip(*
 			[plotData.plotdict[key] for key in ["files", "folders", "x_expressions", "y_expressions", "z_expressions", "weights", "nicks"]]):
