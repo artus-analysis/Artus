@@ -18,6 +18,11 @@ class PlotMpl(plotbase.PlotBase):
 	def __init__(self):
 		super(PlotMpl, self).__init__()
 
+	def modify_argument_parser(self, parser, args):
+		super(PlotMpl, self).modify_argument_parser(parser, args)
+		self.formatting_options.add_argument("--linestyle", default="-", nargs="+",
+		                                     help="Style of errorbar plot line. [Default: '-']")
+
 	def prepare_args(self, parser, plotData):
 		super(PlotMpl, self).prepare_args(parser, plotData)
 		pprint.pprint(plotData.plotdict)
@@ -33,6 +38,8 @@ class PlotMpl(plotbase.PlotBase):
 		for index, marker in enumerate(plotData.plotdict["markers"]):
 			if marker == None:
 				plotData.plotdict["markers"][index] = "-"
+
+		self.prepare_list_args(plotData, ["linestyle"], n_items=len(plotData.plotdict["nicks"]))
 
 
 	def run(self, plotData):
@@ -57,9 +64,12 @@ class PlotMpl(plotbase.PlotBase):
 			plt.text(1.0, 1.030, "$\sqrt{s}=" + energy + "\\ \mathrm{TeV}$", transform=self.ax.transAxes, fontsize=10, horizontalalignment="right")
 
 		if plotData.plotdict["x_lims"] != None:
-			plt.xlim([plotData.plotdict["x_lims"][0],plotData.plotdict["x_lims"][1]])
+			self.ax.set_xlim([plotData.plotdict["x_lims"][0],plotData.plotdict["x_lims"][1]])
 		if plotData.plotdict["y_lims"] != None:
-			plt.ylim(plotData.plotdict["y_lims"][0],plotData.plotdict["y_lims"][1])
+			self.ax.set_ylim(plotData.plotdict["y_lims"][0],plotData.plotdict["y_lims"][1])
+
+		if plotData.plotdict["ratio"] and plotData.plotdict["y_ratio_lims"] != None:
+			self.ax2.set_ylim(plotData.plotdict["y_ratio_lims"][0],plotData.plotdict["y_ratio_lims"][1])
 
 	def prepare_histograms(self, plotData):
 		# create a dictionary with one entry for each plot that will be stacked
@@ -75,14 +85,19 @@ class PlotMpl(plotbase.PlotBase):
 
 	def make_plots(self, plotData):
 
-		for nick, color, label, marker, errorbar, stack in zip(plotData.plotdict["nicks"],
+		for nick, color, label, marker, errorbar, stack, linestyle in zip(plotData.plotdict["nicks"],
 		                                 plotData.plotdict["colors"],
 		                                 plotData.plotdict["labels"],
 		                                 plotData.plotdict["markers"],
 		                                 plotData.plotdict["errorbars"],
-		                                 plotData.plotdict["stack"]):
+		                                 plotData.plotdict["stack"],
+		                                 plotData.plotdict["linestyle"]):
 			root_histogram = plotData.plotdict["root_histos"][nick]
 			mpl_histogram = mplconvert.root2histo(root_histogram, "someFilename", 1)
+
+			# convert linestyles that do not work on command line
+			if linestyle == "dotted":
+				linestyle = "--"
 
 			# determine bin width to allow variable binning
 			widths = []
@@ -103,7 +118,7 @@ class PlotMpl(plotbase.PlotBase):
 				y = mpl_histogram.y if not(stack in self.bottom_y_values) else self.bottom_y_values[stack]
 			
 				self.ax.errorbar(mpl_histogram.xc, y, mpl_histogram.yerr,
-				                 color=color, fmt=marker, capsize=0, label=label, zorder=10, drawstyle='steps-mid', linestyle="-")
+				                 color=color, fmt=marker, capsize=0, label=label, zorder=10, drawstyle='steps-mid', linestyle=linestyle)
 		pprint.pprint(plotData.plotdict)
 		if plotData.plotdict["ratio"]:
 			for root_histogram, ratio_color, ratio_marker, in zip(plotData.plotdict["root_ratio_histos"],
