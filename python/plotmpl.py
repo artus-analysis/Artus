@@ -90,7 +90,7 @@ class PlotMpl(plotbase.PlotBase):
 
 			# determine bin width to allow variable binning
 			widths = []
-			for i in range(root_histogram.GetNBinsX()):
+			for i in range(root_histogram.GetNbinsX()):
 				widths.append(root_histogram.GetBinWidth(i))
 			yerr=mpl_histogram.yerr if errorbar else None
 
