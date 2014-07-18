@@ -28,6 +28,7 @@
 #include "Artus/KappaAnalysis/interface/Filters/HltFilter.h"
 #include "Artus/KappaAnalysis/interface/Filters/ValidObjectsFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsCountFilters.h"
+#include "Artus/KappaAnalysis/interface/Filters/MaxObjectsCountFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsLowerPtCutFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsUpperAbsEtaCutFilters.h"
 
@@ -113,6 +114,14 @@ public:
 			return new TausCountFilter<TTypes>();
 		else if(id == JetsCountFilter<TTypes>().GetFilterId())
 			return new JetsCountFilter<TTypes>();
+		else if(id == MaxElectronsCountFilter<TTypes>().GetFilterId())
+			return new MaxElectronsCountFilter<TTypes>();
+		else if(id == MaxMuonsCountFilter<TTypes>().GetFilterId())
+			return new MaxMuonsCountFilter<TTypes>();
+		else if(id == MaxTausCountFilter<TTypes>().GetFilterId())
+			return new MaxTausCountFilter<TTypes>();
+		else if(id == MaxJetsCountFilter<TTypes>().GetFilterId())
+			return new MaxJetsCountFilter<TTypes>();
 		else if(id == ElectronLowerPtCutsFilter<TTypes>().GetFilterId())
 			return new ElectronLowerPtCutsFilter<TTypes>();
 		else if(id == MuonLowerPtCutsFilter<TTypes>().GetFilterId())

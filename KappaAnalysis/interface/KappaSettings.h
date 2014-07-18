@@ -131,6 +131,11 @@ public:
 	IMPL_SETTING(int, NTaus);
 	IMPL_SETTING(int, NJets);
 	
+	IMPL_SETTING(int, MaxNElectrons);
+	IMPL_SETTING(int, MaxNMuons);
+	IMPL_SETTING(int, MaxNTaus);
+	IMPL_SETTING(int, MaxNJets);
+	
 	IMPL_SETTING_STRINGLIST(ElectronLowerPtCuts);
 	IMPL_SETTING_STRINGLIST(MuonLowerPtCuts);
 	IMPL_SETTING_STRINGLIST(TauLowerPtCuts);
