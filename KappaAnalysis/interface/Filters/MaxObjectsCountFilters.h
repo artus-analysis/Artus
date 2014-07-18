@@ -4,7 +4,7 @@
 #include "Artus/Filter/interface/CutFilterBase.h"
 
 
-/** Filter checking for the existance of exactly the given number of valid electrons.
+/** Filter checking for the existance of at most the given number of valid electrons.
  *  Required config tag: MaxNElectrons
  */
 template<class TTypes>
@@ -31,7 +31,7 @@ public:
 };
 
 
-/** Filter checking for the existance of exactly the given number of valid muons.
+/** Filter checking for the existance of at most the given number of valid muons.
  *  Required config tag: MaxNMuons
  */
 template<class TTypes>
@@ -58,7 +58,7 @@ public:
 };
 
 
-/** Filter checking for the existance of exactly the given number of valid taus.
+/** Filter checking for the existance of at most the given number of valid taus.
  *  Required config tag: MaxNTaus
  */
 template<class TTypes>
@@ -85,7 +85,7 @@ public:
 };
 
 
-/** Filter checking for the existance of exactly the given number of valid jets.
+/** Filter checking for the existance of at most the given number of valid jets.
  *  Required config tag: MaxNJets
  */
 template<class TTypes>
