@@ -276,4 +276,4 @@ class PlotBase(processor.Processor):
 		                                              plotData.plotdict["ratio_colors"])):
 			color, ratio_color = color_ratio_color
 			if ratio_color == None:
-				plotData.plotdict["ratio_colors"][index] = plotData.plotdict["colors"][index + 1] # TODO
+				plotData.plotdict["ratio_colors"][index] = plotData.plotdict["colors"][index] # TODO
