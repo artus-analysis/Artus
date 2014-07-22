@@ -185,5 +185,13 @@ namespace Utility {
 	
 	template<>
 	bool ApproxEqual<RMSM2x2>(RMSM2x2 value1, RMSM2x2 value2, double maxDelta);
+	
+	template<class T>
+	std::vector<T> Sorted(std::vector<T> const& vectorToSort)
+	{
+		std::vector<T> sortedVector = vectorToSort;
+		std::sort(sortedVector.begin(), sortedVector.end());
+		return sortedVector;
+	}
 }
 
