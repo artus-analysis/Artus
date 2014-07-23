@@ -62,12 +62,20 @@ public:
 		NONE  = -1,
 		MVANONTRIG = 0,
 		MVATRIG = 1,
-		USER  = 2,
+		VBTF95_VETO = 2,
+		VBTF95_LOOSE = 3,
+		VBTF95_MEDIUM = 4,
+		VBTF95_TIGHT = 5,
+		USER  = 6,
 	};
 	static ElectronID ToElectronID(std::string const& electronID)
 	{
 		if (electronID == "mvanontrig") return ElectronID::MVANONTRIG;
 		else if (electronID == "mvatrig") return ElectronID::MVATRIG;
+		else if (electronID == "vbft95_veto") return ElectronID::VBTF95_VETO;
+		else if (electronID == "vbft95_loose") return ElectronID::VBTF95_LOOSE;
+		else if (electronID == "vbft95_medium") return ElectronID::VBTF95_MEDIUM;
+		else if (electronID == "vbft95_tight") return ElectronID::VBTF95_TIGHT;
 		else if (electronID == "user") return ElectronID::USER;
 		else return ElectronID::NONE;
 	}
@@ -340,6 +348,145 @@ private:
 				)
 			);
 
+		return validElectron;
+	}
+
+	bool IsVetoVbtf95Electron(KDataElectron* electron, event_type const& event) const
+	{
+		bool validElectron = true;
+		
+		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
+		{
+			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Barrel_Cuts_eta_supercluster_1_4
+			validElectron = validElectron &&
+			                (std::abs(electron->deltaEtaSuperClusterTrackAtVtx) < 0.007) &&
+			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.8) &&
+			                (electron->sigmaIetaIeta < 0.01) &&
+			                (electron->hadronicOverEm < 0.15) &&
+			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.04) &&
+			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2);
+			                // Isolation missing
+		}
+		else
+		{
+			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
+			validElectron = validElectron &&
+			                (std::abs(electron->deltaEtaSuperClusterTrackAtVtx) < 0.01) &&
+			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.7) &&
+			                (electron->sigmaIetaIeta < 0.03) &&
+			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.04) &&
+			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2);
+			                // Isolation missing
+		}
+		
+		return validElectron;
+	}
+
+	bool IsLooseVbtf95Electron(KDataElectron* electron, event_type const& event) const
+	{
+		bool validElectron = true;
+		
+		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
+		{
+			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Barrel_Cuts_eta_supercluster_1_4
+			validElectron = validElectron &&
+			                (std::abs(electron->deltaEtaSuperClusterTrackAtVtx) < 0.007) &&
+			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.15) &&
+			                (electron->sigmaIetaIeta < 0.01) &&
+			                (electron->hadronicOverEm < 0.12) &&
+			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
+			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2) &&
+			                (electron->fbrem < 0.05);
+			                // Isolation missing
+			                // Conversion rejection missing
+		}
+		else
+		{
+			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
+			validElectron = validElectron &&
+			                (std::abs(electron->deltaEtaSuperClusterTrackAtVtx) < 0.009) &&
+			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.1) &&
+			                (electron->sigmaIetaIeta < 0.03) &&
+			                (electron->hadronicOverEm < 0.1) &&
+			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
+			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2) &&
+			                (electron->fbrem < 0.05);
+			                // Isolation missing
+			                // Conversion rejection missing
+		}
+		
+		return validElectron;
+	}
+
+	bool IsMediumVbtf95Electron(KDataElectron* electron, event_type const& event) const
+	{
+		bool validElectron = true;
+		
+		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
+		{
+			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Barrel_Cuts_eta_supercluster_1_4
+			validElectron = validElectron &&
+			                (std::abs(electron->deltaEtaSuperClusterTrackAtVtx) < 0.004) &&
+			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.06) &&
+			                (electron->sigmaIetaIeta < 0.01) &&
+			                (electron->hadronicOverEm < 0.12) &&
+			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
+			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1) &&
+			                (electron->fbrem < 0.05);
+			                // Isolation missing
+			                // Conversion rejection missing
+		}
+		else
+		{
+			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
+			validElectron = validElectron &&
+			                (std::abs(electron->deltaEtaSuperClusterTrackAtVtx) < 0.007) &&
+			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.03) &&
+			                (electron->sigmaIetaIeta < 0.03) &&
+			                (electron->hadronicOverEm < 0.1) &&
+			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
+			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1) &&
+			                (electron->fbrem < 0.05);
+			                // Isolation missing
+			                // Conversion rejection missing
+		}
+		
+		return validElectron;
+	}
+
+	bool IsTightVbtf95Electron(KDataElectron* electron, event_type const& event) const
+	{
+		bool validElectron = true;
+		
+		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
+		{
+			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Barrel_Cuts_eta_supercluster_1_4
+			validElectron = validElectron &&
+			                (std::abs(electron->deltaEtaSuperClusterTrackAtVtx) < 0.004) &&
+			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.03) &&
+			                (electron->sigmaIetaIeta < 0.01) &&
+			                (electron->hadronicOverEm < 0.12) &&
+			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
+			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1) &&
+			                (electron->fbrem < 0.05);
+			                // Isolation missing
+			                // Conversion rejection missing
+		}
+		else
+		{
+			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
+			validElectron = validElectron &&
+			                (std::abs(electron->deltaEtaSuperClusterTrackAtVtx) < 0.005) &&
+			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.02) &&
+			                (electron->sigmaIetaIeta < 0.03) &&
+			                (electron->hadronicOverEm < 0.1) &&
+			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
+			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1) &&
+			                (electron->fbrem < 0.05);
+			                // Isolation missing
+			                // Conversion rejection missing
+		}
+		
 		return validElectron;
 	}
 
