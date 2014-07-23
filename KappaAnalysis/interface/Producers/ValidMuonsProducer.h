@@ -27,7 +27,7 @@
    This Producer needs the following config tags:
    ValidMuonsInput (default: auto)
    Year (2011 and 2012 implemented)
-   MuonID (only "tight" is currently implemented)
+   MuonID (tight, (veto))
    MuonIsoType (pf and detector implemented, type user is intended to be used in derived code)
    MuonIso (tight and loose implemented)
 */
@@ -59,10 +59,12 @@ public:
 	{
 		NONE  = -1,
 		TIGHT = 0,
+		VETO = 0,
 	};
 	static MuonID ToMuonID(std::string const& muonID)
 	{
 		if (muonID == "tight") return MuonID::TIGHT;
+		else if (muonID == "veto") return MuonID::VETO;
 		else return MuonID::NONE;
 	}
 	
@@ -172,8 +174,14 @@ public:
 				else
 					LOG(FATAL) << "Tight muon ID for year " << settings.GetYear() << " not yet implemented!";
 			}
+			else if (muonID != MuonID::VETO)
+			{
+				validMuon = validMuon && IsVetoMuon(*muon, event, product);
+			}
 			else if (muonID != MuonID::NONE)
+			{
 				LOG(FATAL) << "Muon ID of type " << Utility::ToUnderlyingValue(muonID) << " not yet implemented!";
+			}
 			
 			// Muon Isolation according to Mauon POG definitions (independent of year)
 			// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Muon_Isolation
@@ -281,6 +289,21 @@ private:
 					&& std::abs(muon->bestTrack.getDz(&event.m_vertexSummary->pv)) < 0.5
 					&& muon->innerTrack.nValidPixelHits > 0
 					&& muon->track.nPixelLayers + muon->track.nStripLayers > 5;
+		
+		return validMuon;
+	}
+	
+	// https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsToTauTauWorkingSummer2013#Muon_Tau_Final_state
+	// should be move to Higgs code
+	bool IsVetoMuon(KDataMuon* muon, event_type const& event, product_type& product) const
+	{
+		bool validMuon = true;
+		
+		validMuon = validMuon
+					&& muon->isPFMuon()
+					&& muon->isGlobalMuon()
+					&& muon->isTrackerMuon()
+					&& (std::abs(muon->track.getDz(&event.m_vertexSummary->pv)) < 0.2);
 		
 		return validMuon;
 	}
