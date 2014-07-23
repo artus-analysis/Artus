@@ -201,6 +201,14 @@ public:
 				validElectron = validElectron && IsMVANonTrigElectron(*electron);
 			else if (electronID == ElectronID::MVATRIG)
 				validElectron = validElectron && IsMVATrigElectron(*electron);
+			else if (electronID == ElectronID::VBTF95_VETO)
+				validElectron = validElectron && IsVetoVbtf95Electron(*electron, event, product);
+			else if (electronID == ElectronID::VBTF95_LOOSE)
+				validElectron = validElectron && IsLooseVbtf95Electron(*electron, event, product);
+			else if (electronID == ElectronID::VBTF95_MEDIUM)
+				validElectron = validElectron && IsMediumVbtf95Electron(*electron, event, product);
+			else if (electronID == ElectronID::VBTF95_TIGHT)
+				validElectron = validElectron && IsTightVbtf95Electron(*electron, event, product);
 			else if (electronID != ElectronID::USER && electronID != ElectronID::NONE)
 				LOG(FATAL) << "Electron ID of type " << Utility::ToUnderlyingValue(electronID) << " not yet implemented!";
 
@@ -214,7 +222,9 @@ public:
 					LOG(FATAL) << "Electron isolation of type " << Utility::ToUnderlyingValue(electronIso) << " not yet implemented!";
 			}
 			else if (electronIsoType != ElectronIsoType::USER && electronIsoType != ElectronIsoType::NONE)
+			{
 				LOG(FATAL) << "Electron isolation type of type " << Utility::ToUnderlyingValue(electronIsoType) << " not yet implemented!";
+			}
 
 			// Electron reconstruction
 			if (electronReco == ElectronReco::MVANONTRIG) {
@@ -227,7 +237,9 @@ public:
 				                && ((*electron)->track.nInnerHits == 0);
 			}
 			else if (electronReco != ElectronReco::USER && electronReco != ElectronReco::NONE)
+			{
 				LOG(FATAL) << "Electron reconstruction of type " << Utility::ToUnderlyingValue(electronReco) << " not yet implemented!";
+			}
 			
 			// conversion veto per default
 			validElectron = validElectron && (! (*electron)->hasConversionMatch);
@@ -351,7 +363,7 @@ private:
 		return validElectron;
 	}
 
-	bool IsVetoVbtf95Electron(KDataElectron* electron, event_type const& event) const
+	bool IsVetoVbtf95Electron(KDataElectron* electron, event_type const& event, product_type& product) const
 	{
 		bool validElectron = true;
 		
@@ -382,7 +394,7 @@ private:
 		return validElectron;
 	}
 
-	bool IsLooseVbtf95Electron(KDataElectron* electron, event_type const& event) const
+	bool IsLooseVbtf95Electron(KDataElectron* electron, event_type const& event, product_type& product) const
 	{
 		bool validElectron = true;
 		
@@ -418,7 +430,7 @@ private:
 		return validElectron;
 	}
 
-	bool IsMediumVbtf95Electron(KDataElectron* electron, event_type const& event) const
+	bool IsMediumVbtf95Electron(KDataElectron* electron, event_type const& event, product_type& product) const
 	{
 		bool validElectron = true;
 		
@@ -454,7 +466,7 @@ private:
 		return validElectron;
 	}
 
-	bool IsTightVbtf95Electron(KDataElectron* electron, event_type const& event) const
+	bool IsTightVbtf95Electron(KDataElectron* electron, event_type const& event, product_type& product) const
 	{
 		bool validElectron = true;
 		
