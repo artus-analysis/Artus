@@ -18,7 +18,11 @@ public:
 
     static const int pdgIdPiZero;
     static const int pdgIdPiPlus;
+    static const int pdgIdRhoPlus770;
+    static const int pdgIdEta;
+
     static const int pdgIdKPlus;
+    static const int pdgIdKStar;
     static const int pdgIdKLong;
     static const int pdgIdKShort;
 
@@ -28,4 +32,6 @@ public:
     static const int pdgIdNuMu;
     static const int pdgIdTau;
     static const int pdgIdNuTau;
+
+    static const int pdgIdAOnePlus1260;
 };

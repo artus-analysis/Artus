@@ -3,6 +3,8 @@
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "KappaTools/RootTools/HLTTools.h"
+
+#include "Artus/Utility/interface/DefaultValues.h"
 /**
    \brief Extended class for genParticles in HiggsAnalysis
    This class implements additional quantities: charge, parent of the particle, and final states in the decay 
@@ -83,8 +85,54 @@ public:
 private:
 	int charge = 5;
 	bool detectable = false;
-	std::vector<int> positiveChargedParticlePdgIds = {-11, -13, -15, 24, 211, 213, 321, 323, 20213};
-	std::vector<int> negativeChargedParticlePdgIds = {11, 13, 15, -24, -211, -213, -321, -323, -20213};
-	std::vector<int> notChargedParticlePdgIds = {12, -12, 14, -14, 16, -16, 22, 111, 130, 221, 310};
-	std::vector<int> detectableParticlePdgIds = {22, 211, -211, 11, -11, 13, -13, 15, -15};
+	std::vector<int> positiveChargedParticlePdgIds = 
+		{
+			-DefaultValues::pdgIdElectron,
+			-DefaultValues::pdgIdMuon,
+			-DefaultValues::pdgIdTau, 
+			DefaultValues::pdgIdW, 
+			DefaultValues::pdgIdPiPlus,
+			DefaultValues::pdgIdRhoPlus770, 
+			DefaultValues::pdgIdKPlus, 
+			DefaultValues::pdgIdKStar, 
+			DefaultValues::pdgIdAOnePlus1260
+		};
+	std::vector<int> negativeChargedParticlePdgIds =
+		{
+			DefaultValues::pdgIdElectron,
+			DefaultValues::pdgIdMuon,
+			DefaultValues::pdgIdTau, 
+			-DefaultValues::pdgIdW, 
+			-DefaultValues::pdgIdPiPlus,
+			-DefaultValues::pdgIdRhoPlus770,
+			-DefaultValues::pdgIdKPlus, 
+			-DefaultValues::pdgIdKStar, 
+			-DefaultValues::pdgIdAOnePlus1260
+		};
+	std::vector<int> notChargedParticlePdgIds =
+		{
+			DefaultValues::pdgIdNuE,
+			-DefaultValues::pdgIdNuE,
+			DefaultValues::pdgIdNuMu,
+			-DefaultValues::pdgIdNuMu,
+			DefaultValues::pdgIdNuTau,
+			-DefaultValues::pdgIdNuTau,
+			DefaultValues::pdgIdGamma,
+			DefaultValues::pdgIdPiZero, 
+			DefaultValues::pdgIdKLong, 
+			DefaultValues::pdgIdEta,
+			DefaultValues::pdgIdKShort
+		};
+	std::vector<int> detectableParticlePdgIds = 
+		{
+			DefaultValues::pdgIdGamma,
+			DefaultValues::pdgIdPiPlus,
+			-DefaultValues::pdgIdPiPlus,
+			DefaultValues::pdgIdElectron,
+			-DefaultValues::pdgIdElectron,
+			DefaultValues::pdgIdMuon,
+			-DefaultValues::pdgIdMuon,
+			DefaultValues::pdgIdTau,
+			-DefaultValues::pdgIdTau
+		};
 };
