@@ -60,7 +60,7 @@ def plot_2d(plotdict):
 
 	for plot, label, ax in zip(plotdict['mplhistos'], plotdict['labels'], grid):
 		ax.set_title(label)
-		cmap1 = matplotlib.cm.get_cmap('jet')  # Blues
+		cmap1 = matplotlib.cm.get_cmap('afmhot')  # Blues
 		ctext = 'white'
 		if plotdict['fit'] and "profile" in plotdict['fit']:
 			cmap1 = matplotlib.cm.get_cmap('Blues')  # Blues
