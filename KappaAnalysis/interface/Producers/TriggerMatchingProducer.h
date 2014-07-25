@@ -11,11 +11,11 @@
 /**
    \brief Trigger matching producer
    
-   This producer looks for the vectors of electrons, muons, taus and (tagged) jets in the event
-   and checks whether the the four momentum vector lies inside a cone around trigger objects.
-   If so, the reconstructed object is added to a list product.m_triggerMatched*
+   This producer looks for the vectors of valid electrons, muons, taus and (tagged) jets in the event
+   and checks whether the four momentum vector lies inside a cone around the trigger objects.
+   If so, the valid object is added to a list product.m_triggerMatched*
    
-   This producer needs to run after the HltProducer/HltFilter.
+   This producer needs to run after the HltProducer/HltFilter and the Valid*Producer/Valid*Filter
    
    Required config tags
 	- DeltaRTriggerMatchingElectron (default given)
@@ -95,30 +95,30 @@ public:
 			{
 				KDataLV triggerObject = event.m_triggerObjects->trgObjects.at(*hltIndex);
 			
-				if (event.m_electrons && settings.GetDeltaRTriggerMatchingElectron() > 0.0)
+				if (product.m_validElectrons.size() != 0 && settings.GetDeltaRTriggerMatchingElectron() > 0.0)
 				{
-					product.m_triggerMatchedElectrons = MatchRecoObjects(event.m_electrons, triggerObject, settings.GetDeltaRTriggerMatchingElectron());
+					product.m_triggerMatchedElectrons = MatchValidObjects(product.m_validElectrons, triggerObject, settings.GetDeltaRTriggerMatchingElectron());
 				}
 			
-				if (event.m_muons && settings.GetDeltaRTriggerMatchingMuon() > 0.0)
+				if (product.m_validMuons.size() != 0 && settings.GetDeltaRTriggerMatchingMuon() > 0.0)
 				{
-					product.m_triggerMatchedMuons = MatchRecoObjects(event.m_muons, triggerObject, settings.GetDeltaRTriggerMatchingMuon());
+					product.m_triggerMatchedMuons = MatchValidObjects(product.m_validMuons, triggerObject, settings.GetDeltaRTriggerMatchingMuon());
 				}
 			
-				if (event.m_taus && settings.GetDeltaRTriggerMatchingTau() > 0.0)
+				if (product.m_validTaus.size() != 0 && settings.GetDeltaRTriggerMatchingTau() > 0.0)
 				{
-					product.m_triggerMatchedTaus = MatchRecoObjects(event.m_taus, triggerObject, settings.GetDeltaRTriggerMatchingTau());
+					product.m_triggerMatchedTaus = MatchValidObjects(product.m_validTaus, triggerObject, settings.GetDeltaRTriggerMatchingTau());
 				}
 			
 				if (settings.GetDeltaRTriggerMatchingJet() > 0.0)
 				{
-					if (event.m_jets)
+					if (product.m_validJets.size() != 0)
 					{
-						product.m_triggerMatchedJets = MatchRecoObjects(event.m_jets, triggerObject, settings.GetDeltaRTriggerMatchingJet());
+						product.m_triggerMatchedJets = MatchValidObjects(product.m_validJets, triggerObject, settings.GetDeltaRTriggerMatchingJet());
 					}
-					if (event.m_tjets)
+					if (product.m_bTaggedJets.size() != 0)
 					{
-						product.m_triggerMatchedTaggedJets = MatchRecoObjects(event.m_tjets, triggerObject, settings.GetDeltaRTriggerMatchingJet());
+						product.m_triggerMatchedTaggedJets = MatchValidObjects(product.m_bTaggedJets, triggerObject, settings.GetDeltaRTriggerMatchingJet());
 					}
 				}
 			}
@@ -128,21 +128,21 @@ public:
 
 private:
 	
-	template<class TRecoObject>
-	std::vector<TRecoObject*> MatchRecoObjects(std::vector<TRecoObject>* recoObjects, KDataLV const& triggerObject, float deltaRThreshold) const
+	template<class TValidObject>
+	std::vector<TValidObject*> MatchValidObjects(std::vector<TValidObject*> validObjects, KDataLV const& triggerObject, float deltaRThreshold) const
 	{
-		std::vector<TRecoObject*> matchedRecoObjects;
-		
-		for (typename std::vector<TRecoObject>::iterator recoObject = recoObjects->begin();
-			 recoObject != recoObjects->end(); recoObject++)
+		std::vector<TValidObject*> matchedValidObjects;
+
+		for (typename std::vector<TValidObject*>::iterator validObject = validObjects.begin();
+			 validObject != validObjects.end(); validObject++)
 		{
-			if (ROOT::Math::VectorUtil::DeltaR(triggerObject.p4, recoObject->p4) < deltaRThreshold)
+			if (ROOT::Math::VectorUtil::DeltaR(triggerObject.p4, (*validObject)->p4) < deltaRThreshold)
 			{
-				matchedRecoObjects.push_back(&(*recoObject));
+				matchedValidObjects.push_back(*validObject);
 			}
 		}
 		
-		return matchedRecoObjects;
+		return matchedValidObjects;
 	}
 };
 
