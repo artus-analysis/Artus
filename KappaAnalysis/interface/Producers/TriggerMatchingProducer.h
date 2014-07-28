@@ -135,12 +135,11 @@ private:
 	                       event_type const& event, product_type& product,
 	                       std::map<TValidObject*, size_t>& matchedValidObjects) const
 	{
-		KDataLV triggerObject = TriggerMatchingProducer<TTypes>::GetTriggerObject(event, product, hltIndex);
-
 		for (typename std::vector<TValidObject*>::iterator validObject = validObjects.begin();
 			 validObject != validObjects.end(); validObject++)
 		{
-			if (ROOT::Math::VectorUtil::DeltaR(triggerObject.p4, (*validObject)->p4) < deltaRThreshold)
+			if (ROOT::Math::VectorUtil::DeltaR(TriggerMatchingProducer<TTypes>::GetTriggerObject(event, product, hltIndex).p4,
+			                                   (*validObject)->p4) < deltaRThreshold)
 			{
 				matchedValidObjects[*validObject] = hltIndex;
 			}

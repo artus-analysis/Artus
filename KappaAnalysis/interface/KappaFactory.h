@@ -31,6 +31,7 @@
 #include "Artus/KappaAnalysis/interface/Filters/MaxObjectsCountFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsLowerPtCutFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsUpperAbsEtaCutFilters.h"
+#include "Artus/KappaAnalysis/interface/Filters/TriggerMatchingFilters.h"
 
 // consumer
 #include "Artus/KappaAnalysis/interface/Consumers/KappaCutFlowHistogramConsumer.h"
@@ -138,6 +139,14 @@ public:
 			return new TauUpperAbsEtaCutsFilter<TTypes>();
 		else if(id == JetUpperAbsEtaCutsFilter<TTypes>().GetFilterId())
 			return new JetUpperAbsEtaCutsFilter<TTypes>();
+		else if(id == ElectronTriggerMatchingFilter<TTypes>().GetFilterId())
+			return new ElectronTriggerMatchingFilter<TTypes>();
+		else if(id == MuonTriggerMatchingFilter<TTypes>().GetFilterId())
+			return new MuonTriggerMatchingFilter<TTypes>();
+		else if(id == TauTriggerMatchingFilter<TTypes>().GetFilterId())
+			return new TauTriggerMatchingFilter<TTypes>();
+		else if(id == JetTriggerMatchingFilter<TTypes>().GetFilterId())
+			return new JetTriggerMatchingFilter<TTypes>();
 		else
 			return FactoryBase<TTypes>::createFilter( id );
 	}

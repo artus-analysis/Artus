@@ -134,6 +134,11 @@ public:
 	IMPL_SETTING(int, MaxNTaus);
 	IMPL_SETTING(int, MaxNJets);
 	
+	IMPL_SETTING_DEFAULT(size_t, MinNMatchedElectrons, 0);
+	IMPL_SETTING_DEFAULT(size_t, MinNMatchedMuons, 0);
+	IMPL_SETTING_DEFAULT(size_t, MinNMatchedTaus, 0);
+	IMPL_SETTING_DEFAULT(size_t, MinNMatchedJets, 0);
+	
 	IMPL_SETTING_STRINGLIST(ElectronLowerPtCuts);
 	IMPL_SETTING_STRINGLIST(MuonLowerPtCuts);
 	IMPL_SETTING_STRINGLIST(TauLowerPtCuts);
