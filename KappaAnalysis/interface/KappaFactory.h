@@ -17,7 +17,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/ValidTausProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidJetsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidBTaggedJetsProducer.h"
-#include "Artus/KappaAnalysis/interface/Producers/TriggerMatchingProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/TriggerMatchingProducers.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidLeptonsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/PUWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/EventWeightProducer.h"
@@ -57,8 +57,6 @@ public:
 	  		return new GenParticleProducer<TTypes>();
 		else if(id == HltProducer<TTypes>().GetProducerId())
 			return new HltProducer<TTypes>();
-		else if(id == TriggerMatchingProducer<TTypes>().GetProducerId())
-			return new TriggerMatchingProducer<TTypes>();
 		else if(id == ElectronCorrectionsProducer<TTypes>().GetProducerId())
 			return new ElectronCorrectionsProducer<TTypes>();
 		else if(id == MuonCorrectionsProducer<TTypes>().GetProducerId())
@@ -81,6 +79,14 @@ public:
 			return new ValidTaggedJetsProducer<TTypes>();
 		else if(id == ValidBTaggedJetsProducer<TTypes>().GetProducerId())
 			return new ValidBTaggedJetsProducer<TTypes>();
+		else if(id == ElectronTriggerMatchingProducer<TTypes>().GetProducerId())
+			return new ElectronTriggerMatchingProducer<TTypes>();
+		else if(id == MuonTriggerMatchingProducer<TTypes>().GetProducerId())
+			return new MuonTriggerMatchingProducer<TTypes>();
+		else if(id == TauTriggerMatchingProducer<TTypes>().GetProducerId())
+			return new TauTriggerMatchingProducer<TTypes>();
+		else if(id == JetTriggerMatchingProducer<TTypes>().GetProducerId())
+			return new JetTriggerMatchingProducer<TTypes>();
 		else if(id == ValidLeptonsProducer<TTypes>().GetProducerId())
 			return new ValidLeptonsProducer<TTypes>();
 		else if(id == PUWeightProducer<TTypes>().GetProducerId())

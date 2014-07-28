@@ -92,10 +92,15 @@ public:
 	IMPL_SETTING_STRINGLIST(HltPaths);
 	IMPL_SETTING_DEFAULT(bool, AllowPrescaledTrigger, true);
 	
-	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingElectron, 0.5);
-	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingMuon, 0.5);
-	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingTau, 0.5);
-	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingJet, 0.5);
+	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingElectrons, 0.5);
+	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingMuons, 0.5);
+	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingTaus, 0.5);
+	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingJets, 0.5);
+	
+	IMPL_SETTING_DEFAULT(bool, InvalidateNonMatchingElectrons, true);
+	IMPL_SETTING_DEFAULT(bool, InvalidateNonMatchingMuons, true);
+	IMPL_SETTING_DEFAULT(bool, InvalidateNonMatchingTaus, true);
+	IMPL_SETTING_DEFAULT(bool, InvalidateNonMatchingJets, true);
 	
 	IMPL_SETTING(int, Year);
 	
