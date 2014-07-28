@@ -74,11 +74,11 @@ public:
 	int m_selectedHltPosition;
 
 	/// added by TriggerMatchingProducer
-	std::vector<KDataElectron*> m_triggerMatchedElectrons;
-	std::vector<KDataMuon*> m_triggerMatchedMuons;
-	std::vector<KDataPFTau*> m_triggerMatchedTaus;
-	std::vector<KDataPFJet*> m_triggerMatchedJets;
-	std::vector<KDataPFTaggedJet*> m_triggerMatchedTaggedJets;
+	std::map<KDataElectron*, size_t> m_triggerMatchedElectrons;
+	std::map<KDataMuon*, size_t> m_triggerMatchedMuons;
+	std::map<KDataPFTau*, size_t> m_triggerMatchedTaus;
+	std::map<KDataPFJet*, size_t> m_triggerMatchedJets;
+	std::map<KDataPFTaggedJet*, size_t> m_triggerMatchedTaggedJets;
 	
 	// MVA outputs
 	std::vector<double> m_discriminators;

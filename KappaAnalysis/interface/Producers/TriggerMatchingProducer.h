@@ -78,6 +78,11 @@ public:
 		
 		return false;
 	}
+	
+	static KDataLV GetTriggerObject(event_type const& event, product_type const& product, size_t const& hltIndex)
+	{
+		return event.m_triggerObjects->trgObjects.at(hltIndex);
+	}
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "trigger_matching";
@@ -90,36 +95,33 @@ public:
 		
 		if (! product.m_selectedHltName.empty())
 		{
+			//LOG(INFO) << product.m_selectedHltName << ", " << event.m_triggerObjects->toIdxHLT.at(product.m_selectedHltPosition).size();
 			for (std::vector<size_t>::iterator hltIndex = event.m_triggerObjects->toIdxHLT.at(product.m_selectedHltPosition).begin();
 				 hltIndex != event.m_triggerObjects->toIdxHLT.at(product.m_selectedHltPosition).end(); ++hltIndex)
 			{
-				KDataLV triggerObject = event.m_triggerObjects->trgObjects.at(*hltIndex);
 			
 				if (product.m_validElectrons.size() != 0 && settings.GetDeltaRTriggerMatchingElectron() > 0.0)
 				{
-					product.m_triggerMatchedElectrons = MatchValidObjects(product.m_validElectrons, triggerObject, settings.GetDeltaRTriggerMatchingElectron());
+					MatchValidObjects(product.m_validElectrons, *hltIndex, settings.GetDeltaRTriggerMatchingElectron(),
+					                  event, product, product.m_triggerMatchedElectrons);
 				}
 			
 				if (product.m_validMuons.size() != 0 && settings.GetDeltaRTriggerMatchingMuon() > 0.0)
 				{
-					product.m_triggerMatchedMuons = MatchValidObjects(product.m_validMuons, triggerObject, settings.GetDeltaRTriggerMatchingMuon());
+					 MatchValidObjects(product.m_validMuons, *hltIndex, settings.GetDeltaRTriggerMatchingMuon(),
+					                   event, product, product.m_triggerMatchedMuons);
 				}
 			
 				if (product.m_validTaus.size() != 0 && settings.GetDeltaRTriggerMatchingTau() > 0.0)
 				{
-					product.m_triggerMatchedTaus = MatchValidObjects(product.m_validTaus, triggerObject, settings.GetDeltaRTriggerMatchingTau());
+					MatchValidObjects(product.m_validTaus, *hltIndex, settings.GetDeltaRTriggerMatchingTau(),
+					                  event, product, product.m_triggerMatchedTaus);
 				}
 			
 				if (settings.GetDeltaRTriggerMatchingJet() > 0.0)
 				{
-					if (product.m_validJets.size() != 0)
-					{
-						product.m_triggerMatchedJets = MatchValidObjects(product.m_validJets, triggerObject, settings.GetDeltaRTriggerMatchingJet());
-					}
-					if (product.m_bTaggedJets.size() != 0)
-					{
-						product.m_triggerMatchedTaggedJets = MatchValidObjects(product.m_bTaggedJets, triggerObject, settings.GetDeltaRTriggerMatchingJet());
-					}
+					MatchValidObjects(product.m_validJets, *hltIndex, settings.GetDeltaRTriggerMatchingJet(),
+					                  event, product, product.m_triggerMatchedJets);
 				}
 			}
 		}
@@ -129,20 +131,20 @@ public:
 private:
 	
 	template<class TValidObject>
-	std::vector<TValidObject*> MatchValidObjects(std::vector<TValidObject*> validObjects, KDataLV const& triggerObject, float deltaRThreshold) const
+	void MatchValidObjects(std::vector<TValidObject*> validObjects, size_t hltIndex, float deltaRThreshold,
+	                       event_type const& event, product_type& product,
+	                       std::map<TValidObject*, size_t>& matchedValidObjects) const
 	{
-		std::vector<TValidObject*> matchedValidObjects;
+		KDataLV triggerObject = TriggerMatchingProducer<TTypes>::GetTriggerObject(event, product, hltIndex);
 
 		for (typename std::vector<TValidObject*>::iterator validObject = validObjects.begin();
 			 validObject != validObjects.end(); validObject++)
 		{
 			if (ROOT::Math::VectorUtil::DeltaR(triggerObject.p4, (*validObject)->p4) < deltaRThreshold)
 			{
-				matchedValidObjects.push_back(*validObject);
+				matchedValidObjects[*validObject] = hltIndex;
 			}
 		}
-		
-		return matchedValidObjects;
 	}
 };
 

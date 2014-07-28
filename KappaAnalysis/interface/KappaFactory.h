@@ -6,7 +6,6 @@
 
 // producer
 #include "Artus/KappaAnalysis/interface/Producers/HltProducer.h"
-#include "Artus/KappaAnalysis/interface/Producers/TriggerMatchingProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenTauDecayProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenParticleProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ElectronCorrectionsProducer.h"
@@ -18,6 +17,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/ValidTausProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidJetsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidBTaggedJetsProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/TriggerMatchingProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/PUWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/EventWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/TmvaClassificationReaderBase.h"
