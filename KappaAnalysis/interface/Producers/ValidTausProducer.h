@@ -137,22 +137,12 @@ public:
 			if (validTau)
 			{
 				product.m_validTaus.push_back(*tau);
-				product.m_validLeptons.push_back(*tau);
 			}
 			else
 			{
 				product.m_invalidTaus.push_back(*tau);
-				product.m_invalidLeptons.push_back(*tau);
 			}
 		}
-		
-		// sort vectors of leptons by pt
-		std::sort(product.m_validLeptons.begin(), product.m_validLeptons.end(),
-		          [](KLepton const* lepton1, KLepton const* lepton2) -> bool
-		          { return lepton1->p4.Pt() > lepton2->p4.Pt(); });
-		std::sort(product.m_invalidLeptons.begin(), product.m_invalidLeptons.end(),
-		          [](KLepton const* lepton1, KLepton const* lepton2) -> bool
-		          { return lepton1->p4.Pt() > lepton2->p4.Pt(); });
 	}
 
 

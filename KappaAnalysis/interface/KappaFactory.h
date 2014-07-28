@@ -18,6 +18,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/ValidJetsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidBTaggedJetsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/TriggerMatchingProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/ValidLeptonsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/PUWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/EventWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/TmvaClassificationReaderBase.h"
@@ -80,6 +81,8 @@ public:
 			return new ValidTaggedJetsProducer<TTypes>();
 		else if(id == ValidBTaggedJetsProducer<TTypes>().GetProducerId())
 			return new ValidBTaggedJetsProducer<TTypes>();
+		else if(id == ValidLeptonsProducer<TTypes>().GetProducerId())
+			return new ValidLeptonsProducer<TTypes>();
 		else if(id == PUWeightProducer<TTypes>().GetProducerId())
 			return new PUWeightProducer<TTypes>();
 		else if(id == EventWeightProducer<TTypes>().GetProducerId())

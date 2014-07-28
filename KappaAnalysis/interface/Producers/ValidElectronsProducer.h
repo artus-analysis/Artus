@@ -253,22 +253,12 @@ public:
 			if (validElectron)
 			{
 				(product.*m_validElectronsMember).push_back(*electron);
-				product.m_validLeptons.push_back(*electron);
 			}
 			else
 			{
 				(product.*m_invalidElectronsMember).push_back(*electron);
-				product.m_invalidLeptons.push_back(*electron);
 			}
 		}
-		
-		// sort vectors of leptons by pt
-		std::sort(product.m_validLeptons.begin(), product.m_validLeptons.end(),
-		          [](KLepton const* lepton1, KLepton const* lepton2) -> bool
-		          { return lepton1->p4.Pt() > lepton2->p4.Pt(); });
-		std::sort(product.m_invalidLeptons.begin(), product.m_invalidLeptons.end(),
-		          [](KLepton const* lepton1, KLepton const* lepton2) -> bool
-		          { return lepton1->p4.Pt() > lepton2->p4.Pt(); });
 	}
 
 
