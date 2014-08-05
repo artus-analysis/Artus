@@ -58,6 +58,10 @@ public:
 
 	/// pointer to generator particles
 	KDataGenTaus* m_genTaus = 0;
+	
+	/// pointer to trigger infos and objects
+	KTriggerInfos* m_triggerInfos = 0;
+	KTriggerObjects* m_triggerObjects = 0;
 
 	/// pointer to metadata // TODO: move to Artus/Provider
 	KLumiMetadata* m_lumiMetadata = 0;
@@ -67,7 +71,6 @@ public:
 	KFilterMetadata* m_filterMetadata = 0;
 	KFilterSummary* m_filterSummary = 0;
 	KTaggerMetadata* m_taggerMetadata = 0;
-	KTriggerObjects* m_triggerObjects = 0;
 };
 
 

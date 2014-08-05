@@ -52,6 +52,10 @@ public:
 
 	/// name of vertexSummary collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, VertexSummary, "");
+	
+	/// name of trigger infos and objects collection in kappa tuple
+	IMPL_SETTING_DEFAULT(std::string, TriggerInfos, "");
+	IMPL_SETTING_DEFAULT(std::string, TriggerObjects, "");
 
 	/// name of genParticle collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, GenParticles, "");
@@ -76,7 +80,6 @@ public:
 
 	/// name of TaggerMetaData in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, TaggerMetadata, ""); // TODO: Default value, move to Artus/Provider
-	IMPL_SETTING_DEFAULT(std::string, TriggerObjects, "");
 	
 	IMPL_SETTING_STRINGLIST(JsonFiles);
 	IMPL_SETTING_DEFAULT(int, PassRunLow, 1);

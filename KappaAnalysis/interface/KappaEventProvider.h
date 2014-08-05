@@ -68,6 +68,12 @@ public:
 		if(! settings.GetPFPhotonsNoPileUp().empty())
 			this->m_event.m_pfPhotonsNoPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(settings.GetPFPhotonsNoPileUp());
 		
+		// triggers
+		if(! settings.GetTriggerInfos().empty())
+			this->m_event.m_triggerInfos = this->template SecureFileInterfaceGetMeta<KTriggerInfos>(settings.GetTriggerInfos());
+		if(! settings.GetTriggerObjects().empty())
+			this->m_event.m_triggerObjects = this->template SecureFileInterfaceGet<KTriggerObjects>(settings.GetTriggerObjects());
+		
 		// Generator info
 		if(! settings.GetGenParticles().empty())
 			this->m_event.m_genParticles = this->template SecureFileInterfaceGet<KGenParticles>(settings.GetGenParticles());
@@ -93,8 +99,6 @@ public:
 			this->m_event.m_filterSummary = this->template SecureFileInterfaceGetMeta<KFilterSummary>(settings.GetFilterSummary()); // TODO: Check
 		if(! settings.GetTaggerMetadata().empty())
 			this->m_event.m_taggerMetadata = this->template SecureFileInterfaceGetMeta<KTaggerMetadata>(settings.GetTaggerMetadata());
-		if(! settings.GetTriggerObjects().empty())
-			this->m_event.m_triggerObjects = this->template SecureFileInterfaceGet<KTriggerObjects>(settings.GetTriggerObjects(), false);
 
 	}
 
