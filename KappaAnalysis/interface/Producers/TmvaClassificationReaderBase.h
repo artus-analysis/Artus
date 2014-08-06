@@ -125,9 +125,9 @@ public:
 	}
 	
 	GeneralTmvaClassificationReader() :
-		TmvaClassificationReaderBase<TTypes>(&setting_type::GetAntiTtbarTmvaInputQuantities,
-		                                     &setting_type::GetAntiTtbarTmvaMethods,
-		                                     &setting_type::GetAntiTtbarTmvaWeights,
+		TmvaClassificationReaderBase<TTypes>(&setting_type::GetTmvaInputQuantities,
+		                                     &setting_type::GetTmvaMethods,
+		                                     &setting_type::GetTmvaWeights,
 		                                     &product_type::m_discriminators)
 	{
 	}
