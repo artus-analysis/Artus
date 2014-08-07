@@ -70,9 +70,9 @@ public:
 		
 		// triggers
 		if(! settings.GetTriggerInfos().empty())
-			this->m_event.m_triggerInfos = this->template SecureFileInterfaceGetMeta<KTriggerInfos>(settings.GetTriggerInfos());
+			this->m_event.m_triggerInfos = this->template SecureFileInterfaceGetMeta<KTriggerInfos>(settings.GetTriggerInfos(), false);
 		if(! settings.GetTriggerObjects().empty())
-			this->m_event.m_triggerObjects = this->template SecureFileInterfaceGet<KTriggerObjects>(settings.GetTriggerObjects());
+			this->m_event.m_triggerObjects = this->template SecureFileInterfaceGet<KTriggerObjects>(settings.GetTriggerObjects(), false);
 		
 		// Generator info
 		if(! settings.GetGenParticles().empty())

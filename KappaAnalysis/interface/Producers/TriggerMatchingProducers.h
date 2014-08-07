@@ -20,12 +20,7 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 	
-	static KDataLV GetTriggerObject(event_type const& event, product_type const& product, size_t const& hltIndex)
-	{
-		return event.m_triggerObjects->trgObjects.at(hltIndex);
-	}
-	
-	TriggerMatchingProducerBase(std::map<TValidObject*, size_t> product_type::*triggerMatchedObjects,
+	TriggerMatchingProducerBase(std::map<TValidObject*, KDataLV*> product_type::*triggerMatchedObjects,
 	                            std::vector<TValidObject*> product_type::*validObjects,
 	                            std::vector<TValidObject*> product_type::*invalidObjects,
 	                            float (setting_type::*GetDeltaRTriggerMatchingObjects)(void) const,
@@ -45,23 +40,46 @@ public:
 		
 		if ((! product.m_selectedHltName.empty()) && ((settings.*GetDeltaRTriggerMatchingObjects)() > 0.0))
 		{
+			/*
+			// TODO: remove debug output
+			LOG(INFO) << product.m_selectedHltName << " (" << product.m_selectedHltPosition << ")";
+			for (size_t filterIndex = event.m_triggerInfos->getMinFilterIndex(product.m_selectedHltPosition);
+			     filterIndex <= event.m_triggerInfos->getMaxFilterIndex(product.m_selectedHltPosition); ++filterIndex)
+			{
+				LOG(INFO) << "\t" << event.m_triggerInfos->toFilter[filterIndex] << " (" << filterIndex << ")";
+				for (std::vector<int>::const_iterator triggerObjectIndex = event.m_triggerObjects->toIdxFilter[filterIndex].begin();
+				     triggerObjectIndex != event.m_triggerObjects->toIdxFilter[filterIndex].end();
+				     ++triggerObjectIndex)
+				{
+					LOG(INFO) << "\t\tpt = " << event.m_triggerObjects->trgObjects[*triggerObjectIndex].p4.Pt();
+				}
+			}
+			
 			// loop over all valid objects to check
 			for (typename std::vector<TValidObject*>::iterator validObject = (product.*m_validObjects).begin();
 			     validObject != (product.*m_validObjects).end();)
 			{
-				//LOG(INFO) << product.m_selectedHltName << ", " << event.m_triggerObjects->toIdxHLT.at(product.m_selectedHltPosition).size();
 				
 				// loop over all trigger objects found in the trigger selected for this event
 				bool matched = false;
-				for (std::vector<size_t>::iterator hltIndex = event.m_triggerObjects->toIdxHLT.at(product.m_selectedHltPosition).begin();
-				     (! matched) && (hltIndex != event.m_triggerObjects->toIdxHLT.at(product.m_selectedHltPosition).end()); ++hltIndex)
+				
+				// loop over all filters // TODO: Choose a filter based on a given regexp
+				for (size_t filterIndex = event.m_triggerInfos->getMinFilterIndex(product.m_selectedHltPosition);
+				     (! matched) && (filterIndex <= event.m_triggerInfos->getMaxFilterIndex(product.m_selectedHltPosition));
+				     ++filterIndex)
 				{
-					// check matching
-					if (ROOT::Math::VectorUtil::DeltaR(TriggerMatchingProducerBase<TTypes, TValidObject>::GetTriggerObject(event, product, *hltIndex).p4,
-					                                   (*validObject)->p4) < (settings.*GetDeltaRTriggerMatchingObjects)())
+					// loop over all trigger objects for this filter
+					for (std::vector<int>::const_iterator triggerObjectIndex = event.m_triggerObjects->toIdxFilter[filterIndex].begin();
+					     (! matched) && (triggerObjectIndex != event.m_triggerObjects->toIdxFilter[filterIndex].end());
+					     ++triggerObjectIndex)
 					{
-						(product.*m_triggerMatchedObjects)[*validObject] = *hltIndex;
-						matched = true;
+						// check matching
+						if (ROOT::Math::VectorUtil::DeltaR(event.m_triggerObjects->trgObjects[*triggerObjectIndex].p4,
+						                                   (*validObject)->p4) < (settings.*GetDeltaRTriggerMatchingObjects)())
+						{
+							(product.*m_triggerMatchedObjects)[*validObject] = &(event.m_triggerObjects->trgObjects[*triggerObjectIndex]);
+							matched = true;
+						}
 					}
 				}
 				
@@ -76,6 +94,7 @@ public:
 					++validObject;
 				}
 			}
+			*/
 			
 			// preserve sorting of invalid objects
 			if ((settings.*GetInvalidateNonMatchingObjects)())
@@ -89,7 +108,7 @@ public:
 
 
 private:
-	std::map<TValidObject*, size_t> product_type::*m_triggerMatchedObjects;
+	std::map<TValidObject*, KDataLV*> product_type::*m_triggerMatchedObjects;
 	std::vector<TValidObject*> product_type::*m_validObjects;
 	std::vector<TValidObject*> product_type::*m_invalidObjects;
 	float (setting_type::*GetDeltaRTriggerMatchingObjects)(void) const;

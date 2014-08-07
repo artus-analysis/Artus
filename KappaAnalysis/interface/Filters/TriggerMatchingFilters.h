@@ -20,7 +20,7 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 	
-	TriggerMatchingFilterBase(std::map<TValidObject*, size_t> product_type::*triggerMatchedObjects,
+	TriggerMatchingFilterBase(std::map<TValidObject*, KDataLV*> product_type::*triggerMatchedObjects,
 	                          std::vector<TValidObject*> product_type::*validObjects,
 	                          size_t (setting_type::*GetMinNMatchedObjects)(void) const) :
 		m_triggerMatchedObjects(triggerMatchedObjects),
@@ -45,7 +45,7 @@ public:
 
 
 private:
-	std::map<TValidObject*, size_t> product_type::*m_triggerMatchedObjects;
+	std::map<TValidObject*, KDataLV*> product_type::*m_triggerMatchedObjects;
 	std::vector<TValidObject*> product_type::*m_validObjects;
 	size_t (setting_type::*GetMinNMatchedObjects)(void) const;
 
