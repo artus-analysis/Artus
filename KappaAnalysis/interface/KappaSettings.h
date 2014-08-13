@@ -95,6 +95,11 @@ public:
 	IMPL_SETTING_STRINGLIST(HltPaths);
 	IMPL_SETTING_DEFAULT(bool, AllowPrescaledTrigger, true);
 	
+	IMPL_SETTING_STRINGLIST(ElectronTriggerFilterNames);
+	IMPL_SETTING_STRINGLIST(MuonTriggerFilterNames);
+	IMPL_SETTING_STRINGLIST(TauTriggerFilterNames);
+	IMPL_SETTING_STRINGLIST(JetTriggerFilterNames);
+	
 	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingElectrons, 0.5);
 	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingMuons, 0.5);
 	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingTaus, 0.5);
