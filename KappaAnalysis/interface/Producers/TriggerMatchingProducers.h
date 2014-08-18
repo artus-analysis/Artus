@@ -38,7 +38,7 @@ public:
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
 		ProducerBase<TTypes>::Init(settings);
 		
-		objectTriggerFiltersByIndex = Utility::ParseMapTypes<size_t, std::string>(Utility::ParseVectorToMap((settings.*GetObjectTriggerFilterNames)()), objectTriggerFiltersByHltName);
+		m_objectTriggerFiltersByIndex = Utility::ParseMapTypes<size_t, std::string>(Utility::ParseVectorToMap((settings.*GetObjectTriggerFilterNames)()), m_objectTriggerFiltersByHltName);
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
@@ -79,25 +79,30 @@ public:
 					bool filterMatched = false;
 
 					// loop over the hlt names given in the config file
-					for (std::map<std::string, std::vector<std::string>>::const_iterator objectTriggerFilterByHltName = objectTriggerFiltersByHltName.begin();
-					(!hltMatched) &&
-					(objectTriggerFilterByHltName != objectTriggerFiltersByHltName.end()); ++objectTriggerFilterByHltName)
+					for (std::map<std::string, std::vector<std::string>>::const_iterator objectTriggerFilterByHltName = m_objectTriggerFiltersByHltName.begin();
+					     (!hltMatched) && (objectTriggerFilterByHltName != m_objectTriggerFiltersByHltName.end());
+					     ++objectTriggerFilterByHltName)
 					{
 						// check that the hlt name given in the config matches the hlt which fired in the event
-						if (boost::regex_search(product.m_selectedHltName, boost::regex(objectTriggerFilterByHltName->first, boost::regex::icase | boost::regex::extended))) {
+						if (boost::regex_search(product.m_selectedHltName,
+						                        boost::regex(objectTriggerFilterByHltName->first, boost::regex::icase | boost::regex::extended)))
+						{
 
 							hltMatched = true;
 							std::vector<std::string> objectTriggerFilters = objectTriggerFilterByHltName->second;
 
 							// loop over the filter regexp associated with the given hlt in the config
 							for (std::vector<std::string>::const_iterator filterName = objectTriggerFilters.begin();
-								(!filterMatched) && 
-								(filterName != objectTriggerFilters.end());
-								++filterName) {
+								 (!filterMatched) && (filterName != objectTriggerFilters.end());
+								 ++filterName)
+							{
 
 								// check that the filter regexp matches the filter
-								if (boost::regex_search(event.m_triggerInfos->toFilter[filterIndex], boost::regex(*filterName, boost::regex::icase | boost::regex::extended)))
+								if (boost::regex_search(event.m_triggerInfos->toFilter[filterIndex],
+								                        boost::regex(*filterName, boost::regex::icase | boost::regex::extended)))
+								{
 									filterMatched = true;
+								}
 							}
 						}
 					}
@@ -108,9 +113,9 @@ public:
 
 					// loop over all trigger objects for this filter
 					for (std::vector<int>::const_iterator triggerObjectIndex = event.m_triggerObjects->toIdxFilter[filterIndex].begin();
-					(! objectMatched) &&
-					(triggerObjectIndex != event.m_triggerObjects->toIdxFilter[filterIndex].end());
-					++triggerObjectIndex)
+					     (! objectMatched) &&
+					     (triggerObjectIndex != event.m_triggerObjects->toIdxFilter[filterIndex].end());
+					     ++triggerObjectIndex)
 					{
 						// check the matching
 						if (ROOT::Math::VectorUtil::DeltaR(event.m_triggerObjects->trgObjects[*triggerObjectIndex].p4,
@@ -146,15 +151,15 @@ public:
 
 
 private:
-	std::map<size_t, std::vector<std::string> > objectTriggerFiltersByIndex;
-	std::map<std::string, std::vector<std::string> > objectTriggerFiltersByHltName;
-	
 	std::map<TValidObject*, KDataLV*> product_type::*m_triggerMatchedObjects;
 	std::vector<TValidObject*> product_type::*m_validObjects;
 	std::vector<TValidObject*> product_type::*m_invalidObjects;
 	std::vector<std::string>& (setting_type::*GetObjectTriggerFilterNames)(void) const;
 	float (setting_type::*GetDeltaRTriggerMatchingObjects)(void) const;
 	bool (setting_type::*GetInvalidateNonMatchingObjects)(void) const;
+	
+	std::map<size_t, std::vector<std::string> > m_objectTriggerFiltersByIndex;
+	std::map<std::string, std::vector<std::string> > m_objectTriggerFiltersByHltName;
 
 };
 
