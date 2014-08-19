@@ -3,6 +3,18 @@
 #include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/ProducerBase.h"
 
+
+/**
+   \brief CrossSectionWeightProducer
+   Config tags:
+   - Xsection, e.g. "1234"
+   If config tag available, provided value is used as weight.
+   If not available, external or internal cross section of the
+   LumiSection is used.
+
+*/
+
+
 template<class TTypes>
 class CrossSectionWeightProducer : public ProducerBase<TTypes> {
 public:
