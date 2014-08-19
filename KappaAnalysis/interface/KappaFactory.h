@@ -21,6 +21,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/ValidLeptonsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/PUWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/EventWeightProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/GeneratorWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/TmvaClassificationReaderBase.h"
 
 // filter
@@ -93,6 +94,8 @@ public:
 			return new PUWeightProducer<TTypes>();
 		else if(id == EventWeightProducer<TTypes>().GetProducerId())
 			return new EventWeightProducer<TTypes>();
+		else if(id == GeneratorWeightProducer<TTypes>().GetProducerId())
+			return new GeneratorWeightProducer<TTypes>();
 		else if(id == GeneralTmvaClassificationReader<TTypes>().GetProducerId())
 			return new GeneralTmvaClassificationReader<TTypes>();
 		else
