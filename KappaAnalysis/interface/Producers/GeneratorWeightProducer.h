@@ -15,10 +15,9 @@ public:
 	}
 
 	virtual void Produce(event_type const& event,
-						product_type& product,
-						setting_type const& settings) const ARTUS_CPP11_OVERRIDE
-		{
-			product.m_weights["generatorWeight"] = event.m_genEventMetadata->weight;
+			product_type& product,
+			setting_type const& settings) const ARTUS_CPP11_OVERRIDE {
+		product.m_weights["generatorWeight"] = event.m_genEventMetadata->weight;
 		}
 
 };

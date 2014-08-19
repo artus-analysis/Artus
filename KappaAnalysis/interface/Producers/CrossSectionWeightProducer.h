@@ -17,17 +17,16 @@ public:
 
 	virtual void Produce(event_type const& event,
 			product_type & product,
-			setting_type const& settings) const
-		{
-			if (settings.GetXSection() > 0.)
-				product.m_weights["crossSectionPerEventWeight"] = settings.GetXSection();
-			else if (event.m_genLumiMetadata->xSectionExt > 0.)
-				product.m_weights["crossSectionPerEventWeight"] = event.m_genLumiMetadata->xSectionExt;
-			else if (event.m_genLumiMetadata->xSectionInt > 0.)
-				product.m_weights["crossSectionPerEventWeight"] = event.m_genLumiMetadata->xSectionInt;
-			else
-				LOG(ERROR) << "No CrossSection information found.";
+			setting_type const& settings) const {
+		if (settings.GetXSection() > 0.)
+			product.m_weights["crossSectionPerEventWeight"] = settings.GetXSection();
+		else if (event.m_genLumiMetadata->xSectionExt > 0.)
+			product.m_weights["crossSectionPerEventWeight"] = event.m_genLumiMetadata->xSectionExt;
+		else if (event.m_genLumiMetadata->xSectionInt > 0.)
+			product.m_weights["crossSectionPerEventWeight"] = event.m_genLumiMetadata->xSectionInt;
+		else
+			LOG(ERROR) << "No CrossSection information found.";
 
-		}
+	}
 
 };

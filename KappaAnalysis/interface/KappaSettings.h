@@ -80,6 +80,9 @@ public:
 
 	/// name of TaggerMetaData in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, TaggerMetadata, ""); // TODO: Default value, move to Artus/Provider
+
+
+	IMPL_SETTING_DEFAULT(float, XSection, 1.);
 	
 	IMPL_SETTING_STRINGLIST(JsonFiles);
 	IMPL_SETTING_DEFAULT(int, PassRunLow, 1);
