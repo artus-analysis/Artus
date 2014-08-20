@@ -165,11 +165,6 @@ class PlotBase(processor.Processor):
 				plotData.plotdict[labelKey] = reduce(lambda a, b: "%s, %s" % (str(a), str(b)), set(plotData.plotdict[expressionKey]))
 			if plotData.plotdict[labelKey] == None: plotData.plotdict[labelKey] = ""
 
-		# write name of output file in dictionary
-		plotData.plotdict["output_filenames"] = []
-		for plot_format in plotData.plotdict["formats"]:
-			plotData.plotdict["output_filenames"].append(os.path.join(plotData.plotdict["output_dir"], plotData.plotdict["filename"]+"."+plot_format))
-
 		# formatting options
 		self.prepare_list_args(plotData, ["colors", "labels", "markers", "errorbars", "stack"], len(plotData.plotdict["root_histos"]))
 		
@@ -197,6 +192,11 @@ class PlotBase(processor.Processor):
 						filename += "_VS_"
 					filename += expression_string
 			plotData.plotdict["filename"] = filename
+
+		# write name of output file in dictionary
+		plotData.plotdict["output_filenames"] = []
+		for plot_format in plotData.plotdict["formats"]:
+			plotData.plotdict["output_filenames"].append(os.path.join(plotData.plotdict["output_dir"], plotData.plotdict["filename"]+"."+plot_format))
 
 		# prepare nicknames for stacked plots
 
