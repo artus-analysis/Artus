@@ -60,26 +60,20 @@ public:
 	/// name of genParticle collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, GenParticles, "");
 
-	/// name of lumiMetaData in kappa tuple
-	IMPL_SETTING_DEFAULT(std::string, LumiMetadata, ""); // TODO: Default value, move to Artus/Provider
-
-	/// name of genLumiMetaData in kappa tuple
-	IMPL_SETTING_DEFAULT(std::string, GenLumiMetadata, ""); // TODO: Default value, move to Artus/Provider
-
 	/// name of eventMetaData in kappa tuple
-	IMPL_SETTING_DEFAULT(std::string, EventMetadata, ""); // TODO: Default value, move to Artus/Provider
+	IMPL_SETTING_DEFAULT(std::string, EventMetadata, "");
 
-	/// name of genEventMetaData in kappa tuple
-	IMPL_SETTING_DEFAULT(std::string, GenEventMetadata, ""); // TODO: Default value, move to Artus/Provider
+	/// name of lumiMetaData in kappa tuple
+	IMPL_SETTING_DEFAULT(std::string, LumiMetadata, "");
 
 	/// name of filterMetaData in kappa tuple
-	IMPL_SETTING_DEFAULT(std::string, FilterMetadata, ""); // TODO: Default value, move to Artus/Provider
+	IMPL_SETTING_DEFAULT(std::string, FilterMetadata, "");
 
 	/// name of filterSummary in kappa tuple
-	IMPL_SETTING_DEFAULT(std::string, FilterSummary, ""); // TODO: Default value, move to Artus/Provider
+	IMPL_SETTING_DEFAULT(std::string, FilterSummary, "");
 
 	/// name of TaggerMetaData in kappa tuple
-	IMPL_SETTING_DEFAULT(std::string, TaggerMetadata, ""); // TODO: Default value, move to Artus/Provider
+	IMPL_SETTING_DEFAULT(std::string, TaggerMetadata, "");
 
 
 	IMPL_SETTING_DEFAULT(float, XSection, -1.);

@@ -64,10 +64,10 @@ public:
 	KTriggerObjects* m_triggerObjects = 0;
 
 	/// pointer to metadata // TODO: move to Artus/Provider
-	KLumiMetadata* m_lumiMetadata = 0;
-	KGenLumiMetadata* m_genLumiMetadata = 0;
 	KEventMetadata* m_eventMetadata = 0;
 	KGenEventMetadata* m_genEventMetadata = 0;
+	KLumiMetadata* m_lumiMetadata = 0;
+	KGenLumiMetadata* m_genLumiMetadata = 0;
 	KFilterMetadata* m_filterMetadata = 0;
 	KFilterSummary* m_filterSummary = 0;
 	KTaggerMetadata* m_taggerMetadata = 0;
