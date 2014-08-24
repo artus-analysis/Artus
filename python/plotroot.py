@@ -83,8 +83,9 @@ class PlotRoot(plotbase.PlotBase):
 	def prepare_histograms(self, plotData):
 		super(PlotRoot, self).prepare_histograms(plotData)
 		
-		for root_histogram, color in zip(plotData.plotdict["root_histos"].values(),
-		                                 plotData.plotdict["colors"]):
+		for nick, color in zip(plotData.plotdict["nicks"], plotData.plotdict["colors"]):
+			root_histogram = plotData.plotdict["root_histos"][nick]
+			
 			root_histogram.SetLineColor(color)
 			root_histogram.SetFillColor(color)
 			root_histogram.SetFillStyle(1)
@@ -115,10 +116,10 @@ class PlotRoot(plotbase.PlotBase):
 		self.z_min = sys.float_info.max
 		self.z_max = -sys.float_info.max
 		
-		self.plot_sequence_indices = range(len(plotData.plotdict["root_histos"]))
+		self.plot_sequence_indices = range(len(plotData.plotdict["nicks"]))
 		self.plot_sequence_indices.sort(key=lambda index: "e" in plotData.plotdict["markers"][index].lower())
 		for index, plot_index in enumerate(self.plot_sequence_indices):
-			root_histogram = plotData.plotdict["root_histos"].values()[plot_index]
+			root_histogram = plotData.plotdict["root_histos"][plotData.plotdict["nicks"][plot_index]]
 			marker = plotData.plotdict["markers"][plot_index]
 			option = marker + ("" if index == 0 else " same")
 			root_histogram.Draw(option)
