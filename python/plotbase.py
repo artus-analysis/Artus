@@ -199,7 +199,6 @@ class PlotBase(processor.Processor):
 			plotData.plotdict["output_filenames"].append(os.path.join(plotData.plotdict["output_dir"], plotData.plotdict["filename"]+"."+plot_format))
 
 		# prepare nicknames for stacked plots
-
 		stack = plotData.plotdict["stack"]
 		plotData.plotdict["stack"] = [stack if stack != None else ("stack%d" % index) for index, stack in enumerate(plotData.plotdict["stack"])]
 		
@@ -246,7 +245,11 @@ class PlotBase(processor.Processor):
 		pass
 	
 	def prepare_histograms(self, plotData):
-		pass
+		# handle stacks
+		for index, (nick1, stack1) in enumerate(zip(plotData.plotdict["nicks"], plotData.plotdict["stack"])):
+			for nick2, stack2 in zip(plotData.plotdict["nicks"], plotData.plotdict["stack"])[:index]:
+				if stack1 == stack2:
+					plotData.plotdict["root_histos"][nick2].Add(plotData.plotdict["root_histos"][nick1])
 	
 	def make_plots(self, plotData):
 		pass

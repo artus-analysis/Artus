@@ -72,6 +72,7 @@ class PlotMpl(plotbase.PlotBase):
 			self.ax2.set_ylim(plotData.plotdict["y_ratio_lims"][0],plotData.plotdict["y_ratio_lims"][1])
 
 	def prepare_histograms(self, plotData):
+		# TODO: summation is now done in upper class
 		# create a dictionary with one entry for each plot that will be stacked
 		self.bottom_y_values = {}
 		for stack in plotData.plotdict["stack"]:
