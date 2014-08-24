@@ -9,6 +9,7 @@ log = logging.getLogger(__name__)
 
 import abc
 import collections
+import glob
 
 import Artus.HarryPlotter.processor as processor
 
@@ -43,7 +44,11 @@ class InputBase(processor.Processor):
 		
 		self.prepare_list_args(plotData, ["files", "nicks", "x_expressions", "y_expressions",
 		                                  "z_expressions", "weights", "norm_references"])
-		plotData.plotdict["files"] = [files.split() for files in plotData.plotdict["files"]]
+		
+		# prepare files
+		plotData.plotdict["files"] = [glob.glob(file_arg) for file_args in plotData.plotdict["files"] for file_arg in file_args.split()]
+		
+		# prepare nicks
 		plotData.plotdict["nicks"] = [nick if nick != None else ("nick%d" % index) for index, nick in enumerate(plotData.plotdict["nicks"])]
 	
 	def run(self, plotData):
