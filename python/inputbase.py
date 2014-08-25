@@ -46,7 +46,11 @@ class InputBase(processor.Processor):
 		                                  "z_expressions", "weights", "norm_references"])
 		
 		# prepare files
-		plotData.plotdict["files"] = [glob.glob(file_arg) for file_args in plotData.plotdict["files"] for file_arg in file_args.split()]
+		for index, file_args in enumerate(plotData.plotdict["files"]):
+			files = []
+			for file_arg in file_args.split():
+				files.extend(glob.glob(file_arg))
+			plotData.plotdict["files"][index] = files
 		
 		# prepare nicks
 		plotData.plotdict["nicks"] = [nick if nick != None else ("nick%d" % index) for index, nick in enumerate(plotData.plotdict["nicks"])]
