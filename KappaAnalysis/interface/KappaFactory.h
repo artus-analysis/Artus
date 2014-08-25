@@ -23,6 +23,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/EventWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GeneratorWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/CrossSectionWeightProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/NumberGeneratedEventsWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/TmvaClassificationReaderBase.h"
 
 // filter
@@ -99,6 +100,8 @@ public:
 			return new GeneratorWeightProducer<TTypes>();
 		else if(id == CrossSectionWeightProducer<TTypes>().GetProducerId())
 			return new CrossSectionWeightProducer<TTypes>();
+		else if(id == NumberGeneratedEventsWeightProducer<TTypes>().GetProducerId())
+			return new NumberGeneratedEventsWeightProducer<TTypes>();
 		else if(id == GeneralTmvaClassificationReader<TTypes>().GetProducerId())
 			return new GeneralTmvaClassificationReader<TTypes>();
 		else
