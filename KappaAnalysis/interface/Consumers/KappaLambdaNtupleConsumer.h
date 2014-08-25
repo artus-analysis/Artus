@@ -20,7 +20,7 @@ public:
 
 	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE
 	{
-		return "lambda_ntuple";
+		return "KappaLambdaNtupleConsumer";
 	}
 	
 	virtual void Init(Pipeline<TTypes> * pipeline) ARTUS_CPP11_OVERRIDE

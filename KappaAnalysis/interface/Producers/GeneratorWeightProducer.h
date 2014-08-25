@@ -11,7 +11,7 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "generator_weight";
+		return "GeneratorWeightProducer";
 	}
 
 	virtual void Produce(event_type const& event,

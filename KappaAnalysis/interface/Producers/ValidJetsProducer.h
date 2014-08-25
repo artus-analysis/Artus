@@ -260,7 +260,7 @@ public:
 	};
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "valid_jets";
+		return "ValidJetsFilter";
 	}
 };
 
@@ -291,7 +291,7 @@ public:
 	};
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "valid_tagged_jets";
+		return "ValidTaggedJetsProducer";
 	}
 
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE

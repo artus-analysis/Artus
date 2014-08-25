@@ -17,7 +17,7 @@ public:
 	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "n_electrons";
+		return "ElectronsCountFilter";
 	}
 	
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
@@ -44,7 +44,7 @@ public:
 	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "n_muons";
+		return "MuonsCountFilter";
 	}
 	
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
@@ -71,7 +71,7 @@ public:
 	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "n_taus";
+		return "TausCountFilter";
 	}
 	
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
@@ -98,7 +98,7 @@ public:
 	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "n_jets";
+		return "JetsCountFilter";
 	}
 	
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {

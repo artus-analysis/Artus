@@ -95,7 +95,7 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "muon_trigger_matching";
+		return "MuonTriggerMatchingProducer";
 	}
 	
 	MuonTriggerMatchingFilter() :
@@ -123,7 +123,7 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "tau_trigger_matching";
+		return "TauTriggerMatchingProducer";
 	}
 	
 	TauTriggerMatchingFilter() :
@@ -151,7 +151,7 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "jet_trigger_matching";
+		return "JetTriggerMatchingProducer";
 	}
 	
 	JetTriggerMatchingFilter() :

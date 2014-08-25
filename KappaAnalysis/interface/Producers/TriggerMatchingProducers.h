@@ -214,7 +214,7 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "muon_trigger_matching";
+		return "MuonTriggerMatchingProducer";
 	}
 	
 	MuonTriggerMatchingProducer() :
@@ -247,7 +247,7 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "tau_trigger_matching";
+		return "TauTriggerMatchingProducer";
 	}
 	
 	TauTriggerMatchingProducer() :
@@ -280,7 +280,7 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "jet_trigger_matching";
+		return "JetTriggerMatchingProducer";
 	}
 	
 	JetTriggerMatchingProducer() :

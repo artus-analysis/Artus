@@ -187,7 +187,7 @@ public:
 	};
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "tagged_jet_corrections";
+		return "TaggedJetCorrectionsProducer";
 	}
 };
 

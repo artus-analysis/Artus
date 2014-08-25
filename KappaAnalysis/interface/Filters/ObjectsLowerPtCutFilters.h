@@ -104,7 +104,7 @@ class ElectronLowerPtCutsFilter: public LeptonLowerPtCutsFilter<TTypes, KDataEle
 public:
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "electron_lower_pt_cuts";
+		return "ElectronLowerPtCutsFilter";
 	}
 	
 	ElectronLowerPtCutsFilter() : LeptonLowerPtCutsFilter<TTypes, KDataElectron>(&TTypes::product_type::m_validElectrons) {}
@@ -123,7 +123,7 @@ class MuonLowerPtCutsFilter: public LeptonLowerPtCutsFilter<TTypes, KDataMuon> {
 public:
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "muon_lower_pt_cuts";
+		return "MuonLowerPtCutsFilter";
 	}
 	
 	MuonLowerPtCutsFilter() : LeptonLowerPtCutsFilter<TTypes, KDataMuon>(&TTypes::product_type::m_validMuons) {}
@@ -141,7 +141,7 @@ class TauLowerPtCutsFilter: public LeptonLowerPtCutsFilter<TTypes, KDataPFTau> {
 public:
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "tau_lower_pt_cuts";
+		return "TauLowerPtCutsFilter";
 	}
 	
 	TauLowerPtCutsFilter() : LeptonLowerPtCutsFilter<TTypes, KDataPFTau>(&TTypes::product_type::m_validTaus) {}
@@ -159,7 +159,7 @@ class JetLowerPtCutsFilter: public LeptonLowerPtCutsFilter<TTypes, KDataPFJet> {
 public:
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "jet_lower_pt_cuts";
+		return "JetLowerPtCutsFilter";
 	}
 	
 	JetLowerPtCutsFilter() : LeptonLowerPtCutsFilter<TTypes, KDataPFJet>(&TTypes::product_type::m_validJets) {}

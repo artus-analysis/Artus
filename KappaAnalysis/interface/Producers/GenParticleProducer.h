@@ -34,7 +34,7 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "gen_particle";
+		return "GenParticleProducer";
 	}
 
 	virtual void Init(setting_type const& settings)

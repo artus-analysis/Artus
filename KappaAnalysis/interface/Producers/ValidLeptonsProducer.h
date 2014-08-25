@@ -19,7 +19,7 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "valid_leptons";
+		return "ValidLeptonsProducer";
 	}
 	
 	virtual void Produce(event_type const& event, product_type& product,

@@ -23,7 +23,7 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "hlt_filter";
+		return "HltFilter";
 	}
 
 	virtual bool DoesEventPass(event_type const& event, product_type const& product,

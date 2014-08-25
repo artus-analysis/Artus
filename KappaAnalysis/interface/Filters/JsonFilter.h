@@ -24,7 +24,7 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "json_filter";
+		return "JsonFilter";
 	}
 
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE

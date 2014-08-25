@@ -122,7 +122,7 @@ public:
 	}
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "valid_electrons";
+		return "ValidElectronsProducer";
 	}
 	
 	ValidElectronsProducer(std::vector<KDataElectron*> product_type::*validElectrons=&product_type::m_validElectrons,

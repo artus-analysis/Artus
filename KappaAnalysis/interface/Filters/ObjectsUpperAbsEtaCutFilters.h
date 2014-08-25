@@ -104,7 +104,7 @@ class ElectronUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<TTypes, 
 public:
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "electron_upper_abseta_cuts";
+		return "ElectronUpperAbsEtaCutsFilter";
 	}
 	
 	ElectronUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<TTypes, KDataElectron>(&TTypes::product_type::m_validElectrons) {}
@@ -122,7 +122,7 @@ class MuonUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<TTypes, KDat
 public:
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "muon_upper_abseta_cuts";
+		return "MuonUpperAbsEtaCutsFilter";
 	}
 	
 	MuonUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<TTypes, KDataMuon>(&TTypes::product_type::m_validMuons) {}
@@ -140,7 +140,7 @@ class TauUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<TTypes, KData
 public:
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "tau_upper_abseta_cuts";
+		return "TauUpperAbsEtaCutsFilter";
 	}
 	
 	TauUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<TTypes, KDataPFTau>(&TTypes::product_type::m_validTaus) {}
@@ -158,7 +158,7 @@ class JetUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<TTypes, KData
 public:
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "jet_upper_abseta_cuts";
+		return "JetUpperAbsEtaCutsFilter";
 	}
 	
 	JetUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<TTypes, KDataPFJet>(&TTypes::product_type::m_validJets) {}

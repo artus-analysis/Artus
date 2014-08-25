@@ -25,7 +25,7 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "hlt_selector";
+		return "HltProducer";
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,

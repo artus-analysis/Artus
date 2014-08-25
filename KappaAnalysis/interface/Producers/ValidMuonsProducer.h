@@ -97,7 +97,7 @@ public:
 	}
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "valid_muons";
+		return "ValidMuonsProducer";
 	}
 	
 	ValidMuonsProducer(std::vector<KDataMuon*> product_type::*validMuons=&product_type::m_validMuons,
