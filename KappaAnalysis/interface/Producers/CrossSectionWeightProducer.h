@@ -30,7 +30,7 @@ public:
 	virtual void Produce(event_type const& event,
 			product_type & product,
 			setting_type const& settings) const {
-		if (settings.GetXSection() > 0.)
+		if (settings.GetCrossSection() > 0.0)
 			product.m_weights["crossSectionPerEventWeight"] = settings.GetCrossSection();
 		else if (event.m_genLumiMetadata->xSectionExt > 0.)
 			product.m_weights["crossSectionPerEventWeight"] = event.m_genLumiMetadata->xSectionExt;
