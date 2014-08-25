@@ -76,7 +76,7 @@ public:
 	IMPL_SETTING_DEFAULT(std::string, TaggerMetadata, "");
 
 
-	IMPL_SETTING_DEFAULT(float, XSection, -1.);
+	IMPL_SETTING_DEFAULT(float, CrossSection, -1.);
 	
 	IMPL_SETTING_STRINGLIST(JsonFiles);
 	IMPL_SETTING_DEFAULT(int, PassRunLow, 1);

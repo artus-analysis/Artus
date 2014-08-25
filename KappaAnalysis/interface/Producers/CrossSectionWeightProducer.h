@@ -31,7 +31,7 @@ public:
 			product_type & product,
 			setting_type const& settings) const {
 		if (settings.GetXSection() > 0.)
-			product.m_weights["crossSectionPerEventWeight"] = settings.GetXSection();
+			product.m_weights["crossSectionPerEventWeight"] = settings.GetCrossSection();
 		else if (event.m_genLumiMetadata->xSectionExt > 0.)
 			product.m_weights["crossSectionPerEventWeight"] = event.m_genLumiMetadata->xSectionExt;
 		else if (event.m_genLumiMetadata->xSectionInt > 0.)
