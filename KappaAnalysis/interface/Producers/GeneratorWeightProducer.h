@@ -11,13 +11,14 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "GeneratorWeightProducer";
+		return "generator_weight";
 	}
 
 	virtual void Produce(event_type const& event,
 			product_type& product,
-			setting_type const& settings) const ARTUS_CPP11_OVERRIDE {
+			setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	{
 		product.m_weights["generatorWeight"] = event.m_genEventMetadata->weight;
-		}
+	}
 
 };

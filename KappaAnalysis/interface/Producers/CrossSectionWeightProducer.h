@@ -24,7 +24,7 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 
 	virtual std::string GetProducerId() const {
-		return "CrossSectionWeightProducer";
+		return "cross_section_weight";
 	}
 
 	virtual void Produce(event_type const& event,
