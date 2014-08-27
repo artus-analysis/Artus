@@ -121,7 +121,7 @@ public:
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE
 	{
-		return "general_tmva_reader";
+		return "GeneralTmvaClassificationReader";
 	}
 	
 	GeneralTmvaClassificationReader() :

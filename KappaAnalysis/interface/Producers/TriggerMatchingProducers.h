@@ -181,7 +181,7 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "electron_trigger_matching";
+		return "ElectronTriggerMatchingProducer";
 	}
 	
 	ElectronTriggerMatchingProducer() :
