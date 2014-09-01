@@ -9,6 +9,7 @@ import argparse
 import os
 
 import ROOT
+ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 
 def main():

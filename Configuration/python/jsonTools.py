@@ -10,8 +10,10 @@ import copy
 import json
 import os
 import pprint
-import ROOT
 import sys
+
+import ROOT
+ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 import Artus.Utility.tools as tools
 

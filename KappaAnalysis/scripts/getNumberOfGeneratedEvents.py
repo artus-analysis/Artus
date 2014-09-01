@@ -10,6 +10,7 @@ import os
 import re
 
 import ROOT
+ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 
 def main():

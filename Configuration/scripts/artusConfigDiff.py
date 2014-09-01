@@ -11,6 +11,7 @@ import pprint
 import sys
 
 import ROOT
+ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 import Artus.Configuration.jsonTools as jsonTools
 
