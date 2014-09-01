@@ -96,6 +96,7 @@ private:
 				if ( gProd == ARTUS_CPP11_NULLPTR ){
 					LOG(FATAL) << "Global producer with id " << ntype.second << " not found!";
 				} else {
+					gProd->Init(gSettings);
 					runner.AddProducer( gProd );
 				}
 			} else if (ntype.first == ProcessNodeType::Filter ) {
@@ -104,6 +105,7 @@ private:
 				if ( gProd == ARTUS_CPP11_NULLPTR ){
 					LOG(FATAL) << "Global filter with id " << ntype.second << " not found!";
 				} else {
+					gProd->Init(gSettings);
 					runner.AddFilter( gProd );
 				}
 			}

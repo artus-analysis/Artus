@@ -13,6 +13,7 @@
 
 #include "Artus/Core/interface/ProducerBase.h"
 #include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
+#include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
 #include "Artus/Utility/interface/Utility.h"
 
 
@@ -24,8 +25,9 @@
    invalid muons. 
 
    This Producer needs the following config tags:
+   ValidMuonsInput (default: auto)
    Year (2011 and 2012 implemented)
-   MuonID (only "tight" is currently implemented)
+   MuonID (tight, (veto))
    MuonIsoType (pf and detector implemented, type user is intended to be used in derived code)
    MuonIso (tight and loose implemented)
 */
@@ -40,14 +42,29 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 
+	enum class ValidMuonsInput : int
+	{
+		AUTO = 0,
+		UNCORRECTED = 1,
+		CORRECTED = 2,
+	};
+	static ValidMuonsInput ToValidMuonsInput(std::string const& validMuonsInput)
+	{
+		if (validMuonsInput == "uncorrected") return ValidMuonsInput::UNCORRECTED;
+		else if (validMuonsInput == "corrected") return ValidMuonsInput::CORRECTED;
+		else return ValidMuonsInput::AUTO;
+	}
+
 	enum class MuonID : int
 	{
 		NONE  = -1,
 		TIGHT = 0,
+		VETO = 0,
 	};
 	static MuonID ToMuonID(std::string const& muonID)
 	{
 		if (muonID == "tight") return MuonID::TIGHT;
+		else if (muonID == "veto") return MuonID::VETO;
 		else return MuonID::NONE;
 	}
 	
@@ -80,65 +97,108 @@ public:
 	}
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "valid_muons";
+		return "ValidMuonsProducer";
 	}
 	
-	ValidMuonsProducer() :
+	ValidMuonsProducer(std::vector<KDataMuon*> product_type::*validMuons=&product_type::m_validMuons,
+	                   std::vector<KDataMuon*> product_type::*invalidMuons=&product_type::m_invalidMuons,
+	                   std::string (setting_type::*GetMuonID)(void) const=&setting_type::GetMuonID,
+	                   std::string (setting_type::*GetMuonIsoType)(void) const=&setting_type::GetMuonIsoType,
+	                   std::string (setting_type::*GetMuonIso)(void) const=&setting_type::GetMuonIso,
+	                   std::vector<std::string>& (setting_type::*GetLowerPtCuts)(void) const=&setting_type::GetMuonLowerPtCuts,
+	                   std::vector<std::string>& (setting_type::*GetUpperAbsEtaCuts)(void) const=&setting_type::GetMuonUpperAbsEtaCuts) :
 		ProducerBase<TTypes>(),
-		ValidPhysicsObjectTools<TTypes, KDataMuon>(&product_type::m_validMuons)
+		ValidPhysicsObjectTools<TTypes, KDataMuon>(GetLowerPtCuts, GetUpperAbsEtaCuts, validMuons),
+		m_validMuonsMember(validMuons),
+		m_invalidMuonsMember(invalidMuons),
+		GetMuonID(GetMuonID),
+		GetMuonIsoType(GetMuonIsoType),
+		GetMuonIso(GetMuonIso)
 	{
 	}
 
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
 		ProducerBase<TTypes>::Init(settings);
+		ValidPhysicsObjectTools<TTypes, KDataMuon>::Init(settings);
 		
-		muonID = ToMuonID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonID())));
-		muonIsoType = ToMuonIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonIsoType())));
-		muonIso = ToMuonIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonIso())));
+		validMuonsInput = ToValidMuonsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidMuonsInput())));
 		
-		this->lowerPtCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetMuonLowerPtCuts()),
-		                                                                 this->lowerPtCutsByHltName);
-		this->upperAbsEtaCutsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetMuonUpperAbsEtaCuts()),
-		                                                                 this->upperAbsEtaCutsByHltName);
+		muonID = ToMuonID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetMuonID)())));
+		muonIsoType = ToMuonIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetMuonIsoType)())));
+		muonIso = ToMuonIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetMuonIso)())));
+		
+		// add possible quantities for the lambda ntuples consumers
+		LambdaNtupleConsumer<TTypes>::Quantities["nMuons"] = [](event_type const& event, product_type const& product) {
+			return product.m_validMuons.size();
+		};
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
 	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
+		// select input source
+		std::vector<KDataMuon*> muons;
+		if ((validMuonsInput == ValidMuonsInput::AUTO && (product.m_correctedMuons.size() > 0)) || (validMuonsInput == ValidMuonsInput::CORRECTED))
+		{
+			muons.resize(product.m_correctedMuons.size());
+			size_t muonIndex = 0;
+			for (std::vector<std::shared_ptr<KDataMuon> >::iterator muon = product.m_correctedMuons.begin();
+			     muon != product.m_correctedMuons.end(); ++muon)
+			{
+				muons[muonIndex] = muon->get();
+				++muonIndex;
+			}
+		}
+		else
+		{
+			muons.resize(event.m_muons->size());
+			size_t muonIndex = 0;
+			for (KDataMuons::iterator muon = event.m_muons->begin(); muon != event.m_muons->end(); ++muon)
+			{
+				muons[muonIndex] = &(*muon);
+				++muonIndex;
+			}
+		}
+		
 		// Apply muon isolation and MuonID
-		for (KDataMuons::iterator muon = event.m_muons->begin();
-			 muon != event.m_muons->end(); muon++)
+		for (std::vector<KDataMuon*>::iterator muon = muons.begin(); muon != muons.end(); ++muon)
 		{
 			bool validMuon = true;
 
 			// Muon ID according to Muon POG definitions
 			if (muonID == MuonID::TIGHT) {
 				if (settings.GetYear() == 2012)
-					validMuon = validMuon && IsTightMuon2012(&(*muon), event, product);
+					validMuon = validMuon && IsTightMuon2012(*muon, event, product);
 				else if (settings.GetYear() == 2011)
-					validMuon = validMuon && IsTightMuon2011(&(*muon), event, product);
+					validMuon = validMuon && IsTightMuon2011(*muon, event, product);
 				else
 					LOG(FATAL) << "Tight muon ID for year " << settings.GetYear() << " not yet implemented!";
 			}
+			else if (muonID != MuonID::VETO)
+			{
+				validMuon = validMuon && IsVetoMuon(*muon, event, product);
+			}
 			else if (muonID != MuonID::NONE)
+			{
 				LOG(FATAL) << "Muon ID of type " << Utility::ToUnderlyingValue(muonID) << " not yet implemented!";
+			}
 			
 			// Muon Isolation according to Mauon POG definitions (independent of year)
 			// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Muon_Isolation
 			// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Muon_Isolation_AN1
 			if (muonIsoType == MuonIsoType::PF) {
 				if (muonIso == MuonIso::TIGHT)
-					validMuon = validMuon && muon->pfIso04/muon->p4.Pt() < 0.12;
+					validMuon = validMuon && (*muon)->pfIso04 / (*muon)->p4.Pt() < 0.12;
 				else if (muonIso == MuonIso::LOOSE)
-					validMuon = validMuon && muon->pfIso04/muon->p4.Pt() < 0.20;
+					validMuon = validMuon && (*muon)->pfIso04 / (*muon)->p4.Pt() < 0.20;
 				else if (muonIso != MuonIso::NONE)
 					LOG(FATAL) << "Muon isolation of type " << Utility::ToUnderlyingValue(muonIso) << " not yet implemented!";
 			}
 			else if (muonIsoType == MuonIsoType::DETECTOR) {
 				if (muonIso == MuonIso::TIGHT)
-					validMuon = validMuon && muon->trackIso03/muon->p4.Pt() < 0.05;
+					validMuon = validMuon && (*muon)->trackIso03 / (*muon)->p4.Pt() < 0.05;
 				else if (muonIso == MuonIso::LOOSE)
-					validMuon = validMuon && muon->trackIso03/muon->p4.Pt() < 0.10;
+					validMuon = validMuon && (*muon)->trackIso03 / (*muon)->p4.Pt() < 0.10;
 				else if (muonIso != MuonIso::NONE)
 					LOG(FATAL) << "Muon isolation of type " << Utility::ToUnderlyingValue(muonIso) << " not yet implemented!";
 			}
@@ -146,15 +206,19 @@ public:
 				LOG(FATAL) << "Muon isolation type of type " << Utility::ToUnderlyingValue(muonIsoType) << " not yet implemented!";
 			
 			// kinematic cuts
-			validMuon = validMuon && this->PassKinematicCuts(&(*muon), event, product);
+			validMuon = validMuon && this->PassKinematicCuts(*muon, event, product);
 			
 			// check possible analysis-specific criteria
-			validMuon = validMuon && AdditionalCriteria(&(*muon), event, product, settings);
+			validMuon = validMuon && AdditionalCriteria(*muon, event, product, settings);
 			
 			if (validMuon)
-				product.m_validMuons.push_back(&(*muon));
+			{
+				(product.*m_validMuonsMember).push_back(*muon);
+			}
 			else
-				product.m_invalidMuons.push_back(&(*muon));
+			{
+				(product.*m_invalidMuonsMember).push_back(*muon);
+			}
 		}
 	}
 
@@ -174,6 +238,13 @@ protected:
 
 
 private:
+	std::vector<KDataMuon*> product_type::*m_validMuonsMember;
+	std::vector<KDataMuon*> product_type::*m_invalidMuonsMember;
+	std::string (setting_type::*GetMuonID)(void) const;
+	std::string (setting_type::*GetMuonIsoType)(void) const;
+	std::string (setting_type::*GetMuonIso)(void) const;
+
+	ValidMuonsInput validMuonsInput;
 	
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon_selection
 	bool IsTightMuon2011(KDataMuon* muon, event_type const& event, product_type& product) const
@@ -188,7 +259,7 @@ private:
 					&& muon->nMatches > 1
 					&& std::abs(muon->bestTrack.getDxy(&event.m_vertexSummary->pv)) < 0.2
 					&& muon->innerTrack.nValidPixelHits > 0
-					&& muon->track.nPixelLayers + muon->track.nStripLayers > 8;
+					&& muon->track.nStripLayers > 8;
 		
 		return validMuon;
 	}
@@ -207,7 +278,22 @@ private:
 					&& std::abs(muon->bestTrack.getDxy(&event.m_vertexSummary->pv)) < 0.2
 					&& std::abs(muon->bestTrack.getDz(&event.m_vertexSummary->pv)) < 0.5
 					&& muon->innerTrack.nValidPixelHits > 0
-					&& muon->track.nPixelLayers + muon->track.nStripLayers > 5;
+					&& muon->track.nStripLayers > 5;
+		
+		return validMuon;
+	}
+	
+	// https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsToTauTauWorkingSummer2013#Muon_Tau_Final_state
+	// should be move to Higgs code
+	bool IsVetoMuon(KDataMuon* muon, event_type const& event, product_type& product) const
+	{
+		bool validMuon = true;
+		
+		validMuon = validMuon
+					&& muon->isPFMuon()
+					&& muon->isGlobalMuon()
+					&& muon->isTrackerMuon()
+					&& (std::abs(muon->track.getDz(&event.m_vertexSummary->pv)) < 0.2);
 		
 		return validMuon;
 	}

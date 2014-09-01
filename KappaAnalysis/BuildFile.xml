@@ -1,8 +1,10 @@
 <Flags CXXFLAGS="-g" />
 <Flags LDFLAGS="-rdynamic" />
 
-<use   name="root"/>
-<use   name="boost"/>
+<use name="boost" />
+<use name="root" />
+<use name="roottmva"/>
+<use name="CondFormats/JetMETObjects" />
 
 <flags ADD_SUBDIR="1"/>
 

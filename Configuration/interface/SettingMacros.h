@@ -7,6 +7,8 @@
 #pragma once
 
 #include "VarCache.h"
+#include "Artus/Utility/interface/Utility.h"
+
 
 /**
    Implements a Setting with automatic read + caching from a Boost PropertyTree
@@ -85,11 +87,21 @@ VarCache<stringvector> m_##SNAME; \
 stringvector& Get##SNAME () const { \
 	RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsStringList(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
 }
+#define IMPL_SETTING_SORTED_STRINGLIST( SNAME ) \
+VarCache<stringvector> m_##SNAME; \
+stringvector& Get##SNAME () const { \
+	RETURN_CACHED(m_##SNAME, Utility::Sorted(PropertyTreeSupport::GetAsStringList(GetPropTree(), GetPipelinePrefix() + #SNAME ))) \
+}
 
 #define IMPL_SETTING_DOUBLELIST( SNAME ) \
 VarCache<doublevector> m_##SNAME; \
 doublevector& Get##SNAME () const { \
 	RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsDoubleList(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
+}
+#define IMPL_SETTING_SORTED_DOUBLELIST( SNAME ) \
+VarCache<doublevector> m_##SNAME; \
+doublevector& Get##SNAME () const { \
+	RETURN_CACHED(m_##SNAME, Utility::Sorted(PropertyTreeSupport::GetAsDoubleList(GetPropTree(), GetPipelinePrefix() + #SNAME ))) \
 }
 
 #define IMPL_SETTING_FLOATLIST( SNAME ) \
@@ -97,10 +109,20 @@ VarCache<floatvector> m_##SNAME; \
 floatvector& Get##SNAME () const { \
 	RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsFloatList(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
 }
+#define IMPL_SETTING_SORTED_FLOATLIST( SNAME ) \
+VarCache<floatvector> m_##SNAME; \
+floatvector& Get##SNAME () const { \
+	RETURN_CACHED(m_##SNAME, Utility::Sorted(PropertyTreeSupport::GetAsFloatList(GetPropTree(), GetPipelinePrefix() + #SNAME ))) \
+}
 
 #define IMPL_SETTING_INTLIST( SNAME ) \
 VarCache<intvector> m_##SNAME; \
 intvector& Get##SNAME () const { \
 	RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsIntList(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
+}
+#define IMPL_SETTING_SORTED_INTLIST( SNAME ) \
+VarCache<intvector> m_##SNAME; \
+intvector& Get##SNAME () const { \
+	RETURN_CACHED(m_##SNAME, Utility::Sorted(PropertyTreeSupport::GetAsIntList(GetPropTree(), GetPipelinePrefix() + #SNAME ))) \
 }
 

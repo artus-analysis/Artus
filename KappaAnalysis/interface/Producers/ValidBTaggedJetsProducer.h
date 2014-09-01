@@ -4,6 +4,8 @@
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
+#include "Artus/KappaAnalysis/interface/KappaProduct.h"
 
 
 /**
@@ -22,7 +24,33 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "valid_btagged_jets";
+		return "ValidBTaggedJetsProducer";
+	}
+
+	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
+	{
+		ProducerBase<TTypes>::Init(settings);
+		
+		// add possible quantities for the lambda ntuples consumers
+		LambdaNtupleConsumer<TTypes>::Quantities["nBJets"] = [](event_type const& event, product_type const& product) {
+			return product.m_bTaggedJets.size();
+		};
+		LambdaNtupleConsumer<TTypes>::Quantities["nBJets20"] = [this](event_type const& event, product_type const& product) {
+			return KappaProduct::GetNJetsAbovePtThreshold(product.m_bTaggedJets, 20.0);
+		};
+		LambdaNtupleConsumer<TTypes>::Quantities["nBJets30"] = [this](event_type const& event, product_type const& product) {
+			return KappaProduct::GetNJetsAbovePtThreshold(product.m_bTaggedJets, 30.0);
+		};
+		
+		LambdaNtupleConsumer<TTypes>::Quantities["bJetPt"] = [](event_type const& event, product_type const& product) {
+			return product.m_bTaggedJets.size() >= 1 ? product.m_bTaggedJets.at(0)->p4.Pt() : DefaultValues::UndefinedDouble;
+		};
+		LambdaNtupleConsumer<TTypes>::Quantities["bJetEta"] = [](event_type const& event, product_type const& product) {
+			return product.m_bTaggedJets.size() >= 1 ? product.m_bTaggedJets.at(0)->p4.Eta() : DefaultValues::UndefinedDouble;
+		};
+		LambdaNtupleConsumer<TTypes>::Quantities["bJetPhi"] = [](event_type const& event, product_type const& product) {
+			return product.m_bTaggedJets.size() >= 1 ? product.m_bTaggedJets.at(0)->p4.Phi() : DefaultValues::UndefinedDouble;
+		};
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
@@ -34,7 +62,7 @@ public:
 				bool validBJet = true;
 				KDataPFTaggedJet* tjet = static_cast<KDataPFTaggedJet*>(*jet);
 
-				float combinedSecondaryVertex = tjet->getTagger("CombinedSecondaryVertexBJetTags", event.m_taggermetadata);
+				float combinedSecondaryVertex = tjet->getTagger("CombinedSecondaryVertexBJetTags", event.m_taggerMetadata);
 
 				if (combinedSecondaryVertex < settings.GetBTaggedJetCombinedSecondaryVertexMediumWP() ||
 					std::abs(tjet->p4.eta()) > settings.GetBTaggedJetAbsEtaCut()) {

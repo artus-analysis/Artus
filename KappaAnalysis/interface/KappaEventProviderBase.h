@@ -33,14 +33,6 @@ public:
 			EventProviderBase<TTypes>(),
 			m_prevRun(-1), m_prevLumi(-1), m_prevTree(-1), m_inpType(inpType), m_fi(fi)
 	{
-		// setup pointer to collections
-		m_event.m_eventMetadata = fi.Get<KEventMetadata>();
-
-		if (inpType == McInput) {
-			m_event.m_genEventMetadata = fi.Get<KGenEventMetadata>();
-		}
-		m_fi.SpeedupTree();
-
 		// auto-delete objects when moving to a new object. Not default root behaviour
 		//fi.eventdata.SetAutoDelete(kTRUE);
 
@@ -49,12 +41,20 @@ public:
 
 	/// overwrite and load the Kappa products into your event structure call yourself after 
 	/// creating the provider
-	virtual void WireEvent( setting_type const& ) = 0;
+	virtual void WireEvent(setting_type const& settings)
+	{
+		m_fi.SpeedupTree();
+	}
 
 	virtual bool GetEntry(long long lEvent ) ARTUS_CPP11_OVERRIDE {
+		assert(m_event.m_eventMetadata);
+		assert(m_event.m_lumiMetadata);
 
 		if (!m_mon->Update())
+		{
 			return false;
+		}
+		
 		m_fi.eventdata.GetEntry(lEvent);
 		
 		if (m_prevTree != m_fi.eventdata.GetTreeNumber()) {
@@ -70,23 +70,6 @@ public:
 		if (m_prevLumi != m_event.m_eventMetadata->nLumi) {
 			m_prevLumi = m_event.m_eventMetadata->nLumi;
 			m_fi.GetMetaEntry();
-
-			// load the correct lumi information
-			if (m_inpType == McInput) {
-				/*m_event.m_lumimetadata = m_fi.Get<KGenLumiMetadata> (
-				 m_event.m_eventMetadata->nRun,
-				 m_event.m_eventMetadata->nLumi);*/
-			} else if (m_inpType == DataInput) {
-				/*m_event.m_lumimetadata = m_fi.Get<KDataLumiMetadata> (
-				 m_event.m_eventMetadata->nRun,
-				 m_event.m_eventMetadata->nLumi);*/
-			} else {
-				LOG(FATAL) << "Unknown input type!";
-			}
-
-			//LOG(INFO) << "Loading new lumi info";
-			// reload the HLT information associated with this lumi
-			//hltInfo->setLumiMetadata(m_event.m_lumimetadata);
 		}
 
 		return true;

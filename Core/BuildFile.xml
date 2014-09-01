@@ -2,6 +2,7 @@
 <Flags LDFLAGS="-rdynamic" />
 <use name="root"/>
 <use name="boost"/>
+<use name="boost_system"/>
 <use name="Artus/Utility"/>
 <flags ADD_SUBDIR="1"/>
 <export>

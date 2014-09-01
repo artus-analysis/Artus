@@ -35,11 +35,8 @@ public:
 		LOG(INFO) << "Initialize global Producer \"" << this->GetProducerId() << "\".";
 	}
 
-	// called once per event before the pipelines are split
 	virtual void Produce(event_type const& event, product_type& product,
-	                           setting_type const& globalSettings) const {
-		LOG(FATAL) << "ProduceGlobal function for producer \"" << this->GetProducerId() << "\" is not implemented!";
-	}
+	                     setting_type const& globalSettings) const = 0;
 
 	/// Must return a unique id of the producer.
 	virtual std::string GetProducerId() const = 0;

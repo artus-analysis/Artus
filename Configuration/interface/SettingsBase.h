@@ -78,6 +78,10 @@ public:
 	/// get list of all local producers
 	IMPL_SETTING_STRINGLIST( Processors )
 	IMPL_SETTING_STRINGLIST( Consumers )
+	
+	// list of quantities needed for ntuple consumers
+	IMPL_SETTING_STRINGLIST(Quantities);
+	//IMPL_SETTING_SORTED_STRINGLIST(Quantities);
 
 	virtual stringvector GetFilters () const {
 		return SettingsUtil::ExtractFilters(GetProcessors());

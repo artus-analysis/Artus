@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include "Artus/Utility/interface/ArtusLogging.h"
+
 #include <map>
 #include <type_traits>
 #include <string>
@@ -8,7 +10,18 @@
 
 #include <boost/lexical_cast.hpp>
 
+#include <Math/LorentzVector.h>
+#include <Math/PtEtaPhiM4D.h>
+#include <Math/DisplacementVector3D.h>
+#include <Math/Cartesian3D.h>
+#include <Math/SMatrix.h>
+
 #include "Artus/Core/interface/Cpp11Support.h"
+
+
+typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > RMDataLV;
+typedef ROOT::Math::DisplacementVector3D<ROOT::Math::Cartesian3D<float>,ROOT::Math::DefaultCoordinateSystemTag> RMDataV;
+typedef ROOT::Math::SMatrix<double, 2, 2, ROOT::Math::MatRepSym<double, 2> > RMSM2x2;
 
 namespace Utility {
 
@@ -144,6 +157,41 @@ namespace Utility {
 		std::map<std::string, std::vector<std::string> > outputMapWrongTKeyWrongTValue;
 		
 		return ParseMapTypes(inputMap, outputMapWrongTKey, outputMapWrongTValue, outputMapWrongTKeyWrongTValue);
+	}
+	
+	template<class TNumber>
+	bool ApproxEqual(TNumber value1, TNumber value2, double maxDelta=1e-5)
+	{
+		if (value1 == value2)
+		{
+			return true;
+		}
+		else
+		{
+			double delta = std::abs(value1 - value2);
+			if ((value1 + value2) != 0)
+			{
+				delta *= (2.0 / std::abs(value1 + value2));
+			}
+			return (delta < maxDelta);
+		}
+	}
+	
+	template<>
+	bool ApproxEqual<RMDataLV>(RMDataLV value1, RMDataLV value2, double maxDelta);
+	
+	template<>
+	bool ApproxEqual<RMDataV>(RMDataV value1, RMDataV value2, double maxDelta);
+	
+	template<>
+	bool ApproxEqual<RMSM2x2>(RMSM2x2 value1, RMSM2x2 value2, double maxDelta);
+	
+	template<class T>
+	std::vector<T> Sorted(std::vector<T> const& vectorToSort)
+	{
+		std::vector<T> sortedVector = vectorToSort;
+		std::sort(sortedVector.begin(), sortedVector.end());
+		return sortedVector;
 	}
 }
 

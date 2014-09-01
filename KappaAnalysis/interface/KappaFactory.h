@@ -6,15 +6,25 @@
 
 // producer
 #include "Artus/KappaAnalysis/interface/Producers/HltProducer.h"
-#include "Artus/KappaAnalysis/interface/Producers/TriggerMatchingProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenTauDecayProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/GenParticleProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/ElectronCorrectionsProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/MuonCorrectionsProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/TauCorrectionsProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/JetCorrectionsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidElectronsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidMuonsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidTausProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidJetsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidBTaggedJetsProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/TriggerMatchingProducers.h"
+#include "Artus/KappaAnalysis/interface/Producers/ValidLeptonsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/PUWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/EventWeightProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/GeneratorWeightProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/CrossSectionWeightProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/NumberGeneratedEventsWeightProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/TmvaClassificationReaderBase.h"
 
 // filter
 #include "Artus/KappaAnalysis/interface/Filters/RunLumiEventFilter.h"
@@ -22,8 +32,10 @@
 #include "Artus/KappaAnalysis/interface/Filters/HltFilter.h"
 #include "Artus/KappaAnalysis/interface/Filters/ValidObjectsFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsCountFilters.h"
+#include "Artus/KappaAnalysis/interface/Filters/MaxObjectsCountFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsLowerPtCutFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsUpperAbsEtaCutFilters.h"
+#include "Artus/KappaAnalysis/interface/Filters/TriggerMatchingFilters.h"
 
 // consumer
 #include "Artus/KappaAnalysis/interface/Consumers/KappaCutFlowHistogramConsumer.h"
@@ -44,10 +56,20 @@ public:
 	{
 		if(id == GenTauDecayProducer<TTypes>().GetProducerId())
 	  		return new GenTauDecayProducer<TTypes>();
+		if(id == GenParticleProducer<TTypes>().GetProducerId())
+	  		return new GenParticleProducer<TTypes>();
 		else if(id == HltProducer<TTypes>().GetProducerId())
 			return new HltProducer<TTypes>();
-		else if(id == TriggerMatchingProducer<TTypes>().GetProducerId())
-			return new TriggerMatchingProducer<TTypes>();
+		else if(id == ElectronCorrectionsProducer<TTypes>().GetProducerId())
+			return new ElectronCorrectionsProducer<TTypes>();
+		else if(id == MuonCorrectionsProducer<TTypes>().GetProducerId())
+			return new MuonCorrectionsProducer<TTypes>();
+		else if(id == TauCorrectionsProducer<TTypes>().GetProducerId())
+			return new TauCorrectionsProducer<TTypes>();
+		else if(id == JetCorrectionsProducer<TTypes>().GetProducerId())
+			return new JetCorrectionsProducer<TTypes>();
+		else if(id == TaggedJetCorrectionsProducer<TTypes>().GetProducerId())
+			return new TaggedJetCorrectionsProducer<TTypes>();
 		else if(id == ValidElectronsProducer<TTypes>().GetProducerId())
 			return new ValidElectronsProducer<TTypes>();
 		else if(id == ValidMuonsProducer<TTypes>().GetProducerId())
@@ -60,10 +82,28 @@ public:
 			return new ValidTaggedJetsProducer<TTypes>();
 		else if(id == ValidBTaggedJetsProducer<TTypes>().GetProducerId())
 			return new ValidBTaggedJetsProducer<TTypes>();
+		else if(id == ElectronTriggerMatchingProducer<TTypes>().GetProducerId())
+			return new ElectronTriggerMatchingProducer<TTypes>();
+		else if(id == MuonTriggerMatchingProducer<TTypes>().GetProducerId())
+			return new MuonTriggerMatchingProducer<TTypes>();
+		else if(id == TauTriggerMatchingProducer<TTypes>().GetProducerId())
+			return new TauTriggerMatchingProducer<TTypes>();
+		else if(id == JetTriggerMatchingProducer<TTypes>().GetProducerId())
+			return new JetTriggerMatchingProducer<TTypes>();
+		else if(id == ValidLeptonsProducer<TTypes>().GetProducerId())
+			return new ValidLeptonsProducer<TTypes>();
 		else if(id == PUWeightProducer<TTypes>().GetProducerId())
 			return new PUWeightProducer<TTypes>();
 		else if(id == EventWeightProducer<TTypes>().GetProducerId())
 			return new EventWeightProducer<TTypes>();
+		else if(id == GeneratorWeightProducer<TTypes>().GetProducerId())
+			return new GeneratorWeightProducer<TTypes>();
+		else if(id == CrossSectionWeightProducer<TTypes>().GetProducerId())
+			return new CrossSectionWeightProducer<TTypes>();
+		else if(id == NumberGeneratedEventsWeightProducer<TTypes>().GetProducerId())
+			return new NumberGeneratedEventsWeightProducer<TTypes>();
+		else if(id == GeneralTmvaClassificationReader<TTypes>().GetProducerId())
+			return new GeneralTmvaClassificationReader<TTypes>();
 		else
 			return FactoryBase<TTypes>::createProducer( id );	
 	}
@@ -93,6 +133,14 @@ public:
 			return new TausCountFilter<TTypes>();
 		else if(id == JetsCountFilter<TTypes>().GetFilterId())
 			return new JetsCountFilter<TTypes>();
+		else if(id == MaxElectronsCountFilter<TTypes>().GetFilterId())
+			return new MaxElectronsCountFilter<TTypes>();
+		else if(id == MaxMuonsCountFilter<TTypes>().GetFilterId())
+			return new MaxMuonsCountFilter<TTypes>();
+		else if(id == MaxTausCountFilter<TTypes>().GetFilterId())
+			return new MaxTausCountFilter<TTypes>();
+		else if(id == MaxJetsCountFilter<TTypes>().GetFilterId())
+			return new MaxJetsCountFilter<TTypes>();
 		else if(id == ElectronLowerPtCutsFilter<TTypes>().GetFilterId())
 			return new ElectronLowerPtCutsFilter<TTypes>();
 		else if(id == MuonLowerPtCutsFilter<TTypes>().GetFilterId())
@@ -109,6 +157,14 @@ public:
 			return new TauUpperAbsEtaCutsFilter<TTypes>();
 		else if(id == JetUpperAbsEtaCutsFilter<TTypes>().GetFilterId())
 			return new JetUpperAbsEtaCutsFilter<TTypes>();
+		else if(id == ElectronTriggerMatchingFilter<TTypes>().GetFilterId())
+			return new ElectronTriggerMatchingFilter<TTypes>();
+		else if(id == MuonTriggerMatchingFilter<TTypes>().GetFilterId())
+			return new MuonTriggerMatchingFilter<TTypes>();
+		else if(id == TauTriggerMatchingFilter<TTypes>().GetFilterId())
+			return new TauTriggerMatchingFilter<TTypes>();
+		else if(id == JetTriggerMatchingFilter<TTypes>().GetFilterId())
+			return new JetTriggerMatchingFilter<TTypes>();
 		else
 			return FactoryBase<TTypes>::createFilter( id );
 	}
