@@ -90,20 +90,6 @@ public:
 			setting_type const& settings) {
 		long long firstEvent = 0;
 		long long nEvents = evtProvider.GetEntries();
-/*
-		for( ProcessNodesIterator it = m_globalNodes.begin();
-				it != m_globalNodes.end(); it ++ ) {
-			if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
-				static_cast<producer_base_type&> ( *it ) . Init(settings);
-			}
-			else if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
-				static_cast<filter_base_type&> ( *it ) . Init(settings);
-			}
-			else {
-				LOG(FATAL) << "ProcessNodeType not supported by the pipeline runner!";
-			}
-		}
-*/
 		const stringvector globlalFilterIds = settings.GetFilters();
 
 		// initilize pline filter decision
