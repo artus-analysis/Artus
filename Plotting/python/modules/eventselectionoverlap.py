@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 import hashlib
 import ROOT
 
-import Artus.HarryPlotter.analysisbase as analysisbase
+import HarryPlotter.Plotting.analysisbase as analysisbase
 
 
 class EventSelectionOverlap(analysisbase.AnalysisBase):

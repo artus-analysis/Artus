@@ -11,9 +11,9 @@ import numpy
 import pprint
 import ROOT
 
-import Artus.HarryPlotter.plot1d as plot1d
-import Artus.HarryPlotter.tools.utils as utils
-import Artus.HarryPlotter.tools.labels as labels
+import HarryPlotter.Plotting.plot1d as plot1d
+import HarryPlotter.Plotting.tools.utils as utils
+import HarryPlotter.Plotting.tools.labels as labels
 
 
 class CutEfficiency(object):

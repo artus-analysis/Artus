@@ -11,7 +11,7 @@ import os
 import ROOT
 import sys
 
-import Artus.HarryPlotter.plotbase as plotbase
+import HarryPlotter.Plotting.plotbase as plotbase
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 

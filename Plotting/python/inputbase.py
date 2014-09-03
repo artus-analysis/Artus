@@ -11,7 +11,7 @@ import abc
 import collections
 import glob
 
-import Artus.HarryPlotter.processor as processor
+import HarryPlotter.Plotting.processor as processor
 
 
 class InputBase(processor.Processor):

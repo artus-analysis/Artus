@@ -15,7 +15,7 @@ import inspect
 import matplotlib.pyplot as plt
 import copy
 
-import Artus.HarryPlotter.tools.labels as labels
+import HarryPlotter.Plotting.tools.labels as labels
 
 
 # TODO: delete this obsolete function

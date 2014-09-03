@@ -9,17 +9,17 @@ log = logging.getLogger(__name__)
 
 import ROOT
 
-import Artus.HarryPlotter.analysisbase as analysisbase
-import Artus.HarryPlotter.harryparser as harryparser
-import Artus.HarryPlotter.inputbase as inputbase
-import Artus.HarryPlotter.inputroot as inputroot
-import Artus.HarryPlotter.plotbase as plotbase
-import Artus.HarryPlotter.plotdata as plotdata
-import Artus.HarryPlotter.plotmpl as plotmpl
-import Artus.HarryPlotter.plotroot as plotroot
-import Artus.HarryPlotter.processor as processor
+import HarryPlotter.Plotting.analysisbase as analysisbase
+import HarryPlotter.Plotting.harryparser as harryparser
+import HarryPlotter.Plotting.inputbase as inputbase
+import HarryPlotter.Plotting.inputroot as inputroot
+import HarryPlotter.Plotting.plotbase as plotbase
+import HarryPlotter.Plotting.plotdata as plotdata
+import HarryPlotter.Plotting.plotmpl as plotmpl
+import HarryPlotter.Plotting.plotroot as plotroot
+import HarryPlotter.Plotting.processor as processor
 
-import Artus.HarryPlotter.modules.eventselectionoverlap as eventselectionoverlap
+import HarryPlotter.Plotting.modules.eventselectionoverlap as eventselectionoverlap
 
 import Artus.Configuration.jsonTools as json_tools
 json_tools.JsonDict.COMMENT_DELIMITER = "@"

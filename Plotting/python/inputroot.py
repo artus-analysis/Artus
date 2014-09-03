@@ -11,9 +11,9 @@ import hashlib
 import os
 import ROOT
 
-import Artus.HarryPlotter.inputbase as inputbase
-import Artus.HarryPlotter.roottools as roottools
-import Artus.HarryPlotter.extrafunctions as extrafunctions
+import HarryPlotter.Plotting.inputbase as inputbase
+import HarryPlotter.Plotting.roottools as roottools
+import HarryPlotter.Plotting.extrafunctions as extrafunctions
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 

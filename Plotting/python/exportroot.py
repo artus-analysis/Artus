@@ -7,7 +7,7 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
-import Artus.HarryPlotter.plotbase as plotbase
+import HarryPlotter.Plotting.plotbase as plotbase
 
 
 class ExportRoot(plotbase.PlotBase):

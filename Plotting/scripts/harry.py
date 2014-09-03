@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 
 import sys
 
-import Artus.HarryPlotter.harry as harry
+import HarryPlotter.Plotting.harry as harry
 
 
 if __name__ == "__main__" and len(sys.argv) > 1:

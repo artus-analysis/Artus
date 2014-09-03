@@ -9,9 +9,9 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 
-import Artus.HarryPlotter.plotbase as plotbase
+import HarryPlotter.Plotting.plotbase as plotbase
 
-import Artus.HarryPlotter.tools.mplconvert as mplconvert
+import HarryPlotter.Plotting.tools.mplconvert as mplconvert
 import matplotlib.pyplot as plt
 
 class PlotMpl(plotbase.PlotBase):

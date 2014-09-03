@@ -11,10 +11,10 @@ import hashlib
 import os
 import re
 
-import Artus.HarryPlotter.processor as processor
-import Artus.HarryPlotter.roottools as roottools
-import Artus.HarryPlotter.modules.eventselectionoverlap as eventselectionoverlap
-import Artus.HarryPlotter.extrafunctions as extrafunctions
+import HarryPlotter.Plotting.processor as processor
+import HarryPlotter.Plotting.roottools as roottools
+import HarryPlotter.Plotting.modules.eventselectionoverlap as eventselectionoverlap
+import HarryPlotter.Plotting.extrafunctions as extrafunctions
 
 class PlotBase(processor.Processor):
 	

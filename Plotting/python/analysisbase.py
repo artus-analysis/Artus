@@ -7,7 +7,7 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
-import Artus.HarryPlotter.processor as processor
+import HarryPlotter.Plotting.processor as processor
 
 
 class AnalysisBase(processor.Processor):

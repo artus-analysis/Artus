@@ -4,8 +4,8 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
-import Artus.HarryPlotter.tools.getroot as getroot
-import Artus.HarryPlotter.tools.mplconvert as mplconvert
+import HarryPlotter.Plotting.tools.getroot as getroot
+import HarryPlotter.Plotting.tools.mplconvert as mplconvert
 
 import numpy as np
 import array

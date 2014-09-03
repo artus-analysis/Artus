@@ -35,7 +35,7 @@ import os
 import array
 import numpy as np
 
-import Artus.HarryPlotter.tools.utils as utils
+import HarryPlotter.Plotting.tools.utils as utils
 
 # prevents Root from reading argv
 ROOT.PyConfig.IgnoreCommandLineOptions = True
