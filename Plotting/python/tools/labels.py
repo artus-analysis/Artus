@@ -3,7 +3,7 @@
 """This module contains functions to add various labels to the plot."""
 
 import logging
-import Artus.Utility.logger as logger
+import HarryPlotter.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import time

@@ -5,7 +5,7 @@ Collection of functions to make plotting life faster
 """
 
 import logging
-import Artus.Utility.logger as logger
+import HarryPlotter.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import os

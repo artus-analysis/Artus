@@ -4,7 +4,7 @@
 """
 
 import logging
-import Artus.Utility.logger as logger
+import HarryPlotter.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import ROOT
@@ -21,7 +21,7 @@ import HarryPlotter.Plotting.processor as processor
 
 import HarryPlotter.Plotting.modules.eventselectionoverlap as eventselectionoverlap
 
-import Artus.Configuration.jsonTools as json_tools
+import HarryPlotter.Utility.jsonTools as json_tools
 json_tools.JsonDict.COMMENT_DELIMITER = "@"
 
 

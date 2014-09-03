@@ -6,7 +6,7 @@ This module contains all the often used plotting tools
 """
 
 import logging
-import Artus.Utility.logger as logger
+import HarryPlotter.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import os
