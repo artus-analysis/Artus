@@ -72,7 +72,7 @@ public:
 				// loop over all filters
 				for (size_t filterIndex = event.m_triggerInfos->getMinFilterIndex(product.m_selectedHltPosition);
 					(! objectMatched) &&
-					(filterIndex <= event.m_triggerInfos->getMaxFilterIndex(product.m_selectedHltPosition));
+					(filterIndex < event.m_triggerInfos->getMaxFilterIndex(product.m_selectedHltPosition));
 				     ++filterIndex)
 				{
 					bool hltMatched = false;
