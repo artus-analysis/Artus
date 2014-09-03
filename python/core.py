@@ -22,6 +22,7 @@ import Artus.HarryPlotter.processor as processor
 import Artus.HarryPlotter.modules.eventselectionoverlap as eventselectionoverlap
 
 import Artus.Configuration.jsonTools as json_tools
+json_tools.JsonDict.COMMENT_DELIMITER = "@"
 
 
 class HarryCore(object):
