@@ -26,6 +26,7 @@ class JsonDict(dict):
 	# static members as global settings
 	PATH_TO_ROOT_CONFIG = "config"
 	ALWAYS_DO_COMMENTS = True
+	COMMENT_DELIMITER = "#"
 
 	def __init__(self, jsonDict={}):
 		"""
@@ -289,21 +290,20 @@ class JsonDict(dict):
 	def deepuncomment(jsonDict):
 		"""
 		remove all comments from this JSON dictionary
-		comments are keys, values and list entries starting with #
-		editing in place
+		comments are keys, values and list entries starting with COMMENT_DELIMITER
+		editing in place.
 		"""
-		
 		if isinstance(jsonDict, dict):
 			for key, value in jsonDict.items():
-				if key.strip().startswith("#"):
+				if key.strip().startswith(jsonDict.COMMENT_DELIMITER):
 					pass
 					#del jsonDict[key]
 				else:
-					if isinstance(value, basestring) and value.strip().startswith("#"):
+					if isinstance(value, basestring) and value.strip().startswith(jsonDict.COMMENT_DELIMITER):
 						del jsonDict[key]
 					elif isinstance(value, collections.Iterable) and not isinstance(value, basestring):
 						for index, element in enumerate(value):
-							if isinstance(element, basestring) and element.strip().startswith("#"):
+							if isinstance(element, basestring) and element.strip().startswith(jsonDict.COMMENT_DELIMITER):
 								del value[index]
 					if isinstance(value, dict):
 						JsonDict.deepuncomment(value)
