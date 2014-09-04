@@ -12,6 +12,7 @@
 #include "Artus/Configuration/interface/PropertyTreeSupport.h"
 #include "Artus/Configuration/interface/SettingMacros.h"
 #include "Artus/Configuration/interface/PropertyMacros.h"
+#include "Artus/Configuration/interface/VarCache.h"
 
 /**
    \brief Reads setting of local parts of PipelineRunner from a prepared json configuration file.
@@ -86,5 +87,16 @@ public:
 	virtual stringvector GetFilters () const {
 		return SettingsUtil::ExtractFilters(GetProcessors());
 	}
+
+	typedef std::pair < std::string, size_t > PipelineInfo;
+	typedef std::vector<PipelineInfo> PipelineInfos;
+
+	// returns the name and level of all pipelines
+	// in the config file
+	PipelineInfos GetPipelineInfos () const;
+
+private:
+	VarCache < PipelineInfos > m_pipelineInfos;
+
 };
 

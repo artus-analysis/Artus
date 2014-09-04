@@ -16,3 +16,28 @@ stringvector SettingsUtil::ExtractFilters ( stringvector const& allProcessors ) 
 
 	return filt;
 }
+
+
+std::vector <SettingsBase::PipelineInfo> SettingsBase::GetPipelineInfos () const {
+
+	if ( ! m_pipelineInfos.IsCached() )	{
+		std::vector <SettingsBase::PipelineInfo> pinfo;
+
+		BOOST_FOREACH(boost::property_tree::ptree::value_type& v,
+				GetPropTree()->get_child("Pipelines")) {
+
+			SettingsBase pset;
+			std::string sKeyName = v.first.data();
+
+			pset.SetName(sKeyName);
+			pset.SetPropTreePath("Pipelines." + sKeyName);
+			pset.SetPropTree( GetPropTree() );
+
+			pinfo.push_back( std::make_pair ( sKeyName, pset.GetLevel() ));
+		}
+
+		m_pipelineInfos.SetCache ( pinfo );
+	}
+
+	return m_pipelineInfos.GetValue();
+}
