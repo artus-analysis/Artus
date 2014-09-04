@@ -295,15 +295,15 @@ class JsonDict(dict):
 		"""
 		if isinstance(jsonDict, dict):
 			for key, value in jsonDict.items():
-				if key.strip().startswith(jsonDict.COMMENT_DELIMITER):
+				if key.strip().startswith(JsonDict.COMMENT_DELIMITER):
 					pass
 					#del jsonDict[key]
 				else:
-					if isinstance(value, basestring) and value.strip().startswith(jsonDict.COMMENT_DELIMITER):
+					if isinstance(value, basestring) and value.strip().startswith(JsonDict.COMMENT_DELIMITER):
 						del jsonDict[key]
 					elif isinstance(value, collections.Iterable) and not isinstance(value, basestring):
 						for index, element in enumerate(value):
-							if isinstance(element, basestring) and element.strip().startswith(jsonDict.COMMENT_DELIMITER):
+							if isinstance(element, basestring) and element.strip().startswith(JsonDict.COMMENT_DELIMITER):
 								del value[index]
 					if isinstance(value, dict):
 						JsonDict.deepuncomment(value)
