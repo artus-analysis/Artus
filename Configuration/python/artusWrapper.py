@@ -236,8 +236,7 @@ class ArtusWrapper(object):
 				tmpNick = self.extractNickname(path)
 				if tmpNick != nickname:
 					if not self._args.batch:
-						log.fatal("Input files do have different nicknames, which would cause errors. Aborting.")
-						sys.exit(1)
+						log.warning("Input files do have different nicknames, which could cause errors.")
 		return nickname
 
 	def extractNickname(self, string):
