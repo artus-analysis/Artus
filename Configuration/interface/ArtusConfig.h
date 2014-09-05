@@ -80,9 +80,6 @@ private:
 	template<class TPipelineRunner, class TFactory, class TGlobalSettings>
 	void LoadGlobalProducer( TPipelineRunner& runner, TFactory & factory ) {
 
-		typedef typename TPipelineRunner::producer_base_type producer_base_type;
-		typedef typename TPipelineRunner::filter_base_type filter_base_type;
-
 		TGlobalSettings gSettings = GetSettings< TGlobalSettings >();
 		stringvector globalProds = gSettings.GetProcessors();
 		for ( stringvector::const_iterator it = globalProds.begin();
@@ -91,7 +88,7 @@ private:
 			NodeTypePair ntype = ParseProcessNode( *it );
 
 			if (ntype.first == ProcessNodeType::Producer ) {
-				producer_base_type * gProd = factory.createProducer ( ntype.second );
+				auto * gProd = factory.createProducer ( ntype.second );
 
 				if ( gProd == ARTUS_CPP11_NULLPTR ){
 					LOG(FATAL) << "Global producer with id " << ntype.second << " not found!";
@@ -100,7 +97,7 @@ private:
 					runner.AddProducer( gProd );
 				}
 			} else if (ntype.first == ProcessNodeType::Filter ) {
-				filter_base_type * gProd = factory.createFilter ( ntype.second );
+				auto * gProd = factory.createFilter ( ntype.second );
 
 				if ( gProd == ARTUS_CPP11_NULLPTR ){
 					LOG(FATAL) << "Global filter with id " << ntype.second << " not found!";
@@ -123,9 +120,6 @@ private:
 	{
 		typedef typename TPipelineInitializer::setting_type setting_type;
 		typedef typename TPipelineInitializer::pipeline_type pipeline_type;
-		typedef typename TPipelineRunner::filter_base_type filter_base_type;
-		typedef typename TPipelineRunner::producer_base_type producer_base_type;
-		typedef typename TPipelineRunner::consumer_base_type consumer_base_type;
 
 		BOOST_FOREACH(boost::property_tree::ptree::value_type& v,
 				m_propTreeRoot.get_child("Pipelines"))
@@ -153,7 +147,7 @@ private:
 					NodeTypePair ntype = ParseProcessNode( *it );
 
 					if (ntype.first == ProcessNodeType::Producer ) {
-						producer_base_type * pProducer = factory.createProducer ( ntype.second );
+						auto * pProducer = factory.createProducer ( ntype.second );
 
 						if ( pProducer == ARTUS_CPP11_NULLPTR ){
 							 LOG(FATAL) << "Local Producer with id " << ntype.second << " not found!";
@@ -161,7 +155,7 @@ private:
 							pLine->AddProducer ( pProducer );
 						}
 					} else if (ntype.first == ProcessNodeType::Filter ) {
-						filter_base_type * pProducer = factory.createFilter ( ntype.second );
+						auto * pProducer = factory.createFilter ( ntype.second );
 
 						if ( pProducer == ARTUS_CPP11_NULLPTR ){
 							 LOG(FATAL) << "Local Filter with id " << ntype.second << " not found!";
@@ -175,7 +169,7 @@ private:
 			stringvector localConsumers = pset.GetConsumers();
 			for ( stringvector::const_iterator it = localConsumers.begin();
 				it != localConsumers.end(); it ++ ) {
-					consumer_base_type * pConsumer = factory.createConsumer ( *it );
+					auto * pConsumer = factory.createConsumer ( *it );
 
 					// special case for consumer:
 					// it is ok if they cannot be created here, because some might
