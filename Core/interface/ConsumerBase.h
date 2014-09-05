@@ -12,13 +12,17 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 
 #include "FilterBase.h"
+#include "ProductBase.h"
 #include "FilterResult.h"
+#include "EventBase.h"
+#include "Artus/Configuration/interface/SettingsBase.h"
 
 #include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/ProcessNodeBase.h"
 
-template<class TTypes>
-class Pipeline;
+
+class ConsumerBaseAccess;
+
 
 /*
  The base class to implement your own Consumer which run within an Pipeline.
@@ -27,8 +31,42 @@ class Pipeline;
  It is not allowed to write to the settings, filter, event and products.
  */
 
-template<class TTypes>
-class ConsumerBase: public ProcessNodeBase {
+class ConsumerBaseUntemplated : public ProcessNodeBase {
+public:
+
+	// this will allow the pipeline class to call the protected
+	// base implemenations of ProcessEvent / Init and friends
+	friend ConsumerBaseAccess;
+
+	virtual ~ConsumerBaseUntemplated() {}
+
+protected:
+	// will be implemented by the ConsumerBase class
+	virtual void baseProcessEvent( EventBase const& evt, ProductBase const& prod,
+			FilterResult & fres) = 0;
+	virtual void baseInit ( SettingsBase const& settings ) = 0;
+};
+
+class ConsumerBaseAccess {
+public:
+	ConsumerBaseAccess ( ConsumerBaseUntemplated & cb ) : m_cb(cb) {
+
+	}
+
+	void ProcessEvent( EventBase const& evt, ProductBase const& prod, FilterResult fres){
+		m_cb.baseProcessEvent( evt, prod, fres);
+	}
+
+	void Init ( SettingsBase const& settings ){
+		m_cb.baseInit( settings );
+	}
+private:
+	ConsumerBaseUntemplated & m_cb;
+};
+
+
+template<class TTypes >
+class ConsumerBase: public ConsumerBaseUntemplated  {
 public:
 
 	typedef typename TTypes::event_type event_type;
@@ -38,12 +76,8 @@ public:
 	virtual ~ConsumerBase() {
 	}
 
-	/*
-	 * Called before the first Event is passed to this consumer
-	 */
-	virtual void Init(Pipeline<TTypes> * pipeline) {
-		LOG(INFO) << "Initialize Consumer \"" << this->GetConsumerId() << "\" for pipeline \"" << pipeline->GetSettings().GetName() << "\".";
-		m_pipeline = pipeline;
+	virtual void Init ( setting_type const& settings ) {
+
 	}
 
 	/* this method is only called for events which have passed the filter imposed on the
@@ -83,9 +117,9 @@ public:
 	/*
 	 * Return a reference to the settings used for this consumer
 	 */
-	setting_type const& GetPipelineSettings() const {
+/*	setting_type const& GetPipelineSettings() const {
 		return this->m_pipeline->GetSettings();
-	}
+	}*/
 
 	virtual ProcessNodeType GetProcessNodeType () const
 		ARTUS_CPP11_FINAL
@@ -95,5 +129,19 @@ public:
 	}
 
 protected:
-	Pipeline<TTypes> * m_pipeline;
+	virtual void baseProcessEvent( EventBase const& evt, ProductBase const& prod, FilterResult & fres)
+		ARTUS_CPP11_OVERRIDE {
+		//this->referProcessEvent< event_type, product_type  > ( evt, prod);
+
+		auto const& specEvent = static_cast < event_type const&> ( evt );
+		auto const& specProd = static_cast < product_type const&> ( prod );
+
+		ProcessEvent( specEvent, specProd, fres );
+	}
+
+	void baseInit ( SettingsBase const& settings ) ARTUS_CPP11_OVERRIDE {
+		auto const& specSettings = static_cast < setting_type const&> ( settings );
+
+		this->Init ( specSettings );
+	}
 };

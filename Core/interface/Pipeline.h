@@ -84,8 +84,8 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 
-	typedef ConsumerBase<TTypes> ConsumerForThisPipeline;
-	typedef boost::ptr_vector<ConsumerBase<TTypes> > ConsumerVector;
+	typedef ConsumerBaseUntemplated ConsumerForThisPipeline;
+	typedef boost::ptr_vector<ConsumerBaseUntemplated> ConsumerVector;
 	typedef typename ConsumerVector::iterator ConsumerVectorIterator;
 
 	typedef FilterBase<TTypes> FilterForThisPipeline;
@@ -122,7 +122,7 @@ public:
 
 		// init Consumers
 		for (auto & it : m_consumer) {
-			it.Init(this);
+			ConsumerBaseAccess(it).Init( pset );
 		}
 
 		// store the filter names for later use in RunEvent

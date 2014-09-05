@@ -63,20 +63,21 @@ add_library(artus_utility SHARED
 	Utility/src/CutRange.cc
 )
 
-add_executable(artus_core_test
-	Test/test/Artus_t.cc	
-)
+#add_executable(artus_core_test
+#	Test/test/Artus_t.cc	
+#)
 
-target_link_libraries( artus_core_test 	
-	artus_core	
-	artus_configuration
-	artus_utility
-	${ROOT_LIBRARIES})
+#target_link_libraries( artus_core_test 	
+#	artus_core	
+#	artus_configuration
+#	artus_utility
+#	${ROOT_LIBRARIES})
 
 # use a capitaal *E*xample here and no underscore
 # to be compatible of how the binary is named in the CMSSW build
 add_executable(artusExample
 	Example/bin/ArtusExample.cc
+	Example/src/MeanPtConsumer.cc
 )
 
 target_link_libraries( artusExample 	

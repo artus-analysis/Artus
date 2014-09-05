@@ -48,16 +48,16 @@ public:
 			return FactoryBase<TraxTypes>::createProducer( id );
 	}
 
-	virtual TraxConsumerBase * createConsumer ( std::string const& id )
+	virtual ConsumerBaseUntemplated * createConsumer ( std::string const& id )
 		ARTUS_CPP11_OVERRIDE
 	{
-		if ( MeanPtConsumer().GetConsumerId() == id )
+		/*if ( MeanPtConsumer().GetConsumerId() == id )
 			return new MeanPtConsumer();
 		else if ( TraxNtupleConsumer().GetConsumerId() == id )
 			return new TraxNtupleConsumer();
 		else if ( CutFlowConsumer().GetConsumerId() == id )
 			return new CutFlowConsumer();
-		else
+		else*/
 			return FactoryBase<TraxTypes>::createConsumer( id );
 	}
 

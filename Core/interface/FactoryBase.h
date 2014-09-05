@@ -32,7 +32,7 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 
 	typedef ProducerBase< TTypes > producer_base_type;
-	typedef ConsumerBase< TTypes > consumer_base_type;
+	typedef ConsumerBaseUntemplated consumer_base_type;
 	typedef FilterBase< TTypes > filter_base_type;
 
 	virtual ~FactoryBase() {

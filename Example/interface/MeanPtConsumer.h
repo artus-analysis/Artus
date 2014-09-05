@@ -28,14 +28,7 @@ public:
 	}
 
 	virtual void ProcessFilteredEvent(TraxEvent const& event,
-			TraxProduct const& product ) ARTUS_CPP11_OVERRIDE {
-
-		m_mean = ((m_mean * m_itemCount) + event.m_floatPtSim)
-				/ (m_itemCount + 1);
-
-		m_itemCount++;
-
-	}
+			TraxProduct const& product );
 
 	virtual void Finish() ARTUS_CPP11_OVERRIDE {
 		// todo: print pipeline name here
@@ -46,3 +39,4 @@ private:
 	long long m_itemCount;
 	double m_mean;
 };
+
