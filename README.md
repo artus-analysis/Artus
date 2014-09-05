@@ -71,6 +71,7 @@ Now the local processing for the three configured pipelins commences. Two of the
 filters to only accept event with a certain pt region. Every pipeline has a consumer which plots 
 the transeverse momentum into a histogram.
 
+````
  [ Event Provider ]
 	||
 	\/
@@ -92,7 +93,7 @@ the transeverse momentum into a histogram.
         ||                              ||                              
         \/                              \/                              
  [ ConsumerPlotPt ]		[ ConsumerPlotPt ]
-
+````
 
 
 Example
@@ -101,6 +102,7 @@ Example
 To help understand the framework concept, a comprehensive example is included. To try it out in a CMSSW environment,
 run the following code:
 
+````
 scram p CMSSW_6_2_3
 cd CMSSW_6_2_3/
 cmsenv
@@ -111,6 +113,7 @@ scram b runtests
 cd Artus/Example/data/
 artusExample exampleConfig.json
 root -l sample_output.root  
+````
 
 This will produce the output file "sample_output.root" which contains two folders with histograms and different
 filter settings.
@@ -128,6 +131,7 @@ Standalone CMake compile
 To compile standalone, make sure you have a recent ROOT and cmake installation available in your system. Furthermore,
 you should have at least gcc 4.7 to benefit from the C++11 support.
 
+````
 git clone https://ekptrac.physik.uni-karlsruhe.de/git/Artus
 cd Artus
 cmake .
@@ -135,6 +139,7 @@ make -j4
 cd Example/data/
 ../../artusExample exampleConfig.json
 root -l sample_output.root
+````
 
 This will produce the output file "sample_output.root" which contains two folders with histograms and different
 filter settings.
