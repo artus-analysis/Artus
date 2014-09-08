@@ -18,6 +18,9 @@
 
 #include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/ProcessNodeBase.h"
+#include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/Core/interface/FilterBase.h"
+
 #include "Artus/Utility/interface/Collections.h"
 #include "Artus/Utility/interface/ArtusLogging.h"
 
@@ -93,7 +96,7 @@ private:
 				if ( gProd == ARTUS_CPP11_NULLPTR ){
 					LOG(FATAL) << "Global producer with id " << ntype.second << " not found!";
 				} else {
-					gProd->Init(gSettings);
+					ProducerBaseAccess(	*gProd ).Init(gSettings);
 					runner.AddProducer( gProd );
 				}
 			} else if (ntype.first == ProcessNodeType::Filter ) {
@@ -102,7 +105,7 @@ private:
 				if ( gProd == ARTUS_CPP11_NULLPTR ){
 					LOG(FATAL) << "Global filter with id " << ntype.second << " not found!";
 				} else {
-					gProd->Init(gSettings);
+					FilterBaseAccess( *gProd ).Init(gSettings);
 					runner.AddFilter( gProd );
 				}
 			}

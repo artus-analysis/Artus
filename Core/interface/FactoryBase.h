@@ -27,13 +27,9 @@ template<class TTypes>
 class FactoryBase: public boost::noncopyable {
 public:
 
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
-
-	typedef ProducerBase< TTypes > producer_base_type;
+	typedef ProducerBaseUntemplated producer_base_type;
 	typedef ConsumerBaseUntemplated consumer_base_type;
-	typedef FilterBase< TTypes > filter_base_type;
+	typedef FilterBaseUntemplated filter_base_type;
 
 	virtual ~FactoryBase() {
 	}

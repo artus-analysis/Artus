@@ -37,7 +37,7 @@ public:
 
 	virtual ~TraxFactory() {}
 
-	virtual TraxProducerBase * createProducer ( std::string const& id )
+	virtual ProducerBaseUntemplated * createProducer ( std::string const& id )
 		ARTUS_CPP11_OVERRIDE
 	{
 		if ( PtCorrectionProducer().GetProducerId() == id )
@@ -61,7 +61,7 @@ public:
 			return FactoryBase<TraxTypes>::createConsumer( id );
 	}
 
-	virtual TraxFilterBase * createFilter ( std::string const& id )
+	virtual FilterBaseUntemplated * createFilter ( std::string const& id )
 		ARTUS_CPP11_OVERRIDE
 	{
 		if ( PtFilter().GetFilterId() == id )
