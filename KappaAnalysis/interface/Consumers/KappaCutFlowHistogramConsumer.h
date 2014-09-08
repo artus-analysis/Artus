@@ -21,13 +21,14 @@ class KappaCutFlowHistogramConsumer: public CutFlowHistogramConsumer<TTypes> {
 public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
+	typedef typename TTypes::setting_type setting_type;
 	
-	virtual void Init(Pipeline<TTypes> * pipeline) ARTUS_CPP11_OVERRIDE
+	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
 	{
-		CutFlowHistogramConsumer<TTypes>::Init(pipeline);
+		CutFlowHistogramConsumer<TTypes>::Init(settings);
 	
-		this->weightExtractor = [pipeline](event_type const& event, product_type const& product) -> float {
-			return SafeMap::GetWithDefault(product.m_weights, std::string(pipeline->GetSettings().GetEventWeight()), 1.0);
+		this->weightExtractor = [&settings](event_type const& event, product_type const& product) -> float {
+			return SafeMap::GetWithDefault(product.m_weights, std::string(settings.GetEventWeight()), 1.0);
 		};
 	
 		this->m_addWeightedCutFlow = true;

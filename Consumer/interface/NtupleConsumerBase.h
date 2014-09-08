@@ -39,12 +39,12 @@ public:
 		m_quantitiesVector = pset.GetQuantities();
 		m_quantities = boost::algorithm::join(m_quantitiesVector, ":");
 
-		RootFileHelper::SafeCd(this->GetPipelineSettings().GetRootOutFile(),
-		                       this->GetPipelineSettings().GetRootFileFolder());
+		RootFileHelper::SafeCd(pset.GetRootOutFile(),
+		                       pset.GetRootFileFolder());
 		
 		m_ntuple = new TNtuple("ntuple",
-							   ("Ntuple for Pipeline \"" + this->GetPipelineSettings().GetName() + "\"").c_str(),
-							   m_quantities.c_str());
+				   ("Ntuple for Pipeline \"" + pset.GetName() + "\"").c_str(),
+				   m_quantities.c_str());
 	}
 
 	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE
@@ -55,7 +55,7 @@ public:
 	virtual void ProcessFilteredEvent(event_type const& event,
 			product_type const& product,
 			setting_type const& setting) ARTUS_CPP11_OVERRIDE {
-		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product);
+		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product, setting);
 
 		// preallocated vector
 		std::vector<float> array (m_quantitiesVector.size()) ;

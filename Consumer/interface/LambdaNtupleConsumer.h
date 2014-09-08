@@ -34,8 +34,8 @@ public:
 	virtual ~LambdaNtupleConsumer() {
 	}
 
-	virtual void Init(Pipeline<TTypes> * pipeline) ARTUS_CPP11_OVERRIDE {
-		NtupleConsumerBase<TTypes>::Init(pipeline);
+	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+		NtupleConsumerBase<TTypes>::Init(settings);
 		
 		// construct extractors vector
 		m_valueExtractors.clear();
@@ -48,12 +48,12 @@ public:
 		}
 	}
 
-	virtual void ProcessFilteredEvent(event_type const& event, product_type const& product ) ARTUS_CPP11_OVERRIDE
+	virtual void ProcessFilteredEvent(event_type const& event, product_type const& product, setting_type const& settings ) ARTUS_CPP11_OVERRIDE
 	{
 		assert(m_valueExtractors.size() == this->m_quantitiesVector.size());
 
 		// do not call NtupleConsumerBase<TTypes>::ProcessFilteredEvent due to different filling logic
-		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product);
+		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product, settings);
 		
 		// preallocated vector
 		std::vector<float> array (this->m_quantitiesVector.size());

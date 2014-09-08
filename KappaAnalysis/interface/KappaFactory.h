@@ -51,7 +51,7 @@ public:
 
 	virtual ~KappaFactory() {}
 
-	virtual ProducerBase<TTypes> * createProducer ( std::string const& id )
+	virtual ProducerBaseUntemplated * createProducer ( std::string const& id )
 		ARTUS_CPP11_OVERRIDE
 	{
 		if(id == GenTauDecayProducer<TTypes>().GetProducerId())
@@ -108,7 +108,7 @@ public:
 			return FactoryBase<TTypes>::createProducer( id );	
 	}
 
-	virtual FilterBase<TTypes> * createFilter ( std::string const& id )
+	virtual FilterBaseUntemplated * createFilter ( std::string const& id )
 		ARTUS_CPP11_OVERRIDE
 	{
 		if(id == RunLumiEventFilter<TTypes>().GetFilterId())
@@ -169,7 +169,7 @@ public:
 			return FactoryBase<TTypes>::createFilter( id );
 	}
 
-	virtual ConsumerBase<TTypes> * createConsumer ( std::string const& id )
+	virtual ConsumerBaseUntemplated * createConsumer ( std::string const& id )
 		ARTUS_CPP11_OVERRIDE
 	{
 		if(id == KappaCutFlowHistogramConsumer<TTypes>().GetConsumerId())

@@ -17,13 +17,14 @@ public:
 
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
+	typedef typename TTypes::setting_type setting_type;
 
 	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE
 	{
 		return "KappaLambdaNtupleConsumer";
 	}
 	
-	virtual void Init(Pipeline<TTypes> * pipeline) ARTUS_CPP11_OVERRIDE
+	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
 	{
 		// add possible quantities for the lambda ntuples consumers
 		LambdaNtupleConsumer<TTypes>::Quantities["run"] = [](event_type const& event, product_type const& product)
@@ -43,9 +44,9 @@ public:
 		{
 			return event.m_vertexSummary->nVertices;
 		};
-		LambdaNtupleConsumer<TTypes>::Quantities["npu"] = [pipeline](event_type const& event, product_type const& product)
+		LambdaNtupleConsumer<TTypes>::Quantities["npu"] = [&settings](event_type const& event, product_type const& product)
 		{
-			return (pipeline->GetSettings().GetInputIsData() ?
+			return (settings.GetInputIsData() ?
 			        DefaultValues::UndefinedFloat :
 			        static_cast<KGenEventMetadata*>(event.m_eventMetadata)->numPUInteractionsTruth);
 		};
@@ -56,7 +57,7 @@ public:
 		
 		// loop over all quantities containing "weight" (case-insensitive)
 		// and try to find them in the weights map to write them out
-		for (auto const & quantity : pipeline->GetSettings().GetQuantities())
+		for (auto const & quantity : settings.GetQuantities())
 		{
 			if (boost::algorithm::icontains(quantity, "weight"))
 			{
@@ -72,6 +73,6 @@ public:
 		}
 	
 		// need to be called at last
-		LambdaNtupleConsumer<TTypes>::Init(pipeline);
+		LambdaNtupleConsumer<TTypes>::Init(settings);
 	}
 };
