@@ -6,7 +6,9 @@
 
 #pragma once
 
-class TestEvent {
+#include "Artus/Core/interface/EventBase.h"
+
+class TestEvent : public EventBase {
 public:
 	TestEvent() : iVal(0) {}
 

@@ -18,17 +18,18 @@ public:
 		return "test_consumer";
 	}
 
-	virtual void Init(Pipeline<TestTypes> * pset) ARTUS_CPP11_OVERRIDE {
-		m_pipeline = pset;
+	virtual void Init(TestSettings const& setting) ARTUS_CPP11_OVERRIDE {
+		//m_pipeline = pset;
 		iInit++;
 	}
 
-	virtual void Finish() ARTUS_CPP11_OVERRIDE {
+	virtual void Finish(TestSettings const& setting) ARTUS_CPP11_OVERRIDE {
 		iFinish++;
 	}
 
 	virtual void ProcessFilteredEvent(TestEvent const& event,
-			TestProduct const& product ) ARTUS_CPP11_OVERRIDE
+			TestProduct const& product,
+			TestSettings const& setting) ARTUS_CPP11_OVERRIDE
 	{
 		iProcessFilteredEvent++;
 	}
@@ -36,6 +37,7 @@ public:
 	// this method is called for all events
 	virtual void ProcessEvent(TestEvent const& event,
 			TestProduct const& product,
+			TestSettings const& setting,
 			FilterResult& result) ARTUS_CPP11_OVERRIDE
 	{
 		if ( bCheckInProcessEvent ) {
@@ -48,7 +50,7 @@ public:
 		fres = result;
 	}
 
-	virtual void Process() ARTUS_CPP11_OVERRIDE {
+	virtual void Process(TestSettings const& setting) ARTUS_CPP11_OVERRIDE {
 		iProcess++;
 	}
 
@@ -81,17 +83,15 @@ public:
 		return "test_consumer_local";
 	}
 
-	virtual void Init(Pipeline<TestTypes> * pset) ARTUS_CPP11_OVERRIDE {
-		m_pipeline = pset;
-	}
-
-	virtual void Finish() ARTUS_CPP11_OVERRIDE {
-	}
-
 	virtual void ProcessFilteredEvent(TestEvent const& event,
-			TestProduct const& product ) ARTUS_CPP11_OVERRIDE
+			TestProduct const& product,
+			TestSettings const& setting) ARTUS_CPP11_OVERRIDE
 	{
 		m_iLocalValue = product.iLocalProduct;
+	}
+
+	virtual void Finish ( TestSettings const& setting ) {
+
 	}
 
 	void CheckValue(int compareTo ) {
