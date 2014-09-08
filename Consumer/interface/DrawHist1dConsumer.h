@@ -40,28 +40,29 @@ public:
 		return "hist1d";
 	}
 
-	virtual void Init(Pipeline<TTypes> * pset) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(setting_type const& pset) ARTUS_CPP11_OVERRIDE {
 		DrawConsumerBase<TTypes>::Init(pset);
 
 		// init called
-		const std::string rootFolder = pset->GetSettings().GetRootFileFolder();
+		const std::string rootFolder = pset.GetRootFileFolder();
 		Hist1D * hist = new Hist1D(m_histName, rootFolder, m_desc.second);
 		setHist(hist);
 		assert(m_hist);
 		m_hist->Init();
 	}
 
-	virtual void Finish() ARTUS_CPP11_OVERRIDE {
+	virtual void Finish( setting_type const& setting ) ARTUS_CPP11_OVERRIDE {
 		// store hist
 		// + modifiers
 		//LOG(INFO) << "Storing Hist for " << this->GetProductName() << ".";
-		m_hist->Store(this->GetPipelineSettings().GetRootOutFile());
+		m_hist->Store(setting.GetRootOutFile());
 	}
 
 	virtual void ProcessFilteredEvent(event_type const& event,
-			product_type const& product ) ARTUS_CPP11_OVERRIDE {
+			product_type const& product,
+			setting_type const& setting ) ARTUS_CPP11_OVERRIDE {
 
-		DrawConsumerBase<TTypes>::ProcessFilteredEvent(event, product );
+		DrawConsumerBase<TTypes>::ProcessFilteredEvent(event, product, setting );
 
 		auto res = m_desc.first(event, product);
 

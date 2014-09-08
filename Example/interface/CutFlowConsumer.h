@@ -18,7 +18,7 @@ class CutFlowConsumer: public CutFlowConsumerBase< TraxTypes > {
 
 public:
 
-	virtual void Finish() ARTUS_CPP11_OVERRIDE {
+	virtual void Finish(setting_type const& setting) ARTUS_CPP11_OVERRIDE {
 		LOG(INFO) << "Cut Flow for pipeline" << m_pipelineName << ":";
 		LOG(INFO) << m_flow.ToString();
 	}

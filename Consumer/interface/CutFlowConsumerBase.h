@@ -24,20 +24,21 @@ public:
 		return "cutflow";
 	}
 
-	virtual void Init(Pipeline<TTypes> * pipeline) ARTUS_CPP11_OVERRIDE {
-		ConsumerBase<TTypes>::Init( pipeline );
+	virtual void Init(setting_type const& pset) ARTUS_CPP11_OVERRIDE {
+		ConsumerBase<TTypes>::Init(pset);
 
-		m_pipelineName = pipeline->GetSettings().GetName ();
+		m_pipelineName = pset.GetName ();
 	}
 
 	virtual void ProcessEvent(event_type const& event,
 			product_type const& product,
-            FilterResult & result) {
-		ConsumerBase<TTypes>::ProcessEvent(event, product, result);
+			setting_type const& setting,
+            FilterResult & result) ARTUS_CPP11_OVERRIDE {
+		ConsumerBase<TTypes>::ProcessEvent(event, product, setting, result);
 		m_flow.AddFilterResult ( result );
 	}
 
-	virtual void Finish() ARTUS_CPP11_OVERRIDE {
+	virtual void Finish(setting_type const& setting) ARTUS_CPP11_OVERRIDE {
 		// at this point, m_flow contains all the filter results of all events
 		// overwrite this to analyze
 	}

@@ -33,10 +33,10 @@ public:
 	virtual ~NtupleConsumerBase() {
 	}
 
-	virtual void Init(Pipeline<TTypes> * pset) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(setting_type const& pset) ARTUS_CPP11_OVERRIDE {
 		ConsumerBase<TTypes>::Init(pset);
 
-		m_quantitiesVector = pset->GetSettings().GetQuantities();
+		m_quantitiesVector = pset.GetQuantities();
 		m_quantities = boost::algorithm::join(m_quantitiesVector, ":");
 
 		RootFileHelper::SafeCd(this->GetPipelineSettings().GetRootOutFile(),
@@ -53,7 +53,8 @@ public:
 	}
 
 	virtual void ProcessFilteredEvent(event_type const& event,
-			product_type const& product ) ARTUS_CPP11_OVERRIDE {
+			product_type const& product,
+			setting_type const& setting) ARTUS_CPP11_OVERRIDE {
 		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product);
 
 		// preallocated vector
@@ -71,10 +72,10 @@ public:
 	}
 
 
-	virtual void Finish() ARTUS_CPP11_OVERRIDE
+	virtual void Finish(setting_type const& setting) ARTUS_CPP11_OVERRIDE
 	{
-		RootFileHelper::SafeCd(this->GetPipelineSettings().GetRootOutFile(),
-		                       this->GetPipelineSettings().GetRootFileFolder());
+		RootFileHelper::SafeCd(setting.GetRootOutFile(),
+								setting.GetRootFileFolder());
 		
 		m_ntuple->Write(m_ntuple->GetName());
 	}

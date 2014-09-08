@@ -35,10 +35,9 @@ public:
 	{
 	}
 
-	virtual void Init(Pipeline<TTypes> * pipeline) ARTUS_CPP11_OVERRIDE
+	virtual void Init( typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE
 	{
-		CutFlowConsumerBase<TTypes>::Init(pipeline);
-		
+		CutFlowConsumerBase<TTypes>::Init(settings);
 		// default weight = 1.0
 		// overwrite this in analysis-specific code
 		// and set m_addWeightedCutFlow to true
@@ -47,13 +46,14 @@ public:
 
 	virtual void ProcessEvent(event_type const& event,
 	                          product_type const& product,
+	                          setting_type const& setting,
 	                          FilterResult & filterResult)
 	{
-		CutFlowConsumerBase<TTypes>::ProcessEvent(event, product, filterResult);
+		CutFlowConsumerBase<TTypes>::ProcessEvent(event, product, setting, filterResult);
 		
 		// initialise histograms in first event
 		if(! m_histogramsInitialised) {
-			m_histogramsInitialised = InitialiseHistograms(filterResult);
+			m_histogramsInitialised = InitialiseHistograms(setting, filterResult);
 		}
 
 		float weight = weightExtractor(event, product);
@@ -82,12 +82,12 @@ public:
 		}
 	}
 
-	virtual void Finish() ARTUS_CPP11_OVERRIDE {
-		CutFlowConsumerBase<TTypes>::Finish();
+	virtual void Finish(setting_type const& setting) ARTUS_CPP11_OVERRIDE {
+		CutFlowConsumerBase<TTypes>::Finish(setting);
 		
 		// save histograms
-		RootFileHelper::SafeCd(this->GetPipelineSettings().GetRootOutFile(),
-		                       this->GetPipelineSettings().GetRootFileFolder());
+		RootFileHelper::SafeCd(setting.GetRootOutFile(),
+				setting.GetRootFileFolder());
 		
 		m_cutFlowUnweightedHist->Write(m_cutFlowUnweightedHist->GetName());
 	
@@ -106,17 +106,17 @@ private:
 	bool m_histogramsInitialised;
 	
 	// initialise histograms; to be called in first event
-	bool InitialiseHistograms(FilterResult & filterResult) {
+	bool InitialiseHistograms( setting_type const& setting, FilterResult & filterResult) {
 
 		// filters
 		std::vector<std::string> filterNames = filterResult.GetFilterNames();
 		int nFilters = filterNames.size();
 	
 		// histograms
-		RootFileHelper::SafeCd(this->GetPipelineSettings().GetRootOutFile(),
-		                       this->GetPipelineSettings().GetRootFileFolder());
+		RootFileHelper::SafeCd( setting.GetRootOutFile(),
+		                        setting.GetRootFileFolder());
 		
-		std::string cutFlowHistTitle("Cut Flow for Pipeline \"" + this->GetPipelineSettings().GetName() + "\"");
+		std::string cutFlowHistTitle("Cut Flow for Pipeline \"" + setting.GetName() + "\"");
 		
 		m_cutFlowUnweightedHist = new TH1F("cutFlowUnweighted",
 		                                   cutFlowHistTitle.c_str(),

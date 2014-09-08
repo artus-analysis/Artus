@@ -7,7 +7,7 @@
 #include "Artus/Example/interface/MeanPtConsumer.h"
 
 void MeanPtConsumer::ProcessFilteredEvent(TraxEvent const& event,
-		TraxProduct const& product)
+		TraxProduct const& product, TraxSettings const& setting)
 {
 
 	m_mean = ((m_mean * m_itemCount) + event.m_floatPtSim) / (m_itemCount + 1);

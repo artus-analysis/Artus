@@ -28,9 +28,10 @@ public:
 	}
 
 	virtual void ProcessFilteredEvent(TraxEvent const& event,
-			TraxProduct const& product );
+			TraxProduct const& product,
+			setting_type const& setting) ARTUS_CPP11_OVERRIDE;
 
-	virtual void Finish() ARTUS_CPP11_OVERRIDE {
+	virtual void Finish(setting_type const& setting ) ARTUS_CPP11_OVERRIDE {
 		// todo: print pipeline name here
 		LOG(INFO) << "Track mean Pt is " << m_mean << " [GeV].";
 	}

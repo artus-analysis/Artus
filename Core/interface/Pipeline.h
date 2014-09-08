@@ -149,7 +149,7 @@ public:
 	/// Called once all events have been passed to the pipeline.
 	virtual void FinishPipeline() {
 		for (auto & it : m_consumer) {
-			it.Finish();
+			ConsumerBaseAccess( it ).Finish( GetSettings() );
 		}
 	}
 
@@ -157,7 +157,7 @@ public:
 	/// process output from Pipelines already run.
 	virtual void Run() {
 		for (auto & it : m_consumer) {
-			it.Process();
+			ConsumerBaseAccess( it ).Process( GetSettings() );
 		}
 	}
 
@@ -203,10 +203,10 @@ public:
 		for (ConsumerVectorIterator itcons = m_consumer.begin();
 				itcons != m_consumer.end(); itcons++) {
 			if (localFilterResult.HasPassed()) {
-				itcons->ProcessFilteredEvent(evt, localProduct);
+				ConsumerBaseAccess( *itcons ).ProcessFilteredEvent(evt, localProduct, GetSettings());
 			}
 
-			itcons->ProcessEvent(evt, localProduct, localFilterResult);
+			ConsumerBaseAccess( *itcons ).ProcessEvent(evt, localProduct, GetSettings(), localFilterResult);
 		}
 
 		return localFilterResult.HasPassed();

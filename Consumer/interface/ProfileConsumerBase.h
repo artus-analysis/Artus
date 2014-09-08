@@ -37,12 +37,14 @@ public:
 		return "profile";
 	}
 
-	virtual void Init(PipelineTypeForThis * pset) ARTUS_CPP11_OVERRIDE {
-		ConsumerBase<TTypes>::Init(pset);
+	virtual void Init( typename TTypes::setting_type const& settings)
+		ARTUS_CPP11_OVERRIDE
+	{
+		ConsumerBase<TTypes>::Init(settings);
 
 		m_profile.reset(
 				new Profile2d(m_plotName,
-						this->GetPipelineSettings().GetRootFileFolder()));
+						settings.GetRootFileFolder()));
 
 		for (auto const& m : m_xsource.second) {
 			m->applyProfileBeforeCreation(m_profile.get(), 0);
@@ -56,17 +58,19 @@ public:
 
 	virtual void ProcessEvent(typename TTypes::event_type const& event,
 			typename TTypes::product_type const& product,
+			typename TTypes::setting_type const& setting,
 			FilterResult& result) ARTUS_CPP11_OVERRIDE {
-		ConsumerBase<TTypes>::ProcessEvent(event, product,
+		ConsumerBase<TTypes>::ProcessEvent(event, product, setting,
 				result);
 
 		// not supported ..
 	}
 
 	virtual void ProcessFilteredEvent(typename TTypes::event_type const& event,
-			typename TTypes::product_type const& product )
+			typename TTypes::product_type const& product,
+			typename TTypes::setting_type const& setting)
 					ARTUS_CPP11_OVERRIDE {
-		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product);
+		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product, setting);
 
 		auto resX = m_xsource.first(event, product);
 		auto resY = m_ysource.first(event, product);
@@ -95,8 +99,8 @@ public:
 		}
 	}
 
-	virtual void Finish() {
-		m_profile->Store(this->GetPipelineSettings().GetRootOutFile());
+	virtual void Finish(setting_type const& setting) ARTUS_CPP11_OVERRIDE {
+		m_profile->Store(setting.GetRootOutFile());
 	}
 
 	void SetPlotName(std::string plotName) {
