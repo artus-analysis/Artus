@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 
 
 /**
@@ -16,32 +16,13 @@
    they will be individually written to the ntuple by the LambdaNtupleConsumer
 */
 
-template<class TTypes>
-class EventWeightProducer: public ProducerBase<TTypes> {
+class EventWeightProducer: public KappaProducerBase {
 public:
 
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
-
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "EventWeightProducer";
-	}
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
 	
-	virtual void Produce(event_type const& event, product_type& product,
-	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
-	{
-		double eventWeight = 1.0;
-	
-		// loop over all previously calculated weights and multiply them
-		for(std::map<std::string, double>::const_iterator weight = product.m_weights.begin();
-			weight != product.m_weights.end(); ++weight)
-		{
-			eventWeight *= weight->second;
-		}
-	
-		product.m_weights[settings.GetEventWeight()] = eventWeight;
-	}
+	virtual void Produce(KappaEvent const& event, KappaProduct& product,
+	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE;
 };
 
 

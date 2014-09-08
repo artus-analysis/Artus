@@ -16,7 +16,7 @@
 #define USE_JEC
 #include "KappaTools/RootTools/JECTools.h"
 
-#include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/Utility/interface/Utility.h"
 
 /**
@@ -32,30 +32,29 @@
    
    Documentation:
    https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetEnCorFWLite
+
+   TODO: the code can be moved to a .cc file, if there are no external users using the TJet templated 
+         version
 */
 
 
-template<class TTypes, class TJet>
-class JetCorrectionsProducerBase: public ProducerBase<TTypes>
+template<class TJet>
+class JetCorrectionsProducerBase: public KappaProducerBase
 {
 
 public:
-
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
-	JetCorrectionsProducerBase(std::vector<TJet>* event_type::*jets,
-	                           std::vector<std::shared_ptr<TJet> > product_type::*correctedJets) :
-		ProducerBase<TTypes>(),
+	JetCorrectionsProducerBase(std::vector<TJet>* KappaEvent::*jets,
+	                           std::vector<std::shared_ptr<TJet> > KappaProduct::*correctedJets) :
+		KappaProducerBase(),
 		m_jetsMember(jets),
 		m_correctedJetsMember(correctedJets)
 	{
 	}
 
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE
 	{
-		ProducerBase<TTypes>::Init(settings);
+		KappaProducerBase::Init(settings);
 		
 		// load correction parameters
 		LOG(DEBUG) << "\tLoading JetCorrectorParameters from files...";
@@ -77,8 +76,8 @@ public:
 		}
 	}
 
-	virtual void Produce(event_type const& event, product_type& product,
-	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	virtual void Produce(KappaEvent const& event, KappaProduct& product,
+	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		
 		// create a copy of all jets in the event (first temporarily for the JEC)
@@ -128,15 +127,15 @@ public:
 protected:
 	
 	// Can be overwritten for analysis-specific use cases
-	virtual void AdditionalCorrections(TJet* jet, event_type const& event,
-	                                   product_type& product, setting_type const& settings) const
+	virtual void AdditionalCorrections(TJet* jet, KappaEvent const& event,
+	                                   KappaProduct& product, KappaSettings const& settings) const
 	{
 	}
 
 
 private:
-	std::vector<TJet>* event_type::*m_jetsMember;
-	std::vector<std::shared_ptr<TJet> > product_type::*m_correctedJetsMember;
+	std::vector<TJet>* KappaEvent::*m_jetsMember;
+	std::vector<std::shared_ptr<TJet> > KappaProduct::*m_correctedJetsMember;
 	
 	FactorizedJetCorrector* factorizedJetCorrector = 0;
 	JetCorrectionUncertainty* jetCorrectionUncertainty = 0;
@@ -149,13 +148,12 @@ private:
    
    Operates on the vector event.m_jets and product::m_correctedJets.
 */
-template<class TTypes>
-class JetCorrectionsProducer: public JetCorrectionsProducerBase<TTypes, KDataPFJet>
+class JetCorrectionsProducer: public JetCorrectionsProducerBase<KDataPFJet>
 {
 public:
 	JetCorrectionsProducer() :
-		JetCorrectionsProducerBase<TTypes, KDataPFJet>(&TTypes::event_type::m_jets,
-		                                               &TTypes::product_type::m_correctedJets)
+		JetCorrectionsProducerBase<KDataPFJet>(&KappaEvent::m_jets,
+		                                               &KappaProduct::m_correctedJets)
 	{
 	};
 	
@@ -171,18 +169,13 @@ public:
    
    Operates on the vector event.m_tjets and product::m_correctedTaggedJets.
 */
-template<class TTypes>
-class TaggedJetCorrectionsProducer: public JetCorrectionsProducerBase<TTypes, KDataPFTaggedJet>
+class TaggedJetCorrectionsProducer: public JetCorrectionsProducerBase<KDataPFTaggedJet>
 {
 public:
 
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
-	
 	TaggedJetCorrectionsProducer() :
-		JetCorrectionsProducerBase<TTypes, KDataPFTaggedJet>(&TTypes::event_type::m_tjets,
-		                                                     &TTypes::product_type::m_correctedTaggedJets)
+		JetCorrectionsProducerBase<KDataPFTaggedJet>(&KappaEvent::m_tjets,
+		                                                     &KappaProduct::m_correctedTaggedJets)
 	{
 	};
 	

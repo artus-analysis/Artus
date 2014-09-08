@@ -1,8 +1,7 @@
 #pragma once
 
 #include "Artus/Core/interface/Cpp11Support.h"
-#include "Artus/Core/interface/ProducerBase.h"
-
+#include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 
 /**
    \brief CrossSectionWeightProducer
@@ -14,31 +13,15 @@
 
 */
 
-
-template<class TTypes>
-class CrossSectionWeightProducer : public ProducerBase<TTypes> {
+class CrossSectionWeightProducer : public KappaProducerBase {
 public:
 
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
+	virtual std::string GetProducerId() const
+		ARTUS_CPP11_OVERRIDE;
 
-	virtual std::string GetProducerId() const {
-		return "CrossSectionWeightProducer";
-	}
-
-	virtual void Produce(event_type const& event,
-			product_type & product,
-			setting_type const& settings) const {
-		if (settings.GetCrossSection() > 0.0)
-			product.m_weights["crossSectionPerEventWeight"] = settings.GetCrossSection();
-		else if (event.m_genLumiMetadata->xSectionExt > 0.)
-			product.m_weights["crossSectionPerEventWeight"] = event.m_genLumiMetadata->xSectionExt;
-		else if (event.m_genLumiMetadata->xSectionInt > 0.)
-			product.m_weights["crossSectionPerEventWeight"] = event.m_genLumiMetadata->xSectionInt;
-		else
-			LOG(ERROR) << "No CrossSection information found.";
-
-	}
+	virtual void Produce( KappaEvent const& event,
+			KappaProduct & product,
+			KappaSettings const& settings) const
+		ARTUS_CPP11_OVERRIDE;
 
 };

@@ -5,9 +5,7 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
-#include "Artus/Core/interface/ProducerBase.h"
-
-#include "Artus/KappaAnalysis/interface/KappaProduct.h"
+#include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 
 /**
    \brief GlobalProducer, to write any available generator particle to the product.
@@ -23,50 +21,16 @@
    }
 */
 
-template<class TTypes>
-class GenParticleProducer: public ProducerBase<TTypes>
+class GenParticleProducer: public KappaProducerBase
 {
-
 public:
 
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
 
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "GenParticleProducer";
-	}
-
-	virtual void Init(setting_type const& settings)
-	{
-		genParticleTypes.clear();
-		for (std::vector<std::string>::const_iterator genParticleType = settings.GetGenParticleTypes().begin();
-		     genParticleType != settings.GetGenParticleTypes().end(); ++genParticleType)
-		{
-			genParticleTypes.push_back(ToGenParticleType(*genParticleType));
-		}
-	}
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
  
-	virtual void Produce(event_type const& event, product_type& product,
-	                     setting_type const& settings) const
-	{
-		if (std::find(genParticleTypes.begin(), genParticleTypes.end(), GenParticleType::GENPARTICLE)
-		    != genParticleTypes.end())
-		{
-			for (KGenParticles::iterator part = event.m_genParticles->begin();
-			     part != event.m_genParticles->end(); ++part)
-			{
-				if (std::find(settings.GetGenParticlePdgIds().begin(), settings.GetGenParticlePdgIds().end(), part->pdgId())
-				    != settings.GetGenParticlePdgIds().end())
-				{
-					if ((settings.GetGenParticleStatus() == 0) || ( settings.GetGenParticleStatus() == part->status()))
-					{
-						product.m_genParticlesMap[part->pdgId()].push_back(&(*part));
-					}
-				}
-			}
-		}
-	}
+	virtual void Produce(KappaEvent const& event, KappaProduct& product,
+	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE;
 
 
 private:
@@ -79,14 +43,7 @@ private:
 		GENMUON = 2,
 		GENTAU = 3
 	};
-	static GenParticleType ToGenParticleType(std::string const& genParcticleName)
-	{
-		if (genParcticleName == "genParticle") return GenParticleType::GENPARTICLE;
-		else if (genParcticleName == "genElectron") return GenParticleType::GENELECTRON;
-		else if (genParcticleName == "genMuon") return GenParticleType::GENMUON;
-		else if (genParcticleName == "genTau") return GenParticleType::GENTAU;
-		else return GenParticleType::NONE;
-	}
+	static GenParticleType ToGenParticleType(std::string const& genParcticleName);
 	
 	std::vector<GenParticleType> genParticleTypes;
 

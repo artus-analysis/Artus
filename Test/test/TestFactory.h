@@ -15,13 +15,13 @@
 #include "TestConsumer.h"
 #include "Pipeline_t.h"
 
-class TestFactory: public FactoryBase<TestTypes> {
+class TestFactory: public FactoryBase/*<TestTypes>*/ {
 public:
 
 	virtual ~TestFactory() {
 	}
 
-	virtual TestProducerBase * createProducer(std::string const& id)
+	virtual ProducerBaseUntemplated * createProducer(std::string const& id)
 			ARTUS_CPP11_OVERRIDE
 			{
 		if (TestLocalProducer().GetProducerId() == id) {
@@ -39,7 +39,7 @@ public:
 		return ARTUS_CPP11_NULLPTR;
 	}
 
-	virtual ConsumerBase<TestTypes> * createConsumer(std::string const& id)
+	virtual ConsumerBaseUntemplated * createConsumer(std::string const& id)
 			ARTUS_CPP11_OVERRIDE
 			{
 		if (TestConsumer().GetConsumerId() == id) {
@@ -53,7 +53,7 @@ public:
 		return ARTUS_CPP11_NULLPTR;
 	}
 
-	virtual FilterBase<TestTypes> * createFilter(std::string const& id)
+	virtual FilterBaseUntemplated * createFilter(std::string const& id)
 			ARTUS_CPP11_OVERRIDE
 			{
 		if (TestFilter().GetFilterId() == id) {
