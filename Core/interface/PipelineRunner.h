@@ -42,9 +42,8 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 
-	typedef ProducerBase< TTypes > producer_base_type;
-	typedef FilterBase< TTypes > filter_base_type;
-	typedef ConsumerBase< TTypes > consumer_base_type;
+	typedef ProducerBaseUntemplated producer_base_type;
+	typedef FilterBaseUntemplated filter_base_type;
 
 	typedef boost::ptr_list<TPipeline> Pipelines;
 	typedef typename Pipelines::iterator PipelinesIterator;
@@ -135,12 +134,13 @@ public:
 					break;
 				
 				if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
-					static_cast<producer_base_type&> ( *it ) . Produce(evtProvider.GetCurrentEvent(),
+					ProducerBaseAccess ( static_cast<producer_base_type&> ( *it ) )
+							. Produce(evtProvider.GetCurrentEvent(),
 							productGlobal, settings);
 				}
 				else if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
 					filter_base_type & flt = static_cast<filter_base_type&> ( *it );
-					const bool filterResult = flt . DoesEventPass(evtProvider.GetCurrentEvent(),
+					const bool filterResult = FilterBaseAccess( flt ). DoesEventPass(evtProvider.GetCurrentEvent(),
 					                                                    productGlobal, settings);
 					globalFilterResult.SetFilterDecision( flt.GetFilterId(), filterResult );
 				}

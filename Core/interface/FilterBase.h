@@ -15,12 +15,57 @@
 #include "Artus/Core/interface/ProcessNodeBase.h"
 #include "Artus/Utility/interface/ArtusLogging.h"
 
-// forward define to be able to use the event pipeline here
-template<class TTypes>
-class Pipeline;
+#include "Artus/Core/interface/ProductBase.h"
+#include "Artus/Core/interface/EventBase.h"
+#include "Artus/Configuration/interface/SettingsBase.h"
+
+class FilterBaseAccess;
+
+class FilterBaseUntemplated : public ProcessNodeBase {
+public:
+
+	// this will allow the pipeline class to call the protected
+	// base implemenations
+	friend FilterBaseAccess;
+
+	virtual ~FilterBaseUntemplated() {}
+
+	/*
+	 * Must return a unique id of the filter.
+	 */
+	virtual std::string GetFilterId() const = 0;
+
+protected:
+
+	virtual bool baseDoesEventPass(EventBase const& event,
+			ProductBase const& product, SettingsBase const& settings) const = 0;
+	virtual void baseInit ( SettingsBase const& settings ) = 0;
+
+};
+
+class FilterBaseAccess  {
+public:
+	FilterBaseAccess ( FilterBaseUntemplated & cb ) : m_cb(cb) {
+
+	}
+
+	bool DoesEventPass(EventBase const& event,
+			ProductBase const& product, SettingsBase const& settings) const
+	{
+		return m_cb.baseDoesEventPass( event, product, settings);
+	}
+
+	void Init ( SettingsBase const& settings )
+	{
+		m_cb.baseInit( settings );
+	}
+
+private:
+	FilterBaseUntemplated & m_cb;
+};
 
 template<class TTypes>
-class FilterBase: public ProcessNodeBase {
+class FilterBase: public FilterBaseUntemplated {
 public:
 
 	typedef typename TTypes::event_type event_type;
@@ -31,18 +76,14 @@ public:
 	}
 
 	// initialise global pre-filters
-	virtual void Init(setting_type const& settings) {
+	virtual void Init(setting_type const& settings)
+	{
 		LOG(INFO) << "Initialize global Filter \"" << this->GetFilterId() << "\".";
 	}
 
-	/*
-	 * Must return a unique id of the filter.
-	 */
-	virtual std::string GetFilterId() const = 0;
-
 	// process global event
 	virtual bool DoesEventPass(event_type const& event,
-			product_type const& product, setting_type const& globalSettings) const
+			product_type const& product, setting_type const& settings) const
 	{
 		LOG(FATAL) << "DoesEventPassGlobal function for filter \"" << this->GetFilterId() << "\" is not implemented!";
 		return false;
@@ -59,4 +100,21 @@ public:
 		return ProcessNodeType::Filter;
 	}
 
+protected:
+
+	virtual bool baseDoesEventPass(EventBase const& evt,
+			ProductBase const& prod,
+			SettingsBase const& settings ) const ARTUS_CPP11_OVERRIDE {
+		auto const& specEvent = static_cast < event_type const&> ( evt );
+		auto const& specProd = static_cast < product_type const&> ( prod );
+		auto const& specSetting = static_cast < setting_type const&> ( settings );
+
+		return DoesEventPass( specEvent, specProd, specSetting );
+	}
+
+	virtual void baseInit ( SettingsBase const& settings ) ARTUS_CPP11_OVERRIDE {
+		auto const& specSettings = static_cast < setting_type const&> ( settings );
+
+		this->Init ( specSettings );
+	}
 };

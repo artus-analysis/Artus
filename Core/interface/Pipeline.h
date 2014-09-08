@@ -88,8 +88,8 @@ public:
 	typedef boost::ptr_vector<ConsumerBaseUntemplated> ConsumerVector;
 	typedef typename ConsumerVector::iterator ConsumerVectorIterator;
 
-	typedef FilterBase<TTypes> FilterForThisPipeline;
-	typedef ProducerBase<TTypes> ProducerForThisPipeline;
+	typedef FilterBaseUntemplated FilterForThisPipeline;
+	typedef ProducerBaseUntemplated ProducerForThisPipeline;
 
 	typedef boost::ptr_vector< ProcessNodeBase > ProcessNodeVector;
 	typedef typename ProcessNodeVector::iterator ProcessNodeIterator;
@@ -110,10 +110,12 @@ public:
 		for( ProcessNodeIterator it = m_nodes.begin();
 				it != m_nodes.end(); it ++ ) {
 			if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
-				static_cast< ProducerForThisPipeline &> ( *it ) . Init ( pset );
+				ProducerBaseAccess(	static_cast< ProducerForThisPipeline &> ( *it )	)
+						. Init ( pset );
 			}
 			else if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
-				static_cast< FilterForThisPipeline &> ( *it ) . Init ( pset );
+				FilterBaseAccess( static_cast< FilterForThisPipeline &> ( *it ) )
+						. Init ( pset );
 			}
 			else {
 				LOG(FATAL) << "ProcessNodeType not supported by the pipeline!";
@@ -185,12 +187,13 @@ public:
 				break;
 			
 			if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
-				static_cast< ProducerForThisPipeline &> ( *it ) . Produce(evt, localProduct,
+				ProducerBaseAccess(	static_cast< ProducerForThisPipeline &> ( *it )	)
+						. Produce(evt, localProduct,
 						m_pipelineSettings);
 			}
 			else if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
 				FilterForThisPipeline & flt = static_cast<FilterForThisPipeline &> ( *it );
-				const bool filterResult = flt . DoesEventPass(evt, localProduct,
+				const bool filterResult = FilterBaseAccess( flt ) . DoesEventPass(evt, localProduct,
 				                                                   m_pipelineSettings);
 				localFilterResult.SetFilterDecision( flt.GetFilterId(), filterResult );
 			}
@@ -213,7 +216,7 @@ public:
 	}
 
 	/// Find and return a Filter by it's id in this pipeline.
-	virtual FilterBase<TTypes>* FindFilter(std::string sFilterId) {
+	virtual FilterBaseUntemplated* FindFilter(std::string sFilterId) {
 		for( ProcessNodeIterator it = m_nodes.begin();
 				it != m_nodes.end(); it ++ ) {
 			if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {

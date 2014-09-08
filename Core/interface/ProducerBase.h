@@ -8,7 +8,12 @@
 #include "Artus/Utility/interface/ArtusLogging.h"
 
 #include "Artus/Core/interface/Cpp11Support.h"
+#include "Artus/Core/interface/ProductBase.h"
+#include "Artus/Core/interface/EventBase.h"
+#include "Artus/Configuration/interface/SettingsBase.h"
+
 #include "Artus/Core/interface/ProcessNodeBase.h"
+
 
 /**
    \brief Base class for Producers, that extend the product.
@@ -19,8 +24,47 @@
    within a given pipeline. Only one of these functions are called.
 */
 
+class ProducerBaseAccess;
+
+class ProducerBaseUntemplated : public ProcessNodeBase {
+public:
+
+	// this will allow the pipeline class to call the protected
+	// base implemenations of ProcessEvent / Init and friends
+	friend ProducerBaseAccess;
+
+	virtual ~ProducerBaseUntemplated() {}
+
+protected:
+	// will be implemented by the ConsumerBase class
+	virtual void baseInit ( SettingsBase const& settings ) = 0;
+
+	virtual void baseProduce(EventBase const& event, ProductBase& product,
+	                     SettingsBase const& settings) const = 0;
+};
+
+
+class ProducerBaseAccess {
+public:
+	ProducerBaseAccess ( ProducerBaseUntemplated & cb ) : m_cb(cb) {
+
+	}
+
+	void Init ( SettingsBase const& settings ){
+		m_cb.baseInit( settings );
+	}
+
+	void Produce(EventBase const& event, ProductBase& product,
+	                     SettingsBase const& settings){
+		m_cb.baseProduce ( event, product, settings);
+	}
+
+private:
+	ProducerBaseUntemplated & m_cb;
+};
+
 template<class TTypes>
-class ProducerBase: public ProcessNodeBase {
+class ProducerBase: public ProducerBaseUntemplated {
 public:
 
 	typedef typename TTypes::event_type event_type;
@@ -46,6 +90,24 @@ public:
 		ARTUS_CPP11_OVERRIDE
 	{
 		return ProcessNodeType::Producer;
+	}
+
+protected:
+
+	virtual void baseProduce(EventBase const& evt,
+			ProductBase & prod,
+			SettingsBase const& setting ) const ARTUS_CPP11_OVERRIDE {
+		auto const& specEvent = static_cast < event_type const&> ( evt );
+		auto & specProd = static_cast < product_type &> ( prod );
+		auto const& specSetting = static_cast < setting_type const&> ( setting );
+
+		Produce( specEvent, specProd, specSetting );
+	}
+
+	virtual void baseInit ( SettingsBase const& settings ) ARTUS_CPP11_OVERRIDE {
+		auto const& specSettings = static_cast < setting_type const&> ( settings );
+
+		this->Init ( specSettings );
 	}
 };
 
