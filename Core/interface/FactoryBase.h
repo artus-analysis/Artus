@@ -23,30 +23,26 @@
 #include "Artus/Consumer/interface/CutFlowHistogramConsumer.h"
 
 
-template<class TTypes>
+/*template<class TTypes>*/
 class FactoryBase: public boost::noncopyable {
 public:
-
-	typedef ProducerBaseUntemplated producer_base_type;
-	typedef ConsumerBaseUntemplated consumer_base_type;
-	typedef FilterBaseUntemplated filter_base_type;
 
 	virtual ~FactoryBase() {
 	}
 
 	// these virtual methods offer no default objects, so far
-	virtual producer_base_type * createProducer ( std::string const& id ) {
+	virtual ProducerBaseUntemplated * createProducer ( std::string const& id ) {
 		return ARTUS_CPP11_NULLPTR;
 	}
 
-	virtual filter_base_type * createFilter ( std::string const& id ) {
+	virtual FilterBaseUntemplated * createFilter ( std::string const& id ) {
 		return ARTUS_CPP11_NULLPTR;
 	}
 
-	virtual consumer_base_type * createConsumer ( std::string const& id ) {
-		if(id == CutFlowHistogramConsumer<TTypes>().GetConsumerId())
+	virtual ConsumerBaseUntemplated * createConsumer ( std::string const& id ) {
+		/*if(id == CutFlowHistogramConsumer<TTypes>().GetConsumerId())
 			return new CutFlowHistogramConsumer<TTypes>();
-		else
+		else*/
 			return ARTUS_CPP11_NULLPTR;
 	}
 

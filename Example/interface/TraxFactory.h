@@ -29,10 +29,10 @@
 #include "TraxNtupleConsumer.h"
 #include "CutFlowConsumer.h"
 
-class TraxFactory: public FactoryBase<TraxTypes> {
+class TraxFactory: public FactoryBase/*<TraxTypes>*/ {
 public:
 
-	TraxFactory() : FactoryBase<TraxTypes>() {
+	TraxFactory() : FactoryBase/*<TraxTypes>*/() {
 	}
 
 	virtual ~TraxFactory() {}
@@ -45,7 +45,7 @@ public:
 		else if ( PtCorrectionProducerLocal().GetProducerId() == id )
 			return new PtCorrectionProducerLocal();
 		else
-			return FactoryBase<TraxTypes>::createProducer( id );
+			return FactoryBase/*<TraxTypes>*/::createProducer( id );
 	}
 
 	virtual ConsumerBaseUntemplated * createConsumer ( std::string const& id )
@@ -58,7 +58,7 @@ public:
 		else if ( CutFlowConsumer().GetConsumerId() == id )
 			return new CutFlowConsumer();
 		else*/
-			return FactoryBase<TraxTypes>::createConsumer( id );
+			return FactoryBase/*<TraxTypes>*/::createConsumer( id );
 	}
 
 	virtual FilterBaseUntemplated * createFilter ( std::string const& id )
@@ -69,7 +69,7 @@ public:
 		else if ( ThetaFilter().GetFilterId() == id )
 			return new ThetaFilter();
 		else
-			return FactoryBase<TraxTypes>::createFilter( id );
+			return FactoryBase/*<TraxTypes>*/::createFilter( id );
 	}
 
 
