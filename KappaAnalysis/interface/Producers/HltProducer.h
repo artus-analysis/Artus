@@ -36,7 +36,7 @@ public:
 		}
 
 		// set LumiMetadat, needs to be done here for the case running over multiple files
-		product.m_hltInfo->setLumiMetadata(event.m_lumiMetadata);
+		product.m_hltInfo.setLumiMetadata(event.m_lumiMetadata);
 
 		// search trigger with lowest prescale
 		std::string lowestPrescaleHltName;
@@ -46,18 +46,18 @@ public:
 		bool unprescaledPathFound = false;
 		for (stringvector::const_iterator hltPath = settings.GetHltPaths().begin(); hltPath != settings.GetHltPaths().end(); ++hltPath)
 		{
-			std::string hltName = product.m_hltInfo->getHLTName(*hltPath);
+			std::string hltName = product.m_hltInfo.getHLTName(*hltPath);
 			if (! hltName.empty())
 			{
 				// look for trigger with lowest prescale
-				int prescale = product.m_hltInfo->getPrescale(hltName);
+				int prescale = product.m_hltInfo.getPrescale(hltName);
 				if (prescale < lowestPrescale)
 				{
 					lowestPrescale = prescale;
 					lowestPrescaleHltName = hltName;
 				}
 				
-				if (! product.m_hltInfo->isPrescaled(hltName))
+				if (! product.m_hltInfo.isPrescaled(hltName))
 				{
 					unprescaledPathFound = true;
 				}
@@ -112,7 +112,7 @@ public:
 		
 		if (! selectedHltName.empty())
 		{
-			product.m_selectedHltPosition = (int) product.m_hltInfo->getHLTPosition(selectedHltName);
+			product.m_selectedHltPosition = (int) product.m_hltInfo.getHLTPosition(selectedHltName);
 		}
 		else
 		{

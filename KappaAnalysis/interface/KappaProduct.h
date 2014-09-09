@@ -69,7 +69,7 @@ public:
 	std::vector<KDataPFTaggedJet*> m_bTaggedJets;
 	std::vector<KDataPFTaggedJet*> m_nonBTaggedJets;
 	
-	HLTTools* m_hltInfo = new HLTTools();
+	HLTTools m_hltInfo = HLTTools();
 	std::string m_selectedHltName;
 	int m_selectedHltPosition;
 
