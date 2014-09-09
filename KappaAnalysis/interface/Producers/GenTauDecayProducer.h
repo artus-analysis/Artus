@@ -7,7 +7,6 @@
 
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
-#include "Artus/KappaAnalysis/interface/KappaProduct.h"
 
 
 /**

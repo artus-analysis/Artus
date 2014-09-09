@@ -41,57 +41,58 @@
 
 ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 {
-	/*if(id == GenTauDecayProducer<TTypes>().GetProducerId())
-  		return new GenTauDecayProducer<TTypes>();*/
-	if(id == GenParticleProducer().GetProducerId())
+	if(id == GenTauDecayProducer().GetProducerId())
+  		return new GenTauDecayProducer();
+	else if(id == GenParticleProducer().GetProducerId())
   		return new GenParticleProducer();
 	else if(id == HltProducer().GetProducerId())
 		return new HltProducer();
 	else if(id == ElectronCorrectionsProducer().GetProducerId())
 		return new ElectronCorrectionsProducer();
-	/*else if(id == MuonCorrectionsProducer<TTypes>().GetProducerId())
-		return new MuonCorrectionsProducer<TTypes>();
-	else if(id == TauCorrectionsProducer<TTypes>().GetProducerId())
-		return new TauCorrectionsProducer<TTypes>();*/
+	else if(id == MuonCorrectionsProducer().GetProducerId())
+		return new MuonCorrectionsProducer();
+	else if(id == TauCorrectionsProducer().GetProducerId())
+		return new TauCorrectionsProducer();
 	else if(id == JetCorrectionsProducer().GetProducerId())
-		return new JetCorrectionsProducer();/*
-	else if(id == TaggedJetCorrectionsProducer<TTypes>().GetProducerId())
-		return new TaggedJetCorrectionsProducer<TTypes>();
-	else if(id == ValidElectronsProducer<TTypes>().GetProducerId())
-		return new ValidElectronsProducer<TTypes>();
-	else if(id == ValidMuonsProducer<TTypes>().GetProducerId())
-		return new ValidMuonsProducer<TTypes>();
-	else if(id == ValidTausProducer<TTypes>().GetProducerId())
-		return new ValidTausProducer<TTypes>();
-	else if(id == ValidJetsProducer<TTypes>().GetProducerId())
-		return new ValidJetsProducer<TTypes>();
-	else if(id == ValidTaggedJetsProducer<TTypes>().GetProducerId())
-		return new ValidTaggedJetsProducer<TTypes>();
-	else if(id == ValidBTaggedJetsProducer<TTypes>().GetProducerId())
-		return new ValidBTaggedJetsProducer<TTypes>();
-	else if(id == ElectronTriggerMatchingProducer<TTypes>().GetProducerId())
-		return new ElectronTriggerMatchingProducer<TTypes>();
-	else if(id == MuonTriggerMatchingProducer<TTypes>().GetProducerId())
-		return new MuonTriggerMatchingProducer<TTypes>();
-	else if(id == TauTriggerMatchingProducer<TTypes>().GetProducerId())
-		return new TauTriggerMatchingProducer<TTypes>();
-	else if(id == JetTriggerMatchingProducer<TTypes>().GetProducerId())
-		return new JetTriggerMatchingProducer<TTypes>();
-	else if(id == ValidLeptonsProducer<TTypes>().GetProducerId())
-		return new ValidLeptonsProducer<TTypes>();
-	else if(id == PUWeightProducer<TTypes>().GetProducerId())
-		return new PUWeightProducer<TTypes>();*/
+		return new JetCorrectionsProducer();
+	else if(id == TaggedJetCorrectionsProducer().GetProducerId())
+		return new TaggedJetCorrectionsProducer();
+	else if(id == ValidElectronsProducer<KappaTypes>().GetProducerId())
+		return new ValidElectronsProducer<KappaTypes>();
+	else if(id == ValidMuonsProducer<KappaTypes>().GetProducerId())
+		return new ValidMuonsProducer<KappaTypes>();
+	else if(id == ValidTausProducer<KappaTypes>().GetProducerId())
+		return new ValidTausProducer<KappaTypes>();
+	else if(id == ValidJetsProducer<KappaTypes>().GetProducerId())
+		return new ValidJetsProducer<KappaTypes>();
+	else if(id == ValidTaggedJetsProducer<KappaTypes>().GetProducerId())
+		return new ValidTaggedJetsProducer<KappaTypes>();
+	else if(id == ValidBTaggedJetsProducer<KappaTypes>().GetProducerId())
+		return new ValidBTaggedJetsProducer<KappaTypes>();
+	else if(id == ElectronTriggerMatchingProducer<KappaTypes>().GetProducerId())
+		return new ElectronTriggerMatchingProducer<KappaTypes>();
+	else if(id == MuonTriggerMatchingProducer<KappaTypes>().GetProducerId())
+		return new MuonTriggerMatchingProducer<KappaTypes>();
+	else if(id == TauTriggerMatchingProducer<KappaTypes>().GetProducerId())
+		return new TauTriggerMatchingProducer<KappaTypes>();
+	else if(id == JetTriggerMatchingProducer<KappaTypes>().GetProducerId())
+		return new JetTriggerMatchingProducer<KappaTypes>();
+	else if(id == ValidLeptonsProducer().GetProducerId())
+		return new ValidLeptonsProducer();
+	else if(id == PUWeightProducer().GetProducerId())
+		return new PUWeightProducer();
 	else if(id == EventWeightProducer().GetProducerId())
 		return new EventWeightProducer();
 	else if(id == GeneratorWeightProducer().GetProducerId())
 		return new GeneratorWeightProducer();
 	else if(id == CrossSectionWeightProducer().GetProducerId())
 		return new CrossSectionWeightProducer();
-	/*else if(id == NumberGeneratedEventsWeightProducer<TTypes>().GetProducerId())
-		return new NumberGeneratedEventsWeightProducer<TTypes>();
-	else if(id == GeneralTmvaClassificationReader<TTypes>().GetProducerId())
-		return new GeneralTmvaClassificationReader<TTypes>();
-	else*/
+	else if(id == NumberGeneratedEventsWeightProducer().GetProducerId())
+		return new NumberGeneratedEventsWeightProducer();
+	// todo: uses setting not in KappaSettings
+	/*else if(id == GeneralTmvaClassificationReader().GetProducerId())
+		return new GeneralTmvaClassificationReader();*/
+	else
 		return FactoryBase/*<TTypes>*/::createProducer( id );	
 }
 

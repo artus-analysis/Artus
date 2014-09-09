@@ -9,7 +9,7 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
-#include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
 #include "Artus/Utility/interface/SafeMap.h"
@@ -26,7 +26,7 @@
 */
 
 template<class TTypes>
-class ValidTausProducer: public ProducerBase<TTypes>, public ValidPhysicsObjectTools<TTypes, KDataPFTau>
+class ValidTausProducer: public KappaProducerBase, public ValidPhysicsObjectTools<TTypes, KDataPFTau>
 {
 
 public:
@@ -53,7 +53,7 @@ public:
 	}
 	
 	ValidTausProducer() :
-		ProducerBase<TTypes>(),
+		KappaProducerBase(),
 		ValidPhysicsObjectTools<TTypes, KDataPFTau>(&setting_type::GetTauLowerPtCuts,
 		                                            &setting_type::GetTauUpperAbsEtaCuts,
 		                                            &product_type::m_validTaus)
@@ -62,7 +62,7 @@ public:
 	
 	virtual void Init(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
 	{
-		ProducerBase<TTypes>::Init(settings);
+		KappaProducerBase::Init(settings);
 		ValidPhysicsObjectTools<TTypes, KDataPFTau>::Init(settings);
 		
 		validTausInput = ToValidTausInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidTausInput())));

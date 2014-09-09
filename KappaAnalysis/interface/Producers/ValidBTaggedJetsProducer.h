@@ -3,9 +3,8 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
-#include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
-#include "Artus/KappaAnalysis/interface/KappaProduct.h"
 
 
 /**
@@ -14,7 +13,7 @@
    Exploits the properties of b-tagged jets
 */
 template<class TTypes>
-class ValidBTaggedJetsProducer: public ProducerBase<TTypes>
+class ValidBTaggedJetsProducer: public KappaProducerBase
 {
 
 public:
@@ -29,7 +28,7 @@ public:
 
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
 	{
-		ProducerBase<TTypes>::Init(settings);
+		KappaProducerBase::Init(settings);
 		
 		// add possible quantities for the lambda ntuples consumers
 		LambdaNtupleConsumer<TTypes>::Quantities["nBJets"] = [](event_type const& event, product_type const& product) {

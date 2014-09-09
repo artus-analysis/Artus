@@ -11,7 +11,7 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
-#include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
 #include "Artus/Utility/interface/Utility.h"
@@ -34,7 +34,7 @@
 
 
 template<class TTypes, class TJet, class TValidJet>
-class ValidJetsProducerBase: public ProducerBase<TTypes>, public ValidPhysicsObjectTools<TTypes, TValidJet>
+class ValidJetsProducerBase: public KappaProducerBase, public ValidPhysicsObjectTools<TTypes, TValidJet>
 {
 
 public:
@@ -74,7 +74,7 @@ public:
 	ValidJetsProducerBase(std::vector<TJet>* event_type::*jets,
 	                      std::vector<std::shared_ptr<TJet> > product_type::*correctJets,
 	                      std::vector<TValidJet*> product_type::*validJets) :
-		ProducerBase<TTypes>(),
+		KappaProducerBase(),
 		ValidPhysicsObjectTools<TTypes, TValidJet>(&setting_type::GetJetLowerPtCuts,
 		                                           &setting_type::GetJetUpperAbsEtaCuts,
 		                                           validJets),
@@ -85,7 +85,7 @@ public:
 
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
 	{
-		ProducerBase<TTypes>::Init(settings);
+		KappaProducerBase::Init(settings);
 		ValidPhysicsObjectTools<TTypes, TValidJet>::Init(settings);
 		
 		validJetsInput = ToValidJetsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidJetsInput())));

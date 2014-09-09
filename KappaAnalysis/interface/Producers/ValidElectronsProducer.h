@@ -11,7 +11,7 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
-#include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
 #include "Artus/Utility/interface/Utility.h"
@@ -35,7 +35,7 @@
 */
 
 template<class TTypes>
-class ValidElectronsProducer: public ProducerBase<TTypes>, public ValidPhysicsObjectTools<TTypes, KDataElectron>
+class ValidElectronsProducer: public KappaProducerBase, public ValidPhysicsObjectTools<TTypes, KDataElectron>
 {
 
 public:
@@ -133,7 +133,7 @@ public:
 	                       std::string (setting_type::*GetElectronReco)(void) const=&setting_type::GetElectronReco,
 	                       std::vector<std::string>& (setting_type::*GetLowerPtCuts)(void) const=&setting_type::GetElectronLowerPtCuts,
 	                       std::vector<std::string>& (setting_type::*GetUpperAbsEtaCuts)(void) const=&setting_type::GetElectronUpperAbsEtaCuts) :
-		ProducerBase<TTypes>(),
+		KappaProducerBase(),
 		ValidPhysicsObjectTools<TTypes, KDataElectron>(GetLowerPtCuts, GetUpperAbsEtaCuts, validElectrons),
 		m_validElectronsMember(validElectrons),
 		m_invalidElectronsMember(invalidElectrons),
@@ -145,7 +145,7 @@ public:
 	}
 
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		ProducerBase<TTypes>::Init(settings);
+		KappaProducerBase::Init(settings);
 		ValidPhysicsObjectTools<TTypes, KDataElectron>::Init(settings);
 		
 		validElectronsInput = ToValidElectronsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidElectronsInput())));

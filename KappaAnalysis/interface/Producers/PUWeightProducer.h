@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 
 
 /**
@@ -15,23 +15,17 @@
     - PileupWeightFile
 */
 
-template<class TTypes>
-class PUWeightProducer: public ProducerBase<TTypes>
+class PUWeightProducer: public KappaProducerBase
 {
 
 public:
-
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
-
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "PUWeightProducer";
 	}
 
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		ProducerBase<TTypes>::Init(settings);
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE {
+		KappaProducerBase::Init(settings);
 		
 		const std::string histogramName = "pileup";
 		LOG(DEBUG) << "\tLoading pile-up weights from files...";
@@ -49,8 +43,8 @@ public:
 		file.Close();
 	}
 
-	virtual void Produce(event_type const& event, product_type& product,
-	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	virtual void Produce(KappaEvent const& event, KappaProduct& product,
+	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		assert(event.m_genEventMetadata != NULL);
 		double npu = event.m_genEventMetadata->numPUInteractionsTruth;

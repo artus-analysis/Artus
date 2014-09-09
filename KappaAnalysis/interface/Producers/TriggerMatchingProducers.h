@@ -3,7 +3,7 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
-#include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 
 
 /** Abstract Producer class for trigger matching valid objects
@@ -11,7 +11,7 @@
  *	Needs to run after the valid object producers.
  */
 template<class TTypes, class TValidObject>
-class TriggerMatchingProducerBase: public ProducerBase<TTypes>
+class TriggerMatchingProducerBase: public KappaProducerBase
 {
 
 public:
@@ -36,7 +36,7 @@ public:
 	}
 
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		ProducerBase<TTypes>::Init(settings);
+		KappaProducerBase::Init(settings);
 		
 		m_objectTriggerFiltersByIndex = Utility::ParseMapTypes<size_t, std::string>(Utility::ParseVectorToMap((settings.*GetObjectTriggerFilterNames)()), m_objectTriggerFiltersByHltName);
 	}

@@ -3,7 +3,7 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
-#include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 
 
 /**
@@ -11,27 +11,21 @@
    
    (No correction implemented yet.)
 */
-template<class TTypes>
-class MuonCorrectionsProducer: public ProducerBase<TTypes>
+class MuonCorrectionsProducer: public KappaProducerBase
 {
 
 public:
-
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
-
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "MuonCorrectionsProducer";
 	}
 	
 	virtual void Init(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
 	{
-		ProducerBase<TTypes>::Init(settings);
+		KappaProducerBase::Init(settings);
 	}
 
-	virtual void Produce(event_type const& event, product_type& product,
-	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	virtual void Produce(KappaEvent const& event, KappaProduct& product,
+	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		// create a copy of all muons in the event
 		product.m_correctedMuons.clear();
@@ -64,8 +58,8 @@ public:
 protected:
 
 	// Can be overwritten for analysis-specific use cases
-	virtual void AdditionalCorrections(KDataMuon* muon, event_type const& event,
-	                                   product_type& product, setting_type const& settings) const
+	virtual void AdditionalCorrections(KDataMuon* muon, KappaEvent const& event,
+	                                   KappaProduct& product, KappaSettings const& settings) const
 	{
 	}
 

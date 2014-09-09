@@ -11,7 +11,7 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
-#include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
 #include "Artus/Utility/interface/Utility.h"
@@ -33,7 +33,7 @@
 */
 
 template<class TTypes>
-class ValidMuonsProducer: public ProducerBase<TTypes>, public ValidPhysicsObjectTools<TTypes, KDataMuon>
+class ValidMuonsProducer: public KappaProducerBase, public ValidPhysicsObjectTools<TTypes, KDataMuon>
 {
 
 public:
@@ -107,7 +107,7 @@ public:
 	                   std::string (setting_type::*GetMuonIso)(void) const=&setting_type::GetMuonIso,
 	                   std::vector<std::string>& (setting_type::*GetLowerPtCuts)(void) const=&setting_type::GetMuonLowerPtCuts,
 	                   std::vector<std::string>& (setting_type::*GetUpperAbsEtaCuts)(void) const=&setting_type::GetMuonUpperAbsEtaCuts) :
-		ProducerBase<TTypes>(),
+		KappaProducerBase(),
 		ValidPhysicsObjectTools<TTypes, KDataMuon>(GetLowerPtCuts, GetUpperAbsEtaCuts, validMuons),
 		m_validMuonsMember(validMuons),
 		m_invalidMuonsMember(invalidMuons),
@@ -118,7 +118,7 @@ public:
 	}
 
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		ProducerBase<TTypes>::Init(settings);
+		KappaProducerBase::Init(settings);
 		ValidPhysicsObjectTools<TTypes, KDataMuon>::Init(settings);
 		
 		validMuonsInput = ToValidMuonsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidMuonsInput())));
