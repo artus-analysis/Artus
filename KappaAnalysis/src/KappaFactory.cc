@@ -93,75 +93,75 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 	/*else if(id == GeneralTmvaClassificationReader().GetProducerId())
 		return new GeneralTmvaClassificationReader();*/
 	else
-		return FactoryBase/*<TTypes>*/::createProducer( id );	
+		return FactoryBase/*<KappaTypes>*/::createProducer( id );	
 }
 
 FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
 {
-	/*if(id == RunLumiEventFilter<TTypes>().GetFilterId())
-		return new RunLumiEventFilter<TTypes>();
-	else if(id == JsonFilter<TTypes>().GetFilterId())
-		return new JsonFilter<TTypes>();
-	else if(id == HltFilter<TTypes>().GetFilterId())
-		return new HltFilter<TTypes>();
-	else if(id == ValidElectronsFilter<TTypes>().GetFilterId())
-		return new ValidElectronsFilter<TTypes>();
-	else if(id == ValidMuonsFilter<TTypes>().GetFilterId())
-		return new ValidMuonsFilter<TTypes>();
-	else if(id == ValidTausFilter<TTypes>().GetFilterId())
-		return new ValidTausFilter<TTypes>();
-	else if(id == ValidJetsFilter<TTypes>().GetFilterId())
-		return new ValidJetsFilter<TTypes>();
-	else if(id == ElectronsCountFilter<TTypes>().GetFilterId())
-		return new ElectronsCountFilter<TTypes>();
-	else if(id == MuonsCountFilter<TTypes>().GetFilterId())
-		return new MuonsCountFilter<TTypes>();
-	else if(id == TausCountFilter<TTypes>().GetFilterId())
-		return new TausCountFilter<TTypes>();
-	else if(id == JetsCountFilter<TTypes>().GetFilterId())
-		return new JetsCountFilter<TTypes>();
-	else if(id == MaxElectronsCountFilter<TTypes>().GetFilterId())
-		return new MaxElectronsCountFilter<TTypes>();
-	else if(id == MaxMuonsCountFilter<TTypes>().GetFilterId())
-		return new MaxMuonsCountFilter<TTypes>();
-	else if(id == MaxTausCountFilter<TTypes>().GetFilterId())
-		return new MaxTausCountFilter<TTypes>();
-	else if(id == MaxJetsCountFilter<TTypes>().GetFilterId())
-		return new MaxJetsCountFilter<TTypes>();
-	else if(id == ElectronLowerPtCutsFilter<TTypes>().GetFilterId())
-		return new ElectronLowerPtCutsFilter<TTypes>();
-	else if(id == MuonLowerPtCutsFilter<TTypes>().GetFilterId())
-		return new MuonLowerPtCutsFilter<TTypes>();
-	else if(id == TauLowerPtCutsFilter<TTypes>().GetFilterId())
-		return new TauLowerPtCutsFilter<TTypes>();
-	else if(id == JetLowerPtCutsFilter<TTypes>().GetFilterId())
-		return new JetLowerPtCutsFilter<TTypes>();
-	else if(id == ElectronUpperAbsEtaCutsFilter<TTypes>().GetFilterId())
-		return new ElectronUpperAbsEtaCutsFilter<TTypes>();
-	else if(id == MuonUpperAbsEtaCutsFilter<TTypes>().GetFilterId())
-		return new MuonUpperAbsEtaCutsFilter<TTypes>();
-	else if(id == TauUpperAbsEtaCutsFilter<TTypes>().GetFilterId())
-		return new TauUpperAbsEtaCutsFilter<TTypes>();
-	else if(id == JetUpperAbsEtaCutsFilter<TTypes>().GetFilterId())
-		return new JetUpperAbsEtaCutsFilter<TTypes>();
-	else if(id == ElectronTriggerMatchingFilter<TTypes>().GetFilterId())
-		return new ElectronTriggerMatchingFilter<TTypes>();
-	else if(id == MuonTriggerMatchingFilter<TTypes>().GetFilterId())
-		return new MuonTriggerMatchingFilter<TTypes>();
-	else if(id == TauTriggerMatchingFilter<TTypes>().GetFilterId())
-		return new TauTriggerMatchingFilter<TTypes>();
-	else if(id == JetTriggerMatchingFilter<TTypes>().GetFilterId())
-		return new JetTriggerMatchingFilter<TTypes>();
-	else*/
-		return FactoryBase/*<TTypes>*/::createFilter( id );
+	if(id == RunLumiEventFilter<KappaTypes>().GetFilterId())
+		return new RunLumiEventFilter<KappaTypes>();
+	else if(id == JsonFilter<KappaTypes>().GetFilterId())
+		return new JsonFilter<KappaTypes>();
+	else if(id == HltFilter<KappaTypes>().GetFilterId())
+		return new HltFilter<KappaTypes>();
+	else if(id == ValidElectronsFilter<KappaTypes>().GetFilterId())
+		return new ValidElectronsFilter<KappaTypes>();
+	else if(id == ValidMuonsFilter<KappaTypes>().GetFilterId())
+		return new ValidMuonsFilter<KappaTypes>();
+	else if(id == ValidTausFilter<KappaTypes>().GetFilterId())
+		return new ValidTausFilter<KappaTypes>();
+	else if(id == ValidJetsFilter<KappaTypes>().GetFilterId())
+		return new ValidJetsFilter<KappaTypes>();
+	else if(id == ElectronsCountFilter<KappaTypes>().GetFilterId())
+		return new ElectronsCountFilter<KappaTypes>();
+	else if(id == MuonsCountFilter<KappaTypes>().GetFilterId())
+		return new MuonsCountFilter<KappaTypes>();
+	else if(id == TausCountFilter<KappaTypes>().GetFilterId())
+		return new TausCountFilter<KappaTypes>();
+	else if(id == JetsCountFilter<KappaTypes>().GetFilterId())
+		return new JetsCountFilter<KappaTypes>();
+	else if(id == MaxElectronsCountFilter<KappaTypes>().GetFilterId())
+		return new MaxElectronsCountFilter<KappaTypes>();
+	else if(id == MaxMuonsCountFilter<KappaTypes>().GetFilterId())
+		return new MaxMuonsCountFilter<KappaTypes>();
+	else if(id == MaxTausCountFilter<KappaTypes>().GetFilterId())
+		return new MaxTausCountFilter<KappaTypes>();
+	else if(id == MaxJetsCountFilter<KappaTypes>().GetFilterId())
+		return new MaxJetsCountFilter<KappaTypes>();
+	else if(id == ElectronLowerPtCutsFilter<KappaTypes>().GetFilterId())
+		return new ElectronLowerPtCutsFilter<KappaTypes>();
+	else if(id == MuonLowerPtCutsFilter<KappaTypes>().GetFilterId())
+		return new MuonLowerPtCutsFilter<KappaTypes>();
+	else if(id == TauLowerPtCutsFilter<KappaTypes>().GetFilterId())
+		return new TauLowerPtCutsFilter<KappaTypes>();
+	else if(id == JetLowerPtCutsFilter<KappaTypes>().GetFilterId())
+		return new JetLowerPtCutsFilter<KappaTypes>();
+	else if(id == ElectronUpperAbsEtaCutsFilter<KappaTypes>().GetFilterId())
+		return new ElectronUpperAbsEtaCutsFilter<KappaTypes>();
+	else if(id == MuonUpperAbsEtaCutsFilter<KappaTypes>().GetFilterId())
+		return new MuonUpperAbsEtaCutsFilter<KappaTypes>();
+	else if(id == TauUpperAbsEtaCutsFilter<KappaTypes>().GetFilterId())
+		return new TauUpperAbsEtaCutsFilter<KappaTypes>();
+	else if(id == JetUpperAbsEtaCutsFilter<KappaTypes>().GetFilterId())
+		return new JetUpperAbsEtaCutsFilter<KappaTypes>();
+	else if(id == ElectronTriggerMatchingFilter<KappaTypes>().GetFilterId())
+		return new ElectronTriggerMatchingFilter<KappaTypes>();
+	else if(id == MuonTriggerMatchingFilter<KappaTypes>().GetFilterId())
+		return new MuonTriggerMatchingFilter<KappaTypes>();
+	else if(id == TauTriggerMatchingFilter<KappaTypes>().GetFilterId())
+		return new TauTriggerMatchingFilter<KappaTypes>();
+	else if(id == JetTriggerMatchingFilter<KappaTypes>().GetFilterId())
+		return new JetTriggerMatchingFilter<KappaTypes>();
+	else
+		return FactoryBase::createFilter( id );
 }
 
 ConsumerBaseUntemplated * KappaFactory::createConsumer ( std::string const& id )
 {
-	/*if(id == KappaCutFlowHistogramConsumer<TTypes>().GetConsumerId())
-		return new KappaCutFlowHistogramConsumer<TTypes>();
-	else if(id == KappaLambdaNtupleConsumer<TTypes>().GetConsumerId())
-		return new KappaLambdaNtupleConsumer<TTypes>();
+	/*if(id == KappaCutFlowHistogramConsumer<KappaTypes>().GetConsumerId())
+		return new KappaCutFlowHistogramConsumer<KappaTypes>();
+	else if(id == KappaLambdaNtupleConsumer<KappaTypes>().GetConsumerId())
+		return new KappaLambdaNtupleConsumer<KappaTypes>();
 	else*/
-		return FactoryBase/*<TTypes>*/::createConsumer( id );
+		return FactoryBase/*<KappaTypes>*/::createConsumer( id );
 }
