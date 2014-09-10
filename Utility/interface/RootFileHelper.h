@@ -16,8 +16,6 @@
 #include <TFile.h>
 #include <TGraphErrors.h>
 
-#include "KappaTools/Toolbox/String.h"
-
 #include "ArtusLogging.h"
 
 
