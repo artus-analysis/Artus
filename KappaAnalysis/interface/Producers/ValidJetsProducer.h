@@ -13,7 +13,7 @@
 
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
-#include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
+#include "Artus/KappaAnalysis/interface/Consumers/KappaLambdaNtupleConsumer.h"
 #include "Artus/Utility/interface/Utility.h"
 #include "Artus/KappaAnalysis/interface/KappaProduct.h"
 
@@ -33,15 +33,11 @@
 */
 
 
-template<class TTypes, class TJet, class TValidJet>
-class ValidJetsProducerBase: public KappaProducerBase, public ValidPhysicsObjectTools<TTypes, TValidJet>
+template<class TJet, class TValidJet>
+class ValidJetsProducerBase: public KappaProducerBase, public ValidPhysicsObjectTools<KappaTypes, TValidJet>
 {
 
 public:
-
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 
 	enum class ValidJetsInput : int
 	{
@@ -71,60 +67,60 @@ public:
 		else return JetID::NONE;
 	}
 	
-	ValidJetsProducerBase(std::vector<TJet>* event_type::*jets,
-	                      std::vector<std::shared_ptr<TJet> > product_type::*correctJets,
-	                      std::vector<TValidJet*> product_type::*validJets) :
+	ValidJetsProducerBase(std::vector<TJet>* KappaEvent::*jets,
+	                      std::vector<std::shared_ptr<TJet> > KappaProduct::*correctJets,
+	                      std::vector<TValidJet*> KappaProduct::*validJets) :
 		KappaProducerBase(),
-		ValidPhysicsObjectTools<TTypes, TValidJet>(&setting_type::GetJetLowerPtCuts,
-		                                           &setting_type::GetJetUpperAbsEtaCuts,
-		                                           validJets),
+		ValidPhysicsObjectTools<KappaTypes, TValidJet>(&KappaSettings::GetJetLowerPtCuts,
+		                                               &KappaSettings::GetJetUpperAbsEtaCuts,
+		                                               validJets),
 		m_jetsMember(jets),
 		m_correctedJetsMember(correctJets)
 	{
 	}
 
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE
 	{
 		KappaProducerBase::Init(settings);
-		ValidPhysicsObjectTools<TTypes, TValidJet>::Init(settings);
+		ValidPhysicsObjectTools<KappaTypes, TValidJet>::Init(settings);
 		
 		validJetsInput = ToValidJetsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidJetsInput())));
 		jetID = ToJetID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetJetID())));
 		
 		// add possible quantities for the lambda ntuples consumers
-		LambdaNtupleConsumer<TTypes>::Quantities["nJets"] = [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<KappaTypes>::Quantities["nJets"] = [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validJets.size();
 		};
-		LambdaNtupleConsumer<TTypes>::Quantities["nJets20"] = [this](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<KappaTypes>::Quantities["nJets20"] = [this](KappaEvent const& event, KappaProduct const& product) {
 			return KappaProduct::GetNJetsAbovePtThreshold(product.m_validJets, 20.0);
 		};
-		LambdaNtupleConsumer<TTypes>::Quantities["nJets30"] = [this](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<KappaTypes>::Quantities["nJets30"] = [this](KappaEvent const& event, KappaProduct const& product) {
 			return KappaProduct::GetNJetsAbovePtThreshold(product.m_validJets, 30.0);
 		};
 		
-		LambdaNtupleConsumer<TTypes>::Quantities["leadingJetPt"] = [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<KappaTypes>::Quantities["leadingJetPt"] = [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validJets.size() >= 1 ? product.m_validJets.at(0)->p4.Pt() : DefaultValues::UndefinedDouble;
 		};
-		LambdaNtupleConsumer<TTypes>::Quantities["leadingJetEta"] = [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<KappaTypes>::Quantities["leadingJetEta"] = [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validJets.size() >= 1 ? product.m_validJets.at(0)->p4.Eta() : DefaultValues::UndefinedDouble;
 		};
-		LambdaNtupleConsumer<TTypes>::Quantities["leadingJetPhi"] = [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<KappaTypes>::Quantities["leadingJetPhi"] = [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validJets.size() >= 1 ? product.m_validJets.at(0)->p4.Phi() : DefaultValues::UndefinedDouble;
 		};
 		
-		LambdaNtupleConsumer<TTypes>::Quantities["trailingJetPt"] = [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<KappaTypes>::Quantities["trailingJetPt"] = [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validJets.size() >= 2 ? product.m_validJets.at(1)->p4.Pt() : DefaultValues::UndefinedDouble;
 		};
-		LambdaNtupleConsumer<TTypes>::Quantities["trailingJetEta"] = [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<KappaTypes>::Quantities["trailingJetEta"] = [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validJets.size() >= 2 ? product.m_validJets.at(1)->p4.Eta() : DefaultValues::UndefinedDouble;
 		};
-		LambdaNtupleConsumer<TTypes>::Quantities["trailingJetPhi"] = [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<KappaTypes>::Quantities["trailingJetPhi"] = [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validJets.size() >= 2 ? product.m_validJets.at(1)->p4.Phi() : DefaultValues::UndefinedDouble;
 		};
 	}
 
-	virtual void Produce(event_type const& event, product_type& product,
-	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	virtual void Produce(KappaEvent const& event, KappaProduct& product,
+	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		// select input source
 		std::vector<TJet*> jets;
@@ -200,8 +196,8 @@ public:
 protected:
 	
 	// Can be overwritten for analysis-specific use cases
-	virtual bool AdditionalCriteria(TJet* jet, event_type const& event,
-	                                product_type& product, setting_type const& settings) const
+	virtual bool AdditionalCriteria(TJet* jet, KappaEvent const& event,
+	                                KappaProduct& product, KappaSettings const& settings) const
 	{
 		bool validJet = true;
 		
@@ -210,8 +206,8 @@ protected:
 
 
 private:
-	std::vector<TJet>* event_type::*m_jetsMember;
-	std::vector<std::shared_ptr<TJet> > product_type::*m_correctedJetsMember;
+	std::vector<TJet>* KappaEvent::*m_jetsMember;
+	std::vector<std::shared_ptr<TJet> > KappaProduct::*m_correctedJetsMember;
 	
 	ValidJetsInput validJetsInput;
 	JetID jetID;
@@ -249,13 +245,12 @@ private:
    
    Operates on the vector event.m_jets.
 */
-template<class TTypes>
-class ValidJetsProducer: public ValidJetsProducerBase<TTypes, KDataPFJet, KDataPFJet>
+class ValidJetsProducer: public ValidJetsProducerBase<KDataPFJet, KDataPFJet>
 {
 public:
-	ValidJetsProducer() : ValidJetsProducerBase<TTypes, KDataPFJet, KDataPFJet>(&TTypes::event_type::m_jets,
-	                                                                            &TTypes::product_type::m_correctedJets,
-	                                                                            &TTypes::product_type::m_validJets)
+	ValidJetsProducer() : ValidJetsProducerBase<KDataPFJet, KDataPFJet>(&KappaEvent::m_jets,
+	                                                                            &KappaProduct::m_correctedJets,
+	                                                                            &KappaProduct::m_validJets)
 	{
 	};
 	
@@ -275,18 +270,13 @@ public:
    - PuJetIDs
    - JetTaggerLowerCuts
 */
-template<class TTypes>
-class ValidTaggedJetsProducer: public ValidJetsProducerBase<TTypes, KDataPFTaggedJet, KDataPFJet>
+class ValidTaggedJetsProducer: public ValidJetsProducerBase<KDataPFTaggedJet, KDataPFJet>
 {
 public:
-
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
-	ValidTaggedJetsProducer() : ValidJetsProducerBase<TTypes, KDataPFTaggedJet, KDataPFJet>(&TTypes::event_type::m_tjets,
-	                                                                                        &TTypes::product_type::m_correctedTaggedJets,
-	                                                                                        &TTypes::product_type::m_validJets)
+	ValidTaggedJetsProducer() : ValidJetsProducerBase<KDataPFTaggedJet, KDataPFJet>(&KappaEvent::m_tjets,
+	                                                                                        &KappaProduct::m_correctedTaggedJets,
+	                                                                                        &KappaProduct::m_validJets)
 	{
 	};
 	
@@ -294,9 +284,9 @@ public:
 		return "ValidTaggedJetsProducer";
 	}
 
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE
 	{
-		ValidJetsProducerBase<TTypes, KDataPFTaggedJet, KDataPFJet>::Init(settings);
+		ValidJetsProducerBase<KDataPFTaggedJet, KDataPFJet>::Init(settings);
 		
 		puJetIdsByIndex = Utility::ParseMapTypes<size_t, std::string>(
 				Utility::ParseVectorToMap(settings.GetPuJetIDs()),
@@ -314,17 +304,17 @@ public:
 		);
 		
 		// add possible quantities for the lambda ntuples consumers
-		LambdaNtupleConsumer<TTypes>::Quantities["leadingJetCSV"] = [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<KappaTypes>::Quantities["leadingJetCSV"] = [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validJets.size() >= 1 ? static_cast<KDataPFTaggedJet*>(product.m_validJets.at(0))->getTagger("CombinedSecondaryVertexBJetTags", event.m_taggerMetadata) : DefaultValues::UndefinedDouble;
 		};
-		LambdaNtupleConsumer<TTypes>::Quantities["leadingJetTCHE"] = [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<KappaTypes>::Quantities["leadingJetTCHE"] = [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validJets.size() >= 1 ? static_cast<KDataPFTaggedJet*>(product.m_validJets.at(0))->getTagger("TrackCountingHighEffBJetTags", event.m_taggerMetadata) : DefaultValues::UndefinedDouble;
 		};
 		
-		LambdaNtupleConsumer<TTypes>::Quantities["trailingJetCSV"] = [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<KappaTypes>::Quantities["trailingJetCSV"] = [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validJets.size() >= 2 ? static_cast<KDataPFTaggedJet*>(product.m_validJets.at(1))->getTagger("CombinedSecondaryVertexBJetTags", event.m_taggerMetadata) : DefaultValues::UndefinedDouble;
 		};
-		LambdaNtupleConsumer<TTypes>::Quantities["trailingJetTCHE"] = [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<KappaTypes>::Quantities["trailingJetTCHE"] = [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validJets.size() >= 2 ? static_cast<KDataPFTaggedJet*>(product.m_validJets.at(1))->getTagger("TrackCountingHighEffBJetTags", event.m_taggerMetadata) : DefaultValues::UndefinedDouble;
 		};
 	}
@@ -333,10 +323,10 @@ public:
 protected:
 	
 	// Can be overwritten for analysis-specific use cases
-	virtual bool AdditionalCriteria(KDataPFTaggedJet* jet, event_type const& event,
-	                                product_type& product, setting_type const& settings) const
+	virtual bool AdditionalCriteria(KDataPFTaggedJet* jet, KappaEvent const& event,
+	                                KappaProduct& product, KappaSettings const& settings) const
 	{
-		bool validJet = ValidJetsProducerBase<TTypes, KDataPFTaggedJet, KDataPFJet>::AdditionalCriteria(jet, event, product, settings);
+		bool validJet = ValidJetsProducerBase<KDataPFTaggedJet, KDataPFJet>::AdditionalCriteria(jet, event, product, settings);
 		
 		// PU Jet ID
 		for (std::map<size_t, std::vector<std::string> >::const_iterator puJetIdByIndex = puJetIdsByIndex.begin();

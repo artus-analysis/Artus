@@ -35,7 +35,7 @@
 */
 
 template<class TTypes>
-class ValidElectronsProducer: public KappaProducerBase, public ValidPhysicsObjectTools<TTypes, KDataElectron>
+class ValidElectronsProducer: public ProducerBase<TTypes>, public ValidPhysicsObjectTools<TTypes, KDataElectron>
 {
 
 public:
@@ -133,7 +133,7 @@ public:
 	                       std::string (setting_type::*GetElectronReco)(void) const=&setting_type::GetElectronReco,
 	                       std::vector<std::string>& (setting_type::*GetLowerPtCuts)(void) const=&setting_type::GetElectronLowerPtCuts,
 	                       std::vector<std::string>& (setting_type::*GetUpperAbsEtaCuts)(void) const=&setting_type::GetElectronUpperAbsEtaCuts) :
-		KappaProducerBase(),
+		ProducerBase<TTypes>(),
 		ValidPhysicsObjectTools<TTypes, KDataElectron>(GetLowerPtCuts, GetUpperAbsEtaCuts, validElectrons),
 		m_validElectronsMember(validElectrons),
 		m_invalidElectronsMember(invalidElectrons),
@@ -145,7 +145,7 @@ public:
 	}
 
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		KappaProducerBase::Init(settings);
+		ProducerBase<TTypes>::Init(settings);
 		ValidPhysicsObjectTools<TTypes, KDataElectron>::Init(settings);
 		
 		validElectronsInput = ToValidElectronsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidElectronsInput())));

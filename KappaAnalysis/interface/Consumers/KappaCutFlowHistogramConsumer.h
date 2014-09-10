@@ -15,17 +15,13 @@
    If you wish a custom weight, derive from this (or its upper) class and
    fill the memember weightExtractor according to you requirements.
 */
-template<class TTypes>
-class KappaCutFlowHistogramConsumer: public CutFlowHistogramConsumer<TTypes> {
+class KappaCutFlowHistogramConsumer: public CutFlowHistogramConsumer<KappaTypes> {
 
 public:
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE
 	{
-		CutFlowHistogramConsumer<TTypes>::Init(settings);
+		CutFlowHistogramConsumer<KappaTypes>::Init(settings);
 	
 		this->weightExtractor = [&settings](event_type const& event, product_type const& product) -> float {
 			return SafeMap::GetWithDefault(product.m_weights, std::string(settings.GetEventWeight()), 1.0);

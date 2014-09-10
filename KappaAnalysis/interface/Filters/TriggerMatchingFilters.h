@@ -10,27 +10,24 @@
  *
  *	Needs to run after the trigger matching producers.
  */
-template<class TTypes, class TValidObject>
-class TriggerMatchingFilterBase: public FilterBase<TTypes>
+template<class TValidObject>
+class TriggerMatchingFilterBase: public FilterBase<KappaTypes>
 {
 
 public:
 
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
-	TriggerMatchingFilterBase(std::map<TValidObject*, KDataLV*> product_type::*triggerMatchedObjects,
-	                          std::vector<TValidObject*> product_type::*validObjects,
-	                          size_t (setting_type::*GetMinNMatchedObjects)(void) const) :
+	TriggerMatchingFilterBase(std::map<TValidObject*, KDataLV*> KappaProduct::*triggerMatchedObjects,
+	                          std::vector<TValidObject*> KappaProduct::*validObjects,
+	                          size_t (KappaSettings::*GetMinNMatchedObjects)(void) const) :
 		m_triggerMatchedObjects(triggerMatchedObjects),
 		m_validObjects(validObjects),
 		GetMinNMatchedObjects(GetMinNMatchedObjects)
 	{
 	}
 
-	virtual bool DoesEventPass(event_type const& event, product_type const& product,
-	                           setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	virtual bool DoesEventPass(KappaEvent const& event, KappaProduct const& product,
+	                           KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		if (((product.*m_triggerMatchedObjects).size() < (product.*m_validObjects).size()) ||
 		    ((product.*m_triggerMatchedObjects).size() < (settings.*GetMinNMatchedObjects)()))
@@ -45,9 +42,9 @@ public:
 
 
 private:
-	std::map<TValidObject*, KDataLV*> product_type::*m_triggerMatchedObjects;
-	std::vector<TValidObject*> product_type::*m_validObjects;
-	size_t (setting_type::*GetMinNMatchedObjects)(void) const;
+	std::map<TValidObject*, KDataLV*> KappaProduct::*m_triggerMatchedObjects;
+	std::vector<TValidObject*> KappaProduct::*m_validObjects;
+	size_t (KappaSettings::*GetMinNMatchedObjects)(void) const;
 
 };
 
@@ -56,24 +53,20 @@ private:
  *  Required config tags:
  *  - MinNMatchedElectrons (default 0)
  */
-template<class TTypes>
-class ElectronTriggerMatchingFilter: public TriggerMatchingFilterBase<TTypes, KDataElectron>
+class ElectronTriggerMatchingFilter: public TriggerMatchingFilterBase<KDataElectron>
 {
 
 public:
 
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "ElectronTriggerMatchingFilter";
 	}
 	
 	ElectronTriggerMatchingFilter() :
-		TriggerMatchingFilterBase<TTypes, KDataElectron>(&product_type::m_triggerMatchedElectrons,
-		                                                 &product_type::m_validElectrons,
-		                                                 &setting_type::GetMinNMatchedElectrons)
+		TriggerMatchingFilterBase<KDataElectron>(&KappaProduct::m_triggerMatchedElectrons,
+		                                                 &KappaProduct::m_validElectrons,
+		                                                 &KappaSettings::GetMinNMatchedElectrons)
 	{
 	}
 
@@ -84,24 +77,20 @@ public:
  *  Required config tags:
  *  - MinNMatchedMuons (default 0)
  */
-template<class TTypes>
-class MuonTriggerMatchingFilter: public TriggerMatchingFilterBase<TTypes, KDataMuon>
+class MuonTriggerMatchingFilter: public TriggerMatchingFilterBase<KDataMuon>
 {
 
 public:
 
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "MuonTriggerMatchingFilter";
 	}
 	
 	MuonTriggerMatchingFilter() :
-		TriggerMatchingFilterBase<TTypes, KDataMuon>(&product_type::m_triggerMatchedMuons,
-		                                             &product_type::m_validMuons,
-		                                             &setting_type::GetMinNMatchedMuons)
+		TriggerMatchingFilterBase<KDataMuon>(&KappaProduct::m_triggerMatchedMuons,
+		                                             &KappaProduct::m_validMuons,
+		                                             &KappaSettings::GetMinNMatchedMuons)
 	{
 	}
 
@@ -112,24 +101,20 @@ public:
  *  Required config tags:
  *  - MinNMatchedTaus (default 0)
  */
-template<class TTypes>
-class TauTriggerMatchingFilter: public TriggerMatchingFilterBase<TTypes, KDataPFTau>
+class TauTriggerMatchingFilter: public TriggerMatchingFilterBase<KDataPFTau>
 {
 
 public:
 
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "TauTriggerMatchingFilter";
 	}
 	
 	TauTriggerMatchingFilter() :
-		TriggerMatchingFilterBase<TTypes, KDataPFTau>(&product_type::m_triggerMatchedTaus,
-		                                              &product_type::m_validTaus,
-		                                              &setting_type::GetMinNMatchedTaus)
+		TriggerMatchingFilterBase<KDataPFTau>(&KappaProduct::m_triggerMatchedTaus,
+		                                              &KappaProduct::m_validTaus,
+		                                              &KappaSettings::GetMinNMatchedTaus)
 	{
 	}
 
@@ -140,24 +125,20 @@ public:
  *  Required config tags:
  *  - MinNMatchedJets (default 0)
  */
-template<class TTypes>
-class JetTriggerMatchingFilter: public TriggerMatchingFilterBase<TTypes, KDataPFJet>
+class JetTriggerMatchingFilter: public TriggerMatchingFilterBase<KDataPFJet>
 {
 
 public:
 
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "JetTriggerMatchingFilter";
 	}
 	
 	JetTriggerMatchingFilter() :
-		TriggerMatchingFilterBase<TTypes, KDataPFJet>(&product_type::m_triggerMatchedJets,
-		                                              &product_type::m_validJets,
-		                                              &setting_type::GetMinNMatchedJets)
+		TriggerMatchingFilterBase<KDataPFJet>(&KappaProduct::m_triggerMatchedJets,
+		                                              &KappaProduct::m_validJets,
+		                                              &KappaSettings::GetMinNMatchedJets)
 	{
 	}
 

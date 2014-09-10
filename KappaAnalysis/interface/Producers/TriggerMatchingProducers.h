@@ -10,22 +10,18 @@
  *
  *	Needs to run after the valid object producers.
  */
-template<class TTypes, class TValidObject>
+template<class TValidObject>
 class TriggerMatchingProducerBase: public KappaProducerBase
 {
 
 public:
-
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
-	TriggerMatchingProducerBase(std::map<TValidObject*, KDataLV*> product_type::*triggerMatchedObjects,
-	                            std::vector<TValidObject*> product_type::*validObjects,
-	                            std::vector<TValidObject*> product_type::*invalidObjects,
-	                            std::vector<std::string>& (setting_type::*GetObjectTriggerFilterNames)(void) const,
-	                            float (setting_type::*GetDeltaRTriggerMatchingObjects)(void) const,
-	                            bool (setting_type::*GetInvalidateNonMatchingObjects)(void) const) :
+	TriggerMatchingProducerBase(std::map<TValidObject*, KDataLV*> KappaProduct::*triggerMatchedObjects,
+	                            std::vector<TValidObject*> KappaProduct::*validObjects,
+	                            std::vector<TValidObject*> KappaProduct::*invalidObjects,
+	                            std::vector<std::string>& (KappaSettings::*GetObjectTriggerFilterNames)(void) const,
+	                            float (KappaSettings::*GetDeltaRTriggerMatchingObjects)(void) const,
+	                            bool (KappaSettings::*GetInvalidateNonMatchingObjects)(void) const) :
 		m_triggerMatchedObjects(triggerMatchedObjects),
 		m_validObjects(validObjects),
 		m_invalidObjects(invalidObjects),
@@ -35,14 +31,14 @@ public:
 	{
 	}
 
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE {
 		KappaProducerBase::Init(settings);
 		
 		m_objectTriggerFiltersByIndex = Utility::ParseMapTypes<size_t, std::string>(Utility::ParseVectorToMap((settings.*GetObjectTriggerFilterNames)()), m_objectTriggerFiltersByHltName);
 	}
 
-	virtual void Produce(event_type const& event, product_type& product,
-	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	virtual void Produce(KappaEvent const& event, KappaProduct& product,
+	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		assert(event.m_triggerObjects);
 		
@@ -151,12 +147,12 @@ public:
 
 
 private:
-	std::map<TValidObject*, KDataLV*> product_type::*m_triggerMatchedObjects;
-	std::vector<TValidObject*> product_type::*m_validObjects;
-	std::vector<TValidObject*> product_type::*m_invalidObjects;
-	std::vector<std::string>& (setting_type::*GetObjectTriggerFilterNames)(void) const;
-	float (setting_type::*GetDeltaRTriggerMatchingObjects)(void) const;
-	bool (setting_type::*GetInvalidateNonMatchingObjects)(void) const;
+	std::map<TValidObject*, KDataLV*> KappaProduct::*m_triggerMatchedObjects;
+	std::vector<TValidObject*> KappaProduct::*m_validObjects;
+	std::vector<TValidObject*> KappaProduct::*m_invalidObjects;
+	std::vector<std::string>& (KappaSettings::*GetObjectTriggerFilterNames)(void) const;
+	float (KappaSettings::*GetDeltaRTriggerMatchingObjects)(void) const;
+	bool (KappaSettings::*GetInvalidateNonMatchingObjects)(void) const;
 	
 	std::map<size_t, std::vector<std::string> > m_objectTriggerFiltersByIndex;
 	std::map<std::string, std::vector<std::string> > m_objectTriggerFiltersByHltName;
@@ -170,27 +166,22 @@ private:
  *  - InvalidateNonMatchingElectrons (default provided)
  *  - ElectronTriggerFilterNames
  */
-template<class TTypes>
-class ElectronTriggerMatchingProducer: public TriggerMatchingProducerBase<TTypes, KDataElectron>
+class ElectronTriggerMatchingProducer: public TriggerMatchingProducerBase<KDataElectron>
 {
 
 public:
-
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "ElectronTriggerMatchingProducer";
 	}
 	
 	ElectronTriggerMatchingProducer() :
-		TriggerMatchingProducerBase<TTypes, KDataElectron>(&product_type::m_triggerMatchedElectrons,
-		                                                   &product_type::m_validElectrons,
-		                                                   &product_type::m_invalidElectrons,
-		                                                   &setting_type::GetElectronTriggerFilterNames,
-		                                                   &setting_type::GetDeltaRTriggerMatchingElectrons,
-		                                                   &setting_type::GetInvalidateNonMatchingElectrons)
+		TriggerMatchingProducerBase<KDataElectron>(&KappaProduct::m_triggerMatchedElectrons,
+		                                           &KappaProduct::m_validElectrons,
+		                                           &KappaProduct::m_invalidElectrons,
+		                                                   &KappaSettings::GetElectronTriggerFilterNames,
+		                                                   &KappaSettings::GetDeltaRTriggerMatchingElectrons,
+		                                                   &KappaSettings::GetInvalidateNonMatchingElectrons)
 	{
 	}
 
@@ -203,27 +194,22 @@ public:
  *  - InvalidateNonMatchingMuons (default provided)
  *  - MuonTriggerFilterNames
  */
-template<class TTypes>
-class MuonTriggerMatchingProducer: public TriggerMatchingProducerBase<TTypes, KDataMuon>
+class MuonTriggerMatchingProducer: public TriggerMatchingProducerBase<KDataMuon>
 {
 
 public:
-
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "MuonTriggerMatchingProducer";
 	}
 	
 	MuonTriggerMatchingProducer() :
-		TriggerMatchingProducerBase<TTypes, KDataMuon>(&product_type::m_triggerMatchedMuons,
-		                                               &product_type::m_validMuons,
-		                                               &product_type::m_invalidMuons,
-		                                               &setting_type::GetMuonTriggerFilterNames,
-		                                               &setting_type::GetDeltaRTriggerMatchingMuons,
-		                                               &setting_type::GetInvalidateNonMatchingMuons)
+		TriggerMatchingProducerBase<KDataMuon>(&KappaProduct::m_triggerMatchedMuons,
+		                                       &KappaProduct::m_validMuons,
+		                                       &KappaProduct::m_invalidMuons,
+		                                       &KappaSettings::GetMuonTriggerFilterNames,
+		                                               &KappaSettings::GetDeltaRTriggerMatchingMuons,
+		                                               &KappaSettings::GetInvalidateNonMatchingMuons)
 	{
 	}
 
@@ -236,27 +222,22 @@ public:
  *  - InvalidateNonMatchingTaus (default provided)
  *  - TauTriggerFilterNames
  */
-template<class TTypes>
-class TauTriggerMatchingProducer: public TriggerMatchingProducerBase<TTypes, KDataPFTau>
+class TauTriggerMatchingProducer: public TriggerMatchingProducerBase<KDataPFTau>
 {
 
 public:
-
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "TauTriggerMatchingProducer";
 	}
 	
 	TauTriggerMatchingProducer() :
-		TriggerMatchingProducerBase<TTypes, KDataPFTau>(&product_type::m_triggerMatchedTaus,
-		                                                &product_type::m_validTaus,
-		                                                &product_type::m_invalidTaus,
-		                                                &setting_type::GetTauTriggerFilterNames,
-		                                                &setting_type::GetDeltaRTriggerMatchingTaus,
-		                                                &setting_type::GetInvalidateNonMatchingTaus)
+		TriggerMatchingProducerBase<KDataPFTau>(&KappaProduct::m_triggerMatchedTaus,
+		                                        &KappaProduct::m_validTaus,
+		                                        &KappaProduct::m_invalidTaus,
+		                                        &KappaSettings::GetTauTriggerFilterNames,
+		                                                &KappaSettings::GetDeltaRTriggerMatchingTaus,
+		                                                &KappaSettings::GetInvalidateNonMatchingTaus)
 	{
 	}
 
@@ -269,27 +250,22 @@ public:
  *  - InvalidateNonMatchingJets (default provided)
  *  - JetTriggerFilterNames
  */
-template<class TTypes>
-class JetTriggerMatchingProducer: public TriggerMatchingProducerBase<TTypes, KDataPFJet>
+class JetTriggerMatchingProducer: public TriggerMatchingProducerBase<KDataPFJet>
 {
 
 public:
-
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "JetTriggerMatchingProducer";
 	}
 	
 	JetTriggerMatchingProducer() :
-		TriggerMatchingProducerBase<TTypes, KDataPFJet>(&product_type::m_triggerMatchedJets,
-		                                                &product_type::m_validJets,
-		                                                &product_type::m_invalidJets,
-		                                                &setting_type::GetJetTriggerFilterNames,
-		                                                &setting_type::GetDeltaRTriggerMatchingJets,
-		                                                &setting_type::GetInvalidateNonMatchingJets)
+		TriggerMatchingProducerBase<KDataPFJet>(&KappaProduct::m_triggerMatchedJets,
+		                                        &KappaProduct::m_validJets,
+		                                        &KappaProduct::m_invalidJets,
+		                                        &KappaSettings::GetJetTriggerFilterNames,
+		                                                &KappaSettings::GetDeltaRTriggerMatchingJets,
+		                                                &KappaSettings::GetInvalidateNonMatchingJets)
 	{
 	}
 

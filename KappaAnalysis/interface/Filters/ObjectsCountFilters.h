@@ -7,22 +7,18 @@
 /** Filter checking for the existance of exactly the given number of valid electrons.
  *  Required config tag: NElectrons
  */
-template<class TTypes>
-class ElectronsCountFilter: public CutRangeFilterBase<TTypes> {
+class ElectronsCountFilter: public CutRangeFilterBase<KappaTypes> {
 public:
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
-	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
+	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "ElectronsCountFilter";
 	}
 	
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE {
 		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-				[](event_type const& event, product_type const& product) {
+				[](KappaEvent const& event, KappaProduct const& product) {
 					return product.m_validElectrons.size();
 				},
 				CutRange::EqualsCut(double(settings.GetNElectrons()))
@@ -34,22 +30,18 @@ public:
 /** Filter checking for the existance of exactly the given number of valid muons.
  *  Required config tag: NMuons
  */
-template<class TTypes>
-class MuonsCountFilter: public CutRangeFilterBase<TTypes> {
+class MuonsCountFilter: public CutRangeFilterBase<KappaTypes> {
 public:
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
-	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
+	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "MuonsCountFilter";
 	}
 	
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE {
 		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-				[](event_type const& event, product_type const& product) {
+				[](KappaEvent const& event, KappaProduct const& product) {
 					return product.m_validMuons.size();
 				},
 				CutRange::EqualsCut(double(settings.GetNMuons()))
@@ -61,22 +53,18 @@ public:
 /** Filter checking for the existance of exactly the given number of valid taus.
  *  Required config tag: NTaus
  */
-template<class TTypes>
-class TausCountFilter: public CutRangeFilterBase<TTypes> {
+class TausCountFilter: public CutRangeFilterBase<KappaTypes> {
 public:
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
-	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
+	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "TausCountFilter";
 	}
 	
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE {
 		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-				[](event_type const& event, product_type const& product) {
+				[](KappaEvent const& event, KappaProduct const& product) {
 					return product.m_validTaus.size();
 				},
 				CutRange::EqualsCut(double(settings.GetNTaus()))
@@ -88,22 +76,18 @@ public:
 /** Filter checking for the existance of exactly the given number of valid jets.
  *  Required config tag: NJets
  */
-template<class TTypes>
-class JetsCountFilter: public CutRangeFilterBase<TTypes> {
+class JetsCountFilter: public CutRangeFilterBase<KappaTypes> {
 public:
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
-	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
+	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "JetsCountFilter";
 	}
 	
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE {
 		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-				[](event_type const& event, product_type const& product) {
+				[](KappaEvent const& event, KappaProduct const& product) {
 					return product.m_validJets.size();
 				},
 				CutRange::EqualsCut(double(settings.GetNJets()))

@@ -14,20 +14,16 @@
  *  Therefore this filter cannot meaningfully run as a global pre-filter
  *  which gets an empty product.
  */
-template<class TTypes>
-class HltFilter: public FilterBase<TTypes> {
+class HltFilter: public FilterBase<KappaTypes> {
 public:
 
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "HltFilter";
 	}
 
-	virtual bool DoesEventPass(event_type const& event, product_type const& product,
-	                           setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	virtual bool DoesEventPass(KappaEvent const& event, KappaProduct const& product,
+	                           KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		if (product.m_selectedHltName.empty())
 		{

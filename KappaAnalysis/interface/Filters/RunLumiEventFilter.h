@@ -16,22 +16,18 @@
  *   - EventWhitelist
  *   - EventBlacklist
  */
-template<class TTypes>
-class RunLumiEventFilter: public FilterBase<TTypes>
+class RunLumiEventFilter: public FilterBase<KappaTypes>
 {
 
 public:
 
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "RunLumiEventFilter";
 	}
 
-	virtual bool DoesEventPass(event_type const& event, product_type const& product,
-	                           setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	virtual bool DoesEventPass(KappaEvent const& event, KappaProduct const& product,
+	                           KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		bool match = (MatchWhiteBlackLists(event.m_eventMetadata->nRun, settings.GetRunWhitelist(), settings.GetRunBlacklist()) &&
 		              MatchWhiteBlackLists(event.m_eventMetadata->nLumi, settings.GetLumiWhitelist(), settings.GetLumiBlacklist()) &&

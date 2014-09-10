@@ -4,8 +4,9 @@
 #include "TMVA/Reader.h"
 
 #include "Artus/Core/interface/ProducerBase.h"
-#include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
+#include "Artus/KappaAnalysis/interface/Consumers/KappaLambdaNtupleConsumer.h"
 #include "Artus/Utility/interface/DefaultValues.h"
+#include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 
 
 /**
@@ -16,7 +17,6 @@ class TmvaClassificationReaderBase: public ProducerBase<TTypes>
 {
 
 public:
-
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
@@ -110,14 +110,9 @@ private:
    - TmvaMethods
    - TmvaWeights (same length as for TmvaMethods required)
 */
-template<class TTypes>
-class GeneralTmvaClassificationReader: public TmvaClassificationReaderBase<TTypes>
+class GeneralTmvaClassificationReader: public TmvaClassificationReaderBase<KappaTypes>
 {
 public:
-
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE
 	{
@@ -125,10 +120,10 @@ public:
 	}
 	
 	GeneralTmvaClassificationReader() :
-		TmvaClassificationReaderBase<TTypes>(&setting_type::GetTmvaInputQuantities,
-		                                     &setting_type::GetTmvaMethods,
-		                                     &setting_type::GetTmvaWeights,
-		                                     &product_type::m_discriminators)
+		TmvaClassificationReaderBase(&KappaSettings::GetTmvaInputQuantities,
+		                             &KappaSettings::GetTmvaMethods,
+		                             &KappaSettings::GetTmvaWeights,
+		                             &KappaProduct::m_discriminators)
 	{
 	}
 	

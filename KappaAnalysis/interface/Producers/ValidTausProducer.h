@@ -11,7 +11,7 @@
 
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
-#include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
+#include "Artus/KappaAnalysis/interface/Consumers/KappaLambdaNtupleConsumer.h"
 #include "Artus/Utility/interface/SafeMap.h"
 #include "Artus/Utility/interface/Utility.h"
 
@@ -24,16 +24,10 @@
    - TauLowerPtCuts
    - TauUpperAbsEtaCuts
 */
-
-template<class TTypes>
-class ValidTausProducer: public KappaProducerBase, public ValidPhysicsObjectTools<TTypes, KDataPFTau>
+class ValidTausProducer: public KappaProducerBase, public ValidPhysicsObjectTools<KappaTypes, KDataPFTau>
 {
 
 public:
-
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 
 	enum class ValidTausInput : int
 	{
@@ -54,16 +48,16 @@ public:
 	
 	ValidTausProducer() :
 		KappaProducerBase(),
-		ValidPhysicsObjectTools<TTypes, KDataPFTau>(&setting_type::GetTauLowerPtCuts,
-		                                            &setting_type::GetTauUpperAbsEtaCuts,
-		                                            &product_type::m_validTaus)
+		ValidPhysicsObjectTools<KappaTypes, KDataPFTau>(&KappaSettings::GetTauLowerPtCuts,
+		                                    &KappaSettings::GetTauUpperAbsEtaCuts,
+		                                    &KappaProduct::m_validTaus)
 	{
 	}
 	
-	virtual void Init(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
+	virtual void Init(KappaSettings const& settings)  ARTUS_CPP11_OVERRIDE
 	{
 		KappaProducerBase::Init(settings);
-		ValidPhysicsObjectTools<TTypes, KDataPFTau>::Init(settings);
+		ValidPhysicsObjectTools<KappaTypes, KDataPFTau>::Init(settings);
 		
 		validTausInput = ToValidTausInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidTausInput())));
 	
@@ -72,13 +66,13 @@ public:
 		                                                                    discriminatorsByHltName);
 		
 		// add possible quantities for the lambda ntuples consumers
-		LambdaNtupleConsumer<TTypes>::Quantities["nTaus"] = [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<KappaTypes>::Quantities["nTaus"] = [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validTaus.size();
 		};
 	}
 
-	virtual void Produce(event_type const& event, product_type& product,
-	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	virtual void Produce(KappaEvent const& event, KappaProduct& product,
+	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		// select input source
 		std::vector<KDataPFTau*> taus;
@@ -149,8 +143,8 @@ public:
 protected:
 	
 	// Can be overwritten for analysis-specific use cases
-	virtual bool AdditionalCriteria(KDataPFTau* tau, event_type const& event,
-	                                product_type& product, setting_type const& settings) const
+	virtual bool AdditionalCriteria(KDataPFTau* tau, KappaEvent const& event,
+	                                KappaProduct& product, KappaSettings const& settings) const
 	{
 		bool validTau = true;
 		return validTau;
@@ -164,7 +158,7 @@ private:
 	std::map<std::string, std::vector<std::string> > discriminatorsByHltName;
 	
 	bool ApplyDiscriminators(KDataPFTau* tau, std::vector<std::string> const& discriminators,
-	                         event_type const& event) const
+	                         KappaEvent const& event) const
 	{
 		bool validTau = true;
 		

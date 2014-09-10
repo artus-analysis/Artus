@@ -4,7 +4,7 @@
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
-#include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
+#include "Artus/KappaAnalysis/interface/Consumers/KappaLambdaNtupleConsumer.h"
 
 
 /**
@@ -12,48 +12,43 @@
 
    Exploits the properties of b-tagged jets
 */
-template<class TTypes>
 class ValidBTaggedJetsProducer: public KappaProducerBase
 {
 
 public:
 
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
-
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "ValidBTaggedJetsProducer";
 	}
 
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE
 	{
 		KappaProducerBase::Init(settings);
 		
 		// add possible quantities for the lambda ntuples consumers
-		LambdaNtupleConsumer<TTypes>::Quantities["nBJets"] = [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<KappaTypes>::Quantities["nBJets"] = [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_bTaggedJets.size();
 		};
-		LambdaNtupleConsumer<TTypes>::Quantities["nBJets20"] = [this](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<KappaTypes>::Quantities["nBJets20"] = [this](KappaEvent const& event, KappaProduct const& product) {
 			return KappaProduct::GetNJetsAbovePtThreshold(product.m_bTaggedJets, 20.0);
 		};
-		LambdaNtupleConsumer<TTypes>::Quantities["nBJets30"] = [this](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<KappaTypes>::Quantities["nBJets30"] = [this](KappaEvent const& event, KappaProduct const& product) {
 			return KappaProduct::GetNJetsAbovePtThreshold(product.m_bTaggedJets, 30.0);
 		};
 		
-		LambdaNtupleConsumer<TTypes>::Quantities["bJetPt"] = [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<KappaTypes>::Quantities["bJetPt"] = [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_bTaggedJets.size() >= 1 ? product.m_bTaggedJets.at(0)->p4.Pt() : DefaultValues::UndefinedDouble;
 		};
-		LambdaNtupleConsumer<TTypes>::Quantities["bJetEta"] = [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<KappaTypes>::Quantities["bJetEta"] = [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_bTaggedJets.size() >= 1 ? product.m_bTaggedJets.at(0)->p4.Eta() : DefaultValues::UndefinedDouble;
 		};
-		LambdaNtupleConsumer<TTypes>::Quantities["bJetPhi"] = [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<KappaTypes>::Quantities["bJetPhi"] = [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_bTaggedJets.size() >= 1 ? product.m_bTaggedJets.at(0)->p4.Phi() : DefaultValues::UndefinedDouble;
 		};
 	}
 
-	virtual void Produce(event_type const& event, product_type& product,
-	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	virtual void Produce(KappaEvent const& event, KappaProduct& product,
+	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		for (std::vector<KDataPFJet*>::iterator jet = product.m_validJets.begin();
 				 jet != product.m_validJets.end(); ++jet)
@@ -80,8 +75,8 @@ public:
 
 protected:
 
-	virtual bool AdditionalCriteria(KDataPFTaggedJet* jet, event_type const& event,
-	                                product_type& product, setting_type const& settings) const
+	virtual bool AdditionalCriteria(KDataPFTaggedJet* jet, KappaEvent const& event,
+	                                KappaProduct& product, KappaSettings const& settings) const
 	{
 		bool validBJet = true;
 		return validBJet;

@@ -12,17 +12,14 @@
 
 /** Abstract Lepton Pt Filter
  */
-template<class TTypes, class TLepton>
-class LeptonLowerPtCutsFilter: public CutRangeFilterBase<TTypes> {
+template<class TLepton>
+class LeptonLowerPtCutsFilter: public CutRangeFilterBase<KappaTypes> {
 public:
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
-	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
+	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
 	
-	LeptonLowerPtCutsFilter(std::vector<TLepton*> product_type::*validLeptons) :
-		CutRangeFilterBase<TTypes>(),
+	LeptonLowerPtCutsFilter(std::vector<TLepton*> KappaProduct::*validLeptons) :
+		CutRangeFilterBase<KappaTypes>(),
 		m_validLeptonsMember(validLeptons)
 	{
 	}
@@ -61,7 +58,7 @@ protected:
 				{
 					size_t tmpIndex(*index); // TODO
 					this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-							[this, tmpIndex](event_type const& event, product_type const& product) -> double {
+							[this, tmpIndex](KappaEvent const& event, KappaProduct const& product) -> double {
 								return (((product.*m_validLeptonsMember).size() > tmpIndex) ?
 								        (product.*m_validLeptonsMember).at(tmpIndex)->p4.Pt() :
 								        0.99*std::numeric_limits<double>::max());
@@ -78,7 +75,7 @@ protected:
 					{
 						size_t tmpIndex(*index);
 						this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-								[this, tmpHltName, pattern, tmpIndex](event_type const& event, product_type const& product) -> double {
+								[this, tmpHltName, pattern, tmpIndex](KappaEvent const& event, KappaProduct const& product) -> double {
 									return (((product.*m_validLeptonsMember).size() > tmpIndex && boost::regex_search(product.m_selectedHltName, pattern)) ?
 									        (product.*m_validLeptonsMember).at(tmpIndex)->p4.Pt() :
 									        0.99*std::numeric_limits<double>::max());
@@ -93,24 +90,23 @@ protected:
 
 
 private:
-	std::vector<TLepton*> product_type::*m_validLeptonsMember;
+	std::vector<TLepton*> KappaProduct::*m_validLeptonsMember;
 };
 
 
 /** Electron Pt Filter
  */
-template<class TTypes>
-class ElectronLowerPtCutsFilter: public LeptonLowerPtCutsFilter<TTypes, KDataElectron> {
+class ElectronLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KDataElectron> {
 public:
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "ElectronLowerPtCutsFilter";
 	}
 	
-	ElectronLowerPtCutsFilter() : LeptonLowerPtCutsFilter<TTypes, KDataElectron>(&TTypes::product_type::m_validElectrons) {}
+	ElectronLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KDataElectron>(&KappaProduct::m_validElectrons) {}
 	
 	
-	virtual void Init(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE {
 		this->Initialise(settings.GetElectronLowerPtCuts());
 	}
 };
@@ -118,17 +114,16 @@ public:
 
 /** Muon Pt Filter
  */
-template<class TTypes>
-class MuonLowerPtCutsFilter: public LeptonLowerPtCutsFilter<TTypes, KDataMuon> {
+class MuonLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KDataMuon> {
 public:
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "MuonLowerPtCutsFilter";
 	}
 	
-	MuonLowerPtCutsFilter() : LeptonLowerPtCutsFilter<TTypes, KDataMuon>(&TTypes::product_type::m_validMuons) {}
+	MuonLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KDataMuon>(&KappaProduct::m_validMuons) {}
 	
-	virtual void Init(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE {
 		this->Initialise(settings.GetMuonLowerPtCuts());
 	}
 };
@@ -136,17 +131,16 @@ public:
 
 /** Tau Pt Filter
  */
-template<class TTypes>
-class TauLowerPtCutsFilter: public LeptonLowerPtCutsFilter<TTypes, KDataPFTau> {
+class TauLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KDataPFTau> {
 public:
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "TauLowerPtCutsFilter";
 	}
 	
-	TauLowerPtCutsFilter() : LeptonLowerPtCutsFilter<TTypes, KDataPFTau>(&TTypes::product_type::m_validTaus) {}
+	TauLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KDataPFTau>(&KappaProduct::m_validTaus) {}
 	
-	virtual void Init(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE {
 		this->Initialise(settings.GetTauLowerPtCuts());
 	}
 };
@@ -154,17 +148,16 @@ public:
 
 /** Jet Pt Filter
  */
-template<class TTypes>
-class JetLowerPtCutsFilter: public LeptonLowerPtCutsFilter<TTypes, KDataPFJet> {
+class JetLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KDataPFJet> {
 public:
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
 		return "JetLowerPtCutsFilter";
 	}
 	
-	JetLowerPtCutsFilter() : LeptonLowerPtCutsFilter<TTypes, KDataPFJet>(&TTypes::product_type::m_validJets) {}
+	JetLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KDataPFJet>(&KappaProduct::m_validJets) {}
 	
-	virtual void Init(typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE {
 		this->Initialise(settings.GetJetLowerPtCuts());
 	}
 };
