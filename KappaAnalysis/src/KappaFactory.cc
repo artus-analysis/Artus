@@ -90,8 +90,8 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 	else if(id == NumberGeneratedEventsWeightProducer().GetProducerId())
 		return new NumberGeneratedEventsWeightProducer();
 	// todo: uses setting not in KappaSettings
-	else if(id == GeneralTmvaClassificationReader<KappaTypes>().GetProducerId())
-		return new GeneralTmvaClassificationReader<KappaTypes>();
+	else if(id == GeneralTmvaClassificationReader().GetProducerId())
+		return new GeneralTmvaClassificationReader();
 	else
 		return FactoryBase/**/::createProducer( id );	
 }
@@ -158,8 +158,8 @@ FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
 
 ConsumerBaseUntemplated * KappaFactory::createConsumer ( std::string const& id )
 {
-	if(id == KappaCutFlowHistogramConsumer<KappaTypes>().GetConsumerId())
-		return new KappaCutFlowHistogramConsumer<KappaTypes>();
+	if(id == KappaCutFlowHistogramConsumer().GetConsumerId())
+		return new KappaCutFlowHistogramConsumer();
 	else if(id == KappaLambdaNtupleConsumer<KappaTypes>().GetConsumerId())
 		return new KappaLambdaNtupleConsumer<KappaTypes>();
 	else
