@@ -233,11 +233,11 @@ class PlotRoot(plotbase.PlotBase):
 		self.plot_pad.cd()
 		self.legend = ROOT.TLegend(plotData.plotdict["legloc"][0], plotData.plotdict["legloc"][1], 0.9, 0.9);
 		for plot_index in self.plot_sequence_indices[::-1]:
-			root_histogram = plotData.plotdict["root_histos"].values()[plot_index]
+			root_histogram = plotData.plotdict["root_histos"][plotData.plotdict["nicks"][plot_index]]
 			marker = plotData.plotdict["markers"][plot_index]
 			label = plotData.plotdict["labels"][plot_index]
 			if label != None:
-				self.legend.AddEntry(root_histogram, label, "LP" if "e" in marker.lower() else "F");
+				self.legend.AddEntry(root_histogram, label, "LP" if "e" in marker.lower() else "F")
 		self.legend.Draw()
 	
 	def add_texts(self, plotData):
