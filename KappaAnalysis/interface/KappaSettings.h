@@ -162,6 +162,9 @@ public:
 	
 	IMPL_SETTING_DEFAULT(float, BTaggedJetAbsEtaCut, 0.0);
 	IMPL_SETTING_DEFAULT(float, BTaggedJetCombinedSecondaryVertexMediumWP, 0.0);
+	IMPL_SETTING_DEFAULT(bool, applyBTagSF, false);
+	IMPL_SETTING_DEFAULT(float, BTagShift, 0.0);
+	IMPL_SETTING_DEFAULT(float, BMistagShift, 0.0);
 	
 	//Reading Boson PdgId for GenTauDecayProducer studies.
 	IMPL_SETTING(int, BosonPdgId);
