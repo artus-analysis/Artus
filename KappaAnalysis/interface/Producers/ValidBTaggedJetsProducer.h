@@ -1,4 +1,5 @@
 
+l
 #pragma once
 
 #include "Kappa/DataFormats/interface/Kappa.h"
@@ -6,7 +7,7 @@
 #include "Artus/Core/interface/ProducerBase.h"
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
 #include "Artus/KappaAnalysis/interface/KappaProduct.h"
-#include "Artus/KappaAnalysis/interface/BtagSF.hh"
+#include "Artus/KappaAnalysis/interface/Utility/BtagSF.hh"
 
 
 /**
@@ -73,7 +74,7 @@ public:
 				validBJet = validBJet && AdditionalCriteria(tjet, event, product, settings);
 				
 				//entry point for promotion/demotion of btagged jets - this is recommanded from bPOG
-				if (settings.GetapplyBTagSF() && !settings.GetInputIsData()){
+				if (settings.GetApplyBTagSF() && !settings.GetInputIsData()){
 				        int jetflavor = 1;
 					//if (isPartonExist[iJ] && !datasetID.isData()) jetflavor = TMath::Abs(partonFlavor[iJ]) //gen particle must be loaded
 					unsigned int btagSys = BtagSF::kNo;
