@@ -1,5 +1,4 @@
 
-l
 #pragma once
 
 #include "Kappa/DataFormats/interface/Kappa.h"
