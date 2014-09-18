@@ -39,6 +39,8 @@ public:
 
 	virtual void Init(setting_type const& settings)
 	{
+	        ProducerBase<TTypes>::Init(settings);
+		
 		genParticleTypes.clear();
 		for (std::vector<std::string>::const_iterator genParticleType = settings.GetGenParticleTypes().begin();
 		     genParticleType != settings.GetGenParticleTypes().end(); ++genParticleType)
