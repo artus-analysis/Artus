@@ -79,6 +79,12 @@ public:
 	std::map<KDataPFTau*, KDataLV*> m_triggerMatchedTaus;
 	std::map<KDataPFJet*, KDataLV*> m_triggerMatchedJets;
 	std::map<KDataPFTaggedJet*, KDataLV*> m_triggerMatchedTaggedJets;
+
+	/// added by GenMatchingProducer
+	std::map<KDataElectron*, const KDataLV*> m_genMatchedElectrons;
+	std::map<KDataMuon*, const KDataLV*> m_genMatchedMuons;
+	std::map<KDataPFTau*, const KDataLV*> m_genMatchedTaus;
+	float m_ratioGenMatched;
 	
 	// MVA outputs
 	std::vector<double> m_discriminators;
