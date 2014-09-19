@@ -132,7 +132,7 @@ class PlotMpl(plotbase.PlotBase):
 	def modify_axes(self, plotData):
 		super(PlotMpl, self).modify_axes(plotData)
 
-		plt.grid(plotData.plotdict["grid"])
+		self.ax.grid(plotData.plotdict["grid"])
 
 		self.ax.set_xlabel(plotData.plotdict["x_label"])
 		self.ax.set_ylabel(plotData.plotdict["y_label"])
@@ -146,6 +146,7 @@ class PlotMpl(plotbase.PlotBase):
 		if plotData.plotdict["ratio"]:
 			self.ax2.set_xlabel(plotData.plotdict["x_label"])
 			self.ax2.set_ylabel(plotData.plotdict["y_ratio_label"])
+			self.ax2.grid(plotData.plotdict["ratio_grid"])
 
 
 	def add_labels(self, plotData):
