@@ -11,7 +11,7 @@ plot data.
 
 DONT FORGET TO SOURCE THE ini_harry.sh INITIALIZATION SCRIPT!
 
-It is located in the Artus/HarryPlotter/scripts folder.
+It is located in the HarryPlotter/Plotting/scripts folder.
 
 
 1. Workflow overview

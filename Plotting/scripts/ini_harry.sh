@@ -5,10 +5,10 @@
 export PYTHONPATH=$PYTHONPATH:${CMSSW_RELEASE_BASE}/../../../../slc5_amd64_gcc462/external/py2-matplotlib/1.0.1/lib/python2.6/site-packages/
 
 #add harry to PATH
-export PATH=$CMSSW_BASE/src/Artus/HarryPlotter/scripts:$PATH
+export PATH=$CMSSW_BASE/src/HarryPlotter/Plotting/scripts:$PATH
 
 # Use this to open a root file directly in the TBrowser
 rot()
 {
-    root -l $@ ${CMSSW_BASE}/src/Artus/Utility/scripts/tBrowser.C
+    root -l $@ ${CMSSW_BASE}/src/HarryPlotter/Utility/scripts/tBrowser.C
 }
