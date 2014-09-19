@@ -43,11 +43,17 @@ class HarryCore(object):
 	
 	def run(self, args_from_script=None):
 		parser = harryparser.HarryParser()
+
 		args, unknown_args = parser.parse_known_args(args_from_script.split() if args_from_script != None else None)
 		args = vars(args)
-		
+		json_default_initialisation = None
 		if args["json_defaults"] != None:
+			json_default_initialisation = args["json_defaults"][0]
 			args.update(json_tools.JsonDict(args["json_defaults"]))
+
+		# replace 'json_defaults' from imported json file to actual name of imported json file
+		if json_default_intialisation != None:
+			args["json_defaults"] = json_default_intialisation
 		
 		self.processors = []
 		
