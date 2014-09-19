@@ -29,7 +29,7 @@ class PlotMpl(plotbase.PlotBase):
 		# defaults for colors
 		for index, color in enumerate(plotData.plotdict["colors"]):
 			if color == None:
-				plotData.plotdict["colors"][index] = index + 1
+				plotData.plotdict["colors"][index] = "black"
 			else:
 				plotData.plotdict["colors"][index] = color
 		self.set_default_ratio_colors(plotData)
