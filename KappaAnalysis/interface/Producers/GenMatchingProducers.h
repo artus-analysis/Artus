@@ -357,7 +357,7 @@ public:
 };
 
 
-/** Producer for gen matched jets with Physics Definition
+/** Producer for gen matched jets
  *  Required config tags:
  *  - DeltaRGenMatchingJets (default provided)
  *  - InvalidateNonMatchingJets (default provided) 
@@ -374,7 +374,7 @@ public:
 	typedef typename TTypes::setting_type setting_type;
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "JetGenPhysicMatchingProducer";
+		return "JetGenMatchingProducer";
 	}
 	
 	JetGenMatchingProducer() :
