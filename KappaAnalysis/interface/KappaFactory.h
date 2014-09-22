@@ -97,6 +97,8 @@ public:
 			return new MuonGenMatchingProducer<TTypes>();
 		else if(id == TauGenMatchingProducer<TTypes>().GetProducerId())
 			return new TauGenMatchingProducer<TTypes>();
+		else if(id == JetGenMatchingProducer<TTypes>().GetProducerId())
+			return new JetGenMatchingProducer<TTypes>();
 		else if(id == ValidLeptonsProducer<TTypes>().GetProducerId())
 			return new ValidLeptonsProducer<TTypes>();
 		else if(id == PUWeightProducer<TTypes>().GetProducerId())
