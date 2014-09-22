@@ -178,9 +178,9 @@ class RootTools(object):
 		if x_binning_string != None:
 			binning += x_binning_string
 		if y_binning_string != None and y_expression != None:
-			binning += y_binning_string
+			binning += "," + y_binning_string
 			if z_binning_string != None and z_expression != None:
-				binning += z_binning_string
+				binning += "," + z_binning_string
 		if not binning.startswith("("):
 			binning = "(" + binning
 		if not binning.endswith(")"):
