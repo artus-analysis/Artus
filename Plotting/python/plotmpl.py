@@ -13,6 +13,9 @@ import HarryPlotter.Plotting.plotbase as plotbase
 
 import HarryPlotter.Plotting.tools.mplconvert as mplconvert
 import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
+from matplotlib.colors import Normalize
+
 
 class PlotMpl(plotbase.PlotBase):
 	def __init__(self):
@@ -95,6 +98,8 @@ class PlotMpl(plotbase.PlotBase):
 		                                 plotData.plotdict["linestyle"]):
 			root_histogram = plotData.plotdict["root_histos"][nick]
 			mpl_histogram = mplconvert.root2histo(root_histogram, "someFilename", 1)
+			self.plot2D = ( type(mpl_histogram)==mplconvert.Histo2D)
+                        self.plot1D = ( type(mpl_histogram)==mplconvert.Histo)
 
 			# convert linestyles that do not work on command line
 			if linestyle == "dotted":
@@ -111,8 +116,20 @@ class PlotMpl(plotbase.PlotBase):
 				self.bottom_y_values[stack] =  [sum(x) for x in zip(self.bottom_y_values[stack], mpl_histogram.y)]
 			else:
 				bottom = [0] * root_histogram.GetNbinsX()
-
-			if marker=="bar":
+			if marker=="colormap":
+				print "Erzeuge colormap:"
+				#print mpl_histogram
+				print mpl_histogram.BinContents
+				norm = LogNorm if plotData.plotdict["z_log"] else Normalize
+				print norm
+				self.image = self.ax.imshow(mpl_histogram.BinContents,
+                                               interpolation='nearest',
+				               origin='lower',
+				               extent=[mpl_histogram.xborderlow, mpl_histogram.xborderhigh, mpl_histogram.yborderlow, mpl_histogram.yborderhigh],
+				               aspect='auto',
+				               cmap=plt.cm.get_cmap('afmhot'),
+				               norm=norm())
+			elif marker=="bar":
 				self.ax.bar(mpl_histogram.x, mpl_histogram.y, widths, yerr=yerr, bottom=bottom,
 				            ecolor=color, label=label, fill=True, facecolor=color, edgecolor=color, alpha=0.8)
 			else:
@@ -147,6 +164,9 @@ class PlotMpl(plotbase.PlotBase):
 			self.ax2.set_xlabel(plotData.plotdict["x_label"])
 			self.ax2.set_ylabel(plotData.plotdict["y_ratio_label"])
 			self.ax2.grid(plotData.plotdict["ratio_grid"])
+
+        	cb = self.fig.colorbar(self.image, ax=self.ax)
+
 
 
 	def add_labels(self, plotData):
