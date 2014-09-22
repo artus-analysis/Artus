@@ -48,7 +48,7 @@ class InputRoot(inputbase.InputBase):
 		for root_files, folders, x_expression, y_expression, z_expression, weight, nick in zip(*
 			[plotData.plotdict[key] for key in ["files", "folders", "x_expressions", "y_expressions", "z_expressions", "weights", "nicks"]]):
 			
-			# check wether to read from tree or directly from histograms
+			# check whether to read from tree or directly from histograms
 			root_object_type = roottools.RootTools.check_type(root_files, folders)
 			root_tree_chain = None
 			root_histogram = None
