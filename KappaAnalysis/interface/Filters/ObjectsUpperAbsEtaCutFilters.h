@@ -8,6 +8,7 @@
 
 #include "Artus/Filter/interface/CutFilterBase.h"
 #include "Artus/Utility/interface/Utility.h"
+#include "Artus/KappaAnalysis/interface/KappaTypes.h"
 
 
 /** Abstract Lepton Eta Filter
@@ -99,15 +100,11 @@ private:
 class ElectronUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KDataElectron> {
 public:
 	
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "ElectronUpperAbsEtaCutsFilter";
-	}
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
 	
 	ElectronUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KDataElectron>(&KappaProduct::m_validElectrons) {}
 	
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE {
-		this->Initialise(settings.GetElectronUpperAbsEtaCuts());
-	}
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
 };
 
 
@@ -116,15 +113,11 @@ public:
 class MuonUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KDataMuon> {
 public:
 	
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "MuonUpperAbsEtaCutsFilter";
-	}
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
 	
 	MuonUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KDataMuon>(&KappaProduct::m_validMuons) {}
 	
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE {
-		this->Initialise(settings.GetMuonUpperAbsEtaCuts());
-	}
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
 };
 
 
@@ -133,15 +126,11 @@ public:
 class TauUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KDataPFTau> {
 public:
 	
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "TauUpperAbsEtaCutsFilter";
-	}
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
 	
 	TauUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KDataPFTau>(&KappaProduct::m_validTaus) {}
 	
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE {
-		this->Initialise(settings.GetTauUpperAbsEtaCuts());
-	}
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
 };
 
 
@@ -150,14 +139,10 @@ public:
 class JetUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KDataPFJet> {
 public:
 	
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "JetUpperAbsEtaCutsFilter";
-	}
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
 	
 	JetUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KDataPFJet>(&KappaProduct::m_validJets) {}
 	
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE {
-		this->Initialise(settings.GetJetUpperAbsEtaCuts());
-	}
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
 };
 

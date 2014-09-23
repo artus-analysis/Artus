@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Artus/Filter/interface/CutFilterBase.h"
+#include "Artus/KappaAnalysis/interface/KappaTypes.h"
 
 
 /** Filter checking for the existance of exactly the given number of valid electrons.
@@ -12,18 +13,8 @@ public:
 	
 	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
 	
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "ElectronsCountFilter";
-	}
-	
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE {
-		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-				[](KappaEvent const& event, KappaProduct const& product) {
-					return product.m_validElectrons.size();
-				},
-				CutRange::EqualsCut(double(settings.GetNElectrons()))
-		));
-	}
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
 };
 
 
@@ -35,18 +26,8 @@ public:
 	
 	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
 	
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "MuonsCountFilter";
-	}
-	
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE {
-		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-				[](KappaEvent const& event, KappaProduct const& product) {
-					return product.m_validMuons.size();
-				},
-				CutRange::EqualsCut(double(settings.GetNMuons()))
-		));
-	}
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
 };
 
 
@@ -58,18 +39,8 @@ public:
 	
 	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
 	
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "TausCountFilter";
-	}
-	
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE {
-		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-				[](KappaEvent const& event, KappaProduct const& product) {
-					return product.m_validTaus.size();
-				},
-				CutRange::EqualsCut(double(settings.GetNTaus()))
-		));
-	}
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
 };
 
 
@@ -78,20 +49,10 @@ public:
  */
 class JetsCountFilter: public CutRangeFilterBase<KappaTypes> {
 public:
-	
+
 	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
-	
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "JetsCountFilter";
-	}
-	
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE {
-		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-				[](KappaEvent const& event, KappaProduct const& product) {
-					return product.m_validJets.size();
-				},
-				CutRange::EqualsCut(double(settings.GetNJets()))
-		));
-	}
+
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
 };
 

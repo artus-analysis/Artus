@@ -5,6 +5,7 @@
 #include "KappaTools/RootTools/RunLumiReader.h"
 
 #include "Artus/Core/interface/FilterBase.h"
+#include "Artus/KappaAnalysis/interface/KappaTypes.h"
 
 
 /** Filter events that are listed in a JSON file
@@ -18,25 +19,11 @@ class JsonFilter: public FilterBase<KappaTypes>
 
 public:
 
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
 
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "JsonFilter";
-	}
-
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE
-	{
-		FilterBase<KappaTypes>::Init(settings);
-		
-		m_runLumiSelector = RunLumiSelector(settings.GetJsonFiles(),
-		                                    settings.GetPassRunLow(),
-		                                    settings.GetPassRunHigh());
-	}
-
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
 	virtual bool DoesEventPass(KappaEvent const& event, KappaProduct const& product,
-	                           KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
-	{
-		return m_runLumiSelector.accept(event.m_eventMetadata->nRun, event.m_eventMetadata->nLumi);
-	}
+	                           KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE;
 
 
 private:
