@@ -23,8 +23,8 @@ public:
 	{
 		CutFlowHistogramConsumer<KappaTypes>::Init(settings);
 	
-		this->weightExtractor = [&settings](event_type const& event, product_type const& product) -> float {
-			return SafeMap::GetWithDefault(product.m_weights, std::string(settings.GetEventWeight()), 1.0);
+		this->weightExtractor = [](event_type const& event, product_type const& product, setting_type const& setting) -> float {
+			return SafeMap::GetWithDefault(product.m_weights, std::string(setting.GetEventWeight()), 1.0);
 		};
 	
 		this->m_addWeightedCutFlow = true;

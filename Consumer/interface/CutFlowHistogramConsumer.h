@@ -20,7 +20,7 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 	
-	typedef typename std::function<float(event_type const&, product_type const&)> weight_extractor_lambda;
+	typedef typename std::function<float(event_type const&, product_type const&, setting_type const&)> weight_extractor_lambda;
 
 	virtual std::string GetConsumerId() const
 		ARTUS_CPP11_OVERRIDE
@@ -41,7 +41,7 @@ public:
 		// default weight = 1.0
 		// overwrite this in analysis-specific code
 		// and set m_addWeightedCutFlow to true
-		weightExtractor = [](event_type const&, product_type const&) { return 1.0; };
+		weightExtractor = [](event_type const&, product_type const&, setting_type const&) { return 1.0; };
 	}
 
 	virtual void ProcessEvent(event_type const& event,
@@ -56,7 +56,7 @@ public:
 			m_histogramsInitialised = InitialiseHistograms(setting, filterResult);
 		}
 
-		float weight = weightExtractor(event, product);
+		float weight = weightExtractor(event, product, setting);
 		int bin = 0;
 		
 		// fill first bin of histograms with all events

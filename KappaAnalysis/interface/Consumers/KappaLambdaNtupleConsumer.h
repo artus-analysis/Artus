@@ -44,9 +44,11 @@ public:
 		{
 			return event.m_vertexSummary->nVertices;
 		});
-		LambdaNtupleConsumer<TTypes>::AddQuantity("npu", [&settings](event_type const& event, product_type const& product)
+
+		bool bInpData = settings.GetInputIsData();
+		LambdaNtupleConsumer<TTypes>::AddQuantity("npu", [bInpData](event_type const& event, product_type const& product)
 		{
-			return (settings.GetInputIsData() ?
+			return (bInpData ?
 			        DefaultValues::UndefinedFloat :
 			        static_cast<KGenEventMetadata*>(event.m_eventMetadata)->numPUInteractionsTruth);
 		});
