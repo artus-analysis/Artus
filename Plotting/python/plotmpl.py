@@ -98,8 +98,8 @@ class PlotMpl(plotbase.PlotBase):
 		                                 plotData.plotdict["linestyle"]):
 			root_histogram = plotData.plotdict["root_histos"][nick]
 			mpl_histogram = mplconvert.root2histo(root_histogram, "someFilename", 1)
-			self.plot2D = ( type(mpl_histogram)==mplconvert.Histo2D)
-                        self.plot1D = ( type(mpl_histogram)==mplconvert.Histo)
+			self.plot1D = isinstance(mpl_histogram, mplconvert.Histo)
+                        self.plot2D = isinstance(mpl_histogram, mplconvert.Histo2D)
 
 			# convert linestyles that do not work on command line
 			if linestyle == "dotted":
@@ -116,12 +116,9 @@ class PlotMpl(plotbase.PlotBase):
 				self.bottom_y_values[stack] =  [sum(x) for x in zip(self.bottom_y_values[stack], mpl_histogram.y)]
 			else:
 				bottom = [0] * root_histogram.GetNbinsX()
-			if marker=="colormap":
-				print "Erzeuge colormap:"
-				#print mpl_histogram
-				print mpl_histogram.BinContents
+			# do the actual plotting
+			if self.plot2D:
 				norm = LogNorm if plotData.plotdict["z_log"] else Normalize
-				print norm
 				self.image = self.ax.imshow(mpl_histogram.BinContents,
                                                interpolation='nearest',
 				               origin='lower',
@@ -134,10 +131,9 @@ class PlotMpl(plotbase.PlotBase):
 				            ecolor=color, label=label, fill=True, facecolor=color, edgecolor=color, alpha=0.8)
 			else:
 				y = mpl_histogram.y if not(stack in self.bottom_y_values) else self.bottom_y_values[stack]
-			
+					
 				self.ax.errorbar(mpl_histogram.xc, y, mpl_histogram.yerr,
 				                 color=color, fmt=marker, capsize=0, label=label, zorder=10, drawstyle='steps-mid', linestyle=linestyle)
-		pprint.pprint(plotData.plotdict)
 		if plotData.plotdict["ratio"]:
 			for root_histogram, ratio_color, ratio_marker, in zip(plotData.plotdict["root_ratio_histos"],
 			                                      plotData.plotdict["ratio_colors"],
@@ -147,32 +143,36 @@ class PlotMpl(plotbase.PlotBase):
 
 
 	def modify_axes(self, plotData):
+		# do what is needed for all plots:
 		super(PlotMpl, self).modify_axes(plotData)
 
 		self.ax.grid(plotData.plotdict["grid"])
 
 		self.ax.set_xlabel(plotData.plotdict["x_label"])
 		self.ax.set_ylabel(plotData.plotdict["y_label"])
+		self.ax.ticklabel_format(style='sci',scilimits=(-3,4),axis='both')
 
-		if plotData.plotdict["x_log"]: 
-			self.ax.set_xscale('log', nonposx='mask')
+		# do special things for 1D Plots
+		if self.plot1D:
+			if plotData.plotdict["x_log"]: 
+				self.ax.set_xscale('log', nonposx='mask')
+			if plotData.plotdict["y_log"]: 
+				self.ax.set_yscale('log', nonposx='mask')
 
-		if plotData.plotdict["y_log"]: 
-			self.ax.set_yscale('log', nonposx='mask')
+			if plotData.plotdict["ratio"]:
+				self.ax2.set_xlabel(plotData.plotdict["x_label"])
+				self.ax2.set_ylabel(plotData.plotdict["y_ratio_label"])
+				self.ax2.grid(plotData.plotdict["ratio_grid"])
 
-		if plotData.plotdict["ratio"]:
-			self.ax2.set_xlabel(plotData.plotdict["x_label"])
-			self.ax2.set_ylabel(plotData.plotdict["y_ratio_label"])
-			self.ax2.grid(plotData.plotdict["ratio_grid"])
-
-        	cb = self.fig.colorbar(self.image, ax=self.ax)
-
+		# do special things for 2D Plots
+		if self.plot2D:
+			cb = self.fig.colorbar(self.image, ax=self.ax)
 
 
 	def add_labels(self, plotData):
 		super(PlotMpl, self).add_labels(plotData)
-	
-		self.ax.legend()
+
+		legend = self.ax.legend()
 
 	def save_canvas(self, plotData):
 		for output_filename in plotData.plotdict["output_filenames"]:
