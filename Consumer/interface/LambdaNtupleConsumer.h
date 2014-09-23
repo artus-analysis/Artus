@@ -20,13 +20,11 @@
  */
 
 
-class LCont {
+class LambdaNtupleQuantities {
 public:
 static std::map<std::string, std::function<float(EventBase const&, ProductBase const& ) >> CommonQuantities ;
 
 };
-//	= std::map<std::string, std::function<float(EventBase const&, ProductBase const&)> >(); 
-
 
 template<class TTypes>
 class LambdaNtupleConsumer: public NtupleConsumerBase<TTypes> {
@@ -40,8 +38,6 @@ public:
 	typedef std::function<float(event_type const&, product_type const&)> float_extractor_lambda;
 	typedef std::function<float(EventBase const&, ProductBase const&)> float_extractor_lambda_base;
 	
-	//static std::map<std::string, float_extractor_lambda> Quantities;
-	
 	LambdaNtupleConsumer() : NtupleConsumerBase<TTypes>() {
 	}
 
@@ -50,7 +46,7 @@ public:
 
 	
 	static void AddQuantity ( std::string const& name, float_extractor_lambda lmbToAdd ) {
-		LCont::CommonQuantities[ name ] = [lmbToAdd] ( EventBase const& ev, ProductBase const& pd ) -> float { 
+		LambdaNtupleQuantities::CommonQuantities[ name ] = [lmbToAdd] ( EventBase const& ev, ProductBase const& pd ) -> float { 
 			auto const& specEv = static_cast< event_type const& > ( ev );
 			auto const& specPd = static_cast< product_type const& > ( pd );
 
@@ -59,7 +55,7 @@ public:
 	}
 
 	static std::map<std::string, std::function<float(EventBase const&, ProductBase const& ) >> & GetQuantities () {
-		return LCont::CommonQuantities;
+		return LambdaNtupleQuantities::CommonQuantities;
 	}
 
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
@@ -67,12 +63,11 @@ public:
 		
 		// construct extractors vector
 		m_valueExtractors.clear();
-		//float_extractor_lambda defaultExtractor = [](event_type const&, product_type const&) { return DefaultValues::UndefinedFloat; };
+
 		for (std::vector<std::string>::iterator quantity = this->m_quantitiesVector.begin();
 		     quantity != this->m_quantitiesVector.end(); ++quantity)
 		{
-			//m_valueExtractors.push_back(SafeMap::GetDefault(LambdaNtupleConsumer<TTypes>::Quantities, *quantity, defaultExtractor));
-			m_valueExtractors.push_back(SafeMap::Get(LCont::CommonQuantities, *quantity));
+			m_valueExtractors.push_back(SafeMap::Get(LambdaNtupleQuantities::CommonQuantities, *quantity));
 		}
 	}
 
@@ -103,9 +98,5 @@ private:
 	std::vector<float_extractor_lambda_base> m_valueExtractors;
 
 };
-
-
-//template<class TTypes>
-//std::map<std::string, std::function<float(typename TTypes::event_type const&, typename TTypes::product_type const&)> > LambdaNtupleConsumer<TTypes>::Quantities = std::map<std::string, std::function<float(typename TTypes::event_type const&, typename TTypes::product_type const&)> >();
 
 
