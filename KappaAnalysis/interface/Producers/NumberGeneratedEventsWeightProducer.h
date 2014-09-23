@@ -14,15 +14,10 @@
 class NumberGeneratedEventsWeightProducer : public KappaProducerBase {
 public:
 
-	virtual std::string GetProducerId() const {
-		return "NumberGeneratedEventsWeightProducer";
-	}
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
 
 	virtual void Produce(KappaEvent const& event,
 	                     KappaProduct & product,
-	                     KappaSettings const& settings) const
-	{
-		product.m_weights["numberGeneratedEventsWeight"] = (1.0 / settings.GetNumberGeneratedEvents());
-	}
+	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE;
 
 };

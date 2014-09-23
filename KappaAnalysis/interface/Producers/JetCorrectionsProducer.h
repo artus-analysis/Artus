@@ -151,15 +151,9 @@ private:
 class JetCorrectionsProducer: public JetCorrectionsProducerBase<KDataPFJet>
 {
 public:
-	JetCorrectionsProducer() :
-		JetCorrectionsProducerBase<KDataPFJet>(&KappaEvent::m_jets,
-		                                               &KappaProduct::m_correctedJets)
-	{
-	};
+	JetCorrectionsProducer();
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "JetCorrectionsProducer";
-	}
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
 };
 
 
@@ -173,15 +167,9 @@ class TaggedJetCorrectionsProducer: public JetCorrectionsProducerBase<KDataPFTag
 {
 public:
 
-	TaggedJetCorrectionsProducer() :
-		JetCorrectionsProducerBase<KDataPFTaggedJet>(&KappaEvent::m_tjets,
-		                                                     &KappaProduct::m_correctedTaggedJets)
-	{
-	};
+	TaggedJetCorrectionsProducer();
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "TaggedJetCorrectionsProducer";
-	}
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
 };
 
 

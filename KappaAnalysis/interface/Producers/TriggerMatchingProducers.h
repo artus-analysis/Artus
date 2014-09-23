@@ -171,19 +171,9 @@ class ElectronTriggerMatchingProducer: public TriggerMatchingProducerBase<KDataE
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "ElectronTriggerMatchingProducer";
-	}
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
 	
-	ElectronTriggerMatchingProducer() :
-		TriggerMatchingProducerBase<KDataElectron>(&KappaProduct::m_triggerMatchedElectrons,
-		                                           &KappaProduct::m_validElectrons,
-		                                           &KappaProduct::m_invalidElectrons,
-		                                                   &KappaSettings::GetElectronTriggerFilterNames,
-		                                                   &KappaSettings::GetDeltaRTriggerMatchingElectrons,
-		                                                   &KappaSettings::GetInvalidateNonMatchingElectrons)
-	{
-	}
+	ElectronTriggerMatchingProducer();
 
 };
 
@@ -199,19 +189,9 @@ class MuonTriggerMatchingProducer: public TriggerMatchingProducerBase<KDataMuon>
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "MuonTriggerMatchingProducer";
-	}
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
 	
-	MuonTriggerMatchingProducer() :
-		TriggerMatchingProducerBase<KDataMuon>(&KappaProduct::m_triggerMatchedMuons,
-		                                       &KappaProduct::m_validMuons,
-		                                       &KappaProduct::m_invalidMuons,
-		                                       &KappaSettings::GetMuonTriggerFilterNames,
-		                                               &KappaSettings::GetDeltaRTriggerMatchingMuons,
-		                                               &KappaSettings::GetInvalidateNonMatchingMuons)
-	{
-	}
+	MuonTriggerMatchingProducer();
 
 };
 
@@ -227,19 +207,9 @@ class TauTriggerMatchingProducer: public TriggerMatchingProducerBase<KDataPFTau>
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "TauTriggerMatchingProducer";
-	}
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
 	
-	TauTriggerMatchingProducer() :
-		TriggerMatchingProducerBase<KDataPFTau>(&KappaProduct::m_triggerMatchedTaus,
-		                                        &KappaProduct::m_validTaus,
-		                                        &KappaProduct::m_invalidTaus,
-		                                        &KappaSettings::GetTauTriggerFilterNames,
-		                                                &KappaSettings::GetDeltaRTriggerMatchingTaus,
-		                                                &KappaSettings::GetInvalidateNonMatchingTaus)
-	{
-	}
+	TauTriggerMatchingProducer();
 
 };
 
@@ -255,19 +225,9 @@ class JetTriggerMatchingProducer: public TriggerMatchingProducerBase<KDataPFJet>
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "JetTriggerMatchingProducer";
-	}
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
 	
-	JetTriggerMatchingProducer() :
-		TriggerMatchingProducerBase<KDataPFJet>(&KappaProduct::m_triggerMatchedJets,
-		                                        &KappaProduct::m_validJets,
-		                                        &KappaProduct::m_invalidJets,
-		                                        &KappaSettings::GetJetTriggerFilterNames,
-		                                                &KappaSettings::GetDeltaRTriggerMatchingJets,
-		                                                &KappaSettings::GetInvalidateNonMatchingJets)
-	{
-	}
+	JetTriggerMatchingProducer();
 
 };
 

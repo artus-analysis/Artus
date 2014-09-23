@@ -114,17 +114,8 @@ class GeneralTmvaClassificationReader: public TmvaClassificationReaderBase<Kappa
 {
 public:
 
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE
-	{
-		return "GeneralTmvaClassificationReader";
-	}
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
 	
-	GeneralTmvaClassificationReader() :
-		TmvaClassificationReaderBase(&KappaSettings::GetTmvaInputQuantities,
-		                             &KappaSettings::GetTmvaMethods,
-		                             &KappaSettings::GetTmvaWeights,
-		                             &KappaProduct::m_discriminators)
-	{
-	}
+	GeneralTmvaClassificationReader();
 	
 };

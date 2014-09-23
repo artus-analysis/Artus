@@ -1,3 +1,4 @@
+
 #include "Artus/KappaAnalysis/interface/Producers/CrossSectionWeightProducer.h"
 
 std::string CrossSectionWeightProducer::GetProducerId() const

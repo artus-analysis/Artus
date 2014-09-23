@@ -1,6 +1,7 @@
 
 #include "Artus/KappaAnalysis/interface/Producers/TauCorrectionsProducer.h"
 
+
 std::string TauCorrectionsProducer::GetProducerId() const {
 	return "TauCorrectionsProducer";
 }
@@ -40,4 +41,8 @@ void TauCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& prod
 	          { return tau1->p4.Pt() > tau2->p4.Pt(); });
 }
 
+void TauCorrectionsProducer::AdditionalCorrections(KDataPFTau* tau, KappaEvent const& event,
+	                                   KappaProduct& product, KappaSettings const& settings) const
+{
+}
 

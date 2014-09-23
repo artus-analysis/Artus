@@ -1,3 +1,4 @@
+
 #include "Artus/KappaAnalysis/interface/Producers/EventWeightProducer.h"
 
 std::string EventWeightProducer::GetProducerId() const {

@@ -3,15 +3,16 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
-#include "Artus/Core/interface/ProducerBase.h"
+#include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
+#include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
 
 
 /** Abstract Producer class for trigger matching valid objects
  *
  *	Needs to run after the valid object producers.
  */
-template<class TTypes, class TValidObject>
-class GenMatchingProducerBase: public ProducerBase<TTypes>
+template<class TValidObject>
+class GenMatchingProducerBase: public KappaProducerBase
 {
 
 public:
@@ -24,9 +25,9 @@ public:
 		T   = 2
 	};
 
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
+	typedef typename KappaTypes::event_type event_type;
+	typedef typename KappaTypes::product_type product_type;
+	typedef typename KappaTypes::setting_type setting_type;
 	
 	GenMatchingProducerBase(std::map<TValidObject*, const KGenParticle*> product_type::*genMatchedObjects, //changed to KGenParticle from KDataLV
 	                            std::vector<TValidObject*> product_type::*validObjects,
@@ -48,11 +49,11 @@ public:
 
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE 
 	{
-		ProducerBase<TTypes>::Init(settings);
-		LambdaNtupleConsumer<TTypes>::Quantities["ratioGenMatched"] = [](event_type const & event, product_type const & product)
+		KappaProducerBase::Init(settings);
+		LambdaNtupleConsumer<KappaTypes>::AddQuantity("ratioGenMatched", [](event_type const & event, product_type const & product)
 		{
 			return product.m_ratioGenMatched;
-		};
+		});
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
@@ -263,30 +264,14 @@ private:
  *  - DeltaRGenMatchingElectrons (default provided)
  *  - InvalidateNonMatchingElectrons (default provided)
  */
-template<class TTypes>
-class ElectronGenMatchingProducer: public GenMatchingProducerBase<TTypes, KDataElectron>
+class ElectronGenMatchingProducer: public GenMatchingProducerBase<KDataElectron>
 {
 
 public:
-
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "ElectronGenMatchingProducer";
-	}
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
 
-	ElectronGenMatchingProducer() :
-		GenMatchingProducerBase<TTypes, KDataElectron>(&product_type::m_genMatchedElectrons,
-		                                                   &product_type::m_validElectrons,
-		                                                   &product_type::m_invalidElectrons,
-		                                                   ElectronGenMatchingProducer::TauDecayMode::E,
-		                                                   &setting_type::GetDeltaRGenMatchingElectrons,
-		                                                   &setting_type::GetInvalidateNonGenMatchingElectrons/* , */
-/* 							           &setting_type::GetMatchingAlgorithmusJets */)
-	{
-	}
+	ElectronGenMatchingProducer();
 
 };
 
@@ -296,30 +281,14 @@ public:
  *  - DeltaRGenMatchingMuons (default provided)
  *  - InvalidateNonMatchingMuons (default provided)
  */
-template<class TTypes>
-class MuonGenMatchingProducer: public GenMatchingProducerBase<TTypes, KDataMuon>
+class MuonGenMatchingProducer: public GenMatchingProducerBase<KDataMuon>
 {
 
 public:
-
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "MuonGenMatchingProducer";
-	}
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
 	
-	MuonGenMatchingProducer() :
-		GenMatchingProducerBase<TTypes, KDataMuon>(&product_type::m_genMatchedMuons,
-		                                               &product_type::m_validMuons,
-		                                               &product_type::m_invalidMuons,
-		                                               MuonGenMatchingProducer::TauDecayMode::M,
-		                                               &setting_type::GetDeltaRGenMatchingMuons,
-		                                               &setting_type::GetInvalidateNonGenMatchingMuons/* , */
-/* 							       &setting_type::GetMatchingAlgorithmusJets */)
-	{
-	}
+	MuonGenMatchingProducer();
 
 };
 
@@ -329,30 +298,14 @@ public:
  *  - DeltaRGenMatchingTaus (default provided)
  *  - InvalidateNonMatchingTaus (default provided)
  */
-template<class TTypes>
-class TauGenMatchingProducer: public GenMatchingProducerBase<TTypes, KDataPFTau>
+class TauGenMatchingProducer: public GenMatchingProducerBase<KDataPFTau>
 {
 
 public:
-
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "TauGenMatchingProducer";
-	}
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
 	
-	TauGenMatchingProducer() :
-		GenMatchingProducerBase<TTypes, KDataPFTau>(&product_type::m_genMatchedTaus,
-		                                                &product_type::m_validTaus,
-		                                                &product_type::m_invalidTaus,
-		                                                TauGenMatchingProducer::TauDecayMode::T,
-		                                                &setting_type::GetDeltaRGenMatchingTaus,
-		                                                &setting_type::GetInvalidateNonGenMatchingTaus/* , */
-/* 							        &setting_type::GetMatchingAlgorithmusJets */)
-	{
-	}
+	TauGenMatchingProducer();
 
 };
 
@@ -363,29 +316,13 @@ public:
  *  - InvalidateNonMatchingJets (default provided) 
  *  - MatchingAlgorithmusJets (default provided)
  */
-template<class TTypes>
-class JetGenMatchingProducer: public GenMatchingProducerBase<TTypes, KDataPFJet>
+class JetGenMatchingProducer: public GenMatchingProducerBase<KDataPFJet>
 {
 
 public:
-
-	typedef typename TTypes::event_type event_type;
-	typedef typename TTypes::product_type product_type;
-	typedef typename TTypes::setting_type setting_type;
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
-		return "JetGenMatchingProducer";
-	}
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
 	
-	JetGenMatchingProducer() :
-		GenMatchingProducerBase<TTypes, KDataPFJet>(&product_type::m_genMatchedJets,
-		                                                &product_type::m_validJets,
-		                                                &product_type::m_invalidJets,
-		                                                JetGenMatchingProducer::TauDecayMode::NONE,
-		                                                &setting_type::GetDeltaRGenMatchingJets,
-							        &setting_type::GetInvalidateNonGenMatchingJets/* , */
-/* 							        &setting_type::GetMatchingAlgorithmusJets */)
-	{
-	}
+	JetGenMatchingProducer();
 
 };
