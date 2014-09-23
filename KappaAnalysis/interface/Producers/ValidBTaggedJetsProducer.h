@@ -26,25 +26,24 @@ public:
 		KappaProducerBase::Init(settings);
 		
 		// add possible quantities for the lambda ntuples consumers
-		LambdaNtupleConsumer<KappaTypes>::Quantities["nBJets"] = [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddQuantity("nBJets", [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_bTaggedJets.size();
-		};
-		LambdaNtupleConsumer<KappaTypes>::Quantities["nBJets20"] = [this](KappaEvent const& event, KappaProduct const& product) {
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddQuantity("nBJets20", [this](KappaEvent const& event, KappaProduct const& product) {
 			return KappaProduct::GetNJetsAbovePtThreshold(product.m_bTaggedJets, 20.0);
-		};
-		LambdaNtupleConsumer<KappaTypes>::Quantities["nBJets30"] = [this](KappaEvent const& event, KappaProduct const& product) {
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddQuantity("nBJets30", [this](KappaEvent const& event, KappaProduct const& product) {
 			return KappaProduct::GetNJetsAbovePtThreshold(product.m_bTaggedJets, 30.0);
-		};
-		
-		LambdaNtupleConsumer<KappaTypes>::Quantities["bJetPt"] = [](KappaEvent const& event, KappaProduct const& product) {
+		});		
+		LambdaNtupleConsumer<KappaTypes>::AddQuantity("bJetPt", [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_bTaggedJets.size() >= 1 ? product.m_bTaggedJets.at(0)->p4.Pt() : DefaultValues::UndefinedDouble;
-		};
-		LambdaNtupleConsumer<KappaTypes>::Quantities["bJetEta"] = [](KappaEvent const& event, KappaProduct const& product) {
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddQuantity("bJetEta", [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_bTaggedJets.size() >= 1 ? product.m_bTaggedJets.at(0)->p4.Eta() : DefaultValues::UndefinedDouble;
-		};
-		LambdaNtupleConsumer<KappaTypes>::Quantities["bJetPhi"] = [](KappaEvent const& event, KappaProduct const& product) {
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddQuantity("bJetPhi", [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_bTaggedJets.size() >= 1 ? product.m_bTaggedJets.at(0)->p4.Phi() : DefaultValues::UndefinedDouble;
-		};
+		});
 	}
 
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,

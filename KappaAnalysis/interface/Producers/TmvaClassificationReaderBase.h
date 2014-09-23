@@ -50,7 +50,7 @@ public:
 		for (std::vector<std::string>::const_iterator quantity = (settings.*GetTmvaInputQuantities)().begin();
 		     quantity != (settings.*GetTmvaInputQuantities)().end(); ++quantity)
 		{
-			m_inputExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::Quantities, *quantity));
+			m_inputExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetQuantities(), *quantity));
 		}
 		
 		// loading TMVA weight files

@@ -128,9 +128,9 @@ public:
 		muonIso = ToMuonIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetMuonIso)())));
 		
 		// add possible quantities for the lambda ntuples consumers
-		LambdaNtupleConsumer<TTypes>::Quantities["nMuons"] = [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddQuantity("nMuons", [](event_type const& event, product_type const& product) {
 			return product.m_validMuons.size();
-		};
+		});
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,

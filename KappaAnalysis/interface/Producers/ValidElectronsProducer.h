@@ -156,9 +156,9 @@ public:
 		electronReco = ToElectronReco(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetElectronReco)())));
 		
 		// add possible quantities for the lambda ntuples consumers
-		LambdaNtupleConsumer<TTypes>::Quantities["nElectrons"] = [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddQuantity("nElectrons", [](event_type const& event, product_type const& product) {
 			return product.m_validElectrons.size();
-		};
+		});
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,

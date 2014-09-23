@@ -66,9 +66,9 @@ public:
 		                                                                    discriminatorsByHltName);
 		
 		// add possible quantities for the lambda ntuples consumers
-		LambdaNtupleConsumer<KappaTypes>::Quantities["nTaus"] = [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddQuantity("nTaus", [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validTaus.size();
-		};
+		} );
 	}
 
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
