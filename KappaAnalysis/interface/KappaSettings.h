@@ -108,6 +108,17 @@ public:
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonMatchingTaus, true);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonMatchingJets, true);
 	
+	IMPL_SETTING_DEFAULT(float, DeltaRGenMatchingElectrons, 0.5);
+	IMPL_SETTING_DEFAULT(float, DeltaRGenMatchingMuons, 0.5);
+	IMPL_SETTING_DEFAULT(float, DeltaRGenMatchingTaus, 0.5);
+	IMPL_SETTING_DEFAULT(float, DeltaRGenMatchingJets, 0.3);
+	//IMPL_SETTING_DEFAULT(std::string, MatchingAlgorithmusJets, "algorithmic");
+	
+	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenMatchingElectrons, false);
+	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenMatchingMuons, false);
+	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenMatchingTaus, false);
+	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenMatchingJets, false);
+	
 	IMPL_SETTING(int, Year);
 	
 	IMPL_SETTING_DEFAULT(std::string, ValidMuonsInput, "auto");
@@ -162,6 +173,9 @@ public:
 	
 	IMPL_SETTING_DEFAULT(float, BTaggedJetAbsEtaCut, 0.0);
 	IMPL_SETTING_DEFAULT(float, BTaggedJetCombinedSecondaryVertexMediumWP, 0.0);
+	IMPL_SETTING_DEFAULT(bool, ApplyBTagSF, false);
+	IMPL_SETTING_DEFAULT(float, BTagShift, 0.0);
+	IMPL_SETTING_DEFAULT(float, BMistagShift, 0.0);
 	
 	//Reading Boson PdgId for GenTauDecayProducer studies.
 	IMPL_SETTING(int, BosonPdgId);

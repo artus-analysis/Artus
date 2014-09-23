@@ -69,7 +69,7 @@ public:
 	std::vector<KDataPFTaggedJet*> m_bTaggedJets;
 	std::vector<KDataPFTaggedJet*> m_nonBTaggedJets;
 	
-	HLTTools* m_hltInfo = new HLTTools();
+	HLTTools m_hltInfo = HLTTools();
 	std::string m_selectedHltName;
 	int m_selectedHltPosition;
 
@@ -79,6 +79,13 @@ public:
 	std::map<KDataPFTau*, KDataLV*> m_triggerMatchedTaus;
 	std::map<KDataPFJet*, KDataLV*> m_triggerMatchedJets;
 	std::map<KDataPFTaggedJet*, KDataLV*> m_triggerMatchedTaggedJets;
+
+	/// added by GenMatchingProducer
+	std::map<KDataElectron*, const KGenParticle*> m_genMatchedElectrons; //changed to KGenParticle from KDataLV
+	std::map<KDataMuon*, const KGenParticle*> m_genMatchedMuons; //changed to KGenParticle from KDataLV
+	std::map<KDataPFTau*, const KGenParticle*> m_genMatchedTaus; //changed to KGenParticle from KDataLV
+	std::map<KDataPFJet*, const KGenParticle*> m_genMatchedJets; //changed to KGenParticle from KDataLV
+	float m_ratioGenMatched;
 	
 	// MVA outputs
 	std::vector<double> m_discriminators;

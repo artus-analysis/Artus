@@ -5,6 +5,7 @@
 
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/KappaAnalysis/interface/Consumers/KappaLambdaNtupleConsumer.h"
+#include "Artus/KappaAnalysis/interface/Utility/BtagSF.hh"
 
 
 /**
@@ -63,6 +64,29 @@ public:
 				}
 
 				validBJet = validBJet && AdditionalCriteria(tjet, event, product, settings);
+				
+				//entry point for promotion/demotion of btagged jets - this is recommanded from bPOG
+				if (settings.GetApplyBTagSF() && !settings.GetInputIsData())
+				{
+					int jetflavor = 1;
+					//if (isPartonExist[iJ] && !datasetID.isData()) jetflavor = TMath::Abs(partonFlavor[iJ]) //gen particle must be loaded
+					unsigned int btagSys = BtagSF::kNo;
+					unsigned int bmistagSys = BtagSF::kNo;
+					bool is8TeV = true;
+					if (settings.GetBTagShift()<0)
+					        btagSys = BtagSF::kDown;
+					if (settings.GetBTagShift()>0)
+					        btagSys = BtagSF::kUp;
+					if (settings.GetBMistagShift()<0)
+					        bmistagSys = BtagSF::kDown;
+					if (settings.GetBMistagShift()>0)
+					        bmistagSys = BtagSF::kUp;
+					bool before = validBJet;
+				  BtagSF bla;
+				  validBJet = bla.isbtagged(tjet->p4.pt(), tjet->p4.eta(), combinedSecondaryVertex, jetflavor, settings.GetInputIsData(), btagSys, bmistagSys, is8TeV);
+				  if (before != validBJet) 
+				        LOG(DEBUG) << "Promoted/demoted : " << validBJet;
+				}
 
 				if (validBJet)
 					product.m_bTaggedJets.push_back(tjet);
