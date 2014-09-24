@@ -5,6 +5,7 @@
 
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
+#include "Artus/Utility/interface/DefaultValues.h"
 
 
 /** Abstract Producer class for trigger matching valid objects
@@ -53,6 +54,10 @@ public:
 		LambdaNtupleConsumer<KappaTypes>::AddQuantity("ratioGenMatched", [](event_type const & event, product_type const & product)
 		{
 			return product.m_ratioGenMatched;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddQuantity("genMatchDeltaR", [](event_type const & event, product_type const & product)
+		{
+			return product.m_genMatchDeltaR;
 		});
 	}
 
@@ -210,16 +215,19 @@ public:
 			     !objectMatched && genTau != event.m_genTaus->end();++genTau) 
 				{
 					// only use genTaus that will decay into comparable particles
-					if (this->MatchDecayMode(*genTau,tauDecayMode))
+					if (MatchDecayMode(*genTau,tauDecayMode))
 					{
 						deltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, genTau->p4_vis);
 						if(deltaR<(settings.*GetDeltaRGenMatchingObjects)())
 						{
 							(product.*m_genMatchedObjects)[*validObject] = &(*genTau);
 							ratioGenMatched += 1./(product.*m_validObjects).size();
+							product.m_genMatchDeltaR = deltaR;
 							objectMatched = true;
 						}
+						else product.m_genMatchDeltaR = DefaultValues::UndefinedFloat;
 					}
+					else product.m_genMatchDeltaR = DefaultValues::UndefinedFloat;
 				}
 				// invalidate the object if the trigger has not matched
 				if ((! objectMatched) && (settings.*GetInvalidateNonGenMatchingObjects)())
@@ -240,10 +248,10 @@ public:
 				          { return object1->p4.Pt() > object2->p4.Pt(); });
 			}
 		}
+		else product.m_genMatchDeltaR = DefaultValues::UndefinedFloat;
 	  }
 	  product.m_ratioGenMatched = ratioGenMatched;
 	}
-
 	virtual bool MatchDecayMode(KDataGenTau const &genTau, TauDecayMode tauDecayMode) const
 	{
 		bool decayModeMatched = false;

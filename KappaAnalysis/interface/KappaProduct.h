@@ -89,6 +89,7 @@ public:
 	std::map<KDataPFTau*, KGenParticle*> m_genMatchedTaus; //changed to KGenParticle from const KDataLV
 	std::map<KDataPFJet*, KGenParticle*> m_genMatchedJets; //changed to KGenParticle from const KDataLV
 	float m_ratioGenMatched;
+	float m_genMatchDeltaR;
 	
 	// MVA outputs
 	std::vector<double> m_discriminators;
