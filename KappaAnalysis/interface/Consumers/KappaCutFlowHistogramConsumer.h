@@ -3,6 +3,7 @@
 
 #include "Artus/Consumer/interface/CutFlowHistogramConsumer.h"
 #include "Artus/Utility/interface/SafeMap.h"
+#include "Artus/KappaAnalysis/interface/KappaTypes.h"
 
 
 /**

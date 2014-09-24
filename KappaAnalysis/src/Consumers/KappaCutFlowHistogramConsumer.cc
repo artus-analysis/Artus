@@ -2,7 +2,7 @@
 #include "Artus/KappaAnalysis/interface/Consumers/KappaCutFlowHistogramConsumer.h"
 
 
-virtual void KappaCutFlowHistogramConsumer::Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE
+void KappaCutFlowHistogramConsumer::Init(KappaSettings const& settings)
 {
 	CutFlowHistogramConsumer<KappaTypes>::Init(settings);
 
