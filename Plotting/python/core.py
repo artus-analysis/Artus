@@ -120,6 +120,7 @@ class HarryCore(object):
 			save_args.pop("quantities")
 			save_args.pop("export_json")
 			save_args.pop("live")
+			save_args.pop("json_defaults")	
 			if args["export_json"] != "":
 				save_name = args["export_json"]
 			else:
