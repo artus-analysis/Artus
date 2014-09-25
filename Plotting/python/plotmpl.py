@@ -57,15 +57,8 @@ class PlotMpl(plotbase.PlotBase):
 			#plotdict['ratiosubplotaxes'] = ax2 # needed?
 		else:
 			self.fig = plt.figure(figsize=[5, 5])
-			self.ax = self.fig.add_subplot(111, position = [0.13, 0.10, 0.83, 0.83])
+			self.ax = self.fig.add_subplot(111)
 
-		# place labels specified from command-line
-		plt.text(0.5, 1.035, plotData.plotdict["title"], horizontalalignment='center', transform=self.ax.transAxes, fontsize=14)
-		if not (plotData.plotdict["lumi"]==None):
-			plt.text(-0.0, 1.030, "$\mathcal{L}=" + str(plotData.plotdict["lumi"]) + "\mathrm{fb^{-1}}$", transform=self.ax.transAxes, fontsize=10)
-		if not (plotData.plotdict["energy"] == None):
-			energy = "+".join(plotData.plotdict["energy"])
-			plt.text(1.0, 1.030, "$\sqrt{s}=" + energy + "\\ \mathrm{TeV}$", transform=self.ax.transAxes, fontsize=10, horizontalalignment="right")
 
 		if plotData.plotdict["x_lims"] != None:
 			self.ax.set_xlim([plotData.plotdict["x_lims"][0],plotData.plotdict["x_lims"][1]])
@@ -149,8 +142,8 @@ class PlotMpl(plotbase.PlotBase):
 
 		self.ax.grid(plotData.plotdict["grid"])
 
-		self.ax.set_xlabel(plotData.plotdict["x_label"])
-		self.ax.set_ylabel(plotData.plotdict["y_label"])
+		self.ax.set_xlabel(plotData.plotdict["x_label"], fontsize=14)
+		self.ax.set_ylabel(plotData.plotdict["y_label"], fontsize=14)
 		self.ax.ticklabel_format(style='sci',scilimits=(-3,4),axis='both')
 
 		# do special things for 1D Plots
@@ -173,7 +166,19 @@ class PlotMpl(plotbase.PlotBase):
 	def add_labels(self, plotData):
 		super(PlotMpl, self).add_labels(plotData)
 
+		# place labels specified from command-line
+		#plt.text(0.5, 1.035, plotData.plotdict["title"], horizontalalignment='center', transform=self.ax.transAxes, fontsize=14)
+		self.ax.set_title(plotData.plotdict["title"], fontsize=14)
+
+		if not (plotData.plotdict["lumi"]==None):
+			plt.text(-0.0, 1.030, "$\mathcal{L}=" + str(plotData.plotdict["lumi"]) + "\mathrm{fb^{-1}}$", transform=self.ax.transAxes, fontsize=10)
+			#self.fig.suptitle("$\mathcal{L}=" + str(plotData.plotdict["lumi"]) + "\mathrm{fb^{-1}}$", ha="center", x=0.4)
+		if not (plotData.plotdict["energy"] == None):
+			energy = "+".join(plotData.plotdict["energy"])
+			plt.text(1.0, 1.030, "$\sqrt{s}=" + energy + "\\ \mathrm{TeV}$", transform=self.ax.transAxes, fontsize=10, horizontalalignment="right")
+			#self.fig.suptitle("$\sqrt{s}=" + energy + "\\ \mathrm{TeV}$", ha="right",x=0.9) 
 		legend = self.ax.legend()
+		plt.tight_layout()
 
 	def save_canvas(self, plotData):
 		for output_filename in plotData.plotdict["output_filenames"]:
