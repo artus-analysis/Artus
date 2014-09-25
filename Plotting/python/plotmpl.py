@@ -25,7 +25,8 @@ class PlotMpl(plotbase.PlotBase):
 		super(PlotMpl, self).modify_argument_parser(parser, args)
 		self.formatting_options.add_argument("--linestyle", default="-", nargs="+",
 		                                     help="Style of errorbar plot line. [Default: '-']")
-
+		self.formatting_options.add_argument("--colormap", default="afmhot", nargs="?",
+		                                     help="Colormap for matplotlib [Default: 'afmhot']")
 	def prepare_args(self, parser, plotData):
 		super(PlotMpl, self).prepare_args(parser, plotData)
 		pprint.pprint(plotData.plotdict)
@@ -124,7 +125,7 @@ class PlotMpl(plotbase.PlotBase):
 				               origin='lower',
 				               extent=[mpl_histogram.xborderlow, mpl_histogram.xborderhigh, mpl_histogram.yborderlow, mpl_histogram.yborderhigh],
 				               aspect='auto',
-				               cmap=plt.cm.get_cmap('afmhot'),
+				               cmap=plt.cm.get_cmap(plotData.plotdict["colormap"]),
 				               norm=norm())
 			elif marker=="bar":
 				self.ax.bar(mpl_histogram.x, mpl_histogram.y, widths, yerr=yerr, bottom=bottom,
