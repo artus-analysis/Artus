@@ -114,11 +114,19 @@ class HarryCore(object):
 		ROOT.gROOT.SetBatch(True)
 		
 		# export arguments into JSON file
+		# remove entries from dictionary that are not meant to be exported
 		if args["export_json"] != None:
+			save_args = dict(args)
+			save_args.pop("quantities")
+			save_args.pop("export_json")
+			save_args.pop("live")
 			if args["export_json"] != "":
-				json_tools.JsonDict(args).save(args.pop("export_json"), indent=4)
-			elif args["json_defaults"] != None:
-				json_tools.JsonDict(args).save(args["json_defaults"][0], indent=4)
+				save_name = args["export_json"]
+			else:
+				save_name = args["json_defaults"][0]
+
+			if save_name != None:	
+				json_tools.JsonDict(save_args).save(save_name, indent=4)
 			else: log.warning("No JSON could be exported. Please provide a filename.")
 		
 		# prepare aguments for all processors before running them
