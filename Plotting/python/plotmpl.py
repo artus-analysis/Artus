@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 
 import HarryPlotter.Plotting.plotbase as plotbase
 
-import HarryPlotter.Plotting.tools.mplconvert as mplconvert
+import HarryPlotter.Utility.mplconvert as mplconvert
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 from matplotlib.colors import Normalize
