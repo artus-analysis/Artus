@@ -34,8 +34,6 @@ class InputBase(processor.Processor):
 		self.input_options.add_argument("-w", "--weights", type=str, nargs="+", default="1.0",
 		                                help="Weight (cut) expression(s). [Default: %(default)s]")
 
-		self.input_options.add_argument("--type", type=str, # TODO: default
-		                                help="Type of plot.")
 		self.input_options.add_argument("-n", "--norm-references", type=str, nargs="+",
 		                                help="Nick names of inputs or float values to normalise to. One parameter can contain a whitespace separated list of multiple nick names, that are summed up before the normalisation.")
 	

@@ -32,7 +32,9 @@ class InputRoot(inputbase.InputBase):
 		                                help="Bining for y-axis of 2D/3D histograms. In case only one argument is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [Default: %(default)s]")
 		self.input_options.add_argument("--z-bins", type=str, nargs='+', default=["25"],
 		                                help="Bining for z-axis of 3D histograms. In case only one argument is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [Default: %(default)s]")
-	
+		self.input_options.add_argument("--root-histogram-draw-options", type=str, default="25",
+		                                help="Optional argument for TTree:Draw() call. Use e.g. 'prof' or 'profs' for projections of 2D-Histograms to 1D. See also http://root.cern.ch/root/html/TTree.html#TTree:Draw."  )
+
 	def prepare_args(self, parser, plotData):
 		super(InputRoot, self).prepare_args(parser, plotData)
 		
@@ -57,14 +59,14 @@ class InputRoot(inputbase.InputBase):
 				variable_expression = "%s%s%s" % (z_expression + ":" if z_expression else "",
 				                                  y_expression + ":" if y_expression else "",
 				                                  x_expression)
-				
+				option = plotData.plotdict["root_histogram_draw_options"]	
 				root_tree_chain, root_histogram = root_tools.histogram_from_tree(
 						root_files, folders,
 						x_expression, y_expression, z_expression,
 						x_bins=plotData.plotdict["x_bins"],
 						y_bins=plotData.plotdict["y_bins"],
 						z_bins=plotData.plotdict["z_bins"],
-						weight_selection=weight, option="", name=None
+						weight_selection=weight, option=option, name=None
 				)
 				
 			elif root_object_type == ROOT.TH1:
