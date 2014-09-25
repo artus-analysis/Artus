@@ -86,17 +86,14 @@ def main():
 	
 	parser = argparse.ArgumentParser(description="Tools simplifying dCache usage.", parents=[logger.loggingParser])
 	
-	parser.add_argument("-c", "--command", #required=True,
-	                    help="Command, e.g. lcg-cp, lcg-del or ddcp.",
-	                    default="lcg-ls")
+	parser.add_argument("-c", "--command", required=True,
+	                    help="Command, e.g. lcg-cp, lcg-del or ddcp.")
 	parser.add_argument("-r", "--recursive", default=False, action="store_true",
 	                    help="Follow recursively into all specified directories. Specify this also when you do not want to specify the full destination file name.")
 	parser.add_argument("-a", "--args", default="-v", help="Arguments. Default: -v.")
-	parser.add_argument("-s", "--src", help="Source.", #required=True,
-	                    default="/pnfs/desy.de/cms/tier2/store/user/tmuller/higgs-kit/skimming/2014-07-30-full_skim/DoubleMu_PFembedded_Run2012A_22Jan2013_muelec_8TeV")
-	parser.add_argument("--src-prefix", #default="",
-	                    help="Source prefix. \"gridka\" and \"desy\" are replaced by their dCache locations. \"\" means local path.",
-	                    default="desy")
+	parser.add_argument("-s", "--src", help="Source.", required=True)
+	parser.add_argument("--src-prefix", default="",
+	                    help="Source prefix. \"gridka\" and \"desy\" are replaced by their dCache locations. \"\" means local path.")
 	parser.add_argument("-d", "--dst", help="Destination. Can be left empty.")
 	parser.add_argument("--dst-prefix", default="",
 	                     help="Destination prefix. \"gridka\" and \"desy\" are replaced by their dCache locations. \"\" means local path.")
