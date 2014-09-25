@@ -115,7 +115,11 @@ class HarryCore(object):
 		
 		# export arguments into JSON file
 		if args["export_json"] != None:
-			json_tools.JsonDict(args).save(args.pop("export_json"), indent=4)
+			if args["export_json"] != "":
+				json_tools.JsonDict(args).save(args.pop("export_json"), indent=4)
+			elif args["json_defaults"] != None:
+				json_tools.JsonDict(args).save(args["json_defaults"][0], indent=4)
+			else: log.warning("No JSON could be exported. Please provide a filename.")
 		
 		# prepare aguments for all processors before running them
 		for processor in self.processors:

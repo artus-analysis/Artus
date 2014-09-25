@@ -34,8 +34,8 @@ class HarryParser(argparse.ArgumentParser):
 		self.json_options = self.add_argument_group('JSON Configs')
 		self.json_options.add_argument("-j", "--json-defaults", nargs="+",
 		                               help="JSON config file(s) containing default settings (for a certain plot).")
-		self.json_options.add_argument("--export-json",
-		                               help="Export arguments to specified JSON config file.")
+		self.json_options.add_argument("--export-json", default=None, nargs='?', const='',
+		                               help="Export arguments to specified JSON config file. If plotting from an input JSON config, giving no argument just updates this input JSON.")
 		                  
 		self._n_parse_args_calls = 0
 	
