@@ -81,10 +81,10 @@ public:
 	std::map<KDataPFTaggedJet*, KDataLV*> m_triggerMatchedTaggedJets;
 
 	/// added by GenMatchingProducer
-	std::map<KDataElectron*, const KGenParticle*> m_genMatchedElectrons; //changed to KGenParticle from KDataLV
-	std::map<KDataMuon*, const KGenParticle*> m_genMatchedMuons; //changed to KGenParticle from KDataLV
-	std::map<KDataPFTau*, const KGenParticle*> m_genMatchedTaus; //changed to KGenParticle from KDataLV
-	std::map<KDataPFJet*, const KGenParticle*> m_genMatchedJets; //changed to KGenParticle from KDataLV
+	std::map<KDataElectron*, KGenParticle*> m_genMatchedElectrons; //changed to KGenParticle from const KDataLV
+	std::map<KDataMuon*, KGenParticle*> m_genMatchedMuons; //changed to KGenParticle from const KDataLV
+	std::map<KDataPFTau*, KGenParticle*> m_genMatchedTaus; //changed to KGenParticle from const KDataLV
+	std::map<KDataPFJet*, KGenParticle*> m_genMatchedJets; //changed to KGenParticle from const KDataLV
 	float m_ratioGenMatched;
 	
 	// MVA outputs

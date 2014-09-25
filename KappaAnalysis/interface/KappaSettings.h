@@ -112,7 +112,7 @@ public:
 	IMPL_SETTING_DEFAULT(float, DeltaRGenMatchingMuons, 0.5);
 	IMPL_SETTING_DEFAULT(float, DeltaRGenMatchingTaus, 0.5);
 	IMPL_SETTING_DEFAULT(float, DeltaRGenMatchingJets, 0.3);
-	//IMPL_SETTING_DEFAULT(std::string, MatchingAlgorithmusJets, "algorithmic");
+	IMPL_SETTING_DEFAULT(std::string, MatchingAlgorithmusJets, "algorithmic");
 	
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenMatchingElectrons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenMatchingMuons, false);
