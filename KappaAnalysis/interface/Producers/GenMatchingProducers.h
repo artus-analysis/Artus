@@ -29,21 +29,21 @@ public:
 	typedef typename KappaTypes::product_type product_type;
 	typedef typename KappaTypes::setting_type setting_type;
 	
-	GenMatchingProducerBase(std::map<TValidObject*, const KGenParticle*> product_type::*genMatchedObjects, //changed to KGenParticle from KDataLV
+	GenMatchingProducerBase(std::map<TValidObject*, KGenParticle*> product_type::*genMatchedObjects, //changed to KGenParticle from const KDataLV
 	                            std::vector<TValidObject*> product_type::*validObjects,
 	                            std::vector<TValidObject*> product_type::*invalidObjects,
 	                            TauDecayMode tauDecayMode,
 	                            float (setting_type::*GetDeltaRGenMatchingObjects)(void) const,
-				    bool (setting_type::*GetInvalidateNonGenMatchingObjects)(void) const/* , */
-/* 				    std::string (setting_type::*GetMatchingAlgorithmusObjects)(void) const */
+				    bool (setting_type::*GetInvalidateNonGenMatchingObjects)(void) const,
+				    std::string (setting_type::*GetMatchingAlgorithmusObjects)(void) const
 	                            ) :
 		m_genMatchedObjects(genMatchedObjects),
 		m_validObjects(validObjects),
 		m_invalidObjects(invalidObjects),
 		tauDecayMode(tauDecayMode),
 		GetDeltaRGenMatchingObjects(GetDeltaRGenMatchingObjects),
-	        GetInvalidateNonGenMatchingObjects(GetInvalidateNonGenMatchingObjects)/* , */
-/* 		GetMatchingAlgorithmusObjects(GetMatchingAlgorithmusObjects) */
+	        GetInvalidateNonGenMatchingObjects(GetInvalidateNonGenMatchingObjects),
+		GetMatchingAlgorithmusObjects(GetMatchingAlgorithmusObjects)
 	{
 	}
 
@@ -71,16 +71,18 @@ public:
 			{
 				bool objectMatched = false;
 				float deltaR = 0;
+				KGenParticles matching_algo_partons;
+				KGenParticles matching_phys_partons;
+				matching_algo_partons.clear();
+				matching_phys_partons.clear();
+				KGenParticle * hardest_phys_parton = NULL;
+				KGenParticle * hardest_parton = NULL;
+				KGenParticle * hardest_b_quark = NULL;
+				KGenParticle * hardest_c_quark = NULL;
 				// loop over all genParticles 
-				assert(event.m_genParticles); //moved felix
-				for (typename std::vector<KGenParticle>::const_iterator genParticle = event.m_genParticles->begin();
-			             !objectMatched && genParticle != event.m_genParticles->end();++genParticle) 
+				assert(event.m_genParticles);
+				for (auto genParticle=event.m_genParticles->begin(); genParticle!=event.m_genParticles->end(); ++genParticle)
 				{
-				  KGenParticles matching_algo_partons;
-				  KGenParticles matching_phys_partons;
-				  const KGenParticle * hardest_parton = NULL;
-				  const KGenParticle * hardest_b_quark = NULL;
-				  const KGenParticle * hardest_c_quark = NULL;
 				  // only use genParticles with id 21, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5
 				  if ( (abs(genParticle->pdgId())==1 || abs(genParticle->pdgId())==2 || abs(genParticle->pdgId())==3 
 					   || abs(genParticle->pdgId())==4 || abs(genParticle->pdgId())==5 
@@ -89,7 +91,6 @@ public:
 				    // Algorithmic:
 				    if (genParticle->status() != 3)
 				      {
-					LOG(INFO) << "algorithmic";
 					deltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, genParticle->p4);
 					if (deltaR<(settings.*GetDeltaRGenMatchingObjects)())
 					  {
@@ -107,7 +108,7 @@ public:
 						  hardest_c_quark = &(*genParticle);
 						else if (genParticle->p4.Pt() > hardest_c_quark->p4.Pt())
 						  hardest_c_quark = &(*genParticle);
-							      }
+					      }
 					    else if (hardest_parton == NULL)
 					      hardest_parton = &(*genParticle);
 					    else if (genParticle->p4.Pt() > hardest_parton->p4.Pt())
@@ -117,49 +118,61 @@ public:
 				  // Physics:
 				    else
 				      {
-					LOG(INFO) << "physics";
 					deltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, genParticle->p4);
 					if (deltaR<(settings.*GetDeltaRGenMatchingObjects)())
-					  matching_phys_partons.push_back(*genParticle);
+					  {
+					    matching_phys_partons.push_back(*genParticle);
+					    hardest_phys_parton = &(*genParticle);
+					  }
 				      } 
 				    }
+				}
 				// ALGORITHMIC DEFINITION
 				if (matching_algo_partons.size() == 1)      // exactly one match
 				  {
-				    //if((settings.*GetMatchingAlgorithmusObjects)()=="algorithmic")
-				          (product.*m_genMatchedObjects)[*validObject] = &(matching_algo_partons[0]);
-				    objectMatched = true;
+				    if((settings.*GetMatchingAlgorithmusObjects)()=="algorithmic"){
+					if(hardest_b_quark)
+					  (product.*m_genMatchedObjects)[*validObject] = &(*hardest_b_quark);
+					else if(hardest_c_quark)
+					  (product.*m_genMatchedObjects)[*validObject] = &(*hardest_c_quark);
+					else
+					  (product.*m_genMatchedObjects)[*validObject] = &(*hardest_parton);
+					objectMatched = true;
+				      }
 				  }
 				else if (hardest_b_quark && hardest_b_quark->p4.Pt() > 0.)
 				  {
-				    //if((settings.*GetMatchingAlgorithmusObjects)()=="algorithmic")
-				          (product.*m_genMatchedObjects)[*validObject] = &(*hardest_b_quark);
-				    objectMatched = true;
+				    if((settings.*GetMatchingAlgorithmusObjects)()=="algorithmic"){
+				      (product.*m_genMatchedObjects)[*validObject] = &(*hardest_b_quark);
+				      objectMatched = true;
+				    }
 				  }
 				else if (hardest_c_quark && hardest_c_quark->p4.Pt() > 0.)
 				  {
-				    //if((settings.*GetMatchingAlgorithmusObjects)()=="algorithmic")
-				          (product.*m_genMatchedObjects)[*validObject] = &(*hardest_c_quark);
-				    objectMatched = true;
+				    if((settings.*GetMatchingAlgorithmusObjects)()=="algorithmic"){
+				      (product.*m_genMatchedObjects)[*validObject] = &(*hardest_c_quark);
+				      objectMatched = true;
+				    }
 				  }
 				else if (matching_algo_partons.size() != 0)
 				  {
-				    //if((settings.*GetMatchingAlgorithmusObjects)()=="algorithmic")
-				          (product.*m_genMatchedObjects)[*validObject] = &(*hardest_parton);
-				    objectMatched = true;
+				    if((settings.*GetMatchingAlgorithmusObjects)()=="algorithmic"){
+				      (product.*m_genMatchedObjects)[*validObject] = &(*hardest_parton);
+				      objectMatched = true;
+				    }
 				  }
 				// PHYSICS DEFINITION
 				// flavour is only well defined if exactly ONE matching parton!
 				if (matching_phys_partons.size() == 1)
 				  {
-				    //if((settings.*GetMatchingAlgorithmusObjects)()=="physic")
-				          (product.*m_genMatchedObjects)[*validObject] = &(matching_phys_partons[0]);
-				    objectMatched = true;	
+				    if((settings.*GetMatchingAlgorithmusObjects)()=="physic"){
+				      (product.*m_genMatchedObjects)[*validObject] = &(*hardest_phys_parton);
+				      objectMatched = true;	
+				    }
 				    //calculate ratio only for Physics definition
 				    ratioGenMatched += 1./(product.*m_validObjects).size(); 
-				    LOG(INFO) << "ratio" << ratioGenMatched;
-				  }
-				}				
+				  }	
+			
 				// invalidate the object if the trigger has not matched
 				if ((! objectMatched) && (settings.*GetInvalidateNonGenMatchingObjects)())
 				  {
@@ -193,7 +206,7 @@ public:
 				float deltaR = 0;
 				// loop over all genTaus
 				assert(event.m_genTaus); 
-				for (typename std::vector<KDataGenTau>::const_iterator genTau = event.m_genTaus->begin();
+				for (typename std::vector<KDataGenTau>::iterator genTau = event.m_genTaus->begin();
 			     !objectMatched && genTau != event.m_genTaus->end();++genTau) 
 				{
 					// only use genTaus that will decay into comparable particles
@@ -245,13 +258,13 @@ public:
 	}
 	
 private:
-	std::map<TValidObject*, const KGenParticle*> product_type::*m_genMatchedObjects; //changed to KGenParticle from KDataLV
+	std::map<TValidObject*, KGenParticle*> product_type::*m_genMatchedObjects; //changed to KGenParticle from const KDataLV
 	std::vector<TValidObject*> product_type::*m_validObjects;
 	std::vector<TValidObject*> product_type::*m_invalidObjects;
 	TauDecayMode tauDecayMode;
 	float (setting_type::*GetDeltaRGenMatchingObjects)(void) const;
 	bool (setting_type::*GetInvalidateNonGenMatchingObjects)(void) const;
-	//std::string (setting_type::*GetMatchingAlgorithmusObjects)(void) const;
+	std::string (setting_type::*GetMatchingAlgorithmusObjects)(void) const;
 	
 	std::map<size_t, std::vector<std::string> > m_objectTriggerFiltersByIndex;
 	std::map<std::string, std::vector<std::string> > m_objectTriggerFiltersByHltName;
@@ -303,8 +316,8 @@ class TauGenMatchingProducer: public GenMatchingProducerBase<KDataPFTau>
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
-	
+        virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+    
 	TauGenMatchingProducer();
 
 };
