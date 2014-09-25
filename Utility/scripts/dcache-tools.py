@@ -7,11 +7,12 @@ log = logging.getLogger(__name__)
 
 import argparse
 import fnmatch
-import pprint
 import os
 import subprocess
+import tempfile
 
 
+# expand wildcards in paths and lists files (recursively)
 def list_of_files(prefix, src, recursive):
 	def recursive_ls(prefix, src_checked, src_to_check, recursive_mode=False):
 		src_to_check_splitted = filter(lambda item: item != "", src_to_check.split("/"))
@@ -53,6 +54,7 @@ def list_of_files(prefix, src, recursive):
 	return files_before_recursion, files_after_recursion
 
 
+# construct mapping between source and destination files
 def get_mapping_src_dst(src_files, src_files_recursive, dst_files):
 	if not (len(dst_files) == 1 or len(dst_files) == len(src_files)):
 		log.fatal("Wrong number of destinations!")
@@ -72,28 +74,32 @@ def get_mapping_src_dst(src_files, src_files_recursive, dst_files):
 	return mapping
 
 
+# create missing loacl directories for all destination paths
 def create_local_dst_directories(dst_files):
 	directories = list(set([os.path.dirname(dst_file) for dst_file in dst_files]))
 	for directory in directories:
 		if not os.path.exists(directory):
-			logger.subprocessCall(("mkdir -v " + directory).split())
+			os.makedirs(directory)
 
 
 def main():
 	
 	parser = argparse.ArgumentParser(description="Tools simplifying dCache usage.", parents=[logger.loggingParser])
 	
-	parser.add_argument("-c", "--command", required=True,
-	                    help="Command, e.g. lcg-cp, lcg-del or ddcp.")
+	parser.add_argument("-c", "--command", #required=True,
+	                    help="Command, e.g. lcg-cp, lcg-del or ddcp.",
+	                    default="lcg-ls")
 	parser.add_argument("-r", "--recursive", default=False, action="store_true",
-	                    help="Follow recursively into all specified directories.")
-	parser.add_argument("-a", "--args", help="Arguments (can be left empty).")
-	parser.add_argument("-s", "--src", help="Source.", required=True)
-	parser.add_argument("--src-prefix", default="",
-	                    help="Source prefix. \"gridka\" and \"desy\" are replaced by their dCache locations. \"\" means local path.")
-	#parser.add_argument("-d", "--dst", help="Destination (can be left empty).")
-	#parser.add_argument("--dst-prefix", default="",
-	#                     help="Destination prefix. \"gridka\" and \"desy\" are replaced by their dCache locations. \"\" means local path.")
+	                    help="Follow recursively into all specified directories. Specify this also when you do not want to specify the full destination file name.")
+	parser.add_argument("-a", "--args", default="-v", help="Arguments. Default: -v.")
+	parser.add_argument("-s", "--src", help="Source.", #required=True,
+	                    default="/pnfs/desy.de/cms/tier2/store/user/tmuller/higgs-kit/skimming/2014-07-30-full_skim/DoubleMu_PFembedded_Run2012A_22Jan2013_muelec_8TeV")
+	parser.add_argument("--src-prefix", #default="",
+	                    help="Source prefix. \"gridka\" and \"desy\" are replaced by their dCache locations. \"\" means local path.",
+	                    default="desy")
+	parser.add_argument("-d", "--dst", help="Destination. Can be left empty.")
+	parser.add_argument("--dst-prefix", default="",
+	                     help="Destination prefix. \"gridka\" and \"desy\" are replaced by their dCache locations. \"\" means local path.")
 	
 	args = parser.parse_args()
 	logger.initLogger(args)
@@ -128,7 +134,14 @@ def main():
 		
 		# loop over all files and execute the command
 		for src_file, dst_file in mapping_src_dst.items():
-			logger.subprocessCall((args.command + " " + (args.args if args.args else "") + " " + args.src_prefix + src_file + " " + args.dst_prefix + dst_file).split())
+			if args.src_prefix == "" and args.dst_prefix:
+				# need intermediate temporary local copy of the file
+				local_copy = tempfile.mktemp(prefix="dcache-tools_")
+				logger.subprocessCall((args.command + " " + (args.args if args.args else "") + " " + args.src_prefix + src_file + " " + local_copy).split())
+				logger.subprocessCall((args.command + " " + (args.args if args.args else "") + " " + local_copy + " " + args.dst_prefix + dst_file).split())
+				os.remove(local_copy)
+			else:
+				logger.subprocessCall((args.command + " " + (args.args if args.args else "") + " " + args.src_prefix + src_file + " " + args.dst_prefix + dst_file).split())
 		
 	else:
 		# loop over all src files and execute the command
