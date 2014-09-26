@@ -99,9 +99,6 @@ def root2histo(histo, rootfile='', rebin=1):
 		exit(1)
 	return hst
 
-
-# TODO: remove functions modifying the histograms, since these functions are better checked in ROOT histogram classes
-# TODO: I.e. Sum of error squares missing for correct modification of histograms
 class Histo:
 	"""Reduced Histogramm or Graph
 
@@ -129,11 +126,6 @@ class Histo:
 	def __len__(self):
 		return len(self.y)
 
-	def scale(self, factor):
-		for i in range(len(self.y)):
-			self.y[i] *= factor
-			self.yerr[i] *= factor
-
 	def ysum(self):
 		return sum(self.y)
 
@@ -154,40 +146,6 @@ class Histo:
 
 	def norm(self):
 		return 1.0 / sum(self.y)
-
-	def normalize(self, factor=1.0):
-		self.scale(factor * self.norm())
-		return self
-
-	def append(self, x, xc, y, yerr=0, xerr=0):
-		if xc == True:
-			xc = x
-		self.x.append(x)
-		self.xc.append(xc)
-		self.y.append(y)
-		self.xerr.append(xerr)
-		self.yerr.append(yerr)
-
-	def dropbin(self, number):
-		self.x.pop(number)
-		self.xc.pop(number)
-		self.y.pop(number)
-		self.xerr.pop(number)
-		self.yerr.pop(number)
-
-	def __div__(self, other):
-		#if 0 in other.y:
-		#	log.error("Division by zero!")
-		#	return None
-		if len(self) != len(other):
-			log.error("Histos of different lengths! The shorter is taken.")
-		res = Histo()
-		res.x = [0.5 * (a + b) for a, b in zip(self.x, other.x)]
-		res.xc = [0.5 * (a + b) for a, b in zip(self.xc, other.xc)]
-		res.y = [a / b if b != 0 else 0. for a, b in zip(self.y, other.y)]
-		res.xerr = [0.5 * (abs(da) + abs(db)) for da, db in zip(self.xerr, other.xerr)]
-		res.yerr = [abs(da / b) + abs(db * a / b / b) if b != 0 else 0. for a, da, b, db in zip(self.y, self.yerr, other.y, other.yerr)]
-		return res
 
 	def read(self, filename):
 		"""Read the histogram from a text file
@@ -272,19 +230,9 @@ class Histo:
 			f.close()
 
 	def load(self, filename):
-		"""Write the histogram to a data file"""
+		"""load the histogram from a data file"""
 		f = file(filename)
 		self = pickle.load(f)
-
-	def draw(self, filename="preview.png"):
-		import matplotlib.pyplot as plt
-		fig = plt.figure()
-		ax = fig.add_subplot(111)
-		if len(self.y) == len(self.yerr):
-			ax.errorbar(self.x, self.y, self.yerr)
-		else:
-			ax.plot(self.x, self.y)
-		fig.savefig(filename)
 
 
 def getValue(line, key):
@@ -306,12 +254,6 @@ class Histo2D(Histo):
 		self.yborderhigh = 0.0
 		self.xborderlow = 0.0
 		self.yborderlow = 0.0
-
-	def scale(self, factor):
-		BinContentsNew = []
-		for l in self.BinContents:
-			BinContentsNew.append(map(lambda item: item * factor, l))
-		self.BinContents = BinContentsNew
 
 	def binsum(self):
 		return sum([sum(a) for a in self.BinContents])
