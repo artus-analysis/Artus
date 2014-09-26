@@ -140,12 +140,13 @@ def main():
 		mapping_src_dst = get_mapping_src_dst(src_files, src_files_recursive, dst_files)
 		
 		# create missing local directories (lcg does it on its own)
-		create_local_dst_directories(mapping_src_dst.values())
+		if args.dst_prefix == "":
+			create_local_dst_directories(mapping_src_dst.values())
 		
 		log.debug("Excute commands...")
 		# loop over all files and execute the command
 		for src_file, dst_file in mapping_src_dst.items():
-			if args.src_prefix == "" and args.dst_prefix:
+			if args.src_prefix == "" and args.dst_prefix == "":
 				# need intermediate temporary local copy of the file
 				local_copy = tempfile.mktemp(prefix="dcache-tools_")
 				execute_command((args.command + " " + (args.args if args.args else "") + " " + args.src_prefix + src_file + " " + local_copy))
