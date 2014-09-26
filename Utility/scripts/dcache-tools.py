@@ -82,6 +82,13 @@ def create_local_dst_directories(dst_files):
 			os.makedirs(directory)
 
 
+# execute the command and print it before the execution
+def execute_command(command, print_command=True):
+	if print_command:
+		log.info(command)
+	logger.subprocessCall(command.split())
+
+
 def main():
 	
 	parser = argparse.ArgumentParser(description="Tools simplifying dCache usage.", parents=[logger.loggingParser])
@@ -134,16 +141,16 @@ def main():
 			if args.src_prefix == "" and args.dst_prefix:
 				# need intermediate temporary local copy of the file
 				local_copy = tempfile.mktemp(prefix="dcache-tools_")
-				logger.subprocessCall((args.command + " " + (args.args if args.args else "") + " " + args.src_prefix + src_file + " " + local_copy).split())
-				logger.subprocessCall((args.command + " " + (args.args if args.args else "") + " " + local_copy + " " + args.dst_prefix + dst_file).split())
+				execute_command((args.command + " " + (args.args if args.args else "") + " " + args.src_prefix + src_file + " " + local_copy))
+				execute_command((args.command + " " + (args.args if args.args else "") + " " + local_copy + " " + args.dst_prefix + dst_file))
 				os.remove(local_copy)
 			else:
-				logger.subprocessCall((args.command + " " + (args.args if args.args else "") + " " + args.src_prefix + src_file + " " + args.dst_prefix + dst_file).split())
+				execute_command((args.command + " " + (args.args if args.args else "") + " " + args.src_prefix + src_file + " " + args.dst_prefix + dst_file))
 		
 	else:
 		# loop over all src files and execute the command
 		for src_file in src_files_recursive if args.recursive else src_files:
-			logger.subprocessCall((args.command + " " + (args.args if args.args else "") + " " + args.src_prefix + src_file).split())
+			execute_command((args.command + " " + (args.args if args.args else "") + " " + args.src_prefix + src_file))
 
 if __name__ == "__main__":
 	main()
