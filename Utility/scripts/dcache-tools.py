@@ -91,7 +91,8 @@ def execute_command(command, print_command=True):
 
 def main():
 	
-	parser = argparse.ArgumentParser(description="Tools simplifying dCache usage.", parents=[logger.loggingParser])
+	parser = argparse.ArgumentParser(description="Tools simplifying dCache usage.", parents=[logger.loggingParser],
+	                                 epilog="Useful help: https://twiki.opensciencegrid.org/bin/view/ReleaseDocumentation/LcgUtilities#Using_LCG_Utils_commands")
 	
 	parser.add_argument("-c", "--command", required=True,
 	                    help="Command, e.g. lcg-cp, lcg-del or ddcp.")
