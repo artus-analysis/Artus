@@ -126,16 +126,23 @@ def main():
 		args.dst = os.path.abspath(args.dst)
 	
 	# find src files
+	log.debug("Locate all source files...")
 	src_files, src_files_recursive = list_of_files(args.src_prefix, args.src, args.recursive)
 	
 	if args.dst:
 		# find dst files and mapping to src files
+		log.debug("Locate all destination files...")
 		dst_files, dst_files_recursive = list_of_files(args.dst_prefix, args.dst, False)
+		if len(dst_files) == 0:
+			dst_files = [args.dst]
+		
+		log.debug("Map destination to source files...")
 		mapping_src_dst = get_mapping_src_dst(src_files, src_files_recursive, dst_files)
 		
 		# create missing local directories (lcg does it on its own)
 		create_local_dst_directories(mapping_src_dst.values())
 		
+		log.debug("Excute commands...")
 		# loop over all files and execute the command
 		for src_file, dst_file in mapping_src_dst.items():
 			if args.src_prefix == "" and args.dst_prefix:
@@ -148,9 +155,12 @@ def main():
 				execute_command((args.command + " " + (args.args if args.args else "") + " " + args.src_prefix + src_file + " " + args.dst_prefix + dst_file))
 		
 	else:
+		log.debug("Excute commands...")
 		# loop over all src files and execute the command
 		for src_file in src_files_recursive if args.recursive else src_files:
 			execute_command((args.command + " " + (args.args if args.args else "") + " " + args.src_prefix + src_file))
+	
+	log.debug("Finished!")
 
 if __name__ == "__main__":
 	main()
