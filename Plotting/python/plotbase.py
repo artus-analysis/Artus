@@ -10,6 +10,7 @@ log = logging.getLogger(__name__)
 import hashlib
 import os
 import re
+import pprint
 
 import HarryPlotter.Plotting.processor as processor
 import HarryPlotter.Plotting.roottools as roottools
@@ -133,7 +134,8 @@ class PlotBase(processor.Processor):
 		                                 help="Print available quantities in given folder")
 		self.other_options.add_argument("--live", default=None, nargs='?', const='gthumb',
 		                                 help="Open plot in viewer after its creation. Parameter is the name of your desired viewer.")
-
+		self.other_options.add_argument("--dict", action="store_true", default=False,
+		                                 help="Print out plot dictionary when plotting.")
 		# module specific settings # TODO
 		if eventselectionoverlap.EventSelectionOverlap.name() in args["analysis_modules"]:
 			parser.set_defaults(x_label="Event Selection Overlap")
@@ -270,7 +272,8 @@ class PlotBase(processor.Processor):
 		if not (plotData.plotdict["live"]==None) :
 			for output_filename in plotData.plotdict["output_filenames"]:
 				extrafunctions.show_plot(output_filename, plotData.plotdict["live"])
-
+		if plotData.plotdict["dict"]:
+			pprint.pprint(plotData.plotdict)
 
 	def set_default_ratio_colors(self, plotData):
 		

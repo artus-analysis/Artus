@@ -3,7 +3,6 @@
 """
 """
 import os
-import pprint
 import logging
 import HarryPlotter.Utility.logger as logger
 log = logging.getLogger(__name__)
@@ -29,7 +28,6 @@ class PlotMpl(plotbase.PlotBase):
 		                                     help="Colormap for matplotlib [Default: 'afmhot']")
 	def prepare_args(self, parser, plotData):
 		super(PlotMpl, self).prepare_args(parser, plotData)
-		pprint.pprint(plotData.plotdict)
 		# defaults for colors
 		for index, color in enumerate(plotData.plotdict["colors"]):
 			if color == None:
