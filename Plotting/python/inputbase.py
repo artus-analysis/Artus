@@ -10,6 +10,7 @@ log = logging.getLogger(__name__)
 import abc
 import collections
 import glob
+import os
 
 import HarryPlotter.Plotting.processor as processor
 
@@ -21,7 +22,9 @@ class InputBase(processor.Processor):
 	def modify_argument_parser(self, parser, args):
 		self.input_options = parser.add_argument_group("Input options")
 		self.input_options.add_argument("-i", "--files", type=str, nargs="+",
-		                                 help="Input root file(s).")
+		                                 help="Input (root) file(s).")
+		self.input_options.add_argument("-d", "--directories", type=str, nargs="+",
+		                                 help="Input directories, that are put before the values of the -i/--files option.")
 		self.input_options.add_argument("--nicks", type=str, nargs="+",
 		                                 help="Defines nick names for inputs. Inputs with the same nick name will be merged. By default, every input gets a unique nick name.")
 
@@ -40,14 +43,15 @@ class InputBase(processor.Processor):
 	def prepare_args(self, parser, plotData):
 		super(InputBase, self).prepare_args(parser, plotData)
 		
-		self.prepare_list_args(plotData, ["files", "nicks", "x_expressions", "y_expressions",
+		self.prepare_list_args(plotData, ["files", "directories", "nicks", "x_expressions", "y_expressions",
 		                                  "z_expressions", "weights", "norm_references"])
 		
 		# prepare files
-		for index, file_args in enumerate(plotData.plotdict["files"]):
+		for index, (file_args, directory) in enumerate(zip(plotData.plotdict["files"], plotData.plotdict["directories"])):
 			files = []
 			for file_arg in file_args.split():
-				files.extend(glob.glob(file_arg))
+				tmp_file = os.path.join(directory, file_arg) if directory else file_arg
+				files.extend(glob.glob(tmp_file))
 			plotData.plotdict["files"][index] = files
 		
 		# prepare nicks
