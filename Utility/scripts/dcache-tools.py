@@ -123,7 +123,7 @@ def main():
 	# paths need to be abolute
 	if args.src_prefix == "":
 		args.src = os.path.abspath(args.src)
-	if args.dst_prefix == "":
+	if args.dst_prefix == "" and args.dst:
 		args.dst = os.path.abspath(args.dst)
 	
 	# find src files
