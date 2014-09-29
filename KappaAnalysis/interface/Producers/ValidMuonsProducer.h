@@ -27,7 +27,7 @@
    This Producer needs the following config tags:
    ValidMuonsInput (default: auto)
    Year (2011 and 2012 implemented)
-   MuonID (tight, (veto))
+   MuonID (tight, (veto), loose)
    MuonIsoType (pf and detector implemented, type user is intended to be used in derived code)
    MuonIso (tight and loose implemented)
 */
@@ -59,11 +59,13 @@ public:
 	{
 		NONE  = -1,
 		TIGHT = 0,
-		VETO = 0,
+		LOOSE = 1,
+		VETO = 2,
 	};
 	static MuonID ToMuonID(std::string const& muonID)
 	{
 		if (muonID == "tight") return MuonID::TIGHT;
+		else if (muonID == "loose") return MuonID::LOOSE;
 		else if (muonID == "veto") return MuonID::VETO;
 		else return MuonID::NONE;
 	}
@@ -174,7 +176,13 @@ public:
 				else
 					LOG(FATAL) << "Tight muon ID for year " << settings.GetYear() << " not yet implemented!";
 			}
-			else if (muonID != MuonID::VETO)
+			else if (muonID == MuonID::LOOSE) {
+				if (settings.GetYear() == 2012)
+					validMuon = validMuon && IsLooseMuon2012(*muon, event, product);
+				else
+					LOG(FATAL) << "Loose muon ID for year " << settings.GetYear() << " not yet implemented!";
+			}
+			else if (muonID == MuonID::VETO)
 			{
 				validMuon = validMuon && IsVetoMuon(*muon, event, product);
 			}
@@ -183,7 +191,7 @@ public:
 				LOG(FATAL) << "Muon ID of type " << Utility::ToUnderlyingValue(muonID) << " not yet implemented!";
 			}
 			
-			// Muon Isolation according to Mauon POG definitions (independent of year)
+			// Muon Isolation according to Muon POG definitions (independent of year)
 			// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Muon_Isolation
 			// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Muon_Isolation_AN1
 			if (muonIsoType == MuonIsoType::PF) {
@@ -279,6 +287,18 @@ private:
 					&& std::abs(muon->bestTrack.getDz(&event.m_vertexSummary->pv)) < 0.5
 					&& muon->innerTrack.nValidPixelHits > 0
 					&& muon->track.nStripLayers > 5;
+		
+		return validMuon;
+	}
+	
+	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Loose_Muon
+	bool IsLooseMuon2012(KDataMuon* muon, event_type const& event, product_type& product) const
+	{
+		bool validMuon = true;
+		
+		validMuon = validMuon
+					&& muon->isPFMuon()
+					&& (muon->isGlobalMuon() || muon->isTrackerMuon());
 		
 		return validMuon;
 	}
