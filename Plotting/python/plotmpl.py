@@ -14,7 +14,7 @@ import HarryPlotter.Utility.mplconvert as mplconvert
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 from matplotlib.colors import Normalize
-
+import numpy as np
 
 class PlotMpl(plotbase.PlotBase):
 	def __init__(self):
@@ -126,6 +126,21 @@ class PlotMpl(plotbase.PlotBase):
 					
 				self.ax.errorbar(mpl_histogram.xc, y, mpl_histogram.yerr,
 				                 color=color, fmt=marker, capsize=0, label=label, zorder=10, drawstyle='steps-mid', linestyle=linestyle)
+		# draw functions from dictionary
+		if "root_functions" in plotData.plotdict.keys():
+			x_low = plotData.plotdict["x_lims"][0]
+			x_high = plotData.plotdict["x_lims"][1]
+			# todo: function marker, farbe, linestyle, dicke
+			for function, function_label in zip(plotData.plotdict["root_functions"], plotData.plotdict["function_labels"]):
+				x_values = []
+				y_values = []
+				for x in np.arange(x_low, x_high, (x_high-x_low)/1000):
+					x_values.append(x)
+					y_values.append(function.Eval(x))
+				print function_label
+				self.ax.plot(x_values, y_values, label=function_label)
+
+
 		if plotData.plotdict["ratio"]:
 			for root_histogram, ratio_color, ratio_marker, in zip(plotData.plotdict["root_ratio_histos"],
 			                                      plotData.plotdict["ratio_colors"],
