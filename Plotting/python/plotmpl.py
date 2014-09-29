@@ -131,14 +131,21 @@ class PlotMpl(plotbase.PlotBase):
 			x_low = plotData.plotdict["x_lims"][0]
 			x_high = plotData.plotdict["x_lims"][1]
 			# todo: function marker, farbe, linestyle, dicke
-			for function, function_label in zip(plotData.plotdict["root_functions"], plotData.plotdict["function_labels"]):
+			for function, function_label, color, linestyle, linewidth in zip(
+			                                    plotData.plotdict["root_functions"], 
+			                                    plotData.plotdict["function_labels"],
+			                                    plotData.plotdict["function_colors"],
+			                                    plotData.plotdict["function_linestyles"],
+			                                    plotData.plotdict["function_linewidths"]):
 				x_values = []
 				y_values = []
 				for x in np.arange(x_low, x_high, (x_high-x_low)/1000):
 					x_values.append(x)
 					y_values.append(function.Eval(x))
 				print function_label
-				self.ax.plot(x_values, y_values, label=function_label)
+				print linestyle
+				print linewidth
+				self.ax.plot(x_values, y_values, label=function_label, color=color, linestyle=linestyle, linewidth=float(linewidth))
 
 
 		if plotData.plotdict["ratio"]:
