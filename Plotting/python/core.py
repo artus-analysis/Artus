@@ -20,6 +20,7 @@ import HarryPlotter.Plotting.plotroot as plotroot
 import HarryPlotter.Plotting.processor as processor
 
 import HarryPlotter.Plotting.modules.eventselectionoverlap as eventselectionoverlap
+import HarryPlotter.Plotting.modules.projectbyfit as projectbyfit
 
 import HarryPlotter.Utility.jsonTools as json_tools
 json_tools.JsonDict.COMMENT_DELIMITER = "@"
@@ -35,6 +36,7 @@ class HarryCore(object):
 		self.available_processors = {
 			inputroot.InputRoot.name() : inputroot.InputRoot(),
 			eventselectionoverlap.EventSelectionOverlap.name() : eventselectionoverlap.EventSelectionOverlap(),
+			projectbyfit.ProjectByFit.name() : projectbyfit.ProjectByFit(),
 			plotroot.PlotRoot.name() : plotroot.PlotRoot(),
 			plotmpl.PlotMpl.name() : plotmpl.PlotMpl(),
 		}
