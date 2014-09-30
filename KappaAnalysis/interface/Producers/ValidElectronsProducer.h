@@ -32,6 +32,7 @@
      ElectronReco
      ElectronLowerPtCuts
      ElectronUpperAbsEtaCuts
+     DirectIso
 */
 
 template<class TTypes>
@@ -215,9 +216,9 @@ public:
 			// Electron Isolation
 			if (electronIsoType == ElectronIsoType::PF) {
 				if (electronIso == ElectronIso::MVANONTRIG)
-					validElectron = validElectron && ((*electron)->trackIso04 / (*electron)->p4.Pt()) < 0.4;
+					validElectron = validElectron && ((((*electron)->trackIso04 / (*electron)->p4.Pt()) < 0.4) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (electronIso == ElectronIso::MVATRIG)
-					validElectron = validElectron && ((*electron)->trackIso04 / (*electron)->p4.Pt()) < 0.15;
+					validElectron = validElectron && ((((*electron)->trackIso04 / (*electron)->p4.Pt()) < 0.15) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (electronIso != ElectronIso::NONE)
 					LOG(FATAL) << "Electron isolation of type " << Utility::ToUnderlyingValue(electronIso) << " not yet implemented!";
 			}

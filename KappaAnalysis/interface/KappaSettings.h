@@ -121,6 +121,8 @@ public:
 	
 	IMPL_SETTING(int, Year);
 	
+	IMPL_SETTING(bool, DirectIso);
+	
 	IMPL_SETTING_DEFAULT(std::string, ValidMuonsInput, "auto");
 	IMPL_SETTING(std::string, MuonID);
 	IMPL_SETTING(std::string, MuonIsoType);

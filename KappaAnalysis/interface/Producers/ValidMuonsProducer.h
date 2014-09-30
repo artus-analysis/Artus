@@ -30,6 +30,7 @@
    MuonID (tight, (veto), loose)
    MuonIsoType (pf and detector implemented, type user is intended to be used in derived code)
    MuonIso (tight and loose implemented)
+   DirectIso
 */
 
 template<class TTypes>
@@ -196,17 +197,17 @@ public:
 			// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Muon_Isolation_AN1
 			if (muonIsoType == MuonIsoType::PF) {
 				if (muonIso == MuonIso::TIGHT)
-					validMuon = validMuon && (*muon)->pfIso04 / (*muon)->p4.Pt() < 0.12;
+					validMuon = validMuon && ((((*muon)->pfIso04 / (*muon)->p4.Pt()) < 0.12) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (muonIso == MuonIso::LOOSE)
-					validMuon = validMuon && (*muon)->pfIso04 / (*muon)->p4.Pt() < 0.20;
+					validMuon = validMuon && ((((*muon)->pfIso04 / (*muon)->p4.Pt()) < 0.20) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (muonIso != MuonIso::NONE)
 					LOG(FATAL) << "Muon isolation of type " << Utility::ToUnderlyingValue(muonIso) << " not yet implemented!";
 			}
 			else if (muonIsoType == MuonIsoType::DETECTOR) {
 				if (muonIso == MuonIso::TIGHT)
-					validMuon = validMuon && (*muon)->trackIso03 / (*muon)->p4.Pt() < 0.05;
+					validMuon = validMuon && ((((*muon)->trackIso03 / (*muon)->p4.Pt()) < 0.05) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (muonIso == MuonIso::LOOSE)
-					validMuon = validMuon && (*muon)->trackIso03 / (*muon)->p4.Pt() < 0.10;
+					validMuon = validMuon && ((((*muon)->trackIso03 / (*muon)->p4.Pt()) < 0.10) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (muonIso != MuonIso::NONE)
 					LOG(FATAL) << "Muon isolation of type " << Utility::ToUnderlyingValue(muonIso) << " not yet implemented!";
 			}

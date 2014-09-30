@@ -23,6 +23,7 @@
    - TauDiscriminators
    - TauLowerPtCuts
    - TauUpperAbsEtaCuts
+   - DirectIso
 */
 class ValidTausProducer: public KappaProducerBase, public ValidPhysicsObjectTools<KappaTypes, KDataPFTau>
 {
