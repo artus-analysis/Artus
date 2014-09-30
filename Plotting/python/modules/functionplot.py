@@ -74,17 +74,16 @@ class FunctionPlot(analysisbase.AnalysisBase):
 					plotData.plotdict["root_functions"].append(self.createFunction(function, x_range[0], x_range[1], function_parameters))
 
 
-	def createFunction(self, function, x_min, x_max, start_parameters, bin_number="-1", nick="", root_histogram=None):
+	def createFunction(self, function, x_min, x_max, start_parameters, nick="", root_histogram=None):
 		"""
 		creates a TF1 function from input formula
 
 		does the fit and adds the fitted function to the dictionary
 		"""
-		formula_name = "function_" + (str(bin_number) if bin_number!= "-1" else "") + nick
+		formula_name = "function_" + nick
 		# todo: ensure to have as many start parameters as parameters in formula
 		root_function = ROOT.TF1(formula_name, function, x_min, x_max)
 		# set parameters for fit or just for drawing the function
-		print start_parameters
 		for parameter_index in range(root_function.GetNpar()):
 			root_function.SetParameter(parameter_index, start_parameters[parameter_index])
 		if root_histogram != None:
