@@ -128,18 +128,16 @@ class PlotMpl(plotbase.PlotBase):
 				                 color=color, fmt=marker, capsize=0, label=label, zorder=10, drawstyle='steps-mid', linestyle=linestyle)
 		# draw functions from dictionary
 		if "root_functions" in plotData.plotdict.keys():
-			x_low = plotData.plotdict["x_lims"][0]
-			x_high = plotData.plotdict["x_lims"][1]
-			# todo: function marker, farbe, linestyle, dicke
-			for function, function_label, color, linestyle, linewidth in zip(
+			for function, function_label, color, linestyle, linewidth, x_range in zip(
 			                                    plotData.plotdict["root_functions"], 
 			                                    plotData.plotdict["function_labels"],
 			                                    plotData.plotdict["function_colors"],
 			                                    plotData.plotdict["function_linestyles"],
-			                                    plotData.plotdict["function_linewidths"]):
+			                                    plotData.plotdict["function_linewidths"],
+			                                    plotData.plotdict["function_ranges"]):
 				x_values = []
 				y_values = []
-				for x in np.arange(x_low, x_high, (x_high-x_low)/1000):
+				for x in np.arange(x_range[0], x_range[1], (float(x_range[1])-float(x_range[0]))/1000):
 					x_values.append(x)
 					y_values.append(function.Eval(x))
 				print function_label
