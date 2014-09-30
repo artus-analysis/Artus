@@ -20,9 +20,12 @@ public:
 	KappaProduct() {};
 	~KappaProduct() {};
 
-	// all weights are collected in a map
-	// and multiplied into one "eventWeight" by the EventWeightProducer
+	// all weights in this map are multiplied into one "eventWeight" by the EventWeightProducer
+	// events in this map can be written out automatically by the KappaLambdaNtupleConsumer
 	std::map<std::string, double> m_weights;
+	
+	// events in this map can be written out automatically by the KappaLambdaNtupleConsumer
+	std::map<std::string, double> m_optionalWeights;
 	
 	std::vector<MotherDaughterBundle> m_genBoson;
 

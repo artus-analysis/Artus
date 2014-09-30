@@ -61,16 +61,13 @@ public:
 		// and try to find them in the weights map to write them out
 		for (auto const & quantity : settings.GetQuantities())
 		{
-			if (boost::algorithm::icontains(quantity, "weight"))
+			if (boost::algorithm::icontains(quantity, "weight") && (LambdaNtupleConsumer<TTypes>::GetQuantities().count(quantity) == 0))
 			{
-				if (LambdaNtupleConsumer<TTypes>::GetQuantities().count(quantity) == 0)
+				LOG(DEBUG) << "\tQuantity \"" << quantity << "\" is tried to be taken from product.m_weights or product.m_optionalWeights.";
+				LambdaNtupleConsumer<TTypes>::AddQuantity( quantity, [quantity](event_type const & event, product_type const & product)
 				{
-					LOG(DEBUG) << "\tQuantity \"" << quantity << "\" is tried to be taken from product.m_weights.";
-					LambdaNtupleConsumer<TTypes>::AddQuantity( quantity, [quantity](event_type const & event, product_type const & product)
-					{
-						return SafeMap::GetWithDefault(product.m_weights, quantity, 1.0);
-					} );
-				}
+					return SafeMap::GetWithDefault(product.m_weights, quantity, SafeMap::GetWithDefault(product.m_optionalWeights, quantity, 1.0));
+				} );
 			}
 		}
 
