@@ -94,12 +94,11 @@ class ArtusWrapper(object):
 			if os.path.splitext(entry)[1] == ".root":
 				if entry.find("*") != -1:
 					filelist = glob.glob(os.path.expandvars(entry))
-					self._gridControlInputFiles.append(self.extractNickname(filelist[0]) + ":scan:" + entry)
-					self.setInputFilenames(filelist, True)
+					self.setInputFilenames(filelist, alreadyInGridControl)
 				else:
 					self._config["InputFiles"].append(entry)
 					if not alreadyInGridControl:
-						self._gridControlInputFiles.append(self.extractNickname(entry) + ":file:" + entry + "|1")
+						self._gridControlInputFiles.setdefault(self.extractNickname(entry), []).append(entry + " = 1")
 			elif os.path.isdir(entry):
 				self.setInputFilenames([os.path.join(entry, "*.root")])
 			elif (os.path.splitext(entry))[1] == ".txt":
@@ -173,7 +172,7 @@ class ArtusWrapper(object):
 
 		# merge all base configs into the main config
 		self._config += jsonTools.JsonDict.mergeAll(self._args.base_configs)
-		self._gridControlInputFiles = []
+		self._gridControlInputFiles = {}
 
 		#Set Input Filenames
 		if self._args.input_files:
@@ -317,7 +316,19 @@ class ArtusWrapper(object):
 			self._parser.add_argument("-x", "--executable", help="Artus executable. [Default: %(default)s]", required=True)
 
 	def sendToBatchSystem(self):
-
+		
+		# write dbs file
+		dbsFileContent = ""
+		for nickname, filelist in self._gridControlInputFiles.iteritems():
+			dbsFileContent += "\n[" + nickname + "]\nnickname = " + nickname + "\n"
+			for inputEntry in filelist:
+				dbsFileContent += inputEntry + "\n"
+		
+		dbsFileBasename = "datasets_{0}.dbs".format(hashlib.md5(str(self._config)).hexdigest())
+		dbsFileBasepath = os.path.join(self.projectPath, dbsFileBasename)
+		with open(dbsFileBasepath, "w") as dbsFile:
+			dbsFile.write(dbsFileContent)
+		
 		gcConfigFilePath = os.path.expandvars(self._args.gc_config)
 		gcConfigFile = open(gcConfigFilePath,"r")
 		tmpGcConfigFileBasename = "grid-control_base_config_{0}.conf".format(hashlib.md5(str(self._config)).hexdigest())
@@ -327,12 +338,7 @@ class ArtusWrapper(object):
 		tmpGcConfigFile = open(tmpGcConfigFileBasepath,"w")
 		gcConfigFileContent = gcConfigFile.readlines()
 		gcConfigFile.close()
-
-		# modify base file
-		datasetString = ""
-		for inputEntry in self._gridControlInputFiles:
-			datasetString += "\t" + inputEntry + "\n"
-
+		
 		epilogArguments  = r"epilog arguments = "
 		epilogArguments += r"--disable-repo-versions "
 		epilogArguments += r"--log-level debug "
@@ -355,7 +361,7 @@ class ArtusWrapper(object):
 		                     workdir = workdir,
 		                     jobs= "" if not self._args.fast else "jobs = " + str(self._args.fast),
 		                     inputfiles= "input files = \n\t" + self._configFilename,
-		                     dataset = "dataset = \n " + datasetString,
+		                     dataset = "dataset = \n\t:list:" + dbsFileBasepath,
 		                     epilogarguments = epilogArguments,
 		                     seoutputfiles = "se output files = *.txt *.root" if self._args.no_log_to_se else "se output files = *.root")
 
