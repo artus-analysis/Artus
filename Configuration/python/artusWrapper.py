@@ -309,6 +309,8 @@ class ArtusWrapper(object):
 		                                 help="Run with grid-control.")
 		runningOptionsGroup.add_argument("--no-log-to-se", default=False, action="store_true",
 		                                 help="Do not write logfile in batch mode directly to SE.")
+		runningOptionsGroup.add_argument("--files-per-job", type=int, default=20,
+		                                 help="Files per batch job. [Default: %(default)s]")
 
 		if self._executable:
 			self._parser.add_argument("-x", "--executable", help="Artus executable. [Default: %(default)s]", default=self._executable)
@@ -360,8 +362,9 @@ class ArtusWrapper(object):
 		                     epilogexecutable = "epilog executable = $CMSSW_BASE/bin/" + os.path.join(os.path.expandvars("$SCRAM_ARCH"), os.path.basename(sys.argv[0])),
 		                     sepath = sepath,
 		                     workdir = workdir,
-		                     jobs= "" if not self._args.fast else "jobs = " + str(self._args.fast),
-		                     inputfiles= "input files = \n\t" + self._configFilename,
+		                     jobs = "" if not self._args.fast else "jobs = " + str(self._args.fast),
+		                     inputfiles = "input files = \n\t" + self._configFilename,
+		                     filesperjob = "files per job = " + str(self._args.files_per_job),
 		                     dataset = "dataset = \n\t:list:" + dbsFileBasepath,
 		                     epilogarguments = epilogArguments,
 		                     seoutputfiles = "se output files = *.txt *.root" if self._args.no_log_to_se else "se output files = *.root")
