@@ -258,8 +258,12 @@ public:
 		switch(tauDecayMode) 
   		{	
 		        case TauDecayMode::NONE: LOG(ERROR) << "tauDecayMode == NONE"; //used for jets
-			case TauDecayMode::E: if (genTau.isElectronicDecay()) decayModeMatched = true;
-    			case TauDecayMode::M: if (genTau.isMuonicDecay()) decayModeMatched = true;
+			case TauDecayMode::E: 
+				if (genTau.isElectronicDecay()) decayModeMatched = true;
+				break;
+    			case TauDecayMode::M: 
+				if (genTau.isMuonicDecay()) decayModeMatched = true;
+				break;
 			case TauDecayMode::T: if (genTau.isHadronicDecay()) decayModeMatched = true;
 		};
 		return decayModeMatched;
