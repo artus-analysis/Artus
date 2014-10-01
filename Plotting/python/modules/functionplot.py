@@ -5,6 +5,7 @@ log = logging.getLogger(__name__)
 import ROOT
 import HarryPlotter.Plotting.analysisbase as analysisbase
 import HarryPlotter.Plotting.roottools as roottools
+import hashlib
 
 class FunctionPlot(analysisbase.AnalysisBase):
 	def __init__(self):
@@ -53,34 +54,38 @@ class FunctionPlot(analysisbase.AnalysisBase):
 			else:
 				tmp_x_range.append( [float (x) for x in  x_range.split(",")] )
 		plotData.plotdict["function_ranges"] = tmp_x_range
-		print plotData.plotdict["function_ranges"]
+
+		tmp_function_parameters = plotData.plotdict["function_parameters"]
+		plotData.plotdict["function_parameters"] = [float (x) for x in  tmp_function_parameters.split(",")]
+
 	def run(self, plotData=None):
 		super(FunctionPlot, self).run()
 		if plotData.plotdict["functions"] != None:
 			plotData.plotdict["root_functions"] = []
-			indices = range(len(plotData.plotdict["functions"]))
-			for i, function, parameters, fit_nickname, x_range in zip(indices, plotData.plotdict["functions"], 
+
+			for i, (function, function_parameters, fit_nickname, x_range) in enumerate(zip(indices, plotData.plotdict["functions"], 
 			                                                 plotData.plotdict["function_parameters"],
 			                                                 plotData.plotdict["function_fit"],
-			                                                 plotData.plotdict["function_ranges"]):
-				function_parameters= [float (x) for x in  parameters.split(",")]
+			                                                 plotData.plotdict["function_ranges"])):
 				if fit_nickname != None and fit_nickname in plotData.plotdict["root_histos"].keys(): 
 					root_histogram = plotData.plotdict["root_histos"][fit_nickname]
-					plotData.plotdict["root_functions"].append(self.createFunction(function, x_range[0], x_range[1], 
+					plotData.plotdict["root_functions"].append(self.create_function(function, x_range[0], x_range[1], 
 					                                           function_parameters, 
 					                                           nick=fit_nickname, 
 					                                           root_histogram=root_histogram))
 				else: 
-					plotData.plotdict["root_functions"].append(self.createFunction(function, x_range[0], x_range[1], function_parameters))
+					plotData.plotdict["root_functions"].append(self.create_function(function, x_range[0], x_range[1], function_parameters))
 
 
-	def createFunction(self, function, x_min, x_max, start_parameters, nick="", root_histogram=None):
+	def create_function(self, function, x_min, x_max, start_parameters, nick="", root_histogram=None):
 		"""
 		creates a TF1 function from input formula
 
 		does the fit and adds the fitted function to the dictionary
 		"""
-		formula_name = "function_" + nick
+		formula_name = ("function_" + nick).format(hashlib.md5("_".join([str(function), str(x_min), str(x_max),
+		                                                                str(start_parameters), str(nick), 
+		                                                                str(root_histogram.GetName() if root_histogram != None else "")])).hexdigest())
 		# todo: ensure to have as many start parameters as parameters in formula
 		root_function = ROOT.TF1(formula_name, function, x_min, x_max)
 		# set parameters for fit or just for drawing the function
@@ -91,11 +96,12 @@ class FunctionPlot(analysisbase.AnalysisBase):
 		return root_function
 
 
-	def getParameters(self, root_function):
+	def get_parameters(self, root_function):
 		parameters = []
 		parameter_errors = []
 		chi_square = root_function.GetChisquare()
+		ndf = root_function.GetNDF()
 		for parameter_index in range(root_function.GetNpar()):
 			parameters.append(root_function.GetParameter(parameter_index))
 			parameter_errors.append(root_function.GetParError(parameter_index))
-		return parameters, parameter_errors, chi_square
+		return parameters, parameter_errors, chi_square, ndf
