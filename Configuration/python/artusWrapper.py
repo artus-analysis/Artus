@@ -110,7 +110,7 @@ class ArtusWrapper(object):
 				txtFile.close()
 				self.setInputFilenames(txtFileContent)
 			else:
-				log.debug("Found file in input search path that is not further considered: " + entry + "\n")
+				log.warning("Found file in input search path that is not further considered: " + entry + "\n")
 
 	def setOutputFilename(self, output_filename):
 		self._config["OutputPath"] = output_filename
