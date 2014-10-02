@@ -33,8 +33,10 @@ public:
 			EventProviderBase<TTypes>(),
 			m_prevRun(-1), m_prevLumi(-1), m_prevTree(-1), m_inpType(inpType), m_fi(fi)
 	{
+		m_fi.SpeedupTree(128*1024*1024); // in units of bytes
+		
 		// auto-delete objects when moving to a new object. Not default root behaviour
-		//fi.eventdata.SetAutoDelete(kTRUE);
+		m_fi.eventdata.SetAutoDelete(true);
 
 		m_mon.reset(new ProgressMonitor(GetEntries()));
 	}
@@ -43,7 +45,6 @@ public:
 	/// creating the provider
 	virtual void WireEvent(setting_type const& settings)
 	{
-		m_fi.SpeedupTree(128*1024*1024);
 	}
 
 	virtual bool GetEntry(long long lEvent ) ARTUS_CPP11_OVERRIDE {
