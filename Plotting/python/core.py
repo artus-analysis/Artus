@@ -22,6 +22,7 @@ import HarryPlotter.Plotting.processor as processor
 import HarryPlotter.Plotting.modules.eventselectionoverlap as eventselectionoverlap
 import HarryPlotter.Plotting.modules.projectbyfit as projectbyfit
 import HarryPlotter.Plotting.modules.functionplot as functionplot
+import HarryPlotter.Plotting.modules.shapeyieldmerge as shapeyieldmerge
 
 import HarryPlotter.Utility.jsonTools as json_tools
 json_tools.JsonDict.COMMENT_DELIMITER = "@"
@@ -39,6 +40,7 @@ class HarryCore(object):
 			eventselectionoverlap.EventSelectionOverlap.name() : eventselectionoverlap.EventSelectionOverlap(),
 			projectbyfit.ProjectByFit.name() : projectbyfit.ProjectByFit(),
 			functionplot.FunctionPlot.name() : functionplot.FunctionPlot(),
+			shapeyieldmerge.ShapeYieldMerge.name() : shapeyieldmerge.ShapeYieldMerge(),
 			plotroot.PlotRoot.name() : plotroot.PlotRoot(),
 			plotmpl.PlotMpl.name() : plotmpl.PlotMpl(),
 		}
