@@ -43,7 +43,7 @@ public:
 	/// creating the provider
 	virtual void WireEvent(setting_type const& settings)
 	{
-		m_fi.SpeedupTree();
+		m_fi.SpeedupTree(32*1024*1024);
 	}
 
 	virtual bool GetEntry(long long lEvent ) ARTUS_CPP11_OVERRIDE {
