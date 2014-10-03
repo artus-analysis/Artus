@@ -168,7 +168,7 @@ class PlotBase(processor.Processor):
 			if plotData.plotdict[labelKey] == None: plotData.plotdict[labelKey] = ""
 
 		# formatting options
-		self.prepare_list_args(plotData, ["colors", "labels", "markers", "errorbars", "stack"], len(plotData.plotdict["root_histos"]))
+		self.prepare_list_args(plotData, ["colors", "labels", "markers", "errorbars", "stack"], len(plotData.plotdict["root_objects"]))
 		
 		for index, errorbar in enumerate(plotData.plotdict["errorbars"]):
 			if errorbar == None:
@@ -230,14 +230,14 @@ class PlotBase(processor.Processor):
 		self.save_canvas(plotData)
 		self.plot_end(plotData)
 
-	def calculate_ratios(self, plotData):
-		if plotData.plotdict["ratio"]:
+	def calculate_ratios(self, plotData): ## todo: define ratio for functions
+		if plotData.plotdict["ratio"]: 
 			for numerator_nicks, denominator_nicks in zip(plotData.plotdict["ratio_num"],
 			                                              plotData.plotdict["ratio_denom"]):
 				name = hashlib.md5("_".join(numerator_nicks+denominator_nicks)).hexdigest()
-				numerator_histogram = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_histos"][nick] for nick in numerator_nicks],
+				numerator_histogram = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_objects"][nick] for nick in numerator_nicks],
 				                                                              name=name+"_numerator")
-				denominator_histogram = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_histos"][nick] for nick in denominator_nicks],
+				denominator_histogram = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_objects"][nick] for nick in denominator_nicks],
 				                                                                name=name+"_denominator")
 				ratio_histogram = numerator_histogram.Clone(name + "_ratio")
 				ratio_histogram.Divide(denominator_histogram)
@@ -248,10 +248,11 @@ class PlotBase(processor.Processor):
 	
 	def prepare_histograms(self, plotData):
 		# handle stacks
+		# todo: define how functions should act when stacked
 		for index, (nick1, stack1) in enumerate(zip(plotData.plotdict["nicks"], plotData.plotdict["stack"])):
 			for nick2, stack2 in zip(plotData.plotdict["nicks"], plotData.plotdict["stack"])[:index]:
 				if stack1 == stack2:
-					plotData.plotdict["root_histos"][nick2].Add(plotData.plotdict["root_histos"][nick1])
+					plotData.plotdict["root_objects"][nick2].Add(plotData.plotdict["root_objects"][nick1])
 	
 	def make_plots(self, plotData):
 		pass

@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 from matplotlib.colors import Normalize
 import numpy as np
+import ROOT
 
 class PlotMpl(plotbase.PlotBase):
 	def __init__(self):
@@ -72,7 +73,7 @@ class PlotMpl(plotbase.PlotBase):
 		self.bottom_y_values = {}
 		for stack in plotData.plotdict["stack"]:
 			if plotData.plotdict["stack"].count(stack) > 1:
-				histo_size = plotData.plotdict["root_histos"]["nick0"].GetNbinsX()
+				histo_size = plotData.plotdict["root_objects"]["nick0"].GetNbinsX()
 				if not (stack in self.bottom_y_values):
 					self.bottom_y_values[stack] = [0] * histo_size
 				else:
@@ -81,76 +82,75 @@ class PlotMpl(plotbase.PlotBase):
 
 	def make_plots(self, plotData):
 
-		for nick, color, label, marker, errorbar, stack, linestyle in zip(plotData.plotdict["nicks"],
+		for nick, color, label, marker, errorbar, stack, linestyle, x_bins_string in zip(plotData.plotdict["nicks"],
 		                                 plotData.plotdict["colors"],
 		                                 plotData.plotdict["labels"],
 		                                 plotData.plotdict["markers"],
 		                                 plotData.plotdict["errorbars"],
 		                                 plotData.plotdict["stack"],
-		                                 plotData.plotdict["linestyle"]):
-			root_histogram = plotData.plotdict["root_histos"][nick]
-			mpl_histogram = mplconvert.root2histo(root_histogram, "someFilename", 1)
-			self.plot1D = isinstance(mpl_histogram, mplconvert.Histo)
-                        self.plot2D = isinstance(mpl_histogram, mplconvert.Histo2D)
+		                                 plotData.plotdict["linestyle"],
+		                                 plotData.plotdict["x_bins"]):
+			root_object = plotData.plotdict["root_objects"][nick]
+			if isinstance(root_object, ROOT.TH1):
+				mpl_histogram = mplconvert.root2histo(root_object, "someFilename", 1)
+				self.plot1D = isinstance(mpl_histogram, mplconvert.Histo)
+                        	self.plot2D = isinstance(mpl_histogram, mplconvert.Histo2D)
 
-			# convert linestyles that do not work on command line
-			if linestyle == "dotted":
-				linestyle = "--"
+				# convert linestyles that do not work on command line
+				if linestyle == "dotted":
+					linestyle = "--"
 
-			# determine bin width to allow variable binning
-			widths = []
-			for i in range(root_histogram.GetNbinsX()):
-				widths.append(root_histogram.GetBinWidth(i))
-			yerr=mpl_histogram.yerr if errorbar else None
+				# determine bin width to allow variable binning
+				widths = []
+				for i in range(root_object.GetNbinsX()):
+					widths.append(root_object.GetBinWidth(i))
+				yerr=mpl_histogram.yerr if errorbar else None
 
-			if stack in self.bottom_y_values:
-				bottom = self.bottom_y_values[stack]
-				self.bottom_y_values[stack] =  [sum(x) for x in zip(self.bottom_y_values[stack], mpl_histogram.y)]
-			else:
-				bottom = [0] * root_histogram.GetNbinsX()
-			# do the actual plotting
-			if self.plot2D:
-				norm = LogNorm if plotData.plotdict["z_log"] else Normalize
-				self.image = self.ax.imshow(mpl_histogram.BinContents,
-                                               interpolation='nearest',
-				               origin='lower',
-				               extent=[mpl_histogram.xborderlow, mpl_histogram.xborderhigh, mpl_histogram.yborderlow, mpl_histogram.yborderhigh],
-				               aspect='auto',
-				               cmap=plt.cm.get_cmap(plotData.plotdict["colormap"]),
-				               norm=norm())
-			elif marker=="bar":
-				self.ax.bar(mpl_histogram.x, mpl_histogram.y, widths, yerr=yerr, bottom=bottom,
-				            ecolor=color, label=label, fill=True, facecolor=color, edgecolor=color, alpha=0.8)
-			else:
-				y = mpl_histogram.y if not(stack in self.bottom_y_values) else self.bottom_y_values[stack]
-					
-				self.ax.errorbar(mpl_histogram.xc, y, mpl_histogram.yerr,
-				                 color=color, fmt=marker, capsize=0, label=label, zorder=10, drawstyle='steps-mid', linestyle=linestyle)
+				if stack in self.bottom_y_values:
+					bottom = self.bottom_y_values[stack]
+					self.bottom_y_values[stack] =  [sum(x) for x in zip(self.bottom_y_values[stack], mpl_histogram.y)]
+				else:
+					bottom = [0] * root_object.GetNbinsX()
+				# do the actual plotting
+				if self.plot2D:
+					norm = LogNorm if plotData.plotdict["z_log"] else Normalize
+					self.image = self.ax.imshow(mpl_histogram.BinContents,
+                                               	   interpolation='nearest',
+				               	   origin='lower',
+				               	   extent=[mpl_histogram.xborderlow, mpl_histogram.xborderhigh, mpl_histogram.yborderlow, mpl_histogram.yborderhigh],
+				               	   aspect='auto',
+				               	   cmap=plt.cm.get_cmap(plotData.plotdict["colormap"]),
+				               	   norm=norm())
+				elif marker=="bar":
+					self.ax.bar(mpl_histogram.x, mpl_histogram.y, widths, yerr=yerr, bottom=bottom,
+				            	ecolor=color, label=label, fill=True, facecolor=color, edgecolor=color, alpha=0.8)
+				else:
+					y = mpl_histogram.y if not(stack in self.bottom_y_values) else self.bottom_y_values[stack]
+						
+					self.ax.errorbar(mpl_histogram.xc, y, mpl_histogram.yerr,
+				                 	 color=color, fmt=marker, capsize=0, label=label, zorder=10, drawstyle='steps-mid', linestyle=linestyle)
 		# draw functions from dictionary
-		if "root_functions" in plotData.plotdict.keys():
-			for function, function_label, color, linestyle, linewidth, x_range in zip(
-			                                    plotData.plotdict["root_functions"], 
-			                                    plotData.plotdict["function_labels"],
-			                                    plotData.plotdict["function_colors"],
-			                                    plotData.plotdict["function_linestyles"],
-			                                    plotData.plotdict["function_linewidths"],
-			                                    plotData.plotdict["function_ranges"]):
+			if isinstance(root_object, ROOT.TF1):
 				x_values = []
 				y_values = []
-				for x in np.arange(x_range[0], x_range[1], (float(x_range[1])-float(x_range[0]))/1000):
+				x_bins = [float(x) for x in x_bins_string.split(",")]
+				sampling_points = x_bins[0]
+				if len(x_bins == 1):
+					# determine range automatically
+					x_range = self.ax.get_xlim()
+				if len(x_bins == 3):
+					x_range = [ x_bins[1], x_bins[2] ]
+				for x in np.arange(x_range[0], x_range[1], (float(x_range[1])-float(x_range[0]))/sampling_points):
 					x_values.append(x)
 					y_values.append(function.Eval(x))
-				print function_label
-				print linestyle
-				print linewidth
 				self.ax.plot(x_values, y_values, label=function_label, color=color, linestyle=linestyle, linewidth=float(linewidth))
 
 
 		if plotData.plotdict["ratio"]:
-			for root_histogram, ratio_color, ratio_marker, in zip(plotData.plotdict["root_ratio_histos"],
+			for root_object, ratio_color, ratio_marker, in zip(plotData.plotdict["root_ratio_histos"],
 			                                      plotData.plotdict["ratio_colors"],
 			                                      plotData.plotdict["ratio_markers"]):
-				mpl_histogram = mplconvert.root2histo(root_histogram, "someFilename", 1)
+				mpl_histogram = mplconvert.root2histo(root_object, "someFilename", 1)
 				self.ax2.errorbar(mpl_histogram.xc, mpl_histogram.y, mpl_histogram.yerr, ecolor=ratio_color, fmt=ratio_marker)
 
 

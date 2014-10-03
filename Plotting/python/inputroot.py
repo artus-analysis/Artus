@@ -82,8 +82,8 @@ class InputRoot(inputbase.InputBase):
 					plotData.plotdict["root_trees"][nick] = root_tree_chain
 			
 			# save histogram in plotData merging histograms with same nick names
-			if nick in plotData.plotdict.setdefault("root_histos", {}):
-				plotData.plotdict["root_histos"][nick].Add(root_histogram)
+			if nick in plotData.plotdict.setdefault("root_objects", {}):
+				plotData.plotdict["root_objects"][nick].Add(root_histogram)
 			else:
-				plotData.plotdict["root_histos"][nick] = root_histogram
+				plotData.plotdict["root_objects"][nick] = root_histogram
 
