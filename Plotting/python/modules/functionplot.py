@@ -41,10 +41,10 @@ class FunctionPlot(analysisbase.AnalysisBase):
 				log.debug("Trying to determine the function range automatically")
 				if plotData.plotdict["x_lims"]!=None:
 					tmp_x_range.append(plotData.plotdict["x_lims"])
-				elif plotData.plotdict["root_histos"] != None:
+				elif plotData.plotdict["root_objects"] != None:
 					x_high = []
 					x_low = []
-					for key, histo in plotData.plotdict["root_histos"].iteritems():
+					for key, histo in plotData.plotdict["root_objects"].iteritems():
 						x_high.append( histo.GetXaxis().GetXmax() )
 						x_low.append( histo.GetXaxis().GetXmin() )
 					tmp_x_range.append( [ min(x_low), min(x_high)] )
@@ -67,8 +67,8 @@ class FunctionPlot(analysisbase.AnalysisBase):
 			                                                 plotData.plotdict["function_parameters"],
 			                                                 plotData.plotdict["function_fit"],
 			                                                 plotData.plotdict["function_ranges"])):
-				if fit_nickname != None and fit_nickname in plotData.plotdict["root_histos"].keys(): 
-					root_histogram = plotData.plotdict["root_histos"][fit_nickname]
+				if fit_nickname != None and fit_nickname in plotData.plotdict["root_objects"].keys(): 
+					root_histogram = plotData.plotdict["root_objects"][fit_nickname]
 					plotData.plotdict["root_functions"].append(self.create_function(function, x_range[0], x_range[1], 
 					                                           function_parameters, 
 					                                           nick=fit_nickname, 

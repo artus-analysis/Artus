@@ -20,10 +20,10 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 	def run(self, plotData=None):
 		super(EventSelectionOverlap, self).run(plotData)
 		
-		plotData.plotdict["root_histos"] = {}
+		plotData.plotdict["root_objects"] = {}
 		for index1, (nick1, tree1) in enumerate(plotData.plotdict.get("root_trees", {}).items()):
 			for index2, (nick2, tree2) in enumerate(plotData.plotdict.get("root_trees", {}).items()):
-				if index1 != index2 and len(plotData.plotdict["root_histos"]) == 0:
+				if index1 != index2 and len(plotData.plotdict["root_objects"]) == 0:
 					events1 = EventSelectionOverlap.get_events_set_from_tree(tree1, plotData.plotdict["x_expressions"][index1])
 					events2 = EventSelectionOverlap.get_events_set_from_tree(tree2, plotData.plotdict["x_expressions"][index2])
 					
@@ -40,7 +40,7 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 					histogram.SetBinContent(2, n_events_intersection)
 					histogram.SetBinContent(3, n_events_only2)
 					
-					plotData.plotdict["root_histos"][nick1 + "_vs_" + nick2] = histogram
+					plotData.plotdict["root_objects"][nick1 + "_vs_" + nick2] = histogram
 	
 	@staticmethod
 	def get_events_set_from_tree(tree, events_branch_name):

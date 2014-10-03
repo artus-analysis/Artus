@@ -31,8 +31,8 @@ class ShapeYieldMerge(analysisbase.AnalysisBase):
 	def prepare_args(self, parser, plotData):
 		super(ShapeYieldMerge, self).prepare_args(parser, plotData)
 		
-		plotData.plotdict["shape_nicks"] = [nick for nick in plotData.plotdict["shape_nicks"] if nick in plotData.plotdict["root_histos"]]
-		plotData.plotdict["yield_nicks"] = [nick for nick in plotData.plotdict["yield_nicks"] if nick in plotData.plotdict["root_histos"]]
+		plotData.plotdict["shape_nicks"] = [nick for nick in plotData.plotdict["shape_nicks"] if nick in plotData.plotdict["root_objects"]]
+		plotData.plotdict["yield_nicks"] = [nick for nick in plotData.plotdict["yield_nicks"] if nick in plotData.plotdict["root_objects"]]
 		self.prepare_list_args(plotData, ["shape_nicks", "yield_nicks", "shape_yield_nicks"])
 		
 		for index, nick in enumerate(plotData.plotdict["shape_yield_nicks"]):
@@ -48,12 +48,12 @@ class ShapeYieldMerge(analysisbase.AnalysisBase):
 		                                                                       plotData.plotdict["yield_nicks"],
 		                                                                       plotData.plotdict["shape_yield_nicks"])):
 			
-			new_histogram_name = "histogram_" + hashlib.md5("_".join([plotData.plotdict["root_histos"][shape_nick].GetName(),
-			                                                          plotData.plotdict["root_histos"][yield_nick].GetName()])).hexdigest()
+			new_histogram_name = "histogram_" + hashlib.md5("_".join([plotData.plotdict["root_objects"][shape_nick].GetName(),
+			                                                          plotData.plotdict["root_objects"][yield_nick].GetName()])).hexdigest()
 			
-			new_histogram = plotData.plotdict["root_histos"][shape_nick].Clone(new_histogram_name)
-			new_histogram.Scale(plotData.plotdict["root_histos"][yield_nick].Integral() / plotData.plotdict["root_histos"][shape_nick].Integral())
+			new_histogram = plotData.plotdict["root_objects"][shape_nick].Clone(new_histogram_name)
+			new_histogram.Scale(plotData.plotdict["root_objects"][yield_nick].Integral() / plotData.plotdict["root_objects"][shape_nick].Integral())
 			
-			plotData.plotdict["root_histos"][shape_yield_nick] = new_histogram
+			plotData.plotdict["root_objects"][shape_yield_nick] = new_histogram
 			plotData.plotdict.setdefault("nicks", []).append(shape_yield_nick)
 

@@ -50,7 +50,7 @@ class ProjectByFit(analysisbase.AnalysisBase):
 		                                                                plotData.plotdict["projection_fit_range"],
 		                                                                plotData.plotdict["projection_to_nick"]):
 
-			histogram_2D = plotData.plotdict["root_histos"][nick]
+			histogram_2D = plotData.plotdict["root_objects"][nick]
 
 			if not histogram_2D.ClassName().startswith("TH2"):
 				log.fatal("The ProjectByFit Module only works on projecting TH2 histograms to TH1 histograms, but " + histogram_2D.ClassName() + " was provided as input.")
@@ -75,5 +75,5 @@ class ProjectByFit(analysisbase.AnalysisBase):
 			histograms_to_replace.append(nick)
 
 		for nick in histograms_to_replace:
-			del(plotData.plotdict["root_histos"][nick])
-		plotData.plotdict["root_histos"].update(result_histograms)
+			del(plotData.plotdict["root_objects"][nick])
+		plotData.plotdict["root_objects"].update(result_histograms)

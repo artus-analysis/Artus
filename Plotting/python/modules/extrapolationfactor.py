@@ -31,9 +31,9 @@ class ExtrapolationFactor(analysisbase.AnalysisBase):
 	def prepare_args(self, parser, plotData):
 		super(ExtrapolationFactor, self).prepare_args(parser, plotData)
 		
-		plotData.plotdict["extrapolation_numerator_nicks"] = [nick for nick in plotData.plotdict["extrapolation_numerator_nicks"] if nick in plotData.plotdict["root_histos"]]
-		plotData.plotdict["extrapolation_denominator_nicks"] = [nick for nick in plotData.plotdict["extrapolation_denominator_nicks"] if nick in plotData.plotdict["root_histos"]]
-		plotData.plotdict["extrapolation_nicks"] = [nick for nick in plotData.plotdict["extrapolation_nicks"] if nick in plotData.plotdict["root_histos"]]
+		plotData.plotdict["extrapolation_numerator_nicks"] = [nick for nick in plotData.plotdict["extrapolation_numerator_nicks"] if nick in plotData.plotdict["root_objects"]]
+		plotData.plotdict["extrapolation_denominator_nicks"] = [nick for nick in plotData.plotdict["extrapolation_denominator_nicks"] if nick in plotData.plotdict["root_objects"]]
+		plotData.plotdict["extrapolation_nicks"] = [nick for nick in plotData.plotdict["extrapolation_nicks"] if nick in plotData.plotdict["root_objects"]]
 		self.prepare_list_args(plotData, ["extrapolation_numerator_nicks", "extrapolation_denominator_nicks", "extrapolation_nicks"])
 		
 		for index, nick in enumerate(plotData.plotdict["extrapolation_nicks"]):
@@ -49,16 +49,16 @@ class ExtrapolationFactor(analysisbase.AnalysisBase):
 		                                                                       plotData.plotdict["extrapolation_denominator_nicks"],
 		                                                                       plotData.plotdict["extrapolation_nicks"])):
 			
-			new_histogram_name = "histogram_" + hashlib.md5("_".join([plotData.plotdict["root_histos"][extrapolation_numerator_nick].GetName(),
-			                                                          plotData.plotdict["root_histos"][extrapolation_denominator_nick].GetName()])).hexdigest()
+			new_histogram_name = "histogram_" + hashlib.md5("_".join([plotData.plotdict["root_objects"][extrapolation_numerator_nick].GetName(),
+			                                                          plotData.plotdict["root_objects"][extrapolation_denominator_nick].GetName()])).hexdigest()
 			
-			extrapolation_numerator = plotData.plotdict["root_histos"][extrapolation_numerator_nick].Integral()
-			extrapolation_denominator = plotData.plotdict["root_histos"][extrapolation_denominator_nick].Integral()
+			extrapolation_numerator = plotData.plotdict["root_objects"][extrapolation_numerator_nick].Integral()
+			extrapolation_denominator = plotData.plotdict["root_objects"][extrapolation_denominator_nick].Integral()
 			extrapolation_factor = 1.0
 			if extrapolation_denominator == 0.0:
 				log.error("Extrapolation denominator is empty, which results in a division by zero! The extrapolation factor is set to 1.0.")
 			else:
 				extrapolation_factor = extrapolation_numerator / extrapolation_denominator
 			
-			plotData.plotdict["root_histos"][extrapolation_nick].Scale(extrapolation_factor)
+			plotData.plotdict["root_objects"][extrapolation_nick].Scale(extrapolation_factor)
 
