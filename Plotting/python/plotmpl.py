@@ -78,18 +78,16 @@ class PlotMpl(plotbase.PlotBase):
 					self.bottom_y_values[stack] = [0] * histo_size
 				else:
 					if not (len(self.bottom_y_values[stack]) == histo_size):
-						print "histograms labled with --stack " + stack + " do not have the same size and can not be stacked"
+						log.warning("histograms labled with --stack " + stack + " do not have the same size and can not be stacked")
 
 	def make_plots(self, plotData):
-
-		for nick, color, label, marker, errorbar, stack, linestyle, x_bins_string in zip(plotData.plotdict["nicks"],
+		for nick, color, label, marker, errorbar, stack, linestyle in zip(plotData.plotdict["nicks"],
 		                                 plotData.plotdict["colors"],
 		                                 plotData.plotdict["labels"],
 		                                 plotData.plotdict["markers"],
 		                                 plotData.plotdict["errorbars"],
 		                                 plotData.plotdict["stack"],
-		                                 plotData.plotdict["linestyle"],
-		                                 plotData.plotdict["x_bins"]):
+		                                 plotData.plotdict["linestyle"]):
 			root_object = plotData.plotdict["root_objects"][nick]
 			if isinstance(root_object, ROOT.TH1):
 				mpl_histogram = mplconvert.root2histo(root_object, "someFilename", 1)
@@ -133,17 +131,12 @@ class PlotMpl(plotbase.PlotBase):
 			if isinstance(root_object, ROOT.TF1):
 				x_values = []
 				y_values = []
-				x_bins = [float(x) for x in x_bins_string.split(",")]
-				sampling_points = x_bins[0]
-				if len(x_bins == 1):
-					# determine range automatically
-					x_range = self.ax.get_xlim()
-				if len(x_bins == 3):
-					x_range = [ x_bins[1], x_bins[2] ]
+				sampling_points = 1000
+				x_range = [ root_object.GetXaxis().GetXmin(), root_object.GetXaxis().GetXmax()] 
 				for x in np.arange(x_range[0], x_range[1], (float(x_range[1])-float(x_range[0]))/sampling_points):
 					x_values.append(x)
-					y_values.append(function.Eval(x))
-				self.ax.plot(x_values, y_values, label=function_label, color=color, linestyle=linestyle, linewidth=float(linewidth))
+					y_values.append(root_object.Eval(x))
+				self.ax.plot(x_values, y_values, label=label, color=color, linestyle=linestyle, linewidth=2)
 
 
 		if plotData.plotdict["ratio"]:
