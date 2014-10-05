@@ -96,6 +96,14 @@ public:
 	// MVA outputs
 	std::vector<double> m_discriminators;
 
+	// GenTauDecayModeProducer
+	std::map<const KDataGenTau*, int> m_genMatchedDecayMode;
+	std::map<const KDataGenTau*, int> m_genMatchedProngSize;
+	int m_tau1DecayMode;
+	int m_tau2DecayMode;
+	int m_tau1ProngSize;
+	int m_tau2ProngSize;
+
 	// functions to count jets above pt threshold
 	template<class TJet>
 	static typename std::vector<TJet*>::const_iterator GetLastJetAbovePtThreshold(std::vector<TJet*> const& jets, float lowerPtThreshold)

@@ -26,6 +26,25 @@ public:
 	KGenParticle* node;
 	// will have 0 entries, if there are no daughters
 	std::vector<MotherDaughterBundle> Daughters;
+	
+	enum class DecayMode : int
+	{
+        	NONE = -1,
+		E   = 1,
+		M   = 2,
+		//Greater 3 is hadronic
+		PI = 4,
+		KPLUS = 5,
+		KSTAR = 6,
+		RHO = 7,
+		AONE   = 8,
+		//These should appear for HiggsBoson
+		TAU = 10,
+		TAUTAU = 11
+	};
+
+	DecayMode decayMode = DecayMode::NONE;
+
 	void createFinalStates(MotherDaughterBundle* root)
 	{
 		if (this->finalState == true) root->finalStates.push_back(this);
@@ -81,6 +100,33 @@ public:
 	bool isDetectable() const
 	{
 		return this->detectable;
+	}
+	void determineDecayMode(MotherDaughterBundle* root)
+	{
+		for (auto tauDaughter = root->Daughters.begin(); tauDaughter != root->Daughters.end();++tauDaughter)
+		{
+			this->setDecayMode(&(*tauDaughter));
+			if(this->decayMode == DecayMode::NONE)
+			{
+				this->determineDecayMode(&(*tauDaughter));
+			}
+		}
+	}
+	void setDecayMode(MotherDaughterBundle* tauDaughters)
+	{
+		int pdgId = abs(tauDaughters->node->pdgId());
+		if (pdgId == DefaultValues::pdgIdTau)
+		{
+			if (this->decayMode == DecayMode::TAU) this->decayMode = DecayMode::TAUTAU;
+			this->decayMode = DecayMode::TAU;
+		}
+		else if (pdgId == DefaultValues::pdgIdPiPlus) this->decayMode = DecayMode::PI;
+		else if (pdgId == DefaultValues::pdgIdKPlus) this->decayMode = DecayMode::KPLUS;
+		else if (pdgId == DefaultValues::pdgIdKStar) this->decayMode = DecayMode::KSTAR;
+		else if (pdgId == DefaultValues::pdgIdRhoPlus770) this->decayMode = DecayMode::RHO;
+		else if (pdgId == DefaultValues::pdgIdAOnePlus1260) this->decayMode = DecayMode::AONE;
+		else if (pdgId == DefaultValues::pdgIdMuon) this->decayMode = DecayMode::M;
+		else if (pdgId == DefaultValues::pdgIdElectron) this->decayMode = DecayMode::E;
 	}
 private:
 	int charge = 5;

@@ -1,0 +1,94 @@
+
+#include "Artus/KappaAnalysis/interface/Producers/GenTauDecayModeProducer.h"
+#include "Artus/Utility/interface/Utility.h"
+#include "Artus/Utility/interface/DefaultValues.h"
+
+std::string GenTauDecayModeProducer::GetProducerId() const {
+	return "GenTauDecayModeProducer";
+}
+
+void GenTauDecayModeProducer::Init(KappaSettings const& settings)
+{
+	KappaProducerBase::Init(settings);
+	
+	// add possible quantities for the lambda ntuples consumers
+	
+	LambdaNtupleConsumer<KappaTypes>::AddQuantity( "genTau1DecayMode",[](KappaEvent const & event, KappaProduct const & product)
+	{
+		return product.m_tau1DecayMode;
+	} );
+	LambdaNtupleConsumer<KappaTypes>::AddQuantity( "genTau2DecayMode",[](KappaEvent const & event, KappaProduct const & product)
+	{
+		return product.m_tau2DecayMode;
+	} );
+	LambdaNtupleConsumer<KappaTypes>::AddQuantity( "genTau1ProngSize",[](KappaEvent const & event, KappaProduct const & product)
+	{
+		return product.m_tau1ProngSize;
+	} );
+	LambdaNtupleConsumer<KappaTypes>::AddQuantity( "genTau2ProngSize",[](KappaEvent const & event, KappaProduct const & product)
+	{
+		return product.m_tau2ProngSize;
+	} );
+}
+
+void GenTauDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& product,
+                     KappaSettings const& settings) const
+{
+	MotherDaughterBundle* selectedTau1 = 0;
+	MotherDaughterBundle* selectedTau2 = 0;
+
+	int tau1ProngSize = -1;
+	int tau2ProngSize = -1;
+
+	int tau1DecayMode = -1;
+	int tau2DecayMode = -1;
+
+
+	if(product.m_genBoson.size()>0)
+	{
+		if(product.m_genBoson[0].Daughters.size()>1)
+		{
+			selectedTau1 = &(product.m_genBoson[0].Daughters[0]);
+			selectedTau2 = &(product.m_genBoson[0].Daughters[1]);
+			
+			selectedTau1->determineDecayMode(selectedTau1);
+			selectedTau2->determineDecayMode(selectedTau2);
+
+			tau1DecayMode = Utility::ToUnderlyingValue(selectedTau1->decayMode);
+			tau2DecayMode = Utility::ToUnderlyingValue(selectedTau2->decayMode);
+
+			selectedTau1->createFinalStateProngs(selectedTau1);
+			selectedTau2->createFinalStateProngs(selectedTau2);
+
+			if ((selectedTau1->finalStateOneProngs.size())>0) tau1ProngSize = 1;			
+			else if ((selectedTau1->finalStateThreeProngs.size())>0) tau1ProngSize = 3;
+			else if ((selectedTau1->finalStateFiveProngs.size())>0) tau1ProngSize = 5;
+			
+			if (selectedTau2->finalStateOneProngs.size()>0) tau2ProngSize = 1;
+			else if (selectedTau2->finalStateThreeProngs.size()>0) tau2ProngSize = 3;
+			else if (selectedTau2->finalStateFiveProngs.size()>0) tau2ProngSize = 5;
+		}
+	}
+
+	product.m_tau1DecayMode = tau1DecayMode;
+	product.m_tau2DecayMode = tau2DecayMode;	
+
+	product.m_tau1ProngSize = tau1ProngSize;
+	product.m_tau2ProngSize = tau2ProngSize;
+
+	//ugly temporary solution
+	for(typename std::vector<KDataGenTau>::const_iterator genTau = event.m_genTaus->begin();
+	                                                      genTau != event.m_genTaus->end();++genTau)
+	{
+		if (selectedTau1->node->p4 == genTau->p4)
+		{
+			product.m_genMatchedDecayMode[&(*genTau)] = tau1DecayMode;
+			product.m_genMatchedProngSize[&(*genTau)] = tau1ProngSize;
+		}
+		if (selectedTau2->node->p4 == genTau->p4)
+		{
+			product.m_genMatchedDecayMode[&(*genTau)] = tau2DecayMode;
+			product.m_genMatchedProngSize[&(*genTau)] = tau2ProngSize;
+		}
+	}
+}
