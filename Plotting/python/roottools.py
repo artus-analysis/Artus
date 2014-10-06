@@ -85,7 +85,7 @@ class RootTools(object):
 			prepared_binning.replace(")", "")
 			
 		binning_string, bin_edges = RootTools.binning_to_bin_edges(prepared_binning)
-	
+		
 		return binning_string, bin_edges
 
 
@@ -190,7 +190,8 @@ class RootTools(object):
 	
 		root_histogram = None
 		if any([bin_edges != None for bin_edges in [self.x_bin_edges, self.y_bin_edges, self.z_bin_edges]]):
-			if any([bin_edges == None for bin_edges in [self.x_bin_edges, self.y_bin_edges, self.z_bin_edges]]):
+			if any([bin_edges == None and expression != None for (bin_edges, expression) in zip([self.x_bin_edges, self.y_bin_edges, self.z_bin_edges],
+			                                                                                    [x_expression, y_expression, z_expression])]):
 				log.warning("Bin edges need to be specified either for no or for all axes!")
 			else:
 				if z_expression != None:
@@ -205,7 +206,7 @@ class RootTools(object):
 				else:
 					root_histogram = ROOT.TH1F(name, "",
 							                   len(self.x_bin_edges)-1, self.x_bin_edges)
-	
+		
 		# prepare TChain
 		if isinstance(root_file_names, basestring):
 			root_file_names = [root_file_names]
