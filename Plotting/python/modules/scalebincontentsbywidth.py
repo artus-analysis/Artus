@@ -28,8 +28,8 @@ class ScaleBinContentsByWidth(analysisbase.AnalysisBase):
 						for z_bin in xrange(1, root_histogram.GetNbinsY()+1):
 							global_bin = root_histogram.GetBin(x_bin, y_bin, z_bin)
 							
-							bin_width = root_histogram.GetXaxis().GetBinWidth(x_bin) *
-							            (1.0 if root_histogram.GetNbinsY() == 1 else root_histogram.GetYaxis().GetBinWidth(y_bin)) *
+							bin_width = root_histogram.GetXaxis().GetBinWidth(x_bin) * \
+							            (1.0 if root_histogram.GetNbinsY() == 1 else root_histogram.GetYaxis().GetBinWidth(y_bin)) * \
 							            (1.0 if root_histogram.GetNbinsZ() == 1 else root_histogram.GetZaxis().GetBinWidth(z_bin))
 							
 							root_histogram.SetBinContent(global_bin, root_histogram.GetBinContent(global_bin) / bin_width)
