@@ -24,6 +24,7 @@ import HarryPlotter.Plotting.modules.projectbyfit as projectbyfit
 import HarryPlotter.Plotting.modules.functionplot as functionplot
 import HarryPlotter.Plotting.modules.shapeyieldmerge as shapeyieldmerge
 import HarryPlotter.Plotting.modules.extrapolationfactor as extrapolationfactor
+import HarryPlotter.Plotting.modules.binerrorsofemptybins as binerrorsofemptybins
 
 import HarryPlotter.Utility.jsonTools as json_tools
 json_tools.JsonDict.COMMENT_DELIMITER = "@"
@@ -43,6 +44,7 @@ class HarryCore(object):
 			functionplot.FunctionPlot.name() : functionplot.FunctionPlot(),
 			shapeyieldmerge.ShapeYieldMerge.name() : shapeyieldmerge.ShapeYieldMerge(),
 			extrapolationfactor.ExtrapolationFactor.name() : extrapolationfactor.ExtrapolationFactor(),
+			binerrorsofemptybins.BinErrorsOfEmptyBins.name() : binerrorsofemptybins.BinErrorsOfEmptyBins(),
 			plotroot.PlotRoot.name() : plotroot.PlotRoot(),
 			plotmpl.PlotMpl.name() : plotmpl.PlotMpl(),
 		}
