@@ -160,6 +160,12 @@ public:
 		LambdaNtupleConsumer<TTypes>::AddQuantity("nElectrons", [](event_type const& event, product_type const& product) {
 			return product.m_validElectrons.size();
 		});
+		LambdaNtupleConsumer<TTypes>::AddQuantity("leadingElePt", [](event_type const& event, product_type const& product) {
+			return product.m_validElectrons.size() >= 1 ? product.m_validElectrons[0]->p4.Pt() : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<TTypes>::AddQuantity("leadingEleEta", [](event_type const& event, product_type const& product) {
+			return product.m_validElectrons.size() >= 1 ? product.m_validElectrons[0]->p4.Eta() : DefaultValues::UndefinedDouble;
+		});
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,

@@ -70,6 +70,18 @@ public:
 		LambdaNtupleConsumer<KappaTypes>::AddQuantity("nTaus", [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validTaus.size();
 		} );
+		LambdaNtupleConsumer<KappaTypes>::AddQuantity("leadingTauPt", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->p4.Pt() : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddQuantity("leadingTauEta", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->p4.Eta() : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddQuantity("trailingTauPt", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->p4.Pt() : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddQuantity("trailingTauEta", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->p4.Eta() : DefaultValues::UndefinedDouble;
+		});
 	}
 
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
