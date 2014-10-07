@@ -311,6 +311,8 @@ class ArtusWrapper(object):
 		                                 help="Do not write logfile in batch mode directly to SE.")
 		runningOptionsGroup.add_argument("--files-per-job", type=int, default=20,
 		                                 help="Files per batch job. [Default: %(default)s]")
+		runningOptionsGroup.add_argument("--se-path",
+		                                 help="Custom SE path, if it should different from the work directory.")
 
 		if self._executable:
 			self._parser.add_argument("-x", "--executable", help="Artus executable. [Default: %(default)s]", default=self._executable)
@@ -355,7 +357,7 @@ class ArtusWrapper(object):
 		epilogArguments += "--nick $DATASETNICK "
 		epilogArguments += '-i $FILE_NAMES '
 
-		sepath = "se path = " + sepathRaw
+		sepath = "se path = " + (self._args.se_path if self._args.se_path else sepathRaw)
 		workdir = "workdir = " + os.path.join(self.projectPath, "workdir")
 
 		replacingDict = dict(include = (("include = " + " ".join(self._args.gc_config_includes)) if self._args.gc_config_includes else ""),
@@ -370,6 +372,8 @@ class ArtusWrapper(object):
 		                     seoutputfiles = "se output files = *.txt *.root" if self._args.no_log_to_se else "se output files = *.root")
 
 		self.replaceLines(gcConfigFileContent, replacingDict)
+		for index, line in enumerate(gcConfigFileContent):
+			gcConfigFileContent[index] = line.replace("$CMSSW_BASE", os.environ.get("CMSSW_BASE", ""))
 
 		# save it
 		for line in gcConfigFileContent:
