@@ -43,8 +43,8 @@ class InputBase(processor.Processor):
 	def prepare_args(self, parser, plotData):
 		super(InputBase, self).prepare_args(parser, plotData)
 		
-		self.prepare_list_args(plotData, ["files", "directories", "nicks", "x_expressions", "y_expressions",
-		                                  "z_expressions", "weights", "norm_references"])
+		self.prepare_list_args(plotData, ["files", "directories", "folders", "nicks", "x_expressions",
+		                                  "y_expressions", "z_expressions", "weights", "norm_references"])
 		
 		# prepare files
 		for index, (file_args, directory) in enumerate(zip(plotData.plotdict["files"], plotData.plotdict["directories"])):
