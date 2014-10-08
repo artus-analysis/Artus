@@ -17,6 +17,7 @@ import HarryPlotter.Plotting.plotbase as plotbase
 import HarryPlotter.Plotting.plotdata as plotdata
 import HarryPlotter.Plotting.plotmpl as plotmpl
 import HarryPlotter.Plotting.plotroot as plotroot
+import HarryPlotter.Plotting.exportroot as exportroot
 import HarryPlotter.Plotting.processor as processor
 
 import HarryPlotter.Plotting.modules.eventselectionoverlap as eventselectionoverlap
@@ -49,6 +50,7 @@ class HarryCore(object):
 			scalebincontentsbywidth.ScaleBinContentsByWidth.name() : scalebincontentsbywidth.ScaleBinContentsByWidth(),
 			plotroot.PlotRoot.name() : plotroot.PlotRoot(),
 			plotmpl.PlotMpl.name() : plotmpl.PlotMpl(),
+			exportroot.ExportRoot.name() : exportroot.ExportRoot(),
 		}
 		self.available_processors.update(user_processors)
 		self.processors = []
