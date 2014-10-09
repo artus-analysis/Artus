@@ -17,6 +17,7 @@ import HarryPlotter.Plotting.plotbase as plotbase
 import HarryPlotter.Plotting.plotdata as plotdata
 import HarryPlotter.Plotting.plotmpl as plotmpl
 import HarryPlotter.Plotting.plotroot as plotroot
+import HarryPlotter.Plotting.exportroot as exportroot
 import HarryPlotter.Plotting.processor as processor
 
 import HarryPlotter.Plotting.modules.eventselectionoverlap as eventselectionoverlap
@@ -24,6 +25,8 @@ import HarryPlotter.Plotting.modules.projectbyfit as projectbyfit
 import HarryPlotter.Plotting.modules.functionplot as functionplot
 import HarryPlotter.Plotting.modules.shapeyieldmerge as shapeyieldmerge
 import HarryPlotter.Plotting.modules.extrapolationfactor as extrapolationfactor
+import HarryPlotter.Plotting.modules.binerrorsofemptybins as binerrorsofemptybins
+import HarryPlotter.Plotting.modules.scalebincontentsbywidth as scalebincontentsbywidth
 
 import HarryPlotter.Utility.jsonTools as json_tools
 json_tools.JsonDict.COMMENT_DELIMITER = "@"
@@ -43,8 +46,11 @@ class HarryCore(object):
 			functionplot.FunctionPlot.name() : functionplot.FunctionPlot(),
 			shapeyieldmerge.ShapeYieldMerge.name() : shapeyieldmerge.ShapeYieldMerge(),
 			extrapolationfactor.ExtrapolationFactor.name() : extrapolationfactor.ExtrapolationFactor(),
+			binerrorsofemptybins.BinErrorsOfEmptyBins.name() : binerrorsofemptybins.BinErrorsOfEmptyBins(),
+			scalebincontentsbywidth.ScaleBinContentsByWidth.name() : scalebincontentsbywidth.ScaleBinContentsByWidth(),
 			plotroot.PlotRoot.name() : plotroot.PlotRoot(),
 			plotmpl.PlotMpl.name() : plotmpl.PlotMpl(),
+			exportroot.ExportRoot.name() : exportroot.ExportRoot(),
 		}
 		self.available_processors.update(user_processors)
 		self.processors = []
