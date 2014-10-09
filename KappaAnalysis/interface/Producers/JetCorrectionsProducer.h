@@ -51,6 +51,11 @@ public:
 		m_correctedJetsMember(correctedJets)
 	{
 	}
+	
+	~JetCorrectionsProducerBase()
+	{
+		delete factorizedJetCorrector;
+	}
 
 	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE
 	{
