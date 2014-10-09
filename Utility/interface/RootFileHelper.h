@@ -28,7 +28,7 @@ public:
 	static T* SafeGet(TDirectory* directory, std::string const& objectName,
 	                 bool detachFromDirectory=true)
 	{
-		T* object = (T*) directory->Get(objectName.c_str());
+		T* object = static_cast<T*>(directory->Get(objectName.c_str()));
 		if (object == NULL)
 		{
 			LOG(FATAL) << "Cannot load \"" << objectName << "\" from directory \"" << directory->GetName() << "\"!";
