@@ -20,7 +20,7 @@ class ScaleBinContentsByWidth(analysisbase.AnalysisBase):
 	def run(self, plotData=None):
 		super(ScaleBinContentsByWidth, self).run(plotData)
 		
-		for nick, root_histogram in plotData.plotdict["root_histos"].iteritems():
+		for nick, root_histogram in plotData.plotdict["root_objects"].iteritems():
 			if isinstance(root_histogram, ROOT.TH1):
 			
 				for x_bin in xrange(1, root_histogram.GetNbinsX()+1):

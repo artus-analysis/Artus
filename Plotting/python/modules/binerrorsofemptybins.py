@@ -30,7 +30,7 @@ class BinErrorsOfEmptyBins(analysisbase.AnalysisBase):
 	def run(self, plotData=None):
 		super(BinErrorsOfEmptyBins, self).run(plotData)
 		
-		for nick, root_histogram in plotData.plotdict["root_histos"].iteritems():
+		for nick, root_histogram in plotData.plotdict["root_objects"].iteritems():
 			if isinstance(root_histogram, ROOT.TH1):
 				bin_error_for_empty_bins = plotData.plotdict["empty_bin_error_scale"] * root_histogram.GetSumOfWeights() / root_histogram.GetEntries()
 			
