@@ -23,8 +23,6 @@ class PlotMpl(plotbase.PlotBase):
 
 	def modify_argument_parser(self, parser, args):
 		super(PlotMpl, self).modify_argument_parser(parser, args)
-		self.formatting_options.add_argument("--linestyle", default="-", nargs="+",
-		                                     help="Style of errorbar plot line. [Default: '-']")
 		self.formatting_options.add_argument("--colormap", default="afmhot", nargs="?",
 		                                     help="Colormap for matplotlib [Default: 'afmhot']")
 	def prepare_args(self, parser, plotData):
@@ -42,8 +40,10 @@ class PlotMpl(plotbase.PlotBase):
 			if marker == None:
 				plotData.plotdict["markers"][index] = "-"
 
-		self.prepare_list_args(plotData, ["linestyle"], n_items=len(plotData.plotdict["nicks"]))
-
+		# default for linestyles
+		for index, linestyle in enumerate(plotData.plotdict["linestyles"]):
+			if linestyle == None:
+				plotData.plotdict["linestyles"][index] = "-"
 
 	def run(self, plotData):
 		super(PlotMpl, self).run(plotData)
@@ -78,7 +78,7 @@ class PlotMpl(plotbase.PlotBase):
 		                                 plotData.plotdict["labels"],
 		                                 plotData.plotdict["markers"],
 		                                 plotData.plotdict["errorbars"],
-		                                 plotData.plotdict["linestyle"])
+		                                 plotData.plotdict["linestyles"])
 		for argument in zip_arguments:
 			if len(argument) != len(zip_arguments[0]):
 				log.warning("The PlotMpl module is trying to make plots with invalid inputs. The Plot will eventually not contain all requested information.")
@@ -91,10 +91,6 @@ class PlotMpl(plotbase.PlotBase):
 				mpl_histogram = mplconvert.root2histo(root_object, "someFilename", 1)
 				self.plot1D = isinstance(mpl_histogram, mplconvert.Histo)
                         	self.plot2D = isinstance(mpl_histogram, mplconvert.Histo2D)
-
-				# convert linestyles that do not work on command line
-				if linestyle == "dotted":
-					linestyle = "--"
 
 				# determine bin width to allow variable binning
 				widths = []

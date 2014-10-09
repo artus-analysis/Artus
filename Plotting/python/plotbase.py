@@ -89,6 +89,8 @@ class PlotBase(processor.Processor):
 		                                     help="Style for the plots.")
 		self.formatting_options.add_argument("--ratio-markers", type=str, nargs="+",
 		                                     help="Style for the ratio subplots.")
+		self.formatting_options.add_argument("--linestyles", nargs="+",
+                                             help="Styles of errorbar plot line. [Default: '-']")
 		self.formatting_options.add_argument("--errorbars", type=bool, nargs="+",
 		                                     help="Errorbars for the plots. [Default: True for first plot, False otherwise]")
 		self.formatting_options.add_argument("--ratio-errorbars", type=bool, nargs="+", default=[True],
@@ -168,7 +170,7 @@ class PlotBase(processor.Processor):
 			if plotData.plotdict[labelKey] == None: plotData.plotdict[labelKey] = ""
 
 		# formatting options
-		self.prepare_list_args(plotData, ["colors", "labels", "markers", "errorbars", "stack"], len(plotData.plotdict["root_objects"]))
+		self.prepare_list_args(plotData, ["colors", "labels", "markers", "linestyles", "errorbars", "stack"], len(plotData.plotdict["root_objects"]))
 		
 		for index, errorbar in enumerate(plotData.plotdict["errorbars"]):
 			if errorbar == None:
@@ -216,7 +218,11 @@ class PlotBase(processor.Processor):
 				"Intersection",
 				"Only " + labels[1],
 			]
-	
+
+		# remove escape slashes
+		for index, linestyle in enumerate(plotData.plotdict["linestyles"]):
+			plotData.plotdict["linestyles"][index] = linestyle.replace("\\", "")
+
 	def run(self, plotData):
 		super(PlotBase, self).run(plotData)
 		
