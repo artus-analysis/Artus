@@ -166,7 +166,10 @@ class PlotBase(processor.Processor):
 		for labelKey, expressionKey in zip(["x_label", "y_label", "z_label"],
 		                                   ["x_expressions", "y_expressions", "z_expressions"]):
 			if plotData.plotdict[labelKey] == None:
-				plotData.plotdict[labelKey] = reduce(lambda a, b: "%s, %s" % (str(a), str(b)), set(plotData.plotdict[expressionKey]))
+				if plotData.plotdict["input_module"] == "InputInteractive":
+					plotData.plotdict[labelKey] = str(labelKey[1])
+				else:
+					plotData.plotdict[labelKey] = reduce(lambda a, b: "%s, %s" % (str(a), str(b)), set(plotData.plotdict[expressionKey]))
 			if plotData.plotdict[labelKey] == None: plotData.plotdict[labelKey] = ""
 
 		# formatting options
@@ -184,17 +187,20 @@ class PlotBase(processor.Processor):
 		# construct file name from x/y/z expressions if not specified by user
 		if plotData.plotdict["filename"] == None:
 			filename = ""
-			for expressions in [plotData.plotdict["z_expressions"],
-			                    plotData.plotdict["y_expressions"],
-			                    plotData.plotdict["x_expressions"]]:
-				expression_string = reduce(lambda a, b: "%s__%s" % (str(a), str(b)), set(expressions))
-				if expression_string == None:
-					expression_string = "None"
-				expression_string = re.sub("[^a-zA-Z0-9]", "_", expression_string)
-				if expression_string != "None":
-					if len(filename) > 0:
-						filename += "_VS_"
-					filename += expression_string
+			if plotData.plotdict["input_module"] == "InputInteractive":
+				filename = "plot"
+			else:
+				for expressions in [plotData.plotdict["z_expressions"],
+					                plotData.plotdict["y_expressions"],
+					                plotData.plotdict["x_expressions"]]:
+					expression_string = reduce(lambda a, b: "%s__%s" % (str(a), str(b)), set(expressions))
+					if expression_string == None:
+						expression_string = "None"
+					expression_string = re.sub("[^a-zA-Z0-9]", "_", expression_string)
+					if expression_string != "None":
+						if len(filename) > 0:
+							filename += "_VS_"
+						filename += expression_string
 			plotData.plotdict["filename"] = filename
 
 		# write name of output file in dictionary

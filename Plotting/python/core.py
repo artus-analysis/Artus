@@ -13,6 +13,7 @@ import HarryPlotter.Plotting.analysisbase as analysisbase
 import HarryPlotter.Plotting.harryparser as harryparser
 import HarryPlotter.Plotting.inputbase as inputbase
 import HarryPlotter.Plotting.inputroot as inputroot
+import HarryPlotter.Plotting.inputinteractive as inputinteractive
 import HarryPlotter.Plotting.plotbase as plotbase
 import HarryPlotter.Plotting.plotdata as plotdata
 import HarryPlotter.Plotting.plotmpl as plotmpl
@@ -41,6 +42,7 @@ class HarryCore(object):
 		
 		self.available_processors = {
 			inputroot.InputRoot.name() : inputroot.InputRoot(),
+			inputinteractive.InputInteractive.name() : inputinteractive.InputInteractive(),
 			eventselectionoverlap.EventSelectionOverlap.name() : eventselectionoverlap.EventSelectionOverlap(),
 			projectbyfit.ProjectByFit.name() : projectbyfit.ProjectByFit(),
 			functionplot.FunctionPlot.name() : functionplot.FunctionPlot(),
