@@ -11,20 +11,29 @@ import hashlib
 import os
 import ROOT
 
-import HarryPlotter.Plotting.inputbase as inputbase
+import HarryPlotter.Plotting.inputfile as inputfile
 import HarryPlotter.Plotting.roottools as roottools
 import HarryPlotter.Plotting.extrafunctions as extrafunctions
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 
-class InputRoot(inputbase.InputBase):
+class InputRoot(inputfile.InputFile):
 	def __init__(self):
 		super(InputRoot, self).__init__()
 	
 	def modify_argument_parser(self, parser, args):
 		super(InputRoot, self).modify_argument_parser(parser, args)
+		
 		self.input_options.add_argument("--folders", type=str, nargs='*',
 		                                help="Path(s) to ROOT objects.")
+		self.input_options.add_argument("-x", "--x-expressions", type=str, nargs="+",
+		                                help="x-axis variable expression(s)")
+		self.input_options.add_argument("-y", "--y-expressions", type=str, nargs="+",
+		                                help="y-axis variable expression(s)")
+		self.input_options.add_argument("-z", "--z-expressions", type=str, nargs="+",
+		                                help="z-axis variable expression(s)")
+		self.input_options.add_argument("-w", "--weights", type=str, nargs="+", default="1.0",
+		                                help="Weight (cut) expression(s). [Default: %(default)s]")
 		
 		self.input_options.add_argument("--x-bins", type=str, nargs='+', default=["25"],
 		                                help="Bining for x-axis. In case only one argument is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [Default: %(default)s]")
@@ -38,7 +47,7 @@ class InputRoot(inputbase.InputBase):
 	def prepare_args(self, parser, plotData):
 		super(InputRoot, self).prepare_args(parser, plotData)
 		
-		self.prepare_list_args(plotData, ["files", "folders"])
+		self.prepare_list_args(plotData, ["files", "folders", "weights"])
 		plotData.plotdict["folders"] = [folders.split() if folders else [""] for folders in plotData.plotdict["folders"]]
 	
 	def run(self, plotData):
