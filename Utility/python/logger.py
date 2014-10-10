@@ -230,6 +230,8 @@ def initLogger(argParserArgs=None, name="", logLevel="debug", logFiles=[], logSt
 	for logFile in logFiles:
 		if not os.path.exists(os.path.dirname(logFile)):
 			os.makedirs(os.path.dirname(logFile))
+		if os.path.exists(logFile):
+			os.remove(logFile)
 		loggingHandlers.append(logging.FileHandler(logFile))
 	# Fallback: logging enabled but no target, use STDOUT
 	if not loggingHandlers:
