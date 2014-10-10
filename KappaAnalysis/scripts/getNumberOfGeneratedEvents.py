@@ -41,10 +41,10 @@ def main():
 		n_entries_per_nick[nick] = n_entries_per_nick.get(nick, 0.0) + n_entries
 	
 	# print results
-	log.info("\"NumberGeneratedEvents\" : {\n\t\"nick\" : {")
+	log.info("{\n\t\"NumberGeneratedEvents\" : {\n\t\t\"nick\" : {")
 	for index, (nick, n_entries) in enumerate(n_entries_per_nick.items()):
-		log.info("\t\t\"" + nick + "\" : " + str(int(n_entries)) + ("," if index < len(n_entries_per_nick)-1 else ""))
-	log.info("\t}\n}")
+		log.info("\t\t\t\"" + nick + "\" : " + str(int(n_entries)) + ("," if index < len(n_entries_per_nick)-1 else ""))
+	log.info("\t\t}\n\t}\n}")
 
 
 if __name__ == "__main__":
