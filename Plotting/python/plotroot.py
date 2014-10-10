@@ -91,25 +91,25 @@ class PlotRoot(plotbase.PlotBase):
 		super(PlotRoot, self).prepare_histograms(plotData)
 		
 		for nick, color in zip(plotData.plotdict["nicks"], plotData.plotdict["colors"]):
-			root_histogram = plotData.plotdict["root_objects"][nick]
+			root_object = plotData.plotdict["root_objects"][nick]
 			
-			root_histogram.SetLineColor(color)
-			root_histogram.SetFillColor(color)
-			root_histogram.SetFillStyle(1)
-			root_histogram.SetMarkerColor(color)
+			root_object.SetLineColor(color)
+			root_object.SetFillColor(color)
+			root_object.SetFillStyle(1)
+			root_object.SetMarkerColor(color)
 			
 			# tick labels
 			if plotData.plotdict["x_tick_labels"] and len(plotData.plotdict["x_tick_labels"]) > 0:
-				for x_bin in range(min(root_histogram.GetNbinsX(), len(plotData.plotdict["x_tick_labels"]))):
-					root_histogram.GetXaxis().SetBinLabel(x_bin+1, plotData.plotdict["x_tick_labels"][x_bin])
+				for x_bin in range(min(root_object.GetNbinsX(), len(plotData.plotdict["x_tick_labels"]))):
+					root_object.GetXaxis().SetBinLabel(x_bin+1, plotData.plotdict["x_tick_labels"][x_bin])
 			
 			if plotData.plotdict["y_tick_labels"] and len(plotData.plotdict["y_tick_labels"]) > 0:
-				for y_bin in range(min(root_histogram.GetNbinsY(), len(plotData.plotdict["y_tick_labels"]))):
-					root_histogram.GetYaxis().SetBinLabel(y_bin+1, plotData.plotdict["y_tick_labels"][y_bin])
+				for y_bin in range(min(root_object.GetNbinsY(), len(plotData.plotdict["y_tick_labels"]))):
+					root_object.GetYaxis().SetBinLabel(y_bin+1, plotData.plotdict["y_tick_labels"][y_bin])
 			
 			if plotData.plotdict["z_tick_labels"] and len(plotData.plotdict["z_tick_labels"]) > 0:
-				for z_bin in range(min(root_histogram.GetNbinsZ(), len(plotData.plotdict["z_tick_labels"]))):
-					root_histogram.GetZaxis().SetBinLabel(z_bin+1, plotData.plotdict["z_tick_labels"][z_bin])
+				for z_bin in range(min(root_object.GetNbinsZ(), len(plotData.plotdict["z_tick_labels"]))):
+					root_object.GetZaxis().SetBinLabel(z_bin+1, plotData.plotdict["z_tick_labels"][z_bin])
 	
 	def make_plots(self, plotData):
 		super(PlotRoot, self).make_plots(plotData)
@@ -126,27 +126,27 @@ class PlotRoot(plotbase.PlotBase):
 		self.plot_sequence_indices = range(len(plotData.plotdict["nicks"]))
 		self.plot_sequence_indices.sort(key=lambda index: "e" in plotData.plotdict["markers"][index].lower())
 		for index, plot_index in enumerate(self.plot_sequence_indices):
-			root_histogram = plotData.plotdict["root_objects"][plotData.plotdict["nicks"][plot_index]]
+			root_object = plotData.plotdict["root_objects"][plotData.plotdict["nicks"][plot_index]]
 			marker = plotData.plotdict["markers"][plot_index]
 			option = marker + ("" if index == 0 else " same")
-			root_histogram.Draw(option)
-			if index == 0: self.first_plotted_histogram = root_histogram
+			root_object.Draw(option)
+			if index == 0: self.first_plotted_histogram = root_object
 			
 			# trace min. and max. values of axes
-			if root_histogram.GetXaxis().GetXmin() < self.x_min: self.x_min = root_histogram.GetXaxis().GetXmin()
-			if root_histogram.GetXaxis().GetXmax() > self.x_max: self.x_max = root_histogram.GetXaxis().GetXmax()
-			if root_histogram.GetDimension() > 1:
-				if root_histogram.GetYaxis().GetXmin() < self.y_min: self.y_min = root_histogram.GetYaxis().GetXmin()
-				if root_histogram.GetYaxis().GetXmax() > self.y_max: self.y_max = root_histogram.GetYaxis().GetXmax()
+			if root_object.GetXaxis().GetXmin() < self.x_min: self.x_min = root_object.GetXaxis().GetXmin()
+			if root_object.GetXaxis().GetXmax() > self.x_max: self.x_max = root_object.GetXaxis().GetXmax()
+			if root_object.GetDimension() > 1:
+				if root_object.GetYaxis().GetXmin() < self.y_min: self.y_min = root_object.GetYaxis().GetXmin()
+				if root_object.GetYaxis().GetXmax() > self.y_max: self.y_max = root_object.GetYaxis().GetXmax()
 			else:
-				if root_histogram.GetMinimum() < self.y_min: self.y_min = root_histogram.GetMinimum()
-				if root_histogram.GetMaximum() > self.y_max: self.y_max = root_histogram.GetMaximum()
-			if root_histogram.GetDimension() > 2:
-				if root_histogram.GetZaxis().GetXmin() < self.z_min: self.z_min = root_histogram.GetZaxis().GetXmin()
-				if root_histogram.GetZaxis().GetXmax() > self.z_max: self.z_max = root_histogram.GetZaxis().GetXmax()
+				if root_object.GetMinimum() < self.y_min: self.y_min = root_object.GetMinimum()
+				if root_object.GetMaximum() > self.y_max: self.y_max = root_object.GetMaximum()
+			if root_object.GetDimension() > 2:
+				if root_object.GetZaxis().GetXmin() < self.z_min: self.z_min = root_object.GetZaxis().GetXmin()
+				if root_object.GetZaxis().GetXmax() > self.z_max: self.z_max = root_object.GetZaxis().GetXmax()
 			else:
-				if root_histogram.GetMinimum() < self.z_min: self.z_min = root_histogram.GetMinimum()
-				if root_histogram.GetMaximum() > self.z_max: self.z_max = root_histogram.GetMaximum()
+				if root_object.GetMinimum() < self.z_min: self.z_min = root_object.GetMinimum()
+				if root_object.GetMaximum() > self.z_max: self.z_max = root_object.GetMaximum()
 		
 		if plotData.plotdict["ratio"]:
 			self.ratio_pad.cd()
@@ -154,14 +154,14 @@ class PlotRoot(plotbase.PlotBase):
 			self.ratio_y_min = sys.float_info.max
 			self.ratio_y_max = -sys.float_info.max
 		
-			for index, root_histogram in enumerate(plotData.plotdict["root_ratio_histos"]):
+			for index, root_object in enumerate(plotData.plotdict["root_ratio_histos"]):
 				option = "e" if index == 0 else "e same"
-				root_histogram.Draw(option)
-				if index == 0: self.first_plotted_ratio_histogram = root_histogram
+				root_object.Draw(option)
+				if index == 0: self.first_plotted_ratio_histogram = root_object
 			
 				# trace min. and max. values of axes
-				if root_histogram.GetMinimum() < self.ratio_y_min: self.ratio_y_min = root_histogram.GetMinimum()
-				if root_histogram.GetMaximum() > self.ratio_y_max: self.ratio_y_max = root_histogram.GetMaximum()
+				if root_object.GetMinimum() < self.ratio_y_min: self.ratio_y_min = root_object.GetMinimum()
+				if root_object.GetMaximum() > self.ratio_y_max: self.ratio_y_max = root_object.GetMaximum()
 			
 	
 	def modify_axes(self, plotData):
@@ -240,11 +240,11 @@ class PlotRoot(plotbase.PlotBase):
 		self.plot_pad.cd()
 		self.legend = ROOT.TLegend(plotData.plotdict["legloc"][0], plotData.plotdict["legloc"][1], 0.9, 0.9);
 		for plot_index in self.plot_sequence_indices[::-1]:
-			root_histogram = plotData.plotdict["root_objects"][plotData.plotdict["nicks"][plot_index]]
+			root_object = plotData.plotdict["root_objects"][plotData.plotdict["nicks"][plot_index]]
 			marker = plotData.plotdict["markers"][plot_index]
 			label = plotData.plotdict["labels"][plot_index]
 			if label != None:
-				self.legend.AddEntry(root_histogram, label, "LP" if "e" in marker.lower() else "F")
+				self.legend.AddEntry(root_object, label, "LP" if "e" in marker.lower() else "F")
 		self.legend.Draw()
 	
 	def add_texts(self, plotData):
