@@ -27,6 +27,7 @@ public:
 	// events in this map can be written out automatically by the KappaLambdaNtupleConsumer
 	std::map<std::string, double> m_optionalWeights;
 	
+	// filled by GenTauDecayProducer
 	std::vector<MotherDaughterBundle> m_genBoson;
 
 	/// added by ElectronCorrectionProducer

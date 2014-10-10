@@ -7,7 +7,7 @@
 #include "Artus/Utility/interface/DefaultValues.h"
 /**
    \brief Extended class for genParticles in HiggsAnalysis
-   This class implements additional quantities: charge, parent of the particle, and final states in the decay 
+   This class implements additional quantities: charge, final states in the decay 
    subtree of considered particles. The final states can be devided into one, three and five prongs.
   
 */
@@ -15,8 +15,6 @@ class MotherDaughterBundle {
 public:
 	MotherDaughterBundle( KGenParticle* newnode ) : node( newnode ) {};
 	~MotherDaughterBundle() {};
-	// pointer to the parent
-	MotherDaughterBundle * parent = 0;
 	bool finalState = false;
 	std::vector<MotherDaughterBundle*> finalStates;
 	std::vector<MotherDaughterBundle*> finalStateOneProngs;
