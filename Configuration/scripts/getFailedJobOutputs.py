@@ -43,9 +43,8 @@ def main():
 		if not os.path.exists(output_dir):
 			os.makedirs(output_dir)
 		
-		os.system("ln -vs %s %s" % (os.path.relpath(os.path.join(input_dir, "workdir/output/job_%d/job.info" % job_id), output_dir),
+		os.system("ln -vs %s %s" % (os.path.join(input_dir, "workdir/output/job_%d" % job_id),
 		                            os.path.join(output_dir, "gc_job_%d" % job_id)))
-		
 		os.system("ln -vs %s %s" % (os.path.join(input_dir, "output/*/*_%d_*" % job_id), output_dir))
 
 if __name__ == "__main__":
