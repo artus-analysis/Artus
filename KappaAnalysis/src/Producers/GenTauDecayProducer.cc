@@ -56,10 +56,6 @@ void GenTauDecayProducer::Init(KappaSettings const& settings)
 	} );
 
 	// first daughter
-	LambdaNtupleConsumer<KappaTypes>::AddQuantity( "TauMinusParent",[](KappaEvent const & event, KappaProduct const & product)
-	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].parent->node->pdgId() : DefaultValues::UndefinedDouble;
-	} );
 	LambdaNtupleConsumer<KappaTypes>::AddQuantity( "1genBoson1DaughterPt",[](KappaEvent const & event, KappaProduct const & product)
 	{
 		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].node->p4.Pt() : DefaultValues::UndefinedDouble;
@@ -98,10 +94,6 @@ void GenTauDecayProducer::Init(KappaSettings const& settings)
 	} );
 
 	// second daughter
-	LambdaNtupleConsumer<KappaTypes>::AddQuantity( "TauPlusParent",[](KappaEvent const & event, KappaProduct const & product)
-	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].parent->node->pdgId() : DefaultValues::UndefinedDouble;
-	} );
 	LambdaNtupleConsumer<KappaTypes>::AddQuantity( "1genBoson2DaughterPt",[](KappaEvent const & event, KappaProduct const & product)
 	{
 		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].node->p4.Pt() : DefaultValues::UndefinedDouble;
@@ -491,7 +483,6 @@ void GenTauDecayProducer::Produce(KappaEvent const& event, KappaProduct& product
 			
 			product.m_genBoson.push_back( MotherDaughterBundle(&(*part)) );
 			MotherDaughterBundle & lastBosonRef = product.m_genBoson.back();
-			lastBosonRef.parent = &lastBosonRef;
 			//std::cout << &(lastBosonRef) << std::endl;
 			lastBosonRef.setCharge();
 			lastBosonRef.setDetectable();
@@ -509,7 +500,6 @@ void GenTauDecayProducer::Produce(KappaEvent const& event, KappaProduct& product
 					lastBosonRef.Daughters.push_back(MotherDaughterBundle( &(event.m_genParticles->at(indDaughter)) ));
 					MotherDaughterBundle & lastBosonDaughterRef = lastBosonRef.Daughters.back();
 					//std::cout << &(lastBosonDaughterRef) << std::endl;
-					lastBosonDaughterRef.parent = &lastBosonRef;
 					lastBosonDaughterRef.setCharge();
 					lastBosonDaughterRef.setDetectable();
 					if ( (event.m_genParticles->at(indDaughter)).daughterIndices.size() != 0)
@@ -540,7 +530,6 @@ void GenTauDecayProducer::BuildDecayTree(MotherDaughterBundle & lastProductParen
 		{
 			lastProductParentRef.Daughters.push_back(MotherDaughterBundle( &(event.m_genParticles->at(DaughterIndex)) ));
 			MotherDaughterBundle & lastDaughterRef = lastProductParentRef.Daughters.back();
-			lastDaughterRef.parent = &lastProductParentRef;
 			//std::cout << "parent selbst im product: " << &lastProductParentRef << std::endl;
 			//std::cout << "parent über Daughter im product: " << lastDaughterRef.parent << std::endl;
 			lastDaughterRef.setCharge();
