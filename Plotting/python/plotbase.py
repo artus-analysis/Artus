@@ -221,7 +221,7 @@ class PlotBase(processor.Processor):
 
 		# remove escape slashes
 		for index, linestyle in enumerate(plotData.plotdict["linestyles"]):
-			plotData.plotdict["linestyles"][index] = linestyle.replace("\\", "")
+			plotData.plotdict["linestyles"][index] = linestyle.replace("\\", "") if linestyle else linestyle
 
 	def run(self, plotData):
 		super(PlotBase, self).run(plotData)
