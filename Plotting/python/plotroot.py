@@ -44,7 +44,14 @@ class PlotRoot(plotbase.PlotBase):
 			if color == None:
 				plotData.plotdict["colors"][index] = index + 1
 			else:
-				plotData.plotdict["colors"][index] = getattr(ROOT, color) if color.startswith("k") else eval(color)
+				root_color = None
+				if color.startswith("k"):
+					root_color = getattr(ROOT, color)
+				elif color.startswith("#"):
+					root_color = ROOT.TColor.GetColor(color)
+				else:
+					root_color = eval(color)
+				plotData.plotdict["colors"][index] = root_color
 		self.set_default_ratio_colors(plotData)
 		
 		# defaults for markers
