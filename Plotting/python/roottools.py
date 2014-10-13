@@ -216,7 +216,9 @@ class RootTools(object):
 		tree = ROOT.TChain()
 		for root_file_name in root_file_names:
 			for path_to_tree in path_to_trees:
-				tree.Add(os.path.join(root_file_name, path_to_tree))
+				complete_path_to_tree = os.path.join(root_file_name, path_to_tree)
+				tree.Add(complete_path_to_tree)
+				log.debug("Reading from ntuple %s ..." % complete_path_to_tree)
 	
 		# draw histogram
 		if root_histogram == None:

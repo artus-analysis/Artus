@@ -56,8 +56,8 @@ class InputRoot(inputfile.InputFile):
 			extrafunctions.print_quantities(root_files=plotData.plotdict["files"], root_folders=plotData.plotdict["folders"])
 			exit()
 		root_tools = roottools.RootTools()
-		for root_files, folders, x_expression, y_expression, z_expression, weight, nick in zip(*
-			[plotData.plotdict[key] for key in ["files", "folders", "x_expressions", "y_expressions", "z_expressions", "weights", "nicks"]]):
+		for index, (root_files, folders, x_expression, y_expression, z_expression, weight, nick) in enumerate(zip(*
+			[plotData.plotdict[key] for key in ["files", "folders", "x_expressions", "y_expressions", "z_expressions", "weights", "nicks"]])):
 			
 			# check whether to read from tree or directly from histograms
 			root_object_type = roottools.RootTools.check_type(root_files, folders)
@@ -82,6 +82,10 @@ class InputRoot(inputfile.InputFile):
 				root_objects = [os.path.join(folder, x_expression) for folder in folders]
 				
 				root_histogram = roottools.RootTools.histogram_from_file(root_files, root_objects, name=None)
+			
+			log.debug("Input object %d (nick %s):" % (index, nick))
+			if log.isEnabledFor(logging.DEBUG):
+				root_histogram.Print()
 			
 			# save tree (chain) in plotData merging chains with same nick names
 			if root_tree_chain != None:
