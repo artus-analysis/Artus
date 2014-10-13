@@ -469,8 +469,10 @@ void GenTauDecayProducer::Init(KappaSettings const& settings)
 }
 
 void GenTauDecayProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                     KappaSettings const& settings) const
+                                  KappaSettings const& settings) const
 {
+	assert(event.m_genParticles);
+	
 	// Reading Boson PdgId from TauSpinnerSettings.json
 	int bosonPdgId = settings.GetBosonPdgId();
 
