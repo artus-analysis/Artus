@@ -42,7 +42,7 @@ class InputRoot(inputfile.InputFile):
 		self.input_options.add_argument("--z-bins", type=str, nargs='+', default=["25"],
 		                                help="Bining for z-axis of 3D histograms. In case only one argument is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [Default: %(default)s]")
 		self.input_options.add_argument("--root-histogram-draw-options", type=str, default="",
-		                                help="Optional argument for TTree:Draw() call. Use e.g. 'prof' or 'profs' for projections of 2D-Histograms to 1D. See also http://root.cern.ch/root/html/TTree.html#TTree:Draw."  )
+		                                help="Optional argument for TTree:Draw() call. Use e.g. 'prof' or 'profs' for projections of 2D-Histograms to 1D. See also http://root.cern.ch/root/html/TTree.html#TTree:Draw.")
 
 	def prepare_args(self, parser, plotData):
 		super(InputRoot, self).prepare_args(parser, plotData)
