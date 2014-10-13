@@ -66,7 +66,7 @@ class HarryCore(object):
 			json_default_initialisation = args["json_defaults"]
 			json_defaults = json_tools.JsonDict(args["json_defaults"]).doIncludes().doComments()
 			#set_defaults will overwrite/ignore the json_default argument. Cannot be used.
-			args.update({k:v for k,v in json_defaults.iteritems() if (k in args.keys() and v)})
+			args.update({k:v for k,v in json_defaults.iteritems() if (k not in args and v)})
 
 		# replace 'json_defaults' from imported json file to actual name of imported json file
 		if json_default_initialisation != None:
@@ -122,7 +122,7 @@ class HarryCore(object):
 		
 		# overwrite defaults by defaults from json files
 		if args["json_defaults"] != None:
-			parser.set_defaults(**(json_tools.JsonDict(args["json_defaults"])))
+			parser.set_defaults(**(json_tools.JsonDict(args["json_defaults"]).doIncludes().doComments()))
 		
 		args = vars(parser.parse_args(args_from_script.split() if args_from_script != None else None))
 		plotData = plotdata.PlotData(args)
