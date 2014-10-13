@@ -25,6 +25,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/CrossSectionWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/NumberGeneratedEventsWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/TmvaClassificationReaderBase.h"
+#include "Artus/KappaAnalysis/interface/Producers/GenDiLeptonDecayModeProducer.h"
 
 // filter
 #include "Artus/KappaAnalysis/interface/Filters/RunLumiEventFilter.h"
@@ -36,6 +37,7 @@
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsLowerPtCutFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsUpperAbsEtaCutFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/TriggerMatchingFilters.h"
+#include "Artus/KappaAnalysis/interface/Filters/GenDiLeptonDecayModeFilter.h"
 
 // consumer
 #include "Artus/KappaAnalysis/interface/Consumers/KappaCutFlowHistogramConsumer.h"
@@ -107,8 +109,10 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 	// todo: uses setting not in KappaSettings
 	else if(id == GeneralTmvaClassificationReader().GetProducerId())
 		return new GeneralTmvaClassificationReader();
+	else if(id == GenDiLeptonDecayModeProducer().GetProducerId())
+		return new GenDiLeptonDecayModeProducer();
 	else
-		return FactoryBase/**/::createProducer( id );	
+		return FactoryBase::createProducer( id );	
 }
 
 FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
@@ -167,6 +171,8 @@ FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
 		return new TauTriggerMatchingFilter();
 	else if(id == JetTriggerMatchingFilter().GetFilterId())
 		return new JetTriggerMatchingFilter();
+	else if(id == GenDiLeptonDecayModeFilter().GetFilterId())
+		return new GenDiLeptonDecayModeFilter();
 	else
 		return FactoryBase::createFilter( id );
 }

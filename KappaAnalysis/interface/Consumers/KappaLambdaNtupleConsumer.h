@@ -5,6 +5,7 @@
 
 #include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Utility/interface/DefaultValues.h"
+#include "Artus/Utility/interface/Utility.h"
 
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
 
@@ -55,6 +56,10 @@ public:
 		
 		LambdaNtupleConsumer<TTypes>::AddQuantity("rho", [](event_type const& event, product_type const& product) {
 			return event.m_jetArea->median;
+		});
+		
+		LambdaNtupleConsumer<TTypes>::AddQuantity("genDiLeptonDecayMode", [](event_type const& event, product_type const& product) {
+			return Utility::ToUnderlyingValue(product.m_genDiLeptonDecayMode);
 		});
 		
 		// loop over all quantities containing "weight" (case-insensitive)

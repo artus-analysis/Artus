@@ -7,6 +7,7 @@
 #include "MotherDaughterBundle.h"
 
 #include "Artus/Core/interface/ProductBase.h"
+#include "Artus/KappaAnalysis/interface/KappaEnumTypes.h"
 
 /**
    \brief Container class for everything that can be produced in pipeline.
@@ -68,6 +69,9 @@ public:
 
 	/// added by GenParticleProducer
 	std::map<int, std::vector<KGenParticle*>> m_genParticlesMap;
+	
+	/// added by GenDiLeptonDecayModeProducer
+	KappaEnumTypes::DiLeptonDecayMode m_genDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::NONE;
 
 	/// added by ValidBTaggedJetsProducer
 	std::vector<KDataPFTaggedJet*> m_bTaggedJets;

@@ -181,6 +181,9 @@ public:
 	
 	//Reading Boson PdgId for GenTauDecayProducer studies.
 	IMPL_SETTING(int, BosonPdgId);
+	
+	/// Needed by the GenDiLeptonDecayModeFilter
+	IMPL_SETTING(std::string, GenDiLeptonDecayMode);
 
 	IMPL_SETTING_STRINGLIST(GenParticleTypes);
 	IMPL_SETTING_INTLIST(GenParticlePdgIds);
