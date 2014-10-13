@@ -159,7 +159,7 @@ def main():
 	else:
 		log.debug("Excute commands...")
 		# loop over all src files and execute the command
-		for src_file in src_files_recursive if args.recursive else src_files:
+		for src_file in (src_files_recursive if args.recursive else src_files):
 			execute_command((args.command + " " + (args.args if args.args else "") + " " + args.src_prefix + src_file))
 	
 	log.debug("Finished!")
