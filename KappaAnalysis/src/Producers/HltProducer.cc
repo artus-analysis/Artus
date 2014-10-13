@@ -8,6 +8,9 @@ std::string HltProducer::GetProducerId() const {
 void HltProducer::Produce(KappaEvent const& event, KappaProduct& product,
                      KappaSettings const& settings) const
 {
+	assert(event.m_lumiMetadata);
+	assert(event.m_eventMetadata);
+	
 	if (settings.GetHltPaths().size() == 0) {
 		LOG(FATAL) << "No Hlt Trigger path list (tag \"HltPaths\") configured!";
 	}

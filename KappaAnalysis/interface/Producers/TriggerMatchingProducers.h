@@ -41,6 +41,7 @@ public:
 	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		assert(event.m_triggerObjects);
+		assert(event.m_triggerInfos);
 		
 		if ((! product.m_selectedHltName.empty()) && ((settings.*GetDeltaRTriggerMatchingObjects)() > 0.0))
 		{

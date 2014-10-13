@@ -14,6 +14,8 @@ void MuonCorrectionsProducer::Init(setting_type const& settings)
 void MuonCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& product,
                      KappaSettings const& settings) const
 {
+	assert(event.m_muons);
+
 	// create a copy of all muons in the event
 	product.m_correctedMuons.clear();
 	product.m_correctedMuons.resize(event.m_muons->size());

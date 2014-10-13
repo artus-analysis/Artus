@@ -34,6 +34,8 @@ void GenTauDecayModeProducer::Init(KappaSettings const& settings)
 void GenTauDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& product,
                      KappaSettings const& settings) const
 {
+	assert(event.m_genTaus);
+
 	MotherDaughterBundle* selectedTau1 = 0;
 	MotherDaughterBundle* selectedTau2 = 0;
 

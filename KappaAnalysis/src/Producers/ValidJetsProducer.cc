@@ -59,7 +59,7 @@ void ValidTaggedJetsProducer::Init(KappaSettings const& settings)
 
 // Can be overwritten for analysis-specific use cases
 bool ValidTaggedJetsProducer::AdditionalCriteria(KDataPFTaggedJet* jet, KappaEvent const& event,
-                                KappaProduct& product, KappaSettings const& settings) const
+                                                 KappaProduct& product, KappaSettings const& settings) const
 {
 	bool validJet = ValidJetsProducerBase<KDataPFTaggedJet, KDataPFJet>::AdditionalCriteria(jet, event, product, settings);
 	

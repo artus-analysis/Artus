@@ -84,6 +84,9 @@ public:
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
 	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
 	{
+		assert((event.*m_jetsMember));
+		assert(event.m_jetArea);
+		assert(event.m_vertexSummary);
 		
 		// create a copy of all jets in the event (first temporarily for the JEC)
 		(product.*m_correctedJetsMember).clear();

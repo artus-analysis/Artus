@@ -31,6 +31,7 @@ void PUWeightProducer::Produce(KappaEvent const& event, KappaProduct& product,
                      KappaSettings const& settings) const
 {
 	assert(event.m_genEventMetadata != NULL);
+	
 	double npu = event.m_genEventMetadata->numPUInteractionsTruth;
 	if (npu < m_pileupWeights.size())
 		product.m_weights["puWeight"] = m_pileupWeights.at(int(npu * m_bins));

@@ -87,6 +87,9 @@ public:
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
 	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
 	{
+		assert(event.m_taus);
+		assert(event.m_tauDiscriminatorMetadata);
+	
 		// select input source
 		std::vector<KDataPFTau*> taus;
 		if ((validTausInput == ValidTausInput::AUTO && (product.m_correctedTaus.size() > 0)) || (validTausInput == ValidTausInput::CORRECTED))

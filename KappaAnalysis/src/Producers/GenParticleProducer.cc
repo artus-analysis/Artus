@@ -18,6 +18,8 @@ void GenParticleProducer::Init(KappaSettings const& settings)
 void GenParticleProducer::Produce(KappaEvent const& event, KappaProduct& product,
                      KappaSettings const& settings) const
 {
+	assert(event.m_genParticles);
+	
 	if (std::find(genParticleTypes.begin(), genParticleTypes.end(), GenParticleType::GENPARTICLE)
 	    != genParticleTypes.end())
 	{

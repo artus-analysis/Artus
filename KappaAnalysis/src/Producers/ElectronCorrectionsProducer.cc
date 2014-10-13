@@ -13,6 +13,8 @@ void ElectronCorrectionsProducer::Init(setting_type const& settings)
 void ElectronCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& product,
                      KappaSettings const& settings) const
 {
+	assert(event.m_electrons);
+
 	// create a copy of all electrons in the event
 	product.m_correctedElectrons.clear();
 	product.m_correctedElectrons.resize(event.m_electrons->size());

@@ -10,6 +10,8 @@ void GeneratorWeightProducer::Produce(KappaEvent const& event,
 		KappaProduct& product,
 		KappaSettings const& settings) const
 {
+	assert(event.m_genEventMetadata);
+
 	product.m_weights["generatorWeight"] = event.m_genEventMetadata->weight;
 }
 

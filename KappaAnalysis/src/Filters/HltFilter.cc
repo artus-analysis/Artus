@@ -14,6 +14,9 @@
 	bool HltFilter::DoesEventPass(KappaEvent const& event, KappaProduct const& product,
 	                           KappaSettings const& settings) const
 	{
+		assert(event.m_lumiMetadata);
+		assert(event.m_eventMetadata);
+	
 		if (product.m_selectedHltName.empty())
 		{
 			// no HLT found

@@ -122,6 +122,8 @@ public:
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
 	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
 	{
+		assert((event.*m_jetsMember));
+	
 		// select input source
 		std::vector<TJet*> jets;
 		if ((validJetsInput == ValidJetsInput::AUTO && ((product.*m_correctedJetsMember).size() > 0)) || (validJetsInput == ValidJetsInput::CORRECTED))

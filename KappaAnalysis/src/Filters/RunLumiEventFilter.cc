@@ -7,6 +7,8 @@ std::string RunLumiEventFilter::GetFilterId() const {
 bool RunLumiEventFilter::DoesEventPass(KappaEvent const& event, KappaProduct const& product,
                            KappaSettings const& settings) const 
 {
+	assert(event.m_eventMetadata);
+	
 	bool match = (MatchWhiteBlackLists(event.m_eventMetadata->nRun, settings.GetRunWhitelist(), settings.GetRunBlacklist()) &&
 	              MatchWhiteBlackLists(event.m_eventMetadata->nLumi, settings.GetLumiWhitelist(), settings.GetLumiBlacklist()) &&
 	              MatchWhiteBlackLists(event.m_eventMetadata->nEvent, settings.GetEventWhitelist(), settings.GetEventBlacklist()));
