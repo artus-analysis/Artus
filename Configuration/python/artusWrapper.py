@@ -157,6 +157,32 @@ class ArtusWrapper(object):
 			self._config["InputFiles"] = [""]
 		elif self._args.fast:
 			self._config["InputFiles"] = self._config["InputFiles"][:min(len(self._config["InputFiles"]), self._args.fast)]
+	
+	def remove_pipeline_copies(self):
+		pipelines = self._config["Pipelines"].keys()
+		pipelines_to_remove = []
+		pipeline_renamings = {}
+		for index1, pipeline1 in enumerate(pipelines):
+			if pipeline1 in pipelines_to_remove:
+				continue
+			
+			for pipeline2 in pipelines[index1+1:]:
+				if pipeline2 in pipelines_to_remove:
+					continue
+				
+				difference = jsonTools.JsonDict.deepdiff(self._config["Pipelines"][pipeline1],
+				                                         self._config["Pipelines"][pipeline2])
+				if len(difference[0]) == 0 and len(difference[1]) == 0:
+					pipelines_to_remove.append(pipeline2)
+					new_name = tools.find_common_string(pipeline_renamings.get(pipeline1, pipeline1),
+					                                    pipeline_renamings.get(pipeline2, pipeline2))
+					pipeline_renamings[pipeline1] = new_name.strip("_").replace("__", "_")
+		
+		for pipeline in pipelines_to_remove:
+			self._config["Pipelines"].pop(pipeline)
+		
+		for old_name, new_name in pipeline_renamings.iteritems():
+			self._config["Pipelines"][new_name] = self._config["Pipelines"].pop(old_name)
 
 	def saveConfig(self, filepath=None):
 		"""Save Config to File"""
@@ -220,6 +246,9 @@ class ArtusWrapper(object):
 		else:
 			nickname = self.determineNickname(self._args.nick)
 			self._config = self._config.doIncludes().doNicks(nickname).doComments()
+		
+		# remove all but one of similar pipeline copies
+		self.remove_pipeline_copies()
 		
 		# treat environment variables
 		if self._args.envvar_expansion:
