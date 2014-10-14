@@ -159,7 +159,7 @@ class ArtusWrapper(object):
 			self._config["InputFiles"] = self._config["InputFiles"][:min(len(self._config["InputFiles"]), self._args.fast)]
 	
 	def remove_pipeline_copies(self):
-		pipelines = self._config["Pipelines"].keys()
+		pipelines = self._config.get("Pipelines", {}).keys()
 		pipelines_to_remove = []
 		pipeline_renamings = {}
 		for index1, pipeline1 in enumerate(pipelines):
