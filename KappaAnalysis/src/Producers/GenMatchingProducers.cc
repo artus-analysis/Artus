@@ -61,8 +61,7 @@ JetGenMatchingProducer::JetGenMatchingProducer() :
 	                                    JetGenMatchingProducer::TauDecayMode::NONE,
 	                                    &setting_type::GetDeltaRGenMatchingJets,
 	                                    &setting_type::GetInvalidateNonGenMatchingJets,
-	                                    
-							&setting_type::GetMatchingAlgorithmusJets)
+	                                    &setting_type::GetMatchingAlgorithmusJets)
 {
 }
 
