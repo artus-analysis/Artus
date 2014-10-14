@@ -21,8 +21,16 @@ public:
 
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
 	
+	~EventWeightProducer();
+	
+	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
+	
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
 	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE;
-};
 
+
+private:
+	std::string pipelineName;
+	mutable std::vector<std::string> m_weightNames;
+};
 
