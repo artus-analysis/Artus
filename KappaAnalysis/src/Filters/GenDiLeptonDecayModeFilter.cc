@@ -21,7 +21,7 @@ void GenDiLeptonDecayModeFilter::Init(setting_type const& settings)
 bool GenDiLeptonDecayModeFilter::DoesEventPass(KappaEvent const& event, KappaProduct const& product,
                                                KappaSettings const& settings) const 
 {
-	if (m_genDiLeptonDecayMode != KappaEnumTypes::DiLeptonDecayMode::LL)
+	if (m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::LL)
 	{
 		return ((product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::EE) ||
 		        (product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::MM) ||
