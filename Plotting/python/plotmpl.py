@@ -16,10 +16,12 @@ from matplotlib.colors import LogNorm
 from matplotlib.colors import Normalize
 import numpy as np
 import ROOT
+import matplotlib
 
 class PlotMpl(plotbase.PlotBase):
 	def __init__(self):
 		super(PlotMpl, self).__init__()
+		self.mpl_version = int(matplotlib.__version__.replace(".", ""))
 
 	def modify_argument_parser(self, parser, args):
 		super(PlotMpl, self).modify_argument_parser(parser, args)
@@ -174,7 +176,8 @@ class PlotMpl(plotbase.PlotBase):
 			plt.text(1.0, 1.030, "$\sqrt{s}=" + energy + "\\ \mathrm{TeV}$", transform=self.ax.transAxes, fontsize=10, horizontalalignment="right")
 			#self.fig.suptitle("$\sqrt{s}=" + energy + "\\ \mathrm{TeV}$", ha="right",x=0.9) 
 		legend = self.ax.legend()
-		plt.tight_layout()
+		if self.mpl_version >= 121:
+			plt.tight_layout()
 
 	def save_canvas(self, plotData):
 		for output_filename in plotData.plotdict["output_filenames"]:
