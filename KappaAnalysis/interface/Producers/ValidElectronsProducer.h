@@ -212,9 +212,9 @@ public:
 
 			// Electron IDs
 			if (electronID == ElectronID::MVANONTRIG)
-				validElectron = validElectron && IsMVANonTrigElectron(*electron);
+				validElectron = validElectron && IsMVANonTrigElectron(*electron, event);
 			else if (electronID == ElectronID::MVATRIG)
-				validElectron = validElectron && IsMVATrigElectron(*electron);
+				validElectron = validElectron && IsMVATrigElectron(*electron, event);
 			else if (electronID == ElectronID::VBTF95_VETO)
 				validElectron = validElectron && IsVetoVbtf95Electron(*electron, event, product);
 			else if (electronID == ElectronID::VBTF95_LOOSE)
@@ -305,31 +305,32 @@ private:
 	
 	ValidElectronsInput validElectronsInput;
 
-	bool IsMVANonTrigElectron(KDataElectron* electron) const
+	bool IsMVANonTrigElectron(KDataElectron* electron, event_type const& event) const
 	{
 		bool validElectron = true;
 
 		// Electron ID mva non trig
 		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentification#Non_triggering_MVA
 		// different thresholds depending on electron pT, eta
+        // hardcoded mvaIds.at(2) = mvaNonTrigV050nsCSA14 has to be modified to make sure the right mvaId is used.
 		validElectron = validElectron &&
 			(
 				(
 					(electron->p4.Pt() < 10.0)
 					&&
 					(
-						(abs(electron->p4.Eta()) < 0.8 && electron->idMvaNonTrigV0 > 0.47)
-						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->idMvaNonTrigV0 > 0.004)
-						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->idMvaNonTrigV0 > 0.295)
+						(abs(electron->p4.Eta()) < 0.8 && electron->getMvaId("mvaNonTrigV050nsCSA14", event.m_electronMvaIdMetadata) > 0.47)
+						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getMvaId("mvaNonTrigV050nsCSA14", event.m_electronMvaIdMetadata) > 0.004)
+						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getMvaId("mvaNonTrigV050nsCSA14", event.m_electronMvaIdMetadata) > 0.295)
 					)
 				)
 				||
 				(
 					(electron->p4.Pt() >= 10.0) &&
 					(
-						(abs(electron->p4.Eta()) < 0.8 && electron->idMvaNonTrigV0 > -0.34)
-						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->idMvaNonTrigV0 > -0.65)
-						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->idMvaNonTrigV0 > 0.6)
+						(abs(electron->p4.Eta()) < 0.8 && electron->getMvaId("mvaNonTrigV050nsCSA14", event.m_electronMvaIdMetadata) > -0.34)
+						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getMvaId("mvaNonTrigV050nsCSA14", event.m_electronMvaIdMetadata) > -0.65)
+						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getMvaId("mvaNonTrigV050nsCSA14", event.m_electronMvaIdMetadata) > 0.6)
 					)
 				)
 			);
@@ -337,7 +338,7 @@ private:
 		return validElectron;
 	}
 
-	bool IsMVATrigElectron(KDataElectron* electron) const
+	bool IsMVATrigElectron(KDataElectron* electron, event_type const& event) const
 	{
 		bool validElectron = true;
 
@@ -351,19 +352,19 @@ private:
 					&&
 					(electron->p4.Pt() < 20.0)
 					&&
-					(
-						(abs(electron->p4.Eta()) < 0.8 && electron->idMvaTrigV0 > 0.0)
-						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->idMvaTrigV0 > 0.1)
-						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->idMvaTrigV0 > 0.62)
+					( 
+						(abs(electron->p4.Eta()) < 0.8 && electron->getMvaId("mvaTrigV050nsCSA14", event.m_electronMvaIdMetadata) > 0.0)
+						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getMvaId("mvaTrigV050nsCSA14", event.m_electronMvaIdMetadata) > 0.1)
+						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getMvaId("mvaTrigV050nsCSA14", event.m_electronMvaIdMetadata) > 0.62)
 					)
 				)
 				||
 				(
 					(electron->p4.Pt() >= 20.0) &&
 					(
-						(abs(electron->p4.Eta()) < 0.8 && electron->idMvaTrigV0 > 0.94)
-						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->idMvaTrigV0 > 0.85)
-						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->idMvaTrigV0 > 0.92)
+						(abs(electron->p4.Eta()) < 0.8 && electron->getMvaId("mvaTrigV050nsCSA14", event.m_electronMvaIdMetadata) > 0.94)
+						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getMvaId("mvaTrigV050nsCSA14", event.m_electronMvaIdMetadata) > 0.85)
+						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getMvaId("mvaTrigV050nsCSA14", event.m_electronMvaIdMetadata) > 0.92)
 					)
 				)
 			);
