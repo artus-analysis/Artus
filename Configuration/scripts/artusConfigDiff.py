@@ -9,6 +9,7 @@ import argparse
 import json
 import pprint
 import sys
+import tempfile
 
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
@@ -42,10 +43,18 @@ def main():
 			if pipeline1 != None:
 				dictA = dictA.get("Pipelines", {}).get(pipeline1, {})
 			
+			dictA_filename = tempfile.mktemp(prefix="artusConfigDiff_")
+			with open(dictA_filename, "w") as dictA_file:
+				dictA_file.write(jsonTools.JsonDict(dictA).toString())
+				
 			for pipeline2 in args.pipelines_2:
 				dictB = jsonTools.JsonDict(args.files[1])
 				if pipeline2 != None:
 					dictB = dictB.get("Pipelines", {}).get(pipeline2, {})
+			
+				dictB_filename = tempfile.mktemp(prefix="artusConfigDiff_")
+				with open(dictB_filename, "w") as dictB_file:
+					dictB_file.write(jsonTools.JsonDict(dictB).toString())
 				
 				diffDictA, diffDictB = jsonTools.JsonDict(dictA) - jsonTools.JsonDict(dictB)
 		
@@ -56,6 +65,8 @@ def main():
 		
 				log.info("Diff in file \"%s\"%s:\n" % (args.files[1], ("" if pipeline2 == None else (" (Pipeline \"%s\")" % pipeline2))))
 				log.info(jsonTools.JsonDict(diffDictB))
+				
+				log.info("\nmeld %s %s" % (dictA_filename, dictB_filename))
 				
 				log.info((50*"-") + "\n")
 	
