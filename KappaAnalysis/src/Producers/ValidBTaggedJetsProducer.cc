@@ -29,6 +29,12 @@ void ValidBTaggedJetsProducer::Init(KappaSettings const& settings)
 	LambdaNtupleConsumer<KappaTypes>::AddQuantity("bJetPhi", [](KappaEvent const& event, KappaProduct const& product) {
 		return product.m_bTaggedJets.size() >= 1 ? product.m_bTaggedJets.at(0)->p4.Phi() : DefaultValues::UndefinedDouble;
 	});
+	LambdaNtupleConsumer<KappaTypes>::AddQuantity("leadingBJetCSV",[](KappaEvent const& event, KappaProduct const& product) {
+		return product.m_bTaggedJets.size() >= 1 ? static_cast<KDataPFTaggedJet*>(product.m_bTaggedJets.at(0))->getTagger("CombinedSecondaryVertexBJetTags", event.m_taggerMetadata) : DefaultValues::UndefinedDouble;
+	});
+	LambdaNtupleConsumer<KappaTypes>::AddQuantity("trailingBJetCSV",[](KappaEvent const& event, KappaProduct const& product) {
+		return product.m_bTaggedJets.size() >= 2 ? static_cast<KDataPFTaggedJet*>(product.m_bTaggedJets.at(1))->getTagger("CombinedSecondaryVertexBJetTags", event.m_taggerMetadata) : DefaultValues::UndefinedDouble;
+	});
 }
 
 void ValidBTaggedJetsProducer::Produce(KappaEvent const& event, KappaProduct& product,
