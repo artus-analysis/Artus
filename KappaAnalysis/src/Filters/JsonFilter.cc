@@ -25,5 +25,5 @@
 	{
 		assert(event.m_eventMetadata);
 		
-		return m_runLumiSelector.accept(event.m_eventMetadata->nRun, event.m_eventMetadata->nLumi);
+		return m_runLumiSelector.accept(event.m_eventMetadata->nRun, (event.m_eventMetadata->nLumi & 0x0000FFFF));
 	}
