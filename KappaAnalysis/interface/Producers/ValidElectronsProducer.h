@@ -311,18 +311,18 @@ private:
 					(electron->p4.Pt() < 10.0)
 					&&
 					(
-						(abs(electron->p4.Eta()) < 0.8 && electron->getMvaId("mvaNonTrigV050nsCSA14", event.m_electronMvaIdMetadata) > 0.47)
-						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getMvaId("mvaNonTrigV050nsCSA14", event.m_electronMvaIdMetadata) > 0.004)
-						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getMvaId("mvaNonTrigV050nsCSA14", event.m_electronMvaIdMetadata) > 0.295)
+						(abs(electron->p4.Eta()) < 0.8 && electron->getId("mvaNonTrigV050nsCSA14", event.m_electronIdMetadata) > 0.47)
+						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("mvaNonTrigV050nsCSA14", event.m_electronIdMetadata) > 0.004)
+						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getId("mvaNonTrigV050nsCSA14", event.m_electronIdMetadata) > 0.295)
 					)
 				)
 				||
 				(
 					(electron->p4.Pt() >= 10.0) &&
 					(
-						(abs(electron->p4.Eta()) < 0.8 && electron->getMvaId("mvaNonTrigV050nsCSA14", event.m_electronMvaIdMetadata) > -0.34)
-						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getMvaId("mvaNonTrigV050nsCSA14", event.m_electronMvaIdMetadata) > -0.65)
-						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getMvaId("mvaNonTrigV050nsCSA14", event.m_electronMvaIdMetadata) > 0.6)
+						(abs(electron->p4.Eta()) < 0.8 && electron->getId("mvaNonTrigV050nsCSA14", event.m_electronIdMetadata) > -0.34)
+						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("mvaNonTrigV050nsCSA14", event.m_electronIdMetadata) > -0.65)
+						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getId("mvaNonTrigV050nsCSA14", event.m_electronIdMetadata) > 0.6)
 					)
 				)
 			);
@@ -345,18 +345,18 @@ private:
 					(electron->p4.Pt() < 20.0)
 					&&
 					( 
-						(abs(electron->p4.Eta()) < 0.8 && electron->getMvaId("mvaTrigV050nsCSA14", event.m_electronMvaIdMetadata) > 0.0)
-						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getMvaId("mvaTrigV050nsCSA14", event.m_electronMvaIdMetadata) > 0.1)
-						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getMvaId("mvaTrigV050nsCSA14", event.m_electronMvaIdMetadata) > 0.62)
+						(abs(electron->p4.Eta()) < 0.8 && electron->getId("mvaTrigV050nsCSA14", event.m_electronIdMetadata) > 0.0)
+						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("mvaTrigV050nsCSA14", event.m_electronIdMetadata) > 0.1)
+						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getId("mvaTrigV050nsCSA14", event.m_electronIdMetadata) > 0.62)
 					)
 				)
 				||
 				(
 					(electron->p4.Pt() >= 20.0) &&
 					(
-						(abs(electron->p4.Eta()) < 0.8 && electron->getMvaId("mvaTrigV050nsCSA14", event.m_electronMvaIdMetadata) > 0.94)
-						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getMvaId("mvaTrigV050nsCSA14", event.m_electronMvaIdMetadata) > 0.85)
-						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getMvaId("mvaTrigV050nsCSA14", event.m_electronMvaIdMetadata) > 0.92)
+						(abs(electron->p4.Eta()) < 0.8 && electron->getId("mvaTrigV050nsCSA14", event.m_electronIdMetadata) > 0.94)
+						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("mvaTrigV050nsCSA14", event.m_electronIdMetadata) > 0.85)
+						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getId("mvaTrigV050nsCSA14", event.m_electronIdMetadata) > 0.92)
 					)
 				)
 			);
