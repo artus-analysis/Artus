@@ -17,7 +17,7 @@ public:
 
 	/// name of electron collection in kappa tuple	
 	IMPL_SETTING_DEFAULT(std::string, Electrons, "");
-    IMPL_SETTING_DEFAULT(std::string, ElectronMvaIdMetadata, "");
+    IMPL_SETTING_DEFAULT(std::string, ElectronIdMetadata, "");
 
 	/// name of muon collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, Muons, "");
