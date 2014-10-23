@@ -29,7 +29,7 @@ public:
 		if (! settings.GetElectrons().empty())
 			this->m_event.m_electrons = this->template SecureFileInterfaceGet<KDataElectrons>(settings.GetElectrons());
 		if (! settings.GetElectronMvaIdMetadata().empty())
-            this->m_event.m_electronMvaIdMetadata = this->template SecureFileInterfaceGetMeta<KElectronMvaIdMetadata>(settings.GetElectronMvaIdMetadata());
+            this->m_event.m_electronIdMetadata = this->template SecureFileInterfaceGetMeta<KElectronIdMetadata>(settings.GetElectronMvaIdMetadata());
 
 		// Muons
 		if (! settings.GetMuons().empty())
