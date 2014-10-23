@@ -18,7 +18,7 @@ public:
 
 	/// pointer to electron collection
 	KDataElectrons* m_electrons = 0;
-    KElectronMvaIdMetadata* m_electronMvaIdMetadata = 0;
+    KElectronIdMetadata* m_electronIdMetadata = 0;
 
 	/// pointer to muon collection
 	KDataMuons* m_muons = 0;
