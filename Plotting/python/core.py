@@ -8,6 +8,7 @@ import HarryPlotter.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import ROOT
+ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 import HarryPlotter.Plotting.analysisbase as analysisbase
 import HarryPlotter.Plotting.harryparser as harryparser

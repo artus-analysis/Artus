@@ -14,7 +14,6 @@ import ROOT
 import HarryPlotter.Plotting.inputfile as inputfile
 import HarryPlotter.Plotting.roottools as roottools
 import HarryPlotter.Plotting.extrafunctions as extrafunctions
-ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 
 class InputRoot(inputfile.InputFile):
