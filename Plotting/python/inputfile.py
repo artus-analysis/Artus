@@ -20,7 +20,6 @@ class InputFile(inputbase.InputBase):
 	def modify_argument_parser(self, parser, args):
 		super(InputFile, self).modify_argument_parser(parser, args)
 		
-		self.input_options = parser.add_argument_group("Input options")
 		self.input_options.add_argument("-i", "--files", type=str, nargs="+",
 		                                 help="Input (root) file(s).")
 		self.input_options.add_argument("-d", "--directories", type=str, nargs="+",
