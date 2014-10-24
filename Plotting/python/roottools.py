@@ -15,6 +15,8 @@ import numpy
 import os
 
 import ROOT
+ROOT.gEnv.SetValue("TFile.AsyncPrefetching", 1)
+
 
 class RootTools(object):
 	def __init__(self):
@@ -219,7 +221,11 @@ class RootTools(object):
 				complete_path_to_tree = os.path.join(root_file_name, path_to_tree)
 				tree.Add(complete_path_to_tree)
 				log.debug("Reading from ntuple %s ..." % complete_path_to_tree)
-	
+		
+		# ROOT optimisations
+		tree.SetCacheSize(256*1024*1024) # 256 MB
+		tree.AddBranchToCache("*", True)
+		
 		# draw histogram
 		if root_histogram == None:
 			tree.Draw(variable_expression + ">>" + name + binning, str(weight_selection), option + " GOFF")
