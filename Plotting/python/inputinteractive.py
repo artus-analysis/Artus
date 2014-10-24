@@ -54,7 +54,6 @@ class InputInteractive(inputbase.InputBase):
 			assert(len(set(n_values_per_plot)) == 1)
 	
 	def run(self, plotData):
-		super(InputInteractive, self).run(plotData)
 		
 		for nick, x_values, x_errors, y_values, y_errors, z_values, z_errors in zip(plotData.plotdict["nicks"],
 				plotData.plotdict["x_expressions"], plotData.plotdict["x_errors"], plotData.plotdict["y_expressions"],
@@ -71,4 +70,7 @@ class InputInteractive(inputbase.InputBase):
 			else:
 				log.fatal("Need both x and y values to draw a graph!")
 				sys.exit(1)
-				
+		
+		# run upper class function at last
+		super(InputInteractive, self).run(plotData)
+
