@@ -33,6 +33,10 @@ class PlotBase(processor.Processor):
 		                                   help="Nick names for numerators of ratio. Multiple nicks in one argument (ws-separated) are summed. [Default: first nick]")
 		self.plotting_options.add_argument("--ratio-denom", nargs="+",
 		                                   help="Nick names for denominators of ratio. Multiple nicks in one argument (ws-separated) are summed. [Default: all but first nick]")
+		self.plotting_options.add_argument("--nicks-whitelist", nargs="+",
+		                                   help="Whitelist of (regexp) nick names for objects to be plotted.")
+		self.plotting_options.add_argument("--nicks-blacklist", nargs="+",
+		                                   help="Blacklist of (regexp) nick names for objects to be excluded from plotting.")
 		
 		# axis settings
 		self.axis_options = parser.add_argument_group("Axis options")
@@ -144,8 +148,13 @@ class PlotBase(processor.Processor):
 	
 	def prepare_args(self, parser, plotData):
 		super(PlotBase, self).prepare_args(parser, plotData)
-
-
+		
+		# prepare nick white/black lists
+		if plotData.plotdict["nicks_whitelist"] == None:
+			plotData.plotdict["nicks_whitelist"] = []
+		if plotData.plotdict["nicks_blacklist"] == None:
+			plotData.plotdict["nicks_blacklist"] = []
+		
 		# prepare nick names for ratio subplot
 		if plotData.plotdict["ratio_num"] == None: plotData.plotdict["ratio_num"] = [plotData.plotdict["nicks"][0]]
 		if plotData.plotdict["ratio_denom"] == None: plotData.plotdict["ratio_denom"] = [" ".join(plotData.plotdict["nicks"][1:])]
@@ -232,6 +241,7 @@ class PlotBase(processor.Processor):
 	def run(self, plotData):
 		super(PlotBase, self).run(plotData)
 		
+		self.select_histograms(plotData)
 		self.calculate_ratios(plotData)
 		self.create_canvas(plotData)
 		self.prepare_histograms(plotData)
@@ -241,6 +251,33 @@ class PlotBase(processor.Processor):
 		self.add_texts(plotData)
 		self.save_canvas(plotData)
 		self.plot_end(plotData)
+
+	def select_histograms(self, plotData):
+		nicks_to_keep = []
+		
+		# handle black lists
+		for nick in plotData.plotdict["nicks"]:
+			keep = True
+			for black_nick in plotData.plotdict["nicks_blacklist"]:
+				if re.search(black_nick, nick) != None:
+					keep = False
+					break
+			
+			if keep:
+				# handle white lists
+				keep = (len(plotData.plotdict["nicks_whitelist"]) == 0)
+				for white_nick in plotData.plotdict["nicks_whitelist"]:
+					if re.search(white_nick, nick) != None:
+						keep = True
+						break
+			
+			if keep:
+				nicks_to_keep.append(nick)
+			else:
+				log.debug("Exclude object with nick \"%s\" from beeing plotted." % nick)
+		
+		# change only the list of nicks
+		plotData.plotdict["nicks"] = nicks_to_keep
 
 	def calculate_ratios(self, plotData): ## todo: define ratio for functions
 		if plotData.plotdict["ratio"]: 
