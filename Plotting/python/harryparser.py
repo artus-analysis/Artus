@@ -49,7 +49,6 @@ class HarryParser(argparse.ArgumentParser):
 	
 	def parse_args(self, args=None, namespace=None):
 		known_args = super(HarryParser, self).parse_args(args=args, namespace=namespace)
-		print 'known_args', known_args
 		logger.initLogger(known_args)
 		self._n_parse_args_calls += 1
 		if self._n_parse_args_calls > 1 and known_args.help:
@@ -59,7 +58,6 @@ class HarryParser(argparse.ArgumentParser):
 	
 	def parse_known_args(self, args=None, namespace=None):
 		known_args, unknown_args = super(HarryParser, self).parse_known_args(args=args, namespace=namespace)
-		print 'known_args', known_args
 		logger.initLogger(known_args)
 		self._n_parse_args_calls += 1
 		if self._n_parse_args_calls > 1 and known_args.help:
