@@ -95,9 +95,9 @@ class PlotBase(processor.Processor):
 		                                     help="Style for the ratio subplots.")
 		self.formatting_options.add_argument("--linestyles", nargs="+",
                                              help="Styles of errorbar plot line. [Default: '-']")
-		self.formatting_options.add_argument("--errorbars", type=bool, nargs="+",
+		self.formatting_options.add_argument("--errorbars", type='bool', nargs="+",
 		                                     help="Errorbars for the plots. [Default: True for first plot, False otherwise]")
-		self.formatting_options.add_argument("--ratio-errorbars", type=bool, nargs="+", default=[True],
+		self.formatting_options.add_argument("--ratio-errorbars", type='bool', nargs="+", default=[True],
 		                                     help="Errorbars for the ratio subplots. [Default: True]")
 		self.formatting_options.add_argument("-g", "--legloc", type=str, nargs="?",
 		                                     help="Location of the legend.")
