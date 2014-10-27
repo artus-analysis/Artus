@@ -89,7 +89,17 @@ class PlotMpl(plotbase.PlotBase):
 		for nick, color, label, marker, errorbar, linestyle in zip(*zip_arguments):
 			root_object = plotData.plotdict["root_objects"][nick]
 			print "plotting " + nick
-			if isinstance(root_object, ROOT.TH1):
+			if isinstance(root_object, ROOT.TGraph):
+				mpl_histogram = mplconvert.root2histo(root_object, "someFilename", 1)
+				self.plot1D = isinstance(mpl_histogram, mplconvert.Histo)
+				self.plot2D = isinstance(mpl_histogram, mplconvert.Histo2D)
+				yerr=mpl_histogram.yerr if errorbar else None
+				y = mpl_histogram.y
+				print yerr
+				self.ax.errorbar(mpl_histogram.xc, y, yerr=yerr,
+				                 color=color, fmt=marker, capsize=0, label=label, zorder=10, drawstyle='steps-mid', linestyle=linestyle)
+
+			elif isinstance(root_object, ROOT.TH1):
 				mpl_histogram = mplconvert.root2histo(root_object, "someFilename", 1)
 				self.plot1D = isinstance(mpl_histogram, mplconvert.Histo)
 				self.plot2D = isinstance(mpl_histogram, mplconvert.Histo2D)
@@ -103,21 +113,21 @@ class PlotMpl(plotbase.PlotBase):
 				if self.plot2D:
 					norm = LogNorm if plotData.plotdict["z_log"] else Normalize
 					self.image = self.ax.imshow(mpl_histogram.BinContents,
-                                               	   interpolation='nearest',
-				               	   origin='lower',
-				               	   extent=[mpl_histogram.xborderlow, mpl_histogram.xborderhigh, mpl_histogram.yborderlow, mpl_histogram.yborderhigh],
-				               	   aspect='auto',
-				               	   cmap=plt.cm.get_cmap(plotData.plotdict["colormap"]),
-				               	   norm=norm())
+					                            interpolation='nearest',
+					                            origin='lower',
+					                            extent=[mpl_histogram.xborderlow, mpl_histogram.xborderhigh, mpl_histogram.yborderlow, mpl_histogram.yborderhigh],
+					                            aspect='auto',
+					                            cmap=plt.cm.get_cmap(plotData.plotdict["colormap"]),
+					                            norm=norm())
 				elif marker=="bar":
 					self.ax.bar(mpl_histogram.x, mpl_histogram.y, widths, yerr=yerr, bottom=bottom,
-				            	ecolor=color, label=label, fill=True, facecolor=color, edgecolor=color, alpha=0.8)
+					            ecolor=color, label=label, fill=True, facecolor=color, edgecolor=color, alpha=0.8)
 				else:
 					y = mpl_histogram.y
 					self.ax.errorbar(mpl_histogram.xc, y, yerr=yerr,
 					                 color=color, fmt=marker, capsize=0, label=label, zorder=10, drawstyle='steps-mid', linestyle=linestyle)
-		# draw functions from dictionary
-			if isinstance(root_object, ROOT.TF1):
+			# draw functions from dictionary
+			elif isinstance(root_object, ROOT.TF1):
 				x_values = []
 				y_values = []
 				sampling_points = 1000
@@ -127,11 +137,10 @@ class PlotMpl(plotbase.PlotBase):
 					y_values.append(root_object.Eval(x))
 				self.ax.plot(x_values, y_values, label=label, color=color, linestyle=linestyle, linewidth=2)
 
-
 		if plotData.plotdict["ratio"]:
 			for root_object, ratio_color, ratio_marker, in zip(plotData.plotdict["root_ratio_histos"],
-			                                      plotData.plotdict["ratio_colors"],
-			                                      plotData.plotdict["ratio_markers"]):
+				                                               plotData.plotdict["ratio_colors"],
+				                                               plotData.plotdict["ratio_markers"]):
 				mpl_histogram = mplconvert.root2histo(root_object, "someFilename", 1)
 				self.ax2.errorbar(mpl_histogram.xc, mpl_histogram.y, mpl_histogram.yerr, ecolor=ratio_color, fmt=ratio_marker)
 
