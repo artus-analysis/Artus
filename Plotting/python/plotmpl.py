@@ -92,7 +92,7 @@ class PlotMpl(plotbase.PlotBase):
 			if isinstance(root_object, ROOT.TH1):
 				mpl_histogram = mplconvert.root2histo(root_object, "someFilename", 1)
 				self.plot1D = isinstance(mpl_histogram, mplconvert.Histo)
-                        	self.plot2D = isinstance(mpl_histogram, mplconvert.Histo2D)
+				self.plot2D = isinstance(mpl_histogram, mplconvert.Histo2D)
 
 				# determine bin width to allow variable binning
 				widths = []
