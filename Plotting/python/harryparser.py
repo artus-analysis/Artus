@@ -38,9 +38,18 @@ class HarryParser(argparse.ArgumentParser):
 		                               help="Export arguments to specified JSON config file. If plotting from an input JSON config, giving no argument just updates this input JSON.")
 		                  
 		self._n_parse_args_calls = 0
+
+		# Register new keyword 'bool' for parser
+		self.register('type','bool',self._str2bool) 
+
+	@staticmethod
+	def _str2bool(v):
+		""" Parse string content to bool."""
+		return v.lower() in ("yes", "true", "t", "1")
 	
 	def parse_args(self, args=None, namespace=None):
 		known_args = super(HarryParser, self).parse_args(args=args, namespace=namespace)
+		print 'known_args', known_args
 		logger.initLogger(known_args)
 		self._n_parse_args_calls += 1
 		if self._n_parse_args_calls > 1 and known_args.help:
@@ -50,6 +59,7 @@ class HarryParser(argparse.ArgumentParser):
 	
 	def parse_known_args(self, args=None, namespace=None):
 		known_args, unknown_args = super(HarryParser, self).parse_known_args(args=args, namespace=namespace)
+		print 'known_args', known_args
 		logger.initLogger(known_args)
 		self._n_parse_args_calls += 1
 		if self._n_parse_args_calls > 1 and known_args.help:
