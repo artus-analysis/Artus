@@ -114,7 +114,7 @@ class PlotMpl(plotbase.PlotBase):
 				            	ecolor=color, label=label, fill=True, facecolor=color, edgecolor=color, alpha=0.8)
 				else:
 					y = mpl_histogram.y
-					self.ax.errorbar(mpl_histogram.xc, y, mpl_histogram.yerr,
+					self.ax.errorbar(mpl_histogram.xc, y, yerr=yerr,
 					                 color=color, fmt=marker, capsize=0, label=label, zorder=10, drawstyle='steps-mid', linestyle=linestyle)
 		# draw functions from dictionary
 			if isinstance(root_object, ROOT.TF1):
