@@ -93,6 +93,33 @@ def root2histo(histo, rootfile='', rebin=1):
 			hst.y.append(y)
 			hst.xerr.append(xerr if xerr > 0.0 else 0.0)
 			hst.yerr.append(yerr if yerr > 0.0 else 0.0)
+	elif histo.ClassName() == 'TGraphAsymmErrors':
+		# histo is a graph, read it
+		hst.source = rootfile
+		hst.name = histo.GetName()
+		hst.classname = histo.ClassName()
+		hst.title = histo.GetTitle()
+		hst.xlabel = histo.GetXaxis().GetTitle()
+		hst.ylabel = histo.GetYaxis().GetTitle()
+		a = ROOT.Double(0.0)
+		b = ROOT.Double(0.0)
+		hst.xerr = [[],[]]
+		hst.yerr = [[],[]]
+		for i in range(0, histo.GetN()):
+			histo.GetPoint(i, a, b)
+			x = float(a)
+			y = float(b)
+			xerr_low = histo.GetErrorXlow(i)
+			xerr_high = histo.GetErrorXhigh(i)
+			yerr_low = histo.GetErrorYlow(i)
+			yerr_high = histo.GetErrorYhigh(i)
+			hst.x.append(x)
+			hst.xc.append(x)
+			hst.y.append(y)
+			hst.xerr[0].append(xerr_low)
+			hst.xerr[1].append(xerr_high)
+			hst.yerr[0].append(yerr_low)
+			hst.yerr[1].append(yerr_high)
 	else:
 		# histo is of unknown type
 		log.critical("The object '" + str(histo) + "' is no histogram, no graph and no profile! It could not be converted!")
