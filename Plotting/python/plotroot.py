@@ -68,7 +68,7 @@ class PlotRoot(plotbase.PlotBase):
 		if self.canvas == None:
 			self.canvas = ROOT.TCanvas()
 		
-		if plotData.plotdict["ratio"]:
+		if (plotData.plotdict["ratio"] == True):
 			self.plot_ratio_slider_y = 0.35
 			self.canvas.cd()
 			if self.plot_pad == None:
@@ -148,7 +148,7 @@ class PlotRoot(plotbase.PlotBase):
 				if root_object.GetMinimum() < self.z_min: self.z_min = root_object.GetMinimum()
 				if root_object.GetMaximum() > self.z_max: self.z_max = root_object.GetMaximum()
 		
-		if plotData.plotdict["ratio"]:
+		if (plotData.plotdict["ratio"] == True):
 			self.ratio_pad.cd()
 			
 			self.ratio_y_min = sys.float_info.max
@@ -171,7 +171,7 @@ class PlotRoot(plotbase.PlotBase):
 		self.first_plotted_histogram.GetXaxis().SetTitle(plotData.plotdict["x_label"])
 		self.first_plotted_histogram.GetYaxis().SetTitle(plotData.plotdict["y_label"])
 		self.first_plotted_histogram.GetZaxis().SetTitle(plotData.plotdict["z_label"])
-		if plotData.plotdict["ratio"]:
+		if (plotData.plotdict["ratio"] == True):
 			self.first_plotted_ratio_histogram.GetXaxis().SetTitle(plotData.plotdict["x_label"])
 			self.first_plotted_ratio_histogram.GetYaxis().SetTitle(plotData.plotdict["y_ratio_label"])
 	
@@ -179,20 +179,20 @@ class PlotRoot(plotbase.PlotBase):
 		if plotData.plotdict["x_log"]: self.plot_pad.SetLogx()
 		if plotData.plotdict["y_log"]: self.plot_pad.SetLogy()
 		if plotData.plotdict["z_log"]: self.plot_pad.SetLogz()
-		if plotData.plotdict["ratio"]:
+		if (plotData.plotdict["ratio"] == True):
 			if plotData.plotdict["x_log"]: self.ratio_pad.SetLogx()
 	
 		# axis limits
 		if plotData.plotdict["x_lims"] == None:
 			self.first_plotted_histogram.GetXaxis().SetRangeUser(self.x_min,
 			                                                     self.x_max)
-			if plotData.plotdict["ratio"]:
+			if (plotData.plotdict["ratio"] == True):
 				self.first_plotted_ratio_histogram.GetXaxis().SetRangeUser(self.x_min,
 					                                                       self.x_max)
 		else:
 			self.first_plotted_histogram.GetXaxis().SetRangeUser(plotData.plotdict["x_lims"][0],
 			                                                     plotData.plotdict["x_lims"][1])
-			if plotData.plotdict["ratio"]:
+			if (plotData.plotdict["ratio"] == True):
 				self.first_plotted_ratio_histogram.GetXaxis().SetRangeUser(plotData.plotdict["x_lims"][0],
 					                                                       plotData.plotdict["x_lims"][1])
 		if plotData.plotdict["y_lims"] == None:
@@ -201,7 +201,7 @@ class PlotRoot(plotbase.PlotBase):
 		else:
 			self.first_plotted_histogram.GetYaxis().SetRangeUser(plotData.plotdict["y_lims"][0],
 			                                                     plotData.plotdict["y_lims"][1])
-		if plotData.plotdict["ratio"]:
+		if (plotData.plotdict["ratio"] == True):
 			if plotData.plotdict["y_ratio_lims"] == None:
 				self.first_plotted_ratio_histogram.GetYaxis().SetRangeUser(self.ratio_y_min,
 					                                                       self.ratio_y_max * 1.1)
@@ -215,7 +215,7 @@ class PlotRoot(plotbase.PlotBase):
 			self.first_plotted_histogram.GetZaxis().SetRangeUser(plotData.plotdict["z_lims"][0],
 			                                                     plotData.plotdict["z_lims"][1])
 		
-		if plotData.plotdict["ratio"]:
+		if (plotData.plotdict["ratio"] == True):
 			self.first_plotted_histogram.GetXaxis().SetLabelSize(0)
 			self.first_plotted_histogram.GetXaxis().SetTitleSize(0)
 			self.first_plotted_histogram.GetYaxis().SetLabelSize(self.first_plotted_histogram.GetYaxis().GetLabelSize() / (1.0 - self.plot_ratio_slider_y))

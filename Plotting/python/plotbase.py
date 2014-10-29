@@ -224,7 +224,12 @@ class PlotBase(processor.Processor):
 		# module specific settings # TODO
 		if plotData.plotdict["analysis_modules"] != None and eventselectionoverlap.EventSelectionOverlap.name() in plotData.plotdict["analysis_modules"] and plotData.plotdict["x_tick_labels"] == None:
 			labels = filter(lambda label: label != None, plotData.plotdict.pop("labels"))
-			plotData.plotdict["labels"] = [None]
+			plotData.plotdict["labels"] = len(labels)*[None]
+			nick1 = plotData.plotdict["nicks"][0]
+			nick2 = plotData.plotdict["nicks"][1]
+			#print plotData.plotdict.pop("nicks")[0]
+			#print plotData.plotdict.pop("nicks")[1]
+			plotData.plotdict["nicks"] = [nick1 + "_vs_" + nick2]
 			if len(labels) < 2:
 				log.warning("Argument --labels needs 2 values! These are filled up with the nick names.")
 				labels += plotData.plotdict.pop("nicks")
@@ -280,7 +285,7 @@ class PlotBase(processor.Processor):
 		plotData.plotdict["nicks"] = nicks_to_keep
 
 	def calculate_ratios(self, plotData): ## todo: define ratio for functions
-		if plotData.plotdict["ratio"]: 
+		if (plotData.plotdict["ratio"] == True):
 			for numerator_nicks, denominator_nicks in zip(plotData.plotdict["ratio_num"],
 			                                              plotData.plotdict["ratio_denom"]):
 				name = hashlib.md5("_".join(numerator_nicks+denominator_nicks)).hexdigest()
