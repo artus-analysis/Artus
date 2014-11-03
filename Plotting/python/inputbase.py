@@ -40,9 +40,6 @@ class InputBase(processor.Processor):
 		
 		# prepare scale factors
 		plotData.plotdict["scale_factors"] = [float(scale) if scale != None else 1.0 for scale in plotData.plotdict["scale_factors"]]
-		print plotData.plotdict["scale_factors"]
-		
-		
 	
 	def run(self, plotData):
 		super(InputBase, self).run(plotData)
