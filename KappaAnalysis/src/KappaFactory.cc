@@ -131,6 +131,8 @@ FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
 		return new ValidTausFilter();
 	else if(id == ValidJetsFilter().GetFilterId())
 		return new ValidJetsFilter();
+	else if(id == ValidBTaggedJetsFilter().GetFilterId())
+		return new ValidBTaggedJetsFilter();
 	else if(id == ElectronsCountFilter().GetFilterId())
 		return new ElectronsCountFilter();
 	else if(id == MuonsCountFilter().GetFilterId())

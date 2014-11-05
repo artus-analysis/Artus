@@ -55,3 +55,16 @@ void ValidJetsFilter::Init(KappaSettings const& settings) {
 	));
 }
 
+
+std::string ValidBTaggedJetsFilter::GetFilterId() const {
+	return "ValidBTaggedJetsFilter";
+}
+
+void ValidBTaggedJetsFilter::Init(KappaSettings const& settings) {
+	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
+			[](KappaEvent const& event, KappaProduct const& product) {
+				return product.m_bTaggedJets.size();
+			},
+			CutRange::LowerThresholdCut(1.0)
+	));
+}
