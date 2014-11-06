@@ -29,6 +29,8 @@ import HarryPlotter.Plotting.modules.shapeyieldmerge as shapeyieldmerge
 import HarryPlotter.Plotting.modules.extrapolationfactor as extrapolationfactor
 import HarryPlotter.Plotting.modules.binerrorsofemptybins as binerrorsofemptybins
 import HarryPlotter.Plotting.modules.scalebincontentsbywidth as scalebincontentsbywidth
+import HarryPlotter.Plotting.modules.correctnegativebincontents as correctnegativebincontents
+import HarryPlotter.Plotting.modules.printinfos as printinfos
 
 import HarryPlotter.Utility.jsonTools as json_tools
 json_tools.JsonDict.COMMENT_DELIMITER = "@"
@@ -51,6 +53,8 @@ class HarryCore(object):
 			extrapolationfactor.ExtrapolationFactor.name() : extrapolationfactor.ExtrapolationFactor(),
 			binerrorsofemptybins.BinErrorsOfEmptyBins.name() : binerrorsofemptybins.BinErrorsOfEmptyBins(),
 			scalebincontentsbywidth.ScaleBinContentsByWidth.name() : scalebincontentsbywidth.ScaleBinContentsByWidth(),
+			correctnegativebincontents.CorrectNegativeBinContents.name() : correctnegativebincontents.CorrectNegativeBinContents(),
+			printinfos.PrintInfos.name() : printinfos.PrintInfos(),
 			plotroot.PlotRoot.name() : plotroot.PlotRoot(),
 			plotmpl.PlotMpl.name() : plotmpl.PlotMpl(),
 			exportroot.ExportRoot.name() : exportroot.ExportRoot(),
