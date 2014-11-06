@@ -9,6 +9,7 @@ log = logging.getLogger(__name__)
 
 import glob
 import os
+import sys
 
 import HarryPlotter.Plotting.inputbase as inputbase
 
@@ -36,6 +37,9 @@ class InputFile(inputbase.InputBase):
 			for file_arg in file_args.split():
 				tmp_file = os.path.join(directory, file_arg) if directory else file_arg
 				files.extend(glob.glob(tmp_file))
+			if len(files) == 0:
+				log.error("Input argument %d does not contain any existing files!" % index)
+				sys.exit(1)
 			plotData.plotdict["files"][index] = files
 	
 	def run(self, plotData):
