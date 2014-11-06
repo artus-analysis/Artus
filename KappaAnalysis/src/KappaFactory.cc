@@ -26,6 +26,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/NumberGeneratedEventsWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/TmvaClassificationReaderBase.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenDiLeptonDecayModeProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/EmbeddingWeightProducer.h"
 
 // filter
 #include "Artus/KappaAnalysis/interface/Filters/RunLumiEventFilter.h"
@@ -111,6 +112,8 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new GeneralTmvaClassificationReader();
 	else if(id == GenDiLeptonDecayModeProducer().GetProducerId())
 		return new GenDiLeptonDecayModeProducer();
+	else if(id == EmbeddingWeightProducer().GetProducerId())
+		return new EmbeddingWeightProducer();
 	else
 		return FactoryBase::createProducer( id );	
 }
