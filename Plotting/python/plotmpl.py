@@ -14,6 +14,7 @@ import HarryPlotter.Utility.mplconvert as mplconvert
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 from matplotlib.colors import Normalize
+import matplotlib.gridspec as gridspec
 import numpy as np
 import ROOT
 import matplotlib
@@ -52,9 +53,9 @@ class PlotMpl(plotbase.PlotBase):
 	
 	def create_canvas(self, plotData):
 		if plotData.plotdict["ratio"]:
-			self.fig = plt.figure(figsize=[5, 7])
-			self.ax = self.fig.add_subplot(111, position = [0.13, 0.35, 0.83, 0.58])
-			self.ax2 = self.fig.add_subplot(111, position = [0.13, 0.06, 0.83, 0.22], sharex=self.ax)
+			self.fig = plt.figure(figsize=[7, 7])
+			self.ax = plt.subplot2grid((4,1), (0, 0), rowspan=3)
+			self.ax2 = plt.subplot2grid((4,1), (3, 0))
 			#plotdict['ratiosubplotaxes'] = ax2 # needed?
 		else:
 			self.fig = plt.figure(figsize=[5, 5])
@@ -95,7 +96,6 @@ class PlotMpl(plotbase.PlotBase):
 				self.plot2D = isinstance(mpl_histogram, mplconvert.Histo2D)
 				yerr=mpl_histogram.yerr if errorbar else None
 				y = mpl_histogram.y
-				print yerr
 				self.ax.errorbar(mpl_histogram.xc, y, yerr=yerr,
 				                 color=color, fmt=marker, capsize=0, label=label, zorder=10, drawstyle='steps-mid', linestyle=linestyle)
 
@@ -108,6 +108,8 @@ class PlotMpl(plotbase.PlotBase):
 				widths = []
 				for i in range(root_object.GetNbinsX()):
 					widths.append(root_object.GetBinWidth(i))
+				widths = np.array(widths)
+
 				yerr=mpl_histogram.yerr if errorbar else None
 
 				if self.plot2D:
@@ -120,8 +122,9 @@ class PlotMpl(plotbase.PlotBase):
 					                            cmap=plt.cm.get_cmap(plotData.plotdict["colormap"]),
 					                            norm=norm())
 				elif marker=="bar":
+					bottom=1e-8
 					self.ax.bar(mpl_histogram.x, mpl_histogram.y, widths, yerr=yerr, bottom=bottom,
-					            ecolor=color, label=label, fill=True, facecolor=color, edgecolor=color, alpha=0.8)
+					            label=label, fill=True, facecolor=color, edgecolor=color, ecolor=color, alpha=1.0)
 				else:
 					y = mpl_histogram.y
 					self.ax.errorbar(mpl_histogram.xc, y, yerr=yerr,
@@ -142,6 +145,7 @@ class PlotMpl(plotbase.PlotBase):
 				                                               plotData.plotdict["ratio_colors"],
 				                                               plotData.plotdict["ratio_markers"]):
 				mpl_histogram = mplconvert.root2histo(root_object, "someFilename", 1)
+				self.ax2.axhline(1.0, color='black')
 				self.ax2.errorbar(mpl_histogram.xc, mpl_histogram.y, mpl_histogram.yerr, ecolor=ratio_color, fmt=ratio_marker)
 
 
@@ -151,7 +155,8 @@ class PlotMpl(plotbase.PlotBase):
 
 		self.ax.grid(plotData.plotdict["grid"])
 
-		self.ax.set_xlabel(plotData.plotdict["x_label"], fontsize=14)
+		if not plotData.plotdict["ratio"]:
+			self.ax.set_xlabel(plotData.plotdict["x_label"], fontsize=14)
 		self.ax.set_ylabel(plotData.plotdict["y_label"], fontsize=14)
 		self.ax.ticklabel_format(style='sci',scilimits=(-3,4),axis='both')
 
@@ -175,7 +180,8 @@ class PlotMpl(plotbase.PlotBase):
 	def add_labels(self, plotData):
 		super(PlotMpl, self).add_labels(plotData)
 
-		self.ax.set_title(plotData.plotdict["title"], fontsize=14)
+		if plotData.plotdict["title"]:
+			self.ax.set_title(plotData.plotdict["title"], fontsize=14)
 
 		if not (plotData.plotdict["lumi"]==None):
 			plt.text(-0.0, 1.030, "$\mathcal{L}=" + str(plotData.plotdict["lumi"]) + "\mathrm{fb^{-1}}$", transform=self.ax.transAxes, fontsize=10)
@@ -187,6 +193,8 @@ class PlotMpl(plotbase.PlotBase):
 		legend = self.ax.legend()
 		if self.mpl_version >= 121:
 			plt.tight_layout()
+		# Decrease vertical distance between subplots
+		plt.subplots_adjust(hspace=0.3)
 
 	def save_canvas(self, plotData):
 		for output_filename in plotData.plotdict["output_filenames"]:
