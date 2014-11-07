@@ -45,5 +45,5 @@ class CorrectNegativeBinContents(analysisbase.AnalysisBase):
 				
 				# preserve original integral
 				if negative_bin_contents_found:
-					root_histogram.Scale(original_integral / root_histogram.Integral())
+					root_histogram.Scale(abs(original_integral / root_histogram.Integral()))
 
