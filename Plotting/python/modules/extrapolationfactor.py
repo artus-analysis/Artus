@@ -26,7 +26,7 @@ class ExtrapolationFactor(analysisbase.AnalysisBase):
 		self.extrapolation_factor_options.add_argument("--extrapolation-denominator-nicks", nargs="+", default=[None],
 				help="Nick names for the denominator of the extrapolation factors.")
 		self.extrapolation_factor_options.add_argument("--extrapolation-nicks", nargs="+", default=[None],
-				help="Nick names for the histograms to scaleth the extrapolation factors.")
+				help="Nick names for the histograms to scale the extrapolation factors.")
 
 	def prepare_args(self, parser, plotData):
 		super(ExtrapolationFactor, self).prepare_args(parser, plotData)
