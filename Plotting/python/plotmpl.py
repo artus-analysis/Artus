@@ -95,7 +95,7 @@ class PlotMpl(plotbase.PlotBase):
 				self.plot1D = isinstance(mpl_histogram, mplconvert.Histo)
 				self.plot2D = isinstance(mpl_histogram, mplconvert.Histo2D)
 				yerr=mpl_histogram.yerr if errorbar else None
-				y = mpl_histogram.y
+				y = np.array(mpl_histogram.y)
 				self.ax.errorbar(mpl_histogram.xc, y, yerr=yerr,
 				                 color=color, fmt=marker, capsize=0, label=label, zorder=10, drawstyle='steps-mid', linestyle=linestyle)
 
@@ -105,11 +105,9 @@ class PlotMpl(plotbase.PlotBase):
 				self.plot2D = isinstance(mpl_histogram, mplconvert.Histo2D)
 
 				# determine bin width to allow variable binning
-				widths = []
-				for i in range(root_object.GetNbinsX()):
-					widths.append(root_object.GetBinWidth(i))
-				widths = np.array(widths)
-
+				widths = np.array([root_object.GetXaxis().GetBinWidth(i) for i in xrange(1,root_object.GetNbinsX()+1)])
+				# all bin edges of histogram without over/underflow bins
+				bin_edges = np.array(mpl_histogram.x + [mpl_histogram.xc[-1] + mpl_histogram.xerr[-1]])
 				yerr=mpl_histogram.yerr if errorbar else None
 
 				if self.plot2D:
@@ -122,13 +120,21 @@ class PlotMpl(plotbase.PlotBase):
 					                            cmap=plt.cm.get_cmap(plotData.plotdict["colormap"]),
 					                            norm=norm())
 				elif marker=="bar":
-					bottom=1e-8
+					bottom=0
 					self.ax.bar(mpl_histogram.x, mpl_histogram.y, widths, yerr=yerr, bottom=bottom,
 					            label=label, fill=True, facecolor=color, edgecolor=color, ecolor=color, alpha=1.0)
-				else:
-					y = mpl_histogram.y
+				elif marker=='fill':
+					y = np.array(mpl_histogram.y)
+					self.ax.fill_between(x=self.steppify_bin(bin_edges, isx=True), y1=self.steppify_bin(y),y2=0., color=color,
+					            label=label, facecolor=color, edgecolor='black', alpha=0.8, zorder=1)
 					self.ax.errorbar(mpl_histogram.xc, y, yerr=yerr,
-					                 color=color, fmt=marker, capsize=0, label=label, zorder=10, drawstyle='steps-mid', linestyle=linestyle)
+					                 color=color, fmt='+', capsize=0, label=label, zorder=10, linestyle='')
+				else:
+					y = np.array(mpl_histogram.y)
+					self.ax.plot(self.steppify_bin(bin_edges, isx=True), self.steppify_bin(y), color=color,
+					             linestyle='-')
+					self.ax.errorbar(mpl_histogram.xc, y, yerr=yerr,
+					                 color=color, fmt=marker, capsize=0, label=label, zorder=1, linestyle='')
 			# draw functions from dictionary
 			elif isinstance(root_object, ROOT.TF1):
 				x_values = []
@@ -165,7 +171,7 @@ class PlotMpl(plotbase.PlotBase):
 			if plotData.plotdict["x_log"]: 
 				self.ax.set_xscale('log', nonposx='mask')
 			if plotData.plotdict["y_log"]: 
-				self.ax.set_yscale('log', nonposx='mask')
+				self.ax.set_yscale('log', nonposy='clip')
 
 			if plotData.plotdict["ratio"]:
 				self.ax2.set_xlabel(plotData.plotdict["x_label"])
@@ -199,3 +205,16 @@ class PlotMpl(plotbase.PlotBase):
 	def save_canvas(self, plotData):
 		for output_filename in plotData.plotdict["output_filenames"]:
 			self.fig.savefig(output_filename)
+
+
+	@staticmethod
+	def steppify_bin(arr, isx=False):
+		"""
+		Produce stepped array of arr, also of x
+		"""
+		if isx:
+			newarr = np.array(zip(arr[:-1], arr[1:])).ravel()
+		else:
+			newarr = np.array(zip(arr, arr)).ravel()
+		return newarr
+
