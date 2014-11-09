@@ -28,7 +28,8 @@ import HarryPlotter.Plotting.modules.functionplot as functionplot
 import HarryPlotter.Plotting.modules.shapeyieldmerge as shapeyieldmerge
 import HarryPlotter.Plotting.modules.extrapolationfactor as extrapolationfactor
 import HarryPlotter.Plotting.modules.binerrorsofemptybins as binerrorsofemptybins
-import HarryPlotter.Plotting.modules.scalebincontentsbywidth as scalebincontentsbywidth
+from HarryPlotter.Plotting.modules.normalization import NormalizeByBinWidth, NormalizeToUnity, NormalizeToFirstHisto
+
 import HarryPlotter.Plotting.modules.correctnegativebincontents as correctnegativebincontents
 import HarryPlotter.Plotting.modules.printinfos as printinfos
 
@@ -52,7 +53,9 @@ class HarryCore(object):
 			shapeyieldmerge.ShapeYieldMerge.name() : shapeyieldmerge.ShapeYieldMerge(),
 			extrapolationfactor.ExtrapolationFactor.name() : extrapolationfactor.ExtrapolationFactor(),
 			binerrorsofemptybins.BinErrorsOfEmptyBins.name() : binerrorsofemptybins.BinErrorsOfEmptyBins(),
-			scalebincontentsbywidth.ScaleBinContentsByWidth.name() : scalebincontentsbywidth.ScaleBinContentsByWidth(),
+			NormalizeByBinWidth.name(): NormalizeByBinWidth(),
+			NormalizeToUnity.name(): NormalizeToUnity(),
+			NormalizeToFirstHisto.name(): NormalizeToFirstHisto(),
 			correctnegativebincontents.CorrectNegativeBinContents.name() : correctnegativebincontents.CorrectNegativeBinContents(),
 			printinfos.PrintInfos.name() : printinfos.PrintInfos(),
 			plotroot.PlotRoot.name() : plotroot.PlotRoot(),
