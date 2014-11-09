@@ -25,6 +25,7 @@ import HarryPlotter.Plotting.processor as processor
 import HarryPlotter.Plotting.modules.eventselectionoverlap as eventselectionoverlap
 import HarryPlotter.Plotting.modules.projectbyfit as projectbyfit
 import HarryPlotter.Plotting.modules.functionplot as functionplot
+import HarryPlotter.Plotting.modules.triggerefficiency as triggerefficiency
 import HarryPlotter.Plotting.modules.shapeyieldmerge as shapeyieldmerge
 import HarryPlotter.Plotting.modules.extrapolationfactor as extrapolationfactor
 import HarryPlotter.Plotting.modules.binerrorsofemptybins as binerrorsofemptybins
@@ -51,6 +52,7 @@ class HarryCore(object):
 			eventselectionoverlap.EventSelectionOverlap.name() : eventselectionoverlap.EventSelectionOverlap(),
 			projectbyfit.ProjectByFit.name() : projectbyfit.ProjectByFit(),
 			functionplot.FunctionPlot.name() : functionplot.FunctionPlot(),
+			triggerefficiency.TriggerEfficiency.name() : triggerefficiency.TriggerEfficiency(),
 			shapeyieldmerge.ShapeYieldMerge.name() : shapeyieldmerge.ShapeYieldMerge(),
 			extrapolationfactor.ExtrapolationFactor.name() : extrapolationfactor.ExtrapolationFactor(),
 			binerrorsofemptybins.BinErrorsOfEmptyBins.name() : binerrorsofemptybins.BinErrorsOfEmptyBins(),
