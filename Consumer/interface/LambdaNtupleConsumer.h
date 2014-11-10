@@ -5,15 +5,18 @@
 
 #include "Artus/Core/interface/EventBase.h"
 #include "Artus/Core/interface/ProductBase.h"
+#include "Artus/Core/interface/ConsumerBase.h"
 #include "Artus/Configuration/interface/SettingsBase.h"
-#include "Artus/Consumer/interface/NtupleConsumerBase.h"
 #include "Artus/Utility/interface/DefaultValues.h"
 #include "Artus/Utility/interface/SafeMap.h"
+#include "Artus/Utility/interface/RootFileHelper.h"
 
 #include <cassert>
 
+#include <TTree.h>
+
 /**
- * Fills NTuples with valueExtractors defined as lambda functions
+ * Fills TTrees with valueExtractors defined as lambda functions
  * This removes the string operations from its base class
  * This consumer can only be fully initilised in the constructor of an derived class
  * where the map LambdaNtupleConsumer<TTypes>::Quantities is filled with analysis specific code
@@ -27,7 +30,7 @@ static std::map<std::string, std::function<float(EventBase const&, ProductBase c
 };
 
 template<class TTypes>
-class LambdaNtupleConsumer: public NtupleConsumerBase<TTypes> {
+class LambdaNtupleConsumer: public ConsumerBase<TTypes> {
 
 public:
 
@@ -37,21 +40,14 @@ public:
 
 	typedef std::function<float(event_type const&, product_type const&)> float_extractor_lambda;
 	typedef std::function<float(EventBase const&, ProductBase const&)> float_extractor_lambda_base;
-	
-	LambdaNtupleConsumer() : NtupleConsumerBase<TTypes>() {
-	}
-
-	virtual ~LambdaNtupleConsumer() {
-	}
 
 	
 	static void AddQuantity ( std::string const& name, float_extractor_lambda lmbToAdd ) {
 		LambdaNtupleQuantities::CommonQuantities[ name ] = [lmbToAdd] ( EventBase const& ev, ProductBase const& pd ) -> float { 
 			auto const& specEv = static_cast< event_type const& > ( ev );
 			auto const& specPd = static_cast< product_type const& > ( pd );
-
 			return lmbToAdd( specEv, specPd );
-			};
+		};
 	}
 
 	static std::map<std::string, std::function<float(EventBase const&, ProductBase const& ) >> & GetQuantities () {
@@ -59,44 +55,54 @@ public:
 	}
 
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		NtupleConsumerBase<TTypes>::Init(settings);
+		ConsumerBase<TTypes>::Init(settings);
 		
-		// construct extractors vector
+		// construct tree and value extractors
+		m_tree = new TTree("ntuple", ("Tree for Pipeline \"" + settings.GetName() + "\"").c_str());
+		
+		m_values.resize(settings.GetQuantities().size());
 		m_valueExtractors.clear();
-
-		for (std::vector<std::string>::iterator quantity = this->m_quantitiesVector.begin();
-		     quantity != this->m_quantitiesVector.end(); ++quantity)
+		
+		size_t quantityIndex = 0;
+		for (std::vector<std::string>::iterator quantity = settings.GetQuantities().begin();
+		     quantity != settings.GetQuantities().end(); ++quantity)
 		{
+			m_tree->Branch(quantity->c_str(), &m_values[quantityIndex], (*quantity + "/F").c_str());
+		
 			m_valueExtractors.push_back(SafeMap::Get(LambdaNtupleQuantities::CommonQuantities, *quantity));
+			
+			quantityIndex++;
 		}
 	}
 
 	virtual void ProcessFilteredEvent(event_type const& event, product_type const& product, setting_type const& settings ) ARTUS_CPP11_OVERRIDE
 	{
-		assert(m_valueExtractors.size() == this->m_quantitiesVector.size());
-
-		// do not call NtupleConsumerBase<TTypes>::ProcessFilteredEvent due to different filling logic
 		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product, settings);
 		
-		// preallocated vector
-		std::vector<float> array (this->m_quantitiesVector.size());
-		
-		size_t arrayIndex = 0;
+		size_t valueIndex = 0;
 		for(typename std::vector<float_extractor_lambda_base>::iterator valueExtractor = m_valueExtractors.begin();
 		    valueExtractor != m_valueExtractors.end(); ++valueExtractor)
 		{
-			array[arrayIndex] = (*valueExtractor)(event, product);
-			arrayIndex++;
+			m_values[valueIndex] = (*valueExtractor)(event, product);
+			valueIndex++;
 		}
 
-		// add the array to the ntuple
-		this->m_ntuple->Fill(&array.front());
+		// fill tree
+		this->m_tree->Fill();
+	}
+
+	virtual void Finish(setting_type const& setting) ARTUS_CPP11_OVERRIDE
+	{
+		RootFileHelper::SafeCd(setting.GetRootOutFile(), setting.GetRootFileFolder());
+		m_tree->Write(m_tree->GetName());
 	}
 
 
 private:
+	TTree* m_tree = 0;
+	
 	std::vector<float_extractor_lambda_base> m_valueExtractors;
-
+	std::vector<float> m_values;
 };
 
 
