@@ -131,13 +131,13 @@ public:
 		muonIso = ToMuonIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetMuonIso)())));
 		
 		// add possible quantities for the lambda ntuples consumers
-		LambdaNtupleConsumer<TTypes>::AddQuantity("nMuons", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddIntQuantity("nMuons", [](event_type const& event, product_type const& product) {
 			return product.m_validMuons.size();
 		});
-		LambdaNtupleConsumer<TTypes>::AddQuantity("leadingMuonPt", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuonPt", [](event_type const& event, product_type const& product) {
 			return product.m_validMuons.size() >= 1 ? product.m_validMuons[0]->p4.Pt() : DefaultValues::UndefinedDouble;
 		});
-		LambdaNtupleConsumer<TTypes>::AddQuantity("leadingMuonEta", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuonEta", [](event_type const& event, product_type const& product) {
 			return product.m_validMuons.size() >= 1 ? product.m_validMuons[0]->p4.Eta() : DefaultValues::UndefinedDouble;
 		});
 	}

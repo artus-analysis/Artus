@@ -11,28 +11,28 @@ void ValidBTaggedJetsProducer::Init(KappaSettings const& settings)
 	KappaProducerBase::Init(settings);
 	
 	// add possible quantities for the lambda ntuples consumers
-	LambdaNtupleConsumer<KappaTypes>::AddQuantity("nBJets", [](KappaEvent const& event, KappaProduct const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nBJets", [](KappaEvent const& event, KappaProduct const& product) {
 		return product.m_bTaggedJets.size();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddQuantity("nBJets20", [this](KappaEvent const& event, KappaProduct const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nBJets20", [this](KappaEvent const& event, KappaProduct const& product) {
 		return KappaProduct::GetNJetsAbovePtThreshold(product.m_bTaggedJets, 20.0);
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddQuantity("nBJets30", [this](KappaEvent const& event, KappaProduct const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nBJets30", [this](KappaEvent const& event, KappaProduct const& product) {
 		return KappaProduct::GetNJetsAbovePtThreshold(product.m_bTaggedJets, 30.0);
 	});		
-	LambdaNtupleConsumer<KappaTypes>::AddQuantity("bJetPt", [](KappaEvent const& event, KappaProduct const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("bJetPt", [](KappaEvent const& event, KappaProduct const& product) {
 		return product.m_bTaggedJets.size() >= 1 ? product.m_bTaggedJets.at(0)->p4.Pt() : DefaultValues::UndefinedDouble;
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddQuantity("bJetEta", [](KappaEvent const& event, KappaProduct const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("bJetEta", [](KappaEvent const& event, KappaProduct const& product) {
 		return product.m_bTaggedJets.size() >= 1 ? product.m_bTaggedJets.at(0)->p4.Eta() : DefaultValues::UndefinedDouble;
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddQuantity("bJetPhi", [](KappaEvent const& event, KappaProduct const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("bJetPhi", [](KappaEvent const& event, KappaProduct const& product) {
 		return product.m_bTaggedJets.size() >= 1 ? product.m_bTaggedJets.at(0)->p4.Phi() : DefaultValues::UndefinedDouble;
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddQuantity("leadingBJetCSV",[](KappaEvent const& event, KappaProduct const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingBJetCSV",[](KappaEvent const& event, KappaProduct const& product) {
 		return product.m_bTaggedJets.size() >= 1 ? static_cast<KDataPFTaggedJet*>(product.m_bTaggedJets.at(0))->getTagger("CombinedSecondaryVertexBJetTags", event.m_taggerMetadata) : DefaultValues::UndefinedDouble;
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddQuantity("trailingBJetCSV",[](KappaEvent const& event, KappaProduct const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingBJetCSV",[](KappaEvent const& event, KappaProduct const& product) {
 		return product.m_bTaggedJets.size() >= 2 ? static_cast<KDataPFTaggedJet*>(product.m_bTaggedJets.at(1))->getTagger("CombinedSecondaryVertexBJetTags", event.m_taggerMetadata) : DefaultValues::UndefinedDouble;
 	});
 }

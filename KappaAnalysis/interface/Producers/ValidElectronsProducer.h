@@ -157,13 +157,13 @@ public:
 		electronReco = ToElectronReco(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetElectronReco)())));
 		
 		// add possible quantities for the lambda ntuples consumers
-		LambdaNtupleConsumer<TTypes>::AddQuantity("nElectrons", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddIntQuantity("nElectrons", [](event_type const& event, product_type const& product) {
 			return product.m_validElectrons.size();
 		});
-		LambdaNtupleConsumer<TTypes>::AddQuantity("leadingElePt", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingElePt", [](event_type const& event, product_type const& product) {
 			return product.m_validElectrons.size() >= 1 ? product.m_validElectrons[0]->p4.Pt() : DefaultValues::UndefinedDouble;
 		});
-		LambdaNtupleConsumer<TTypes>::AddQuantity("leadingEleEta", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingEleEta", [](event_type const& event, product_type const& product) {
 			return product.m_validElectrons.size() >= 1 ? product.m_validElectrons[0]->p4.Eta() : DefaultValues::UndefinedDouble;
 		});
 	}

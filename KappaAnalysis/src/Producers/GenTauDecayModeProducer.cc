@@ -13,19 +13,19 @@ void GenTauDecayModeProducer::Init(KappaSettings const& settings)
 	
 	// add possible quantities for the lambda ntuples consumers
 	
-	LambdaNtupleConsumer<KappaTypes>::AddQuantity( "genTau1DecayMode",[](KappaEvent const & event, KappaProduct const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity( "genTau1DecayMode",[](KappaEvent const & event, KappaProduct const & product)
 	{
 		return product.m_tau1DecayMode;
 	} );
-	LambdaNtupleConsumer<KappaTypes>::AddQuantity( "genTau2DecayMode",[](KappaEvent const & event, KappaProduct const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity( "genTau2DecayMode",[](KappaEvent const & event, KappaProduct const & product)
 	{
 		return product.m_tau2DecayMode;
 	} );
-	LambdaNtupleConsumer<KappaTypes>::AddQuantity( "genTau1ProngSize",[](KappaEvent const & event, KappaProduct const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity( "genTau1ProngSize",[](KappaEvent const & event, KappaProduct const & product)
 	{
 		return product.m_tau1ProngSize;
 	} );
-	LambdaNtupleConsumer<KappaTypes>::AddQuantity( "genTau2ProngSize",[](KappaEvent const & event, KappaProduct const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity( "genTau2ProngSize",[](KappaEvent const & event, KappaProduct const & product)
 	{
 		return product.m_tau2ProngSize;
 	} );

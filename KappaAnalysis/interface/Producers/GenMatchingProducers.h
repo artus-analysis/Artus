@@ -50,11 +50,11 @@ public:
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE 
 	{
 		KappaProducerBase::Init(settings);
-		LambdaNtupleConsumer<KappaTypes>::AddQuantity("ratioGenMatched", [](event_type const & event, product_type const & product)
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("ratioGenMatched", [](event_type const & event, product_type const & product)
 		{
 			return product.m_ratioGenMatched;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddQuantity("genMatchDeltaR", [](event_type const & event, product_type const & product)
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genMatchDeltaR", [](event_type const & event, product_type const & product)
 		{
 			return product.m_genMatchDeltaR;
 		});
