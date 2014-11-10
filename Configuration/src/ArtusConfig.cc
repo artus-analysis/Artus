@@ -114,7 +114,7 @@ void ArtusConfig::InitConfig( bool configPreLoaded )
 	if (minimumLogLevel.second >= el::Level::Fatal)
 		defaultLoggingConfig.set(el::Level::Error, el::ConfigurationType::Enabled, "false");
 
-	defaultLoggingConfig.set(el::Level::Debug, el::ConfigurationType::Format, "%level (%loc): %msg");
+	defaultLoggingConfig.set(el::Level::Debug, el::ConfigurationType::Format, "%msg");
 	defaultLoggingConfig.set(el::Level::Info, el::ConfigurationType::Format, "%msg");
 	defaultLoggingConfig.set(el::Level::Warning, el::ConfigurationType::Format, "%level: %msg");
 	defaultLoggingConfig.set(el::Level::Error, el::ConfigurationType::Format, "%level: %msg");
