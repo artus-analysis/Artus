@@ -66,7 +66,9 @@ public:
 		// and try to find them in the weights map to write them out
 		for (auto const & quantity : settings.GetQuantities())
 		{
-			if (boost::algorithm::icontains(quantity, "weight") && (LambdaNtupleConsumer<TTypes>::GetQuantities().count(quantity) == 0))
+			if (boost::algorithm::icontains(quantity, "weight") &&
+			    (LambdaNtupleConsumer<TTypes>::GetFloatQuantities().count(quantity) == 0) &&
+			    (LambdaNtupleConsumer<TTypes>::GetDoubleQuantities().count(quantity) == 0))
 			{
 				LOG(DEBUG) << "\tQuantity \"" << quantity << "\" is tried to be taken from product.m_weights or product.m_optionalWeights.";
 				LambdaNtupleConsumer<TTypes>::AddFloatQuantity( quantity, [quantity](event_type const & event, product_type const & product)

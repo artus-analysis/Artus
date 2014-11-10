@@ -50,7 +50,14 @@ public:
 		for (std::vector<std::string>::const_iterator quantity = (settings.*GetTmvaInputQuantities)().begin();
 		     quantity != (settings.*GetTmvaInputQuantities)().end(); ++quantity)
 		{
-			m_inputExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetQuantities(), *quantity));
+			if (LambdaNtupleConsumer<TTypes>::GetFloatQuantities().count(*quantity) > 0)
+			{
+				m_inputExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetFloatQuantities(), *quantity));
+			}
+			else // TODO
+			{
+				LOG(FATAL) << "The TMVA interface currently only supports float-type input variables!";
+			}
 		}
 		
 		// loading TMVA weight files

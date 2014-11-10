@@ -112,21 +112,21 @@ public:
 		for (std::vector<std::string>::iterator quantity = settings.GetQuantities().begin();
 		     quantity != settings.GetQuantities().end(); ++quantity)
 		{
-			if (LambdaNtupleQuantities::CommonFloatQuantities.count(*quantity) > 0)
+			if (LambdaNtupleConsumer<TTypes>::GetFloatQuantities().count(*quantity) > 0)
 			{
-				m_floatValueExtractors.push_back(SafeMap::Get(LambdaNtupleQuantities::CommonFloatQuantities, *quantity));
+				m_floatValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetFloatQuantities(), *quantity));
 			}
-			else if (LambdaNtupleQuantities::CommonIntQuantities.count(*quantity) > 0)
+			else if (LambdaNtupleConsumer<TTypes>::GetIntQuantities().count(*quantity) > 0)
 			{
-				m_intValueExtractors.push_back(SafeMap::Get(LambdaNtupleQuantities::CommonIntQuantities, *quantity));
+				m_intValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetIntQuantities(), *quantity));
 			}
-			else if (LambdaNtupleQuantities::CommonDoubleQuantities.count(*quantity) > 0)
+			else if (LambdaNtupleConsumer<TTypes>::GetDoubleQuantities().count(*quantity) > 0)
 			{
-				m_doubleValueExtractors.push_back(SafeMap::Get(LambdaNtupleQuantities::CommonDoubleQuantities, *quantity));
+				m_doubleValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetDoubleQuantities(), *quantity));
 			}
-			/*else if (LambdaNtupleQuantities::CommonBoolQuantities.count(*quantity) > 0)
+			/*else if (LambdaNtupleConsumer<TTypes>::GetBoolQuantities().count(*quantity) > 0)
 			{
-				m_boolValueExtractors.push_back(SafeMap::Get(LambdaNtupleQuantities::CommonBoolQuantities, *quantity));
+				m_boolValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetBoolQuantities(), *quantity));
 			}*/
 			else
 			{
