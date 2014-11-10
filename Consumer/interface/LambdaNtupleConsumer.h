@@ -89,8 +89,17 @@ public:
 		};
 	}
 
-	static std::map<std::string, std::function<float(EventBase const&, ProductBase const& ) >> & GetQuantities () {
+	/*static std::map<std::string, std::function<bool(EventBase const&, ProductBase const& ) >> & GetBoolQuantities () {
+		return LambdaNtupleQuantities::CommonBoolQuantities;
+	}*/
+	static std::map<std::string, std::function<int(EventBase const&, ProductBase const& ) >> & GetIntQuantities () {
+		return LambdaNtupleQuantities::CommonIntQuantities;
+	}
+	static std::map<std::string, std::function<float(EventBase const&, ProductBase const& ) >> & GetFloatQuantities () {
 		return LambdaNtupleQuantities::CommonFloatQuantities;
+	}
+	static std::map<std::string, std::function<double(EventBase const&, ProductBase const& ) >> & GetDoubleQuantities () {
+		return LambdaNtupleQuantities::CommonDoubleQuantities;
 	}
 
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
