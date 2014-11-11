@@ -44,6 +44,8 @@ public:
 		// Jets
 		if (! settings.GetJets().empty())
 			this->m_event.m_jets = this->template SecureFileInterfaceGet<KDataPFJets>(settings.GetJets());
+		if (! settings.GetGenJets().empty())
+			this->m_event.m_genJets = this->template SecureFileInterfaceGet<KDataLVs>(settings.GetGenJets());
 		if (! settings.GetTaggedJets().empty())
 			this->m_event.m_tjets = this->template SecureFileInterfaceGet<KDataPFTaggedJets>(settings.GetTaggedJets());
 		if (! settings.GetJetArea().empty())

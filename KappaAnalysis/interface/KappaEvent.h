@@ -28,6 +28,7 @@ public:
 
 	/// pointer to jet collection
 	KDataPFJets* m_jets = 0;
+	KDataLVs* m_genJets = 0;
 
 	/// pointer to tagged jet collection
 	KDataPFTaggedJets* m_tjets = 0;
