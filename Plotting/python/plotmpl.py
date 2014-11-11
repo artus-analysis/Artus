@@ -58,13 +58,13 @@ class PlotMpl(plotbase.PlotBase):
 			self.ax2 = plt.subplot2grid((4,1), (3, 0))
 			#plotdict['ratiosubplotaxes'] = ax2 # needed?
 		else:
-			self.fig = plt.figure(figsize=[5, 5])
+			self.fig = plt.figure(figsize=[7, 7])
 			self.ax = self.fig.add_subplot(111)
 
 
-		if plotData.plotdict["x_lims"] != None:
+		if plotData.plotdict["x_lims"] is not None:
 			self.ax.set_xlim([plotData.plotdict["x_lims"][0],plotData.plotdict["x_lims"][1]])
-		if plotData.plotdict["y_lims"] != None:
+		if plotData.plotdict["y_lims"] is not None:
 			self.ax.set_ylim(plotData.plotdict["y_lims"][0],plotData.plotdict["y_lims"][1])
 
 		if plotData.plotdict["ratio"] and plotData.plotdict["y_ratio_lims"] != None:
@@ -89,7 +89,6 @@ class PlotMpl(plotbase.PlotBase):
 
 		for nick, color, label, marker, errorbar, linestyle in zip(*zip_arguments):
 			root_object = plotData.plotdict["root_objects"][nick]
-			print "plotting " + nick
 			if isinstance(root_object, ROOT.TGraph):
 				mpl_histogram = mplconvert.root2histo(root_object, "someFilename", 1)
 				self.plot1D = isinstance(mpl_histogram, mplconvert.Histo)
@@ -150,9 +149,10 @@ class PlotMpl(plotbase.PlotBase):
 			for root_object, ratio_color, ratio_marker, in zip(plotData.plotdict["root_ratio_histos"],
 				                                               plotData.plotdict["ratio_colors"],
 				                                               plotData.plotdict["ratio_markers"]):
-				mpl_histogram = mplconvert.root2histo(root_object, "someFilename", 1)
+				mpl_histogram = mplconvert.root2histo(root_object)
 				self.ax2.axhline(1.0, color='black')
 				self.ax2.errorbar(mpl_histogram.xc, mpl_histogram.y, mpl_histogram.yerr, ecolor=ratio_color, fmt=ratio_marker)
+
 
 
 	def modify_axes(self, plotData):
@@ -169,7 +169,7 @@ class PlotMpl(plotbase.PlotBase):
 		# do special things for 1D Plots
 		if self.plot1D:
 			if plotData.plotdict["x_log"]: 
-				self.ax.set_xscale('log', nonposx='mask')
+				self.ax.set_xscale('log', nonposx='clip')
 			if plotData.plotdict["y_log"]: 
 				self.ax.set_yscale('log', nonposy='clip')
 
@@ -177,6 +177,12 @@ class PlotMpl(plotbase.PlotBase):
 				self.ax2.set_xlabel(plotData.plotdict["x_label"])
 				self.ax2.set_ylabel(plotData.plotdict["y_ratio_label"])
 				self.ax2.grid(plotData.plotdict["ratio_grid"])
+				self.ax2.set_xlim(self.ax.get_xlim())
+				if plotData.plotdict["x_log"]: 
+					self.ax2.set_xscale('log', nonposx='clip')
+
+
+
 
 		# do special things for 2D Plots
 		if self.plot2D:
