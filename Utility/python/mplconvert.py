@@ -19,6 +19,7 @@ def root2histo(histo, rootfile='', rebin=1):
 	# Detect if it is a histogram or a graph
 	if histo.ClassName() == 'TH1D' or histo.ClassName() == 'TH1F' or \
 			histo.ClassName() == 'TProfile':
+		print "yo1d"
 		# histo is a 1D histogram, read it
 		if rebin > 1:
 			histo.Rebin(rebin)
@@ -44,6 +45,7 @@ def root2histo(histo, rootfile='', rebin=1):
 		hst.mean = histo.GetMean()
 		hst.meanerr = histo.GetMeanError()
 	elif histo.ClassName() == 'TH2D' or histo.ClassName() == 'TH2F' or histo.ClassName() == 'TProfile2D':
+		print "yo2d"
 		hst = Histo2D()
 		histo.RebinX(rebin)
 		histo.RebinY(rebin)
