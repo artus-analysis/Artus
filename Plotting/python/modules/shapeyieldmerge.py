@@ -55,5 +55,9 @@ class ShapeYieldMerge(analysisbase.AnalysisBase):
 			new_histogram.Scale(plotData.plotdict["root_objects"][yield_nick].Integral() / plotData.plotdict["root_objects"][shape_nick].Integral())
 			
 			plotData.plotdict["root_objects"][shape_yield_nick] = new_histogram
-			plotData.plotdict.setdefault("nicks", []).append(shape_yield_nick)
+			
+			# insert new nick between the two existing ones
+			if shape_yield_nick not in plotData.plotdict["nicks"]:
+				plotData.plotdict["nicks"].insert(max(plotData.plotdict["nicks"].index(shape_nick), plotData.plotdict["nicks"].index(yield_nick)),
+				                                  shape_yield_nick)
 
