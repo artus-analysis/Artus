@@ -112,8 +112,6 @@ class PlotMpl(plotbase.PlotBase):
 				self.plot1D = isinstance(mplhist, MplHisto1D)
 				self.plot2D = False
 
-				# determine bin width to allow variable binning
-				widths = np.array([root_object.GetXaxis().GetBinWidth(i) for i in xrange(1,root_object.GetNbinsX()+1)])
 				# all bin edges of histogram without over/underflow bins
 				yerr=mplhist.yerr if errorbar else None
 
@@ -127,11 +125,9 @@ class PlotMpl(plotbase.PlotBase):
 					                            cmap=plt.cm.get_cmap(plotData.plotdict["colormap"]),
 					                            norm=norm())
 				elif marker=="bar":
-					bottom=0.
-					self.ax.bar(mplhist.x, mplhist.y, widths, yerr=yerr, bottom=bottom,
-					            label=label, fill=True, facecolor=color, edgecolor=color, ecolor=color, alpha=1.0)
+					self.plot_hist1d(mplhist, style='bar', ax=self.ax, show_yerr=errorbar, label=label, color=color, alpha=1.0, zorder=1)
 				elif marker=='fill':
-					self.plot_hist1d(mplhist, ax=self.ax, yerr=True, color=color, alpha=1.0, zorder=1)
+					self.plot_hist1d(mplhist, style='fill', ax=self.ax, show_yerr=errorbar, label=label, color=color, alpha=1.0, zorder=1)
 				else:
 					self.plot_errorbar(mplhist, ax=self.ax, color=color, fmt=marker, capsize=0, linestyle='-', label=label, zorder = 4)
 
@@ -289,7 +285,7 @@ class PlotMpl(plotbase.PlotBase):
 
 		ax.errorbar(hist.x, hist.y, xerr=xerr, yerr=yerr, label=label, zorder=zorder, capsize=capsize, fmt=fmt, **kwargs)
 
-	def plot_hist1d(self, hist, ax=None, yerr=False, **kwargs):
+	def plot_hist1d(self, hist, style='fill', ax=None, show_yerr=None, **kwargs):
 
 		if ax is None:
 			ax = plt.gca()
@@ -298,13 +294,17 @@ class PlotMpl(plotbase.PlotBase):
 		bottom = kwargs.pop('bottom', 0.)
 		label = kwargs.pop('label', '')
 
-		ax.fill_between(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(hist.y), 
-		                y2=bottom, color=color, alpha=1.0, zorder=1)
+		if style == 'fill':
+			ax.fill_between(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(hist.y), 
+			                y2=bottom, color=color, alpha=1.0, zorder=1)
+			# draw the legend proxy
+			proxy = plt.Rectangle((0, 0), 0, 0, label=label, facecolor=color, edgecolor='black', alpha=1.0)
+			ax.add_patch(proxy)
+		elif style == 'bar':
+			ax.bar(hist.xl, hist.y, hist.xbinwidth, bottom=bottom,
+			       label=label, fill=True, facecolor=color, edgecolor=color, ecolor=color, alpha=1.0)
 
-		print hist.yerr
-		self.ax.errorbar(hist.x, hist.y, yerr=hist.yerr, color=color, fmt='', capsize=0, zorder=1, linestyle='')
-		# draw the legend proxy
-		proxy = plt.Rectangle((0, 0), 0, 0, label=label, facecolor=color, edgecolor='black', alpha=1.0)
-		self.ax.add_patch(proxy)
+		if show_yerr:
+			ax.errorbar(hist.x, hist.y, yerr=hist.yerr, color=color, fmt='', capsize=0, zorder=1, linestyle='')
 
 

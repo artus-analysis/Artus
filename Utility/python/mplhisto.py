@@ -169,7 +169,7 @@ class MplHisto1D:
 
 	@property
 	def xbinwidth(self):
-		return self.xh -self.xl
+		return self.xu -self.xl
 
 	@property
 	def xbinedges(self):
