@@ -96,14 +96,12 @@ class PlotMpl(plotbase.PlotBase):
 
 		for nick, color, label, marker, errorbar, linestyle in zip(*zip_arguments):
 			root_object = plotData.plotdict["root_objects"][nick]
-			# if isinstance(root_object, ROOT.TGraph):
-			# 	mplhist = mplconvert.root2histo(root_object, "someFilename", 1)
-			# 	self.plot1D = isinstance(mplhist, mplconvert.Histo)
-			# 	self.plot2D = isinstance(mplhist, mplconvert.Histo2D)
-			# 	yerr=mplhist.yerr if errorbar else None
-			# 	y = np.array(mplhist.y)
-			# 	self.ax.errorbar(mplhist.xc, y, yerr=yerr,
-			# 	                 color=color, fmt=marker, capsize=0, label=label, zorder=10, drawstyle='steps-mid', linestyle=linestyle)
+
+			if isinstance(root_object, ROOT.TGraph):
+				mplhist = MplHisto1D(root_object)
+				self.plot1D = isinstance(mplhist, MplHisto1D)
+				# self.plot2D = isinstance(mplhist, mplconvert.Histo2D)
+				self.plot_errorbar(mplhist, ax=self.ax, color=color, fmt=marker, capsize=0, linestyle='-', label=label, zorder = 4)
 
 			if isinstance(root_object, ROOT.TH1):
 
