@@ -10,15 +10,13 @@ log = logging.getLogger(__name__)
 import ROOT
 
 import HarryPlotter.Plotting.plotbase as plotbase
-import HarryPlotter.Utility.mplconvert as mplconvert
 
-import HarryPlotter.Utility.rootpy
+from HarryPlotter.Utility.mplhisto import MplHisto1D
 
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 from matplotlib.colors import Normalize
-import matplotlib.gridspec as gridspec
 
 import numpy as np
 
@@ -39,15 +37,18 @@ class PlotMpl(plotbase.PlotBase):
 		default_colorcycle = iter(matplotlib.rcParams['axes.color_cycle'])
 		for index, color in enumerate(plotData.plotdict["colors"]):
 			if color is None:
-				plotData.plotdict["colors"][index] = next(self._default_colorcycle)
+				plotData.plotdict["colors"][index] = next(default_colorcycle)
 			else:
 				plotData.plotdict["colors"][index] = color
 		self.set_default_ratio_colors(plotData)
 		
 		# defaults for markers
 		for index, marker in enumerate(plotData.plotdict["markers"]):
-			if marker == None:
-				plotData.plotdict["markers"][index] = "-"
+			if marker is None:
+				if idx == 0:
+					plotData.plotdict["markers"][index] = "."
+				else:
+					plotData.plotdict["markers"][index] = "fill"
 
 		# default for linestyles
 		for index, linestyle in enumerate(plotData.plotdict["linestyles"]):
@@ -95,56 +96,45 @@ class PlotMpl(plotbase.PlotBase):
 
 		for nick, color, label, marker, errorbar, linestyle in zip(*zip_arguments):
 			root_object = plotData.plotdict["root_objects"][nick]
-			if isinstance(root_object, ROOT.TGraph):
-				mpl_histogram = mplconvert.root2histo(root_object, "someFilename", 1)
-				self.plot1D = isinstance(mpl_histogram, mplconvert.Histo)
-				self.plot2D = isinstance(mpl_histogram, mplconvert.Histo2D)
-				yerr=mpl_histogram.yerr if errorbar else None
-				y = np.array(mpl_histogram.y)
-				self.ax.errorbar(mpl_histogram.xc, y, yerr=yerr,
-				                 color=color, fmt=marker, capsize=0, label=label, zorder=10, drawstyle='steps-mid', linestyle=linestyle)
+			# if isinstance(root_object, ROOT.TGraph):
+			# 	mplhist = mplconvert.root2histo(root_object, "someFilename", 1)
+			# 	self.plot1D = isinstance(mplhist, mplconvert.Histo)
+			# 	self.plot2D = isinstance(mplhist, mplconvert.Histo2D)
+			# 	yerr=mplhist.yerr if errorbar else None
+			# 	y = np.array(mplhist.y)
+			# 	self.ax.errorbar(mplhist.xc, y, yerr=yerr,
+			# 	                 color=color, fmt=marker, capsize=0, label=label, zorder=10, drawstyle='steps-mid', linestyle=linestyle)
 
-			elif isinstance(root_object, ROOT.TH1):
-				mpl_histogram = mplconvert.root2histo(root_object, "someFilename", 1)
-				self.plot1D = isinstance(mpl_histogram, mplconvert.Histo)
-				self.plot2D = isinstance(mpl_histogram, mplconvert.Histo2D)
+			if isinstance(root_object, ROOT.TH1):
+
+				mplhist = MplHisto1D(root_object)
+
+				self.plot1D = isinstance(mplhist, MplHisto1D)
+				self.plot2D = False
 
 				# determine bin width to allow variable binning
 				widths = np.array([root_object.GetXaxis().GetBinWidth(i) for i in xrange(1,root_object.GetNbinsX()+1)])
 				# all bin edges of histogram without over/underflow bins
-				bin_edges = np.array(mpl_histogram.x + [mpl_histogram.xc[-1] + mpl_histogram.xerr[-1]])
-				yerr=mpl_histogram.yerr if errorbar else None
+				yerr=mplhist.yerr if errorbar else None
 
 				if self.plot2D:
 					norm = LogNorm if plotData.plotdict["z_log"] else Normalize
-					self.image = self.ax.imshow(mpl_histogram.BinContents,
+					self.image = self.ax.imshow(mplhist.BinContents,
 					                            interpolation='nearest',
 					                            origin='lower',
-					                            extent=[mpl_histogram.xborderlow, mpl_histogram.xborderhigh, mpl_histogram.yborderlow, mpl_histogram.yborderhigh],
+					                            extent=[mplhist.xborderlow, mplhist.xborderhigh, mplhist.yborderlow, mplhist.yborderhigh],
 					                            aspect='auto',
 					                            cmap=plt.cm.get_cmap(plotData.plotdict["colormap"]),
 					                            norm=norm())
 				elif marker=="bar":
 					bottom=0.
-					self.ax.bar(mpl_histogram.x, mpl_histogram.y, widths, yerr=yerr, bottom=bottom,
+					self.ax.bar(mplhist.x, mplhist.y, widths, yerr=yerr, bottom=bottom,
 					            label=label, fill=True, facecolor=color, edgecolor=color, ecolor=color, alpha=1.0)
 				elif marker=='fill':
-					y = np.array(mpl_histogram.y)
-					self.ax.fill_between(x=self.steppify_bin(bin_edges, isx=True), y1=self.steppify_bin(y),y2=0., color=color,
-					                     facecolor=color, edgecolor=color, alpha=1.0, zorder=1)
-					if errorbar:
-						self.ax.errorbar(mpl_histogram.xc, y, yerr=yerr,
-						                 color=color, fmt='+', capsize=0, zorder=1, linestyle='')
-					# draw the legend proxy
-					proxy = plt.Rectangle((0, 0), 0, 0, label=label, facecolor=color, edgecolor='black', alpha=1.0)
-					self.ax.add_patch(proxy)
+					self.plot_hist1d(mplhist, ax=self.ax, yerr=True, color=color, alpha=1.0, zorder=1)
 				else:
-					y = np.array(mpl_histogram.y)
-					self.ax.plot(self.steppify_bin(bin_edges, isx=True), self.steppify_bin(y), color=color,
-					             linestyle='-', label=label, zorder = 4)
-					if errorbar:
-						self.ax.errorbar(mpl_histogram.xc, y, yerr=yerr,
-						                 color=color, fmt=marker, capsize=0, zorder=4, linestyle='')
+					self.plot_errorbar(mplhist, ax=self.ax, color=color, fmt=marker, capsize=0, linestyle='-', label=label, zorder = 4)
+
 			# draw functions from dictionary
 			elif isinstance(root_object, ROOT.TF1):
 				x_values = []
@@ -160,9 +150,10 @@ class PlotMpl(plotbase.PlotBase):
 			for root_object, ratio_color, ratio_marker, in zip(plotData.plotdict["root_ratio_histos"],
 				                                               plotData.plotdict["ratio_colors"],
 				                                               plotData.plotdict["ratio_markers"]):
-				mpl_histogram = mplconvert.root2histo(root_object)
 				self.ax2.axhline(1.0, color='black')
-				self.ax2.errorbar(mpl_histogram.xc, mpl_histogram.y, mpl_histogram.yerr, ecolor=ratio_color, fmt=ratio_marker)
+				mplhist_ratio = MplHisto1D(root_object)
+				# self.ax2.errorbar(mplhist_ratio.x, mplhist_ratio.y, mplhist_ratio.yerr, ecolor=ratio_color, fmt=ratio_marker)
+				self.plot_errorbar(mplhist_ratio, ax=self.ax2, color=ratio_color, fmt=ratio_marker, capsize=0, linestyle='')
 
 
 
@@ -263,7 +254,6 @@ class PlotMpl(plotbase.PlotBase):
 		matplotlib.rcParams['savefig.format'] = 'png'
 		matplotlib.rcParams['agg.path.chunksize'] = 20000
 
-
 	@staticmethod
 	def steppify_bin(arr, isx=False):
 		"""
@@ -275,35 +265,46 @@ class PlotMpl(plotbase.PlotBase):
 			newarr = np.array(zip(arr, arr)).ravel()
 		return newarr
 
-	def plot_errorbar(hist, xerr=True, yerr=True, emptybins=True, ax=None, zorder=1, **kwargs)
+	def plot_errorbar(self, hist, xerr=True, yerr=True, emptybins=True, ax=None, zorder=1, **kwargs):
 	
 		if ax is None:
 			ax = plt.gca()
 		pass
-
 		if xerr:
-			xerr = np.array(h.xerrl, h.xerrh)
+			xerr = np.array((hist.xerrl, hist.xerru))
 		else:
-			xerr = 0.
+			xerr = None
 		if yerr:
-			yerr = np.array(h.yerrl, h.yerrh)
+			yerr = np.array((hist.yerrl, hist.yerru))
 		else:
-			yerr = 0.
+			yerr = None
 
-		ax.errorbar(h.x, h.y, xerr=xerr, yerr=yerr, zorder=zorder, **kwargs)
+		linestyle = kwargs.pop('linestyle', '')
+		capsize = kwargs.pop('capsize', 0)
+		fmt = kwargs.pop('fmt', '.')
+		label = kwargs.pop('label', '')
 
-	def plot_hist1d(hist, style='fill', **kwargs):
+		if linestyle:
+			ax.step(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(hist.y), linestyle=linestyle, **kwargs)
+
+		ax.errorbar(hist.x, hist.y, xerr=xerr, yerr=yerr, label=label, zorder=zorder, capsize=capsize, fmt=fmt, **kwargs)
+
+	def plot_hist1d(self, hist, ax=None, yerr=False, **kwargs):
 
 		if ax is None:
 			ax = plt.gca()
-		pass
 
-		bottom = 0.
-		x = self.steppify_bin(hist.xedges, isx=True)
-		y = self.steppify_bin(hist.y)
+		color = kwargs.pop('color')
+		bottom = kwargs.pop('bottom', 0.)
+		label = kwargs.pop('label', '')
 
-		ax.fill_between(x, y, bottom=0., color=color,
-		                alpha=1.0, zorder=1)
+		ax.fill_between(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(hist.y), 
+		                y2=bottom, color=color, alpha=1.0, zorder=1)
+
+		print hist.yerr
+		self.ax.errorbar(hist.x, hist.y, yerr=hist.yerr, color=color, fmt='', capsize=0, zorder=1, linestyle='')
 		# draw the legend proxy
 		proxy = plt.Rectangle((0, 0), 0, 0, label=label, facecolor=color, edgecolor='black', alpha=1.0)
 		self.ax.add_patch(proxy)
+
+
