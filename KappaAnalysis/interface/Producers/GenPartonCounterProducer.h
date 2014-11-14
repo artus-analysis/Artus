@@ -8,10 +8,10 @@
    \brief GlobalProducer, count partons at generator level.
    
    This producers takes the GenParticles as input and counts the final-state partons which are present in
-   an event in addition to a Z or W boson
+   an event in addition to a boson.
    
-   At the moment the choice to start counting after finding a Z or W boson (pdgId = 23 || 24) is hard-coded,
-   but, in case of future needs, these pdgIds can be easily taken from a configurable setting.
+   Required config tag:
+     - BosonPdgId
 */
 
 class GenPartonCounterProducer: public ProducerBase<KappaTypes>

@@ -38,8 +38,8 @@ void GenPartonCounterProducer::Produce(KappaEvent const& event, KappaProduct& pr
 				nPartons++;
 		}
 		
-		// start counting partons after finding a Z or a W boson
-		if (abs(genParticle->pdgId()) == 23 || abs(genParticle->pdgId()) == 24) 
+		// start counting partons after finding a boson (for example W or Z)
+		if (abs(genParticle->pdgId()) == settings.GetBosonPdgId()) 
 			countPartons = true; 
 	}
 	
