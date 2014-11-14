@@ -124,9 +124,56 @@ import ROOT
 # 		log.critical("The object '" + str(histo) + "' is no histogram, no graph and no profile! It could not be converted!")
 # 		exit(1)
 # 	return hst
+class MplGraph:
+
+	def __init__(self, rootgraph):
+		if not rootgraph.ClassName() in ['TGraph', 'TGraphErrors', 'TGraphAsymmErrors']:
+			raise TypeError('No valid TH1D, TH1F or TProfile passed.')
+		self.name = rootgraph.GetName()
+		self.rootgraph = rootgraph
+		# self.classname = roothisto.ClassName()
+		self.title = rootgraph.GetTitle()
+		self.xlabel = rootgraph.GetXaxis().GetTitle()
+		self.ylabel = rootgraph.GetYaxis().GetTitle()
+		# Number of bins without underflow/overflow bin
+		self.size = rootgraph.GetN()
+
+		self.x = np.zeros((self.size))
+		self.y = np.zeros((self.size))
+
+		for i in xrange(self.size):
+			tmpX, tmpY = ROOT.Double(0), ROOT.Double(0)
+			rootgraph.GetPoint(i, tmpX, tmpY)
+			self.x[i] = tmpX
+			self.y[i] = tmpY
+		self.xerrl = np.array([rootgraph.GetErrorXlow(i) for i in xrange(self.size)])
+		self.xerru = np.array([rootgraph.GetErrorXhigh(i) for i in xrange(self.size)])
+		self.yerrl = np.array([rootgraph.GetErrorYlow(i) for i in xrange(self.size)])
+		self.yerru = np.array([rootgraph.GetErrorYhigh(i) for i in xrange(self.size)])
+
+	@property
+	def xbinedges(self):
+		return np.concatenate((self.xl, self.xu[-1:]))
+
+	@property
+	def xl(self):
+		return self.x - self.xerrl
+
+	@property
+	def xu(self):
+		return self.x + self.xerru
+
+	@property
+	def yl(self):
+		return self.y - self.yerrl
+
+	@property
+	def yu(self):
+		return self.y + self.yerru
+
 
 class MplHisto1D:
-	""" Convenient representation of 1D Root histogram to be used for matplotlib."""
+	"""Simple representation of 1D Root histogram to be used for matplotlib."""
 
 	def __init__(self, roothisto):
 		if not roothisto.ClassName() in ['TH1D', 'TH1F', 'TProfile']:
@@ -183,13 +230,77 @@ class MplHisto1D:
 	def yu(self):
 		return self.y + self.yerru
 
+class MplHisto2D:
+	"""Simple representation of 1D Root histogram to be used for matplotlib."""
 
-#class Histo2D(Histo):
-#	def __init__(self):
-#		Histo.__init__(self)
-#		self.yc = []
-#		self.BinContents = []
-#		self.xborderhigh = 0.0
-#		self.yborderhigh = 0.0
-#		self.xborderlow = 0.0
-#		self.yborderlow = 0.0
+	def __init__(self, roothisto):
+		if not roothisto.ClassName() in ['TH2D', 'TH2F', 'TProfile2D']:
+			raise TypeError('No valid TH2D, TH2F or TProfile2D passed.')
+		self.name = roothisto.GetName()
+		self.roothisto = roothisto
+		# self.classname = roothisto.ClassName()
+		self.title = roothisto.GetTitle()
+		self.xlabel = roothisto.GetXaxis().GetTitle()
+		self.ylabel = roothisto.GetYaxis().GetTitle()
+		# Number of bins without underflow/overflow bin
+		self.size = (roothisto.GetNbinsY(), roothisto.GetNbinsX())
+
+		self.bincontents = np.zeros((roothisto.GetNbinsY(), roothisto.GetNbinsX()))
+		# self.bincontents = np.ma.masked_equal(tmparr, 0.0)
+
+		for y in xrange(1, roothisto.GetNbinsY() + 1):
+			for x in xrange(1, roothisto.GetNbinsX() + 1):
+				if (roothisto.ClassName() != 'TProfile2D') or roothisto.GetBinEntries(roothisto.GetBin(x, y)) > 0:
+					self.bincontents[y - 1, x - 1] = roothisto.GetBinContent(x, y)
+
+		# bin center
+		self.x = np.array([roothisto.GetXaxis().GetBinCenter(i) for i in xrange(1, roothisto.GetNbinsX() +1)])
+		# lower bin edge
+		self.xl = np.array([roothisto.GetXaxis().GetBinLowEdge(i) for i in xrange(1, roothisto.GetNbinsX() +1)])
+		# upper bin edge
+		self.xu = np.array([roothisto.GetXaxis().GetBinUpEdge(i) for i in xrange(1, roothisto.GetNbinsX() +1)])
+		# bin content
+		# bin center
+		self.y = np.array([roothisto.GetYaxis().GetBinCenter(i) for i in xrange(1, roothisto.GetNbinsY() +1)])
+		# lower bin edge
+		self.yl = np.array([roothisto.GetYaxis().GetBinLowEdge(i) for i in xrange(1, roothisto.GetNbinsY() +1)])
+		# upper bin edge
+		self.yu = np.array([roothisto.GetYaxis().GetBinUpEdge(i) for i in xrange(1, roothisto.GetNbinsY() +1)])
+		# bin content
+
+	@property
+	def xerr(self):
+		return 0.5 * self.xbinwidth
+
+	@property
+	def xerrl(self):
+		return self.x - self.xl
+
+	@property
+	def xerru(self):
+		return self.xu - self.x
+
+	@property
+	def xbinwidth(self):
+		return self.xu -self.xl
+
+	@property
+	def xbinedges(self):
+		return np.concatenate((self.xl, self.xu[-1:]))
+
+	@property
+	def yl(self):
+		return self.y - self.yerrl
+
+	@property
+	def yu(self):
+		return self.y + self.yerru
+
+	@property
+	def ybinwidth(self):
+		return self.yu - self.yl
+
+	@property
+	def ybinedges(self):
+		return np.concatenate((self.yl, self.yu[-1:]))
+

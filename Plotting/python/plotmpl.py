@@ -11,7 +11,7 @@ import ROOT
 
 import HarryPlotter.Plotting.plotbase as plotbase
 
-from HarryPlotter.Utility.mplhisto import MplHisto1D
+from HarryPlotter.Utility.mplhisto import MplHisto1D, MplGraph, MplHisto2D
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -45,27 +45,25 @@ class PlotMpl(plotbase.PlotBase):
 		# defaults for markers
 		for index, marker in enumerate(plotData.plotdict["markers"]):
 			if marker is None:
-				if idx == 0:
+				if index == 0:
 					plotData.plotdict["markers"][index] = "."
 				else:
 					plotData.plotdict["markers"][index] = "fill"
 
 		# default for linestyles
 		for index, linestyle in enumerate(plotData.plotdict["linestyles"]):
-			if linestyle == None:
+			if linestyle is None:
 				plotData.plotdict["linestyles"][index] = "-"
 
 	def run(self, plotData):
 		super(PlotMpl, self).run(plotData)
 	
 	def create_canvas(self, plotData):
+		self.fig = plt.figure()
 		if plotData.plotdict["ratio"]:
-			self.fig = plt.figure()
 			self.ax = plt.subplot2grid((4,1), (0, 0), rowspan=3)
 			self.ax2 = plt.subplot2grid((4,1), (3, 0))
-			#plotdict['ratiosubplotaxes'] = ax2 # needed?
 		else:
-			self.fig = plt.figure()
 			self.ax = self.fig.add_subplot(111)
 
 
@@ -98,37 +96,41 @@ class PlotMpl(plotbase.PlotBase):
 			root_object = plotData.plotdict["root_objects"][nick]
 
 			if isinstance(root_object, ROOT.TGraph):
+				self.plot_dimension = 1
+				mplhist = MplGraph(root_object)
+				self.plot_errorbar(mplhist, ax=self.ax, style='line', color=color, fmt=marker, capsize=0, linestyle=linestyle, label=label, zorder = 4)
+			elif isinstance(root_object, ROOT.TH2):
+				self.plot_dimension = 2
+				mplhist = MplHisto2D(root_object)
+
+				z = mplhist.bincontents
+				if plotData.plotdict["z_log"]:
+					norm = LogNorm
+					z = np.ma.masked_equal(z, 0.0)
+				else:
+					norm = Normalize
+
+				cmap = plt.cm.get_cmap(plotData.plotdict["colormap"])
+				cmap.set_bad('black')
+				self.image = self.ax.imshow(z,
+				                            interpolation='nearest',
+				                            origin='lower',
+				                            extent=[mplhist.xl[0], mplhist.xu[-1], mplhist.yl[0], mplhist.yu[-1]],
+				                            aspect='auto',
+				                            cmap=cmap,
+				                            norm=norm())
+
+			elif isinstance(root_object, ROOT.TH1):
+				self.plot_dimension = 1
+
 				mplhist = MplHisto1D(root_object)
-				self.plot1D = isinstance(mplhist, MplHisto1D)
-				# self.plot2D = isinstance(mplhist, mplconvert.Histo2D)
-				self.plot_errorbar(mplhist, ax=self.ax, color=color, fmt=marker, capsize=0, linestyle='-', label=label, zorder = 4)
 
-			if isinstance(root_object, ROOT.TH1):
-
-				mplhist = MplHisto1D(root_object)
-
-				self.plot1D = isinstance(mplhist, MplHisto1D)
-				self.plot2D = False
-
-				# all bin edges of histogram without over/underflow bins
-				yerr=mplhist.yerr if errorbar else None
-
-				if self.plot2D:
-					norm = LogNorm if plotData.plotdict["z_log"] else Normalize
-					self.image = self.ax.imshow(mplhist.BinContents,
-					                            interpolation='nearest',
-					                            origin='lower',
-					                            extent=[mplhist.xborderlow, mplhist.xborderhigh, mplhist.yborderlow, mplhist.yborderhigh],
-					                            aspect='auto',
-					                            cmap=plt.cm.get_cmap(plotData.plotdict["colormap"]),
-					                            norm=norm())
-				elif marker=="bar":
+				if marker=="bar":
 					self.plot_hist1d(mplhist, style='bar', ax=self.ax, show_yerr=errorbar, label=label, color=color, alpha=1.0, zorder=1)
 				elif marker=='fill':
 					self.plot_hist1d(mplhist, style='fill', ax=self.ax, show_yerr=errorbar, label=label, color=color, alpha=1.0, zorder=1)
 				else:
 					self.plot_errorbar(mplhist, ax=self.ax, color=color, fmt=marker, capsize=0, linestyle='-', label=label, zorder = 4)
-
 			# draw functions from dictionary
 			elif isinstance(root_object, ROOT.TF1):
 				x_values = []
@@ -163,7 +165,7 @@ class PlotMpl(plotbase.PlotBase):
 		# self.ax.ticklabel_format(style='sci',scilimits=(-3,4),axis='both')
 
 		# do special things for 1D Plots
-		if self.plot1D:
+		if self.plot_dimension == 1:
 			if plotData.plotdict["x_log"]: 
 				self.ax.set_xscale('log', nonposx='clip')
 			if plotData.plotdict["y_log"]: 
@@ -179,9 +181,8 @@ class PlotMpl(plotbase.PlotBase):
 				self.ax2.set_xlim(self.ax.get_xlim())
 				if plotData.plotdict["x_log"]: 
 					self.ax2.set_xscale('log', nonposx='clip')
-
 		# do special things for 2D Plots
-		if self.plot2D:
+		elif self.plot_dimension == 2:
 			cb = self.fig.colorbar(self.image, ax=self.ax)
 
 
@@ -260,7 +261,7 @@ class PlotMpl(plotbase.PlotBase):
 			newarr = np.array(zip(arr, arr)).ravel()
 		return newarr
 
-	def plot_errorbar(self, hist, xerr=True, yerr=True, emptybins=True, ax=None, zorder=1, **kwargs):
+	def plot_errorbar(self, hist, style='step', xerr=True, yerr=True, emptybins=True, ax=None, zorder=1, **kwargs):
 	
 		if ax is None:
 			ax = plt.gca()
@@ -275,12 +276,17 @@ class PlotMpl(plotbase.PlotBase):
 			yerr = None
 
 		linestyle = kwargs.pop('linestyle', '')
+		print "linestyle", linestyle
 		capsize = kwargs.pop('capsize', 0)
 		fmt = kwargs.pop('fmt', '.')
+		print 'fmt', fmt
 		label = kwargs.pop('label', '')
 
 		if linestyle:
-			ax.step(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(hist.y), linestyle=linestyle, **kwargs)
+			if style == 'stepped':
+				ax.step(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(hist.y), linestyle=linestyle, **kwargs)
+			elif style == 'line':
+				ax.plot(hist.x, hist.y, linestyle=linestyle, **kwargs)
 
 		ax.errorbar(hist.x, hist.y, xerr=xerr, yerr=yerr, label=label, zorder=zorder, capsize=capsize, fmt=fmt, **kwargs)
 
