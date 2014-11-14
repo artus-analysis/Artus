@@ -62,6 +62,10 @@ public:
 			return Utility::ToUnderlyingValue(product.m_genDiLeptonDecayMode);
 		});
 		
+		LambdaNtupleConsumer<TTypes>::AddIntQuantity("genNPartons", [](event_type const& event, product_type const& product) {
+			return product.m_genNPartons;
+		});
+		
 		// loop over all quantities containing "weight" (case-insensitive)
 		// and try to find them in the weights map to write them out
 		for (auto const & quantity : settings.GetQuantities())
