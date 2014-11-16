@@ -229,7 +229,7 @@ class PlotMpl(plotbase.PlotBase):
 		matplotlib.rcParams['ytick.major.size'] = 14
 		matplotlib.rcParams['ytick.minor.size'] = 7
 		matplotlib.rcParams['lines.markersize'] = 8
-		# color cycle
+		# default color cycle
 		matplotlib.rcParams['axes.color_cycle'] = [(0.0, 0.0, 0.0),
 		                                           (0.21568627450980393, 0.49411764705882355, 0.7215686274509804),
 		                                           (0.30196078431372547, 0.6862745098039216, 0.2901960784313726),
@@ -253,7 +253,13 @@ class PlotMpl(plotbase.PlotBase):
 	@staticmethod
 	def steppify_bin(arr, isx=False):
 		"""
-		Produce stepped array of arr, also of x
+		Produce stepped array of arr, needed for example for stepped fill_betweens.
+		Pass all x bin edges to produce stepped x arr and all y bincontents to produce
+		stepped bincontents representation
+		steppify_bin([1,2,3], True) 
+		-> [1,2,2,3]
+		steppify_bin([5,6])
+		-> [5,5,6,6]
 		"""
 		if isx:
 			newarr = np.array(zip(arr[:-1], arr[1:])).ravel()
@@ -261,34 +267,44 @@ class PlotMpl(plotbase.PlotBase):
 			newarr = np.array(zip(arr, arr)).ravel()
 		return newarr
 
-	def plot_errorbar(self, hist, style='step', xerr=True, yerr=True, emptybins=True, ax=None, zorder=1, **kwargs):
+	def plot_errorbar(self, hist, style='step', show_xerr=True, show_yerr=True, emptybins=True, ax=None, zorder=1, **kwargs):
 	
+		# if no axis passed use current global axis
 		if ax is None:
 			ax = plt.gca()
-		pass
-		if xerr:
+
+		x = hist.x
+		if isinstance(hist, MplHisto1D):
+			y = hist.bincontents
+		else:
+			y = hist.y
+
+		if show_xerr:
 			xerr = np.array((hist.xerrl, hist.xerru))
 		else:
 			xerr = None
-		if yerr:
-			yerr = np.array((hist.yerrl, hist.yerru))
+		if show_yerr:
+			if isinstance(hist, MplHisto1D):
+				yerr = np.array((hist.binerrl, hist.binerru))
+			else:
+				yerr = np.array((hist.yerrl, hist.yerru))
 		else:
 			yerr = None
 
 		linestyle = kwargs.pop('linestyle', '')
-		print "linestyle", linestyle
 		capsize = kwargs.pop('capsize', 0)
 		fmt = kwargs.pop('fmt', '.')
-		print 'fmt', fmt
 		label = kwargs.pop('label', '')
 
+		# Due to a bug in matplotlib v1.1 errorbar does not always respect linestyle when fmt is passed.
+		# Workaround by plotting line and errorbars separetely.
 		if linestyle:
 			if style == 'stepped':
-				ax.step(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(hist.y), linestyle=linestyle, **kwargs)
+				ax.step(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(y), linestyle=linestyle, **kwargs)
 			elif style == 'line':
-				ax.plot(hist.x, hist.y, linestyle=linestyle, **kwargs)
+				ax.plot(x, y, linestyle=linestyle, **kwargs)
 
-		ax.errorbar(hist.x, hist.y, xerr=xerr, yerr=yerr, label=label, zorder=zorder, capsize=capsize, fmt=fmt, **kwargs)
+		ax.errorbar(x, y, xerr=xerr, yerr=yerr, label=label, zorder=zorder, capsize=capsize, fmt=fmt, **kwargs)
 
 	def plot_hist1d(self, hist, style='fill', ax=None, show_yerr=None, **kwargs):
 
@@ -300,7 +316,7 @@ class PlotMpl(plotbase.PlotBase):
 		label = kwargs.pop('label', '')
 
 		if style == 'fill':
-			ax.fill_between(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(hist.y), 
+			ax.fill_between(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(hist.bincontents), 
 			                y2=bottom, color=color, alpha=1.0, zorder=1)
 			# draw the legend proxy
 			proxy = plt.Rectangle((0, 0), 0, 0, label=label, facecolor=color, edgecolor='black', alpha=1.0)
@@ -311,5 +327,3 @@ class PlotMpl(plotbase.PlotBase):
 
 		if show_yerr:
 			ax.errorbar(hist.x, hist.y, yerr=hist.yerr, color=color, fmt='', capsize=0, zorder=1, linestyle='')
-
-
