@@ -7,123 +7,6 @@ log = logging.getLogger(__name__)
 import numpy as np
 import ROOT
 
-
-# def root2histo(histo, rootfile='', rebin=1):
-# 	"""Convert a root histogram to the Histo class"""
-# 	hst = Histo()
-#
-# 	if not hasattr(histo, 'ClassName'):
-# 		log.critical(histo + " is no TObject. It could not be converted.")
-# 		exit(1)
-# 	# Detect if it is a histogram or a graph
-# 	if histo.ClassName() == 'TH1D' or histo.ClassName() == 'TH1F' or \
-# 			histo.ClassName() == 'TProfile':
-# 		# histo is a 1D histogram, read it
-# 		if rebin > 1:
-# 			histo.Rebin(rebin)
-# 		hst.source = rootfile
-# 		hst.name = histo.GetName()
-# 		hst.classname = histo.ClassName()
-# 		hst.title = histo.GetTitle()
-# 		hst.xlabel = histo.GetXaxis().GetTitle()
-# 		hst.ylabel = histo.GetYaxis().GetTitle()
-# 		hst.RMS = histo.GetRMS()
-# 		hst.RMSerr = histo.GetRMSError()
-# 		for i in range(1, histo.GetSize() - 1):
-# 			hst.x.append(histo.GetBinLowEdge(i))
-# 			hst.xc.append(histo.GetBinCenter(i))
-# 			hst.y.append(histo.GetBinContent(i))
-# 			hst.xerr.append(histo.GetBinWidth(i) / 2.0)
-# 			hst.yerr.append(histo.GetBinError(i))
-# 		#hst.x.append(histo.GetBinLowEdge(histo.GetSize() - 1))
-# 		#hst.xc.append(histo.GetBinLowEdge(histo.GetSize() - 1))
-# 		#hst.y.append(0.0)
-# 		#hst.xerr.append(0.0)
-# 		#hst.yerr.append(0.0)
-# 		hst.mean = histo.GetMean()
-# 		hst.meanerr = histo.GetMeanError()
-# 	elif histo.ClassName() == 'TH2D' or histo.ClassName() == 'TH2F' or histo.ClassName() == 'TProfile2D':
-# 		hst = Histo2D()
-# 		histo.RebinX(rebin)
-# 		histo.RebinY(rebin)
-# 		hst.source = rootfile
-# 		hst.name = histo.GetName()
-# 		hst.classname = histo.ClassName()
-# 		hst.title = histo.GetTitle()
-# 		hst.xlabel = histo.GetXaxis().GetTitle()
-# 		hst.ylabel = histo.GetYaxis().GetTitle()
-# 		for x in range(1, histo.GetNbinsX() + 1):
-# 			hst.x.append(histo.GetBinLowEdge(x))
-# 			hst.xc.append(histo.GetBinCenter(x))
-# 			hst.xerr.append(histo.GetBinWidth(x) / 2.0)
-# 		a = np.zeros(shape=(histo.GetNbinsY(), histo.GetNbinsX()))
-# 		hst.BinContents = np.ma.masked_equal(a, 0.0)
-# 		for y in range(1, histo.GetNbinsY() + 1):
-# 			for x in range(1, histo.GetNbinsX() + 1):
-# 				if (histo.ClassName() != 'TProfile2D') or histo.GetBinEntries(histo.GetBin(x, y)) > 0:
-# 					hst.BinContents[y - 1, x - 1] = histo.GetBinContent(x, y)
-# 			hst.y.append(histo.GetYaxis().GetBinLowEdge(y))
-# 			hst.yc.append(histo.GetYaxis().GetBinCenter(y))
-# 			hst.yerr.append(histo.GetYaxis().GetBinWidth(y) / 2.0)
-# 		hst.xborderhigh = hst.xc[-1] + hst.xerr[-1]
-# 		hst.xborderlow = hst.xc[0] - hst.xerr[0]
-# 		hst.yborderhigh = hst.yc[-1] + hst.yerr[-1]
-# 		hst.yborderlow = hst.yc[0] - hst.yerr[0]
-# 		hst.mean = histo.GetMean()
-# 		hst.meanerr = histo.GetMeanError()
-# 	elif histo.ClassName() == 'TGraphErrors' or histo.ClassName() == 'TGraph':
-# 		# histo is a graph, read it
-# 		hst.source = rootfile
-# 		hst.name = histo.GetName()
-# 		hst.classname = histo.ClassName()
-# 		hst.title = histo.GetTitle()
-# 		hst.xlabel = histo.GetXaxis().GetTitle()
-# 		hst.ylabel = histo.GetYaxis().GetTitle()
-# 		a = ROOT.Double(0.0)
-# 		b = ROOT.Double(0.0)
-# 		for i in range(0, histo.GetN()):
-# 			histo.GetPoint(i, a, b)
-# 			x = float(a)
-# 			y = float(b)
-# 			xerr = histo.GetErrorX(i)
-# 			yerr = histo.GetErrorY(i)
-# 			hst.x.append(x)
-# 			hst.xc.append(x)
-# 			hst.y.append(y)
-# 			hst.xerr.append(xerr if xerr > 0.0 else 0.0)
-# 			hst.yerr.append(yerr if yerr > 0.0 else 0.0)
-# 	elif histo.ClassName() == 'TGraphAsymmErrors':
-# 		# histo is a graph, read it
-# 		hst.source = rootfile
-# 		hst.name = histo.GetName()
-# 		hst.classname = histo.ClassName()
-# 		hst.title = histo.GetTitle()
-# 		hst.xlabel = histo.GetXaxis().GetTitle()
-# 		hst.ylabel = histo.GetYaxis().GetTitle()
-# 		a = ROOT.Double(0.0)
-# 		b = ROOT.Double(0.0)
-# 		hst.xerr = [[],[]]
-# 		hst.yerr = [[],[]]
-# 		for i in range(0, histo.GetN()):
-# 			histo.GetPoint(i, a, b)
-# 			x = float(a)
-# 			y = float(b)
-# 			xerr_low = histo.GetErrorXlow(i)
-# 			xerr_high = histo.GetErrorXhigh(i)
-# 			yerr_low = histo.GetErrorYlow(i)
-# 			yerr_high = histo.GetErrorYhigh(i)
-# 			hst.x.append(x)
-# 			hst.xc.append(x)
-# 			hst.y.append(y)
-# 			hst.xerr[0].append(xerr_low)
-# 			hst.xerr[1].append(xerr_high)
-# 			hst.yerr[0].append(yerr_low)
-# 			hst.yerr[1].append(yerr_high)
-# 	else:
-# 		# histo is of unknown type
-# 		log.critical("The object '" + str(histo) + "' is no histogram, no graph and no profile! It could not be converted!")
-# 		exit(1)
-# 	return hst
 class MplGraph:
 
 	def __init__(self, rootgraph):
@@ -146,8 +29,10 @@ class MplGraph:
 			rootgraph.GetPoint(i, tmpX, tmpY)
 			self.x[i] = tmpX
 			self.y[i] = tmpY
+		self.xerr = np.array([rootgraph.GetErrorX(i) for i in xrange(self.size)])
 		self.xerrl = np.array([rootgraph.GetErrorXlow(i) for i in xrange(self.size)])
 		self.xerru = np.array([rootgraph.GetErrorXhigh(i) for i in xrange(self.size)])
+		self.yerr = np.array([rootgraph.GetErrorY(i) for i in xrange(self.size)])
 		self.yerrl = np.array([rootgraph.GetErrorYlow(i) for i in xrange(self.size)])
 		self.yerru = np.array([rootgraph.GetErrorYhigh(i) for i in xrange(self.size)])
 
@@ -172,7 +57,7 @@ class MplGraph:
 		return self.y + self.yerru
 
 
-class MplHisto1D:
+class MplHisto1D(object):
 	"""Simple representation of 1D Root histogram to be used for matplotlib."""
 
 	def __init__(self, roothisto):
@@ -194,13 +79,13 @@ class MplHisto1D:
 		# upper bin edge
 		self.xu = np.array([roothisto.GetXaxis().GetBinUpEdge(i) for i in xrange(1, self.size +1)])
 		# bin content
-		self.y = np.array([roothisto.GetBinContent(i) for i in xrange(1, self.size +1)])
+		self.bincontents = np.array([roothisto.GetBinContent(i) for i in xrange(1, self.size +1)])
 		# bin content
-		self.yerr = np.array([roothisto.GetBinError(i) for i in xrange(1, self.size +1)])
+		self.binerr = np.array([roothisto.GetBinError(i) for i in xrange(1, self.size +1)])
 		# lower bin error
-		self.yerrl = np.array([roothisto.GetBinErrorLow(i) for i in xrange(1, self.size +1)])
+		self.binerrl = np.array([roothisto.GetBinErrorLow(i) for i in xrange(1, self.size +1)])
 		# upper bin error
-		self.yerru = np.array([roothisto.GetBinErrorUp(i) for i in xrange(1, self.size +1)])
+		self.binerru = np.array([roothisto.GetBinErrorUp(i) for i in xrange(1, self.size +1)])
 
 	@property
 	def xerr(self):
@@ -223,19 +108,20 @@ class MplHisto1D:
 		return np.concatenate((self.xl, self.xu[-1:]))
 
 	@property
-	def yl(self):
-		return self.y - self.yerrl
+	def bincontentsl(self):
+		return self.bincontents - self.binerrorsl
 
 	@property
-	def yu(self):
-		return self.y + self.yerru
+	def bincontentsu(self):
+		return self.bincontents + self.binerrorsu
 
-class MplHisto2D:
-	"""Simple representation of 1D Root histogram to be used for matplotlib."""
+class MplHisto2D(object):
+	"""Simple representation of 2D Root histogram to be used for matplotlib."""
 
 	def __init__(self, roothisto):
 		if not roothisto.ClassName() in ['TH2D', 'TH2F', 'TProfile2D']:
 			raise TypeError('No valid TH2D, TH2F or TProfile2D passed.')
+
 		self.name = roothisto.GetName()
 		self.roothisto = roothisto
 		# self.classname = roothisto.ClassName()
@@ -246,8 +132,6 @@ class MplHisto2D:
 		self.size = (roothisto.GetNbinsY(), roothisto.GetNbinsX())
 
 		self.bincontents = np.zeros((roothisto.GetNbinsY(), roothisto.GetNbinsX()))
-		# self.bincontents = np.ma.masked_equal(tmparr, 0.0)
-
 		for y in xrange(1, roothisto.GetNbinsY() + 1):
 			for x in xrange(1, roothisto.GetNbinsX() + 1):
 				if (roothisto.ClassName() != 'TProfile2D') or roothisto.GetBinEntries(roothisto.GetBin(x, y)) > 0:
@@ -287,14 +171,6 @@ class MplHisto2D:
 	@property
 	def xbinedges(self):
 		return np.concatenate((self.xl, self.xu[-1:]))
-
-	@property
-	def yl(self):
-		return self.y - self.yerrl
-
-	@property
-	def yu(self):
-		return self.y + self.yerru
 
 	@property
 	def ybinwidth(self):
