@@ -10,6 +10,8 @@ void ValidBTaggedJetsProducer::Init(KappaSettings const& settings)
 {
 	KappaProducerBase::Init(settings);
 	
+	bTagSFMethod = ToBTagScaleFactorMethod(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetBTagSFMethod())));
+	
 	// add possible quantities for the lambda ntuples consumers
 	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nBJets", [](KappaEvent const& event, KappaProduct const& product) {
 		return product.m_bTaggedJets.size();
@@ -57,38 +59,46 @@ void ValidBTaggedJetsProducer::Produce(KappaEvent const& event, KappaProduct& pr
 
 		validBJet = validBJet && AdditionalCriteria(tjet, event, product, settings);
 		
-		//entry point for promotion/demotion of btagged jets - this is recommanded from bPOG
+		//entry point for Scale Factor (SF) of btagged jets
 		if (settings.GetApplyBTagSF() && !settings.GetInputIsData())
 		{
-			int jetflavor = 1;
-			for (auto iterator=product.m_genMatchedJets.begin(); iterator!=product.m_genMatchedJets.end(); ++iterator)
-			{
-				if ( iterator->first->p4 == tjet->p4 )
-				{
-					jetflavor = std::abs(iterator->second->pdgId());
-					LOG(DEBUG) << "Jet " << iterator->first->p4 << "  => " << iterator->second->p4;
-					LOG(DEBUG) << "particle ID " << std::abs(iterator->second->pdgId());
-				}		
-			}
-			unsigned int btagSys = BtagSF::kNo;
-			unsigned int bmistagSys = BtagSF::kNo;
-			bool is8TeV = true;
-			if (settings.GetBTagShift()<0)
-				btagSys = BtagSF::kDown;
-			if (settings.GetBTagShift()>0)
-				btagSys = BtagSF::kUp;
-			if (settings.GetBMistagShift()<0)
-				bmistagSys = BtagSF::kDown;
-			if (settings.GetBMistagShift()>0)
-				bmistagSys = BtagSF::kUp;
+			if (bTagSFMethod == BTagScaleFactorMethod::PROMOTIONDEMOTION) {
 			
-			bool before = validBJet;
-			BtagSF btagSF;
-			validBJet = btagSF.isbtagged(tjet->p4.pt(), tjet->p4.eta(), combinedSecondaryVertex,
-							           jetflavor, settings.GetInputIsData(),
-							           btagSys, bmistagSys, is8TeV);
-			if (before != validBJet) 
-				LOG(DEBUG) << "Promoted/demoted : " << validBJet;
+				int jetflavor = 1;
+				for (auto iterator=product.m_genMatchedJets.begin(); iterator!=product.m_genMatchedJets.end(); ++iterator)
+				{
+					if ( iterator->first->p4 == tjet->p4 )
+					{
+						jetflavor = std::abs(iterator->second->pdgId());
+						LOG(DEBUG) << "Jet " << iterator->first->p4 << "  => " << iterator->second->p4;
+						LOG(DEBUG) << "particle ID " << std::abs(iterator->second->pdgId());
+					}
+				}
+				unsigned int btagSys = BtagSF::kNo;
+				unsigned int bmistagSys = BtagSF::kNo;
+				bool is8TeV = true;
+				if (settings.GetBTagShift()<0)
+					btagSys = BtagSF::kDown;
+				if (settings.GetBTagShift()>0)
+					btagSys = BtagSF::kUp;
+				if (settings.GetBMistagShift()<0)
+					bmistagSys = BtagSF::kDown;
+				if (settings.GetBMistagShift()>0)
+					bmistagSys = BtagSF::kUp;
+			
+				bool before = validBJet;
+				BtagSF btagSF;
+				validBJet = btagSF.isbtagged(tjet->p4.pt(), tjet->p4.eta(), combinedSecondaryVertex,
+							     jetflavor, settings.GetInputIsData(),
+							     btagSys, bmistagSys, is8TeV);
+				if (before != validBJet) 
+					LOG(DEBUG) << "Promoted/demoted : " << validBJet;
+			}
+			
+			else if (bTagSFMethod == BTagScaleFactorMethod::OTHER) {
+				
+				//todo
+			}
 		}
 
 		if (validBJet)
