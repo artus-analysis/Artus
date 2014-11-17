@@ -59,6 +59,12 @@ public:
 		MEDIUM = 1,
 		LOOSE  = 2,
 	};
+	enum class JetIDVersion : int
+	{
+		ID2010 = 0,
+		ID2014 = 1,
+	};
+
 	static JetID ToJetID(std::string const& jetID)
 	{
 		if (jetID == "tight") return JetID::TIGHT;
@@ -66,7 +72,13 @@ public:
 		else if (jetID == "loose") return JetID::LOOSE;
 		else return JetID::NONE;
 	}
-	
+
+	static JetIDVersion ToJetIDVersion(std::string const& jetIDVersion)
+	{
+		if (jetIDVersion == "2010") return JetIDVersion::ID2010;
+		else if (jetIDVersion == "2014") return JetIDVersion::ID2014;
+		else return JetIDVersion::ID2010;
+	}
 	ValidJetsProducerBase(std::vector<TJet>* KappaEvent::*jets,
 	                      std::vector<std::shared_ptr<TJet> > KappaProduct::*correctJets,
 	                      std::vector<TValidJet*> KappaProduct::*validJets) :
@@ -86,6 +98,7 @@ public:
 		
 		validJetsInput = ToValidJetsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidJetsInput())));
 		jetID = ToJetID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetJetID())));
+		jetIDVersion = ToJetIDVersion(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetJetIDVersion())));
 		
 		// add possible quantities for the lambda ntuples consumers
 		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nJets",[](KappaEvent const& event, KappaProduct const& product) {
@@ -169,6 +182,12 @@ public:
 						   && (*jet)->nCharged > 0
 						   && (*jet)->chargedEMFraction < 0.99;
 			}
+			if (jetIDVersion == JetIDVersion::ID2014) 
+			{
+				validJet = validJet
+						   && (*jet)->muonFraction < 0.8
+						   && (*jet)->chargedEMFraction < 0.9;
+			}
 			
 			// remove leptons from list of jets via simple DeltaR isolation
 			for (std::vector<KLepton*>::const_iterator lepton = product.m_validLeptons.begin();
@@ -213,6 +232,7 @@ private:
 	
 	ValidJetsInput validJetsInput;
 	JetID jetID;
+	JetIDVersion jetIDVersion;
 
 	float GetMaxNeutralFraction() const
 	{
