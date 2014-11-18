@@ -211,6 +211,7 @@ class PlotMpl(plotbase.PlotBase):
 	def save_canvas(self, plotData):
 		for output_filename in plotData.plotdict["output_filenames"]:
 			self.fig.savefig(output_filename)
+			log.info("Created plot \"%s\"." % output_filename)
 
 
 	@staticmethod
