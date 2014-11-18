@@ -55,7 +55,7 @@ class ExportRoot(plotbase.PlotBase):
 			root_output_file.cd()
 			
 			for nick, path in zip(plotData.plotdict["nicks"], plotData.plotdict["labels"]):
-				root_object = plotData.plotdict["root_histos"][nick]
+				root_object = plotData.plotdict["root_objects"][nick]
 				roottools.RootTools.write_object(root_output_file, root_object, path)
 		
 	def modify_axes(self, plotData):
