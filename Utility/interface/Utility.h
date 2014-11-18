@@ -159,6 +159,14 @@ namespace Utility {
 		return ParseMapTypes(inputMap, outputMapWrongTKey, outputMapWrongTValue, outputMapWrongTKeyWrongTValue);
 	}
 	
+	// Check if container contains a certain item
+	template <template<class, class...> class Container, typename Item, typename... Args>
+	static bool Contains(Container<Item, Args...> const& container, Item const& item)
+	{
+		typename Container<Item, Args...>::const_iterator it = std::find(container.begin(), container.end(), item);
+		return (it != container.end());
+	}
+	
 	template<class TNumber>
 	bool ApproxEqual(TNumber value1, TNumber value2, double maxDelta=1e-5)
 	{
