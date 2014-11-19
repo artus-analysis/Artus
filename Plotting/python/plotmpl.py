@@ -11,7 +11,7 @@ import ROOT
 
 import HarryPlotter.Plotting.plotbase as plotbase
 
-from HarryPlotter.Utility.mplhisto import MplHisto1D, MplGraph, MplHisto2D
+from HarryPlotter.Utility.mplhisto import MplHisto, MplGraph
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -101,16 +101,16 @@ class PlotMpl(plotbase.PlotBase):
 				mplhist = MplGraph(root_object)
 				self.plot_errorbar(mplhist, ax=self.ax, style='line', color=color, fmt=marker, capsize=0, linestyle=linestyle, label=label, zorder = 4)
 			elif isinstance(root_object, ROOT.TH2):
-				self.plot_dimension = 2
-				mplhist = MplHisto2D(root_object)
+				mplhist = MplHisto(root_object)
+				self.plot_dimension = mplhist.dimension
 				vmin = plotData.plotdict["z_lims"][0] if plotData.plotdict["z_lims"] else None
 				vmax = plotData.plotdict["z_lims"][1] if plotData.plotdict["z_lims"] else None
 				cmap = plt.cm.get_cmap(plotData.plotdict["colormap"])
 				self.plot_contour1d(mplhist, ax=self.ax, vmin=vmin, vmax=vmax, z_log=plotData.plotdict["z_log"], cmap=cmap)
 
 			elif isinstance(root_object, ROOT.TH1):
-				self.plot_dimension = 1
-				mplhist = MplHisto1D(root_object)
+				mplhist = MplHisto(root_object)
+				self.plot_dimension = mplhist.dimension
 
 				if marker=="bar":
 					self.plot_hist1d(mplhist, style='bar', ax=self.ax, show_yerr=errorbar, label=label, color=color, alpha=1.0, zorder=1)
@@ -134,7 +134,7 @@ class PlotMpl(plotbase.PlotBase):
 				                                               plotData.plotdict["ratio_colors"],
 				                                               plotData.plotdict["ratio_markers"]):
 				self.ax2.axhline(1.0, color='black')
-				mplhist_ratio = MplHisto1D(root_object)
+				mplhist_ratio = MplHisto(root_object)
 				# self.ax2.errorbar(mplhist_ratio.x, mplhist_ratio.y, mplhist_ratio.yerr, ecolor=ratio_color, fmt=ratio_marker)
 				self.plot_errorbar(mplhist_ratio, ax=self.ax2, color=ratio_color, fmt=ratio_marker, capsize=0, linestyle='')
 
@@ -269,7 +269,7 @@ class PlotMpl(plotbase.PlotBase):
 			ax = plt.gca()
 
 		x = hist.x
-		if isinstance(hist, MplHisto1D):
+		if isinstance(hist, MplHisto):
 			y = hist.bincontents
 		else:
 			y = hist.y
@@ -279,7 +279,7 @@ class PlotMpl(plotbase.PlotBase):
 		else:
 			xerr = None
 		if show_yerr:
-			if isinstance(hist, MplHisto1D):
+			if isinstance(hist, MplHisto):
 				yerr = np.array((hist.binerrl, hist.binerru))
 			else:
 				yerr = np.array((hist.yerrl, hist.yerru))
