@@ -103,25 +103,10 @@ class PlotMpl(plotbase.PlotBase):
 			elif isinstance(root_object, ROOT.TH2):
 				self.plot_dimension = 2
 				mplhist = MplHisto2D(root_object)
-
-				z = mplhist.bincontents
 				vmin = plotData.plotdict["z_lims"][0] if plotData.plotdict["z_lims"] else None
 				vmax = plotData.plotdict["z_lims"][1] if plotData.plotdict["z_lims"] else None
-				if plotData.plotdict["z_log"]:
-					norm = LogNorm(vmin=vmin, vmax=vmax)
-					z = np.ma.masked_equal(z, 0.0)
-				else:
-					norm = Normalize(vmin=vmin, vmax=vmax)
-
 				cmap = plt.cm.get_cmap(plotData.plotdict["colormap"])
-				cmap.set_bad('black')
-				self.image = self.ax.imshow(z,
-				                            interpolation='nearest',
-				                            origin='lower',
-				                            extent=[mplhist.xl[0], mplhist.xu[-1], mplhist.yl[0], mplhist.yu[-1]],
-				                            aspect='auto',
-				                            cmap=cmap,
-				                            norm=norm)
+				self.plot_contour1d(mplhist, ax=self.ax, vmin=vmin, vmax=vmax, z_log=plotData.plotdict["z_log"], cmap=cmap)
 
 			elif isinstance(root_object, ROOT.TH1):
 				self.plot_dimension = 1
@@ -201,7 +186,9 @@ class PlotMpl(plotbase.PlotBase):
 			energy = "+".join(plotData.plotdict["energy"])
 			plt.text(1.0, 1.030, "$\sqrt{s}=" + energy + "\\ \mathrm{TeV}$", transform=self.ax.transAxes, fontsize=10, horizontalalignment="right")
 			#self.fig.suptitle("$\sqrt{s}=" + energy + "\\ \mathrm{TeV}$", ha="right",x=0.9) 
-		legend = self.ax.legend(loc='upper right')
+
+		self.ax.legend(loc='upper right')
+
 		if self.mpl_version >= 121:
 			plt.tight_layout()
 		# Decrease vertical distance between subplots
@@ -209,7 +196,6 @@ class PlotMpl(plotbase.PlotBase):
 
 	def save_canvas(self, plotData):
 		for output_filename in plotData.plotdict["output_filenames"]:
-			print "Save figure to {0}".format(output_filename)
 			self.fig.savefig(output_filename)
 			log.info("Created plot \"%s\"." % output_filename)
 
@@ -336,3 +322,23 @@ class PlotMpl(plotbase.PlotBase):
 
 		if show_yerr:
 			ax.errorbar(hist.x, hist.y, yerr=hist.yerr, color=color, fmt='', capsize=0, zorder=1, linestyle='')
+
+	def plot_contour1d(self, hist, ax=None, z_log=False, vmin=None, vmax=None, cmap='afmhot'):
+
+		arr = hist.bincontents
+		if z_log:
+			norm = LogNorm(vmin=vmin, vmax=vmax)
+			z = np.ma.masked_equal(z, 0.0)
+		else:
+			norm = Normalize(vmin=vmin, vmax=vmax)
+
+		# TODO Masked values are currently plotted black. Needs to be adapted to chosen colorbar
+		cmap.set_bad('black')
+		self.image = self.ax.imshow(arr,
+		                            interpolation='nearest',
+		                            origin='lower',
+		                            extent=[hist.xl[0], hist.xu[-1], hist.yl[0], hist.yu[-1]],
+		                            aspect='auto',
+		                            cmap=cmap,
+		                            norm=norm)
+
