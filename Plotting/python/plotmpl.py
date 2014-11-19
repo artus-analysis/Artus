@@ -93,6 +93,7 @@ class PlotMpl(plotbase.PlotBase):
 				break
 
 		for nick, color, label, marker, errorbar, linestyle in zip(*zip_arguments):
+			print "Process nick: {0}".format(nick)
 			root_object = plotData.plotdict["root_objects"][nick]
 
 			if isinstance(root_object, ROOT.TGraph):
@@ -104,11 +105,13 @@ class PlotMpl(plotbase.PlotBase):
 				mplhist = MplHisto2D(root_object)
 
 				z = mplhist.bincontents
+				vmin = plotData.plotdict["z_lims"][0] if plotData.plotdict["z_lims"] else None
+				vmax = plotData.plotdict["z_lims"][1] if plotData.plotdict["z_lims"] else None
 				if plotData.plotdict["z_log"]:
-					norm = LogNorm
+					norm = LogNorm(vmin=vmin, vmax=vmax)
 					z = np.ma.masked_equal(z, 0.0)
 				else:
-					norm = Normalize
+					norm = Normalize(vmin=vmin, vmax=vmax)
 
 				cmap = plt.cm.get_cmap(plotData.plotdict["colormap"])
 				cmap.set_bad('black')
@@ -118,11 +121,10 @@ class PlotMpl(plotbase.PlotBase):
 				                            extent=[mplhist.xl[0], mplhist.xu[-1], mplhist.yl[0], mplhist.yu[-1]],
 				                            aspect='auto',
 				                            cmap=cmap,
-				                            norm=norm())
+				                            norm=norm)
 
 			elif isinstance(root_object, ROOT.TH1):
 				self.plot_dimension = 1
-
 				mplhist = MplHisto1D(root_object)
 
 				if marker=="bar":
@@ -162,7 +164,7 @@ class PlotMpl(plotbase.PlotBase):
 		if not plotData.plotdict["ratio"]:
 			self.ax.set_xlabel(plotData.plotdict["x_label"], position=(1., 0.), va='top', ha='right')
 		self.ax.set_ylabel(plotData.plotdict["y_label"], position=(0., 1.), va='top', ha='right')
-		# self.ax.ticklabel_format(style='sci',scilimits=(-3,4),axis='both')
+		self.ax.ticklabel_format(style='sci',scilimits=(-3,4),axis='both')
 
 		# do special things for 1D Plots
 		if self.plot_dimension == 1:
@@ -207,6 +209,7 @@ class PlotMpl(plotbase.PlotBase):
 
 	def save_canvas(self, plotData):
 		for output_filename in plotData.plotdict["output_filenames"]:
+			print "Save figure to {0}".format(output_filename)
 			self.fig.savefig(output_filename)
 			log.info("Created plot \"%s\"." % output_filename)
 
@@ -217,17 +220,22 @@ class PlotMpl(plotbase.PlotBase):
 		matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
 		matplotlib.rcParams['mathtext.default'] = 'rm'
 		# matplotlib.rcParams['font.sans-serif'] = 'helvetica, Helvetica, Nimbus Sans L, Mukti Narrow, FreeSans'
+
 		# figure
 		matplotlib.rcParams['figure.figsize'] = 7., 7.
 		# axes
 		matplotlib.rcParams['axes.linewidth'] = 2
 		matplotlib.rcParams['axes.labelsize'] = 20
 		matplotlib.rcParams['xtick.labelsize'] = 16
-		matplotlib.rcParams['xtick.major.size'] = 12
+		matplotlib.rcParams['xtick.major.size'] = 8
+		matplotlib.rcParams['xtick.major.width'] = 1.5
 		matplotlib.rcParams['xtick.minor.size'] = 6
+		matplotlib.rcParams['xtick.minor.width'] = 1.
 		matplotlib.rcParams['ytick.labelsize'] = 16
-		matplotlib.rcParams['ytick.major.size'] = 14
-		matplotlib.rcParams['ytick.minor.size'] = 7
+		matplotlib.rcParams['ytick.major.width'] = 1.5
+		matplotlib.rcParams['ytick.major.size'] = 8
+		matplotlib.rcParams['ytick.minor.size'] = 6
+		matplotlib.rcParams['ytick.minor.width'] = 1.
 		matplotlib.rcParams['lines.markersize'] = 8
 		# default color cycle
 		matplotlib.rcParams['axes.color_cycle'] = [(0.0, 0.0, 0.0),
@@ -239,6 +247,7 @@ class PlotMpl(plotbase.PlotBase):
 		                                           (0.6509803921568628, 0.33725490196078434, 0.1568627450980392),
 		                                           (0.9686274509803922, 0.5058823529411764, 0.7490196078431373),
 		                                           (0.6, 0.6, 0.6)]
+		matplotlib.rcParams["axes.formatter.limits"] = [-5, 5]
 		# legend
 		matplotlib.rcParams['legend.numpoints'] = 1
 		matplotlib.rcParams['legend.fontsize'] = 19
