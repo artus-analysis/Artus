@@ -60,6 +60,13 @@ public:
 			}
 		}
 		
+		// register TMVA input variables
+		for (std::vector<std::string>::const_iterator quantity = (settings.*GetTmvaInputQuantities)().begin();
+		     quantity != (settings.*GetTmvaInputQuantities)().end(); ++quantity)
+		{
+			tmvaReader.AddVariable(*quantity, (float*)(0));
+		}
+		
 		// loading TMVA weight files
 		assert((settings.*GetTmvaMethods)().size() == (settings.*GetTmvaWeights)().size());
 		LOG(DEBUG) << "\tLoading TMVA weight files...";
