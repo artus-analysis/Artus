@@ -7,6 +7,8 @@ import logging
 import HarryPlotter.Utility.logger as logger
 log = logging.getLogger(__name__)
 
+import copy
+
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
@@ -163,8 +165,11 @@ class HarryCore(object):
 		
 		# prepare aguments for all processors before running them
 		for processor in self.processors:
-			processor.prepare_args(parser, plotData)
-			processor.run(plotData)
+			tmpPlotData = copy.deepcopy(plotData) if isinstance(processor, plotbase.PlotBase) else plotData
+			processor.prepare_args(parser, tmpPlotData)
+			processor.run(tmpPlotData)
+			if not isinstance(processor, plotbase.PlotBase):
+				plotData = tmpPlotData
 	
 	def register_processor(self, processor_name, processor):
 		self.available_processors[processor_name] = processor
