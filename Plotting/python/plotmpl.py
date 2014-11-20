@@ -317,11 +317,11 @@ class PlotMpl(plotbase.PlotBase):
 			proxy = plt.Rectangle((0, 0), 0, 0, label=label, facecolor=color, edgecolor='black', alpha=1.0)
 			ax.add_patch(proxy)
 		elif style == 'bar':
-			ax.bar(hist.xl, hist.y, hist.xbinwidth, bottom=bottom,
+			ax.bar(hist.xl, hist.bincontents, hist.xbinwidth, bottom=bottom,
 			       label=label, fill=True, facecolor=color, edgecolor=color, ecolor=color, alpha=1.0)
 
 		if show_yerr:
-			ax.errorbar(hist.x, hist.y, yerr=hist.yerr, color=color, fmt='', capsize=0, zorder=1, linestyle='')
+			ax.errorbar(hist.x, hist.bincontents, yerr=hist.binerr, color=color, fmt='', capsize=0, zorder=1, linestyle='')
 
 	def plot_contour1d(self, hist, ax=None, z_log=False, vmin=None, vmax=None, cmap='afmhot'):
 
