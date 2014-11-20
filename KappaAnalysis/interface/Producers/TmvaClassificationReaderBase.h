@@ -1,6 +1,9 @@
 
 #pragma once
 
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/trim.hpp>
+
 #include "TMVA/Reader.h"
 
 #include "Artus/Core/interface/ProducerBase.h"
@@ -50,9 +53,15 @@ public:
 		for (std::vector<std::string>::const_iterator quantity = (settings.*GetTmvaInputQuantities)().begin();
 		     quantity != (settings.*GetTmvaInputQuantities)().end(); ++quantity)
 		{
-			if (LambdaNtupleConsumer<TTypes>::GetFloatQuantities().count(*quantity) > 0)
+			std::vector<std::string> splitted;
+			boost::algorithm::split(splitted, *quantity, boost::algorithm::is_any_of(":="));
+			transform(splitted.begin(), splitted.end(), splitted.begin(),
+			          [](std::string s) { return boost::algorithm::trim_copy(s); });
+			std::string lambdaQuantity = splitted.front();
+			
+			if (LambdaNtupleConsumer<TTypes>::GetFloatQuantities().count(lambdaQuantity) > 0)
 			{
-				m_inputExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetFloatQuantities(), *quantity));
+				m_inputExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetFloatQuantities(), lambdaQuantity));
 			}
 			else // TODO
 			{
