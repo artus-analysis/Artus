@@ -7,8 +7,19 @@ log = logging.getLogger(__name__)
 
 import argparse
 import getpass
+import math
 import re
 import subprocess
+
+
+def progress_bar(n_running, n_all, n_norm, size):
+	running_char = "\033[0;42m \033[0m"
+	queued_char = "\033[0;43m \033[0m"
+	free_char = " "
+	n_running_chars = int(math.ceil(float(n_running) * size / n_norm))
+	n_queued_chars = min(int(math.ceil(float(n_all-n_running) * size / n_norm)), size - n_running_chars)
+	n_free_chars = size - n_running_chars - n_queued_chars
+	return "%s%s%s" % (running_char*n_running_chars, queued_char*n_queued_chars, free_char*n_free_chars)
 
 
 def main():
@@ -17,6 +28,8 @@ def main():
 	
 	parser.add_argument("-s", "--sort-state", default="r",
 	                    help="State to be used for sorting. [Default: %(default)s]")
+	parser.add_argument("--norm-total-jobs", default=False, action="store_true",
+	                    help="Norm progress bar to total number of jobs in batch system. [Default: Norm to user with most job in system.]")
 	
 	args = parser.parse_args()
 	logger.initLogger(args)
@@ -52,17 +65,29 @@ def main():
 	               key=lambda user: len(parsed_qstat_output[user].get(sort_state, [])))
 	max_len_users = max([len(user) for user in users])
 	
+	tty_width_command = "stty size"
+	tty_width = int(subprocess.Popen(tty_width_command, stdout=subprocess.PIPE, shell=True).communicate()[0].split()[-1])
+	
+	n_total_jobs = sum([len(state_jobids.get("all", [])) for state_jobids in parsed_qstat_output.values()])
+	max_n_jobs = max([len(state_jobids.get("all", [])) for state_jobids in parsed_qstat_output.values()])
+	
 	# format table header
-	qstat_table = ((" \033[0;1m%" + ("%d" % max_len_users) + "s\033[0m") % "User")
+	qstat_table = ((" \033[0;1m%" + ("%d" % max_len_users) + "s\033[0m | ") % "User")
 	for state in states:
-		qstat_table += (" | \033[0;1m%6s\033[0m" % state)
-	qstat_table += ("\n" + ("-" * (max_len_users+2)) + (("|" + ("-"*8)) * len(states)))
+		qstat_table += ("\033[0;1m%6s\033[0m | " % state)
+	line = (("-" * (max_len_users+2)) + (("|" + ("-"*8)) * len(states)) + "|")
+	line += ("-" * (tty_width-len(line)))
+	qstat_table += ("\n" + line)
 	
 	# format table body
 	for user in users:
-		line = ((" %" + ("%d" % max_len_users) + "s") % user)
+		line = ((" %" + ("%d" % max_len_users) + "s | ") % user)
 		for state in states:
-			line += (" | %6d" % len(parsed_qstat_output[user].get(state, [])))
+			line += ("%6d | " % len(parsed_qstat_output[user].get(state, [])))
+		line += progress_bar(len(parsed_qstat_output[user].get("r", [])),
+		                     len(parsed_qstat_output[user].get("all", [])),
+		                     n_total_jobs if args.norm_total_jobs else max_n_jobs,
+		                     tty_width-len(line))
 		qstat_table += ("\n" + (("\033[0;31;47m"+line+"\033[0m") if user == getpass.getuser() else line))
 	
 	# output table
