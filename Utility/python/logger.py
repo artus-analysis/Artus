@@ -245,9 +245,11 @@ def initLogger(argParserArgs=None, name="", logLevel="debug", logFiles=[], logSt
 
 # By-name-reference default dictionaries
 initLogger.LDFormatDefault = {
-		logging.DEBUG   : "%(levelname)s (%(filename)s.%(lineno)d): %(message)s",
+		logging.DEBUG	: "%(message)s",
 		logging.INFO	: "%(message)s",
-		logging.WARNING : "%(levelname)s: %(message)s"
+		logging.WARNING	: "\033[0;43m%(levelname)s:\033[0m %(message)s",
+		logging.ERROR	: "\033[0;41m%(levelname)s:\033[0m %(message)s",
+		logging.FATAL	: "\033[0;41m%(levelname)s:\033[0;31m %(message)s\033[0m",
 	}
 
 # Custom formatter with level-dependent formats
