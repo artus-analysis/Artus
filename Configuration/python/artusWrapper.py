@@ -338,8 +338,14 @@ class ArtusWrapper(object):
 		                                 help="Run with grid-control.")
 		runningOptionsGroup.add_argument("--no-log-to-se", default=False, action="store_true",
 		                                 help="Do not write logfile in batch mode directly to SE.")
-		runningOptionsGroup.add_argument("--files-per-job", type=int, default=20,
+		runningOptionsGroup.add_argument("--files-per-job", type=int, default=15,
 		                                 help="Files per batch job. [Default: %(default)s]")
+		runningOptionsGroup.add_argument("--wall-time", default="02:00:00",
+		                                 help="Wall time of batch jobs. [Default: %(default)s]")
+		runningOptionsGroup.add_argument("--memory", type=int, default=6000,
+		                                 help="Memory (in MB) for batch jobs. [Default: %(default)s]")
+		runningOptionsGroup.add_argument("--cmdargs", default="-cG -m 3",
+		                                 help="Command line arguments for go.py. [Default: %(default)s]")
 		runningOptionsGroup.add_argument("--se-path",
 		                                 help="Custom SE path, if it should different from the work directory.")
 
@@ -396,6 +402,9 @@ class ArtusWrapper(object):
 		                     jobs = "" if not self._args.fast else "jobs = " + str(self._args.fast),
 		                     inputfiles = "input files = \n\t" + self._configFilename,
 		                     filesperjob = "files per job = " + str(self._args.files_per_job),
+		                     walltime = "wall time = " + self._args.wall_time,
+		                     memory = "memory = " + str(self._args.memory),
+		                     cmdargs = "cmdargs = " + self._args.cmdargs,
 		                     dataset = "dataset = \n\t:list:" + dbsFileBasepath,
 		                     epilogarguments = epilogArguments,
 		                     seoutputfiles = "se output files = *.txt *.root" if self._args.no_log_to_se else "se output files = *.root")
