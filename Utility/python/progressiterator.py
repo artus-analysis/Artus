@@ -25,8 +25,9 @@ class ProgressIterator(object):
 		if current_progress > self.current_progress:
 			self.current_progress = current_progress
 			ratio = float(self.current_index) / self.len
-			line = " %s%.1f %s" % (self.description, ratio*100, "%")
-			line += (" " * (self.tty_width - len(line)))
+			line = "%s%.1f %s" % (self.description, ratio*100, "%")
+			#line += (" " * (self.tty_width - len(line)))
+			line = line.center(self.tty_width)
 			line = "\r\033[0;42m%s\033[0;41m%s\033[0m" % (line[:self.current_progress], line[self.current_progress:])
 			sys.stdout.write(line)
 			sys.stdout.flush()
