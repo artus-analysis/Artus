@@ -12,6 +12,8 @@ import os
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
+import Artus.Utility.progressiterator as pi
+
 
 def main():
 	ROOT.gROOT.SetBatch(True)
@@ -28,7 +30,9 @@ def main():
 	outputs_per_nick = {nick : glob.glob(os.path.join(args.project_dir, "output", nick, "*.root")) for nick in nick_names}
 	outputs_per_nick = {nick : files for nick, files in outputs_per_nick.iteritems() if len(files) > 0}
 	
-	for nick_name, output_files in outputs_per_nick.iteritems():
+	for nick_name, output_files in pi.ProgressIterator(outputs_per_nick.iteritems(),
+	                                                   length=len(outputs_per_nick),
+	                                                   description="Merging Artus outputs"):
 		merged_dir = os.path.join(args.project_dir, "merged", nick_name)
 		if not os.path.exists(merged_dir):
 			os.makedirs(merged_dir)
