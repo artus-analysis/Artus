@@ -67,7 +67,8 @@ public:
 		VBTF95_LOOSE = 3,
 		VBTF95_MEDIUM = 4,
 		VBTF95_TIGHT = 5,
-		USER  = 6,
+		FAKEABLE = 6,
+		USER  = 7,
 	};
 	static ElectronID ToElectronID(std::string const& electronID)
 	{
@@ -77,6 +78,7 @@ public:
 		else if (electronID == "vbft95_loose") return ElectronID::VBTF95_LOOSE;
 		else if (electronID == "vbft95_medium") return ElectronID::VBTF95_MEDIUM;
 		else if (electronID == "vbft95_tight") return ElectronID::VBTF95_TIGHT;
+		else if (electronID == "fakeable") return ElectronID::FAKEABLE;
 		else if (electronID == "user") return ElectronID::USER;
 		else return ElectronID::NONE;
 	}
@@ -99,11 +101,13 @@ public:
 		NONE  = -1,
 		MVANONTRIG = 0,
 		MVATRIG = 1,
+		FAKEABLE = 2,
 	};
 	static ElectronIso ToElectronIso(std::string const& electronIso)
 	{
 		if (electronIso == "mvanontrig") return ElectronIso::MVANONTRIG;
 		else if (electronIso == "mvatrig") return ElectronIso::MVATRIG;
+		else if (electronIso == "fakeable") return ElectronIso::FAKEABLE;
 		else return ElectronIso::NONE;
 	}
 	
@@ -219,6 +223,8 @@ public:
 				validElectron = validElectron && IsMediumVbtf95Electron(*electron, event, product);
 			else if (electronID == ElectronID::VBTF95_TIGHT)
 				validElectron = validElectron && IsTightVbtf95Electron(*electron, event, product);
+			else if (electronID == ElectronID::FAKEABLE)
+				validElectron = validElectron && IsFakeableElectron(*electron, event, product);
 			else if (electronID != ElectronID::USER && electronID != ElectronID::NONE)
 				LOG(FATAL) << "Electron ID of type " << Utility::ToUnderlyingValue(electronID) << " not yet implemented!";
 
@@ -228,6 +234,8 @@ public:
 					validElectron = validElectron && ((((*electron)->trackIso04 / (*electron)->p4.Pt()) < 0.4) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (electronIso == ElectronIso::MVATRIG)
 					validElectron = validElectron && ((((*electron)->trackIso04 / (*electron)->p4.Pt()) < 0.15) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+				else if (electronIso == ElectronIso::FAKEABLE)
+					validElectron = validElectron && IsFakeableElectronIso(*electron, event, product, settings);
 				else if (electronIso != ElectronIso::NONE)
 					LOG(FATAL) << "Electron isolation of type " << Utility::ToUnderlyingValue(electronIso) << " not yet implemented!";
 			}
@@ -502,5 +510,42 @@ private:
 		return validElectron;
 	}
 
+	bool IsFakeableElectron(KDataElectron* electron, event_type const& event, product_type& product) const
+	{
+		bool validElectron = true;
+		
+		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
+		{
+			validElectron = validElectron &&
+			                (std::abs(electron->deltaEtaSuperClusterTrackAtVtx) < 0.007) &&
+			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.15) &&
+			                (electron->sigmaIetaIeta < 0.01) &&
+			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
+			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2);
+		}
+		else
+		{
+			validElectron = validElectron &&
+			                (std::abs(electron->deltaEtaSuperClusterTrackAtVtx) < 0.009) &&
+			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.1) &&
+			                (electron->sigmaIetaIeta < 0.03) &&
+			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
+			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2);
+		}
+		
+		return validElectron;
+	}
+
+	bool IsFakeableElectronIso(KDataElectron* electron, event_type const& event, product_type& product,  setting_type const& settings) const
+	{
+		bool validElectron = true;
+		
+		validElectron = validElectron &&
+		                (((electron->trackIso04 / electron->p4.Pt()) < 0.2) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
+				((electron->ecalIso04 / electron->p4.Pt()) < 0.2) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
+				((electron->hcal1Iso04 / electron->p4.Pt()) < 0.2) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+		
+		return validElectron;
+	}
 };
 

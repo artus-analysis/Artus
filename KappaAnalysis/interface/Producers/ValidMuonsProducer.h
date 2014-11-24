@@ -62,12 +62,14 @@ public:
 		TIGHT = 0,
 		LOOSE = 1,
 		VETO = 2,
+		FAKEABLE = 3,
 	};
 	static MuonID ToMuonID(std::string const& muonID)
 	{
 		if (muonID == "tight") return MuonID::TIGHT;
 		else if (muonID == "loose") return MuonID::LOOSE;
 		else if (muonID == "veto") return MuonID::VETO;
+		else if (muonID == "fakeable") return MuonID::FAKEABLE;
 		else return MuonID::NONE;
 	}
 	
@@ -91,11 +93,13 @@ public:
 		NONE  = -1,
 		TIGHT = 0,
 		LOOSE = 1,
+		FAKEABLE = 2,
 	};
 	static MuonIso ToMuonIso(std::string const& muonIso)
 	{
 		if (muonIso == "tight") return MuonIso::TIGHT;
 		else if (muonIso == "loose") return MuonIso::LOOSE;
+		else if (muonIso == "fakeable") return MuonIso::FAKEABLE;
 		else return MuonIso::NONE;
 	}
 
@@ -196,6 +200,10 @@ public:
 			{
 				validMuon = validMuon && IsVetoMuon(*muon, event, product);
 			}
+			else if (muonID == MuonID::FAKEABLE)
+			{
+				validMuon = validMuon && IsFakeableMuon(*muon, event, product);
+			}
 			else if (muonID != MuonID::NONE)
 			{
 				LOG(FATAL) << "Muon ID of type " << Utility::ToUnderlyingValue(muonID) << " not yet implemented!";
@@ -209,6 +217,8 @@ public:
 					validMuon = validMuon && ((((*muon)->pfIso04 / (*muon)->p4.Pt()) < 0.12) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (muonIso == MuonIso::LOOSE)
 					validMuon = validMuon && ((((*muon)->pfIso04 / (*muon)->p4.Pt()) < 0.20) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+				else if (muonIso == MuonIso::FAKEABLE)
+					validMuon = validMuon && IsFakeableMuonIso(*muon, event, product, settings);
 				else if (muonIso != MuonIso::NONE)
 					LOG(FATAL) << "Muon isolation of type " << Utility::ToUnderlyingValue(muonIso) << " not yet implemented!";
 			}
@@ -327,6 +337,36 @@ private:
 		
 		return validMuon;
 	}
-
+	
+	bool IsFakeableMuon(KDataMuon* muon, event_type const& event, product_type& product) const
+	{
+		bool validMuon = true;
+		
+		validMuon = validMuon
+					&& muon->isGlobalMuon()
+					&& std::abs(muon->bestTrack.getDxy(&event.m_vertexSummary->pv)) < 0.2;
+		
+		return validMuon;
+	}
+	
+	bool IsFakeableMuonIso(KDataMuon* muon, event_type const& event, product_type& product, setting_type const& settings) const
+	{
+		bool validMuon = true;
+		
+		if (muon->p4.Pt() < 20.0) {
+			validMuon = validMuon &&
+				   ((muon->trackIso03 < 8.0) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
+				   (muon->ecalIso03  < 8.0) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
+				   (muon->hcalIso03  < 8.0) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+		}
+		else {
+			validMuon = validMuon &&
+				   (((muon->trackIso03 / muon->p4.Pt()) < 0.4) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
+				   ((muon->ecalIso03 / muon->p4.Pt()) < 0.4) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
+				   ((muon->hcalIso03 / muon->p4.Pt()) < 0.4) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+		}
+		
+		return validMuon;
+	}
 };
 
