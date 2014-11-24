@@ -48,6 +48,13 @@ class PlotMpl(plotbase.PlotBase):
 			if linestyle == None:
 				plotData.plotdict["linestyles"][index] = "-"
 
+		# validate length of parameters first
+		zip_arguments = self.get_zip_arguments(plotData)
+		for argument in zip_arguments:
+			if len(argument) != len(zip_arguments[0]):
+				log.warning("The PlotMpl module is trying to make plots with invalid inputs. The Plot will eventually not contain all requested information.")
+				break
+
 	def run(self, plotData):
 		super(PlotMpl, self).run(plotData)
 	
@@ -75,17 +82,7 @@ class PlotMpl(plotbase.PlotBase):
 
 
 	def make_plots(self, plotData):
-		# validate length of parameters first
-		zip_arguments = ( list(set(plotData.plotdict["nicks"])),
-		                                 plotData.plotdict["colors"],
-		                                 plotData.plotdict["labels"],
-		                                 plotData.plotdict["markers"],
-		                                 plotData.plotdict["errorbars"],
-		                                 plotData.plotdict["linestyles"])
-		for argument in zip_arguments:
-			if len(argument) != len(zip_arguments[0]):
-				log.warning("The PlotMpl module is trying to make plots with invalid inputs. The Plot will eventually not contain all requested information.")
-				break
+		zip_arguments = self.get_zip_arguments(plotData)
 
 		for nick, color, label, marker, errorbar, linestyle in zip(*zip_arguments):
 			root_object = plotData.plotdict["root_objects"][nick]
@@ -224,4 +221,13 @@ class PlotMpl(plotbase.PlotBase):
 		else:
 			newarr = np.array(zip(arr, arr)).ravel()
 		return newarr
+
+	def get_zip_arguments(self, plotData):
+		zip_arguments = ( list(set(plotData.plotdict["nicks"])),
+		                                 plotData.plotdict["colors"],
+		                                 plotData.plotdict["labels"],
+		                                 plotData.plotdict["markers"],
+		                                 plotData.plotdict["errorbars"],
+		                                 plotData.plotdict["linestyles"])
+		return zip_arguments
 
