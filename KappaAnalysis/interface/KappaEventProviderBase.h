@@ -101,7 +101,7 @@ protected:
 	{
 		T* result = this->m_fi.template Get<T>(name, check, def);
 		if(result == 0)
-			LOG(FATAL) << "Requested branch not found!";
+			LOG(FATAL) << "Requested branch (" << name << ") not found!";
 		return result;
 	}
 	
@@ -109,7 +109,7 @@ protected:
 	T* SecureFileInterfaceGetMeta(const std::string &name, const bool check = true, const bool def = false) 	{
 		T* result = this->m_fi.template GetMeta<T>(name, check, def);
 		if(result == 0)
-			LOG(FATAL) << "Requested branch not found!";
+			LOG(FATAL) << "Requested branch (" << name << ") not found!";
 		return result;
 	}
 };
