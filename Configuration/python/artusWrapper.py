@@ -343,7 +343,7 @@ class ArtusWrapper(object):
 		                                 help="Files per batch job. [Default: %(default)s]")
 		runningOptionsGroup.add_argument("--wall-time", default="02:00:00",
 		                                 help="Wall time of batch jobs. [Default: %(default)s]")
-		runningOptionsGroup.add_argument("--memory", type=int, default=6000,
+		runningOptionsGroup.add_argument("--memory", type=int, default=3000,
 		                                 help="Memory (in MB) for batch jobs. [Default: %(default)s]")
 		runningOptionsGroup.add_argument("--cmdargs", default="-cG -m 3",
 		                                 help="Command line arguments for go.py. [Default: %(default)s]")
