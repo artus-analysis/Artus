@@ -30,6 +30,11 @@ class PlotMpl(plotbase.PlotBase):
 		super(PlotMpl, self).modify_argument_parser(parser, args)
 		self.formatting_options.add_argument("--colormap", default="afmhot", nargs="?",
 		                                     help="Colormap for matplotlib [Default: 'afmhot']")
+		self.formatting_options.add_argument("--step", default=False, type='bool', nargs="+",
+		                                     help="Step lines according to bin edges instead of connecting points.")
+		self.formatting_options.add_argument("--zorder", type=int, nargs="+",
+		                                     help="Order in which plots are layered. Default is first nick always on top, then zorder increases.")
+
 	def prepare_args(self, parser, plotData):
 		super(PlotMpl, self).prepare_args(parser, plotData)
 
@@ -49,6 +54,17 @@ class PlotMpl(plotbase.PlotBase):
 					plotData.plotdict["markers"][index] = "."
 				else:
 					plotData.plotdict["markers"][index] = "fill"
+
+		for index, marker in enumerate(plotData.plotdict["zorder"]):
+			if marker is None:
+				if index == 0:
+					plotData.plotdict["zorder"][index] = 99
+				else:
+					plotData.plotdict["zorder"][index] = index
+
+		for index, marker in enumerate(plotData.plotdict["ratio_markers"]):
+			if marker is None:
+					plotData.plotdict["ratio_markers"][index] = '.'
 
 		# default for linestyles
 		for index, linestyle in enumerate(plotData.plotdict["linestyles"]):
@@ -89,14 +105,14 @@ class PlotMpl(plotbase.PlotBase):
 	def make_plots(self, plotData):
 		zip_arguments = self.get_zip_arguments(plotData)
 
-		for nick, color, label, marker, errorbar, linestyle in zip(*zip_arguments):
-			print "Process nick: {0}".format(nick)
+		for nick, color, label, marker, errorbar, linestyle, step, zorder in zip(*zip_arguments):
+			log.info("Process nick: {0}".format(nick))
 			root_object = plotData.plotdict["root_objects"][nick]
 
 			if isinstance(root_object, ROOT.TGraph):
 				self.plot_dimension = 1
 				mplhist = MplGraph(root_object)
-				self.plot_errorbar(mplhist, ax=self.ax, style='line', color=color, fmt=marker, capsize=0, linestyle=linestyle, label=label, zorder = 4)
+				self.plot_errorbar(mplhist, ax=self.ax, style='line', color=color, fmt=marker, capsize=0, linestyle=linestyle, label=label, zorder=zorder)
 			elif isinstance(root_object, ROOT.TH2):
 				mplhist = MplHisto(root_object)
 				self.plot_dimension = mplhist.dimension
@@ -110,11 +126,11 @@ class PlotMpl(plotbase.PlotBase):
 				self.plot_dimension = mplhist.dimension
 
 				if marker=="bar":
-					self.plot_hist1d(mplhist, style='bar', ax=self.ax, show_yerr=errorbar, label=label, color=color, alpha=1.0, zorder=1)
+					self.plot_hist1d(mplhist, style='bar', ax=self.ax, show_yerr=errorbar, label=label, color=color, alpha=1.0, zorder=zorder)
 				elif marker=='fill':
-					self.plot_hist1d(mplhist, style='fill', ax=self.ax, show_yerr=errorbar, label=label, color=color, alpha=1.0, zorder=1)
+					self.plot_hist1d(mplhist, style='fill', ax=self.ax, show_yerr=errorbar, label=label, color=color, alpha=1.0, zorder=zorder)
 				else:
-					self.plot_errorbar(mplhist, ax=self.ax, color=color, fmt=marker, capsize=0, linestyle='-', label=label, zorder = 4)
+					self.plot_errorbar(mplhist, ax=self.ax, step=step, color=color, fmt=marker, capsize=0, linestyle=linestyle, label=label, zorder=zorder)
 			# draw functions from dictionary
 			elif isinstance(root_object, ROOT.TF1):
 				x_values = []
@@ -130,10 +146,11 @@ class PlotMpl(plotbase.PlotBase):
 			for root_object, ratio_color, ratio_marker, in zip(plotData.plotdict["root_ratio_histos"],
 				                                               plotData.plotdict["ratio_colors"],
 				                                               plotData.plotdict["ratio_markers"]):
+				log.info("Process ratio.")
 				self.ax2.axhline(1.0, color='black')
 				mplhist_ratio = MplHisto(root_object)
 				# self.ax2.errorbar(mplhist_ratio.x, mplhist_ratio.y, mplhist_ratio.yerr, ecolor=ratio_color, fmt=ratio_marker)
-				self.plot_errorbar(mplhist_ratio, ax=self.ax2, color=ratio_color, fmt=ratio_marker, capsize=0, linestyle='')
+				self.plot_errorbar(mplhist_ratio, ax=self.ax2, step=step, color=ratio_color, fmt=ratio_marker, capsize=0, linestyle=linestyle, zorder=zorder)
 
 
 
@@ -259,7 +276,7 @@ class PlotMpl(plotbase.PlotBase):
 			newarr = np.array(zip(arr, arr)).ravel()
 		return newarr
 
-	def plot_errorbar(self, hist, style='step', show_xerr=True, show_yerr=True, emptybins=True, ax=None, zorder=1, **kwargs):
+	def plot_errorbar(self, hist, step=False, show_xerr=True, show_yerr=True, emptybins=True, ax=None, **kwargs):
 	
 		# if no axis passed use current global axis
 		if ax is None:
@@ -285,18 +302,20 @@ class PlotMpl(plotbase.PlotBase):
 
 		linestyle = kwargs.pop('linestyle', '')
 		capsize = kwargs.pop('capsize', 0)
-		fmt = kwargs.pop('fmt', '.')
+		fmt = kwargs.pop('fmt', '')
 		label = kwargs.pop('label', '')
-
 		# Due to a bug in matplotlib v1.1 errorbar does not always respect linestyle when fmt is passed.
-		# Workaround by plotting line and errorbars separetely.
+		# Workaround by plotting line and errorbars separately.
+		# http://stackoverflow.com/a/18499120/3243729
 		if linestyle:
-			if style == 'stepped':
+			if step:
+				print "hah"
 				ax.step(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(y), linestyle=linestyle, **kwargs)
-			elif style == 'line':
+			else:
+				print "hoh"
 				ax.plot(x, y, linestyle=linestyle, **kwargs)
 
-		ax.errorbar(x, y, xerr=xerr, yerr=yerr, label=label, zorder=zorder, capsize=capsize, fmt=fmt, **kwargs)
+		ax.errorbar(x, y, xerr=xerr, yerr=yerr, label=label, capsize=capsize, fmt=fmt, linestyle='None', **kwargs)
 
 	def plot_hist1d(self, hist, style='fill', ax=None, show_yerr=None, **kwargs):
 
@@ -340,12 +359,14 @@ class PlotMpl(plotbase.PlotBase):
 		                            norm=norm)
 
 	def get_zip_arguments(self, plotData):
-		zip_arguments = ( list(set(plotData.plotdict["nicks"])),
+		zip_arguments = (list(plotData.plotdict["nicks"]),
 		                                 plotData.plotdict["colors"],
 		                                 plotData.plotdict["labels"],
 		                                 plotData.plotdict["markers"],
 		                                 plotData.plotdict["errorbars"],
-		                                 plotData.plotdict["linestyles"])
+		                                 plotData.plotdict["linestyles"],
+		                                 plotData.plotdict["step"],
+		                                 plotData.plotdict["zorder"])
 		return zip_arguments
 
 
