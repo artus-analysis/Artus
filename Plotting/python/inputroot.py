@@ -14,6 +14,7 @@ import ROOT
 import HarryPlotter.Plotting.inputfile as inputfile
 import HarryPlotter.Plotting.roottools as roottools
 import HarryPlotter.Plotting.extrafunctions as extrafunctions
+import HarryPlotter.Utility.progressiterator as pi
 
 
 class InputRoot(inputfile.InputFile):
@@ -55,8 +56,9 @@ class InputRoot(inputfile.InputFile):
 			extrafunctions.print_quantities(root_files=plotData.plotdict["files"], root_folders=plotData.plotdict["folders"])
 			exit()
 		root_tools = roottools.RootTools()
-		for index, (root_files, folders, x_expression, y_expression, z_expression, weight, nick) in enumerate(zip(*
-			[plotData.plotdict[key] for key in ["files", "folders", "x_expressions", "y_expressions", "z_expressions", "weights", "nicks"]])):
+		for index, (root_files, folders, x_expression, y_expression, z_expression, weight, nick) in enumerate(pi.ProgressIterator(zip(*
+			[plotData.plotdict[key] for key in ["files", "folders", "x_expressions", "y_expressions", "z_expressions", "weights", "nicks"]]),
+			description="Reading ROOT inputs")):
 			
 			# check whether to read from tree or directly from histograms
 			root_object_type = roottools.RootTools.check_type(root_files, folders)
