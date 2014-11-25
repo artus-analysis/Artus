@@ -243,6 +243,7 @@ class ArtusWrapper(object):
 		# treat includes, nicks and comments
 		if self._args.batch:
 			self._config = self._config.doIncludes().doComments()
+			self._config["BatchMode"] = True
 		else:
 			nickname = self.determineNickname(self._args.nick)
 			self._config = self._config.doIncludes().doNicks(nickname).doComments()

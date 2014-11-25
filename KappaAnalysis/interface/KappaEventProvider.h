@@ -18,8 +18,8 @@ public:
 	
 	typedef typename TTypes::setting_type setting_type;
 	
-	KappaEventProvider(FileInterface2 & fi, InputTypeEnum inpType) :
-		KappaEventProviderBase<TTypes>(fi, inpType)
+	KappaEventProvider(FileInterface2 & fi, InputTypeEnum inpType, bool batchMode=false) :
+		KappaEventProviderBase<TTypes>(fi, inpType, batchMode)
 	{
 	}
 

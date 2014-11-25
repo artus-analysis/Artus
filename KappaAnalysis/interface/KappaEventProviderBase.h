@@ -29,9 +29,9 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::setting_type setting_type;
 
-	KappaEventProviderBase(FileInterface2 & fi, InputTypeEnum inpType) :
+	KappaEventProviderBase(FileInterface2 & fi, InputTypeEnum inpType, bool batchMode=false) :
 			EventProviderBase<TTypes>(),
-			m_prevRun(-1), m_prevLumi(-1), m_prevTree(-1), m_inpType(inpType), m_fi(fi)
+			m_prevRun(-1), m_prevLumi(-1), m_prevTree(-1), m_inpType(inpType), m_fi(fi), m_batchMode(batchMode)
 	{
 		m_fi.SpeedupTree(128*1024*1024); // in units of bytes
 		
@@ -56,7 +56,7 @@ public:
 			return false;
 		}
 		
-		m_fi.eventdata.GetEntry(lEvent);
+		int resultGetEntry = m_fi.eventdata.GetEntry(lEvent);
 		
 		if (m_prevTree != m_fi.eventdata.GetTreeNumber()) {
 			m_prevTree = m_fi.eventdata.GetTreeNumber();
@@ -73,7 +73,7 @@ public:
 			m_fi.GetMetaEntry();
 		}
 
-		return true;
+		return (resultGetEntry != 0);
 	}
 
 	virtual event_type const& GetCurrentEvent() const ARTUS_CPP11_OVERRIDE {
@@ -81,7 +81,7 @@ public:
 	}
 
 	virtual long long GetEntries() const ARTUS_CPP11_OVERRIDE {
-		return m_fi.eventdata.GetEntries();
+		return (m_batchMode ? m_fi.eventdata.GetEntriesFast() : m_fi.eventdata.GetEntries());
 	}
 
 
@@ -95,6 +95,7 @@ protected:
 	boost::scoped_ptr<ProgressMonitor> m_mon;
 
 	FileInterface2 & m_fi;
+	bool m_batchMode;
 
 	template<typename T>
 	T* SecureFileInterfaceGet(const std::string &name, const bool check = true, const bool def = false)

@@ -112,14 +112,14 @@ public:
 				LOG(FATAL)<< "Pipeline name '" << *itUnq << "' is not unique, but pipeline names must be unique";
 			}
 		}
-		for (long long i = firstEvent; i < nEvents; ++i) {
+		for (long long i = firstEvent; true; ++i) {
 
+			if (!evtProvider.GetEntry(i))
+				break;
 			for (ProgressReportIterator it = m_progressReport.begin();
 					it != m_progressReport.end(); it++) {
 				it->update(i, nEvents);
 			}
-			if (!evtProvider.GetEntry(i))
-				break;
 
 			product_type productGlobal;
 			// use the lit of filters to bootstrap the filter list names

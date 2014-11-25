@@ -15,6 +15,8 @@
 class KappaSettings: public SettingsBase {
 public:
 
+	IMPL_SETTING_DEFAULT(bool, BatchMode, false);
+
 	/// name of electron collection in kappa tuple	
 	IMPL_SETTING_DEFAULT(std::string, Electrons, "");
 
