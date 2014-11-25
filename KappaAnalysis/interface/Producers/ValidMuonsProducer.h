@@ -353,7 +353,7 @@ private:
 	{
 		bool validMuon = true;
 		
-		if (muon->p4.Pt() < 20.0) {
+		if (muon->p4.Pt() <= 20.0) {
 			validMuon = validMuon &&
 				   ((muon->trackIso03 < 8.0) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
 				   (muon->ecalIso03  < 8.0) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&

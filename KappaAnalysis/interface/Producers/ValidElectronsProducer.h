@@ -521,7 +521,7 @@ private:
 			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.15) &&
 			                (electron->sigmaIetaIeta < 0.01) &&
 			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
-			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2);
+			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1);
 		}
 		else
 		{
@@ -530,7 +530,7 @@ private:
 			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.1) &&
 			                (electron->sigmaIetaIeta < 0.03) &&
 			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
-			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2);
+			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1);
 		}
 		
 		return validElectron;
@@ -543,7 +543,8 @@ private:
 		validElectron = validElectron &&
 		                (((electron->trackIso04 / electron->p4.Pt()) < 0.2) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
 				((electron->ecalIso04 / electron->p4.Pt()) < 0.2) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
-				((electron->hcal1Iso04 / electron->p4.Pt()) < 0.2) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+				((electron->hcal1Iso04 / electron->p4.Pt()) < 0.2) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
+				((electron->hcal2Iso04 / electron->p4.Pt()) < 0.2) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 		
 		return validElectron;
 	}
