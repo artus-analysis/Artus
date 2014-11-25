@@ -18,7 +18,7 @@ public:
 		return m_event;
 	}
 	virtual bool GetEntry(long long lEventNumber) ARTUS_CPP11_OVERRIDE {
-		return true;
+		return lEventNumber < GetEntries();
 	}
 	virtual long long GetEntries() const ARTUS_CPP11_OVERRIDE {
 		return 10;

@@ -26,8 +26,7 @@ public:
 	}
 
 	virtual bool GetEntry(long long lEvent) {
-		m_rootChain->GetEntry(lEvent);
-		return true;
+		return (m_rootChain->GetEntry(lEvent) != 0);
 	}
 
 	virtual event_type const& GetCurrentEvent() const {
