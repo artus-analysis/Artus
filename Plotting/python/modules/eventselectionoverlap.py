@@ -11,6 +11,7 @@ import hashlib
 import ROOT
 
 import HarryPlotter.Plotting.analysisbase as analysisbase
+import HarryPlotter.Utility.progressiterator as pi
 
 
 class EventSelectionOverlap(analysisbase.AnalysisBase):
@@ -46,7 +47,7 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 	@staticmethod
 	def get_events_set_from_tree(tree, events_branch_name):
 		events = []
-		for entry in xrange(tree.GetEntries()):
+		for entry in pi.ProgressIterator(xrange(tree.GetEntries()), description="Reading event numbers from tree"):
 			tree.GetEntry(entry)
 			events.append(getattr(tree, events_branch_name))
 		return set(events)
