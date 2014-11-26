@@ -5,6 +5,8 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
+import Artus.Utility.tools as tools
+
 import argparse
 import getpass
 import math
@@ -65,8 +67,7 @@ def main():
 	               key=lambda user: len(parsed_qstat_output[user].get(sort_state, [])))
 	max_len_users = max([len(user) for user in users])
 	
-	tty_width_command = "stty size"
-	tty_width = int(subprocess.Popen(tty_width_command, stdout=subprocess.PIPE, shell=True).communicate()[0].split()[-1])
+	tty_width = tools.get_tty_size()[1]
 	
 	n_total_jobs = sum([len(state_jobids.get("all", [])) for state_jobids in parsed_qstat_output.values()])
 	max_n_jobs = max([len(state_jobids.get("all", [])) for state_jobids in parsed_qstat_output.values()])

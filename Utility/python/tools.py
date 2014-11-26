@@ -5,7 +5,10 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
+import array
+import fcntl
 import re
+import termios
 
 
 def flattenList(listOfLists):
@@ -56,3 +59,9 @@ def find_common_patterns(s1, s2): # used recursively
 
 def find_common_string(s1, s2):
 	return "".join(pattern[1] if pattern[0] > 0 else "" for pattern in find_common_patterns(s1, s2)[0])
+
+def get_tty_size():
+	size = array.array("B", [0, 0, 0, 0])
+	fcntl.ioctl(0, termios.TIOCGWINSZ, size, True)
+	return (size[0], size[2])
+
