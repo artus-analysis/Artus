@@ -155,6 +155,9 @@ class PlotBase(processor.Processor):
 		if plotData.plotdict["nicks_blacklist"] == None:
 			plotData.plotdict["nicks_blacklist"] = []
 		
+		# delete nicks that do not need to be used for plotting
+		self.select_histograms(plotData)
+		
 		# prepare nick names for ratio subplot
 		if plotData.plotdict["ratio_num"] == None: plotData.plotdict["ratio_num"] = [plotData.plotdict["nicks"][0]]
 		if plotData.plotdict["ratio_denom"] == None: plotData.plotdict["ratio_denom"] = [" ".join(plotData.plotdict["nicks"][1:])]
@@ -182,7 +185,7 @@ class PlotBase(processor.Processor):
 			if plotData.plotdict[labelKey] == None: plotData.plotdict[labelKey] = ""
 
 		# formatting options
-		self.prepare_list_args(plotData, ["colors", "labels", "markers", "linestyles", "errorbars", "stack"], len(plotData.plotdict["root_objects"]))
+		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "linestyles", "errorbars", "stack"])
 		
 		for index, errorbar in enumerate(plotData.plotdict["errorbars"]):
 			if errorbar == None:
@@ -246,7 +249,6 @@ class PlotBase(processor.Processor):
 	def run(self, plotData):
 		super(PlotBase, self).run(plotData)
 		
-		self.select_histograms(plotData)
 		self.calculate_ratios(plotData)
 		self.create_canvas(plotData)
 		self.prepare_histograms(plotData)

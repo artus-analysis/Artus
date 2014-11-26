@@ -38,7 +38,8 @@ class PlotMpl(plotbase.PlotBase):
 	def prepare_args(self, parser, plotData):
 		super(PlotMpl, self).prepare_args(parser, plotData)
 
-		self.prepare_list_args(plotData, ["step", "zorder"], len(plotData.plotdict["markers"]))
+		self.prepare_list_args(plotData, ["nicks", "step", "zorder"])
+		
 		# Set meaningful default values for colors if none provided
 		default_colorcycle = iter(matplotlib.rcParams['axes.color_cycle'])
 		for index, color in enumerate(plotData.plotdict["colors"]):
