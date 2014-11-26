@@ -170,6 +170,8 @@ class HarryCore(object):
 			processor.run(tmpPlotData)
 			if not isinstance(processor, plotbase.PlotBase):
 				plotData = tmpPlotData
+		
+		del(plotData)
 	
 	def register_processor(self, processor_name, processor):
 		self.available_processors[processor_name] = processor

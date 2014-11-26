@@ -20,4 +20,8 @@ class PlotData(object):
 	def __init__(self, args):
 		super(PlotData, self).__init__()
 		self.plotdict = args
+	
+	def __del__(self):
+		for root_object in self.plotdict.get("root_objects", []):
+			del(root_object)
 
