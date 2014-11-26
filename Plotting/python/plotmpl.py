@@ -184,6 +184,8 @@ class PlotMpl(plotbase.PlotBase):
 		# do special things for 2D Plots
 		elif self.plot_dimension == 2:
 			cb = self.fig.colorbar(self.image, ax=self.ax)
+			if plotData.plotdict["z_label"]:
+				cb.set_label(plotData.plotdict["z_label"])
 
 
 	def add_labels(self, plotData):
