@@ -7,13 +7,16 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wfatal-errors -std=c++0x -fp
 
 # Load some basic macros which are needed later on
 include(FindROOT.cmake)
-execute_process(COMMAND ls $ENV{CMSSW_RELEASE_BASE}/../../../../$ENV{SCRAM_ARCH}/external/boost COMMAND tail -n 1 COMMAND tr -d '\n' OUTPUT_VARIABLE BOOSTVER)
-set(BOOST_INCLUDE_DIR "/afs/cern.ch/cms/$ENV{SCRAM_ARCH}/external/boost/${BOOSTVER}/include/")
-message("Looking for boost... - found ${BOOST_INCLUDE_DIR}")
+
+# commented for now, if you will need this type of compile environment ( afs-machine + cmake compile )
+# please take care of making this check safe also on non-afs systems
+#execute_process(COMMAND ls $ENV{CMSSW_RELEASE_BASE}/../../../../$ENV{SCRAM_ARCH}/external/boost COMMAND tail -n 1 COMMAND tr -d '\n' OUTPUT_VARIABLE BOOSTVER)
+#set(BOOST_INCLUDE_DIR "/afs/cern.ch/cms/$ENV{SCRAM_ARCH}/external/boost/${BOOSTVER}/include/")
+#message("Looking for boost... - found ${BOOST_INCLUDE_DIR}")
 
 set(INCLUDE_DIRECTORIES
-${ROOT_INCLUDE_DIR} 
-${BOOST_INCLUDE_DIR}
+${ROOT_INCLUDE_DIR}
+#${BOOST_INCLUDE_DIR}
 )
 
 include_directories( ${INCLUDE_DIRECTORIES})
