@@ -343,7 +343,7 @@ class PlotMpl(plotbase.PlotBase):
 		arr = hist.bincontents
 		if z_log:
 			norm = LogNorm(vmin=vmin, vmax=vmax)
-			z = np.ma.masked_equal(z, 0.0)
+			arr = np.ma.masked_equal(arr, 0.0)
 		else:
 			norm = Normalize(vmin=vmin, vmax=vmax)
 
