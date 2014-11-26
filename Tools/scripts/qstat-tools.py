@@ -5,7 +5,7 @@ import logging
 import ArtusTools.Tools.logger as logger
 log = logging.getLogger(__name__)
 
-import Artus.Utility.tools as tools
+import ArtusTools.Tools.tools as tools
 
 import argparse
 import getpass

@@ -15,7 +15,7 @@ import sys
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
-import Artus.Utility.tools as tools
+import ArtusTools.Tools.tools as tools
 
 
 class JsonDict(dict):
