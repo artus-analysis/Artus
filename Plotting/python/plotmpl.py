@@ -230,14 +230,14 @@ class PlotMpl(plotbase.PlotBase):
 		matplotlib.rcParams['axes.labelsize'] = 20
 		matplotlib.rcParams['xtick.labelsize'] = 16
 		matplotlib.rcParams['xtick.major.size'] = 8
-		matplotlib.rcParams['xtick.major.width'] = 1.5
+		#matplotlib.rcParams['xtick.major.width'] = 1.5
 		matplotlib.rcParams['xtick.minor.size'] = 6
-		matplotlib.rcParams['xtick.minor.width'] = 1.
+		#matplotlib.rcParams['xtick.minor.width'] = 1.
 		matplotlib.rcParams['ytick.labelsize'] = 16
-		matplotlib.rcParams['ytick.major.width'] = 1.5
+		#matplotlib.rcParams['ytick.major.width'] = 1.5
 		matplotlib.rcParams['ytick.major.size'] = 8
 		matplotlib.rcParams['ytick.minor.size'] = 6
-		matplotlib.rcParams['ytick.minor.width'] = 1.
+		#matplotlib.rcParams['ytick.minor.width'] = 1.
 		matplotlib.rcParams['lines.markersize'] = 8
 		# default color cycle
 		matplotlib.rcParams['axes.color_cycle'] = [(0.0, 0.0, 0.0),
@@ -254,11 +254,11 @@ class PlotMpl(plotbase.PlotBase):
 		matplotlib.rcParams['legend.numpoints'] = 1
 		matplotlib.rcParams['legend.fontsize'] = 19
 		matplotlib.rcParams['legend.labelspacing'] = 0.3
-		matplotlib.rcParams['legend.frameon'] = False
-		  # Saving
-		matplotlib.rcParams['savefig.bbox'] = 'tight'
+		#matplotlib.rcParams['legend.frameon'] = False
+		# Saving
+		#matplotlib.rcParams['savefig.bbox'] = 'tight'
 		matplotlib.rcParams['savefig.dpi'] = 150
-		matplotlib.rcParams['savefig.format'] = 'png'
+		#matplotlib.rcParams['savefig.format'] = 'png'
 		matplotlib.rcParams['agg.path.chunksize'] = 20000
 
 	@staticmethod
