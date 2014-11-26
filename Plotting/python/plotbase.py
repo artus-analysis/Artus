@@ -182,7 +182,7 @@ class PlotBase(processor.Processor):
 			if plotData.plotdict[labelKey] == None: plotData.plotdict[labelKey] = ""
 
 		# formatting options
-		self.prepare_list_args(plotData, ["colors", "labels", "markers", "linestyles", "errorbars", "stack", "step", "zorder"], len(plotData.plotdict["root_objects"]))
+		self.prepare_list_args(plotData, ["colors", "labels", "markers", "linestyles", "errorbars", "stack"], len(plotData.plotdict["root_objects"]))
 		
 		for index, errorbar in enumerate(plotData.plotdict["errorbars"]):
 			if errorbar == None:
