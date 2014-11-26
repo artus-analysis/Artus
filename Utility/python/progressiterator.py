@@ -1,9 +1,12 @@
 
 # -*- coding: utf-8 -*-
 
+import array
+import fcntl
 import math
 import subprocess
 import sys
+import termios
 
 
 class ProgressIterator(object):
@@ -14,7 +17,7 @@ class ProgressIterator(object):
 		self.description = (description if description == "" else (description+"... "))
 		self.current_index = 0
 		self.current_progress = -1
-		self.tty_width = int(subprocess.Popen("stty size", stdout=subprocess.PIPE, shell=True).communicate()[0].split()[-1])
+		self.tty_width = ProgressIterator.get_tty_size()[1]
 
 	def __iter__(self):
 		return self
@@ -35,4 +38,10 @@ class ProgressIterator(object):
 			sys.stdout.write("\n")
 		self.current_index += 1
 		return self.iterator.next()
+	
+	@staticmethod
+	def get_tty_size():
+		size = array.array("B", [0, 0, 0, 0])
+		fcntl.ioctl(0, termios.TIOCGWINSZ, size, True)
+		return (size[0], size[2])
 
