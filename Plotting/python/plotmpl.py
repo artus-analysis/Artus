@@ -146,7 +146,6 @@ class PlotMpl(plotbase.PlotBase):
 			for root_object, ratio_color, ratio_marker, in zip(plotData.plotdict["root_ratio_histos"],
 				                                               plotData.plotdict["ratio_colors"],
 				                                               plotData.plotdict["ratio_markers"]):
-				log.info("Process ratio.")
 				self.ax2.axhline(1.0, color='black')
 				mplhist_ratio = MplHisto(root_object)
 				# self.ax2.errorbar(mplhist_ratio.x, mplhist_ratio.y, mplhist_ratio.yerr, ecolor=ratio_color, fmt=ratio_marker)
@@ -309,10 +308,8 @@ class PlotMpl(plotbase.PlotBase):
 		# http://stackoverflow.com/a/18499120/3243729
 		if linestyle:
 			if step:
-				print "hah"
 				ax.step(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(y), linestyle=linestyle, **kwargs)
 			else:
-				print "hoh"
 				ax.plot(x, y, linestyle=linestyle, **kwargs)
 
 		ax.errorbar(x, y, xerr=xerr, yerr=yerr, label=label, capsize=capsize, fmt=fmt, linestyle='None', **kwargs)
