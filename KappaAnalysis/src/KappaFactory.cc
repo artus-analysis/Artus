@@ -28,6 +28,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/GenDiLeptonDecayModeProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenPartonCounterProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/EmbeddingWeightProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/NicknameProducer.h"
 
 // filter
 #include "Artus/KappaAnalysis/interface/Filters/RunLumiEventFilter.h"
@@ -117,6 +118,8 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new GenPartonCounterProducer();
 	else if(id == EmbeddingWeightProducer().GetProducerId())
 		return new EmbeddingWeightProducer();
+	else if(id == NicknameProducer().GetProducerId())
+		return new NicknameProducer();
 	else
 		return FactoryBase::createProducer( id );	
 }

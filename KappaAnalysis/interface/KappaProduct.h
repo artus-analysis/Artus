@@ -20,6 +20,8 @@ class KappaProduct : public ProductBase {
 public:
 	KappaProduct() {};
 	~KappaProduct() {};
+	
+	std::string m_nickname = "";
 
 	// all weights in this map are multiplied into one "eventWeight" by the EventWeightProducer
 	// events in this map can be written out automatically by the KappaLambdaNtupleConsumer
