@@ -126,3 +126,14 @@ intvector& Get##SNAME () const { \
 	RETURN_CACHED(m_##SNAME, Utility::Sorted(PropertyTreeSupport::GetAsIntList(GetPropTree(), GetPipelinePrefix() + #SNAME ))) \
 }
 
+#define IMPL_SETTING_UINT64LIST( SNAME ) \
+VarCache<uint64vector> m_##SNAME; \
+uint64vector& Get##SNAME () const { \
+	RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsUInt64List(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
+}
+#define IMPL_SETTING_SORTED_UINT64LIST( SNAME ) \
+VarCache<uint64vector> m_##SNAME; \
+uint64vector& Get##SNAME () const { \
+	RETURN_CACHED(m_##SNAME, Utility::Sorted(PropertyTreeSupport::GetAsUInt64List(GetPropTree(), GetPipelinePrefix() + #SNAME ))) \
+}
+

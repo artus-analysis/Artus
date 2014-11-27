@@ -5,6 +5,9 @@
  */
 
 #pragma once
+
+#include <cstdint>
+
 #include <boost/property_tree/ptree.hpp>
 
 #include "Artus/Utility/interface/Collections.h"
@@ -24,14 +27,20 @@ public:
 	                                    std::string path);
 
 	static floatvector GetAsFloatList(boost::property_tree::ptree * propTree,
-	                                    std::string path);
+	                                  std::string path);
 
 	static floatvector GetAsFloatList(boost::property_tree::ptree & propTree,
-	                                    std::string path);
+	                                  std::string path);
 
 	static intvector GetAsIntList(boost::property_tree::ptree & propTree,
 	                              std::string path);
 
 	static intvector GetAsIntList(boost::property_tree::ptree * propTree,
 	                              std::string path);
+
+	static uint64vector GetAsUInt64List(boost::property_tree::ptree & propTree,
+	                                    std::string path);
+
+	static uint64vector GetAsUInt64List(boost::property_tree::ptree * propTree,
+	                                    std::string path);
 };
