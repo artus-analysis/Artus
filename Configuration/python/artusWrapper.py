@@ -247,6 +247,7 @@ class ArtusWrapper(object):
 		else:
 			nickname = self.determineNickname(self._args.nick)
 			self._config = self._config.doIncludes().doNicks(nickname).doComments()
+			self._config["Nickname"] = nickname
 		
 		# remove all but one of similar pipeline copies
 		self.remove_pipeline_copies()
