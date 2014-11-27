@@ -228,7 +228,7 @@ public:
 			}
 			else if (LambdaNtupleQuantities::CommonStringQuantities.count(*quantity) > 0)
 			{
-				m_tree->Branch(quantity->c_str(), &(m_stringValues[stringQuantityIndex]), (*quantity + "/D").c_str());
+				m_tree->Branch(quantity->c_str(), &(m_stringValues[stringQuantityIndex]));
 				stringQuantityIndex++;
 			}
 		}
