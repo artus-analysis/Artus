@@ -28,15 +28,15 @@ public:
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
 	{
 		// add possible quantities for the lambda ntuples consumers
-		LambdaNtupleConsumer<TTypes>::AddIntQuantity("run", [](event_type const& event, product_type const& product)
+		LambdaNtupleConsumer<TTypes>::AddUInt64Quantity("run", [](event_type const& event, product_type const& product) -> uint64_t
 		{
 			return event.m_eventMetadata->nRun;
 		});
-		LambdaNtupleConsumer<TTypes>::AddIntQuantity("lumi", [](event_type const& event, product_type const& product)
+		LambdaNtupleConsumer<TTypes>::AddUInt64Quantity("lumi", [](event_type const& event, product_type const& product) -> uint64_t
 		{
 			return event.m_eventMetadata->nLumi;
 		});
-		LambdaNtupleConsumer<TTypes>::AddIntQuantity("event", [](event_type const& event, product_type const& product)
+		LambdaNtupleConsumer<TTypes>::AddUInt64Quantity("event", [](event_type const& event, product_type const& product) -> uint64_t
 		{
 			return event.m_eventMetadata->nEvent;
 		});

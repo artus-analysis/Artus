@@ -7,6 +7,9 @@ std::map<std::string, std::function<bool(EventBase const&, ProductBase const& ) 
 std::map<std::string, std::function<int(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonIntQuantities 
 	= std::map<std::string, std::function<int(EventBase const&, ProductBase const& ) >>();
 	
+std::map<std::string, std::function<uint64_t(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonUInt64Quantities 
+	= std::map<std::string, std::function<uint64_t(EventBase const&, ProductBase const& ) >>();
+	
 std::map<std::string, std::function<float(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonFloatQuantities 
 	= std::map<std::string, std::function<float(EventBase const&, ProductBase const& ) >>();
 	
