@@ -31,5 +31,5 @@ public:
 
 private:
 	
-	bool MatchWhiteBlackLists(int item, std::vector<int> const& whitelist, std::vector<int> const& blacklist) const;
+	bool MatchWhiteBlackLists(uint64_t item, std::vector<uint64_t> const& whitelist, std::vector<uint64_t> const& blacklist) const;
 };
