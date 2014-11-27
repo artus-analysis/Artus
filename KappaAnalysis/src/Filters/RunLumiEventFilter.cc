@@ -5,7 +5,7 @@ std::string RunLumiEventFilter::GetFilterId() const {
 }
 
 bool RunLumiEventFilter::DoesEventPass(KappaEvent const& event, KappaProduct const& product,
-                           KappaSettings const& settings) const 
+                                       KappaSettings const& settings) const 
 {
 	assert(event.m_eventMetadata);
 	
@@ -22,7 +22,7 @@ bool RunLumiEventFilter::DoesEventPass(KappaEvent const& event, KappaProduct con
 	return match;
 }
 
-bool RunLumiEventFilter::MatchWhiteBlackLists(int item, std::vector<int> const& whitelist, std::vector<int> const& blacklist) const
+bool RunLumiEventFilter::MatchWhiteBlackLists(uint64_t item, std::vector<uint64_t> const& whitelist, std::vector<uint64_t> const& blacklist) const
 {
 	if ((whitelist.size() > 0) && (std::find(whitelist.begin(), whitelist.end(), item) == whitelist.end()))
 	{
