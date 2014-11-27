@@ -32,6 +32,7 @@ import HarryPlotter.Plotting.modules.shapeyieldmerge as shapeyieldmerge
 import HarryPlotter.Plotting.modules.extrapolationfactor as extrapolationfactor
 import HarryPlotter.Plotting.modules.binerrorsofemptybins as binerrorsofemptybins
 import HarryPlotter.Plotting.modules.sumofhistograms as sumofhistograms
+import HarryPlotter.Plotting.modules.cutflow as cutflow
 from HarryPlotter.Plotting.modules.normalization import NormalizeByBinWidth, NormalizeToUnity, NormalizeToFirstHisto, NormalizeStackToFirstHisto
 
 import HarryPlotter.Plotting.modules.correctnegativebincontents as correctnegativebincontents
@@ -65,6 +66,7 @@ class HarryCore(object):
 			NormalizeStackToFirstHisto.name(): NormalizeStackToFirstHisto(),
 			correctnegativebincontents.CorrectNegativeBinContents.name() : correctnegativebincontents.CorrectNegativeBinContents(),
 			printinfos.PrintInfos.name() : printinfos.PrintInfos(),
+			cutflow.Cutflow.name() : cutflow.Cutflow(),
 			plotroot.PlotRoot.name() : plotroot.PlotRoot(),
 			plotmpl.PlotMpl.name() : plotmpl.PlotMpl(),
 			exportroot.ExportRoot.name() : exportroot.ExportRoot(),
