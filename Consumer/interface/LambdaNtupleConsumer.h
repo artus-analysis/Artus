@@ -33,6 +33,7 @@ public:
 	static std::map<std::string, std::function<uint64_t(EventBase const&, ProductBase const& ) >> CommonUInt64Quantities;
 	static std::map<std::string, std::function<float(EventBase const&, ProductBase const& ) >> CommonFloatQuantities;
 	static std::map<std::string, std::function<double(EventBase const&, ProductBase const& ) >> CommonDoubleQuantities;
+	static std::map<std::string, std::function<std::string(EventBase const&, ProductBase const& ) >> CommonStringQuantities;
 
 };
 
@@ -50,6 +51,7 @@ public:
 	typedef std::function<uint64_t(EventBase const&, ProductBase const&)> uint64_extractor_lambda_base;
 	typedef std::function<float(EventBase const&, ProductBase const&)> float_extractor_lambda_base;
 	typedef std::function<double(EventBase const&, ProductBase const&)> double_extractor_lambda_base;
+	typedef std::function<std::string(EventBase const&, ProductBase const&)> string_extractor_lambda_base;
 
 	
 	static void AddBoolQuantity(std::string const& name,
@@ -93,9 +95,19 @@ public:
 		};
 	}
 	static void AddDoubleQuantity(std::string const& name,
-	                        std::function<double(event_type const&, product_type const&)> valueExtractor)
+	                              std::function<double(event_type const&, product_type const&)> valueExtractor)
 	{
 		LambdaNtupleQuantities::CommonDoubleQuantities[name] = [valueExtractor](EventBase const& ev, ProductBase const& pd) -> double
+		{ 
+			auto const& specEv = static_cast<event_type const&>(ev);
+			auto const& specPd = static_cast<product_type const&>(pd);
+			return valueExtractor(specEv, specPd);
+		};
+	}
+	static void AddStringQuantity(std::string const& name,
+	                              std::function<std::string(event_type const&, product_type const&)> valueExtractor)
+	{
+		LambdaNtupleQuantities::CommonStringQuantities[name] = [valueExtractor](EventBase const& ev, ProductBase const& pd) -> std::string
 		{ 
 			auto const& specEv = static_cast<event_type const&>(ev);
 			auto const& specPd = static_cast<product_type const&>(pd);
@@ -118,6 +130,9 @@ public:
 	static std::map<std::string, std::function<double(EventBase const&, ProductBase const& ) >> & GetDoubleQuantities () {
 		return LambdaNtupleQuantities::CommonDoubleQuantities;
 	}
+	static std::map<std::string, std::function<std::string(EventBase const&, ProductBase const& ) >> & GetStringQuantities () {
+		return LambdaNtupleQuantities::CommonStringQuantities;
+	}
 
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
 		ConsumerBase<TTypes>::Init(settings);
@@ -127,6 +142,7 @@ public:
 		m_intValueExtractors.clear();
 		m_uint64ValueExtractors.clear();
 		m_doubleValueExtractors.clear();
+		m_stringValueExtractors.clear();
 		m_boolValueExtractors.clear();
 		
 		size_t quantityIndex = 0;
@@ -153,6 +169,10 @@ public:
 			{
 				m_boolValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetBoolQuantities(), *quantity));
 			}
+			else if (LambdaNtupleConsumer<TTypes>::GetStringQuantities().count(*quantity) > 0)
+			{
+				m_stringValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetStringQuantities(), *quantity));
+			}
 			else
 			{
 				LOG(FATAL) << "No lambda expression available for quantity \"" << *quantity << "\"!";
@@ -170,12 +190,14 @@ public:
 		m_uint64Values.resize(m_uint64ValueExtractors.size());
 		m_floatValues.resize(m_floatValueExtractors.size());
 		m_doubleValues.resize(m_doubleValueExtractors.size());
+		m_stringValues.resize(m_stringValueExtractors.size());
 		
 		size_t boolQuantityIndex = 0;
 		size_t intQuantityIndex = 0;
 		size_t uint64QuantityIndex = 0;
 		size_t floatQuantityIndex = 0;
 		size_t doubleQuantityIndex = 0;
+		size_t stringQuantityIndex = 0;
 		for (std::vector<std::string>::iterator quantity = settings.GetQuantities().begin();
 		     quantity != settings.GetQuantities().end(); ++quantity)
 		{
@@ -203,6 +225,11 @@ public:
 			{
 				m_tree->Branch(quantity->c_str(), &(m_boolValues[boolQuantityIndex]), (*quantity + "/O").c_str());
 				boolQuantityIndex++;
+			}
+			else if (LambdaNtupleQuantities::CommonStringQuantities.count(*quantity) > 0)
+			{
+				m_tree->Branch(quantity->c_str(), &(m_stringValues[stringQuantityIndex]), (*quantity + "/D").c_str());
+				stringQuantityIndex++;
 			}
 		}
 	}
@@ -251,6 +278,14 @@ public:
 			m_doubleValues[doubleValueIndex] = (*valueExtractor)(event, product);
 			doubleValueIndex++;
 		}
+		
+		size_t stringValueIndex = 0;
+		for(typename std::vector<string_extractor_lambda_base>::iterator valueExtractor = m_stringValueExtractors.begin();
+		    valueExtractor != m_stringValueExtractors.end(); ++valueExtractor)
+		{
+			m_stringValues[stringValueIndex] = (*valueExtractor)(event, product);
+			stringValueIndex++;
+		}
 
 		// fill tree
 		this->m_tree->Fill();
@@ -271,12 +306,14 @@ private:
 	std::vector<uint64_extractor_lambda_base> m_uint64ValueExtractors;
 	std::vector<float_extractor_lambda_base> m_floatValueExtractors;
 	std::vector<double_extractor_lambda_base> m_doubleValueExtractors;
+	std::vector<string_extractor_lambda_base> m_stringValueExtractors;
 	
 	std::vector<char> m_boolValues; // needs to be char vector because of bitset treatment of bool vector
 	std::vector<int> m_intValues;
 	std::vector<uint64_t> m_uint64Values;
 	std::vector<float> m_floatValues;
 	std::vector<double> m_doubleValues;
+	std::vector<std::string> m_stringValues;
 };
 
 
