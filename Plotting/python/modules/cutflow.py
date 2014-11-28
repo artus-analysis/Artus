@@ -41,7 +41,7 @@ class Cutflow(analysisbase.AnalysisBase):
 		# loop over all histograms
 		for nick, root_histogram in plotData.plotdict["root_objects"].iteritems():
 			if isinstance(root_histogram, ROOT.TH1):
-				if plotData.plotdict["scale_to_previous_bin"]:
+				if plotData.plotdict["rel_cuts"]:
 					for x_bin in xrange(root_histogram.GetNbinsX(), 1, -1):
 						new_bin_content = root_histogram.GetBinContent(x_bin)
 						if new_bin_content != 0:
