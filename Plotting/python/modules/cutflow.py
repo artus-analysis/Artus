@@ -21,8 +21,8 @@ class Cutflow(analysisbase.AnalysisBase):
 		super(Cutflow, self).modify_argument_parser(parser, args)
 		
 		self.cutflow_options = parser.add_argument_group("Cutflow options")
-		self.cutflow_options.add_argument("--scale-to-previous-bin", action="store_true", default=False,
-				help="Scale bin relative to respective left bins. [Default: scale all bins relative to first bin.]")
+		self.cutflow_options.add_argument("--rel-cuts", action="store_true", default=False,
+				help="Scale bins relative to respective left bins.")
 	
 	def prepare_args(self, parser, plotData):
 		super(Cutflow, self).prepare_args(parser, plotData)
