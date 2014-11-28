@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Kappa/DataFormats/interface/Kappa.h"
+#include "Artus/KappaAnalysis/interface/KappaTypes.h"
 
 #include "Artus/Core/interface/FilterBase.h"
 
@@ -58,18 +59,8 @@ class ElectronTriggerMatchingFilter: public TriggerMatchingFilterBase<KDataElect
 
 public:
 
-	
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "ElectronTriggerMatchingFilter";
-	}
-	
-	ElectronTriggerMatchingFilter() :
-		TriggerMatchingFilterBase<KDataElectron>(&KappaProduct::m_triggerMatchedElectrons,
-		                                                 &KappaProduct::m_validElectrons,
-		                                                 &KappaSettings::GetMinNMatchedElectrons)
-	{
-	}
-
+	ElectronTriggerMatchingFilter();
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
 };
 
 
@@ -82,17 +73,8 @@ class MuonTriggerMatchingFilter: public TriggerMatchingFilterBase<KDataMuon>
 
 public:
 
-	
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "MuonTriggerMatchingFilter";
-	}
-	
-	MuonTriggerMatchingFilter() :
-		TriggerMatchingFilterBase<KDataMuon>(&KappaProduct::m_triggerMatchedMuons,
-		                                             &KappaProduct::m_validMuons,
-		                                             &KappaSettings::GetMinNMatchedMuons)
-	{
-	}
+	MuonTriggerMatchingFilter();
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
 
 };
 
@@ -106,17 +88,8 @@ class TauTriggerMatchingFilter: public TriggerMatchingFilterBase<KDataPFTau>
 
 public:
 
-	
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "TauTriggerMatchingFilter";
-	}
-	
-	TauTriggerMatchingFilter() :
-		TriggerMatchingFilterBase<KDataPFTau>(&KappaProduct::m_triggerMatchedTaus,
-		                                              &KappaProduct::m_validTaus,
-		                                              &KappaSettings::GetMinNMatchedTaus)
-	{
-	}
+	TauTriggerMatchingFilter();
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
 
 };
 
@@ -130,17 +103,8 @@ class JetTriggerMatchingFilter: public TriggerMatchingFilterBase<KDataPFJet>
 
 public:
 
-	
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
-		return "JetTriggerMatchingFilter";
-	}
-	
-	JetTriggerMatchingFilter() :
-		TriggerMatchingFilterBase<KDataPFJet>(&KappaProduct::m_triggerMatchedJets,
-		                                              &KappaProduct::m_validJets,
-		                                              &KappaSettings::GetMinNMatchedJets)
-	{
-	}
+	JetTriggerMatchingFilter();
+	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
 
 };
 
