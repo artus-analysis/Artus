@@ -40,6 +40,7 @@
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsLowerPtCutFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsUpperAbsEtaCutFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/TriggerMatchingFilters.h"
+#include "Artus/KappaAnalysis/interface/Filters/GenMatchingFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/GenDiLeptonDecayModeFilter.h"
 
 // consumer
@@ -182,6 +183,14 @@ FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
 		return new TauTriggerMatchingFilter();
 	else if(id == JetTriggerMatchingFilter().GetFilterId())
 		return new JetTriggerMatchingFilter();
+	else if(id == ElectronGenMatchingFilter().GetFilterId())
+		return new ElectronGenMatchingFilter();
+	else if(id == MuonGenMatchingFilter().GetFilterId())
+		return new MuonGenMatchingFilter();
+	else if(id == TauGenMatchingFilter().GetFilterId())
+		return new TauGenMatchingFilter();
+	else if(id == JetGenMatchingFilter().GetFilterId())
+		return new JetGenMatchingFilter();
 	else if(id == GenDiLeptonDecayModeFilter().GetFilterId())
 		return new GenDiLeptonDecayModeFilter();
 	else
