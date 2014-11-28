@@ -10,7 +10,6 @@ import sys
 import ROOT
 import hashlib
 import HarryPlotter.Plotting.analysisbase as analysisbase
-import HarryPlotter.Plotting.roottools as roottools
 
 import HarryPlotter.Plotting.modules.functionplot as functionplot
 import copy

@@ -8,7 +8,7 @@ import HarryPlotter.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import HarryPlotter.Plotting.plotbase as plotbase
-import HarryPlotter.Plotting.roottools as roottools
+import HarryPlotter.Utility.roottools as roottools
 
 import ROOT
 

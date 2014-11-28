@@ -4,7 +4,6 @@ log = logging.getLogger(__name__)
 
 import ROOT
 import HarryPlotter.Plotting.analysisbase as analysisbase
-import HarryPlotter.Plotting.roottools as roottools
 import hashlib
 
 class FunctionPlot(analysisbase.AnalysisBase):

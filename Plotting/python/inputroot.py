@@ -12,7 +12,7 @@ import os
 import ROOT
 
 import HarryPlotter.Plotting.inputfile as inputfile
-import HarryPlotter.Plotting.roottools as roottools
+import HarryPlotter.Utility.roottools as roottools
 import HarryPlotter.Plotting.extrafunctions as extrafunctions
 import HarryPlotter.Utility.progressiterator as pi
 
