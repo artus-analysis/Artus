@@ -16,6 +16,7 @@
  *   - LumiBlacklist
  *   - EventWhitelist
  *   - EventBlacklist
+ *   - MatchRunLumiEventTuples (optional)
  */
 class RunLumiEventFilter: public FilterBase<KappaTypes>
 {

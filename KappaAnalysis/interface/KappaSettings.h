@@ -95,6 +95,7 @@ public:
 	IMPL_SETTING_UINT64LIST(LumiBlacklist);
 	IMPL_SETTING_UINT64LIST(EventWhitelist);
 	IMPL_SETTING_UINT64LIST(EventBlacklist);
+	IMPL_SETTING_DEFAULT(bool, MatchRunLumiEventTuples, false);
 	
 	IMPL_SETTING_STRINGLIST(HltPaths);
 	IMPL_SETTING_DEFAULT(bool, AllowPrescaledTrigger, true);
