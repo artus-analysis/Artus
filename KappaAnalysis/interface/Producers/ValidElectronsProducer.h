@@ -541,10 +541,10 @@ private:
 		bool validElectron = true;
 		
 		validElectron = validElectron &&
-		                (((electron->trackIso04 / electron->p4.Pt()) < 0.2) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
-				((electron->ecalIso04 / electron->p4.Pt()) < 0.2) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
-				((electron->hcal1Iso04 / electron->p4.Pt()) < 0.2) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
-				((electron->hcal2Iso04 / electron->p4.Pt()) < 0.2) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+		                (((electron->trackIso / electron->p4.Pt()) < 0.2) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
+				((electron->ecalIso / electron->p4.Pt()) < 0.2) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
+				((electron->hcal1Iso / electron->p4.Pt()) < 0.2) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
+				((electron->hcal2Iso / electron->p4.Pt()) < 0.2) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 		
 		return validElectron;
 	}

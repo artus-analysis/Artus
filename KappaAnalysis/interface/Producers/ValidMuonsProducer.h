@@ -224,9 +224,9 @@ public:
 			}
 			else if (muonIsoType == MuonIsoType::DETECTOR) {
 				if (muonIso == MuonIso::TIGHT)
-					validMuon = validMuon && ((((*muon)->trackIso03 / (*muon)->p4.Pt()) < 0.05) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+					validMuon = validMuon && ((((*muon)->trackIso / (*muon)->p4.Pt()) < 0.05) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (muonIso == MuonIso::LOOSE)
-					validMuon = validMuon && ((((*muon)->trackIso03 / (*muon)->p4.Pt()) < 0.10) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+					validMuon = validMuon && ((((*muon)->trackIso / (*muon)->p4.Pt()) < 0.10) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (muonIso != MuonIso::NONE)
 					LOG(FATAL) << "Muon isolation of type " << Utility::ToUnderlyingValue(muonIso) << " not yet implemented!";
 			}
@@ -285,8 +285,8 @@ private:
 					&& muon->globalTrack.chi2 / muon->globalTrack.nDOF < 10.0
 					&& muon->globalTrack.nValidMuonHits > 0
 					&& muon->nMatches > 1
-					&& std::abs(muon->bestTrack.getDxy(&event.m_vertexSummary->pv)) < 0.2
-					&& muon->innerTrack.nValidPixelHits > 0
+					&& std::abs(muon->dxy) < 0.2
+					&& muon->track.nValidPixelHits > 0
 					&& muon->track.nStripLayers > 8;
 		
 		return validMuon;
@@ -303,9 +303,9 @@ private:
 					&& muon->globalTrack.chi2 / muon->globalTrack.nDOF < 10.0
 					&& muon->globalTrack.nValidMuonHits > 0
 					&& muon->nMatches > 1
-					&& std::abs(muon->bestTrack.getDxy(&event.m_vertexSummary->pv)) < 0.2
-					&& std::abs(muon->bestTrack.getDz(&event.m_vertexSummary->pv)) < 0.5
-					&& muon->innerTrack.nValidPixelHits > 0
+					&& std::abs(muon->dxy) < 0.2
+					&& std::abs(muon->dz) < 0.5
+					&& muon->track.nValidPixelHits > 0
 					&& muon->track.nStripLayers > 5;
 		
 		return validMuon;
@@ -333,7 +333,7 @@ private:
 					&& muon->isPFMuon()
 					&& muon->isGlobalMuon()
 					&& muon->isTrackerMuon()
-					&& (std::abs(muon->track.getDz(&event.m_vertexSummary->pv)) < 0.2);
+					&& (std::abs(muon->dz) < 0.2);
 		
 		return validMuon;
 	}
@@ -344,7 +344,7 @@ private:
 		
 		validMuon = validMuon
 					&& muon->isGlobalMuon()
-					&& std::abs(muon->bestTrack.getDxy(&event.m_vertexSummary->pv)) < 0.2;
+					&& std::abs(muon->dxy) < 0.2;
 		
 		return validMuon;
 	}
@@ -355,15 +355,15 @@ private:
 		
 		if (muon->p4.Pt() <= 20.0) {
 			validMuon = validMuon &&
-				   ((muon->trackIso03 < 8.0) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
-				   (muon->ecalIso03  < 8.0) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
-				   (muon->hcalIso03  < 8.0) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+				   ((muon->trackIso < 8.0) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
+				   (muon->ecalIso  < 8.0) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
+				   (muon->hcalIso  < 8.0) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 		}
 		else {
 			validMuon = validMuon &&
-				   (((muon->trackIso03 / muon->p4.Pt()) < 0.4) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
-				   ((muon->ecalIso03 / muon->p4.Pt()) < 0.4) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
-				   ((muon->hcalIso03 / muon->p4.Pt()) < 0.4) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+				   (((muon->trackIso / muon->p4.Pt()) < 0.4) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
+				   ((muon->ecalIso / muon->p4.Pt()) < 0.4) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
+				   ((muon->hcalIso / muon->p4.Pt()) < 0.4) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 		}
 		
 		return validMuon;
