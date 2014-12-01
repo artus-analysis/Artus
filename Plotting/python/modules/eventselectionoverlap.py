@@ -12,6 +12,7 @@ import ROOT
 
 import HarryPlotter.Plotting.analysisbase as analysisbase
 import HarryPlotter.Utility.progressiterator as pi
+import HarryPlotter.Utility.jsonTools as jsonTools
 
 
 class EventSelectionOverlap(analysisbase.AnalysisBase):
@@ -20,6 +21,8 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 	
 	def modify_argument_parser(self, parser, args):
 		super(EventSelectionOverlap, self).modify_argument_parser(parser, args)
+		
+		parser.set_defaults(x_expressions="1")
 		
 		self.cutflow_options = parser.add_argument_group("Event selection overlap options")
 		self.cutflow_options.add_argument("--events-only-in-1", action="store_true", default=False,
@@ -35,19 +38,28 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 			for index2, (nick2, tree2) in enumerate(plotData.plotdict.get("root_trees", {}).items()):
 				if index1 != index2 and len(plotData.plotdict["root_objects"]) == 0:
 
-					# Events in sync ntuple
-					events1 = EventSelectionOverlap.get_events_set_from_tree(tree1, plotData.plotdict["x_expressions"][index1])
-					# Events in KIT ntuple
-					events2 = EventSelectionOverlap.get_events_set_from_tree(tree2, plotData.plotdict["x_expressions"][index2])
+					# Events in first ntuple
+					events1 = EventSelectionOverlap.get_events_set_from_tree(tree1, ["run", "lumi", "evt"])
+					
+					# Events in second ntuple
+					events2 = EventSelectionOverlap.get_events_set_from_tree(tree2, ["run", "lumi", "evt"])
 
 					events_only1 = list(events2.difference(events1))
 					events_intersection = list(events1.intersection(events2))
 					events_only2 = list(events1.difference(events2))
 					
+					print_dict = jsonTools.JsonDict()
 					if plotData.plotdict["events_only_in_1"]:
-						log.info("Events only in the first input:\n\t%s" % str(events_only1))
+						print_dict.setdefault("RunWhitelist", []).extend(zip(*events_only1)[0])
+						print_dict.setdefault("LumiWhitelist", []).extend(zip(*events_only1)[1])
+						print_dict.setdefault("EventWhitelist", []).extend(zip(*events_only1)[2])
 					if plotData.plotdict["events_only_in_2"]:
-						log.info("Events only in the second input:\n\t%s" % str(events_only2))
+						print_dict.setdefault("RunWhitelist", []).extend(zip(*events_only2)[0])
+						print_dict.setdefault("LumiWhitelist", []).extend(zip(*events_only2)[1])
+						print_dict.setdefault("EventWhitelist", []).extend(zip(*events_only2)[2])
+					if len(print_dict) > 0:
+						print_dict["MatchRunLumiEventTuples"] = True
+						log.info(str(print_dict))
 
 					histogram = ROOT.TH1F("histogram_{0}".format(hashlib.md5("_".join([str(events_only1), str(events_intersection), str(events_only2)]))), "Event Selection Overlap", 3, -1.0, 1.0)
 
@@ -59,10 +71,15 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 					plotData.plotdict["root_objects"][nick2 + "_vs_" + nick1] = histogram
 	
 	@staticmethod
-	def get_events_set_from_tree(tree, events_branch_name):
+	def get_events_set_from_tree(tree, branch_names):
+		if isinstance(branch_names, basestring):
+			branch_names = [branch_names]
 		events = []
 		for entry in pi.ProgressIterator(xrange(tree.GetEntries()), description="Reading event numbers from tree"):
 			tree.GetEntry(entry)
-			events.append(getattr(tree, events_branch_name))
+			event = []
+			for branch_name in branch_names:
+				event.append(getattr(tree, branch_name))
+			events.append(tuple(event))
 		return set(events)
 					
