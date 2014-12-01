@@ -23,7 +23,7 @@
 	bool JsonFilter::DoesEventPass(KappaEvent const& event, KappaProduct const& product,
 	                           KappaSettings const& settings) const
 	{
-		assert(event.m_eventMetadata);
+		assert(event.m_eventInfo);
 		
-		return m_runLumiSelector.accept(event.m_eventMetadata->nRun, (event.m_eventMetadata->nLumi & 0x0000FFFF));
+		return m_runLumiSelector.accept(event.m_eventInfo->nRun, (event.m_eventInfo->nLumi & 0x0000FFFF));
 	}

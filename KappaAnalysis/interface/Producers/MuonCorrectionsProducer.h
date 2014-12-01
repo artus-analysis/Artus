@@ -25,7 +25,7 @@ public:
 protected:
 
 	// Can be overwritten for analysis-specific use cases
-	virtual void AdditionalCorrections(KDataMuon* muon, KappaEvent const& event,
+	virtual void AdditionalCorrections(KMuon* muon, KappaEvent const& event,
 	                                   KappaProduct& product, KappaSettings const& settings) const;
 
 };

@@ -35,39 +35,39 @@ public:
 
 	/// added by ElectronCorrectionProducer
 	// needs to be a shared_ptr in order to be deleted when the product is deleted
-	std::vector<std::shared_ptr<KDataElectron> > m_correctedElectrons;
+	std::vector<std::shared_ptr<KElectron> > m_correctedElectrons;
 
 	/// added by ValidElectronsProducer
-	std::vector<KDataElectron*> m_validElectrons;
-	std::vector<KDataElectron*> m_invalidElectrons;
+	std::vector<KElectron*> m_validElectrons;
+	std::vector<KElectron*> m_invalidElectrons;
 
 	/// added by MuonCorrectionProducer
 	// needs to be a shared_ptr in order to be deleted when the product is deleted
-	std::vector<std::shared_ptr<KDataMuon> > m_correctedMuons;
+	std::vector<std::shared_ptr<KMuon> > m_correctedMuons;
 
 	/// added by ValidMuonsProducer
-	std::vector<KDataMuon*> m_validMuons;
-	std::vector<KDataMuon*> m_invalidMuons;
+	std::vector<KMuon*> m_validMuons;
+	std::vector<KMuon*> m_invalidMuons;
 
 	/// added by TauEnergyCorrectionProducer
 	// needs to be a shared_ptr in order to be deleted when the product is deleted
-	std::vector<std::shared_ptr<KDataPFTau> > m_correctedTaus;
+	std::vector<std::shared_ptr<KTau> > m_correctedTaus;
 
 	/// added by ValidTausProducer
-	std::vector<KDataPFTau*> m_validTaus;
-	std::vector<KDataPFTau*> m_invalidTaus;
+	std::vector<KTau*> m_validTaus;
+	std::vector<KTau*> m_invalidTaus;
 	
 	// added by ValidElectronsProducer, ValidMuonsProducer, ValidTausProducer
 	std::vector<KLepton*> m_validLeptons;
 	std::vector<KLepton*> m_invalidLeptons;
 
 	/// added by JetEnergyCorrectionProducer
-	std::vector<std::shared_ptr<KDataPFJet> > m_correctedJets;
-	std::vector<std::shared_ptr<KDataPFTaggedJet> > m_correctedTaggedJets;
+	std::vector<std::shared_ptr<KBasicJet> > m_correctedJets;
+	std::vector<std::shared_ptr<KJet> > m_correctedTaggedJets;
 	
 	/// added by ValidJetsProducer
-	std::vector<KDataPFJet*> m_validJets;
-	std::vector<KDataPFJet*> m_invalidJets;
+	std::vector<KBasicJet*> m_validJets;
+	std::vector<KBasicJet*> m_invalidJets;
 
 	/// added by GenParticleProducer
 	std::map<int, std::vector<KGenParticle*>> m_genParticlesMap;
@@ -76,25 +76,25 @@ public:
 	KappaEnumTypes::DiLeptonDecayMode m_genDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::NONE;
 
 	/// added by ValidBTaggedJetsProducer
-	std::vector<KDataPFTaggedJet*> m_bTaggedJets;
-	std::vector<KDataPFTaggedJet*> m_nonBTaggedJets;
+	std::vector<KJet*> m_bTaggedJets;
+	std::vector<KJet*> m_nonBTaggedJets;
 	
 	HLTTools m_hltInfo = HLTTools();
 	std::string m_selectedHltName;
 	int m_selectedHltPosition;
 
 	/// added by TriggerMatchingProducer
-	std::map<KDataElectron*, KDataLV*> m_triggerMatchedElectrons;
-	std::map<KDataMuon*, KDataLV*> m_triggerMatchedMuons;
-	std::map<KDataPFTau*, KDataLV*> m_triggerMatchedTaus;
-	std::map<KDataPFJet*, KDataLV*> m_triggerMatchedJets;
-	std::map<KDataPFTaggedJet*, KDataLV*> m_triggerMatchedTaggedJets;
+	std::map<KElectron*, KLV*> m_triggerMatchedElectrons;
+	std::map<KMuon*, KLV*> m_triggerMatchedMuons;
+	std::map<KTau*, KLV*> m_triggerMatchedTaus;
+	std::map<KBasicJet*, KLV*> m_triggerMatchedJets;
+	std::map<KJet*, KLV*> m_triggerMatchedTaggedJets;
 
 	/// added by GenMatchingProducer
-	std::map<KDataElectron*, KGenParticle*> m_genMatchedElectrons; //changed to KGenParticle from const KDataLV
-	std::map<KDataMuon*, KGenParticle*> m_genMatchedMuons; //changed to KGenParticle from const KDataLV
-	std::map<KDataPFTau*, KGenParticle*> m_genMatchedTaus; //changed to KGenParticle from const KDataLV
-	std::map<KDataPFJet*, KGenParticle*> m_genMatchedJets; //changed to KGenParticle from const KDataLV
+	std::map<KElectron*, KGenParticle*> m_genMatchedElectrons; //changed to KGenParticle from const KLV
+	std::map<KMuon*, KGenParticle*> m_genMatchedMuons; //changed to KGenParticle from const KLV
+	std::map<KTau*, KGenParticle*> m_genMatchedTaus; //changed to KGenParticle from const KLV
+	std::map<KBasicJet*, KGenParticle*> m_genMatchedJets; //changed to KGenParticle from const KLV
 	float m_ratioGenMatched;
 	float m_genMatchDeltaR;
 
@@ -104,8 +104,8 @@ public:
 	std::vector<double> m_discriminators;
 
 	// GenTauDecayModeProducer
-	std::map<const KDataGenTau*, int> m_genMatchedDecayMode;
-	std::map<const KDataGenTau*, int> m_genMatchedProngSize;
+	std::map<const KGenTau*, int> m_genMatchedDecayMode;
+	std::map<const KGenTau*, int> m_genMatchedProngSize;
 	int m_tau1DecayMode;
 	int m_tau2DecayMode;
 	int m_tau1ProngSize;

@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <algorithm>
@@ -20,7 +19,7 @@
 
 /**
    \brief GlobalProducer, for valid electrons.
-   
+
    This producer implements quality criteria for electrons. Currently only the
    *mvanontrig* working point for non-triggering MVA is implemented.
 
@@ -36,7 +35,7 @@
 */
 
 template<class TTypes>
-class ValidElectronsProducer: public ProducerBase<TTypes>, public ValidPhysicsObjectTools<TTypes, KDataElectron>
+class ValidElectronsProducer: public ProducerBase<TTypes>, public ValidPhysicsObjectTools<TTypes, KElectron>
 {
 
 public:
@@ -82,7 +81,7 @@ public:
 		else if (electronID == "user") return ElectronID::USER;
 		else return ElectronID::NONE;
 	}
-	
+
 	enum class ElectronIsoType : int
 	{
 		NONE  = -1,
@@ -95,7 +94,7 @@ public:
 		else if (electronIsoType == "user") return ElectronIsoType::USER;
 		else return ElectronIsoType::NONE;
 	}
-	
+
 	enum class ElectronIso : int
 	{
 		NONE  = -1,
@@ -110,7 +109,7 @@ public:
 		else if (electronIso == "fakeable") return ElectronIso::FAKEABLE;
 		else return ElectronIso::NONE;
 	}
-	
+
 	enum class ElectronReco : int
 	{
 		NONE  = -1,
@@ -129,9 +128,9 @@ public:
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
 		return "ValidElectronsProducer";
 	}
-	
-	ValidElectronsProducer(std::vector<KDataElectron*> product_type::*validElectrons=&product_type::m_validElectrons,
-	                       std::vector<KDataElectron*> product_type::*invalidElectrons=&product_type::m_invalidElectrons,
+
+	ValidElectronsProducer(std::vector<KElectron*> product_type::*validElectrons=&product_type::m_validElectrons,
+	                       std::vector<KElectron*> product_type::*invalidElectrons=&product_type::m_invalidElectrons,
 	                       std::string (setting_type::*GetElectronID)(void) const=&setting_type::GetElectronID,
 	                       std::string (setting_type::*GetElectronIsoType)(void) const=&setting_type::GetElectronIsoType,
 	                       std::string (setting_type::*GetElectronIso)(void) const=&setting_type::GetElectronIso,
@@ -139,7 +138,7 @@ public:
 	                       std::vector<std::string>& (setting_type::*GetLowerPtCuts)(void) const=&setting_type::GetElectronLowerPtCuts,
 	                       std::vector<std::string>& (setting_type::*GetUpperAbsEtaCuts)(void) const=&setting_type::GetElectronUpperAbsEtaCuts) :
 		ProducerBase<TTypes>(),
-		ValidPhysicsObjectTools<TTypes, KDataElectron>(GetLowerPtCuts, GetUpperAbsEtaCuts, validElectrons),
+		ValidPhysicsObjectTools<TTypes, KElectron>(GetLowerPtCuts, GetUpperAbsEtaCuts, validElectrons),
 		m_validElectronsMember(validElectrons),
 		m_invalidElectronsMember(invalidElectrons),
 		GetElectronID(GetElectronID),
@@ -151,7 +150,7 @@ public:
 
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
 		ProducerBase<TTypes>::Init(settings);
-		ValidPhysicsObjectTools<TTypes, KDataElectron>::Init(settings);
+		ValidPhysicsObjectTools<TTypes, KElectron>::Init(settings);
 		
 		validElectronsInput = ToValidElectronsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidElectronsInput())));
 		
@@ -177,14 +176,14 @@ public:
 	{
 		assert(event.m_electrons);
 		assert(event.m_vertexSummary);
-	
+		assert(event.m_electronMetadata);
 		// select input source
-		std::vector<KDataElectron*> electrons;
+		std::vector<KElectron*> electrons;
 		if ((validElectronsInput == ValidElectronsInput::AUTO && (product.m_correctedElectrons.size() > 0)) || (validElectronsInput == ValidElectronsInput::CORRECTED))
 		{
 			electrons.resize(product.m_correctedElectrons.size());
 			size_t electronIndex = 0;
-			for (std::vector<std::shared_ptr<KDataElectron> >::iterator electron = product.m_correctedElectrons.begin();
+			for (std::vector<std::shared_ptr<KElectron> >::iterator electron = product.m_correctedElectrons.begin();
 			     electron != product.m_correctedElectrons.end(); ++electron)
 			{
 				electrons[electronIndex] = electron->get();
@@ -195,17 +194,17 @@ public:
 		{
 			electrons.resize(event.m_electrons->size());
 			size_t electronIndex = 0;
-			for (KDataElectrons::iterator electron = event.m_electrons->begin(); electron != event.m_electrons->end(); ++electron)
+			for (KElectrons::iterator electron = event.m_electrons->begin(); electron != event.m_electrons->end(); ++electron)
 			{
 				electrons[electronIndex] = &(*electron);
 				++electronIndex;
 			}
 		}
-		
-		for (std::vector<KDataElectron*>::iterator electron = electrons.begin(); electron != electrons.end(); ++electron)
+
+		for (std::vector<KElectron*>::iterator electron = electrons.begin(); electron != electrons.end(); ++electron)
 		{
 			bool validElectron = true;
-			
+
 			// POG recommondations
 			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentification#Non_triggering_MVA
 			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentification#Triggering_MVA
@@ -287,7 +286,7 @@ protected:
 	ElectronReco electronReco;
 
 	// Can be overwritten for analysis-specific use cases
-	virtual bool AdditionalCriteria(KDataElectron* electron, event_type const& event,
+	virtual bool AdditionalCriteria(KElectron* electron, event_type const& event,
 	                                product_type& product, setting_type const& settings) const
 	{
 		bool validElectron = true;
@@ -296,8 +295,8 @@ protected:
 
 
 private:
-	std::vector<KDataElectron*> product_type::*m_validElectronsMember;
-	std::vector<KDataElectron*> product_type::*m_invalidElectronsMember;
+	std::vector<KElectron*> product_type::*m_validElectronsMember;
+	std::vector<KElectron*> product_type::*m_invalidElectronsMember;
 	std::string (setting_type::*GetElectronID)(void) const;
 	std::string (setting_type::*GetElectronIsoType)(void) const;
 	std::string (setting_type::*GetElectronIso)(void) const;
@@ -352,7 +351,7 @@ private:
 					&&
 					(electron->p4.Pt() < 20.0)
 					&&
-					( 
+					(
 						(abs(electron->p4.Eta()) < 0.8 && electron->getId("mvaTrigV050nsCSA14", event.m_electronIdMetadata) > 0.0)
 						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("mvaTrigV050nsCSA14", event.m_electronIdMetadata) > 0.1)
 						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getId("mvaTrigV050nsCSA14", event.m_electronIdMetadata) > 0.62)
@@ -372,7 +371,7 @@ private:
 		return validElectron;
 	}
 
-	bool IsVetoVbtf95Electron(KDataElectron* electron, event_type const& event, product_type& product) const
+	bool IsVetoVbtf95Electron(KElectron* electron, event_type const& event, product_type& product) const
 	{
 		bool validElectron = true;
 		
@@ -380,8 +379,8 @@ private:
 		{
 			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Barrel_Cuts_eta_supercluster_1_4
 			validElectron = validElectron &&
-			                (std::abs(electron->deltaEtaSuperClusterTrackAtVtx) < 0.007) &&
-			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.8) &&
+			                (std::abs(electron->dEtaIn) < 0.007) &&
+			                (std::abs(electron->dPhiIn) < 0.8) &&
 			                (electron->sigmaIetaIeta < 0.01) &&
 			                (electron->hadronicOverEm < 0.15) &&
 			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.04) &&
@@ -392,8 +391,8 @@ private:
 		{
 			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
 			validElectron = validElectron &&
-			                (std::abs(electron->deltaEtaSuperClusterTrackAtVtx) < 0.01) &&
-			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.7) &&
+			                (std::abs(electron->dEtaIn) < 0.01) &&
+			                (std::abs(electron->dPhiIn) < 0.7) &&
 			                (electron->sigmaIetaIeta < 0.03) &&
 			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.04) &&
 			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2);
@@ -403,7 +402,7 @@ private:
 		return validElectron;
 	}
 
-	bool IsLooseVbtf95Electron(KDataElectron* electron, event_type const& event, product_type& product) const
+	bool IsLooseVbtf95Electron(KElectron* electron, event_type const& event, product_type& product) const
 	{
 		bool validElectron = true;
 		
@@ -411,8 +410,8 @@ private:
 		{
 			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Barrel_Cuts_eta_supercluster_1_4
 			validElectron = validElectron &&
-			                (std::abs(electron->deltaEtaSuperClusterTrackAtVtx) < 0.007) &&
-			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.15) &&
+			                (std::abs(electron->dEtaIn) < 0.007) &&
+			                (std::abs(electron->dPhiIn) < 0.15) &&
 			                (electron->sigmaIetaIeta < 0.01) &&
 			                (electron->hadronicOverEm < 0.12) &&
 			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
@@ -425,8 +424,8 @@ private:
 		{
 			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
 			validElectron = validElectron &&
-			                (std::abs(electron->deltaEtaSuperClusterTrackAtVtx) < 0.009) &&
-			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.1) &&
+			                (std::abs(electron->dEtaIn) < 0.009) &&
+			                (std::abs(electron->dPhiIn) < 0.1) &&
 			                (electron->sigmaIetaIeta < 0.03) &&
 			                (electron->hadronicOverEm < 0.1) &&
 			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
@@ -439,7 +438,7 @@ private:
 		return validElectron;
 	}
 
-	bool IsMediumVbtf95Electron(KDataElectron* electron, event_type const& event, product_type& product) const
+	bool IsMediumVbtf95Electron(KElectron* electron, event_type const& event, product_type& product) const
 	{
 		bool validElectron = true;
 		
@@ -447,8 +446,8 @@ private:
 		{
 			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Barrel_Cuts_eta_supercluster_1_4
 			validElectron = validElectron &&
-			                (std::abs(electron->deltaEtaSuperClusterTrackAtVtx) < 0.004) &&
-			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.06) &&
+			                (std::abs(electron->dEtaIn) < 0.004) &&
+			                (std::abs(electron->dPhiIn) < 0.06) &&
 			                (electron->sigmaIetaIeta < 0.01) &&
 			                (electron->hadronicOverEm < 0.12) &&
 			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
@@ -461,8 +460,8 @@ private:
 		{
 			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
 			validElectron = validElectron &&
-			                (std::abs(electron->deltaEtaSuperClusterTrackAtVtx) < 0.007) &&
-			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.03) &&
+			                (std::abs(electron->dEtaIn) < 0.007) &&
+			                (std::abs(electron->dPhiIn) < 0.03) &&
 			                (electron->sigmaIetaIeta < 0.03) &&
 			                (electron->hadronicOverEm < 0.1) &&
 			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
@@ -475,7 +474,7 @@ private:
 		return validElectron;
 	}
 
-	bool IsTightVbtf95Electron(KDataElectron* electron, event_type const& event, product_type& product) const
+	bool IsTightVbtf95Electron(KElectron* electron, event_type const& event, product_type& product) const
 	{
 		bool validElectron = true;
 		
@@ -483,8 +482,8 @@ private:
 		{
 			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Barrel_Cuts_eta_supercluster_1_4
 			validElectron = validElectron &&
-			                (std::abs(electron->deltaEtaSuperClusterTrackAtVtx) < 0.004) &&
-			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.03) &&
+			                (std::abs(electron->dEtaIn) < 0.004) &&
+			                (std::abs(electron->dPhiIn) < 0.03) &&
 			                (electron->sigmaIetaIeta < 0.01) &&
 			                (electron->hadronicOverEm < 0.12) &&
 			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
@@ -497,8 +496,8 @@ private:
 		{
 			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
 			validElectron = validElectron &&
-			                (std::abs(electron->deltaEtaSuperClusterTrackAtVtx) < 0.005) &&
-			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.02) &&
+			                (std::abs(electron->dEtaIn) < 0.005) &&
+			                (std::abs(electron->dPhiIn) < 0.02) &&
 			                (electron->sigmaIetaIeta < 0.03) &&
 			                (electron->hadronicOverEm < 0.1) &&
 			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
@@ -511,15 +510,15 @@ private:
 		return validElectron;
 	}
 
-	bool IsFakeableElectron(KDataElectron* electron, event_type const& event, product_type& product) const
+	bool IsFakeableElectron(KElectron* electron, event_type const& event, product_type& product) const
 	{
 		bool validElectron = true;
 		
 		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
 		{
 			validElectron = validElectron &&
-			                (std::abs(electron->deltaEtaSuperClusterTrackAtVtx) < 0.007) &&
-			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.15) &&
+			                (std::abs(electron->dEtaIn) < 0.007) &&
+			                (std::abs(electron->dPhiIn) < 0.15) &&
 			                (electron->sigmaIetaIeta < 0.01) &&
 			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
 			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1);
@@ -527,8 +526,8 @@ private:
 		else
 		{
 			validElectron = validElectron &&
-			                (std::abs(electron->deltaEtaSuperClusterTrackAtVtx) < 0.009) &&
-			                (std::abs(electron->deltaPhiSuperClusterTrackAtVtx) < 0.1) &&
+			                (std::abs(electron->dEtaIn) < 0.009) &&
+			                (std::abs(electron->dPhiIn) < 0.1) &&
 			                (electron->sigmaIetaIeta < 0.03) &&
 			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
 			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1);
@@ -537,7 +536,7 @@ private:
 		return validElectron;
 	}
 
-	bool IsFakeableElectronIso(KDataElectron* electron, event_type const& event, product_type& product,  setting_type const& settings) const
+	bool IsFakeableElectronIso(KElectron* electron, event_type const& event, product_type& product,  setting_type const& settings) const
 	{
 		bool validElectron = true;
 		

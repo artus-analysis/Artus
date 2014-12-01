@@ -85,7 +85,7 @@ public:
 	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		assert((event.*m_jetsMember));
-		assert(event.m_jetArea);
+		assert(event.m_pileupDensity);
 		assert(event.m_vertexSummary);
 		
 		// create a copy of all jets in the event (first temporarily for the JEC)
@@ -101,7 +101,7 @@ public:
 		
 		// apply jet energy corrections and uncertainty shift
 		correctJets(&correctJetsForJecTools, factorizedJetCorrector, jetCorrectionUncertainty,
-		            event.m_jetArea->median, event.m_vertexSummary->nVertices, -1,
+		            event.m_pileupDensity->rho, event.m_vertexSummary->nVertices, -1,
 		            settings.GetJetEnergyCorrectionUncertaintyShift());
 		
 		// create the shared pointers to store in the product
@@ -156,7 +156,7 @@ private:
    
    Operates on the vector event.m_jets and product::m_correctedJets.
 */
-class JetCorrectionsProducer: public JetCorrectionsProducerBase<KDataPFJet>
+class JetCorrectionsProducer: public JetCorrectionsProducerBase<KBasicJet>
 {
 public:
 	JetCorrectionsProducer();
@@ -171,7 +171,7 @@ public:
    
    Operates on the vector event.m_tjets and product::m_correctedTaggedJets.
 */
-class TaggedJetCorrectionsProducer: public JetCorrectionsProducerBase<KDataPFTaggedJet>
+class TaggedJetCorrectionsProducer: public JetCorrectionsProducerBase<KJet>
 {
 public:
 

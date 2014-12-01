@@ -16,7 +16,7 @@ class TriggerMatchingProducerBase: public KappaProducerBase
 
 public:
 	
-	TriggerMatchingProducerBase(std::map<TValidObject*, KDataLV*> KappaProduct::*triggerMatchedObjects,
+	TriggerMatchingProducerBase(std::map<TValidObject*, KLV*> KappaProduct::*triggerMatchedObjects,
 	                            std::vector<TValidObject*> KappaProduct::*validObjects,
 	                            std::vector<TValidObject*> KappaProduct::*invalidObjects,
 	                            std::vector<std::string>& (KappaSettings::*GetObjectTriggerFilterNames)(void) const,
@@ -41,17 +41,17 @@ public:
 	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		assert(event.m_triggerObjects);
-		assert(event.m_triggerInfos);
+		assert(event.m_triggerObjectMetadata);
 		
 		if ((! product.m_selectedHltName.empty()) && ((settings.*GetDeltaRTriggerMatchingObjects)() > 0.0))
 		{
 /*
 			// TODO: remove debug output
 			LOG(INFO) << product.m_selectedHltName << " (" << product.m_selectedHltPosition << ")";
-			for (size_t filterIndex = event.m_triggerInfos->getMinFilterIndex(product.m_selectedHltPosition);
-			     filterIndex <= event.m_triggerInfos->getMaxFilterIndex(product.m_selectedHltPosition); ++filterIndex)
+			for (size_t filterIndex = event.m_triggerObjectMetadata->getMinFilterIndex(product.m_selectedHltPosition);
+			     filterIndex <= event.m_triggerObjectMetadata->getMaxFilterIndex(product.m_selectedHltPosition); ++filterIndex)
 			{
-				LOG(INFO) << "\t" << event.m_triggerInfos->toFilter[filterIndex] << " (" << filterIndex << ")";
+				LOG(INFO) << "\t" << event.m_triggerObjectMetadata->toFilter[filterIndex] << " (" << filterIndex << ")";
 				for (std::vector<int>::const_iterator triggerObjectIndex = event.m_triggerObjects->toIdxFilter[filterIndex].begin();
 				     triggerObjectIndex != event.m_triggerObjects->toIdxFilter[filterIndex].end();
 				     ++triggerObjectIndex)
@@ -67,9 +67,9 @@ public:
 				bool objectMatched = false;
 				
 				// loop over all filters
-				for (size_t filterIndex = event.m_triggerInfos->getMinFilterIndex(product.m_selectedHltPosition);
+				for (size_t filterIndex = event.m_triggerObjectMetadata->getMinFilterIndex(product.m_selectedHltPosition);
 					(! objectMatched) &&
-					(filterIndex < event.m_triggerInfos->getMaxFilterIndex(product.m_selectedHltPosition));
+					(filterIndex < event.m_triggerObjectMetadata->getMaxFilterIndex(product.m_selectedHltPosition));
 				     ++filterIndex)
 				{
 					bool hltMatched = false;
@@ -95,7 +95,7 @@ public:
 							{
 
 								// check that the filter regexp matches the filter
-								if (boost::regex_search(event.m_triggerInfos->toFilter[filterIndex],
+								if (boost::regex_search(event.m_triggerObjectMetadata->toFilter[filterIndex],
 								                        boost::regex(*filterName, boost::regex::icase | boost::regex::extended)))
 								{
 									filterMatched = true;
@@ -148,7 +148,7 @@ public:
 
 
 private:
-	std::map<TValidObject*, KDataLV*> KappaProduct::*m_triggerMatchedObjects;
+	std::map<TValidObject*, KLV*> KappaProduct::*m_triggerMatchedObjects;
 	std::vector<TValidObject*> KappaProduct::*m_validObjects;
 	std::vector<TValidObject*> KappaProduct::*m_invalidObjects;
 	std::vector<std::string>& (KappaSettings::*GetObjectTriggerFilterNames)(void) const;
@@ -167,7 +167,7 @@ private:
  *  - InvalidateNonMatchingElectrons (default provided)
  *  - ElectronTriggerFilterNames
  */
-class ElectronTriggerMatchingProducer: public TriggerMatchingProducerBase<KDataElectron>
+class ElectronTriggerMatchingProducer: public TriggerMatchingProducerBase<KElectron>
 {
 
 public:
@@ -185,7 +185,7 @@ public:
  *  - InvalidateNonMatchingMuons (default provided)
  *  - MuonTriggerFilterNames
  */
-class MuonTriggerMatchingProducer: public TriggerMatchingProducerBase<KDataMuon>
+class MuonTriggerMatchingProducer: public TriggerMatchingProducerBase<KMuon>
 {
 
 public:
@@ -203,7 +203,7 @@ public:
  *  - InvalidateNonMatchingTaus (default provided)
  *  - TauTriggerFilterNames
  */
-class TauTriggerMatchingProducer: public TriggerMatchingProducerBase<KDataPFTau>
+class TauTriggerMatchingProducer: public TriggerMatchingProducerBase<KTau>
 {
 
 public:
@@ -221,7 +221,7 @@ public:
  *  - InvalidateNonMatchingJets (default provided)
  *  - JetTriggerFilterNames
  */
-class JetTriggerMatchingProducer: public TriggerMatchingProducerBase<KDataPFJet>
+class JetTriggerMatchingProducer: public TriggerMatchingProducerBase<KBasicJet>
 {
 
 public:

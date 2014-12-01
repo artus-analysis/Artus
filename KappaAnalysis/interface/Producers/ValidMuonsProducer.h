@@ -34,7 +34,7 @@
 */
 
 template<class TTypes>
-class ValidMuonsProducer: public ProducerBase<TTypes>, public ValidPhysicsObjectTools<TTypes, KDataMuon>
+class ValidMuonsProducer: public ProducerBase<TTypes>, public ValidPhysicsObjectTools<TTypes, KMuon>
 {
 
 public:
@@ -107,15 +107,15 @@ public:
 		return "ValidMuonsProducer";
 	}
 	
-	ValidMuonsProducer(std::vector<KDataMuon*> product_type::*validMuons=&product_type::m_validMuons,
-	                   std::vector<KDataMuon*> product_type::*invalidMuons=&product_type::m_invalidMuons,
+	ValidMuonsProducer(std::vector<KMuon*> product_type::*validMuons=&product_type::m_validMuons,
+	                   std::vector<KMuon*> product_type::*invalidMuons=&product_type::m_invalidMuons,
 	                   std::string (setting_type::*GetMuonID)(void) const=&setting_type::GetMuonID,
 	                   std::string (setting_type::*GetMuonIsoType)(void) const=&setting_type::GetMuonIsoType,
 	                   std::string (setting_type::*GetMuonIso)(void) const=&setting_type::GetMuonIso,
 	                   std::vector<std::string>& (setting_type::*GetLowerPtCuts)(void) const=&setting_type::GetMuonLowerPtCuts,
 	                   std::vector<std::string>& (setting_type::*GetUpperAbsEtaCuts)(void) const=&setting_type::GetMuonUpperAbsEtaCuts) :
 		ProducerBase<TTypes>(),
-		ValidPhysicsObjectTools<TTypes, KDataMuon>(GetLowerPtCuts, GetUpperAbsEtaCuts, validMuons),
+		ValidPhysicsObjectTools<TTypes, KMuon>(GetLowerPtCuts, GetUpperAbsEtaCuts, validMuons),
 		m_validMuonsMember(validMuons),
 		m_invalidMuonsMember(invalidMuons),
 		GetMuonID(GetMuonID),
@@ -126,7 +126,7 @@ public:
 
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
 		ProducerBase<TTypes>::Init(settings);
-		ValidPhysicsObjectTools<TTypes, KDataMuon>::Init(settings);
+		ValidPhysicsObjectTools<TTypes, KMuon>::Init(settings);
 		
 		validMuonsInput = ToValidMuonsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidMuonsInput())));
 		
@@ -153,12 +153,12 @@ public:
 		assert(event.m_vertexSummary);
 		
 		// select input source
-		std::vector<KDataMuon*> muons;
+		std::vector<KMuon*> muons;
 		if ((validMuonsInput == ValidMuonsInput::AUTO && (product.m_correctedMuons.size() > 0)) || (validMuonsInput == ValidMuonsInput::CORRECTED))
 		{
 			muons.resize(product.m_correctedMuons.size());
 			size_t muonIndex = 0;
-			for (std::vector<std::shared_ptr<KDataMuon> >::iterator muon = product.m_correctedMuons.begin();
+			for (std::vector<std::shared_ptr<KMuon> >::iterator muon = product.m_correctedMuons.begin();
 			     muon != product.m_correctedMuons.end(); ++muon)
 			{
 				muons[muonIndex] = muon->get();
@@ -169,7 +169,7 @@ public:
 		{
 			muons.resize(event.m_muons->size());
 			size_t muonIndex = 0;
-			for (KDataMuons::iterator muon = event.m_muons->begin(); muon != event.m_muons->end(); ++muon)
+			for (KMuons::iterator muon = event.m_muons->begin(); muon != event.m_muons->end(); ++muon)
 			{
 				muons[muonIndex] = &(*muon);
 				++muonIndex;
@@ -177,7 +177,7 @@ public:
 		}
 		
 		// Apply muon isolation and MuonID
-		for (std::vector<KDataMuon*>::iterator muon = muons.begin(); muon != muons.end(); ++muon)
+		for (std::vector<KMuon*>::iterator muon = muons.begin(); muon != muons.end(); ++muon)
 		{
 			bool validMuon = true;
 
@@ -214,9 +214,9 @@ public:
 			// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Muon_Isolation_AN1
 			if (muonIsoType == MuonIsoType::PF) {
 				if (muonIso == MuonIso::TIGHT)
-					validMuon = validMuon && ((((*muon)->pfIso04 / (*muon)->p4.Pt()) < 0.12) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+					validMuon = validMuon && ((((*muon)->pfIso04() / (*muon)->p4.Pt()) < 0.12) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (muonIso == MuonIso::LOOSE)
-					validMuon = validMuon && ((((*muon)->pfIso04 / (*muon)->p4.Pt()) < 0.20) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+					validMuon = validMuon && ((((*muon)->pfIso04() / (*muon)->p4.Pt()) < 0.20) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (muonIso == MuonIso::FAKEABLE)
 					validMuon = validMuon && IsFakeableMuonIso(*muon, event, product, settings);
 				else if (muonIso != MuonIso::NONE)
@@ -257,7 +257,7 @@ protected:
 	MuonIso muonIso;
 	
 	// Can be overwritten for analysis-specific use cases
-	virtual bool AdditionalCriteria(KDataMuon* muon, event_type const& event,
+	virtual bool AdditionalCriteria(KMuon* muon, event_type const& event,
 	                                product_type& product, setting_type const& settings) const
 	{
 		bool validMuon = true;
@@ -266,8 +266,8 @@ protected:
 
 
 private:
-	std::vector<KDataMuon*> product_type::*m_validMuonsMember;
-	std::vector<KDataMuon*> product_type::*m_invalidMuonsMember;
+	std::vector<KMuon*> product_type::*m_validMuonsMember;
+	std::vector<KMuon*> product_type::*m_invalidMuonsMember;
 	std::string (setting_type::*GetMuonID)(void) const;
 	std::string (setting_type::*GetMuonIsoType)(void) const;
 	std::string (setting_type::*GetMuonIso)(void) const;
@@ -275,7 +275,7 @@ private:
 	ValidMuonsInput validMuonsInput;
 	
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon_selection
-	bool IsTightMuon2011(KDataMuon* muon, event_type const& event, product_type& product) const
+	bool IsTightMuon2011(KMuon* muon, event_type const& event, product_type& product) const
 	{
 		bool validMuon = true;
 		
@@ -293,7 +293,7 @@ private:
 	}
 	
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon
-	bool IsTightMuon2012(KDataMuon* muon, event_type const& event, product_type& product) const
+	bool IsTightMuon2012(KMuon* muon, event_type const& event, product_type& product) const
 	{
 		bool validMuon = true;
 		
@@ -312,7 +312,7 @@ private:
 	}
 	
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Loose_Muon
-	bool IsLooseMuon2012(KDataMuon* muon, event_type const& event, product_type& product) const
+	bool IsLooseMuon2012(KMuon* muon, event_type const& event, product_type& product) const
 	{
 		bool validMuon = true;
 		
@@ -325,7 +325,7 @@ private:
 	
 	// https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsToTauTauWorkingSummer2013#Muon_Tau_Final_state
 	// should be move to Higgs code
-	bool IsVetoMuon(KDataMuon* muon, event_type const& event, product_type& product) const
+	bool IsVetoMuon(KMuon* muon, event_type const& event, product_type& product) const
 	{
 		bool validMuon = true;
 		
@@ -338,7 +338,7 @@ private:
 		return validMuon;
 	}
 	
-	bool IsFakeableMuon(KDataMuon* muon, event_type const& event, product_type& product) const
+	bool IsFakeableMuon(KMuon* muon, event_type const& event, product_type& product) const
 	{
 		bool validMuon = true;
 		
@@ -349,7 +349,7 @@ private:
 		return validMuon;
 	}
 	
-	bool IsFakeableMuonIso(KDataMuon* muon, event_type const& event, product_type& product, setting_type const& settings) const
+	bool IsFakeableMuonIso(KMuon* muon, event_type const& event, product_type& product, setting_type const& settings) const
 	{
 		bool validMuon = true;
 		

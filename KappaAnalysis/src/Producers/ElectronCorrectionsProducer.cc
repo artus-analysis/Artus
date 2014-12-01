@@ -19,15 +19,15 @@ void ElectronCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct&
 	product.m_correctedElectrons.clear();
 	product.m_correctedElectrons.resize(event.m_electrons->size());
 	size_t electronIndex = 0;
-	for (KDataElectrons::const_iterator electron = event.m_electrons->begin();
+	for (KElectrons::const_iterator electron = event.m_electrons->begin();
 		 electron != event.m_electrons->end(); ++electron)
 	{
-		product.m_correctedElectrons[electronIndex] = std::shared_ptr<KDataElectron>(new KDataElectron(*electron));
+		product.m_correctedElectrons[electronIndex] = std::shared_ptr<KElectron>(new KElectron(*electron));
 		++electronIndex;
 	}
 	
 	// perform corrections on copied electrons
-	for (std::vector<std::shared_ptr<KDataElectron> >::iterator electron = product.m_correctedElectrons.begin();
+	for (std::vector<std::shared_ptr<KElectron> >::iterator electron = product.m_correctedElectrons.begin();
 		 electron != product.m_correctedElectrons.end(); ++electron)
 	{
 		// No general correction available
@@ -38,7 +38,7 @@ void ElectronCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct&
 	
 	// sort vectors of corrected electrons by pt
 	std::sort(product.m_correctedElectrons.begin(), product.m_correctedElectrons.end(),
-	          [](std::shared_ptr<KDataElectron> electron1, std::shared_ptr<KDataElectron> electron2) -> bool
+	          [](std::shared_ptr<KElectron> electron1, std::shared_ptr<KElectron> electron2) -> bool
 	          { return electron1->p4.Pt() > electron2->p4.Pt(); });
 }
 

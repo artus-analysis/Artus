@@ -34,15 +34,15 @@ public:
 		});
 		LambdaNtupleConsumer<TTypes>::AddUInt64Quantity("run", [](event_type const& event, product_type const& product) -> uint64_t
 		{
-			return event.m_eventMetadata->nRun;
+			return event.m_eventInfo->nRun;
 		});
 		LambdaNtupleConsumer<TTypes>::AddUInt64Quantity("lumi", [](event_type const& event, product_type const& product) -> uint64_t
 		{
-			return event.m_eventMetadata->nLumi;
+			return event.m_eventInfo->nLumi;
 		});
 		LambdaNtupleConsumer<TTypes>::AddUInt64Quantity("event", [](event_type const& event, product_type const& product) -> uint64_t
 		{
-			return event.m_eventMetadata->nEvent;
+			return event.m_eventInfo->nEvent;
 		});
 		
 		LambdaNtupleConsumer<TTypes>::AddIntQuantity("npv", [](event_type const& event, product_type const& product)
@@ -55,11 +55,11 @@ public:
 		{
 			return (bInpData ?
 			        DefaultValues::UndefinedInt :
-			        static_cast<KGenEventMetadata*>(event.m_eventMetadata)->numPUInteractionsTruth);
+			        static_cast<KGenEventInfo*>(event.m_eventInfo)->nPUMean);
 		});
 		
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("rho", [](event_type const& event, product_type const& product) {
-			return event.m_jetArea->median;
+			return event.m_pileupDensity->rho;
 		});
 		
 		LambdaNtupleConsumer<TTypes>::AddIntQuantity("genDiLeptonDecayMode", [](event_type const& event, product_type const& product) {

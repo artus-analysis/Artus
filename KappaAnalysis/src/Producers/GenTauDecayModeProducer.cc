@@ -79,7 +79,7 @@ void GenTauDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& pro
 	product.m_tau2ProngSize = tau2ProngSize;
 
 	//ugly temporary solution
-	for(typename std::vector<KDataGenTau>::const_iterator genTau = event.m_genTaus->begin();
+	for(typename std::vector<KGenTau>::const_iterator genTau = event.m_genTaus->begin();
 	                                                      genTau != event.m_genTaus->end();++genTau)
 	{
 		if (selectedTau1->node->p4 == genTau->p4)

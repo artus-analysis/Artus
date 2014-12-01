@@ -19,31 +19,32 @@ public:
 	size_t m_input = 0;
 
 	/// pointer to electron collection
-	KDataElectrons* m_electrons = 0;
-    KElectronIdMetadata* m_electronIdMetadata = 0;
+	KElectrons* m_electrons = 0;
+	KElectronMetadata* m_electronMetadata = 0;
 
 	/// pointer to muon collection
-	KDataMuons* m_muons = 0;
+	KMuons* m_muons = 0;
+	KMuonMetadata* m_muonMetadata = 0;
 
 	/// pointer to tau collection
-	KDataPFTaus* m_taus = 0;
-	KTauDiscriminatorMetadata* m_tauDiscriminatorMetadata = 0;
+	KTaus* m_taus = 0;
+	KTauMetadata* m_tauMetadata = 0;
 
 	/// pointer to jet collection
-	KDataPFJets* m_jets = 0;
-	KDataLVs* m_genJets = 0;
+	KBasicJets* m_jets = 0;
+	KLVs* m_genJets = 0;
 
 	/// pointer to tagged jet collection
-	KDataPFTaggedJets* m_tjets = 0;
+	KJets* m_tjets = 0;
 
 	/// pointer to jet area collection
-	KJetArea* m_jetArea = 0;
+	KPileupDensity* m_pileupDensity = 0;
 
 	/// pointer to MET collection
-	KDataPFMET* m_met = 0;
+	KMET* m_met = 0;
 
 	/// pointer to GenMET collection
-	KDataMET* m_genMet = 0;
+	KBasicMET* m_genMet = 0;
 
 	/// pointers to PF candidates
 	KPFCandidates* m_pfChargedHadronsPileUp = 0;
@@ -52,7 +53,7 @@ public:
 	KPFCandidates* m_pfPhotonsNoPileUp = 0;
 
 	/// pointer to beamspot collection
-	KDataBeamSpot* m_beamSpot = 0;
+	KBeamSpot* m_beamSpot = 0;
 
 	/// pointer to primary vertex summary
 	KVertexSummary* m_vertexSummary = 0;
@@ -61,20 +62,20 @@ public:
 	KGenParticles* m_genParticles = 0;
 
 	/// pointer to generator particles
-	KDataGenTaus* m_genTaus = 0;
-	
+	KGenTaus* m_genTaus = 0;
+
 	/// pointer to trigger infos and objects
-	KTriggerInfos* m_triggerInfos = 0;
+	KTriggerObjectMetadata* m_triggerObjectMetadata = 0;
 	KTriggerObjects* m_triggerObjects = 0;
 
 	/// pointer to metadata // TODO: move to Artus/Provider
-	KEventMetadata* m_eventMetadata = 0;
-	KGenEventMetadata* m_genEventMetadata = 0;
-	KLumiMetadata* m_lumiMetadata = 0;
-	KGenLumiMetadata* m_genLumiMetadata = 0;
+	KEventInfo* m_eventInfo = 0;
+	KGenEventInfo* m_genEventInfo = 0;
+	KLumiInfo* m_lumiInfo = 0;
+	KGenLumiInfo* m_genLumiMetadata = 0;
 	KFilterMetadata* m_filterMetadata = 0;
 	KFilterSummary* m_filterSummary = 0;
-	KTaggerMetadata* m_taggerMetadata = 0;
+	KJetMetadata* m_jetMetadata = 0;
 };
 
 

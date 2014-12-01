@@ -28,7 +28,7 @@
    This producer should be run after the ValidElectronsProducer, ValidMuonsProducer and ValidTausProducer,
    because it cleans the list of jets according to the valid leptons.
    
-   This is a templated base version. Use the actual versions for KDataPFJets or KDataPFTaggedJets
+   This is a templated base version. Use the actual versions for KBasicJets or KJets
    at the end of this file.
 */
 
@@ -171,22 +171,22 @@ public:
 			float maxNeutralFraction = this->GetMaxNeutralFraction();
 			
 			validJet = validJet
-					   && (*jet)->neutralHadFraction + (*jet)->HFHadFraction < maxNeutralFraction
-					   && (*jet)->neutralEMFraction < maxNeutralFraction
-					   && (*jet)->nConst > 1;
+					   && (*jet)->neutralHadronFraction + (*jet)->hfHadronFraction < maxNeutralFraction
+					   && (*jet)->photonFraction < maxNeutralFraction
+					   && (*jet)->nConstituents > 1;
 			// jets, |eta| < 2.4 (tracker)
 			if (std::abs((*jet)->p4.eta()) < 2.4)
 			{
 				validJet = validJet
-						   && (*jet)->chargedHadFraction > 0.0
+						   && (*jet)->chargedHadronFraction > 0.0
 						   && (*jet)->nCharged > 0
-						   && (*jet)->chargedEMFraction < 0.99;
+						   && (*jet)->electronFraction < 0.99;
 			}
 			if (jetIDVersion == JetIDVersion::ID2014) 
 			{
 				validJet = validJet
 						   && (*jet)->muonFraction < 0.8
-						   && (*jet)->chargedEMFraction < 0.9;
+						   && (*jet)->electronFraction < 0.9;
 			}
 			
 			// remove leptons from list of jets via simple DeltaR isolation
@@ -267,7 +267,7 @@ private:
    
    Operates on the vector event.m_jets.
 */
-class ValidJetsProducer: public ValidJetsProducerBase<KDataPFJet, KDataPFJet>
+class ValidJetsProducer: public ValidJetsProducerBase<KBasicJet, KBasicJet>
 {
 public:
 	ValidJetsProducer();
@@ -286,7 +286,7 @@ public:
    - PuJetIDs
    - JetTaggerLowerCuts
 */
-class ValidTaggedJetsProducer: public ValidJetsProducerBase<KDataPFTaggedJet, KDataPFJet>
+class ValidTaggedJetsProducer: public ValidJetsProducerBase<KJet, KBasicJet>
 {
 public:
 	
@@ -300,7 +300,7 @@ public:
 protected:
 	
 	// Can be overwritten for analysis-specific use cases
-	virtual bool AdditionalCriteria(KDataPFTaggedJet* jet, KappaEvent const& event,
+	virtual bool AdditionalCriteria(KJet* jet, KappaEvent const& event,
 	                                KappaProduct& product, KappaSettings const& settings) const;
 
 private:
@@ -309,7 +309,7 @@ private:
 	std::map<std::string, std::vector<float> > jetTaggerLowerCutsByTaggerName;
 	std::map<std::string, std::vector<float> > jetTaggerUpperCutsByTaggerName;
 	
-	bool PassPuJetIds(KDataPFTaggedJet* jet, std::vector<std::string> const& puJetIds, KTaggerMetadata* taggerMetadata) const;
+	bool PassPuJetIds(KJet* jet, std::vector<std::string> const& puJetIds, KJetMetadata* taggerMetadata) const;
 
 };
 

@@ -97,12 +97,12 @@ private:
 
 /** Electron Eta Filter
  */
-class ElectronUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KDataElectron> {
+class ElectronUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KElectron> {
 public:
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
 	
-	ElectronUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KDataElectron>(&KappaProduct::m_validElectrons) {}
+	ElectronUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KElectron>(&KappaProduct::m_validElectrons) {}
 	
 	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
 };
@@ -110,12 +110,12 @@ public:
 
 /** Muon Eta Filter
  */
-class MuonUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KDataMuon> {
+class MuonUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KMuon> {
 public:
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
 	
-	MuonUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KDataMuon>(&KappaProduct::m_validMuons) {}
+	MuonUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KMuon>(&KappaProduct::m_validMuons) {}
 	
 	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
 };
@@ -123,12 +123,12 @@ public:
 
 /** Tau Eta Filter
  */
-class TauUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KDataPFTau> {
+class TauUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KTau> {
 public:
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
 	
-	TauUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KDataPFTau>(&KappaProduct::m_validTaus) {}
+	TauUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KTau>(&KappaProduct::m_validTaus) {}
 	
 	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
 };
@@ -136,12 +136,12 @@ public:
 
 /** Jet Eta Filter
  */
-class JetUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KDataPFJet> {
+class JetUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KBasicJet> {
 public:
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
 	
-	JetUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KDataPFJet>(&KappaProduct::m_validJets) {}
+	JetUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KBasicJet>(&KappaProduct::m_validJets) {}
 	
 	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
 };

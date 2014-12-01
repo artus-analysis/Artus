@@ -8,7 +8,7 @@ std::string ElectronTriggerMatchingProducer::GetProducerId() const
 }
 
 ElectronTriggerMatchingProducer::ElectronTriggerMatchingProducer() :
-	TriggerMatchingProducerBase<KDataElectron>(&KappaProduct::m_triggerMatchedElectrons,
+	TriggerMatchingProducerBase<KElectron>(&KappaProduct::m_triggerMatchedElectrons,
 	                                           &KappaProduct::m_validElectrons,
 	                                           &KappaProduct::m_invalidElectrons,
 	                                                   &KappaSettings::GetElectronTriggerFilterNames,
@@ -24,7 +24,7 @@ std::string MuonTriggerMatchingProducer::GetProducerId() const
 }
 
 MuonTriggerMatchingProducer::MuonTriggerMatchingProducer() :
-	TriggerMatchingProducerBase<KDataMuon>(&KappaProduct::m_triggerMatchedMuons,
+	TriggerMatchingProducerBase<KMuon>(&KappaProduct::m_triggerMatchedMuons,
 	                                       &KappaProduct::m_validMuons,
 	                                       &KappaProduct::m_invalidMuons,
 	                                       &KappaSettings::GetMuonTriggerFilterNames,
@@ -40,7 +40,7 @@ std::string TauTriggerMatchingProducer::GetProducerId() const
 }
 
 TauTriggerMatchingProducer::TauTriggerMatchingProducer() :
-	TriggerMatchingProducerBase<KDataPFTau>(&KappaProduct::m_triggerMatchedTaus,
+	TriggerMatchingProducerBase<KTau>(&KappaProduct::m_triggerMatchedTaus,
 	                                        &KappaProduct::m_validTaus,
 	                                        &KappaProduct::m_invalidTaus,
 	                                        &KappaSettings::GetTauTriggerFilterNames,
@@ -55,7 +55,7 @@ std::string JetTriggerMatchingProducer::GetProducerId() const {
 }
 
 JetTriggerMatchingProducer::JetTriggerMatchingProducer() :
-	TriggerMatchingProducerBase<KDataPFJet>(&KappaProduct::m_triggerMatchedJets,
+	TriggerMatchingProducerBase<KBasicJet>(&KappaProduct::m_triggerMatchedJets,
 	                                        &KappaProduct::m_validJets,
 	                                        &KappaProduct::m_invalidJets,
 	                                        &KappaSettings::GetJetTriggerFilterNames,

@@ -8,15 +8,15 @@ std::string HltProducer::GetProducerId() const {
 void HltProducer::Produce(KappaEvent const& event, KappaProduct& product,
                      KappaSettings const& settings) const
 {
-	assert(event.m_lumiMetadata);
-	assert(event.m_eventMetadata);
+	assert(event.m_lumiInfo);
+	assert(event.m_eventInfo);
 	
 	if (settings.GetHltPaths().size() == 0) {
 		LOG(FATAL) << "No Hlt Trigger path list (tag \"HltPaths\") configured!";
 	}
 
 	// set LumiMetadat, needs to be done here for the case running over multiple files
-	product.m_hltInfo.setLumiMetadata(event.m_lumiMetadata);
+	product.m_hltInfo.setLumiInfo(event.m_lumiInfo);
 
 	// search trigger with lowest prescale
 	std::string lowestPrescaleHltName;
@@ -43,7 +43,7 @@ void HltProducer::Produce(KappaEvent const& event, KappaProduct& product,
 			}
 			
 			// look for fired trigger
-			if (event.m_eventMetadata->hltFired(hltName, event.m_lumiMetadata))
+			if (event.m_eventInfo->hltFired(hltName, event.m_lumiInfo))
 			{
 				if (prescale < prescaleFiredHlt) {
 					prescaleFiredHlt = prescale;

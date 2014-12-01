@@ -16,9 +16,9 @@ class KappaEventBase : public EventBase {
 public:
 
 	/// pointer to eventMetadata
-	KEventMetadata* m_eventMetadata = 0;
+	KEventInfo* m_eventInfo = 0;
 	/// pointer to genEventmetaData
-	KGenEventMetadata* m_genEventMetadata = 0;
+	KGenEventInfo* m_genEventInfo = 0;
 };
 
 

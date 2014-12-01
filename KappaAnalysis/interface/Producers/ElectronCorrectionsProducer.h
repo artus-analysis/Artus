@@ -27,7 +27,7 @@ public:
 protected:
 
 	// Can be overwritten for analysis-specific use cases
-	virtual void AdditionalCorrections(KDataElectron* electron, KappaEvent const& event,
+	virtual void AdditionalCorrections(KElectron* electron, KappaEvent const& event,
 	                                   KappaProduct& product, KappaSettings const& settings) const
 	{
 	}

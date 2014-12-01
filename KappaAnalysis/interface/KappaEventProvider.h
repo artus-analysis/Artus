@@ -15,51 +15,50 @@
 template<class TTypes>
 class KappaEventProvider: public KappaEventProviderBase<TTypes> {
 public:
-	
+
 	typedef typename TTypes::setting_type setting_type;
-	
+
 	KappaEventProvider(FileInterface2 & fi, InputTypeEnum inpType, bool batchMode=false) :
 		KappaEventProviderBase<TTypes>(fi, inpType, batchMode)
 	{
 	}
 
 	virtual void WireEvent(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
-		
 		// Electrons
 		if (! settings.GetElectrons().empty())
-			this->m_event.m_electrons = this->template SecureFileInterfaceGet<KDataElectrons>(settings.GetElectrons());
-		if (! settings.GetElectronIdMetadata().empty())
-            this->m_event.m_electronIdMetadata = this->template SecureFileInterfaceGetMeta<KElectronIdMetadata>(settings.GetElectronIdMetadata());
+			this->m_event.m_electrons = this->template SecureFileInterfaceGet<KElectrons>(settings.GetElectrons());
+		if (! settings.GetElectronMetadata().empty())
+            this->m_event.m_electronIdMetadata = this->template SecureFileInterfaceGetMeta<KElectronMetadata>(settings.GetElectronMetadata());
 
 		// Muons
 		if (! settings.GetMuons().empty())
-			this->m_event.m_muons = this->template SecureFileInterfaceGet<KDataMuons>(settings.GetMuons());
+			this->m_event.m_muons = this->template SecureFileInterfaceGet<KMuons>(settings.GetMuons());
 
 		// Taus
 		if (! settings.GetTaus().empty())
-			this->m_event.m_taus = this->template SecureFileInterfaceGet<KDataPFTaus>(settings.GetTaus());
+			this->m_event.m_taus = this->template SecureFileInterfaceGet<KTaus>(settings.GetTaus());
 		if (! settings.GetGenTaus().empty())
-			this->m_event.m_genTaus = this->template SecureFileInterfaceGet<KDataGenTaus>(settings.GetGenTaus());
+			this->m_event.m_genTaus = this->template SecureFileInterfaceGet<KGenTaus>(settings.GetGenTaus());
 		if (! settings.GetTauDiscriminatorMetadata().empty())
-			this->m_event.m_tauDiscriminatorMetadata = this->template SecureFileInterfaceGetMeta<KTauDiscriminatorMetadata>(settings.GetTauDiscriminatorMetadata());
+			this->m_event.m_tauMetadata = this->template SecureFileInterfaceGetMeta<KTauMetadata>(settings.GetTauDiscriminatorMetadata());
 
 		// Jets
 		if (! settings.GetJets().empty())
-			this->m_event.m_jets = this->template SecureFileInterfaceGet<KDataPFJets>(settings.GetJets());
+			this->m_event.m_jets = this->template SecureFileInterfaceGet<KBasicJets>(settings.GetJets());
 		if (! settings.GetGenJets().empty())
-			this->m_event.m_genJets = this->template SecureFileInterfaceGet<KDataLVs>(settings.GetGenJets());
+			this->m_event.m_genJets = this->template SecureFileInterfaceGet<KLVs>(settings.GetGenJets());
 		if (! settings.GetTaggedJets().empty())
-			this->m_event.m_tjets = this->template SecureFileInterfaceGet<KDataPFTaggedJets>(settings.GetTaggedJets());
+			this->m_event.m_tjets = this->template SecureFileInterfaceGet<KJets>(settings.GetTaggedJets());
 		if (! settings.GetJetArea().empty())
-			this->m_event.m_jetArea = this->template SecureFileInterfaceGet<KJetArea>(settings.GetJetArea());
+			this->m_event.m_pileupDensity = this->template SecureFileInterfaceGet<KPileupDensity>(settings.GetJetArea());
 	
 		// MET info
 		if (! settings.GetMet().empty())
-			this->m_event.m_met = this->template SecureFileInterfaceGet<KDataPFMET>(settings.GetMet());
+			this->m_event.m_met = this->template SecureFileInterfaceGet<KMET>(settings.GetMet());
 
 		//GenMET info
 		if (! settings.GetGenMet().empty())
-			this->m_event.m_genMet = this->template SecureFileInterfaceGet<KDataPFMET>(settings.GetMet());
+			this->m_event.m_genMet = this->template SecureFileInterfaceGet<KMET>(settings.GetMet());
 
 		// PF candidates info
 		if (! settings.GetPFChargedHadronsPileUp().empty())
@@ -73,7 +72,7 @@ public:
 		
 		// triggers
 		if (! settings.GetTriggerInfos().empty())
-			this->m_event.m_triggerInfos = this->template SecureFileInterfaceGetMeta<KTriggerInfos>(settings.GetTriggerInfos(), false);
+			this->m_event.m_triggerObjectMetadata = this->template SecureFileInterfaceGetMeta<KTriggerObjectMetadata>(settings.GetTriggerInfos(), false);
 		if (! settings.GetTriggerObjects().empty())
 			this->m_event.m_triggerObjects = this->template SecureFileInterfaceGet<KTriggerObjects>(settings.GetTriggerObjects(), false);
 		
@@ -83,7 +82,7 @@ public:
 	
 		// Vertex info
 		if (! settings.GetBeamSpot().empty())
-			this->m_event.m_beamSpot = this->template SecureFileInterfaceGet<KDataBeamSpot>(settings.GetBeamSpot());
+			this->m_event.m_beamSpot = this->template SecureFileInterfaceGet<KBeamSpot>(settings.GetBeamSpot());
 		if (! settings.GetVertexSummary().empty())
 			this->m_event.m_vertexSummary = this->template SecureFileInterfaceGet<KVertexSummary>(settings.GetVertexSummary());
 
@@ -92,12 +91,12 @@ public:
 		{
 			if(settings.GetInputIsData())
 			{
-				this->m_event.m_eventMetadata = this->template SecureFileInterfaceGet<KEventMetadata>(settings.GetEventMetadata());
+				this->m_event.m_eventInfo = this->template SecureFileInterfaceGet<KEventInfo>(settings.GetEventMetadata());
 			}
 			else
 			{
-				this->m_event.m_genEventMetadata = this->template SecureFileInterfaceGet<KGenEventMetadata>(settings.GetEventMetadata());
-				this->m_event.m_eventMetadata = this->m_event.m_genEventMetadata;
+				this->m_event.m_genEventInfo = this->template SecureFileInterfaceGet<KGenEventInfo>(settings.GetEventMetadata());
+				this->m_event.m_eventInfo = this->m_event.m_genEventInfo;
 			}
 		}
 		
@@ -105,12 +104,12 @@ public:
 		{
 			if(settings.GetInputIsData())
 			{
-				this->m_event.m_lumiMetadata = this->template SecureFileInterfaceGetMeta<KLumiMetadata>(settings.GetLumiMetadata());
+				this->m_event.m_lumiInfo = this->template SecureFileInterfaceGetMeta<KLumiInfo>(settings.GetLumiMetadata());
 			}
 			else
 			{
-				this->m_event.m_genLumiMetadata = this->template SecureFileInterfaceGetMeta<KGenLumiMetadata>(settings.GetLumiMetadata());
-				this->m_event.m_lumiMetadata = this->m_event.m_genLumiMetadata;
+				this->m_event.m_genLumiMetadata = this->template SecureFileInterfaceGetMeta<KGenLumiInfo>(settings.GetLumiMetadata());
+				this->m_event.m_lumiInfo = this->m_event.m_genLumiMetadata;
 			}
 		}
 		if (! settings.GetFilterMetadata().empty())
@@ -118,7 +117,7 @@ public:
 		if (! settings.GetFilterSummary().empty())
 			this->m_event.m_filterSummary = this->template SecureFileInterfaceGetMeta<KFilterSummary>(settings.GetFilterSummary()); // TODO: Check
 		if (! settings.GetTaggerMetadata().empty())
-			this->m_event.m_taggerMetadata = this->template SecureFileInterfaceGetMeta<KTaggerMetadata>(settings.GetTaggerMetadata());
+			this->m_event.m_jetMetadata = this->template SecureFileInterfaceGetMeta<KJetMetadata>(settings.GetTaggerMetadata());
 		
 		KappaEventProviderBase<TTypes>::WireEvent(settings);
 	}

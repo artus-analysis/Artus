@@ -25,7 +25,7 @@
    - TauUpperAbsEtaCuts
    - DirectIso
 */
-class ValidTausProducer: public KappaProducerBase, public ValidPhysicsObjectTools<KappaTypes, KDataPFTau>
+class ValidTausProducer: public KappaProducerBase, public ValidPhysicsObjectTools<KappaTypes, KTau>
 {
 
 public:
@@ -49,7 +49,7 @@ public:
 	
 	ValidTausProducer() :
 		KappaProducerBase(),
-		ValidPhysicsObjectTools<KappaTypes, KDataPFTau>(&KappaSettings::GetTauLowerPtCuts,
+		ValidPhysicsObjectTools<KappaTypes, KTau>(&KappaSettings::GetTauLowerPtCuts,
 		                                    &KappaSettings::GetTauUpperAbsEtaCuts,
 		                                    &KappaProduct::m_validTaus)
 	{
@@ -58,7 +58,7 @@ public:
 	virtual void Init(KappaSettings const& settings)  ARTUS_CPP11_OVERRIDE
 	{
 		KappaProducerBase::Init(settings);
-		ValidPhysicsObjectTools<KappaTypes, KDataPFTau>::Init(settings);
+		ValidPhysicsObjectTools<KappaTypes, KTau>::Init(settings);
 		
 		validTausInput = ToValidTausInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidTausInput())));
 	
@@ -88,15 +88,15 @@ public:
 	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		assert(event.m_taus);
-		assert(event.m_tauDiscriminatorMetadata);
+		assert(event.m_tauMetadata);
 	
 		// select input source
-		std::vector<KDataPFTau*> taus;
+		std::vector<KTau*> taus;
 		if ((validTausInput == ValidTausInput::AUTO && (product.m_correctedTaus.size() > 0)) || (validTausInput == ValidTausInput::CORRECTED))
 		{
 			taus.resize(product.m_correctedTaus.size());
 			size_t tauIndex = 0;
-			for (std::vector<std::shared_ptr<KDataPFTau> >::iterator tau = product.m_correctedTaus.begin();
+			for (std::vector<std::shared_ptr<KTau> >::iterator tau = product.m_correctedTaus.begin();
 			     tau != product.m_correctedTaus.end(); ++tau)
 			{
 				taus[tauIndex] = tau->get();
@@ -107,14 +107,14 @@ public:
 		{
 			taus.resize(event.m_taus->size());
 			size_t tauIndex = 0;
-			for (KDataPFTaus::iterator tau = event.m_taus->begin(); tau != event.m_taus->end(); ++tau)
+			for (KTaus::iterator tau = event.m_taus->begin(); tau != event.m_taus->end(); ++tau)
 			{
 				taus[tauIndex] = &(*tau);
 				++tauIndex;
 			}
 		}
 		
-		for (std::vector<KDataPFTau*>::iterator tau = taus.begin(); tau != taus.end(); ++tau)
+		for (std::vector<KTau*>::iterator tau = taus.begin(); tau != taus.end(); ++tau)
 		{
 			bool validTau = true;
 			
@@ -159,7 +159,7 @@ public:
 protected:
 	
 	// Can be overwritten for analysis-specific use cases
-	virtual bool AdditionalCriteria(KDataPFTau* tau, KappaEvent const& event,
+	virtual bool AdditionalCriteria(KTau* tau, KappaEvent const& event,
 	                                KappaProduct& product, KappaSettings const& settings) const
 	{
 		bool validTau = true;
@@ -173,7 +173,7 @@ private:
 	std::map<size_t, std::vector<std::string> > discriminatorsByIndex;
 	std::map<std::string, std::vector<std::string> > discriminatorsByHltName;
 	
-	bool ApplyDiscriminators(KDataPFTau* tau, std::vector<std::string> const& discriminators,
+	bool ApplyDiscriminators(KTau* tau, std::vector<std::string> const& discriminators,
 	                         KappaEvent const& event) const
 	{
 		bool validTau = true;
@@ -181,7 +181,7 @@ private:
 		for (std::vector<std::string>::const_iterator discriminator = discriminators.begin();
 		     validTau && (discriminator != discriminators.end()); ++discriminator)
 		{
-			validTau = validTau && tau->hasID(*discriminator, event.m_tauDiscriminatorMetadata);
+			validTau = validTau && tau->getId(*discriminator, event.m_tauMetadata);
 		}
 		
 		return validTau;

@@ -8,7 +8,7 @@
    \brief GlobalProducer, for PU weight.
    
    This producer calculates a weight for a event based on the number of pileup truth
-   interaction in a MC skim (m_genEventMetadata->numPUInteractionsTruth) and the
+   interaction in a MC skim (m_genEventInfo->nPUMean) and the
    weights from an output file of the weightCalc.py script.
    
    This producer needs the following config tags:

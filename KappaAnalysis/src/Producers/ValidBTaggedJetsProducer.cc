@@ -32,25 +32,25 @@ void ValidBTaggedJetsProducer::Init(KappaSettings const& settings)
 		return product.m_bTaggedJets.size() >= 1 ? product.m_bTaggedJets.at(0)->p4.Phi() : DefaultValues::UndefinedDouble;
 	});
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingBJetCSV",[](KappaEvent const& event, KappaProduct const& product) {
-		return product.m_bTaggedJets.size() >= 1 ? static_cast<KDataPFTaggedJet*>(product.m_bTaggedJets.at(0))->getTagger("CombinedSecondaryVertexBJetTags", event.m_taggerMetadata) : DefaultValues::UndefinedDouble;
+		return product.m_bTaggedJets.size() >= 1 ? static_cast<KJet*>(product.m_bTaggedJets.at(0))->getTag("CombinedSecondaryVertexBJetTags", event.m_jetMetadata) : DefaultValues::UndefinedDouble;
 	});
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingBJetCSV",[](KappaEvent const& event, KappaProduct const& product) {
-		return product.m_bTaggedJets.size() >= 2 ? static_cast<KDataPFTaggedJet*>(product.m_bTaggedJets.at(1))->getTagger("CombinedSecondaryVertexBJetTags", event.m_taggerMetadata) : DefaultValues::UndefinedDouble;
+		return product.m_bTaggedJets.size() >= 2 ? static_cast<KJet*>(product.m_bTaggedJets.at(1))->getTag("CombinedSecondaryVertexBJetTags", event.m_jetMetadata) : DefaultValues::UndefinedDouble;
 	});
 }
 
 void ValidBTaggedJetsProducer::Produce(KappaEvent const& event, KappaProduct& product,
                                        KappaSettings const& settings) const
 {
-	assert(event.m_taggerMetadata);
+	assert(event.m_jetMetadata);
 
-	for (std::vector<KDataPFJet*>::iterator jet = product.m_validJets.begin();
+	for (std::vector<KBasicJet*>::iterator jet = product.m_validJets.begin();
 	     jet != product.m_validJets.end(); ++jet)
 	{
 		bool validBJet = true;
-		KDataPFTaggedJet* tjet = static_cast<KDataPFTaggedJet*>(*jet);
+		KJet* tjet = static_cast<KJet*>(*jet);
 
-		float combinedSecondaryVertex = tjet->getTagger("CombinedSecondaryVertexBJetTags", event.m_taggerMetadata);
+		float combinedSecondaryVertex = tjet->getTag("CombinedSecondaryVertexBJetTags", event.m_jetMetadata);
 
 		if (combinedSecondaryVertex < settings.GetBTaggedJetCombinedSecondaryVertexMediumWP() ||
 			std::abs(tjet->p4.eta()) > settings.GetBTaggedJetAbsEtaCut()) {
@@ -108,7 +108,7 @@ void ValidBTaggedJetsProducer::Produce(KappaEvent const& event, KappaProduct& pr
 	}
 }
 
-bool ValidBTaggedJetsProducer::AdditionalCriteria(KDataPFTaggedJet* jet, KappaEvent const& event,
+bool ValidBTaggedJetsProducer::AdditionalCriteria(KJet* jet, KappaEvent const& event,
                                 KappaProduct& product, KappaSettings const& settings) const
 {
 	bool validBJet = true;

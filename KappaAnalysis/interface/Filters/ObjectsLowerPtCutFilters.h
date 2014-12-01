@@ -97,12 +97,12 @@ private:
 
 /** Electron Pt Filter
  */
-class ElectronLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KDataElectron> {
+class ElectronLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KElectron> {
 public:
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
 	
-	ElectronLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KDataElectron>(&KappaProduct::m_validElectrons) {}
+	ElectronLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KElectron>(&KappaProduct::m_validElectrons) {}
 	
 	
 	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
@@ -111,12 +111,12 @@ public:
 
 /** Muon Pt Filter
  */
-class MuonLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KDataMuon> {
+class MuonLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KMuon> {
 public:
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
 	
-	MuonLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KDataMuon>(&KappaProduct::m_validMuons) {}
+	MuonLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KMuon>(&KappaProduct::m_validMuons) {}
 	
 	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
 };
@@ -124,12 +124,12 @@ public:
 
 /** Tau Pt Filter
  */
-class TauLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KDataPFTau> {
+class TauLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KTau> {
 public:
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
 	
-	TauLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KDataPFTau>(&KappaProduct::m_validTaus) {}
+	TauLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KTau>(&KappaProduct::m_validTaus) {}
 	
 	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
 };
@@ -137,12 +137,12 @@ public:
 
 /** Jet Pt Filter
  */
-class JetLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KDataPFJet> {
+class JetLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KBasicJet> {
 public:
 	
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
 	
-	JetLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KDataPFJet>(&KappaProduct::m_validJets) {}
+	JetLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KBasicJet>(&KappaProduct::m_validJets) {}
 	
 	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
 };

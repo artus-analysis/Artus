@@ -7,7 +7,7 @@ std::string ElectronGenMatchingProducer::GetProducerId() const {
 }
 
 ElectronGenMatchingProducer::ElectronGenMatchingProducer() :
-	GenMatchingProducerBase<KDataElectron>(&product_type::m_genMatchedElectrons,
+	GenMatchingProducerBase<KElectron>(&product_type::m_genMatchedElectrons,
 	                                       &product_type::m_validElectrons,
 	                                       &product_type::m_invalidElectrons,
 	                                       ElectronGenMatchingProducer::TauDecayMode::E,
@@ -23,7 +23,7 @@ std::string MuonGenMatchingProducer::GetProducerId() const {
 }
 
 MuonGenMatchingProducer::MuonGenMatchingProducer() :
-	GenMatchingProducerBase<KDataMuon>(&product_type::m_genMatchedMuons,
+	GenMatchingProducerBase<KMuon>(&product_type::m_genMatchedMuons,
 	                                   &product_type::m_validMuons,
 	                                   &product_type::m_invalidMuons,
 	                                   MuonGenMatchingProducer::TauDecayMode::M,
@@ -39,7 +39,7 @@ std::string TauGenMatchingProducer::GetProducerId() const {
 }
 
 TauGenMatchingProducer::TauGenMatchingProducer() :
-	GenMatchingProducerBase<KDataPFTau>(&product_type::m_genMatchedTaus,
+	GenMatchingProducerBase<KTau>(&product_type::m_genMatchedTaus,
 	                                    &product_type::m_validTaus,
 	                                    &product_type::m_invalidTaus,
 	                                    TauGenMatchingProducer::TauDecayMode::T,
@@ -55,7 +55,7 @@ std::string JetGenMatchingProducer::GetProducerId() const {
 }
 
 JetGenMatchingProducer::JetGenMatchingProducer() :
-	GenMatchingProducerBase<KDataPFJet>(&product_type::m_genMatchedJets,
+	GenMatchingProducerBase<KBasicJet>(&product_type::m_genMatchedJets,
 	                                    &product_type::m_validJets,
 	                                    &product_type::m_invalidJets,
 	                                    JetGenMatchingProducer::TauDecayMode::NONE,

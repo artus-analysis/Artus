@@ -19,7 +19,7 @@
 #include "Artus/Core/interface/Cpp11Support.h"
 
 
-typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > RMDataLV;
+typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > RMFLV;
 typedef ROOT::Math::DisplacementVector3D<ROOT::Math::Cartesian3D<float>,ROOT::Math::DefaultCoordinateSystemTag> RMDataV;
 typedef ROOT::Math::SMatrix<double, 2, 2, ROOT::Math::MatRepSym<double, 2> > RMSM2x2;
 
@@ -186,7 +186,7 @@ namespace Utility {
 	}
 	
 	template<>
-	bool ApproxEqual<RMDataLV>(RMDataLV value1, RMDataLV value2, double maxDelta);
+	bool ApproxEqual<RMFLV>(RMFLV value1, RMFLV value2, double maxDelta);
 	
 	template<>
 	bool ApproxEqual<RMDataV>(RMDataV value1, RMDataV value2, double maxDelta);

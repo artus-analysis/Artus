@@ -48,8 +48,8 @@ public:
 	}
 
 	virtual bool GetEntry(long long lEvent ) ARTUS_CPP11_OVERRIDE {
-		assert(m_event.m_eventMetadata);
-		assert(m_event.m_lumiMetadata);
+		assert(m_event.m_eventInfo);
+		assert(m_event.m_lumiInfo);
 
 		if (!m_mon->Update())
 		{
@@ -64,13 +64,13 @@ public:
 			LOG(INFO) << "\nProcessing " << m_fi.eventdata.GetFile()->GetName() << " ...";
 		}
 
-		if (m_prevRun != m_event.m_eventMetadata->nRun) {
-			m_prevRun = m_event.m_eventMetadata->nRun;
+		if (m_prevRun != m_event.m_eventInfo->nRun) {
+			m_prevRun = m_event.m_eventInfo->nRun;
 			m_prevLumi = -1;
 		}
 
-		if (m_prevLumi != m_event.m_eventMetadata->nLumi) {
-			m_prevLumi = m_event.m_eventMetadata->nLumi;
+		if (m_prevLumi != m_event.m_eventInfo->nLumi) {
+			m_prevLumi = m_event.m_eventInfo->nLumi;
 			m_fi.GetMetaEntry();
 		}
 

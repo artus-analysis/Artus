@@ -50,7 +50,7 @@ std::map<std::string, std::vector<std::string> > Utility::ParseVectorToMap(std::
 }
 
 template<>
-bool Utility::ApproxEqual<RMDataLV>(RMDataLV value1, RMDataLV value2, double maxDelta)
+bool Utility::ApproxEqual<RMFLV>(RMFLV value1, RMFLV value2, double maxDelta)
 {
 	return (Utility::ApproxEqual(value1.Pt(), value2.Pt(), maxDelta) &&
 	        Utility::ApproxEqual(value1.Eta(), value2.Eta(), maxDelta) &&

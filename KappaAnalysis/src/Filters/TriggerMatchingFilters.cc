@@ -10,7 +10,7 @@ std::string ElectronTriggerMatchingFilter::GetFilterId() const{
 }
 
 ElectronTriggerMatchingFilter::ElectronTriggerMatchingFilter() :
-	TriggerMatchingFilterBase<KDataElectron>(&KappaProduct::m_triggerMatchedElectrons,
+	TriggerMatchingFilterBase<KElectron>(&KappaProduct::m_triggerMatchedElectrons,
 	                                                 &KappaProduct::m_validElectrons,
 	                                                 &KappaSettings::GetMinNMatchedElectrons)
 {
@@ -26,7 +26,7 @@ std::string MuonTriggerMatchingFilter::GetFilterId() const{
 }
 
 MuonTriggerMatchingFilter::MuonTriggerMatchingFilter() :
-	TriggerMatchingFilterBase<KDataMuon>(&KappaProduct::m_triggerMatchedMuons,
+	TriggerMatchingFilterBase<KMuon>(&KappaProduct::m_triggerMatchedMuons,
 	                                             &KappaProduct::m_validMuons,
 	                                             &KappaSettings::GetMinNMatchedMuons)
 {
@@ -44,7 +44,7 @@ std::string TauTriggerMatchingFilter::GetFilterId() const{
 }
 
 TauTriggerMatchingFilter::TauTriggerMatchingFilter() :
-	TriggerMatchingFilterBase<KDataPFTau>(&KappaProduct::m_triggerMatchedTaus,
+	TriggerMatchingFilterBase<KTau>(&KappaProduct::m_triggerMatchedTaus,
 	                                              &KappaProduct::m_validTaus,
 	                                              &KappaSettings::GetMinNMatchedTaus)
 {
@@ -62,7 +62,7 @@ std::string JetTriggerMatchingFilter::GetFilterId() const{
 }
 
 JetTriggerMatchingFilter::JetTriggerMatchingFilter() :
-	TriggerMatchingFilterBase<KDataPFJet>(&KappaProduct::m_triggerMatchedJets,
+	TriggerMatchingFilterBase<KBasicJet>(&KappaProduct::m_triggerMatchedJets,
 	                                              &KappaProduct::m_validJets,
 	                                              &KappaSettings::GetMinNMatchedJets)
 {

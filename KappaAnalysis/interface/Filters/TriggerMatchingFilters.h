@@ -18,7 +18,7 @@ class TriggerMatchingFilterBase: public FilterBase<KappaTypes>
 public:
 
 	
-	TriggerMatchingFilterBase(std::map<TValidObject*, KDataLV*> KappaProduct::*triggerMatchedObjects,
+	TriggerMatchingFilterBase(std::map<TValidObject*, KLV*> KappaProduct::*triggerMatchedObjects,
 	                          std::vector<TValidObject*> KappaProduct::*validObjects,
 	                          size_t (KappaSettings::*GetMinNMatchedObjects)(void) const) :
 		m_triggerMatchedObjects(triggerMatchedObjects),
@@ -43,7 +43,7 @@ public:
 
 
 private:
-	std::map<TValidObject*, KDataLV*> KappaProduct::*m_triggerMatchedObjects;
+	std::map<TValidObject*, KLV*> KappaProduct::*m_triggerMatchedObjects;
 	std::vector<TValidObject*> KappaProduct::*m_validObjects;
 	size_t (KappaSettings::*GetMinNMatchedObjects)(void) const;
 
@@ -54,7 +54,7 @@ private:
  *  Required config tags:
  *  - MinNMatchedElectrons (default 0)
  */
-class ElectronTriggerMatchingFilter: public TriggerMatchingFilterBase<KDataElectron>
+class ElectronTriggerMatchingFilter: public TriggerMatchingFilterBase<KElectron>
 {
 
 public:
@@ -68,7 +68,7 @@ public:
  *  Required config tags:
  *  - MinNMatchedMuons (default 0)
  */
-class MuonTriggerMatchingFilter: public TriggerMatchingFilterBase<KDataMuon>
+class MuonTriggerMatchingFilter: public TriggerMatchingFilterBase<KMuon>
 {
 
 public:
@@ -83,7 +83,7 @@ public:
  *  Required config tags:
  *  - MinNMatchedTaus (default 0)
  */
-class TauTriggerMatchingFilter: public TriggerMatchingFilterBase<KDataPFTau>
+class TauTriggerMatchingFilter: public TriggerMatchingFilterBase<KTau>
 {
 
 public:
@@ -98,7 +98,7 @@ public:
  *  Required config tags:
  *  - MinNMatchedJets (default 0)
  */
-class JetTriggerMatchingFilter: public TriggerMatchingFilterBase<KDataPFJet>
+class JetTriggerMatchingFilter: public TriggerMatchingFilterBase<KBasicJet>
 {
 
 public:

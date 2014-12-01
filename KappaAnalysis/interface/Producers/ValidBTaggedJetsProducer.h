@@ -44,7 +44,7 @@ public:
 
 protected:
 
-	virtual bool AdditionalCriteria(KDataPFTaggedJet* jet, KappaEvent const& event,
+	virtual bool AdditionalCriteria(KJet* jet, KappaEvent const& event,
 	                                KappaProduct& product, KappaSettings const& settings) const;
 
 private:

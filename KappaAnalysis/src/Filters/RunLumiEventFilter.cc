@@ -7,7 +7,7 @@ std::string RunLumiEventFilter::GetFilterId() const {
 bool RunLumiEventFilter::DoesEventPass(KappaEvent const& event, KappaProduct const& product,
                                        KappaSettings const& settings) const 
 {
-	assert(event.m_eventMetadata);
+	assert(event.m_eventInfo);
 	
 	bool match = false;
 	
@@ -18,9 +18,9 @@ bool RunLumiEventFilter::DoesEventPass(KappaEvent const& event, KappaProduct con
 		                                                 settings.GetLumiBlacklist().size()),
 		                                        settings.GetEventBlacklist().size()); ++index)
 		{
-			if ((event.m_eventMetadata->nRun == settings.GetRunBlacklist()[index]) &&
-			    (event.m_eventMetadata->nLumi == settings.GetLumiBlacklist()[index]) &&
-			    (event.m_eventMetadata->nEvent == settings.GetEventBlacklist()[index]))
+			if ((event.m_eventInfo->nRun == settings.GetRunBlacklist()[index]) &&
+			    (event.m_eventInfo->nLumi == settings.GetLumiBlacklist()[index]) &&
+			    (event.m_eventInfo->nEvent == settings.GetEventBlacklist()[index]))
 			{
 				match = false;
 				break;
@@ -33,9 +33,9 @@ bool RunLumiEventFilter::DoesEventPass(KappaEvent const& event, KappaProduct con
 			                                                 settings.GetLumiWhitelist().size()),
 			                                        settings.GetEventWhitelist().size()); ++index)
 			{
-				if ((event.m_eventMetadata->nRun == settings.GetRunWhitelist()[index]) &&
-					(event.m_eventMetadata->nLumi == settings.GetLumiWhitelist()[index]) &&
-					(event.m_eventMetadata->nEvent == settings.GetEventWhitelist()[index]))
+				if ((event.m_eventInfo->nRun == settings.GetRunWhitelist()[index]) &&
+					(event.m_eventInfo->nLumi == settings.GetLumiWhitelist()[index]) &&
+					(event.m_eventInfo->nEvent == settings.GetEventWhitelist()[index]))
 				{
 					match = true;
 					break;
@@ -45,16 +45,16 @@ bool RunLumiEventFilter::DoesEventPass(KappaEvent const& event, KappaProduct con
 	}
 	else
 	{
-		match = (MatchWhiteBlackLists(event.m_eventMetadata->nRun, settings.GetRunWhitelist(), settings.GetRunBlacklist()) &&
-		         MatchWhiteBlackLists(event.m_eventMetadata->nLumi, settings.GetLumiWhitelist(), settings.GetLumiBlacklist()) &&
-		         MatchWhiteBlackLists(event.m_eventMetadata->nEvent, settings.GetEventWhitelist(), settings.GetEventBlacklist()));
+		match = (MatchWhiteBlackLists(event.m_eventInfo->nRun, settings.GetRunWhitelist(), settings.GetRunBlacklist()) &&
+		         MatchWhiteBlackLists(event.m_eventInfo->nLumi, settings.GetLumiWhitelist(), settings.GetLumiBlacklist()) &&
+		         MatchWhiteBlackLists(event.m_eventInfo->nEvent, settings.GetEventWhitelist(), settings.GetEventBlacklist()));
 	}
 	if (match)
 	{
 		LOG(DEBUG) << "Process: " <<
-		              "run = " << event.m_eventMetadata->nRun << ", " <<
-		              "lumi = " << event.m_eventMetadata->nLumi << ", " <<
-		              "event = " << event.m_eventMetadata->nEvent;
+		              "run = " << event.m_eventInfo->nRun << ", " <<
+		              "lumi = " << event.m_eventInfo->nLumi << ", " <<
+		              "event = " << event.m_eventInfo->nEvent;
 	}
 	return match;
 }

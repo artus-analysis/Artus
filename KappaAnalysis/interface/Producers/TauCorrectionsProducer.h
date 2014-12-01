@@ -27,7 +27,7 @@ public:
 protected:
 
 	// Can be overwritten for analysis-specific use cases
-	virtual void AdditionalCorrections(KDataPFTau* tau, KappaEvent const& event,
+	virtual void AdditionalCorrections(KTau* tau, KappaEvent const& event,
 	                                   KappaProduct& product, KappaSettings const& settings) const;
 
 };

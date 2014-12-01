@@ -18,15 +18,15 @@ void TauCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& prod
 	product.m_correctedTaus.clear();
 	product.m_correctedTaus.resize(event.m_taus->size());
 	size_t tauIndex = 0;
-	for (KDataPFTaus::const_iterator tau = event.m_taus->begin();
+	for (KTaus::const_iterator tau = event.m_taus->begin();
 		 tau != event.m_taus->end(); ++tau)
 	{
-		product.m_correctedTaus[tauIndex] = std::shared_ptr<KDataPFTau>(new KDataPFTau(*tau));
+		product.m_correctedTaus[tauIndex] = std::shared_ptr<KTau>(new KTau(*tau));
 		++tauIndex;
 	}
 	
 	// perform corrections on copied taus
-	for (std::vector<std::shared_ptr<KDataPFTau> >::iterator tau = product.m_correctedTaus.begin();
+	for (std::vector<std::shared_ptr<KTau> >::iterator tau = product.m_correctedTaus.begin();
 		 tau != product.m_correctedTaus.end(); ++tau)
 	{
 		// No general correction available
@@ -37,11 +37,11 @@ void TauCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& prod
 	
 	// sort vectors of corrected taus by pt
 	std::sort(product.m_correctedTaus.begin(), product.m_correctedTaus.end(),
-	          [](std::shared_ptr<KDataPFTau> tau1, std::shared_ptr<KDataPFTau> tau2) -> bool
+	          [](std::shared_ptr<KTau> tau1, std::shared_ptr<KTau> tau2) -> bool
 	          { return tau1->p4.Pt() > tau2->p4.Pt(); });
 }
 
-void TauCorrectionsProducer::AdditionalCorrections(KDataPFTau* tau, KappaEvent const& event,
+void TauCorrectionsProducer::AdditionalCorrections(KTau* tau, KappaEvent const& event,
 	                                   KappaProduct& product, KappaSettings const& settings) const
 {
 }

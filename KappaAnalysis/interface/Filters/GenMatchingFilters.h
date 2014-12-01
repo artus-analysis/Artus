@@ -48,7 +48,7 @@ private:
  *  Required config tags:
  *  - MinNMatchedElectrons (default 0)
  */
-class ElectronGenMatchingFilter: public GenMatchingFilterBase<KDataElectron>
+class ElectronGenMatchingFilter: public GenMatchingFilterBase<KElectron>
 {
 
 public:
@@ -59,7 +59,7 @@ public:
 	}
 	
 	ElectronGenMatchingFilter() :
-		GenMatchingFilterBase<KDataElectron>(&KappaProduct::m_genMatchedElectrons,
+		GenMatchingFilterBase<KElectron>(&KappaProduct::m_genMatchedElectrons,
 		                                     &KappaProduct::m_validElectrons)
 	{
 	}
@@ -71,7 +71,7 @@ public:
  *  Required config tags:
  *  - MinNMatchedMuons (default 0)
  */
-class MuonGenMatchingFilter: public GenMatchingFilterBase<KDataMuon>
+class MuonGenMatchingFilter: public GenMatchingFilterBase<KMuon>
 {
 
 public:
@@ -82,7 +82,7 @@ public:
 	}
 	
 	MuonGenMatchingFilter() :
-		GenMatchingFilterBase<KDataMuon>(&KappaProduct::m_genMatchedMuons,
+		GenMatchingFilterBase<KMuon>(&KappaProduct::m_genMatchedMuons,
 		                                 &KappaProduct::m_validMuons)
 	{
 	}
@@ -94,7 +94,7 @@ public:
  *  Required config tags:
  *  - MinNMatchedTaus (default 0)
  */
-class TauGenMatchingFilter: public GenMatchingFilterBase<KDataPFTau>
+class TauGenMatchingFilter: public GenMatchingFilterBase<KTau>
 {
 
 public:
@@ -105,7 +105,7 @@ public:
 	}
 	
 	TauGenMatchingFilter() :
-		GenMatchingFilterBase<KDataPFTau>(&KappaProduct::m_genMatchedTaus,
+		GenMatchingFilterBase<KTau>(&KappaProduct::m_genMatchedTaus,
 		                                  &KappaProduct::m_validTaus)
 	{
 	}
@@ -117,7 +117,7 @@ public:
  *  Required config tags:
  *  - MinNMatchedJets (default 0)
  */
-class JetGenMatchingFilter: public GenMatchingFilterBase<KDataPFJet>
+class JetGenMatchingFilter: public GenMatchingFilterBase<KBasicJet>
 {
 
 public:
@@ -128,7 +128,7 @@ public:
 	}
 	
 	JetGenMatchingFilter() :
-		GenMatchingFilterBase<KDataPFJet>(&KappaProduct::m_genMatchedJets,
+		GenMatchingFilterBase<KBasicJet>(&KappaProduct::m_genMatchedJets,
 		                                  &KappaProduct::m_validJets)
 	{
 	}
