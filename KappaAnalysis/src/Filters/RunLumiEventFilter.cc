@@ -9,9 +9,46 @@ bool RunLumiEventFilter::DoesEventPass(KappaEvent const& event, KappaProduct con
 {
 	assert(event.m_eventMetadata);
 	
-	bool match = (MatchWhiteBlackLists(event.m_eventMetadata->nRun, settings.GetRunWhitelist(), settings.GetRunBlacklist()) &&
-	              MatchWhiteBlackLists(event.m_eventMetadata->nLumi, settings.GetLumiWhitelist(), settings.GetLumiBlacklist()) &&
-	              MatchWhiteBlackLists(event.m_eventMetadata->nEvent, settings.GetEventWhitelist(), settings.GetEventBlacklist()));
+	bool match = false;
+	
+	if (settings.GetMatchRunLumiEventTuples())
+	{
+		match = true;
+		for (size_t index = 0; index < std::min(std::min(settings.GetRunBlacklist().size(),
+		                                                 settings.GetLumiBlacklist().size()),
+		                                        settings.GetEventBlacklist().size()); ++index)
+		{
+			if ((event.m_eventMetadata->nRun == settings.GetRunBlacklist()[index]) &&
+			    (event.m_eventMetadata->nLumi == settings.GetLumiBlacklist()[index]) &&
+			    (event.m_eventMetadata->nEvent == settings.GetEventBlacklist()[index]))
+			{
+				match = false;
+				break;
+			}
+		}
+		if (match)
+		{
+			match = false;
+			for (size_t index = 0; index < std::min(std::min(settings.GetRunWhitelist().size(),
+			                                                 settings.GetLumiWhitelist().size()),
+			                                        settings.GetEventWhitelist().size()); ++index)
+			{
+				if ((event.m_eventMetadata->nRun == settings.GetRunWhitelist()[index]) &&
+					(event.m_eventMetadata->nLumi == settings.GetLumiWhitelist()[index]) &&
+					(event.m_eventMetadata->nEvent == settings.GetEventWhitelist()[index]))
+				{
+					match = true;
+					break;
+				}
+			}
+		}
+	}
+	else
+	{
+		match = (MatchWhiteBlackLists(event.m_eventMetadata->nRun, settings.GetRunWhitelist(), settings.GetRunBlacklist()) &&
+		         MatchWhiteBlackLists(event.m_eventMetadata->nLumi, settings.GetLumiWhitelist(), settings.GetLumiBlacklist()) &&
+		         MatchWhiteBlackLists(event.m_eventMetadata->nEvent, settings.GetEventWhitelist(), settings.GetEventBlacklist()));
+	}
 	if (match)
 	{
 		LOG(DEBUG) << "Process: " <<
