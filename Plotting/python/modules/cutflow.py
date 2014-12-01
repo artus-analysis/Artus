@@ -30,7 +30,7 @@ class Cutflow(analysisbase.AnalysisBase):
 		if plotData.plotdict["x_label"] == parser.get_default("x_label"):
 			plotData.plotdict["x_label"] = ""
 		if plotData.plotdict["y_label"] == parser.get_default("y_label"):
-			plotData.plotdict["y_label"] = "Cut Efficiency"
+			plotData.plotdict["y_label"] = ("Relative " if plotData.plotdict["rel_cuts"] else "") + "Cut Efficiency"
 		
 		if plotData.plotdict["y_lims"] == parser.get_default("y_lims"):
 			plotData.plotdict["y_lims"] = [1e-5, 1.5] if plotData.plotdict["y_log"] else [0.0, 1.1]
