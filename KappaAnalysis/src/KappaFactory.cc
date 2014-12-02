@@ -45,6 +45,7 @@
 
 // consumer
 #include "Artus/KappaAnalysis/interface/Consumers/KappaCutFlowHistogramConsumer.h"
+#include "Artus/KappaAnalysis/interface/Consumers/KappaCutFlowTreeConsumer.h"
 #include "Artus/KappaAnalysis/interface/Consumers/KappaLambdaNtupleConsumer.h"
 
 
@@ -201,6 +202,8 @@ ConsumerBaseUntemplated * KappaFactory::createConsumer ( std::string const& id )
 {
 	if(id == KappaCutFlowHistogramConsumer().GetConsumerId())
 		return new KappaCutFlowHistogramConsumer();
+	if(id == KappaCutFlowTreeConsumer().GetConsumerId())
+		return new KappaCutFlowTreeConsumer();
 	else if(id == KappaLambdaNtupleConsumer<KappaTypes>().GetConsumerId())
 		return new KappaLambdaNtupleConsumer<KappaTypes>();
 	else
