@@ -36,6 +36,7 @@
 #include "Artus/KappaAnalysis/interface/Filters/HltFilter.h"
 #include "Artus/KappaAnalysis/interface/Filters/ValidObjectsFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsCountFilters.h"
+#include "Artus/KappaAnalysis/interface/Filters/MinObjectsCountFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/MaxObjectsCountFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsLowerPtCutFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsUpperAbsEtaCutFilters.h"
@@ -152,6 +153,14 @@ FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
 		return new TausCountFilter();
 	else if(id == JetsCountFilter().GetFilterId())
 		return new JetsCountFilter();
+	else if(id == MinElectronsCountFilter().GetFilterId())
+		return new MinElectronsCountFilter();
+	else if(id == MinMuonsCountFilter().GetFilterId())
+		return new MinMuonsCountFilter();
+	else if(id == MinTausCountFilter().GetFilterId())
+		return new MinTausCountFilter();
+	else if(id == MinJetsCountFilter().GetFilterId())
+		return new MinJetsCountFilter();
 	else if(id == MaxElectronsCountFilter().GetFilterId())
 		return new MaxElectronsCountFilter();
 	else if(id == MaxMuonsCountFilter().GetFilterId())
