@@ -153,9 +153,13 @@ class PlotRoot(plotbase.PlotBase):
 			self.ratio_y_max = -sys.float_info.max
 		
 			for index, root_object in enumerate(plotData.plotdict["root_ratio_histos"]):
-				option = "e" if index == 0 else "e same"
-				root_object.Draw(option)
+				option = "e" if index == 0 else "e2 same"
 				if index == 0: self.first_plotted_ratio_histogram = root_object
+				else:
+					root_object.SetMarkerStyle(1)
+					root_object.SetFillColor(1)
+					root_object.SetFillStyle(3001)
+				root_object.Draw(option)
 			
 				# trace min. and max. values of axes
 				if root_object.GetMinimum() < self.ratio_y_min: self.ratio_y_min = root_object.GetMinimum()
