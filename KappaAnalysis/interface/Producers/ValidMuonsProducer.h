@@ -214,9 +214,9 @@ public:
 			// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Muon_Isolation_AN1
 			if (muonIsoType == MuonIsoType::PF) {
 				if (muonIso == MuonIso::TIGHT)
-					validMuon = validMuon && ((((*muon)->pfIso04() / (*muon)->p4.Pt()) < 0.12) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+					validMuon = validMuon && ((((*muon)->pfIso() / (*muon)->p4.Pt()) < 0.12) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (muonIso == MuonIso::LOOSE)
-					validMuon = validMuon && ((((*muon)->pfIso04() / (*muon)->p4.Pt()) < 0.20) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+					validMuon = validMuon && ((((*muon)->pfIso() / (*muon)->p4.Pt()) < 0.20) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (muonIso == MuonIso::FAKEABLE)
 					validMuon = validMuon && IsFakeableMuonIso(*muon, event, product, settings);
 				else if (muonIso != MuonIso::NONE)

@@ -230,9 +230,9 @@ public:
 			// Electron Isolation
 			if (electronIsoType == ElectronIsoType::PF) {
 				if (electronIso == ElectronIso::MVANONTRIG)
-					validElectron = validElectron && ((((*electron)->trackIso04 / (*electron)->p4.Pt()) < 0.4) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+					validElectron = validElectron && ((((*electron)->trackIso / (*electron)->p4.Pt()) < 0.4) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (electronIso == ElectronIso::MVATRIG)
-					validElectron = validElectron && ((((*electron)->trackIso04 / (*electron)->p4.Pt()) < 0.15) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+					validElectron = validElectron && ((((*electron)->trackIso / (*electron)->p4.Pt()) < 0.15) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (electronIso == ElectronIso::FAKEABLE)
 					validElectron = validElectron && IsFakeableElectronIso(*electron, event, product, settings);
 				else if (electronIso != ElectronIso::NONE)
@@ -246,12 +246,12 @@ public:
 			// Electron reconstruction
 			if (electronReco == ElectronReco::MVANONTRIG) {
 				validElectron = validElectron
-				                && ((*electron)->track.nInnerHits <= 1);
+				                && ((*electron)->track.nValidTrackerHits() <= 1);
 				                // && sip is the significance of impact parameter in 3D of the electron GSF track < 4 TODO
 			}
 			else if (electronReco == ElectronReco::MVATRIG) {
 				validElectron = validElectron
-				                && ((*electron)->track.nInnerHits == 0);
+				                && ((*electron)->track.nValidTrackerHits() == 0);
 			}
 			else if (electronReco != ElectronReco::USER && electronReco != ElectronReco::NONE)
 			{
@@ -259,7 +259,7 @@ public:
 			}
 			
 			// conversion veto per default
-			validElectron = validElectron && (! (*electron)->hasConversionMatch);
+			validElectron = validElectron && (! ((*electron)->electronType & (1 << KElectronType::hasConversionMatch)));
 			
 			// kinematic cuts
 			validElectron = validElectron && this->PassKinematicCuts(*electron, event, product);
