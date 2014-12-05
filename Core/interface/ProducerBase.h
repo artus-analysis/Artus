@@ -76,7 +76,7 @@ public:
 	}
 
 	virtual void Init(setting_type const& globalSettings) {
-		LOG(INFO) << "Initialize global Producer \"" << this->GetProducerId() << "\".";
+		LOG(INFO) << "Initialize Producer \"" << this->GetProducerId() << "\".";
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
