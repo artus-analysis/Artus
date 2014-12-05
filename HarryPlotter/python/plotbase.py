@@ -307,10 +307,18 @@ class PlotBase(processor.Processor):
 	def prepare_histograms(self, plotData):
 		# handle stacks
 		# todo: define how functions should act when stacked
+		plotData.plotdict["root_stack_histos"] = {}
 		for index, (nick1, stack1) in enumerate(zip(plotData.plotdict["nicks"], plotData.plotdict["stack"])):
+			plotData.plotdict["root_stack_histos"][stack1] = plotData.plotdict["root_objects"][nick1].Clone()
+			
+			count = 0
 			for nick2, stack2 in zip(plotData.plotdict["nicks"], plotData.plotdict["stack"])[:index]:
 				if stack1 == stack2:
 					plotData.plotdict["root_objects"][nick2].Add(plotData.plotdict["root_objects"][nick1])
+					
+					if count == 0:
+						plotData.plotdict["root_stack_histos"][stack1] = plotData.plotdict["root_objects"][nick2].Clone()
+					count = count+1
 	
 	def make_plots(self, plotData):
 		pass
