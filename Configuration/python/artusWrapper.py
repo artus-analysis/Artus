@@ -17,7 +17,7 @@ from string import Template
 from datetime import datetime
 
 import Artus.Utility.tools as tools
-import Artus.Configuration.jsonTools as jsonTools
+import Artus.Utility.jsonTools as jsonTools
 
 
 class ArtusWrapper(object):
