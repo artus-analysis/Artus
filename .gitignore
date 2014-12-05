@@ -12,6 +12,3 @@ __init__.py
 *.png
 *.pdf
 *~
-=======
-*.pyc
-__init__.py
