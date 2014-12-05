@@ -95,7 +95,7 @@ public:
 	}
 
 	virtual void Init ( setting_type const& settings ) {
-
+		LOG(INFO) << "Initialize Consumer \"" << this->GetConsumerId() << "\".";
 	}
 
 	/* this method is only called for events which have passed the filter imposed on the
