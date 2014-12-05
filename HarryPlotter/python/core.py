@@ -11,6 +11,7 @@ import copy
 
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
+ROOT.gErrorIgnoreLevel = ROOT.kError
 
 import Artus.HarryPlotter.analysisbase as analysisbase
 import Artus.HarryPlotter.harryparser as harryparser
