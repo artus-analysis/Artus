@@ -52,7 +52,7 @@ class PlotMpl(plotbase.PlotBase):
 		# defaults for markers
 		for index, marker in enumerate(plotData.plotdict["markers"]):
 			if marker is None:
-				if index == 0:
+				if index == 0 and len(plotData.plotdict["markers"]) > 1 :
 					plotData.plotdict["markers"][index] = "."
 				else:
 					plotData.plotdict["markers"][index] = "fill"
@@ -71,7 +71,7 @@ class PlotMpl(plotbase.PlotBase):
 		# default for linestyles
 		for index, linestyle in enumerate(plotData.plotdict["linestyles"]):
 			if linestyle is None:
-				plotData.plotdict["linestyles"][index] = "-"
+				plotData.plotdict["linestyles"][index] = ""
 
 		# validate length of parameters first
 		zip_arguments = self.get_zip_arguments(plotData)
@@ -114,7 +114,7 @@ class PlotMpl(plotbase.PlotBase):
 			if isinstance(root_object, ROOT.TGraph):
 				self.plot_dimension = 1
 				mplhist = MplGraph(root_object)
-				self.plot_errorbar(mplhist, ax=self.ax, style='line', color=color, fmt=marker, capsize=0, linestyle=linestyle, label=label, zorder=zorder)
+				self.plot_errorbar(mplhist, ax=self.ax, color=color, fmt=marker, capsize=0, linestyle=linestyle, label=label, zorder=zorder)
 			elif isinstance(root_object, ROOT.TH2):
 				mplhist = MplHisto(root_object)
 				self.plot_dimension = mplhist.dimension
@@ -284,7 +284,6 @@ class PlotMpl(plotbase.PlotBase):
 		# if no axis passed use current global axis
 		if ax is None:
 			ax = plt.gca()
-
 		x = hist.x
 		if isinstance(hist, MplHisto):
 			y = hist.bincontents
@@ -306,6 +305,9 @@ class PlotMpl(plotbase.PlotBase):
 		linestyle = kwargs.pop('linestyle', '')
 		capsize = kwargs.pop('capsize', 0)
 		fmt = kwargs.pop('fmt', '')
+		if fmt in ['bar', 'fill']:
+			log.warning('Invalid marker style. Default to \'.\'')
+			fmt = '.'
 		label = kwargs.pop('label', '')
 		# Due to a bug in matplotlib v1.1 errorbar does not always respect linestyle when fmt is passed.
 		# Workaround by plotting line and errorbars separately.
@@ -315,7 +317,6 @@ class PlotMpl(plotbase.PlotBase):
 				ax.step(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(y), linestyle=linestyle, **kwargs)
 			else:
 				ax.plot(x, y, linestyle=linestyle, **kwargs)
-
 		ax.errorbar(x, y, xerr=xerr, yerr=yerr, label=label, capsize=capsize, fmt=fmt, linestyle='None', **kwargs)
 
 	def plot_hist1d(self, hist, style='fill', ax=None, show_yerr=None, **kwargs):

@@ -254,6 +254,7 @@ class PlotBase(processor.Processor):
 		self.prepare_histograms(plotData)
 		self.make_plots(plotData)
 		self.modify_axes(plotData)
+		self.add_grid(plotData)
 		self.add_labels(plotData)
 		self.add_texts(plotData)
 		self.save_canvas(plotData)
@@ -314,6 +315,9 @@ class PlotBase(processor.Processor):
 		pass
 	
 	def modify_axes(self, plotData):
+		pass
+	
+	def add_grid(self, plotData):
 		pass
 	
 	def add_labels(self, plotData):

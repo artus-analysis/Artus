@@ -31,8 +31,6 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Place an x-axes grid on the plot.")
 		self.formatting_options.add_argument("--y-grid", action='store_true', default=False,
 		                                     help="Place an y-axes grid on the plot.")
-		self.formatting_options.add_argument("--z-grid", action='store_true', default=False,
-		                                     help="Place an z-axes grid on the plot.")
 		self.formatting_options.add_argument("-g", "--legloc", type=float, nargs=2, default=[0.6, 0.6],
 		                                     help="Location (x/y coordinates) of the legend. [Default: %(default)s]")
 		
@@ -234,6 +232,20 @@ class PlotRoot(plotbase.PlotBase):
 			self.first_plotted_ratio_histogram.GetYaxis().SetNdivisions(5, 0, 0)
 			
 		
+	def add_grid(self, plotData):
+		super(PlotRoot, self).add_grid(plotData)
+		
+		self.plot_pad.cd()
+		if (plotData.plotdict["grid"] or plotData.plotdict["x_grid"]):
+			self.plot_pad.SetGridx()
+		if (plotData.plotdict["grid"] or plotData.plotdict["y_grid"]):
+			self.plot_pad.SetGridy()
+		
+		if (plotData.plotdict["ratio"] == True):
+			self.ratio_pad.cd()
+			if (plotData.plotdict["ratio_grid"] == True):
+				self.ratio_pad.SetGrid()
+	
 	def add_labels(self, plotData):
 		super(PlotRoot, self).add_labels(plotData)
 		

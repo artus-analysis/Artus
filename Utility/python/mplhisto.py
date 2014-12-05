@@ -19,20 +19,20 @@ class MplGraph:
 		self.xlabel = rootgraph.GetXaxis().GetTitle()
 		self.ylabel = rootgraph.GetYaxis().GetTitle()
 		# Number of bins without underflow/overflow bin
-		self.x = np.zeros((roograph.GetN()))
-		self.y = np.zeros((roograph.GetN()))
+		self.x = np.zeros((rootgraph.GetN()))
+		self.y = np.zeros((rootgraph.GetN()))
 
-		for i in xrange(roograph.GetN()):
+		for i in xrange(rootgraph.GetN()):
 			tmpX, tmpY = ROOT.Double(0), ROOT.Double(0)
 			rootgraph.GetPoint(i, tmpX, tmpY)
 			self.x[i] = tmpX
 			self.y[i] = tmpY
-		self.xerr = np.array([rootgraph.GetErrorX(i) for i in xrange(roograph.GetN())])
-		self.xerrl = np.array([rootgraph.GetErrorXlow(i) for i in xrange(roograph.GetN())])
-		self.xerru = np.array([rootgraph.GetErrorXhigh(i) for i in xrange(roograph.GetN())])
-		self.yerr = np.array([rootgraph.GetErrorY(i) for i in xrange(roograph.GetN())])
-		self.yerrl = np.array([rootgraph.GetErrorYlow(i) for i in xrange(roograph.GetN())])
-		self.yerru = np.array([rootgraph.GetErrorYhigh(i) for i in xrange(roograph.GetN())])
+		self.xerr = np.array([rootgraph.GetErrorX(i) for i in xrange(rootgraph.GetN())])
+		self.xerrl = np.array([rootgraph.GetErrorXlow(i) for i in xrange(rootgraph.GetN())])
+		self.xerru = np.array([rootgraph.GetErrorXhigh(i) for i in xrange(rootgraph.GetN())])
+		self.yerr = np.array([rootgraph.GetErrorY(i) for i in xrange(rootgraph.GetN())])
+		self.yerrl = np.array([rootgraph.GetErrorYlow(i) for i in xrange(rootgraph.GetN())])
+		self.yerru = np.array([rootgraph.GetErrorYhigh(i) for i in xrange(rootgraph.GetN())])
 
 	@property
 	def xbinedges(self):
