@@ -5,7 +5,7 @@ Collection of functions to ease handling ROOT histograms
 """
 
 import logging
-import HarryPlotter.Utility.logger as logger
+import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import array

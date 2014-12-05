@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import HarryPlotter.Utility.logger as logger
+import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import numpy as np
