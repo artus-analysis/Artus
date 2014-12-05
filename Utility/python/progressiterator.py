@@ -38,8 +38,14 @@ class ProgressIterator(object):
 			sys.stdout.flush()
 		
 		if self.current_index == self.len:
-			sys.stdout.write("\n")
+			sys.stdout.write("\r\033[J")
+			sys.stdout.flush()
 		
 		self.current_index += 1
-		return self.iterator.next()
+		try:
+			return self.iterator.next()
+		except StopIteration, e:
+			sys.stdout.write("\r\033[J")
+			sys.stdout.flush()
+			raise StopIteration(e)
 
