@@ -167,6 +167,12 @@ DONT FORGET TO SOURCE THE ini_harry.sh INITIALIZATION SCRIPT!
 
 It is located in the HarryPlotter/Plotting/scripts folder.
 
+If you prefer to have only the HarryPlotter scripts and not the Artus source 
+code available you can use git's sparse checkout feature by runnig the script
+
+Utility/scripts/onlyHarryPlotter.sh
+
+after you performed a regular clone fo the Artus repository.
 
 1. Workflow overview
 -------------------------------------------------------------------------------
