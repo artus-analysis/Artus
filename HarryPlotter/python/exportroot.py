@@ -8,7 +8,7 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import Artus.HarryPlotter.plotbase as plotbase
-import Artus.Utility.roottools as roottools
+import Artus.HarryPlotter.utility.roottools as roottools
 
 import ROOT
 
