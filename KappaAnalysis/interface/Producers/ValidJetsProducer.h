@@ -86,7 +86,7 @@ public:
 		ValidPhysicsObjectTools<KappaTypes, TValidJet>(&KappaSettings::GetJetLowerPtCuts,
 		                                               &KappaSettings::GetJetUpperAbsEtaCuts,
 		                                               validJets),
-		m_jetsMember(jets),
+		m_basicJetsMember(jets),
 		m_correctedJetsMember(correctJets)
 	{
 	}
@@ -135,7 +135,7 @@ public:
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
 	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
 	{
-		assert((event.*m_jetsMember));
+		assert((event.*m_basicJetsMember));
 	
 		// select input source
 		std::vector<TJet*> jets;
@@ -152,9 +152,9 @@ public:
 		}
 		else
 		{
-			jets.resize((event.*m_jetsMember)->size());
+			jets.resize((event.*m_basicJetsMember)->size());
 			size_t jetIndex = 0;
-			for (typename std::vector<TJet>::iterator jet = (event.*m_jetsMember)->begin(); jet != (event.*m_jetsMember)->end(); ++jet)
+			for (typename std::vector<TJet>::iterator jet = (event.*m_basicJetsMember)->begin(); jet != (event.*m_basicJetsMember)->end(); ++jet)
 			{
 				jets[jetIndex] = &(*jet);
 				++jetIndex;
@@ -227,7 +227,7 @@ protected:
 
 
 private:
-	std::vector<TJet>* KappaEvent::*m_jetsMember;
+	std::vector<TJet>* KappaEvent::*m_basicJetsMember;
 	std::vector<std::shared_ptr<TJet> > KappaProduct::*m_correctedJetsMember;
 	
 	ValidJetsInput validJetsInput;
@@ -265,7 +265,7 @@ private:
 /**
    \brief Producer for valid jets (simple PF jets).
    
-   Operates on the vector event.m_jets.
+   Operates on the vector event.m_basicJets.
 */
 class ValidJetsProducer: public ValidJetsProducerBase<KBasicJet, KBasicJet>
 {

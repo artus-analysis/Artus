@@ -3,7 +3,7 @@
 
 
 JetCorrectionsProducer::JetCorrectionsProducer() :
-	JetCorrectionsProducerBase<KBasicJet>(&KappaEvent::m_jets,
+	JetCorrectionsProducerBase<KBasicJet>(&KappaEvent::m_basicJets,
 	                                               &KappaProduct::m_correctedJets)
 {
 };

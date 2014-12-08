@@ -2,7 +2,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/ValidJetsProducer.h"
 
 
-ValidJetsProducer::ValidJetsProducer() : ValidJetsProducerBase<KBasicJet, KBasicJet>(&KappaEvent::m_jets,
+ValidJetsProducer::ValidJetsProducer() : ValidJetsProducerBase<KBasicJet, KBasicJet>(&KappaEvent::m_basicJets,
                                                                             &KappaProduct::m_correctedJets,
                                                                             &KappaProduct::m_validJets)
 {

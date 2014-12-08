@@ -21,25 +21,25 @@ public:
 
 	/// name of electron collection in kappa tuple	
 	IMPL_SETTING_DEFAULT(std::string, Electrons, "");
-    IMPL_SETTING_DEFAULT(std::string, ElectronIdMetadata, "");
+    IMPL_SETTING_DEFAULT(std::string, ElectronMetadata, "");
 
 	/// name of muon collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, Muons, "");
 
 	/// name of tau collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, Taus, "");
-	IMPL_SETTING_DEFAULT(std::string, TauDiscriminatorMetadata, "");
+	IMPL_SETTING_DEFAULT(std::string, TauMetadata, "");
 	IMPL_SETTING_DEFAULT(std::string, GenTaus, "");
 
 	/// name of jet collection in kappa tuple
-	IMPL_SETTING_DEFAULT(std::string, Jets, "");
+	IMPL_SETTING_DEFAULT(std::string, BasicJets, "");
 	IMPL_SETTING_DEFAULT(std::string, GenJets, "");
 
 	/// name of tagged jet collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, TaggedJets, "");
 
-	/// name of jet area collection in kappa tuple
-	IMPL_SETTING_DEFAULT(std::string, JetArea, "");
+	/// name of pileup density branch in kappa tuple
+	IMPL_SETTING_DEFAULT(std::string, PileupDensity, "");
 
 	/// name of MET collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, Met, "");
@@ -79,7 +79,7 @@ public:
 	IMPL_SETTING_DEFAULT(std::string, FilterSummary, "");
 
 	/// name of TaggerMetaData in kappa tuple
-	IMPL_SETTING_DEFAULT(std::string, TaggerMetadata, "");
+	IMPL_SETTING_DEFAULT(std::string, JetMetadata, "");
 
 
 	IMPL_SETTING_DEFAULT(float, CrossSection, -1.);

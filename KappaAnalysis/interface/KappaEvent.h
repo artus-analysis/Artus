@@ -31,7 +31,7 @@ public:
 	KTauMetadata* m_tauMetadata = 0;
 
 	/// pointer to jet collection
-	KBasicJets* m_jets = 0;
+	KBasicJets* m_basicJets = 0;
 	KLVs* m_genJets = 0;
 
 	/// pointer to tagged jet collection

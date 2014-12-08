@@ -28,7 +28,7 @@ public:
 		if (! settings.GetElectrons().empty())
 			this->m_event.m_electrons = this->template SecureFileInterfaceGet<KElectrons>(settings.GetElectrons());
 		if (! settings.GetElectronMetadata().empty())
-            this->m_event.m_electronIdMetadata = this->template SecureFileInterfaceGetMeta<KElectronMetadata>(settings.GetElectronMetadata());
+            this->m_event.m_electronMetadata = this->template SecureFileInterfaceGetMeta<KElectronMetadata>(settings.GetElectronMetadata());
 
 		// Muons
 		if (! settings.GetMuons().empty())
@@ -39,19 +39,19 @@ public:
 			this->m_event.m_taus = this->template SecureFileInterfaceGet<KTaus>(settings.GetTaus());
 		if (! settings.GetGenTaus().empty())
 			this->m_event.m_genTaus = this->template SecureFileInterfaceGet<KGenTaus>(settings.GetGenTaus());
-		if (! settings.GetTauDiscriminatorMetadata().empty())
-			this->m_event.m_tauMetadata = this->template SecureFileInterfaceGetMeta<KTauMetadata>(settings.GetTauDiscriminatorMetadata());
+		if (! settings.GetTauMetadata().empty())
+			this->m_event.m_tauMetadata = this->template SecureFileInterfaceGetMeta<KTauMetadata>(settings.GetTauMetadata());
 
 		// Jets
-		if (! settings.GetJets().empty())
-			this->m_event.m_jets = this->template SecureFileInterfaceGet<KBasicJets>(settings.GetJets());
+		if (! settings.GetBasicJets().empty())
+			this->m_event.m_basicJets = this->template SecureFileInterfaceGet<KBasicJets>(settings.GetBasicJets());
 		if (! settings.GetGenJets().empty())
 			this->m_event.m_genJets = this->template SecureFileInterfaceGet<KLVs>(settings.GetGenJets());
 		if (! settings.GetTaggedJets().empty())
 			this->m_event.m_tjets = this->template SecureFileInterfaceGet<KJets>(settings.GetTaggedJets());
-		if (! settings.GetJetArea().empty())
-			this->m_event.m_pileupDensity = this->template SecureFileInterfaceGet<KPileupDensity>(settings.GetJetArea());
-	
+		if (! settings.GetPileupDensity().empty())
+			this->m_event.m_pileupDensity = this->template SecureFileInterfaceGet<KPileupDensity>(settings.GetPileupDensity());
+
 		// MET info
 		if (! settings.GetMet().empty())
 			this->m_event.m_met = this->template SecureFileInterfaceGet<KMET>(settings.GetMet());
@@ -116,9 +116,9 @@ public:
 			this->m_event.m_filterMetadata = this->template SecureFileInterfaceGetMeta<KFilterMetadata>(settings.GetFilterMetadata()); // TODO: Check
 		if (! settings.GetFilterSummary().empty())
 			this->m_event.m_filterSummary = this->template SecureFileInterfaceGetMeta<KFilterSummary>(settings.GetFilterSummary()); // TODO: Check
-		if (! settings.GetTaggerMetadata().empty())
-			this->m_event.m_jetMetadata = this->template SecureFileInterfaceGetMeta<KJetMetadata>(settings.GetTaggerMetadata());
-		
+		if (! settings.GetJetMetadata().empty())
+			this->m_event.m_jetMetadata = this->template SecureFileInterfaceGetMeta<KJetMetadata>(settings.GetJetMetadata());
+
 		KappaEventProviderBase<TTypes>::WireEvent(settings);
 	}
 

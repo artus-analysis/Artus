@@ -47,7 +47,7 @@ public:
 	JetCorrectionsProducerBase(std::vector<TJet>* KappaEvent::*jets,
 	                           std::vector<std::shared_ptr<TJet> > KappaProduct::*correctedJets) :
 		KappaProducerBase(),
-		m_jetsMember(jets),
+		m_basicJetsMember(jets),
 		m_correctedJetsMember(correctedJets)
 	{
 	}
@@ -84,16 +84,16 @@ public:
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
 	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
 	{
-		assert((event.*m_jetsMember));
+		assert((event.*m_basicJetsMember));
 		assert(event.m_pileupDensity);
 		assert(event.m_vertexSummary);
 		
 		// create a copy of all jets in the event (first temporarily for the JEC)
 		(product.*m_correctedJetsMember).clear();
-		std::vector<TJet> correctJetsForJecTools((event.*m_jetsMember)->size());
+		std::vector<TJet> correctJetsForJecTools((event.*m_basicJetsMember)->size());
 		size_t jetIndex = 0;
-		for (typename std::vector<TJet>::const_iterator jet = (event.*m_jetsMember)->begin();
-			 jet != (event.*m_jetsMember)->end(); ++jet)
+		for (typename std::vector<TJet>::const_iterator jet = (event.*m_basicJetsMember)->begin();
+			 jet != (event.*m_basicJetsMember)->end(); ++jet)
 		{
 			correctJetsForJecTools[jetIndex] = *jet;
 			++jetIndex;
@@ -142,7 +142,7 @@ protected:
 
 
 private:
-	std::vector<TJet>* KappaEvent::*m_jetsMember;
+	std::vector<TJet>* KappaEvent::*m_basicJetsMember;
 	std::vector<std::shared_ptr<TJet> > KappaProduct::*m_correctedJetsMember;
 	
 	FactorizedJetCorrector* factorizedJetCorrector = 0;
@@ -154,7 +154,7 @@ private:
 /**
    \brief Producer for Jet Energy Correction (JEC)
    
-   Operates on the vector event.m_jets and product::m_correctedJets.
+   Operates on the vector event.m_basicJets and product::m_correctedJets.
 */
 class JetCorrectionsProducer: public JetCorrectionsProducerBase<KBasicJet>
 {
