@@ -14,7 +14,7 @@ import pprint
 
 import Artus.HarryPlotter.processor as processor
 import Artus.HarryPlotter.utility.roottools as roottools
-import Artus.HarryPlotter.modules.eventselectionoverlap as eventselectionoverlap
+import Artus.HarryPlotter.analysis_modules.eventselectionoverlap as eventselectionoverlap
 import Artus.HarryPlotter.extrafunctions as extrafunctions
 
 class PlotBase(processor.Processor):

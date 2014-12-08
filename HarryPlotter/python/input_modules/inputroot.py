@@ -11,7 +11,7 @@ import hashlib
 import os
 import ROOT
 
-import Artus.HarryPlotter.inputfile as inputfile
+import Artus.HarryPlotter.input_modules.inputfile as inputfile
 import Artus.HarryPlotter.utility.roottools as roottools
 import Artus.HarryPlotter.extrafunctions as extrafunctions
 import Artus.Utility.progressiterator as pi

@@ -97,7 +97,7 @@ class FunctionPlot(analysisbase.AnalysisBase):
 		for parameter_index in range(root_function.GetNpar()):
 			root_function.SetParameter(parameter_index, start_parameters[parameter_index])
 		if root_histogram != None:
-			root_histogram.Fit(formula_name)
+			root_histogram.Fit(formula_name, "", "", x_min, x_max)
 		return root_function
 
 
