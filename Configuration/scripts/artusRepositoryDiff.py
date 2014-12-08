@@ -9,7 +9,7 @@ import argparse
 import os
 import shlex
 
-import Artus.Configuration.jsonTools as jsonTools
+import Artus.Utility.jsonTools as jsonTools
 import Artus.Utility.tools as tools
 
 

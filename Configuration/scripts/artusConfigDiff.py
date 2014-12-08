@@ -14,7 +14,7 @@ import tempfile
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
-import Artus.Configuration.jsonTools as jsonTools
+import Artus.Utility.jsonTools as jsonTools
 
 
 

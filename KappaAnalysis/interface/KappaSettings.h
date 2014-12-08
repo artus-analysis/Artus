@@ -161,6 +161,11 @@ public:
 	IMPL_SETTING(int, NTaus);
 	IMPL_SETTING(int, NJets);
 	
+	IMPL_SETTING(int, MinNElectrons);
+	IMPL_SETTING(int, MinNMuons);
+	IMPL_SETTING(int, MinNTaus);
+	IMPL_SETTING(int, MinNJets);
+	
 	IMPL_SETTING(int, MaxNElectrons);
 	IMPL_SETTING(int, MaxNMuons);
 	IMPL_SETTING(int, MaxNTaus);

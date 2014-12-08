@@ -57,6 +57,7 @@ public:
 		}
 		
 		int resultGetEntry = m_fi.eventdata.GetEntry(lEvent);
+		m_event.m_input = m_fi.eventdata.GetTreeNumber();
 		
 		if (m_prevTree != m_fi.eventdata.GetTreeNumber()) {
 			m_prevTree = m_fi.eventdata.GetTreeNumber();
