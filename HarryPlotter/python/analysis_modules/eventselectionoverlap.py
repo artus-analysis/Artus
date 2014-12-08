@@ -30,6 +30,12 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 		self.cutflow_options.add_argument("--events-only-in-2", action="store_true", default=False,
 				help="Print events that are only in the second input.")
 	
+	def prepare_args(self, parser, plotData):
+		super(EventSelectionOverlap, self).prepare_args(parser, plotData)
+		
+		if plotData.plotdict["x_label"] == parser.get_default("x_label"):
+			plotData.plotdict["x_label"] = "Event Selection Overlap"
+	
 	def run(self, plotData=None):
 		super(EventSelectionOverlap, self).run(plotData)
 		

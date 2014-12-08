@@ -14,7 +14,6 @@ import pprint
 
 import Artus.HarryPlotter.processor as processor
 import Artus.HarryPlotter.utility.roottools as roottools
-import Artus.HarryPlotter.analysis_modules.eventselectionoverlap as eventselectionoverlap
 import Artus.HarryPlotter.extrafunctions as extrafunctions
 
 class PlotBase(processor.Processor):
@@ -142,9 +141,6 @@ class PlotBase(processor.Processor):
 		                                 help="Open plot in viewer after its creation. Parameter is the name of your desired viewer.")
 		self.other_options.add_argument("--dict", action="store_true", default=False,
 		                                 help="Print out plot dictionary when plotting.")
-		# module specific settings # TODO
-		if eventselectionoverlap.EventSelectionOverlap.name() in args["analysis_modules"]:
-			parser.set_defaults(x_label="Event Selection Overlap")
 	
 	def prepare_args(self, parser, plotData):
 		super(PlotBase, self).prepare_args(parser, plotData)
