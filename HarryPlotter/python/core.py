@@ -16,28 +16,28 @@ ROOT.gErrorIgnoreLevel = ROOT.kError
 import Artus.HarryPlotter.analysisbase as analysisbase
 import Artus.HarryPlotter.harryparser as harryparser
 import Artus.HarryPlotter.inputbase as inputbase
-import Artus.HarryPlotter.inputroot as inputroot
-import Artus.HarryPlotter.inputinteractive as inputinteractive
+import Artus.HarryPlotter.input_modules.inputroot as inputroot
+import Artus.HarryPlotter.input_modules.inputinteractive as inputinteractive
 import Artus.HarryPlotter.plotbase as plotbase
 import Artus.HarryPlotter.plotdata as plotdata
-import Artus.HarryPlotter.plotmpl as plotmpl
-import Artus.HarryPlotter.plotroot as plotroot
-import Artus.HarryPlotter.exportroot as exportroot
+import Artus.HarryPlotter.plot_modules.plotmpl as plotmpl
+import Artus.HarryPlotter.plot_modules.plotroot as plotroot
+import Artus.HarryPlotter.plot_modules.exportroot as exportroot
 import Artus.HarryPlotter.processor as processor
 
-import Artus.HarryPlotter.modules.eventselectionoverlap as eventselectionoverlap
-import Artus.HarryPlotter.modules.projectbyfit as projectbyfit
-import Artus.HarryPlotter.modules.functionplot as functionplot
-import Artus.HarryPlotter.modules.efficiency as efficiency
-import Artus.HarryPlotter.modules.shapeyieldmerge as shapeyieldmerge
-import Artus.HarryPlotter.modules.extrapolationfactor as extrapolationfactor
-import Artus.HarryPlotter.modules.binerrorsofemptybins as binerrorsofemptybins
-import Artus.HarryPlotter.modules.sumofhistograms as sumofhistograms
-import Artus.HarryPlotter.modules.cutflow as cutflow
-from Artus.HarryPlotter.modules.normalization import NormalizeByBinWidth, NormalizeToUnity, NormalizeToFirstHisto, NormalizeStackToFirstHisto
+import Artus.HarryPlotter.analysis_modules.eventselectionoverlap as eventselectionoverlap
+import Artus.HarryPlotter.analysis_modules.projectbyfit as projectbyfit
+import Artus.HarryPlotter.analysis_modules.functionplot as functionplot
+import Artus.HarryPlotter.analysis_modules.efficiency as efficiency
+import Artus.HarryPlotter.analysis_modules.shapeyieldmerge as shapeyieldmerge
+import Artus.HarryPlotter.analysis_modules.extrapolationfactor as extrapolationfactor
+import Artus.HarryPlotter.analysis_modules.binerrorsofemptybins as binerrorsofemptybins
+import Artus.HarryPlotter.analysis_modules.sumofhistograms as sumofhistograms
+import Artus.HarryPlotter.analysis_modules.cutflow as cutflow
+from Artus.HarryPlotter.analysis_modules.normalization import NormalizeByBinWidth, NormalizeToUnity, NormalizeToFirstHisto, NormalizeStackToFirstHisto
 
-import Artus.HarryPlotter.modules.correctnegativebincontents as correctnegativebincontents
-import Artus.HarryPlotter.modules.printinfos as printinfos
+import Artus.HarryPlotter.analysis_modules.correctnegativebincontents as correctnegativebincontents
+import Artus.HarryPlotter.analysis_modules.printinfos as printinfos
 
 import Artus.Utility.jsonTools as json_tools
 json_tools.JsonDict.COMMENT_DELIMITER = "@"

@@ -11,7 +11,7 @@ import ROOT
 import hashlib
 import Artus.HarryPlotter.analysisbase as analysisbase
 
-import Artus.HarryPlotter.modules.functionplot as functionplot
+import Artus.HarryPlotter.analysis_modules.functionplot as functionplot
 import copy
 
 class ProjectByFit(analysisbase.AnalysisBase):
