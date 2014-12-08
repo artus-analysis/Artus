@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 import argparse
 import os
 
-import Artus.Configuration.jsonTools as jsonTools
+import Artus.Utility.jsonTools as jsonTools
 
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
