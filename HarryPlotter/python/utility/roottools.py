@@ -120,16 +120,19 @@ class RootTools(object):
 		
 			for path_to_histogram in path_to_histograms:
 				tmp_root_histogram = root_file.Get(path_to_histogram)
-				if tmp_root_histogram == None:
+				tmp_root_histogram.SetDirectory(0)
+				if tmp_root_histogram is None:
 					log.error("Could not find histogram \"" + path_to_histogram + "\" in file \"" + root_file_name + "\"!")
 				else:
-					if root_histogram:
-						root_histogram.Add(tmp_root_histogram)
+					if root_histogram == None:
+						root_histogram = tmp_root_histogram.Clone(name)
+						root_histogram.SetDirectory(0)
 					else:
-						root_histogram = tmp_root_histogram
-						root_histogram.SetName(name)
-	
-		root_histogram.SetDirectory(0)
+						root_histogram.Add(tmp_root_histogram)
+			
+			if root_file:
+				root_file.Close()
+		
 		return root_histogram
 
 
