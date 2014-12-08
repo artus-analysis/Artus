@@ -35,6 +35,15 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 		
 		if plotData.plotdict["x_label"] == parser.get_default("x_label"):
 			plotData.plotdict["x_label"] = "Event Selection Overlap"
+		
+		# TODO
+		if plotData.plotdict.get("x_tick_labels") == parser.get_default("x_tick_labels"):
+			labels = filter(lambda label: label != None, plotData.plotdict.get("labels", plotData.plotdict["nicks"]))
+			plotData.plotdict["x_tick_labels"] = [
+				"Only " + labels[0],
+				"Intersection",
+				"Only " + labels[1],
+			]
 	
 	def run(self, plotData=None):
 		super(EventSelectionOverlap, self).run(plotData)
@@ -74,7 +83,12 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 					histogram.SetBinContent(3, len(events_only2))
 
 					# KIT vs sync ntuple
-					plotData.plotdict["root_objects"][nick2 + "_vs_" + nick1] = histogram
+					new_nick = nick2 + "_vs_" + nick1
+					plotData.plotdict["root_objects"][new_nick] = histogram
+					plotData.plotdict["nicks"].insert(plotData.plotdict["nicks"].index(nick1), new_nick)
+					plotData.plotdict["nicks"].remove(nick1)
+					plotData.plotdict["nicks"].remove(nick2)
+					
 	
 	@staticmethod
 	def get_events_set_from_tree(tree, branch_names):

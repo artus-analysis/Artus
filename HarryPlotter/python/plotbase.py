@@ -219,24 +219,6 @@ class PlotBase(processor.Processor):
 		# prepare nicknames for stacked plots
 		stack = plotData.plotdict["stack"]
 		plotData.plotdict["stack"] = [stack if stack != None else ("stack%d" % index) for index, stack in enumerate(plotData.plotdict["stack"])]
-		
-		# module specific settings # TODO
-		if plotData.plotdict["analysis_modules"] != None and eventselectionoverlap.EventSelectionOverlap.name() in plotData.plotdict["analysis_modules"] and plotData.plotdict["x_tick_labels"] == None:
-			labels = filter(lambda label: label != None, plotData.plotdict.pop("labels"))
-			plotData.plotdict["labels"] = len(labels)*[None]
-			nick1 = plotData.plotdict["nicks"][0]
-			nick2 = plotData.plotdict["nicks"][1]
-			#print plotData.plotdict.pop("nicks")[0]
-			#print plotData.plotdict.pop("nicks")[1]
-			plotData.plotdict["nicks"] = [nick1 + "_vs_" + nick2]
-			if len(labels) < 2:
-				log.warning("Argument --labels needs 2 values! These are filled up with the nick names.")
-				labels += plotData.plotdict.pop("nicks")
-			plotData.plotdict["x_tick_labels"] = [
-				"Only " + labels[0],
-				"Intersection",
-				"Only " + labels[1],
-			]
 
 		# remove escape slashes
 		for index, linestyle in enumerate(plotData.plotdict["linestyles"]):
