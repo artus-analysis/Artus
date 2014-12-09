@@ -32,24 +32,32 @@ json_tools.JsonDict.COMMENT_DELIMITER = "@"
 
 
 class HarryCore(object):
-	def __init__(self, user_processors=None):
+
+	def __init__(self, modules_dirs=None, args_from_script=None):
 		super(HarryCore, self).__init__()
 		
-		if user_processors is None:
-			user_processors = {}
+		# First time parsing of cmd arguments
+		self.parser = harryparser.HarryParser()
+		self._args_from_script = args_from_script.split() if args_from_script else None
+		args, unknown_args = self.parser.parse_known_args(args_from_script)
+		self._args = vars(args)
 
 		# Default directories to be searched for plugins
+
 		self._modules_dirs = ["input_modules/", "analysis_modules/", "plot_modules/"]
+		if self._args['modules_search_paths']:
+			self._modules_dirs += self._args['modules_search_paths']
+		if modules_dirs is not None:
+			self._modules_dirs += modules_dirs
 
 		# Dict of all available processors
 		self.available_processors = {}
 		# List of active processors
 		self.processors = []
 
-		self._find_processors()
-		print self.available_processors
+		self._detect_available_processors()
 
-	def _find_processors(self):
+	def _detect_available_processors(self):
 		"""Detect all valid processors in modules_dirs and add them to avalaible processors."""
 		# Get absolute paths to module directories
 		modules_dirs = []
@@ -62,7 +70,6 @@ class HarryCore(object):
 			if os.path.isdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), module_dir)):
 				modules_dirs.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), module_dir))
 		# Loop over all possible module files
-		print modules_dirs
 		for module_dir in modules_dirs:
 			# TODO: Replace glob by walk to allow recursive folder structure
 			for filename in glob.glob(os.path.join(module_dir, "*.py")):
@@ -80,37 +87,46 @@ class HarryCore(object):
 					log.debug("Failed to import module {0} from {1}.".format(module_name, filename))
 					pass
 
-	def run(self, args_from_script=None):
-		parser = harryparser.HarryParser()
-		args, unknown_args = parser.parse_known_args(args_from_script.split() if args_from_script != None else None)
-		args = vars(args)
+	def run(self):
+		""" Add all requested processors, then reparse all command line arguments.
+		    Finally prepare and run all processors.
+		"""
 		json_default_initialisation = None
-		if args["json_defaults"] != None:
-			json_default_initialisation = args["json_defaults"]
-			json_defaults = json_tools.JsonDict(args["json_defaults"]).doIncludes().doComments()
+		if self._args["json_defaults"] != None:
+			json_default_initialisation = self._args["json_defaults"]
+			json_defaults = json_tools.JsonDict(self._args["json_defaults"]).doIncludes().doComments()
 			#set_defaults will overwrite/ignore the json_default argument. Cannot be used.
-			args.update(json_defaults)
+			self._args.update(json_defaults)
 
 		# replace 'json_defaults' from imported json file to actual name of imported json file
 		if json_default_initialisation != None:
-			args["json_defaults"] = json_default_initialisation
+			self._args["json_defaults"] = json_default_initialisation
+
+		if self._args["list_available_modules"]:
+			print "Input modules:"
+			print "\t", "\n\t".join(sorted([module for module in self.available_processors if issubclass(self.available_processors[module], InputBase)]))
+			print "Analysis modules:"
+			print "\t", "\n\t".join(sorted([module for module in self.available_processors if issubclass(self.available_processors[module], AnalysisBase)]))
+			print "Plot modules:"
+			print "\t", "\n\t".join(sorted([module for module in self.available_processors if issubclass(self.available_processors[module], PlotBase)]))
+			return
 		
 		# handle input modules (first)
-		if args["input_module"] not in self.available_processors:
-			log.warning("Input module \"" + args["input_module"] + "\" not found! Fall back to default \"%s\"!" % (parser.get_default("input_modules")))
-			args["input_module"] = parser.get_default("input_module")
-		self.processors.append(self.available_processors[args["input_module"]]())
+		if self._args["input_module"] not in self.available_processors:
+			log.warning("Input module \"" + self._args["input_module"] + "\" not found! Fall back to default \"%s\"!" % (self.parser.get_default("input_modules")))
+			self._args["input_module"] = self.parser.get_default("input_module")
+		self.processors.append(self.available_processors[self._args["input_module"]]())
 		
 		# handle analysis modules (second)
-		if args["analysis_modules"] is None:
-			args["analysis_modules"] = []
+		if self._args["analysis_modules"] is None:
+			self._args["analysis_modules"] = []
 		
-		available_modules = [module for module in args["analysis_modules"]
+		available_modules = [module for module in self._args["analysis_modules"]
 		                     if module in self.available_processors.keys() and
 		                     issubclass(self.available_processors[module], AnalysisBase)]
 		self.processors.extend([self.available_processors[module]() for module in available_modules])
 		
-		missing_modules = [module for module in args["analysis_modules"]
+		missing_modules = [module for module in self._args["analysis_modules"]
 		                   if module not in self.available_processors.keys() or
 		                   not issubclass(self.available_processors[module], AnalysisBase)]
 
@@ -120,18 +136,18 @@ class HarryCore(object):
 				log.warning("\t" + module)
 		
 		# handle plot modules (third)
-		if isinstance(args["plot_modules"], basestring):
-			args["plot_modules"] = [args["plot_modules"]]
+		if isinstance(self._args["plot_modules"], basestring):
+			self._args["plot_modules"] = [self._args["plot_modules"]]
 
-		available_modules = [module for module in args["plot_modules"]
+		available_modules = [module for module in self._args["plot_modules"]
 		                     if module in self.available_processors and
 		                     issubclass(self.available_processors[module], PlotBase)]
 		if len(available_modules) == 0:
-			log.warning("No plot module found! Fall back to default \"%s\"!" % (parser.get_default("plot_modules")))
-			available_modules = [parser.get_default("plot_modules")]
+			log.warning("No plot module found! Fall back to default \"%s\"!" % (self.parser.get_default("plot_modules")))
+			available_modules = [self.parser.get_default("plot_modules")]
 		self.processors.extend([self.available_processors[module]() for module in available_modules])
 		
-		missing_modules = [module for module in args["plot_modules"]
+		missing_modules = [module for module in self._args["plot_modules"]
 		                   if module not in self.available_processors or
 		                   not issubclass(self.available_processors[module], PlotBase)]
 
@@ -142,14 +158,14 @@ class HarryCore(object):
 		
 		# let processors modify the parser and then parse the arguments again
 		for processor in self.processors:
-			processor.modify_argument_parser(parser, args)
+			processor.modify_argument_parser(self.parser, self._args)
 		
 		# overwrite defaults by defaults from json files
-		if args["json_defaults"] != None:
-			parser.set_defaults(**(json_tools.JsonDict(args["json_defaults"]).doIncludes().doComments()))
+		if self._args["json_defaults"] != None:
+			self.parser.set_defaults(**(json_tools.JsonDict(self._args["json_defaults"]).doIncludes().doComments()))
 		
-		args = vars(parser.parse_args(args_from_script.split() if args_from_script != None else None))
-		plotData = plotdata.PlotData(args)
+		self._args = vars(self.parser.parse_args(self._args_from_script))
+		plotData = plotdata.PlotData(self._args)
 		
 		# general ROOT settings
 		ROOT.TH1.SetDefaultSumw2(True)
@@ -157,25 +173,25 @@ class HarryCore(object):
 		
 		# export arguments into JSON file
 		# remove entries from dictionary that are not meant to be exported
-		if args["export_json"] != None:
-			save_args = dict(args)
+		if self._args["export_json"] != None:
+			save_args = dict(self._args)
 			save_args.pop("quantities")
 			save_args.pop("export_json")
 			save_args.pop("live")
-			save_args.pop("json_defaults")	
-			if args["export_json"] != "":
-				save_name = args["export_json"]
+			save_args.pop("json_defaults")
+			if self._args["export_json"] != "":
+				save_name = self._args["export_json"]
 			else:
-				save_name = args["json_defaults"][0]
+				save_name = self._args["json_defaults"][0]
 
-			if save_name != None:	
+			if save_name != None:
 				json_tools.JsonDict(save_args).save(save_name, indent=4)
 			else: log.warning("No JSON could be exported. Please provide a filename.")
 		
 		# prepare aguments for all processors before running them
 		for processor in self.processors:
 			tmpPlotData = copy.deepcopy(plotData) if isinstance(processor, PlotBase) else plotData
-			processor.prepare_args(parser, tmpPlotData)
+			processor.prepare_args(self.parser, tmpPlotData)
 			processor.run(tmpPlotData)
 			if not isinstance(processor, PlotBase):
 				plotData = tmpPlotData
