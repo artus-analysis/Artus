@@ -2,44 +2,32 @@
 
 """
 """
-
+import os
+import sys
+import imp
+import glob
+import inspect
+import copy
 import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
-import copy
 
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gErrorIgnoreLevel = ROOT.kError
 
-import Artus.HarryPlotter.analysisbase as analysisbase
 import Artus.HarryPlotter.harryparser as harryparser
-import Artus.HarryPlotter.inputbase as inputbase
-import Artus.HarryPlotter.input_modules.inputroot as inputroot
-import Artus.HarryPlotter.input_modules.inputinteractive as inputinteractive
-import Artus.HarryPlotter.plotbase as plotbase
 import Artus.HarryPlotter.plotdata as plotdata
-import Artus.HarryPlotter.plot_modules.plotmpl as plotmpl
-import Artus.HarryPlotter.plot_modules.plotroot as plotroot
-import Artus.HarryPlotter.plot_modules.exportroot as exportroot
+
+from Artus.HarryPlotter.analysisbase import AnalysisBase
+from Artus.HarryPlotter.inputbase import InputBase
+from Artus.HarryPlotter.plotbase import PlotBase
+
 import Artus.HarryPlotter.processor as processor
 
-import Artus.HarryPlotter.analysis_modules.eventselectionoverlap as eventselectionoverlap
-import Artus.HarryPlotter.analysis_modules.projectbyfit as projectbyfit
-import Artus.HarryPlotter.analysis_modules.functionplot as functionplot
-import Artus.HarryPlotter.analysis_modules.efficiency as efficiency
-import Artus.HarryPlotter.analysis_modules.shapeyieldmerge as shapeyieldmerge
-import Artus.HarryPlotter.analysis_modules.extrapolationfactor as extrapolationfactor
-import Artus.HarryPlotter.analysis_modules.binerrorsofemptybins as binerrorsofemptybins
-import Artus.HarryPlotter.analysis_modules.sumofhistograms as sumofhistograms
-import Artus.HarryPlotter.analysis_modules.cutflow as cutflow
-from Artus.HarryPlotter.analysis_modules.normalization import NormalizeByBinWidth, NormalizeToUnity, NormalizeToFirstHisto, NormalizeStackToFirstHisto
-
-import Artus.HarryPlotter.analysis_modules.correctnegativebincontents as correctnegativebincontents
-import Artus.HarryPlotter.analysis_modules.printinfos as printinfos
-
 import Artus.Utility.jsonTools as json_tools
+
 json_tools.JsonDict.COMMENT_DELIMITER = "@"
 
 
@@ -47,34 +35,51 @@ class HarryCore(object):
 	def __init__(self, user_processors=None):
 		super(HarryCore, self).__init__()
 		
-		if user_processors == None:
+		if user_processors is None:
 			user_processors = {}
-		
-		self.available_processors = {
-			inputroot.InputRoot.name() : inputroot.InputRoot(),
-			inputinteractive.InputInteractive.name() : inputinteractive.InputInteractive(),
-			eventselectionoverlap.EventSelectionOverlap.name() : eventselectionoverlap.EventSelectionOverlap(),
-			projectbyfit.ProjectByFit.name() : projectbyfit.ProjectByFit(),
-			functionplot.FunctionPlot.name() : functionplot.FunctionPlot(),
-			efficiency.Efficiency.name() : efficiency.Efficiency(),
-			shapeyieldmerge.ShapeYieldMerge.name() : shapeyieldmerge.ShapeYieldMerge(),
-			extrapolationfactor.ExtrapolationFactor.name() : extrapolationfactor.ExtrapolationFactor(),
-			binerrorsofemptybins.BinErrorsOfEmptyBins.name() : binerrorsofemptybins.BinErrorsOfEmptyBins(),
-			sumofhistograms.SumOfHistograms.name() : sumofhistograms.SumOfHistograms(),
-			NormalizeByBinWidth.name(): NormalizeByBinWidth(),
-			NormalizeToUnity.name(): NormalizeToUnity(),
-			NormalizeToFirstHisto.name(): NormalizeToFirstHisto(),
-			NormalizeStackToFirstHisto.name(): NormalizeStackToFirstHisto(),
-			correctnegativebincontents.CorrectNegativeBinContents.name() : correctnegativebincontents.CorrectNegativeBinContents(),
-			printinfos.PrintInfos.name() : printinfos.PrintInfos(),
-			cutflow.Cutflow.name() : cutflow.Cutflow(),
-			plotroot.PlotRoot.name() : plotroot.PlotRoot(),
-			plotmpl.PlotMpl.name() : plotmpl.PlotMpl(),
-			exportroot.ExportRoot.name() : exportroot.ExportRoot(),
-		}
-		self.available_processors.update(user_processors)
+
+		# Default directories to be searched for plugins
+		self._modules_dirs = ["input_modules/", "analysis_modules/", "plot_modules/"]
+
+		# Dict of all available processors
+		self.available_processors = {}
+		# List of active processors
 		self.processors = []
-	
+
+		self._find_processors()
+		print self.available_processors
+
+	def _find_processors(self):
+		"""Detect all valid processors in modules_dirs and add them to avalaible processors."""
+		# Get absolute paths to module directories
+		modules_dirs = []
+		# TODO: Needs to be extended for all usecases
+		for module_dir in self._modules_dirs:
+			# absolute path
+			if os.path.isdir(module_dir):
+				modules_dirs.append(module_dir)
+			# relative path to current file
+			if os.path.isdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), module_dir)):
+				modules_dirs.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), module_dir))
+		# Loop over all possible module files
+		print modules_dirs
+		for module_dir in modules_dirs:
+			# TODO: Replace glob by walk to allow recursive folder structure
+			for filename in glob.glob(os.path.join(module_dir, "*.py")):
+				try:
+					log.debug("Try to import module from path {0}.".format(filename))
+					module_name = os.path.splitext(os.path.basename(filename))[0]
+					module = imp.load_source(module_name, filename)
+					for name, obj in inspect.getmembers(module):
+						if inspect.isclass(obj):
+							if (issubclass(obj, AnalysisBase) or issubclass(obj, InputBase) or
+							    issubclass(obj, PlotBase)):
+								log.debug("Adding module {0} to available processors.".format(obj.name()))
+								self.available_processors[obj.name()] = obj
+				except ImportError:
+					log.debug("Failed to import module {0} from {1}.".format(module_name, filename))
+					pass
+
 	def run(self, args_from_script=None):
 		parser = harryparser.HarryParser()
 		args, unknown_args = parser.parse_known_args(args_from_script.split() if args_from_script != None else None)
@@ -90,26 +95,25 @@ class HarryCore(object):
 		if json_default_initialisation != None:
 			args["json_defaults"] = json_default_initialisation
 		
-		self.processors = []
-		
 		# handle input modules (first)
-		if args["input_module"] not in self.available_processors.keys():
+		if args["input_module"] not in self.available_processors:
 			log.warning("Input module \"" + args["input_module"] + "\" not found! Fall back to default \"%s\"!" % (parser.get_default("input_modules")))
 			args["input_module"] = parser.get_default("input_module")
-		self.processors.append(self.available_processors[args["input_module"]])
+		self.processors.append(self.available_processors[args["input_module"]]())
 		
 		# handle analysis modules (second)
-		if args["analysis_modules"] == None:
+		if args["analysis_modules"] is None:
 			args["analysis_modules"] = []
 		
 		available_modules = [module for module in args["analysis_modules"]
 		                     if module in self.available_processors.keys() and
-		                     isinstance(self.available_processors[module], analysisbase.AnalysisBase)]
-		self.processors.extend([self.available_processors[module] for module in available_modules])
+		                     issubclass(self.available_processors[module], AnalysisBase)]
+		self.processors.extend([self.available_processors[module]() for module in available_modules])
 		
 		missing_modules = [module for module in args["analysis_modules"]
 		                   if module not in self.available_processors.keys() or
-		                   not isinstance(self.available_processors[module], analysisbase.AnalysisBase)]
+		                   not issubclass(self.available_processors[module], AnalysisBase)]
+
 		if len(missing_modules) > 0:
 			log.warning("Some requested analysis modules have not been registered!")
 			for module in missing_modules:
@@ -118,17 +122,19 @@ class HarryCore(object):
 		# handle plot modules (third)
 		if isinstance(args["plot_modules"], basestring):
 			args["plot_modules"] = [args["plot_modules"]]
+
 		available_modules = [module for module in args["plot_modules"]
-		                     if module in self.available_processors.keys() and
-		                     isinstance(self.available_processors[module], plotbase.PlotBase)]
+		                     if module in self.available_processors and
+		                     issubclass(self.available_processors[module], PlotBase)]
 		if len(available_modules) == 0:
 			log.warning("No plot module found! Fall back to default \"%s\"!" % (parser.get_default("plot_modules")))
 			available_modules = [parser.get_default("plot_modules")]
-		self.processors.extend([self.available_processors[module] for module in available_modules])
+		self.processors.extend([self.available_processors[module]() for module in available_modules])
 		
 		missing_modules = [module for module in args["plot_modules"]
-		                   if module not in self.available_processors.keys() or
-		                   not isinstance(self.available_processors[module], plotbase.PlotBase)]
+		                   if module not in self.available_processors or
+		                   not issubclass(self.available_processors[module], PlotBase)]
+
 		if len(missing_modules) > 0:
 			log.warning("Some requested plot modules have not been registered!")
 			for module in missing_modules:
@@ -168,10 +174,10 @@ class HarryCore(object):
 		
 		# prepare aguments for all processors before running them
 		for processor in self.processors:
-			tmpPlotData = copy.deepcopy(plotData) if isinstance(processor, plotbase.PlotBase) else plotData
+			tmpPlotData = copy.deepcopy(plotData) if isinstance(processor, PlotBase) else plotData
 			processor.prepare_args(parser, tmpPlotData)
 			processor.run(tmpPlotData)
-			if not isinstance(processor, plotbase.PlotBase):
+			if not isinstance(processor, PlotBase):
 				plotData = tmpPlotData
 		
 		del(plotData)
