@@ -92,8 +92,8 @@ class HarryCore(object):
 				pass
 
 	def run(self):
-		""" Add all requested processors, then reparse all command line arguments.
-		    Finally prepare and run all processors.
+		"""Add all requested processors, then reparse all command line arguments.
+		   Finally prepare and run all processors.
 		"""
 		json_default_initialisation = None
 		if self._args["json_defaults"] != None:
@@ -111,51 +111,40 @@ class HarryCore(object):
 			return
 		
 		# handle input modules (first)
-		if self._args["input_module"] not in self.available_processors:
-			log.warning("Input module \"" + self._args["input_module"] + "\" not found! Fall back to default \"%s\"!" % (self.parser.get_default("input_modules")))
-			self._args["input_module"] = self.parser.get_default("input_module")
-		self.processors.append(self.available_processors[self._args["input_module"]]())
+		if self._isvalid_processor(self._args["input_module"], processor_type=InputBase):
+			self.processors.append(self.available_processors[self._args["input_module"]]())
+		else:
+			log.error("Input module \"{0}\" not found!".format(self._args["input_module"]))
+			log.info("Provide a valid input module or none at all. Default is \"{0}\"!".format(self.parser.get_default("input_modules")))
+			sys.exit(1)
 		
 		# handle analysis modules (second)
 		if self._args["analysis_modules"] is None:
 			self._args["analysis_modules"] = []
 		
-		available_modules = [module for module in self._args["analysis_modules"]
-		                     if module in self.available_processors.keys() and
-		                     issubclass(self.available_processors[module], AnalysisBase)]
-		self.processors.extend([self.available_processors[module]() for module in available_modules])
-		
-		missing_modules = [module for module in self._args["analysis_modules"]
-		                   if module not in self.available_processors.keys() or
-		                   not issubclass(self.available_processors[module], AnalysisBase)]
+		for module in self._args["analysis_modules"]:
+			if self._isvalid_processor(module, processor_type=AnalysisBase):
+				self.processors.append(self.available_processors[module]())
+			else:
+				log.error("Analysis module \"{0}\" not found!".format(module))
+				sys.exit(1)
 
-		if len(missing_modules) > 0:
-			log.warning("Some requested analysis modules have not been registered!")
-			for module in missing_modules:
-				log.warning("\t" + module)
-		
 		# handle plot modules (third)
 		if isinstance(self._args["plot_modules"], basestring):
 			self._args["plot_modules"] = [self._args["plot_modules"]]
+		if not self._args["plot_modules"]:
+			log.error("Empty list of plot modules supplied!")
 
-		available_modules = [module for module in self._args["plot_modules"]
-		                     if module in self.available_processors and
-		                     issubclass(self.available_processors[module], PlotBase)]
-		if len(available_modules) == 0:
-			log.warning("No plot module found! Fall back to default \"%s\"!" % (self.parser.get_default("plot_modules")))
-			available_modules = [self.parser.get_default("plot_modules")]
-		self.processors.extend([self.available_processors[module]() for module in available_modules])
-		
-		missing_modules = [module for module in self._args["plot_modules"]
-		                   if module not in self.available_processors or
-		                   not issubclass(self.available_processors[module], PlotBase)]
+		for module in self._args["plot_modules"]:
+			print module
+			if self._isvalid_processor(module, processor_type=PlotBase):
+				self.processors.append(self.available_processors[module]())
+			else:
+				log.error("Plot module \"{0}\" not found!".format(module))
+				sys.exit(1)
 
-		if len(missing_modules) > 0:
-			log.warning("Some requested plot modules have not been registered!")
-			for module in missing_modules:
-				log.warning("\t" + module)
-		
 		# let processors modify the parser and then parse the arguments again
+		print self.processors
 		for processor in self.processors:
 			processor.modify_argument_parser(self.parser, self._args)
 		
@@ -205,6 +194,19 @@ class HarryCore(object):
 			self.available_processors[processor.name()] = processor
 		else:
 			raise TypeError("Provided processor is of invalid type.")
+
+	def _isvalid_processor(self, processor_name, processor_type=None):
+		"""Check if a processor is valid."""
+		if not processor_name in self.available_processors:
+			return False
+		elif not (issubclass(self.available_processors[processor_name], AnalysisBase) or 
+			      issubclass(self.available_processors[processor_name], InputBase) or
+			      issubclass(self.available_processors[processor_name], PlotBase)):
+			return False
+		elif processor_type is not None and not issubclass(self.available_processors[processor_name], processor_type):
+			return False
+		else:
+			return True
 
 	def _print_available_modules(self):
 		""" Prints all available modules to stdout."""

@@ -28,7 +28,7 @@ class HarryParser(argparse.ArgumentParser):
 		                                 help="Additional paths to be searched for modules.")
 		self.module_options.add_argument("--input-module", default="InputRoot",
 		                                 help="Input Module. [Default: %(default)s]")
-		self.module_options.add_argument("--analysis-modules", default=None, nargs="+",
+		self.module_options.add_argument("--analysis-modules", default=[], nargs="+",
 		                                 help="Analysis Modules. [Default: %(default)s]")
 		self.module_options.add_argument("--plot-modules", default="PlotMpl", nargs="+",
 		                                 help="Plot Modules. [Default: %(default)s]")
