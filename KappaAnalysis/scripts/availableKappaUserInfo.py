@@ -17,8 +17,8 @@ def main():
 	ROOT.gROOT.SetBatch(True)
 	ROOT.gSystem.Load(os.path.expandvars("$CMSSW_BASE/src/Kappa/lib/libKappa"))
 	
-	parser = argparse.ArgumentParser(description="Print out the available tau discriminators in a kappa skim.", parents=[logger.loggingParser])
-	parser.add_argument("file", help="Kappa skim output file containing the Tau Meta data")
+	parser = argparse.ArgumentParser(description="Print out the user info in the kappa skim.", parents=[logger.loggingParser])
+	parser.add_argument("file", help="Kappa skim output file containing the UserInfo in the Lumis tree")
 	parser.add_argument("-k", "--keys", nargs="+",
 	                    help="Keys to print. [Default: print available keys]")
 	args = parser.parse_args()
