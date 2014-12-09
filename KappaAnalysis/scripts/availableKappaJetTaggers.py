@@ -10,6 +10,7 @@ import os
 
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
+ROOT.gErrorIgnoreLevel = ROOT.kError
 
 
 def main():
