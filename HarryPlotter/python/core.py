@@ -107,7 +107,7 @@ class HarryCore(object):
 			self._args["json_defaults"] = json_default_initialisation
 
 		if self._args["list_available_modules"]:
-			self.print_available_modules()
+			self._print_available_modules()
 			return
 		
 		# handle input modules (first)
@@ -167,6 +167,7 @@ class HarryCore(object):
 		plotData = plotdata.PlotData(self._args)
 		
 		# general ROOT settings
+		log.debug("Setting ROOT TH1 DefaultSumw2 to True.")
 		ROOT.TH1.SetDefaultSumw2(True)
 		ROOT.gROOT.SetBatch(True)
 		
@@ -197,11 +198,15 @@ class HarryCore(object):
 		
 		del(plotData)
 	
-	def register_processor(self, processor_name, processor):
-		self.available_processors[processor_name] = processor
+	def register_processor(self, processor):
+		"""Add processor to list of available processors."""
+		if (issubclass(obj, AnalysisBase) or issubclass(obj, InputBase) or
+		    issubclass(obj, PlotBase)):
+			self.available_processors[processor.name()] = processor
+		else:
+			raise TypeError("Provided processor is of invalid type.")
 
-
-	def print_available_modules(self):
+	def _print_available_modules(self):
 		""" Prints all available modules to stdout."""
 
 		print "Valid input modules:"
