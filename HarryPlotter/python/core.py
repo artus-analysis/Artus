@@ -3,9 +3,9 @@
 """
 """
 import os
+import fnmatch
 import sys
 import imp
-import glob
 import inspect
 import copy
 import logging
@@ -70,22 +70,26 @@ class HarryCore(object):
 			if os.path.isdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), module_dir)):
 				modules_dirs.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), module_dir))
 		# Loop over all possible module files
+		matches = []
 		for module_dir in modules_dirs:
-			# TODO: Replace glob by walk to allow recursive folder structure
-			for filename in glob.glob(os.path.join(module_dir, "*.py")):
-				try:
-					log.debug("Try to import module from path {0}.".format(filename))
-					module_name = os.path.splitext(os.path.basename(filename))[0]
-					module = imp.load_source(module_name, filename)
-					for name, obj in inspect.getmembers(module):
-						if inspect.isclass(obj):
-							if (issubclass(obj, AnalysisBase) or issubclass(obj, InputBase) or
-							    issubclass(obj, PlotBase)):
-								log.debug("Adding module {0} to available processors.".format(obj.name()))
-								self.available_processors[obj.name()] = obj
-				except ImportError:
-					log.debug("Failed to import module {0} from {1}.".format(module_name, filename))
-					pass
+			for root, dirnames, filenames in os.walk(module_dir):
+				for filename in fnmatch.filter(filenames, '*.py'):
+					matches.append(os.path.join(root, filename))
+
+		for filename in matches:
+			try:
+				log.debug("Try to import module from path {0}.".format(filename))
+				module_name = os.path.splitext(os.path.basename(filename))[0]
+				module = imp.load_source(module_name, filename)
+				for name, obj in inspect.getmembers(module):
+					if inspect.isclass(obj):
+						if (issubclass(obj, AnalysisBase) or issubclass(obj, InputBase) or
+						    issubclass(obj, PlotBase)):
+							log.debug("Adding module {0} to available processors.".format(obj.name()))
+							self.available_processors[obj.name()] = obj
+			except ImportError:
+				log.debug("Failed to import module {0} from {1}.".format(module_name, filename))
+				pass
 
 	def run(self):
 		""" Add all requested processors, then reparse all command line arguments.
@@ -103,12 +107,7 @@ class HarryCore(object):
 			self._args["json_defaults"] = json_default_initialisation
 
 		if self._args["list_available_modules"]:
-			print "Input modules:"
-			print "\t", "\n\t".join(sorted([module for module in self.available_processors if issubclass(self.available_processors[module], InputBase)]))
-			print "Analysis modules:"
-			print "\t", "\n\t".join(sorted([module for module in self.available_processors if issubclass(self.available_processors[module], AnalysisBase)]))
-			print "Plot modules:"
-			print "\t", "\n\t".join(sorted([module for module in self.available_processors if issubclass(self.available_processors[module], PlotBase)]))
+			self.print_available_modules()
 			return
 		
 		# handle input modules (first)
@@ -200,4 +199,30 @@ class HarryCore(object):
 	
 	def register_processor(self, processor_name, processor):
 		self.available_processors[processor_name] = processor
+
+
+	def print_available_modules(self):
+		""" Prints all available modules to stdout."""
+
+		print "Valid input modules:"
+		input_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], InputBase)])
+		for module in input_modules:
+			print "  {}".format(module)
+			if inspect.getdoc(self.available_processors[module]):
+				print "    ".format(inspect.getdoc(self.available_processors[module]))
+		print ""
+		print "Valid analysis modules:"
+		analysis_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], AnalysisBase)])
+		for module in analysis_modules:
+			print "  {}".format(module)
+			if inspect.getdoc(self.available_processors[module]):
+				print "    {}".format(inspect.getdoc(self.available_processors[module]))
+		print ""
+		print "Valid Plot modules:"
+		plot_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], PlotBase)])
+		for module in plot_modules:
+			print "  {}".format(module)
+			if inspect.getdoc(self.available_processors[module]):
+				print "    {}".format(inspect.getdoc(self.available_processors[module]))
+
 
