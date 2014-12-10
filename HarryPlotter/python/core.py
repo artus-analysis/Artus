@@ -33,9 +33,16 @@ json_tools.JsonDict.COMMENT_DELIMITER = "@"
 
 class HarryCore(object):
 
-	def __init__(self, modules_dirs=None, args_from_script=None):
+	def __init__(self, additional_modules_dirs=None, args_from_script=None):
 		super(HarryCore, self).__init__()
-		
+
+		# List of absolute paths to all module directories
+		self._modules_dirs = []
+		# Dict of all available processors
+		self.available_processors = {}
+		# List of active processors
+		self.processors = []
+
 		# First time parsing of cmd arguments
 		self.parser = harryparser.HarryParser()
 		self._args_from_script = args_from_script.split() if args_from_script else None
@@ -43,32 +50,23 @@ class HarryCore(object):
 		self._args = vars(args)
 
 		# Default directories to be searched for plugins
+		default_modules_dirs = ["input_modules/", "analysis_modules/", "plot_modules/"]
 
-		self._modules_dirs = ["input_modules/", "analysis_modules/", "plot_modules/"]
+		# Modules search dir from command line arguments
 		if self._args['modules_search_paths']:
-			self._modules_dirs += self._args['modules_search_paths']
-		if modules_dirs is not None:
-			self._modules_dirs += modules_dirs
+			default_modules_dirs += self._args['modules_search_paths']
+		# Passed additonal modules dirs
+		if additional_modules_dirs:
+			default_modules_dirs += additional_modules_dirs
+		for directory in default_modules_dirs:
+			self.register_modules_dir(directory)
 
-		# Dict of all available processors
-		self.available_processors = {}
-		# List of active processors
-		self.processors = []
 
-		self._detect_available_processors()
+
 
 	def _detect_available_processors(self):
 		"""Detect all valid processors in modules_dirs and add them to avalaible processors."""
-		# Get absolute paths to module directories
-		modules_dirs = []
-		# TODO: Needs to be extended for all usecases
-		for module_dir in self._modules_dirs:
-			# absolute path
-			if os.path.isdir(module_dir):
-				modules_dirs.append(module_dir)
-			# relative path to current file
-			if os.path.isdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), module_dir)):
-				modules_dirs.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), module_dir))
+		modules_dirs = self._modules_dirs
 		# Loop over all possible module files
 		matches = []
 		for module_dir in modules_dirs:
@@ -95,6 +93,10 @@ class HarryCore(object):
 		"""Add all requested processors, then reparse all command line arguments.
 		   Finally prepare and run all processors.
 		"""
+
+		# Detect all valid processors
+		self._detect_available_processors()
+
 		json_default_initialisation = None
 		if self._args["json_defaults"] != None:
 			json_default_initialisation = self._args["json_defaults"]
@@ -114,10 +116,9 @@ class HarryCore(object):
 		if self._isvalid_processor(self._args["input_module"], processor_type=InputBase):
 			self.processors.append(self.available_processors[self._args["input_module"]]())
 		else:
-			log.error("Input module \"{0}\" not found!".format(self._args["input_module"]))
 			log.info("Provide a valid input module or none at all. Default is \"{0}\"!".format(self.parser.get_default("input_modules")))
-			sys.exit(1)
-		
+			log.critical("Input module \"{0}\" not found!".format(self._args["input_module"]))
+
 		# handle analysis modules (second)
 		if self._args["analysis_modules"] is None:
 			self._args["analysis_modules"] = []
@@ -126,22 +127,20 @@ class HarryCore(object):
 			if self._isvalid_processor(module, processor_type=AnalysisBase):
 				self.processors.append(self.available_processors[module]())
 			else:
-				log.error("Analysis module \"{0}\" not found!".format(module))
-				sys.exit(1)
+				log.critical("Analysis module \"{0}\" not found!".format(module))
 
 		# handle plot modules (third)
 		if isinstance(self._args["plot_modules"], basestring):
 			self._args["plot_modules"] = [self._args["plot_modules"]]
 		if not self._args["plot_modules"]:
-			log.error("Empty list of plot modules supplied!")
+			log.critical("Empty list of plot modules supplied!")
 
 		for module in self._args["plot_modules"]:
 			print module
 			if self._isvalid_processor(module, processor_type=PlotBase):
 				self.processors.append(self.available_processors[module]())
 			else:
-				log.error("Plot module \"{0}\" not found!".format(module))
-				sys.exit(1)
+				log.critical("Plot module \"{0}\" not found!".format(module))
 
 		# let processors modify the parser and then parse the arguments again
 		print self.processors
@@ -195,6 +194,18 @@ class HarryCore(object):
 		else:
 			raise TypeError("Provided processor is of invalid type.")
 
+	def register_modules_dir(self, module_dir):
+		"""Add directory to list of searched directories for modules."""
+		# Expand environment variables
+		module_dir = os.path.expandvars(module_dir)
+		print "module dir", module_dir
+		# absolute path
+		if os.path.isdir(module_dir):
+			self._modules_dirs.append(module_dir)
+		# relative path to current file
+		if os.path.isdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), module_dir)):
+			self._modules_dirs.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), module_dir))
+
 	def _isvalid_processor(self, processor_name, processor_type=None):
 		"""Check if a processor is valid."""
 		if not processor_name in self.available_processors:
@@ -209,7 +220,8 @@ class HarryCore(object):
 			return True
 
 	def _print_available_modules(self):
-		""" Prints all available modules to stdout."""
+		"""Prints all available modules to stdout."""
+		print self._modules_dirs
 
 		print "Valid input modules:"
 		input_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], InputBase)])
