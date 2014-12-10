@@ -33,7 +33,9 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Place an y-axes grid on the plot.")
 		self.formatting_options.add_argument("-g", "--legloc", type=float, nargs=2, default=[0.6, 0.6],
 		                                     help="Location (x/y coordinates) of the legend. [Default: %(default)s]")
-		self.formatting_options.add_argument("--stacks-error", nargs="+",
+		self.formatting_options.add_argument("--stacks-errband", action='store_true', default=False,
+		                                     help="Draw error band on top of the stacked plots.")
+		self.formatting_options.add_argument("--stacks-errband-names", nargs="+",
 		                                     help="Nick names for stacked plots for which an error band will be shown. [Default: all but first stack nick]")
 		
 	def prepare_args(self, parser, plotData):
@@ -60,12 +62,13 @@ class PlotRoot(plotbase.PlotBase):
 				plotData.plotdict["markers"][index] = "E" if index == 0 else "HIST"
 		
 		# defaults for stacked plots shaded error band
-		if plotData.plotdict["stacks_error"] == None: plotData.plotdict["stacks_error"] = [" ".join(set(plotData.plotdict["stack"][1:]))]
-		plotData.plotdict["stacks_error"] = [nicks.split() for nicks in plotData.plotdict["stacks_error"]]
-		for nicks in plotData.plotdict["stacks_error"]:
+		if plotData.plotdict["stacks_errband_names"] == None: plotData.plotdict["stacks_errband_names"] = [" ".join(set(plotData.plotdict["stack"][1:]))]
+		plotData.plotdict["stacks_errband_names"] = [nicks.split() for nicks in plotData.plotdict["stacks_errband_names"]]
+		for nicks in plotData.plotdict["stacks_errband_names"]:
 			for nick in nicks:
 				if nick not in plotData.plotdict["stack"]:
-					log.warning("Stack name \"%s\" of argument --%s does not exist in argument --stack!" % (nick, "stacks_error".replace("_", "-")))
+					log.error("Stack name \"%s\" of argument --%s does not exist in argument --stack!" % (nick, "stacks_errband_names".replace("_", "-")))
+					sys.exit(1)
 	
 	def run(self, plotData):
 		super(PlotRoot, self).run(plotData)
@@ -157,12 +160,13 @@ class PlotRoot(plotbase.PlotBase):
 				if root_object.GetMaximum() > self.z_max: self.z_max = root_object.GetMaximum()
 		
 		# draw shaded error band for the chosen stacked histograms
-		for nicks in plotData.plotdict["stacks_error"]:
-			for nick in nicks:
-				plotData.plotdict["root_stack_histos"][nick].SetMarkerStyle(1)
-				plotData.plotdict["root_stack_histos"][nick].SetFillColor(1)
-				plotData.plotdict["root_stack_histos"][nick].SetFillStyle(3001)
-				plotData.plotdict["root_stack_histos"][nick].Draw("e2 same")
+		if (plotData.plotdict["stacks_errband"] == True):
+			for nicks in plotData.plotdict["stacks_errband_names"]:
+				for nick in nicks:
+					plotData.plotdict["root_stack_histos"][nick].SetMarkerStyle(1)
+					plotData.plotdict["root_stack_histos"][nick].SetFillColor(1)
+					plotData.plotdict["root_stack_histos"][nick].SetFillStyle(3001)
+					plotData.plotdict["root_stack_histos"][nick].Draw("e2 same")
 		
 		if (plotData.plotdict["ratio"] == True):
 			self.ratio_pad.cd()
