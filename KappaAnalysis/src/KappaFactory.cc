@@ -48,6 +48,7 @@
 #include "Artus/KappaAnalysis/interface/Consumers/KappaCutFlowHistogramConsumer.h"
 #include "Artus/KappaAnalysis/interface/Consumers/KappaCutFlowTreeConsumer.h"
 #include "Artus/KappaAnalysis/interface/Consumers/KappaLambdaNtupleConsumer.h"
+#include "Artus/KappaAnalysis/interface/Consumers/KappaCollectionsConsumers.h"
 
 
 ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
@@ -215,6 +216,16 @@ ConsumerBaseUntemplated * KappaFactory::createConsumer ( std::string const& id )
 		return new KappaCutFlowTreeConsumer();
 	else if(id == KappaLambdaNtupleConsumer<KappaTypes>().GetConsumerId())
 		return new KappaLambdaNtupleConsumer<KappaTypes>();
+	else if(id == KappaElectronsConsumer().GetConsumerId())
+		return new KappaElectronsConsumer();
+	else if(id == KappaMuonsConsumer().GetConsumerId())
+		return new KappaMuonsConsumer();
+	else if(id == KappaTausConsumer().GetConsumerId())
+		return new KappaTausConsumer();
+	else if(id == KappaJetsConsumer().GetConsumerId())
+		return new KappaJetsConsumer();
+	//else if(id == KappaTaggedJetsConsumer().GetConsumerId())
+	//	return new KappaTaggedJetsConsumer();
 	else
 		return FactoryBase::createConsumer( id );
 }
