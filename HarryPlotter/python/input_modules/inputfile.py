@@ -21,7 +21,7 @@ class InputFile(inputbase.InputBase):
 	def modify_argument_parser(self, parser, args):
 		super(InputFile, self).modify_argument_parser(parser, args)
 		
-		self.input_options.add_argument("-i", "--files", type=str, nargs="+",
+		self.input_options.add_argument("-i", "--files", type=str, nargs="+", required=True,
 		                                 help="Input (root) file(s).")
 		self.input_options.add_argument("-d", "--directories", type=str, nargs="+",
 		                                 help="Input directories, that are put before the values of the -i/--files option.")
