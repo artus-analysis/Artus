@@ -53,23 +53,20 @@ class HarryParser(argparse.ArgumentParser):
 	def parse_args(self, args=None, namespace=None):
 		known_args = super(HarryParser, self).parse_args(args=args, namespace=namespace)
 		logger.initLogger(known_args)
-		print "Adding help"
+
+		# Add help after first parsing
 		self.add_help = True
 		self.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS, help='show this help message and exit')
-		# if self._n_parse_args_calls > 1 and known_args.help:
-			# self.print_help()
-			# sys.exit(0)
+
 		return known_args
 	
 	def parse_known_args(self, args=None, namespace=None):
 		known_args, unknown_args = super(HarryParser, self).parse_known_args(args=args, namespace=namespace)
 		logger.initLogger(known_args)
-		print "Adding help"
+
+		# Add help after first parsing
 		self.add_help = True
 		self.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS, help='show this help message and exit')
 
-		# if self._n_parse_args_calls > 1 and known_args.help:
-			# self.print_help()
-			# sys.exit(0)
 		return known_args, unknown_args
 
