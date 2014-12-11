@@ -291,6 +291,8 @@ class PlotRoot(plotbase.PlotBase):
 	def save_canvas(self, plotData):
 		super(PlotRoot, self).save_canvas(plotData)
 		
+		self.canvas.RedrawAxis()
+		
 		for output_filename in plotData.plotdict["output_filenames"]:
 			self.canvas.SaveAs(output_filename)
 			log.info("Created plot \"%s\"." % output_filename)
