@@ -109,14 +109,18 @@ class PlotMpl(plotbase.PlotBase):
 	def make_plots(self, plotData):
 		zip_arguments = self.get_zip_arguments(plotData)
 
-		for nick, color, label, marker, errorbar, linestyle, step, zorder in zip(*zip_arguments):
+		for nick, color, label, marker, x_error, y_error, linestyle, step, zorder in zip(*zip_arguments):
 			log.info("Process nick: {0}".format(nick))
 			root_object = plotData.plotdict["root_objects"][nick]
 
 			if isinstance(root_object, ROOT.TGraph):
 				self.plot_dimension = 1
 				mplhist = MplGraph(root_object)
-				self.plot_errorbar(mplhist, ax=self.ax, show_yerr=errorbar, color=color, fmt=marker, capsize=0, linestyle=linestyle, label=label, zorder=zorder)
+				self.plot_errorbar(mplhist, ax=self.ax, 
+				                   show_xerr=x_error, show_yerr=y_error, 
+				                   color=color, fmt=marker, capsize=0, 
+				                   linestyle=linestyle, label=label, zorder=zorder)
+
 			elif isinstance(root_object, ROOT.TH2):
 				mplhist = MplHisto(root_object)
 				self.plot_dimension = mplhist.dimension
@@ -130,11 +134,15 @@ class PlotMpl(plotbase.PlotBase):
 				self.plot_dimension = mplhist.dimension
 
 				if marker=="bar":
-					self.plot_hist1d(mplhist, style='bar', ax=self.ax, show_yerr=errorbar, label=label, color=color, alpha=1.0, zorder=zorder)
+					self.plot_hist1d(mplhist, style='bar', ax=self.ax, show_yerr=y_error, label=label, color=color, alpha=1.0, zorder=zorder)
 				elif marker=='fill':
-					self.plot_hist1d(mplhist, style='fill', ax=self.ax, show_yerr=errorbar, label=label, color=color, alpha=1.0, zorder=zorder)
+					self.plot_hist1d(mplhist, style='fill', ax=self.ax, show_yerr=y_error, label=label, color=color, alpha=1.0, zorder=zorder)
 				else:
-					self.plot_errorbar(mplhist, ax=self.ax, step=step, color=color, fmt=marker, capsize=0, linestyle=linestyle, label=label, zorder=zorder)
+					self.plot_errorbar(mplhist, ax=self.ax,
+					                   show_xerr=x_error, show_yerr=y_error,
+					                   step=step, color=color, fmt=marker,
+					                   capsize=0, linestyle=linestyle, label=label, zorder=zorder)
+
 			# draw functions from dictionary
 			elif isinstance(root_object, ROOT.TF1):
 				x_values = []
@@ -147,13 +155,17 @@ class PlotMpl(plotbase.PlotBase):
 				self.ax.plot(x_values, y_values, label=label, color=color, linestyle=linestyle, linewidth=2)
 
 		if plotData.plotdict["ratio"]:
-			for root_object, ratio_color, ratio_marker, in zip(plotData.plotdict["root_ratio_histos"],
+			for root_object, ratio_color, ratio_x_error, ratio_y_error, ratio_marker, in zip(plotData.plotdict["root_ratio_histos"],
 				                                               plotData.plotdict["ratio_colors"],
+				                                               plotData.plotdict["ratio_x_errors"],
+				                                               plotData.plotdict["ratio_y_errors"],
 				                                               plotData.plotdict["ratio_markers"]):
 				self.ax2.axhline(1.0, color='black')
 				mplhist_ratio = MplHisto(root_object)
-				# self.ax2.errorbar(mplhist_ratio.x, mplhist_ratio.y, mplhist_ratio.yerr, ecolor=ratio_color, fmt=ratio_marker)
-				self.plot_errorbar(mplhist_ratio, ax=self.ax2, step=step, color=ratio_color, fmt=ratio_marker, capsize=0, linestyle=linestyle, zorder=zorder)
+				self.plot_errorbar(mplhist_ratio, ax=self.ax2,
+				                   show_xerr=ratio_x_error, show_yerr=ratio_y_error,
+				                   step=step, color=ratio_color, fmt=ratio_marker,
+				                   capsize=0, linestyle=linestyle, zorder=zorder)
 
 
 
@@ -282,6 +294,7 @@ class PlotMpl(plotbase.PlotBase):
 		return newarr
 
 	def plot_errorbar(self, hist, step=False, show_xerr=True, show_yerr=True, emptybins=True, ax=None, **kwargs):
+		""" Produce an errorbar plots with or without connecting lines. """
 	
 		# if no axis passed use current global axis
 		if ax is None:
@@ -321,8 +334,9 @@ class PlotMpl(plotbase.PlotBase):
 				ax.plot(x, y, linestyle=linestyle, **kwargs)
 		ax.errorbar(x, y, xerr=xerr, yerr=yerr, label=label, capsize=capsize, fmt=fmt, linestyle='None', **kwargs)
 
-	def plot_hist1d(self, hist, style='fill', ax=None, show_yerr=None, **kwargs):
+	def plot_hist1d(self, hist, style='fill', ax=None, show_xerr=False, show_yerr=False, **kwargs):
 
+		# if no axis passed use current global axis
 		if ax is None:
 			ax = plt.gca()
 
@@ -340,8 +354,22 @@ class PlotMpl(plotbase.PlotBase):
 			ax.bar(hist.xl, hist.bincontents, hist.xbinwidth, bottom=bottom,
 			       label=label, fill=True, facecolor=color, edgecolor=color, ecolor=color, alpha=1.0)
 
+
+		# No idea if xerr is ever needed
+		if show_xerr:
+			xerr = np.array((hist.xerrl, hist.xerru))
+		else:
+			xerr = None
 		if show_yerr:
-			ax.errorbar(hist.x, hist.bincontents, yerr=hist.binerr, color=color, fmt='', capsize=0, zorder=1, linestyle='')
+			if isinstance(hist, MplHisto):
+				yerr = np.array((hist.binerrl, hist.binerru))
+			else:
+				yerr = np.array((hist.yerrl, hist.yerru))
+		else:
+			yerr = None
+
+		if show_xerr or show_yerr:
+			ax.errorbar(hist.x, hist.bincontents, yerr=yerr, xerr=xerr, color=color, fmt='', capsize=0, zorder=1, linestyle='')
 
 	def plot_contour1d(self, hist, ax=None, z_log=False, vmin=None, vmax=None, cmap='afmhot'):
 
@@ -355,10 +383,6 @@ class PlotMpl(plotbase.PlotBase):
 		# TODO Masked values are currently plotted black. Needs to be adapted to chosen colorbar
 		cmap.set_bad('black', alpha=None)
 		self.image = self.ax.pcolormesh(hist.xbinedges, hist.ybinedges, arr,
-		                            # interpolation='nearest',
-		                            # origin='lower',
-		                            # extent=[hist.xl[0], hist.xu[-1], hist.yl[0], hist.yu[-1]],
-		                            # aspect='auto',
 		                            cmap=cmap,
 		                            norm=norm)
 
@@ -367,7 +391,8 @@ class PlotMpl(plotbase.PlotBase):
 		                                 plotData.plotdict["colors"],
 		                                 plotData.plotdict["labels"],
 		                                 plotData.plotdict["markers"],
-		                                 plotData.plotdict["errorbars"],
+		                                 plotData.plotdict["x_errors"],
+		                                 plotData.plotdict["y_errors"],
 		                                 plotData.plotdict["linestyles"],
 		                                 plotData.plotdict["step"],
 		                                 plotData.plotdict["zorder"])
