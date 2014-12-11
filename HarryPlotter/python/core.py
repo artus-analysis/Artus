@@ -219,23 +219,22 @@ class HarryCore(object):
 
 	def _print_available_modules(self):
 		"""Prints all available modules to stdout."""
-		print self._modules_dirs
 
-		print "Valid input modules:"
+		print "Input modules:"
 		input_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], InputBase)])
 		for module in input_modules:
 			print "\t{}".format(module)
 			if inspect.getdoc(self.available_processors[module]):
 				print "\t\t{}".format(inspect.getdoc(self.available_processors[module]))
 		print ""
-		print "Valid analysis modules:"
+		print "Analysis modules:"
 		analysis_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], AnalysisBase)])
 		for module in analysis_modules:
 			print "\t{}".format(module)
 			if inspect.getdoc(self.available_processors[module]):
 				print "\t\t{}".format(inspect.getdoc(self.available_processors[module]))
 		print ""
-		print "Valid Plot modules:"
+		print "Plot modules:"
 		plot_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], PlotBase)])
 		for module in plot_modules:
 			print "\t{}".format(module)
