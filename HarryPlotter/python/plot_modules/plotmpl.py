@@ -18,6 +18,8 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 from matplotlib.colors import Normalize
 
+from itertools import cycle
+
 import numpy as np
 
 class PlotMpl(plotbase.PlotBase):
@@ -41,7 +43,7 @@ class PlotMpl(plotbase.PlotBase):
 		self.prepare_list_args(plotData, ["nicks", "step", "zorder"])
 		
 		# Set meaningful default values for colors if none provided
-		default_colorcycle = iter(matplotlib.rcParams['axes.color_cycle'])
+		default_colorcycle = cycle(matplotlib.rcParams['axes.color_cycle'])
 		for index, color in enumerate(plotData.plotdict["colors"]):
 			if color is None:
 				plotData.plotdict["colors"][index] = next(default_colorcycle)
@@ -114,7 +116,7 @@ class PlotMpl(plotbase.PlotBase):
 			if isinstance(root_object, ROOT.TGraph):
 				self.plot_dimension = 1
 				mplhist = MplGraph(root_object)
-				self.plot_errorbar(mplhist, ax=self.ax, color=color, fmt=marker, capsize=0, linestyle=linestyle, label=label, zorder=zorder)
+				self.plot_errorbar(mplhist, ax=self.ax, show_yerr=errorbar, color=color, fmt=marker, capsize=0, linestyle=linestyle, label=label, zorder=zorder)
 			elif isinstance(root_object, ROOT.TH2):
 				mplhist = MplHisto(root_object)
 				self.plot_dimension = mplhist.dimension
@@ -351,12 +353,12 @@ class PlotMpl(plotbase.PlotBase):
 			norm = Normalize(vmin=vmin, vmax=vmax)
 
 		# TODO Masked values are currently plotted black. Needs to be adapted to chosen colorbar
-		cmap.set_bad('black')
-		self.image = self.ax.imshow(arr,
-		                            interpolation='nearest',
-		                            origin='lower',
-		                            extent=[hist.xl[0], hist.xu[-1], hist.yl[0], hist.yu[-1]],
-		                            aspect='auto',
+		cmap.set_bad('black', alpha=None)
+		self.image = self.ax.pcolormesh(hist.xbinedges, hist.ybinedges, arr,
+		                            # interpolation='nearest',
+		                            # origin='lower',
+		                            # extent=[hist.xl[0], hist.xu[-1], hist.yl[0], hist.yu[-1]],
+		                            # aspect='auto',
 		                            cmap=cmap,
 		                            norm=norm)
 
