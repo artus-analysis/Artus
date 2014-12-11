@@ -46,7 +46,7 @@ class HarryCore(object):
 		# First time parsing of cmd arguments
 		self.parser = harryparser.HarryParser()
 		self._args_from_script = args_from_script.split() if args_from_script else None
-		args, unknown_args = self.parser.parse_known_args(args_from_script)
+		args, unknown_args = self.parser.parse_known_args(self._args_from_script)
 		self._args = vars(args)
 
 		# Default directories to be searched for plugins
@@ -85,8 +85,9 @@ class HarryCore(object):
 						    issubclass(obj, PlotBase)):
 							log.debug("Adding module {0} to available processors.".format(obj.name()))
 							self.available_processors[obj.name()] = obj
-			except ImportError:
+			except ImportError as e:
 				log.debug("Failed to import module {0} from {1}.".format(module_name, filename))
+				log.debug("Error message {0}.".format(e))
 				pass
 
 	def run(self):
@@ -136,7 +137,6 @@ class HarryCore(object):
 			log.critical("Empty list of plot modules supplied!")
 
 		for module in self._args["plot_modules"]:
-			print module
 			if self._isvalid_processor(module, processor_type=PlotBase):
 				self.processors.append(self.available_processors[module]())
 			else:
