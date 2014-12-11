@@ -143,7 +143,6 @@ class HarryCore(object):
 				log.critical("Plot module \"{0}\" not found!".format(module))
 
 		# let processors modify the parser and then parse the arguments again
-		print self.processors
 		for processor in self.processors:
 			processor.modify_argument_parser(self.parser, self._args)
 		
@@ -198,7 +197,6 @@ class HarryCore(object):
 		"""Add directory to list of searched directories for modules."""
 		# Expand environment variables
 		module_dir = os.path.expandvars(module_dir)
-		print "module dir", module_dir
 		# absolute path
 		if os.path.isdir(module_dir):
 			self._modules_dirs.append(module_dir)
@@ -226,22 +224,22 @@ class HarryCore(object):
 		print "Valid input modules:"
 		input_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], InputBase)])
 		for module in input_modules:
-			print "  {}".format(module)
+			print "\t{}".format(module)
 			if inspect.getdoc(self.available_processors[module]):
-				print "    ".format(inspect.getdoc(self.available_processors[module]))
+				print "\t\t{}".format(inspect.getdoc(self.available_processors[module]))
 		print ""
 		print "Valid analysis modules:"
 		analysis_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], AnalysisBase)])
 		for module in analysis_modules:
-			print "  {}".format(module)
+			print "\t{}".format(module)
 			if inspect.getdoc(self.available_processors[module]):
-				print "    {}".format(inspect.getdoc(self.available_processors[module]))
+				print "\t\t{}".format(inspect.getdoc(self.available_processors[module]))
 		print ""
 		print "Valid Plot modules:"
 		plot_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], PlotBase)])
 		for module in plot_modules:
-			print "  {}".format(module)
+			print "\t{}".format(module)
 			if inspect.getdoc(self.available_processors[module]):
-				print "    {}".format(inspect.getdoc(self.available_processors[module]))
+				print "\t{}".format(inspect.getdoc(self.available_processors[module]))
 
 
