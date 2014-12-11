@@ -67,7 +67,7 @@ class PlotRoot(plotbase.PlotBase):
 		for nicks in plotData.plotdict["stacks_errband_names"]:
 			for nick in nicks:
 				if nick not in plotData.plotdict["stack"]:
-					log.error("Stack name \"%s\" of argument --%s does not exist in argument --stack!" % (nick, "stacks_errband_names".replace("_", "-")))
+					log.critical("Stack name \"%s\" of argument --%s does not exist in argument --stack!" % (nick, "stacks_errband_names".replace("_", "-")))
 					sys.exit(1)
 	
 	def run(self, plotData):
