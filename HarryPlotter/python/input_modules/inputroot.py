@@ -9,6 +9,7 @@ log = logging.getLogger(__name__)
 
 import hashlib
 import os
+import sys
 import ROOT
 
 import Artus.HarryPlotter.input_modules.inputfile as inputfile
@@ -54,7 +55,7 @@ class InputRoot(inputfile.InputFile):
 		
 		if plotData.plotdict["quantities"]:
 			extrafunctions.print_quantities(root_files=plotData.plotdict["files"], root_folders=plotData.plotdict["folders"])
-			exit()
+			sys.exit(0)
 		root_tools = roottools.RootTools()
 		for index, (root_files, folders, x_expression, y_expression, z_expression, weight, nick) in enumerate(pi.ProgressIterator(zip(*
 			[plotData.plotdict[key] for key in ["files", "folders", "x_expressions", "y_expressions", "z_expressions", "weights", "nicks"]]),
@@ -80,6 +81,9 @@ class InputRoot(inputfile.InputFile):
 				)
 				
 			elif root_object_type == ROOT.TH1:
+				if x_expression is None:
+					log.error('No x_expression provided.')
+					sys.exit(1)
 				root_objects = [os.path.join(folder, x_expression) for folder in folders]
 				
 				root_histogram = roottools.RootTools.histogram_from_file(root_files, root_objects, name=None)

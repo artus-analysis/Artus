@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 import Artus.HarryPlotter.core as harrycore
 
 
-def harry(args_from_script = None):
+def harry(args_from_script=None):
 	"""
 	Main plotting function
 	
@@ -16,6 +16,6 @@ def harry(args_from_script = None):
 	as it would be done by calling this script in the bash.
 	"""
 
-	harry_core = harrycore.HarryCore()
-	harry_core.run(args_from_script)
+	harry_core = harrycore.HarryCore(args_from_script=args_from_script)
+	harry_core.run()
 
