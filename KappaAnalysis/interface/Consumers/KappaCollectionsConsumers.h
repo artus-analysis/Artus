@@ -24,7 +24,8 @@ public:
 		ConsumerBase<KappaTypes>(),
 		m_treeName(treeName),
 		m_validObjects(validObjects),
-		m_objectMetaInfo(objectMetaInfo)
+		m_objectMetaInfo(objectMetaInfo),
+		m_objectMetaInfoAvailable(objectMetaInfo != 0)
 	{
 	}
 	
@@ -39,8 +40,10 @@ public:
 		
 		m_tree->Branch("object", &m_currentObject);
 		
-		// TODO
-		// m_tree->Branch("meta", &m_currentObjectMetaInfo);
+		if (m_objectMetaInfoAvailable)
+		{
+			m_tree->Branch("meta", &m_currentObjectMetaInfo);
+		}
 	}
 	
 	virtual void ProcessFilteredEvent(event_type const& event, product_type const& product,
@@ -51,7 +54,7 @@ public:
 		{
 			m_currentObject = *(*validObject);
 			
-			if ((event.*m_objectMetaInfo) != 0)
+			if (m_objectMetaInfoAvailable)
 			{
 				m_currentObjectMetaInfo = *(event.*m_objectMetaInfo);
 			}
@@ -73,6 +76,7 @@ private:
 	std::string m_treeName;
 	std::vector<TObject*> product_type::*m_validObjects;
 	TObjectMetaInfo* event_type::*m_objectMetaInfo;
+	bool m_objectMetaInfoAvailable = false;
 	
 	TTree* m_tree = 0;
 	
