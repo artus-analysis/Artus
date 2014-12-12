@@ -210,5 +210,11 @@ public:
 	IMPL_SETTING_STRINGLIST(TmvaInputQuantities);
 	IMPL_SETTING_STRINGLIST(TmvaMethods);
 	IMPL_SETTING_STRINGLIST(TmvaWeights);
+	
+	// KappaCollectionsConsumer settings
+	IMPL_SETTING_DEFAULT(bool, BranchGenMatchedElectrons, false);
+	IMPL_SETTING_DEFAULT(bool, BranchGenMatchedMuons, false);
+	IMPL_SETTING_DEFAULT(bool, BranchGenMatchedTaus, false);
+	IMPL_SETTING_DEFAULT(bool, BranchGenMatchedJets, false);
 
 };
