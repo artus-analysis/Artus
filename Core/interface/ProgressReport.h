@@ -14,7 +14,7 @@ public:
 
 	virtual void update(long long currentIndex, long long maxItems) = 0;
 
-	virtual void finish(long long currentIndex, long long maxItems) = 0;
+	virtual void finish() = 0;
 };
 
 class ConsoleProgressReport: public ProgressReportBase {
@@ -26,7 +26,7 @@ public:
 
 	virtual void update(long long currentIndex, long long maxItems) ARTUS_CPP11_OVERRIDE;
 
-	virtual void finish(long long currentIndex, long long maxItems) ARTUS_CPP11_OVERRIDE;
+	virtual void finish() ARTUS_CPP11_OVERRIDE;
 
 	// in percent
 	float m_reportIntervall;

@@ -38,6 +38,7 @@ add_library(artus_core SHARED
 	Core/src/FilterResult.cc
 	Core/src/Mutation.cc
 	Core/src/ProgressReport.cc
+	Core/src/OsSignalHandler.cc
 )
 
 add_library(artus_configuration SHARED

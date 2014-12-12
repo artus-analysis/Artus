@@ -50,7 +50,7 @@ int main(int argc, char** argv)
 	// all the attached Producer, Filer and Consumer
 	TraxPipelineInitializer pInit;
 	TraxFactory factory;
-	TraxPipelineRunner runner;
+	TraxPipelineRunner runner(true);
 
 	// load the pipeline with their configuration from the config file
 	myConfig.LoadConfiguration(pInit, runner, factory, rootEnv.GetRootFile());

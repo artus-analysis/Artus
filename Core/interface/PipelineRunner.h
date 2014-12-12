@@ -6,8 +6,10 @@
 
 #pragma once
 
+#include <thread>
 #include <vector>
 #include <algorithm>
+#include <unistd.h>
 
 #include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_list.hpp>
@@ -16,24 +18,38 @@
 #include "EventProviderBase.h"
 #include "ProgressReport.h"
 #include "FilterResult.h"
+#include "OsSignalHandler.h"
 
 /**
-   \brief Class to manage all registered Pipelines and to connect them to the event.
-   
-   The PipelineRunner utilizes a user-provided EventProvider to load events and passes them to all 
-   registered Pipelines. The EventProvider is passed to the function PipelineRunner::RunPipelines 
-   as an argument. Furthermore, Producers can be registered, which can generate Pipeline-
-   independet products of the event. These Producers are run before any pipeline is started
-   and the generated data is passed on to the pipelines.
-*/
+ \brief Class to manage all registered Pipelines and to connect them to the event.
+
+ The PipelineRunner utilizes a user-provided EventProvider to load events and passes them to all
+ registered Pipelines. The EventProvider is passed to the function PipelineRunner::RunPipelines
+ as an argument. Furthermore, Producers can be registered, which can generate Pipeline-
+ independet products of the event. These Producers are run before any pipeline is started
+ and the generated data is passed on to the pipelines.
+ */
 template<typename TPipeline, typename TTypes>
-class PipelineRunner: public boost::noncopyable {
+class PipelineRunner: public boost::noncopyable
+{
 public:
 
-	PipelineRunner() {
+	// set registerSignalHandlern = true if you want to register
+	// a signal listener with the OS to handle Ctrl-C commands send
+	// by the user to the console. In this case the processing will be stopped
+	// after the current event and the root file will be properly written.
+	PipelineRunner(bool registerSignalHandlern = false)
+	{
 		// this is the default
 		// use AddProgressReport / ClearProgressReports to adapt it to your needs
 		AddProgressReport(new ConsoleProgressReport());
+
+		// register on signals to allow for a graceful shutdown if the user
+		// requests it
+		if (registerSignalHandlern)
+		{
+			osRegisterHandler();
+		}
 	}
 
 	typedef TPipeline pipeline_type;
@@ -48,35 +64,40 @@ public:
 	typedef boost::ptr_list<TPipeline> Pipelines;
 	typedef typename Pipelines::iterator PipelinesIterator;
 
-	typedef boost::ptr_list< ProcessNodeBase > ProcessNodes;
+	typedef boost::ptr_list<ProcessNodeBase> ProcessNodes;
 	typedef typename ProcessNodes::iterator ProcessNodesIterator;
 
 	typedef boost::ptr_list<ProgressReportBase> ProgressReportList;
 	typedef typename ProgressReportList::iterator ProgressReportIterator;
 
 	/// Add a pipeline. The object is destroyed in the destructor of the PipelineRunner.
-	void AddPipeline(TPipeline* pline) {
+	void AddPipeline(TPipeline* pline)
+	{
 		m_pipelines.push_back(pline);
 	}
 
 	/// Add a filter. The object is destroyed in the destructor of the PipelineRunner.
 	// the execution order of AddGlobalFilter and AddGlobalProducer is defined by the order
 	// this methods are called
-	void AddFilter(filter_base_type* filter) {
+	void AddFilter(filter_base_type* filter)
+	{
 		m_globalNodes.push_back(filter);
 	}
 
 	/// Add a GlobalProducer. The object is destroyed in the destructor of the PipelineRunner.
 	// the execution order of AddGlobalFilter and AddGlobalProducer is defined by the order
 	// this methods are called
-	void AddProducer(producer_base_type* prod) {
+	void AddProducer(producer_base_type* prod)
+	{
 		m_globalNodes.push_back(prod);
 	}
 
 	/// Add a range of pipelines. The object is destroyed in the destructor of the PipelineRunner.
-	void AddPipelines(std::vector<TPipeline*> pVec) {
+	void AddPipelines(std::vector<TPipeline*> pVec)
+	{
 
-		for (auto * it : pVec) {
+		for (auto * it : pVec)
+		{
 			AddPipeline(it);
 		}
 	}
@@ -84,9 +105,9 @@ public:
 	/// Run the Producers and all pipelines. Give any pipeline setting here: only the
 	/// producer will read from the settings ...
 	template<class TEventProvider>
-	void RunPipelines(
-			TEventProvider & evtProvider,
-			setting_type const& settings) {
+	void RunPipelines(TEventProvider & evtProvider,
+			setting_type const& settings)
+	{
 		long long firstEvent = 0;
 		long long nEvents = evtProvider.GetEntries();
 		const stringvector globlalFilterIds = settings.GetFilters();
@@ -112,12 +133,21 @@ public:
 				LOG(FATAL)<< "Pipeline name '" << *itUnq << "' is not unique, but pipeline names must be unique";
 			}
 		}
-		for (long long i = firstEvent; true; ++i) {
+		for (long long i = firstEvent; true; ++i)
+		{
+
+			// quit here according to OS
+			if (osHasSIGINT())
+			{
+				LOG(INFO)<< "Terminating processing due to received SIGTERM";
+				break;
+			}
 
 			if (!evtProvider.GetEntry(i))
-				break;
+			break;
 			for (ProgressReportIterator it = m_progressReport.begin();
-					it != m_progressReport.end(); it++) {
+					it != m_progressReport.end(); it++)
+			{
 				it->update(i, nEvents);
 			}
 
@@ -126,25 +156,29 @@ public:
 			FilterResult globalFilterResult ( globlalFilterIds );
 
 			for( ProcessNodesIterator it = m_globalNodes.begin();
-					it != m_globalNodes.end(); it ++ ) {
+					it != m_globalNodes.end(); it ++ )
+			{
 
 				// stop processing as soon as one filter fails
 				// but the consumers will still be processed
 				if (! globalFilterResult.HasPassed())
-					break;
-				
-				if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
+				break;
+
+				if ( it->GetProcessNodeType () == ProcessNodeType::Producer )
+				{
 					ProducerBaseAccess ( static_cast<producer_base_type&> ( *it ) )
-							. Produce(evtProvider.GetCurrentEvent(),
+					. Produce(evtProvider.GetCurrentEvent(),
 							productGlobal, settings);
 				}
-				else if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
+				else if ( it->GetProcessNodeType () == ProcessNodeType::Filter )
+				{
 					filter_base_type & flt = static_cast<filter_base_type&> ( *it );
 					const bool filterResult = FilterBaseAccess( flt ). DoesEventPass(evtProvider.GetCurrentEvent(),
-					                                                    productGlobal, settings);
+							productGlobal, settings);
 					globalFilterResult.SetFilterDecision( flt.GetFilterId(), filterResult );
 				}
-				else {
+				else
+				{
 					LOG(FATAL) << "ProcessNodeType not supported by the pipeline runner!";
 				}
 			}
@@ -153,7 +187,8 @@ public:
 			FilterResult pipelineFilterRes(pipelineResultNames);
 
 			for (PipelinesIterator it = m_pipelines.begin();
-					it != m_pipelines.end(); it++) {
+					it != m_pipelines.end(); it++)
+			{
 				if (it->GetSettings().GetLevel() == 1)
 				{
 					productGlobal.PreviousPipelinesResult = pipelineFilterRes;
@@ -166,25 +201,39 @@ public:
 		}
 
 		for (ProgressReportIterator it = m_progressReport.begin();
-				it != m_progressReport.end(); it++) {
-			it->finish(nEvents - 1, nEvents);
+				it != m_progressReport.end(); it++)
+		{
+			it->finish();
 		}
 
 		// first safe the results ( > plots ) from all level one pipelines
 		for (PipelinesIterator it = m_pipelines.begin();
-				!(it == m_pipelines.end()); it++) {
+				!(it == m_pipelines.end()); it++)
+		{
 			if (it->GetSettings().GetLevel() == 1)
 				it->FinishPipeline();
 		}
 
+		osSignalReset();
+
 		// run the pipelines greater level one
+		// even if the previous event loop was interrupted
 		bool noPipelineRun = false;
 		size_t curLevel = 2;
-		while (!noPipelineRun) {
+		while (!noPipelineRun)
+		{
 			noPipelineRun = true;
 			for (PipelinesIterator it = m_pipelines.begin();
-					it != m_pipelines.end(); it++) {
-				if (it->GetSettings().GetLevel() == curLevel) {
+					it != m_pipelines.end(); it++)
+			{
+				if (osHasSIGINT())
+				{
+					LOG(INFO)<< "Terminating processing due to received SIGTERM";
+					break;
+				}
+
+				if (it->GetSettings().GetLevel() == curLevel)
+				{
 					noPipelineRun = false;
 
 					it->Run();
@@ -195,19 +244,23 @@ public:
 		}
 	}
 
-	void AddProgressReport(ProgressReportBase * p) {
+	void AddProgressReport(ProgressReportBase * p)
+	{
 		m_progressReport.push_back(p);
 	}
 
-	void ClearProgressReports() {
+	void ClearProgressReports()
+	{
 		m_progressReport.clear();
 	}
 
-	Pipelines & GetPipelines() {
+	Pipelines & GetPipelines()
+	{
 		return m_pipelines;
 	}
 
-	ProcessNodes & GetNodes() {
+	ProcessNodes & GetNodes()
+	{
 		return m_globalNodes;
 	}
 
