@@ -38,7 +38,7 @@ public:
 	// a signal listener with the OS to handle Ctrl-C commands send
 	// by the user to the console. In this case the processing will be stopped
 	// after the current event and the root file will be properly written.
-	PipelineRunner(bool registerSignalHandlern = false)
+	PipelineRunner(bool registerSignalHandler = true) : m_registerSignalHandler(registerSignalHandler)
 	{
 		// this is the default
 		// use AddProgressReport / ClearProgressReports to adapt it to your needs
@@ -46,10 +46,15 @@ public:
 
 		// register on signals to allow for a graceful shutdown if the user
 		// requests it
-		if (registerSignalHandlern)
+		if (m_registerSignalHandler)
 		{
 			osRegisterHandler();
 		}
+	}
+
+	~PipelineRunner() {
+		if (m_registerSignalHandler)
+			osUnregisterHandler();
 	}
 
 	typedef TPipeline pipeline_type;
@@ -269,5 +274,6 @@ private:
 	Pipelines m_pipelines;
 	ProcessNodes m_globalNodes;
 	ProgressReportList m_progressReport;
+	bool m_registerSignalHandler;
 };
 

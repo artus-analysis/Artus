@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_producer_filter )
 	tset.SetLevel(1);
 	tline1->InitPipeline( tset, TestPipelineInitializer() );
 
-	TestPipelineRunnerInstr prunner;
+	TestPipelineRunnerInstr prunner(false);
 	// don't show progress report in this test cases
 	prunner.ClearProgressReports();
 
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_producer_filter_pass )
 	tset.SetLevel(1);
 	tline1->InitPipeline( tset, TestPipelineInitializer() );
 
-	TestPipelineRunnerInstr prunner;
+	TestPipelineRunnerInstr prunner(false);
 	// don't show progress report in this test cases
 	prunner.ClearProgressReports();
 
@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner )
 	tline4->InitPipeline( TestSettings("4"), TestPipelineInitializer() );
 	tline5->InitPipeline( TestSettings("5"), TestPipelineInitializer() );
 
-	TestPipelineRunnerInstr prunner;
+	TestPipelineRunnerInstr prunner(false);
 	// don't show progress report in this test cases
 	prunner.ClearProgressReports();
 
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_result )
 	tline2->InitPipeline( TestSettings("line2"), TestPipelineInitializer() );
 	tline3->InitPipeline( TestSettings("line3"), TestPipelineInitializer() );
 
-	TestPipelineRunnerInstr prunner;
+	TestPipelineRunnerInstr prunner(false);
 	// don't show progress report in this test cases
 	prunner.ClearProgressReports();
 
@@ -217,7 +217,7 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_multi_level )
 	tline2->InitPipeline( tset_lvl1_b, TestPipelineInitializer() );
 	tline3->InitPipeline( tset_lvl2, TestPipelineInitializer() );
 
-	TestPipelineRunnerInstr prunner;
+	TestPipelineRunnerInstr prunner(false);
 	// don't show progress report in this test cases
 	prunner.ClearProgressReports();
 	prunner.AddPipelines(
