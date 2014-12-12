@@ -10,7 +10,10 @@ import sys
 import Artus.HarryPlotter.harry as harry
 
 
-if __name__ == "__main__" and len(sys.argv) > 1:
+if __name__ == "__main__":
 	"""This script executes all steps necessary to create a plot."""
-	harry.harry()
+	if len(sys.argv) == 1:
+		sys.argv.append("-h")
+		
+	harry.HarryPlotter()
 
