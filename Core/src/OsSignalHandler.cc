@@ -17,6 +17,11 @@ void osRegisterHandler()
 	signal(SIGINT, osSignalHandler);
 }
 
+void osUnregisterHandler()
+{
+	signal(SIGINT, SIG_DFL);
+}
+
 bool osHasSIGINT()
 {
 	return osSignal_hasSIGINT.load();
