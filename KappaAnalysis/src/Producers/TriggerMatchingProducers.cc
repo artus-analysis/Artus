@@ -11,9 +11,11 @@ ElectronTriggerMatchingProducer::ElectronTriggerMatchingProducer() :
 	TriggerMatchingProducerBase<KDataElectron>(&KappaProduct::m_triggerMatchedElectrons,
 	                                           &KappaProduct::m_validElectrons,
 	                                           &KappaProduct::m_invalidElectrons,
-	                                                   &KappaSettings::GetElectronTriggerFilterNames,
-	                                                   &KappaSettings::GetDeltaRTriggerMatchingElectrons,
-	                                                   &KappaSettings::GetInvalidateNonMatchingElectrons)
+	                                           &KappaProduct::m_settingsElectronTriggerFiltersByIndex,
+	                                           &KappaProduct::m_settingsElectronTriggerFiltersByHltName,
+	                                           &KappaSettings::GetElectronTriggerFilterNames,
+	                                           &KappaSettings::GetDeltaRTriggerMatchingElectrons,
+	                                           &KappaSettings::GetInvalidateNonMatchingElectrons)
 {
 }
 
@@ -27,9 +29,11 @@ MuonTriggerMatchingProducer::MuonTriggerMatchingProducer() :
 	TriggerMatchingProducerBase<KDataMuon>(&KappaProduct::m_triggerMatchedMuons,
 	                                       &KappaProduct::m_validMuons,
 	                                       &KappaProduct::m_invalidMuons,
+	                                       &KappaProduct::m_settingsMuonTriggerFiltersByIndex,
+	                                       &KappaProduct::m_settingsMuonTriggerFiltersByHltName,
 	                                       &KappaSettings::GetMuonTriggerFilterNames,
-	                                               &KappaSettings::GetDeltaRTriggerMatchingMuons,
-	                                               &KappaSettings::GetInvalidateNonMatchingMuons)
+	                                       &KappaSettings::GetDeltaRTriggerMatchingMuons,
+	                                       &KappaSettings::GetInvalidateNonMatchingMuons)
 {
 }
 
@@ -43,9 +47,11 @@ TauTriggerMatchingProducer::TauTriggerMatchingProducer() :
 	TriggerMatchingProducerBase<KDataPFTau>(&KappaProduct::m_triggerMatchedTaus,
 	                                        &KappaProduct::m_validTaus,
 	                                        &KappaProduct::m_invalidTaus,
+	                                        &KappaProduct::m_settingsTauTriggerFiltersByIndex,
+	                                        &KappaProduct::m_settingsTauTriggerFiltersByHltName,
 	                                        &KappaSettings::GetTauTriggerFilterNames,
-	                                                &KappaSettings::GetDeltaRTriggerMatchingTaus,
-	                                                &KappaSettings::GetInvalidateNonMatchingTaus)
+	                                        &KappaSettings::GetDeltaRTriggerMatchingTaus,
+	                                        &KappaSettings::GetInvalidateNonMatchingTaus)
 {
 }
 
@@ -58,9 +64,11 @@ JetTriggerMatchingProducer::JetTriggerMatchingProducer() :
 	TriggerMatchingProducerBase<KDataPFJet>(&KappaProduct::m_triggerMatchedJets,
 	                                        &KappaProduct::m_validJets,
 	                                        &KappaProduct::m_invalidJets,
+	                                        &KappaProduct::m_settingsJetTriggerFiltersByIndex,
+	                                        &KappaProduct::m_settingsJetTriggerFiltersByHltName,
 	                                        &KappaSettings::GetJetTriggerFilterNames,
-	                                                &KappaSettings::GetDeltaRTriggerMatchingJets,
-	                                                &KappaSettings::GetInvalidateNonMatchingJets)
+	                                        &KappaSettings::GetDeltaRTriggerMatchingJets,
+	                                        &KappaSettings::GetInvalidateNonMatchingJets)
 {
 }
 
