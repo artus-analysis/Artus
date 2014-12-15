@@ -28,9 +28,9 @@ class InputRoot(inputfile.InputFile):
 		self.input_options.add_argument("--folders", type=str, nargs='*',
 		                                help="Path(s) to ROOT objects.")
 		self.input_options.add_argument("--friend-treenames", type=str, nargs="+",
-		                                help="Names of trees to be used as friends. Seperate different plots with space, seperate for same plot with \",\".", default=None)
+		                                help="Names of trees to be used as friends. Seperate different plots with space, seperate for same plot with space.", default=None)
 		self.input_options.add_argument("--friend-filenames", type=str, nargs="+",
-		                                help="Filenames to be added as friends. Seperate different plots with space, seperate for same plot with \",\".", default=None)
+		                                help="Filenames to be added as friends. Seperate different plots with space, seperate for same plot with space.", default=None)
 		self.input_options.add_argument("-x", "--x-expressions", type=str, nargs="+",
 		                                help="x-axis variable expression(s)")
 		self.input_options.add_argument("-y", "--y-expressions", type=str, nargs="+",
@@ -58,7 +58,7 @@ class InputRoot(inputfile.InputFile):
 		                     	 plotData.plotdict["friend_treenames"],
 		                     	 plotData.plotdict["friend_filenames"]):
 				tuple = []
-				for plot_friend_treename, plot_friend_filename in zip(friend_treename.split(","), friend_filename.split(",")):
+				for plot_friend_treename, plot_friend_filename in zip(friend_treename.split(" "), friend_filename.split(" ")):
 					tuple.append((plot_friend_treename, plot_friend_filename))
 				plotData.plotdict["friend_trees"].append(tuple)
 		else:
