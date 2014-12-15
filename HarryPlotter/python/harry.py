@@ -20,7 +20,7 @@ def pool_plot(args):
 		return args[1:]
 
 class HarryPlotter(object):
-	def __init__(self, plots=None, n_processes=4):
+	def __init__(self, plots=None, n_processes=1):
 		if isinstance(plots, collections.Iterable) and not isinstance(plots, basestring):
 			self.multi_plots(plots, n_processes=n_processes)
 		else:
@@ -30,7 +30,7 @@ class HarryPlotter(object):
 		harry_core = harrycore.HarryCore(args_from_script=harry_args)
 		harry_core.run()
 	
-	def multi_plots(self, list_of_harry_args, n_processes=4):
+	def multi_plots(self, list_of_harry_args, n_processes=1):
 		pool = Pool(processes=n_processes)
 		results = pool.map_async(pool_plot, zip([self]*len(list_of_harry_args), list_of_harry_args))
 		
