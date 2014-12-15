@@ -139,7 +139,7 @@ class RootTools(object):
 	def histogram_from_tree(self, root_file_names, path_to_trees,
 		                    x_expression, y_expression=None, z_expression=None,
 		                    x_bins=None, y_bins=None, z_bins=None,
-		                    weight_selection="", option="", name=None):
+		                    weight_selection="", option="", name=None, friend_trees=None):
 		"""
 		Read histograms from trees
 	
@@ -224,6 +224,11 @@ class RootTools(object):
 				complete_path_to_tree = os.path.join(root_file_name, path_to_tree)
 				tree.Add(complete_path_to_tree)
 				log.debug("Reading from ntuple %s ..." % complete_path_to_tree)
+		
+		#Add Friends
+		if friend_trees is not None:
+			for friend in friend_trees:
+				tree.AddFriend(friend[0], friend[1])
 		
 		# ROOT optimisations
 		tree.SetCacheSize(256*1024*1024) # 256 MB
