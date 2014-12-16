@@ -9,7 +9,7 @@
 #include "Artus/KappaAnalysis/interface/KappaTypes.h"
 
 
-template<class TObject, class TObjectMetaInfo>
+template<class TObject, class TObjectMetaInfo, class TGenObject>
 class KappaCollectionsConsumerBase: public ConsumerBase<KappaTypes>
 {
 
@@ -73,7 +73,7 @@ public:
 			if ((settings.*GetBranchGenMatchedObjects)())
 			{
 				KGenParticle* current = SafeMap::GetWithDefault((product.*m_genMatchedObjects), *validObject, (KGenParticle*)(0));
-				m_currentGenObject = (current != 0 ? *current : KGenParticle());
+				m_currentGenObject = (current != 0 ? *(static_cast<TGenObject*>(current)) : TGenObject());
 				m_currentGenObjectMatched = (current != 0);
 			}
 			
@@ -102,13 +102,13 @@ private:
 	
 	TObject m_currentObject;
 	TObjectMetaInfo m_currentObjectMetaInfo;
-	KGenParticle m_currentGenObject;
+	TGenObject m_currentGenObject;
 	char m_currentGenObjectMatched;
 };
 
 
 
-class KappaElectronsConsumer: public KappaCollectionsConsumerBase<KDataElectron, int>
+class KappaElectronsConsumer: public KappaCollectionsConsumerBase<KDataElectron, int, KDataGenTau>
 {
 
 public:
@@ -122,7 +122,7 @@ public:
 
 
 
-class KappaMuonsConsumer: public KappaCollectionsConsumerBase<KDataMuon, int>
+class KappaMuonsConsumer: public KappaCollectionsConsumerBase<KDataMuon, int, KDataGenTau>
 {
 
 public:
@@ -136,7 +136,7 @@ public:
 
 
 
-class KappaTausConsumer: public KappaCollectionsConsumerBase<KDataPFTau, KTauDiscriminatorMetadata>
+class KappaTausConsumer: public KappaCollectionsConsumerBase<KDataPFTau, KTauDiscriminatorMetadata, KDataGenTau>
 {
 
 public:
@@ -151,7 +151,7 @@ public:
 
 
 
-class KappaJetsConsumer: public KappaCollectionsConsumerBase<KDataPFJet, int>
+class KappaJetsConsumer: public KappaCollectionsConsumerBase<KDataPFJet, int, KGenParticle>
 {
 
 public:
@@ -165,7 +165,7 @@ public:
 
 
 /* TODO
-class KappaTaggedJetsConsumer: public KappaCollectionsConsumerBase<KDataPFTaggedJets, KTaggerMetadata>
+class KappaTaggedJetsConsumer: public KappaCollectionsConsumerBase<KDataPFTaggedJets, KTaggerMetadata, KGenParticle>
 {
 
 public:
