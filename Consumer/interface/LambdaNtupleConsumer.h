@@ -158,8 +158,7 @@ public:
 		m_uint64ValueExtractors.clear();
 		m_doubleValueExtractors.clear();
 
-		m_vDoubleValues = new std::vector<std::vector<double>>;
-		// m_vDoubleValueExtractors.clear();
+		m_vDoubleValueExtractors.clear();
 		m_stringValueExtractors.clear();
 		m_boolValueExtractors.clear();
 		
@@ -212,7 +211,7 @@ public:
 		m_uint64Values.resize(m_uint64ValueExtractors.size());
 		m_floatValues.resize(m_floatValueExtractors.size());
 		m_doubleValues.resize(m_doubleValueExtractors.size());
-		m_vDoubleValues->resize(m_vDoubleValueExtractors.size());
+		m_vDoubleValues.resize(m_vDoubleValueExtractors.size());
 		m_stringValues.resize(m_stringValueExtractors.size());
 		
 		size_t boolQuantityIndex = 0;
@@ -247,7 +246,7 @@ public:
 			}
 			else if (LambdaNtupleQuantities::CommonVDoubleQuantities.count(*quantity) > 0)
 			{
-				m_tree->Branch(quantity->c_str(), &m_vDoubleValues);
+				m_tree->Branch(quantity->c_str(), &(m_vDoubleValues[vDoubleQuantityIndex]));
 				vDoubleQuantityIndex++;
 			}
 			else if (LambdaNtupleQuantities::CommonBoolQuantities.count(*quantity) > 0)
@@ -311,7 +310,7 @@ public:
 		for(typename std::vector<vDouble_extractor_lambda_base>::iterator valueExtractor = m_vDoubleValueExtractors.begin();
 		    valueExtractor != m_vDoubleValueExtractors.end(); ++valueExtractor)
 		{
-			(*m_vDoubleValues)[vDoubleValueIndex] = (*valueExtractor)(event, product);
+			m_vDoubleValues[vDoubleValueIndex] = (*valueExtractor)(event, product);
 			vDoubleValueIndex++;
 		}
 
@@ -350,7 +349,7 @@ private:
 	std::vector<uint64_t> m_uint64Values;
 	std::vector<float> m_floatValues;
 	std::vector<double> m_doubleValues;
-	std::vector<std::vector<double>> *m_vDoubleValues = NULL;
+	std::vector<std::vector<double>> m_vDoubleValues;
 	std::vector<std::string> m_stringValues;
 };
 
