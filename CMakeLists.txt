@@ -10,21 +10,27 @@ include(FindROOT.cmake)
 
 # commented for now, if you will need this type of compile environment ( afs-machine + cmake compile )
 # please take care of making this check safe also on non-afs systems
-#execute_process(COMMAND ls $ENV{CMSSW_RELEASE_BASE}/../../../../$ENV{SCRAM_ARCH}/external/boost COMMAND tail -n 1 COMMAND tr -d '\n' OUTPUT_VARIABLE BOOSTVER)
-#set(BOOST_INCLUDE_DIR "/afs/cern.ch/cms/$ENV{SCRAM_ARCH}/external/boost/${BOOSTVER}/include/")
-#message("Looking for boost... - found ${BOOST_INCLUDE_DIR}")
+
+if (DEFINED ENV{CMSSW_RELEASE_BASE} )
+	set(USE_BOOST_CMSSW TRUE)
+	execute_process(COMMAND ls $ENV{CMSSW_RELEASE_BASE}/../../../../$ENV{SCRAM_ARCH}/external/boost COMMAND tail -n 1 COMMAND tr -d '\n' OUTPUT_VARIABLE BOOSTVER)
+	set(BOOST_INCLUDE_DIR "/afs/cern.ch/cms/$ENV{SCRAM_ARCH}/external/boost/${BOOSTVER}/include/")
+	set(BOOST_LIB_DIR "/afs/cern.ch/cms/$ENV{SCRAM_ARCH}/external/boost/${BOOSTVER}/lib/")
+	message("Looking for boost in CMSSW ... - found ${BOOST_INCLUDE_DIR}")
+	message("Looking for boost in CMSSW ... - found ${BOOST_LIB_DIR}")
+else()
+	set(USE_BOOST_CMSSW FALSE)
+	set(BOOST_INCLUDE_DIR "")
+	set(BOOST_LIB_DIR "")
+	message("Expecting boost to be provided by system")
+endif()
 
 set(INCLUDE_DIRECTORIES
-${ROOT_INCLUDE_DIR}
-#${BOOST_INCLUDE_DIR}
+	${ROOT_INCLUDE_DIR}
+	${BOOST_INCLUDE_DIR}
 )
 
 include_directories( ${INCLUDE_DIRECTORIES})
-
-set(LINK_DIRECTORIES
-${ROOT_LIBRARY_DIR}
-)
-
 include_directories( ${closure_SOURCE_DIR}../ )
 
 add_library(artus_core SHARED
@@ -32,6 +38,7 @@ add_library(artus_core SHARED
 	Core/src/FilterResult.cc
 	Core/src/Mutation.cc
 	Core/src/ProgressReport.cc
+	Core/src/OsSignalHandler.cc
 )
 
 add_library(artus_configuration SHARED
@@ -41,8 +48,14 @@ add_library(artus_configuration SHARED
 	Configuration/src/SettingsBase.cc
 )
 
-target_link_libraries( artus_configuration 	
-        boost_program_options)
+if ( USE_BOOST_CMSSW )
+	target_link_libraries( artus_configuration
+			-L${BOOST_LIB_DIR 	
+	        boost_program_options)
+else()
+	target_link_libraries( artus_configuration 	
+	        boost_program_options)
+endif()
 
 add_library(artus_consumer SHARED
 	Consumer/src/Hist1D.cc

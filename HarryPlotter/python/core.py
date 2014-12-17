@@ -2,180 +2,247 @@
 
 """
 """
-
+import os
+import fnmatch
+import sys
+import imp
+import inspect
+import copy
 import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
-import copy
 
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gErrorIgnoreLevel = ROOT.kError
 
-import Artus.HarryPlotter.analysisbase as analysisbase
 import Artus.HarryPlotter.harryparser as harryparser
-import Artus.HarryPlotter.inputbase as inputbase
-import Artus.HarryPlotter.input_modules.inputroot as inputroot
-import Artus.HarryPlotter.input_modules.inputinteractive as inputinteractive
-import Artus.HarryPlotter.plotbase as plotbase
 import Artus.HarryPlotter.plotdata as plotdata
-import Artus.HarryPlotter.plot_modules.plotmpl as plotmpl
-import Artus.HarryPlotter.plot_modules.plotroot as plotroot
-import Artus.HarryPlotter.plot_modules.exportroot as exportroot
+
+from Artus.HarryPlotter.analysisbase import AnalysisBase
+from Artus.HarryPlotter.inputbase import InputBase
+from Artus.HarryPlotter.plotbase import PlotBase
+
 import Artus.HarryPlotter.processor as processor
 
-import Artus.HarryPlotter.analysis_modules.eventselectionoverlap as eventselectionoverlap
-import Artus.HarryPlotter.analysis_modules.projectbyfit as projectbyfit
-import Artus.HarryPlotter.analysis_modules.functionplot as functionplot
-import Artus.HarryPlotter.analysis_modules.efficiency as efficiency
-import Artus.HarryPlotter.analysis_modules.shapeyieldmerge as shapeyieldmerge
-import Artus.HarryPlotter.analysis_modules.extrapolationfactor as extrapolationfactor
-import Artus.HarryPlotter.analysis_modules.binerrorsofemptybins as binerrorsofemptybins
-import Artus.HarryPlotter.analysis_modules.sumofhistograms as sumofhistograms
-import Artus.HarryPlotter.analysis_modules.cutflow as cutflow
-from Artus.HarryPlotter.analysis_modules.normalization import NormalizeByBinWidth, NormalizeToUnity, NormalizeToFirstHisto, NormalizeStackToFirstHisto
-
-import Artus.HarryPlotter.analysis_modules.correctnegativebincontents as correctnegativebincontents
-import Artus.HarryPlotter.analysis_modules.printinfos as printinfos
-
 import Artus.Utility.jsonTools as json_tools
+
 json_tools.JsonDict.COMMENT_DELIMITER = "@"
 
 
 class HarryCore(object):
-	def __init__(self, user_processors=None):
+
+	def __init__(self, additional_modules_dirs=None, args_from_script=None):
 		super(HarryCore, self).__init__()
-		
-		if user_processors == None:
-			user_processors = {}
-		
-		self.available_processors = {
-			inputroot.InputRoot.name() : inputroot.InputRoot(),
-			inputinteractive.InputInteractive.name() : inputinteractive.InputInteractive(),
-			eventselectionoverlap.EventSelectionOverlap.name() : eventselectionoverlap.EventSelectionOverlap(),
-			projectbyfit.ProjectByFit.name() : projectbyfit.ProjectByFit(),
-			functionplot.FunctionPlot.name() : functionplot.FunctionPlot(),
-			efficiency.Efficiency.name() : efficiency.Efficiency(),
-			shapeyieldmerge.ShapeYieldMerge.name() : shapeyieldmerge.ShapeYieldMerge(),
-			extrapolationfactor.ExtrapolationFactor.name() : extrapolationfactor.ExtrapolationFactor(),
-			binerrorsofemptybins.BinErrorsOfEmptyBins.name() : binerrorsofemptybins.BinErrorsOfEmptyBins(),
-			sumofhistograms.SumOfHistograms.name() : sumofhistograms.SumOfHistograms(),
-			NormalizeByBinWidth.name(): NormalizeByBinWidth(),
-			NormalizeToUnity.name(): NormalizeToUnity(),
-			NormalizeToFirstHisto.name(): NormalizeToFirstHisto(),
-			NormalizeStackToFirstHisto.name(): NormalizeStackToFirstHisto(),
-			correctnegativebincontents.CorrectNegativeBinContents.name() : correctnegativebincontents.CorrectNegativeBinContents(),
-			printinfos.PrintInfos.name() : printinfos.PrintInfos(),
-			cutflow.Cutflow.name() : cutflow.Cutflow(),
-			plotroot.PlotRoot.name() : plotroot.PlotRoot(),
-			plotmpl.PlotMpl.name() : plotmpl.PlotMpl(),
-			exportroot.ExportRoot.name() : exportroot.ExportRoot(),
-		}
-		self.available_processors.update(user_processors)
+
+		# List of absolute paths to all module directories
+		self._modules_dirs = []
+		# Dict of all available processors
+		self.available_processors = {}
+		# List of active processors
 		self.processors = []
-	
-	def run(self, args_from_script=None):
-		parser = harryparser.HarryParser()
-		args, unknown_args = parser.parse_known_args(args_from_script.split() if args_from_script != None else None)
-		args = vars(args)
+
+		# First time parsing of cmd arguments
+		self.parser = harryparser.HarryParser()
+		self._args_from_script = args_from_script.split() if args_from_script else None
+		args, unknown_args = self.parser.parse_known_args(self._args_from_script)
+		self.args = vars(args)
+
+		# Default directories to be searched for plugins
+		default_modules_dirs = ["input_modules/", "analysis_modules/", "plot_modules/"]
+
+		# Modules search dir from command line arguments
+		if self.args['modules_search_paths']:
+			default_modules_dirs += self.args['modules_search_paths']
+		# Passed additonal modules dirs
+		if additional_modules_dirs:
+			default_modules_dirs += additional_modules_dirs
+		for directory in default_modules_dirs:
+			self.register_modules_dir(directory)
+
+
+
+
+	def _detect_available_processors(self):
+		"""Detect all valid processors in modules_dirs and add them to avalaible processors."""
+
+		modules_dirs = self._modules_dirs
+		# Loop over all possible module files
+		matches = []
+		for module_dir in modules_dirs:
+			for root, dirnames, filenames in os.walk(module_dir):
+				for filename in fnmatch.filter(filenames, '*.py'):
+					matches.append(os.path.join(root, filename))
+
+		for filename in matches:
+			try:
+				log.debug("Try to import module from path {0}.".format(filename))
+				module_name = os.path.splitext(os.path.basename(filename))[0]
+				module = imp.load_source(module_name, filename)
+				for name, obj in inspect.getmembers(module):
+					if inspect.isclass(obj):
+						if (issubclass(obj, AnalysisBase) or issubclass(obj, InputBase) or
+						    issubclass(obj, PlotBase)):
+							log.debug("Adding module {0} to available processors.".format(obj.name()))
+							self.available_processors[obj.name()] = obj
+			except ImportError as e:
+				log.debug("Failed to import module {0} from {1}.".format(module_name, filename))
+				log.debug("Error message {0}.".format(e))
+				pass
+
+	def run(self):
+		"""Add all requested processors, then reparse all command line arguments.
+		   Finally prepare and run all processors.
+		"""
+		# Detect all valid processors
+		self._detect_available_processors()
+
 		json_default_initialisation = None
-		if args["json_defaults"] != None:
-			json_default_initialisation = args["json_defaults"]
-			json_defaults = json_tools.JsonDict(args["json_defaults"]).doIncludes().doComments()
+		if self.args["json_defaults"] != None:
+			json_default_initialisation = self.args["json_defaults"]
+			json_defaults = json_tools.JsonDict(self.args["json_defaults"]).doIncludes().doComments()
 			#set_defaults will overwrite/ignore the json_default argument. Cannot be used.
-			args.update({k:v for k,v in json_defaults.iteritems() if (args.get(k) == None and v != None)})
+			json_defaults.update(self.args)
+			self.args = json_defaults
 
 		# replace 'json_defaults' from imported json file to actual name of imported json file
 		if json_default_initialisation != None:
-			args["json_defaults"] = json_default_initialisation
-		
-		self.processors = []
+			self.args["json_defaults"] = json_default_initialisation
+
+		if self.args["list_available_modules"]:
+			self._print_available_modules()
+			return
 		
 		# handle input modules (first)
-		if args["input_module"] not in self.available_processors.keys():
-			log.warning("Input module \"" + args["input_module"] + "\" not found! Fall back to default \"%s\"!" % (parser.get_default("input_modules")))
-			args["input_module"] = parser.get_default("input_module")
-		self.processors.append(self.available_processors[args["input_module"]])
-		
+		if self._isvalid_processor(self.args["input_module"], processor_type=InputBase):
+			self.processors.append(self.available_processors[self.args["input_module"]]())
+		else:
+			log.info("Provide a valid input module or none at all. Default is \"{0}\"!".format(self.parser.get_default("input_modules")))
+			log.critical("Input module \"{0}\" not found!".format(self.args["input_module"]))
+
 		# handle analysis modules (second)
-		if args["analysis_modules"] == None:
-			args["analysis_modules"] = []
+		if self.args["analysis_modules"] is None:
+			self.args["analysis_modules"] = []
 		
-		available_modules = [module for module in args["analysis_modules"]
-		                     if module in self.available_processors.keys() and
-		                     isinstance(self.available_processors[module], analysisbase.AnalysisBase)]
-		self.processors.extend([self.available_processors[module] for module in available_modules])
-		
-		missing_modules = [module for module in args["analysis_modules"]
-		                   if module not in self.available_processors.keys() or
-		                   not isinstance(self.available_processors[module], analysisbase.AnalysisBase)]
-		if len(missing_modules) > 0:
-			log.warning("Some requested analysis modules have not been registered!")
-			for module in missing_modules:
-				log.warning("\t" + module)
-		
+		for module in self.args["analysis_modules"]:
+			if self._isvalid_processor(module, processor_type=AnalysisBase):
+				self.processors.append(self.available_processors[module]())
+			else:
+				log.critical("Analysis module \"{0}\" not found!".format(module))
+
 		# handle plot modules (third)
-		if isinstance(args["plot_modules"], basestring):
-			args["plot_modules"] = [args["plot_modules"]]
-		available_modules = [module for module in args["plot_modules"]
-		                     if module in self.available_processors.keys() and
-		                     isinstance(self.available_processors[module], plotbase.PlotBase)]
-		if len(available_modules) == 0:
-			log.warning("No plot module found! Fall back to default \"%s\"!" % (parser.get_default("plot_modules")))
-			available_modules = [parser.get_default("plot_modules")]
-		self.processors.extend([self.available_processors[module] for module in available_modules])
-		
-		missing_modules = [module for module in args["plot_modules"]
-		                   if module not in self.available_processors.keys() or
-		                   not isinstance(self.available_processors[module], plotbase.PlotBase)]
-		if len(missing_modules) > 0:
-			log.warning("Some requested plot modules have not been registered!")
-			for module in missing_modules:
-				log.warning("\t" + module)
-		
+		if isinstance(self.args["plot_modules"], basestring):
+			self.args["plot_modules"] = [self.args["plot_modules"]]
+		if not self.args["plot_modules"]:
+			log.critical("Empty list of plot modules supplied!")
+
+		for module in self.args["plot_modules"]:
+			if self._isvalid_processor(module, processor_type=PlotBase):
+				self.processors.append(self.available_processors[module]())
+			else:
+				log.critical("Plot module \"{0}\" not found!".format(module))
+
+		# print the final processor chain
+		log.debug('Processors will be run in the following order')
+		log.debug(' => '.join([processor.name() for processor in self.processors]))
 		# let processors modify the parser and then parse the arguments again
 		for processor in self.processors:
-			processor.modify_argument_parser(parser, args)
+			processor.modify_argument_parser(self.parser, self.args)
 		
 		# overwrite defaults by defaults from json files
-		if args["json_defaults"] != None:
-			parser.set_defaults(**(json_tools.JsonDict(args["json_defaults"]).doIncludes().doComments()))
+		if self.args["json_defaults"] != None:
+			self.parser.set_defaults(**(json_tools.JsonDict(self.args["json_defaults"]).doIncludes().doComments()))
 		
-		args = vars(parser.parse_args(args_from_script.split() if args_from_script != None else None))
-		plotData = plotdata.PlotData(args)
+		self.args = vars(self.parser.parse_args(self._args_from_script))
+		plotData = plotdata.PlotData(self.args)
 		
 		# general ROOT settings
+		log.debug("Setting ROOT TH1 DefaultSumw2 to True.")
 		ROOT.TH1.SetDefaultSumw2(True)
 		ROOT.gROOT.SetBatch(True)
 		
 		# export arguments into JSON file
 		# remove entries from dictionary that are not meant to be exported
-		if args["export_json"] != None:
-			save_args = dict(args)
+		if self.args["export_json"] != None:
+			save_args = dict(self.args)
 			save_args.pop("quantities")
 			save_args.pop("export_json")
 			save_args.pop("live")
-			save_args.pop("json_defaults")	
-			if args["export_json"] != "":
-				save_name = args["export_json"]
+			save_args.pop("json_defaults")
+			if self.args["export_json"] != "":
+				save_name = self.args["export_json"]
 			else:
-				save_name = args["json_defaults"][0]
+				save_name = self.args["json_defaults"][0]
 
-			if save_name != None:	
+			if save_name != None:
 				json_tools.JsonDict(save_args).save(save_name, indent=4)
 			else: log.warning("No JSON could be exported. Please provide a filename.")
 		
 		# prepare aguments for all processors before running them
 		for processor in self.processors:
-			tmpPlotData = copy.deepcopy(plotData) if isinstance(processor, plotbase.PlotBase) else plotData
-			processor.prepare_args(parser, tmpPlotData)
+			tmpPlotData = copy.deepcopy(plotData) if isinstance(processor, PlotBase) else plotData
+			processor.prepare_args(self.parser, tmpPlotData)
 			processor.run(tmpPlotData)
-			if not isinstance(processor, plotbase.PlotBase):
+			if not isinstance(processor, PlotBase):
 				plotData = tmpPlotData
 		
 		del(plotData)
 	
-	def register_processor(self, processor_name, processor):
-		self.available_processors[processor_name] = processor
+	def register_processor(self, processor):
+		"""Add processor to list of available processors."""
+		if (issubclass(obj, AnalysisBase) or issubclass(obj, InputBase) or
+		    issubclass(obj, PlotBase)):
+			self.available_processors[processor.name()] = processor
+		else:
+			raise TypeError("Provided processor is of invalid type.")
+
+	def register_modules_dir(self, module_dir):
+		"""Add directory to list of searched directories for modules."""
+		# Expand environment variables
+		module_dir = os.path.expandvars(module_dir)
+		# absolute path
+		if os.path.isdir(module_dir):
+			self._modules_dirs.append(module_dir)
+		# relative path to current file
+		if os.path.isdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), module_dir)):
+			self._modules_dirs.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), module_dir))
+
+	def _isvalid_processor(self, processor_name, processor_type=None):
+		"""Check if a processor is valid."""
+		if not processor_name in self.available_processors:
+			return False
+		elif not (issubclass(self.available_processors[processor_name], AnalysisBase) or 
+			      issubclass(self.available_processors[processor_name], InputBase) or
+			      issubclass(self.available_processors[processor_name], PlotBase)):
+			return False
+		elif processor_type is not None and not issubclass(self.available_processors[processor_name], processor_type):
+			return False
+		else:
+			return True
+
+	def _print_available_modules(self):
+		"""Prints all available modules to stdout."""
+
+		print "Input modules:"
+		input_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], InputBase)])
+		for module in input_modules:
+			print "\t{}".format(module)
+			if inspect.getdoc(self.available_processors[module]):
+				print "\t\t{}".format(inspect.getdoc(self.available_processors[module]))
+		print ""
+		print "Analysis modules:"
+		analysis_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], AnalysisBase)])
+		for module in analysis_modules:
+			print "\t{}".format(module)
+			if inspect.getdoc(self.available_processors[module]):
+				print "\t\t{}".format(inspect.getdoc(self.available_processors[module]))
+		print ""
+		print "Plot modules:"
+		plot_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], PlotBase)])
+		for module in plot_modules:
+			print "\t{}".format(module)
+			if inspect.getdoc(self.available_processors[module]):
+				print "\t{}".format(inspect.getdoc(self.available_processors[module]))
+
 

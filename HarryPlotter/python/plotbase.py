@@ -14,7 +14,6 @@ import pprint
 
 import Artus.HarryPlotter.processor as processor
 import Artus.HarryPlotter.utility.roottools as roottools
-import Artus.HarryPlotter.analysis_modules.eventselectionoverlap as eventselectionoverlap
 import Artus.HarryPlotter.extrafunctions as extrafunctions
 
 class PlotBase(processor.Processor):
@@ -94,11 +93,15 @@ class PlotBase(processor.Processor):
 		self.formatting_options.add_argument("--ratio-markers", type=str, nargs="+",
 		                                     help="Style for the ratio subplots.")
 		self.formatting_options.add_argument("--linestyles", nargs="+",
-                                             help="Styles of errorbar plot line. [Default: '-']")
-		self.formatting_options.add_argument("--errorbars", type='bool', nargs="+",
-		                                     help="Errorbars for the plots. [Default: True for first plot, False otherwise]")
-		self.formatting_options.add_argument("--ratio-errorbars", type='bool', nargs="+", default=[True],
-		                                     help="Errorbars for the ratio subplots. [Default: True]")
+                                             help="Linestyle of plots line. [Default: '-']")
+		self.formatting_options.add_argument("--x-errors", type='bool', nargs="+",
+		                                     help="Show x errors for the nicks. [Default: True for first plot, False otherwise]")
+		self.formatting_options.add_argument("--y-errors", type='bool', nargs="+",
+		                                     help="Show y errors for the plots. [Default: True for first plot, False otherwise]")
+		self.formatting_options.add_argument("--ratio-x-errors", type='bool', nargs="+", default=[True],
+		                                     help="Show x errors in the ratio subplots. [Default: True]")
+		self.formatting_options.add_argument("--ratio-y-errors", type='bool', nargs="+", default=[True],
+		                                     help="Show y errors in the ratio subplots. [Default: True]")
 		self.formatting_options.add_argument("-g", "--legloc", type=str, nargs="?",
 		                                     help="Location of the legend.")
 		self.formatting_options.add_argument("-G", "--grid", action="store_true", default=False,
@@ -142,9 +145,6 @@ class PlotBase(processor.Processor):
 		                                 help="Open plot in viewer after its creation. Parameter is the name of your desired viewer.")
 		self.other_options.add_argument("--dict", action="store_true", default=False,
 		                                 help="Print out plot dictionary when plotting.")
-		# module specific settings # TODO
-		if eventselectionoverlap.EventSelectionOverlap.name() in args["analysis_modules"]:
-			parser.set_defaults(x_label="Event Selection Overlap")
 	
 	def prepare_args(self, parser, plotData):
 		super(PlotBase, self).prepare_args(parser, plotData)
@@ -172,7 +172,7 @@ class PlotBase(processor.Processor):
 		if problems_with_ratio_nicks:
 			log.warning("Continue without ratio subplot!")
 			plotData.plotdict["ratio"] = False
-		self.prepare_list_args(plotData, ["ratio_num", "ratio_denom", "ratio_colors", "ratio_labels", "ratio_markers", "ratio_errorbars"])
+		self.prepare_list_args(plotData, ["ratio_num", "ratio_denom", "ratio_colors", "ratio_labels", "ratio_markers", "ratio_x_errors", "ratio_y_errors"])
 		
 		# construct labels from x/y/z expressions if not specified by user
 		for labelKey, expressionKey in zip(["x_label", "y_label", "z_label"],
@@ -185,12 +185,14 @@ class PlotBase(processor.Processor):
 			if plotData.plotdict[labelKey] == None: plotData.plotdict[labelKey] = ""
 
 		# formatting options
-		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "linestyles", "errorbars", "stack"])
+		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "linestyles", "x_errors", "y_errors", "stack"])
 		
-		for index, errorbar in enumerate(plotData.plotdict["errorbars"]):
-			if errorbar == None:
-				plotData.plotdict["errorbars"][index] = True if index == 0 else False
-		
+		for index, error in enumerate(plotData.plotdict["x_errors"]):
+			if error is None:
+				plotData.plotdict["x_errors"][index] = True if index == 0 else False
+		for index, error in enumerate(plotData.plotdict["y_errors"]):
+			if error is None:
+				plotData.plotdict["y_errors"][index] = True if index == 0 else False
 		# create output directory if not exisiting
 		if not os.path.exists(plotData.plotdict["output_dir"]):
 			os.makedirs(plotData.plotdict["output_dir"])
@@ -223,24 +225,6 @@ class PlotBase(processor.Processor):
 		# prepare nicknames for stacked plots
 		stack = plotData.plotdict["stack"]
 		plotData.plotdict["stack"] = [stack if stack != None else ("stack%d" % index) for index, stack in enumerate(plotData.plotdict["stack"])]
-		
-		# module specific settings # TODO
-		if plotData.plotdict["analysis_modules"] != None and eventselectionoverlap.EventSelectionOverlap.name() in plotData.plotdict["analysis_modules"] and plotData.plotdict["x_tick_labels"] == None:
-			labels = filter(lambda label: label != None, plotData.plotdict.pop("labels"))
-			plotData.plotdict["labels"] = len(labels)*[None]
-			nick1 = plotData.plotdict["nicks"][0]
-			nick2 = plotData.plotdict["nicks"][1]
-			#print plotData.plotdict.pop("nicks")[0]
-			#print plotData.plotdict.pop("nicks")[1]
-			plotData.plotdict["nicks"] = [nick1 + "_vs_" + nick2]
-			if len(labels) < 2:
-				log.warning("Argument --labels needs 2 values! These are filled up with the nick names.")
-				labels += plotData.plotdict.pop("nicks")
-			plotData.plotdict["x_tick_labels"] = [
-				"Only " + labels[0],
-				"Intersection",
-				"Only " + labels[1],
-			]
 
 		# remove escape slashes
 		for index, linestyle in enumerate(plotData.plotdict["linestyles"]):

@@ -32,10 +32,6 @@ public:
 			TraxSettings const& pset) const ARTUS_CPP11_OVERRIDE
 			{
 
-		typedef std::function<
-				std::vector<float>(event_type const&, product_type const& )> ValueExtractLambda;
-		typedef std::pair<ValueExtractLambda, ValueModifiers> ValueDesc;
-
 		// define how to extract Pt and the range
 		auto extractPtSim =
 				[]( TraxEvent const& ev, TraxProduct const & prod )

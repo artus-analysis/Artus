@@ -11,7 +11,13 @@ void HltProducer::Produce(KappaEvent const& event, KappaProduct& product,
 	assert(event.m_lumiInfo);
 	assert(event.m_eventInfo);
 	
-	if (settings.GetHltPaths().size() == 0) {
+	if (product.m_settingsHltPaths.empty())
+	{
+		product.m_settingsHltPaths.insert(product.m_settingsHltPaths.begin(),
+		                                  settings.GetHltPaths().begin(),
+		                                  settings.GetHltPaths().end());
+	}
+	if (product.m_settingsHltPaths.empty()) {
 		LOG(FATAL) << "No Hlt Trigger path list (tag \"HltPaths\") configured!";
 	}
 
@@ -24,7 +30,7 @@ void HltProducer::Produce(KappaEvent const& event, KappaProduct& product,
 	std::string firedHltName;
 	int prescaleFiredHlt = std::numeric_limits<int>::max();
 	bool unprescaledPathFound = false;
-	for (stringvector::const_iterator hltPath = settings.GetHltPaths().begin(); hltPath != settings.GetHltPaths().end(); ++hltPath)
+	for (stringvector::const_iterator hltPath = product.m_settingsHltPaths.begin(); hltPath != product.m_settingsHltPaths.end(); ++hltPath)
 	{
 		std::string hltName = product.m_hltInfo.getHLTName(*hltPath);
 		if (! hltName.empty())

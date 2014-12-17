@@ -21,6 +21,19 @@ public:
 	KappaProduct() {};
 	~KappaProduct() {};
 	
+	// settings to be modified (e.g. in the case of run-dependent settings)
+	std::vector<std::string> m_settingsHltPaths;
+	
+	std::map<size_t, std::vector<std::string> > m_settingsElectronTriggerFiltersByIndex;
+	std::map<size_t, std::vector<std::string> > m_settingsMuonTriggerFiltersByIndex;
+	std::map<size_t, std::vector<std::string> > m_settingsTauTriggerFiltersByIndex;
+	std::map<size_t, std::vector<std::string> > m_settingsJetTriggerFiltersByIndex;
+	
+	std::map<std::string, std::vector<std::string> > m_settingsElectronTriggerFiltersByHltName;
+	std::map<std::string, std::vector<std::string> > m_settingsMuonTriggerFiltersByHltName;
+	std::map<std::string, std::vector<std::string> > m_settingsTauTriggerFiltersByHltName;
+	std::map<std::string, std::vector<std::string> > m_settingsJetTriggerFiltersByHltName;
+	
 	std::string m_nickname = "";
 
 	// all weights in this map are multiplied into one "eventWeight" by the EventWeightProducer

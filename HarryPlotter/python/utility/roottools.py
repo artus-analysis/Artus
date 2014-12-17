@@ -13,6 +13,7 @@ import collections
 import hashlib
 import numpy
 import os
+import sys
 
 import ROOT
 ROOT.gEnv.SetValue("TFile.AsyncPrefetching", 1)
@@ -120,6 +121,10 @@ class RootTools(object):
 		
 			for path_to_histogram in path_to_histograms:
 				tmp_root_histogram = root_file.Get(path_to_histogram)
+				if tmp_root_histogram == None:
+					log.critical("Cannot find histogram \"%s\" in file \"%s\"!" % (path_to_histogram, root_file_name))
+					sys.exit(1)
+				
 				tmp_root_histogram.SetDirectory(0)
 				if tmp_root_histogram is None:
 					log.error("Could not find histogram \"" + path_to_histogram + "\" in file \"" + root_file_name + "\"!")
@@ -139,7 +144,7 @@ class RootTools(object):
 	def histogram_from_tree(self, root_file_names, path_to_trees,
 		                    x_expression, y_expression=None, z_expression=None,
 		                    x_bins=None, y_bins=None, z_bins=None,
-		                    weight_selection="", option="", name=None):
+		                    weight_selection="", option="", name=None, friend_trees=None):
 		"""
 		Read histograms from trees
 	
@@ -225,6 +230,11 @@ class RootTools(object):
 				tree.Add(complete_path_to_tree)
 				log.debug("Reading from ntuple %s ..." % complete_path_to_tree)
 		
+		#Add Friends
+		if friend_trees is not None:
+			for friend in friend_trees:
+				tree.AddFriend(friend[0], friend[1])
+		
 		# ROOT optimisations
 		tree.SetCacheSize(256*1024*1024) # 256 MB
 		tree.AddBranchToCache("*", True)
@@ -235,6 +245,10 @@ class RootTools(object):
 		else:
 			tree.Project(name, variable_expression, str(weight_selection), option + " GOFF")
 		root_histogram = ROOT.gDirectory.Get(name)
+		if root_histogram == None:
+			log.critical("Cannot find histogram \"%s\" created from trees %s in files %s!" % (name, str(path_to_trees), str(root_file_names)))
+			sys.exit(1)
+		
 		root_histogram.SetDirectory(0)
 	
 		self.x_bin_edges = RootTools.get_binning(root_histogram, axisNumber=0)

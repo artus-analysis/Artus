@@ -25,7 +25,7 @@ void ConsoleProgressReport::update(long long currentIndex, long long maxItems)
 	}
 }
 
-void ConsoleProgressReport::finish(long long currentIndex, long long maxItems)
+void ConsoleProgressReport::finish()
 {
 	std::cout << std::endl;
 }

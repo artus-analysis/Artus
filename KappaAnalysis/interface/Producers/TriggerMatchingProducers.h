@@ -19,12 +19,16 @@ public:
 	TriggerMatchingProducerBase(std::map<TValidObject*, KLV*> KappaProduct::*triggerMatchedObjects,
 	                            std::vector<TValidObject*> KappaProduct::*validObjects,
 	                            std::vector<TValidObject*> KappaProduct::*invalidObjects,
+	                            std::map<size_t, std::vector<std::string> > KappaProduct::*settingsObjectTriggerFiltersByIndex,
+	                            std::map<std::string, std::vector<std::string> > KappaProduct::*settingsObjectTriggerFiltersByHltName,
 	                            std::vector<std::string>& (KappaSettings::*GetObjectTriggerFilterNames)(void) const,
 	                            float (KappaSettings::*GetDeltaRTriggerMatchingObjects)(void) const,
 	                            bool (KappaSettings::*GetInvalidateNonMatchingObjects)(void) const) :
 		m_triggerMatchedObjects(triggerMatchedObjects),
 		m_validObjects(validObjects),
 		m_invalidObjects(invalidObjects),
+		m_settingsObjectTriggerFiltersByIndex(settingsObjectTriggerFiltersByIndex),
+		m_settingsObjectTriggerFiltersByHltName(settingsObjectTriggerFiltersByHltName),
 		GetObjectTriggerFilterNames(GetObjectTriggerFilterNames),
 		GetDeltaRTriggerMatchingObjects(GetDeltaRTriggerMatchingObjects),
 		GetInvalidateNonMatchingObjects(GetInvalidateNonMatchingObjects)
@@ -34,7 +38,7 @@ public:
 	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE {
 		KappaProducerBase::Init(settings);
 		
-		m_objectTriggerFiltersByIndex = Utility::ParseMapTypes<size_t, std::string>(Utility::ParseVectorToMap((settings.*GetObjectTriggerFilterNames)()), m_objectTriggerFiltersByHltName);
+		m_objectTriggerFiltersByIndexFromSettings = Utility::ParseMapTypes<size_t, std::string>(Utility::ParseVectorToMap((settings.*GetObjectTriggerFilterNames)()), m_objectTriggerFiltersByHltNameFromSettings);
 	}
 
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
@@ -42,6 +46,17 @@ public:
 	{
 		assert(event.m_triggerObjects);
 		assert(event.m_triggerObjectMetadata);
+		
+		if ((product.*m_settingsObjectTriggerFiltersByIndex).empty())
+		{
+			(product.*m_settingsObjectTriggerFiltersByIndex).insert(m_objectTriggerFiltersByIndexFromSettings.begin(),
+			                                                        m_objectTriggerFiltersByIndexFromSettings.end());
+		}
+		if ((product.*m_settingsObjectTriggerFiltersByHltName).empty())
+		{
+			(product.*m_settingsObjectTriggerFiltersByHltName).insert(m_objectTriggerFiltersByHltNameFromSettings.begin(),
+			                                                          m_objectTriggerFiltersByHltNameFromSettings.end());
+		}
 		
 		if ((! product.m_selectedHltName.empty()) && ((settings.*GetDeltaRTriggerMatchingObjects)() > 0.0))
 		{
@@ -76,8 +91,8 @@ public:
 					bool filterMatched = false;
 
 					// loop over the hlt names given in the config file
-					for (std::map<std::string, std::vector<std::string>>::const_iterator objectTriggerFilterByHltName = m_objectTriggerFiltersByHltName.begin();
-					     (!hltMatched) && (objectTriggerFilterByHltName != m_objectTriggerFiltersByHltName.end());
+					for (std::map<std::string, std::vector<std::string>>::const_iterator objectTriggerFilterByHltName = (product.*m_settingsObjectTriggerFiltersByHltName).begin();
+					     (!hltMatched) && (objectTriggerFilterByHltName != (product.*m_settingsObjectTriggerFiltersByHltName).end());
 					     ++objectTriggerFilterByHltName)
 					{
 						// check that the hlt name given in the config matches the hlt which fired in the event
@@ -151,12 +166,14 @@ private:
 	std::map<TValidObject*, KLV*> KappaProduct::*m_triggerMatchedObjects;
 	std::vector<TValidObject*> KappaProduct::*m_validObjects;
 	std::vector<TValidObject*> KappaProduct::*m_invalidObjects;
+	std::map<size_t, std::vector<std::string> > KappaProduct::*m_settingsObjectTriggerFiltersByIndex;
+	std::map<std::string, std::vector<std::string> > KappaProduct::*m_settingsObjectTriggerFiltersByHltName;
 	std::vector<std::string>& (KappaSettings::*GetObjectTriggerFilterNames)(void) const;
 	float (KappaSettings::*GetDeltaRTriggerMatchingObjects)(void) const;
 	bool (KappaSettings::*GetInvalidateNonMatchingObjects)(void) const;
 	
-	std::map<size_t, std::vector<std::string> > m_objectTriggerFiltersByIndex;
-	std::map<std::string, std::vector<std::string> > m_objectTriggerFiltersByHltName;
+	std::map<size_t, std::vector<std::string> > m_objectTriggerFiltersByIndexFromSettings;
+	std::map<std::string, std::vector<std::string> > m_objectTriggerFiltersByHltNameFromSettings;
 
 };
 
