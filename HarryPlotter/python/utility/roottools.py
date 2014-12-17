@@ -240,7 +240,7 @@ class RootTools(object):
 		tree.AddBranchToCache("*", True)
 		
 		# draw histogram
-		if root_histogram == None:
+		if root_histogram == None or option.find("prof")!=-1:
 			tree.Draw(variable_expression + ">>" + name + binning, str(weight_selection), option + " GOFF")
 		else:
 			tree.Project(name, variable_expression, str(weight_selection), option + " GOFF")
@@ -254,8 +254,7 @@ class RootTools(object):
 		self.x_bin_edges = RootTools.get_binning(root_histogram, axisNumber=0)
 		self.y_bin_edges = RootTools.get_binning(root_histogram, axisNumber=1)
 		self.z_bin_edges = RootTools.get_binning(root_histogram, axisNumber=2)
-		self.binning_determined = True
-	
+		self.binning_determined = True if option.find("prof")==-1 else False
 		return tree, root_histogram
 
 
