@@ -42,7 +42,7 @@ class PlotMpl(plotbase.PlotBase):
 
 		self.prepare_list_args(plotData, ["nicks", "step", "zorder"])
 		
-		# Set meaningful default values for colors if none provided
+		# Set default values for colors if not provided
 		default_colorcycle = cycle(matplotlib.rcParams['axes.color_cycle'])
 		for index, color in enumerate(plotData.plotdict["colors"]):
 			if color is None:
@@ -50,7 +50,9 @@ class PlotMpl(plotbase.PlotBase):
 			else:
 				plotData.plotdict["colors"][index] = color
 		self.set_default_ratio_colors(plotData)
-		
+
+		if plotData.plotdict["legloc"] is None:
+			plotData.plotdict["legloc"] = "upper right"
 		# defaults for markers
 		for index, marker in enumerate(plotData.plotdict["markers"]):
 			if marker is None:
@@ -218,8 +220,7 @@ class PlotMpl(plotbase.PlotBase):
 			# handles, labels = self.ax.get_legend_handles_labels()
 			# sort both labels and handles by labels
 			# labels, handles = zip(*sorted(zip(labels, handles), key=lambda t: t[0]))
-			self.ax.legend(loc='upper right')
-			k
+			self.ax.legend(loc=plotData.plotdict["legloc"])
 
 		if self.mpl_version >= 121:
 			plt.tight_layout()
