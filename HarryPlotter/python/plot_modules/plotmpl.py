@@ -218,7 +218,9 @@ class PlotMpl(plotbase.PlotBase):
 			plt.text(1.0, 1.030, "$\sqrt{s}=" + energy + "\\ \mathrm{TeV}$", transform=self.ax.transAxes, fontsize=10, horizontalalignment="right")
 			#self.fig.suptitle("$\sqrt{s}=" + energy + "\\ \mathrm{TeV}$", ha="right",x=0.9) 
 
-		self.ax.legend(loc='upper right')
+		# Only plot legend if there active legend handles
+		if self.ax.get_legend_handles_labels()[0]:
+			self.ax.legend(loc='upper right')
 
 		if self.mpl_version >= 121:
 			plt.tight_layout()
