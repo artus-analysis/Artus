@@ -172,7 +172,7 @@ public:
 			
 			validJet = validJet
 					   && (*jet)->neutralHadronFraction + (*jet)->hfHadronFraction < maxNeutralFraction
-					   && (*jet)->photonFraction < maxNeutralFraction
+					   && (*jet)->photonFraction + (*jet)->hfEMFraction < maxNeutralFraction
 					   && (*jet)->nConstituents > 1;
 			// jets, |eta| < 2.4 (tracker)
 			if (std::abs((*jet)->p4.eta()) < 2.4)
