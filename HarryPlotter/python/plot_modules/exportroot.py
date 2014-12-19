@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 
-"""
-"""
-
 import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
@@ -14,6 +11,8 @@ import ROOT
 
 
 class ExportRoot(plotbase.PlotBase):
+	"""Write all Root objects in plotdict to a Root file."""
+
 	def __init__(self):
 		super(ExportRoot, self).__init__()
 	
