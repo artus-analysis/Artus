@@ -1,7 +1,9 @@
 
 #pragma once
 
-#include "Artus/KappaAnalysis/interface/KappaEventBase.h"
+
+#include "Kappa/DataFormats/interface/Kappa.h"
+#include "Artus/Core/interface/EventBase.h"
 
 /**
    \brief Defines the content of the kappa ntuple.
@@ -11,10 +13,10 @@
    pointers to the eventMetadata and genEventMetadata, the minimal content of a kappa ntuple. 
 */
 
-class KappaEvent : public KappaEventBase
+class KappaEvent : public EventBase
 {
 public:
-	KappaEvent() : KappaEventBase() {};
+	KappaEvent() : EventBase() {};
 	
 	size_t m_input = 0;
 
