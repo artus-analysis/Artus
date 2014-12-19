@@ -246,12 +246,12 @@ public:
 			// Electron reconstruction
 			if (electronReco == ElectronReco::MVANONTRIG) {
 				validElectron = validElectron
-				                && ((*electron)->track.nValidTrackerHits() <= 1);
+				                && ((*electron)->track.nInnerHits <= 1);
 				                // && sip is the significance of impact parameter in 3D of the electron GSF track < 4 TODO
 			}
 			else if (electronReco == ElectronReco::MVATRIG) {
 				validElectron = validElectron
-				                && ((*electron)->track.nValidTrackerHits() == 0);
+				                && ((*electron)->track.nInnerHits == 0);
 			}
 			else if (electronReco != ElectronReco::USER && electronReco != ElectronReco::NONE)
 			{
