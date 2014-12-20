@@ -35,9 +35,6 @@ class InputBase(processor.Processor):
 		
 		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "scale_factors"])
 		
-		# prepare nicks
-		plotData.plotdict["nicks"] = [nick if nick != None else ("nick%d" % index) for index, nick in enumerate(plotData.plotdict["nicks"])]
-		
 		# prepare scale factors
 		plotData.plotdict["scale_factors"] = [float(scale) if scale != None else 1.0 for scale in plotData.plotdict["scale_factors"]]
 	
@@ -77,4 +74,9 @@ class InputBase(processor.Processor):
 			if nick not in tmp_nicks:
 				tmp_nicks.append(nick)
 		plotData.plotdict["nicks"] = tmp_nicks
-		
+	
+	# this method must only to be called once, so this need to be done in the most specialised input module # TODO better solution?
+	@staticmethod
+	def prepare_nicks(plotData):
+		plotData.plotdict["nicks"] = [nick if nick != None else ("nick%d" % index) for index, nick in enumerate(plotData.plotdict["nicks"])]
+

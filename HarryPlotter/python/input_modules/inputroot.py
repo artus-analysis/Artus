@@ -12,6 +12,7 @@ import os
 import sys
 import ROOT
 
+import Artus.HarryPlotter.inputbase as inputbase
 import Artus.HarryPlotter.input_modules.inputfile as inputfile
 import Artus.HarryPlotter.utility.roottools as roottools
 import Artus.HarryPlotter.extrafunctions as extrafunctions
@@ -66,6 +67,9 @@ class InputRoot(inputfile.InputFile):
 
 		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "scale_factors", "files", "directories", "folders", "weights", "friend_trees"])
 		plotData.plotdict["folders"] = [folders.split() if folders else [""] for folders in plotData.plotdict["folders"]]
+		
+		inputbase.InputBase.prepare_nicks(plotData)
+	
 	def run(self, plotData):
 		
 		if plotData.plotdict["quantities"]:
@@ -84,7 +88,7 @@ class InputRoot(inputfile.InputFile):
 				variable_expression = "%s%s%s" % (z_expression + ":" if z_expression else "",
 				                                  y_expression + ":" if y_expression else "",
 				                                  x_expression)
-				option = plotData.plotdict["root_histogram_draw_options"]	
+				option = plotData.plotdict["root_histogram_draw_options"]
 				root_tree_chain, root_histogram = root_tools.histogram_from_tree(
 						root_files, folders,
 						x_expression, y_expression, z_expression,
