@@ -232,8 +232,7 @@ class PlotMpl(plotbase.PlotBase):
 			self.fig.savefig(output_filename)
 			log.info("Created plot \"%s\"." % output_filename)
 
-	@staticmethod
-	def set_matplotlib_defaults():
+	def set_matplotlib_defaults(self):
 		# Set matplotlib rc settings
 		# matplotlib.rcParams['font.family'] = 'sans-serif'
 		matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
