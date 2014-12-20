@@ -64,7 +64,7 @@ class InputRoot(inputfile.InputFile):
 		else:
 			plotData.plotdict["friend_trees"] = [None]
 
-		self.prepare_list_args(plotData, ["files", "folders", "weights", "friend_trees"])
+		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "scale_factors", "files", "directories", "folders", "weights", "friend_trees"])
 		plotData.plotdict["folders"] = [folders.split() if folders else [""] for folders in plotData.plotdict["folders"]]
 	def run(self, plotData):
 		
