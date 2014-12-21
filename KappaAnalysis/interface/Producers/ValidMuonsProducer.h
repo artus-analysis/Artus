@@ -287,7 +287,7 @@ private:
 					&& muon->nMatches > 1
 					&& std::abs(muon->dxy) < 0.2
 					&& muon->track.nValidPixelHits > 0
-					&& muon->track.nStripLayers > 8;
+					&& muon->track.nTrackerLayers() > 8;
 		
 		return validMuon;
 	}
@@ -306,7 +306,7 @@ private:
 					&& std::abs(muon->dxy) < 0.2
 					&& std::abs(muon->dz) < 0.5
 					&& muon->track.nValidPixelHits > 0
-					&& muon->track.nStripLayers > 5;
+					&& muon->track.nTrackerLayers() > 5;
 		
 		return validMuon;
 	}
