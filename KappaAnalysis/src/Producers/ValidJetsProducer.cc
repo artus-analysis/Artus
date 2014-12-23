@@ -61,6 +61,8 @@ void ValidTaggedJetsProducer::Init(KappaSettings const& settings)
 bool ValidTaggedJetsProducer::AdditionalCriteria(KDataPFTaggedJet* jet, KappaEvent const& event,
                                                  KappaProduct& product, KappaSettings const& settings) const
 {
+	assert(event.m_taggerMetadata);
+	
 	bool validJet = ValidJetsProducerBase<KDataPFTaggedJet, KDataPFJet>::AdditionalCriteria(jet, event, product, settings);
 	
 	// PU Jet ID

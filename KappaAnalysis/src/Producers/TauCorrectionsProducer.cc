@@ -14,6 +14,8 @@ void TauCorrectionsProducer::Init(KappaSettings const& settings)
 void TauCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& product,
                      KappaSettings const& settings) const
 {
+	assert(event.m_taus);
+	
 	// create a copy of all taus in the event
 	product.m_correctedTaus.clear();
 	product.m_correctedTaus.resize(event.m_taus->size());
