@@ -85,7 +85,7 @@ public:
 	IMPL_SETTING(int, NumberGeneratedEvents);
 	
 	IMPL_SETTING_STRINGLIST(JsonFiles);
-	IMPL_SETTING_DEFAULT(int, PassRunLow, 1);
+	IMPL_SETTING_DEFAULT(int, PassRunLow, 0);
 	IMPL_SETTING_DEFAULT(int, PassRunHigh, 0);
 	
 	IMPL_SETTING_UINT64LIST(RunWhitelist);
