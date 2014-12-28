@@ -88,6 +88,11 @@ public:
 	IMPL_SETTING_DEFAULT(int, PassRunLow, 0);
 	IMPL_SETTING_DEFAULT(int, PassRunHigh, 0);
 	
+
+	IMPL_SETTING(float, MaxPrimaryVertexZ);
+	IMPL_SETTING(float, MaxPrimaryVertexRho);
+	IMPL_SETTING(int, MinPrimaryVertexFitnDOF);
+
 	IMPL_SETTING_UINT64LIST(RunWhitelist);
 	IMPL_SETTING_UINT64LIST(RunBlacklist);
 	IMPL_SETTING_UINT64LIST(LumiWhitelist);
