@@ -61,9 +61,6 @@ class HarryCore(object):
 		for directory in default_modules_dirs:
 			self.register_modules_dir(directory)
 
-
-
-
 	def _detect_available_processors(self):
 		"""Detect all valid processors in modules_dirs and add them to avalaible processors."""
 
@@ -99,11 +96,12 @@ class HarryCore(object):
 		self._detect_available_processors()
 
 		json_default_initialisation = None
-		if self.args["json_defaults"] != None:
+		if self.args["json_defaults"] is not None:
 			json_default_initialisation = self.args["json_defaults"]
 			json_defaults = json_tools.JsonDict(self.args["json_defaults"]).doIncludes().doComments()
 			#set_defaults will overwrite/ignore the json_default argument. Cannot be used.
-			self.args = dict(json_defaults.items() + self.args.items())
+			no_default_args = dict((k,v) for (k,v) in self.args.items() if not self.parser.get_default(k) == self.args[k] )
+			self.args = dict(json_defaults.items() + no_default_args.items())
 
 		# replace 'json_defaults' from imported json file to actual name of imported json file
 		if json_default_initialisation != None:
