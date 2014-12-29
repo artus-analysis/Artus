@@ -58,6 +58,12 @@ public:
 	/// name of vertexSummary collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, VertexSummary, "");
 	
+	/// name of track summary collection in kappa tuple
+	IMPL_SETTING_DEFAULT(std::string, TrackSummary, "");
+
+	/// name of HCALNoise summary collection in kappa tuple
+	IMPL_SETTING_DEFAULT(std::string, HCALNoiseSummary, "");
+
 	/// name of trigger infos and objects collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, TriggerInfos, "");
 	IMPL_SETTING_DEFAULT(std::string, TriggerObjects, "");

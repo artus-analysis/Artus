@@ -85,6 +85,14 @@ public:
 		if (! settings.GetVertexSummary().empty())
 			this->m_event.m_vertexSummary = this->template SecureFileInterfaceGet<KVertexSummary>(settings.GetVertexSummary());
 
+		// Track summary
+		if (! settings.GetTrackSummary().empty())
+			this->m_event.m_trackSummary = this->template SecureFileInterfaceGet<KTrackSummary>(settings.GetTrackSummary());
+
+		// HCAL Noise summary
+		if (! settings.GetHCALNoiseSummary().empty())
+			this->m_event.m_hcalNoiseSummary = this->template SecureFileInterfaceGet<KHCALNoiseSummary>(settings.GetHCALNoiseSummary());
+
 		// Meta data
 		if (! settings.GetEventMetadata().empty())
 		{
