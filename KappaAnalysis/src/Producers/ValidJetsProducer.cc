@@ -6,7 +6,7 @@ ValidJetsProducer::ValidJetsProducer() : ValidJetsProducerBase<KDataPFJet, KData
                                                                             &KappaProduct::m_correctedJets,
                                                                             &KappaProduct::m_validJets)
 {
-};
+}
 
 std::string ValidJetsProducer::GetProducerId() const {
 	return "ValidJetsProducer";
@@ -16,7 +16,7 @@ ValidTaggedJetsProducer::ValidTaggedJetsProducer() : ValidJetsProducerBase<KData
                                                                                         &KappaProduct::m_correctedTaggedJets,
                                                                                         &KappaProduct::m_validJets)
 {
-};
+}
 
 std::string ValidTaggedJetsProducer::GetProducerId() const {
 	return "ValidTaggedJetsProducer";
