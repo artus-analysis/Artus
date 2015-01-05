@@ -73,6 +73,9 @@ class PlotRoot(plotbase.PlotBase):
 	def run(self, plotData):
 		super(PlotRoot, self).run(plotData)
 
+	def set_style(self, plotData):
+		super(PlotRoot, self).set_style(plotData)
+
 	def create_canvas(self, plotData):
 		super(PlotRoot, self).create_canvas(plotData)
 		

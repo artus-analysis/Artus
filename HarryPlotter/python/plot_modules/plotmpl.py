@@ -86,6 +86,9 @@ class PlotMpl(plotbase.PlotBase):
 
 	def run(self, plotData):
 		super(PlotMpl, self).run(plotData)
+
+	def set_style(self, plotData):
+		super(PlotMpl, self).set_style(plotData)
 	
 	def create_canvas(self, plotData):
 		self.fig = plt.figure()
