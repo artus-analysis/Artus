@@ -132,7 +132,7 @@ class PlotMpl(plotbase.PlotBase):
 				vmin = plotData.plotdict["z_lims"][0] if plotData.plotdict["z_lims"] else None
 				vmax = plotData.plotdict["z_lims"][1] if plotData.plotdict["z_lims"] else None
 				cmap = plt.cm.get_cmap(plotData.plotdict["colormap"])
-				self.plot_contour1d(mplhist, ax=self.ax, vmin=vmin, vmax=vmax, z_log=plotData.plotdict["z_log"], cmap=cmap)
+				self.image = self.plot_contour1d(mplhist, ax=self.ax, vmin=vmin, vmax=vmax, z_log=plotData.plotdict["z_log"], cmap=cmap)
 
 			elif isinstance(root_object, ROOT.TH1):
 				mplhist = MplHisto(root_object)
