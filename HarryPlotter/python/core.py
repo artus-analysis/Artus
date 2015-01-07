@@ -221,25 +221,25 @@ class HarryCore(object):
 	def _print_available_modules(self):
 		"""Prints all available modules to stdout."""
 
-		print "Input modules:"
+		log.info("Input modules:")
 		input_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], InputBase)])
 		for module in input_modules:
-			print "\t{}".format(module)
+			log.info("\t{}".format(module))
 			if inspect.getdoc(self.available_processors[module]):
-				print "\t\t{}".format(inspect.getdoc(self.available_processors[module]))
-		print ""
-		print "Analysis modules:"
+				log.info("\t\t{}".format(inspect.getdoc(self.available_processors[module])))
+		log.info("")
+		log.info("Analysis modules:")
 		analysis_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], AnalysisBase)])
 		for module in analysis_modules:
-			print "\t{}".format(module)
+			log.info("\t{}".format(module))
 			if inspect.getdoc(self.available_processors[module]):
-				print "\t\t{}".format(inspect.getdoc(self.available_processors[module]))
-		print ""
-		print "Plot modules:"
+				log.info("\t\t{}".format(inspect.getdoc(self.available_processors[module])))
+		log.info("")
+		log.info("Plot modules:")
 		plot_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], PlotBase)])
 		for module in plot_modules:
-			print "\t{}".format(module)
+			log.info("\t{}".format(module))
 			if inspect.getdoc(self.available_processors[module]):
-				print "\t{}".format(inspect.getdoc(self.available_processors[module]))
+				log.info("\t{}".format(inspect.getdoc(self.available_processors[module])))
 
 
