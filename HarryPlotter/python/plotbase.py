@@ -102,7 +102,7 @@ class PlotBase(processor.Processor):
 		                                     help="Show x errors in the ratio subplots. [Default: True]")
 		self.formatting_options.add_argument("--ratio-y-errors", type='bool', nargs="+", default=[True],
 		                                     help="Show y errors in the ratio subplots. [Default: True]")
-		self.formatting_options.add_argument("-g", "--legloc", type=str, nargs="?",
+		self.formatting_options.add_argument("--legloc", type=str, nargs="?",
 		                                     help="Location of the legend.")
 		self.formatting_options.add_argument("-G", "--grid", action="store_true", default=False,
 		                                     help="Place an axes grid on the plot.")
@@ -233,6 +233,7 @@ class PlotBase(processor.Processor):
 	def run(self, plotData):
 		super(PlotBase, self).run(plotData)
 		
+		self.set_style(plotData)
 		self.calculate_ratios(plotData)
 		self.create_canvas(plotData)
 		self.prepare_histograms(plotData)
@@ -271,6 +272,9 @@ class PlotBase(processor.Processor):
 		# change only the list of nicks
 		plotData.plotdict["nicks"] = nicks_to_keep
 
+	def set_style(self, plotData):
+		pass
+		
 	def calculate_ratios(self, plotData): ## todo: define ratio for functions
 		if (plotData.plotdict["ratio"] == True):
 			for numerator_nicks, denominator_nicks in zip(plotData.plotdict["ratio_num"],

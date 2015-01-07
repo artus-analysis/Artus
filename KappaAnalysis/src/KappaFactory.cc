@@ -43,6 +43,9 @@
 #include "Artus/KappaAnalysis/interface/Filters/TriggerMatchingFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/GenMatchingFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/GenDiLeptonDecayModeFilter.h"
+#include "Artus/KappaAnalysis/interface/Filters/GoodPrimaryVertexFilter.h"
+#include "Artus/KappaAnalysis/interface/Filters/BeamScrapingFilter.h"
+#include "Artus/KappaAnalysis/interface/Filters/HCALNoiseFilter.h"
 
 // consumer
 #include "Artus/KappaAnalysis/interface/Consumers/KappaCutFlowHistogramConsumer.h"
@@ -204,6 +207,12 @@ FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
 		return new JetGenMatchingFilter();
 	else if(id == GenDiLeptonDecayModeFilter().GetFilterId())
 		return new GenDiLeptonDecayModeFilter();
+	else if(id == GoodPrimaryVertexFilter().GetFilterId())
+		return new GoodPrimaryVertexFilter();
+	else if(id == HCALNoiseFilter().GetFilterId())
+		return new HCALNoiseFilter();
+	else if(id == BeamScrapingFilter().GetFilterId())
+		return new BeamScrapingFilter();
 	else
 		return FactoryBase::createFilter( id );
 }

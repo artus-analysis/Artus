@@ -1,7 +1,5 @@
 #  -*- coding: utf-8 -*-
 
-"""
-"""
 import os
 import logging
 import Artus.Utility.logger as logger
@@ -23,6 +21,8 @@ from itertools import cycle
 import numpy as np
 
 class PlotMpl(plotbase.PlotBase):
+	"""Create scientific plots using the Matplotlib backend."""
+
 	def __init__(self):
 		super(PlotMpl, self).__init__()
 		self.mpl_version = int(matplotlib.__version__.replace(".", ""))
@@ -42,7 +42,7 @@ class PlotMpl(plotbase.PlotBase):
 
 		self.prepare_list_args(plotData, ["nicks", "step", "zorder"])
 		
-		# Set meaningful default values for colors if none provided
+		# Set default values for colors if not provided
 		default_colorcycle = cycle(matplotlib.rcParams['axes.color_cycle'])
 		for index, color in enumerate(plotData.plotdict["colors"]):
 			if color is None:
@@ -50,7 +50,9 @@ class PlotMpl(plotbase.PlotBase):
 			else:
 				plotData.plotdict["colors"][index] = color
 		self.set_default_ratio_colors(plotData)
-		
+
+		if plotData.plotdict["legloc"] is None:
+			plotData.plotdict["legloc"] = "upper right"
 		# defaults for markers
 		for index, marker in enumerate(plotData.plotdict["markers"]):
 			if marker is None:
@@ -84,6 +86,9 @@ class PlotMpl(plotbase.PlotBase):
 
 	def run(self, plotData):
 		super(PlotMpl, self).run(plotData)
+
+	def set_style(self, plotData):
+		super(PlotMpl, self).set_style(plotData)
 	
 	def create_canvas(self, plotData):
 		self.fig = plt.figure()
@@ -127,7 +132,7 @@ class PlotMpl(plotbase.PlotBase):
 				vmin = plotData.plotdict["z_lims"][0] if plotData.plotdict["z_lims"] else None
 				vmax = plotData.plotdict["z_lims"][1] if plotData.plotdict["z_lims"] else None
 				cmap = plt.cm.get_cmap(plotData.plotdict["colormap"])
-				self.plot_contour1d(mplhist, ax=self.ax, vmin=vmin, vmax=vmax, z_log=plotData.plotdict["z_log"], cmap=cmap)
+				self.image = self.plot_contour1d(mplhist, ax=self.ax, vmin=vmin, vmax=vmax, z_log=plotData.plotdict["z_log"], cmap=cmap)
 
 			elif isinstance(root_object, ROOT.TH1):
 				mplhist = MplHisto(root_object)
@@ -141,7 +146,7 @@ class PlotMpl(plotbase.PlotBase):
 					self.plot_errorbar(mplhist, ax=self.ax,
 					                   show_xerr=x_error, show_yerr=y_error,
 					                   step=step, color=color, fmt=marker,
-					                   capsize=0, linestyle=linestyle, label=label, zorder=zorder)
+					                   capsize=2, linestyle=linestyle, label=label, zorder=zorder)
 
 			# draw functions from dictionary
 			elif isinstance(root_object, ROOT.TF1):
@@ -166,8 +171,6 @@ class PlotMpl(plotbase.PlotBase):
 				                   show_xerr=ratio_x_error, show_yerr=ratio_y_error,
 				                   step=step, color=ratio_color, fmt=ratio_marker,
 				                   capsize=0, linestyle=linestyle, zorder=zorder)
-
-
 
 	def modify_axes(self, plotData):
 		# do what is needed for all plots:
@@ -203,7 +206,6 @@ class PlotMpl(plotbase.PlotBase):
 			if plotData.plotdict["z_label"]:
 				cb.set_label(plotData.plotdict["z_label"])
 
-
 	def add_labels(self, plotData):
 		super(PlotMpl, self).add_labels(plotData)
 
@@ -212,13 +214,16 @@ class PlotMpl(plotbase.PlotBase):
 
 		if not (plotData.plotdict["lumi"]==None):
 			plt.text(-0.0, 1.030, "$\mathcal{L}=" + str(plotData.plotdict["lumi"]) + "\mathrm{fb^{-1}}$", transform=self.ax.transAxes, fontsize=10)
-			#self.fig.suptitle("$\mathcal{L}=" + str(plotData.plotdict["lumi"]) + "\mathrm{fb^{-1}}$", ha="center", x=0.4)
 		if not (plotData.plotdict["energy"] == None):
 			energy = "+".join(plotData.plotdict["energy"])
 			plt.text(1.0, 1.030, "$\sqrt{s}=" + energy + "\\ \mathrm{TeV}$", transform=self.ax.transAxes, fontsize=10, horizontalalignment="right")
-			#self.fig.suptitle("$\sqrt{s}=" + energy + "\\ \mathrm{TeV}$", ha="right",x=0.9) 
 
-		self.ax.legend(loc='upper right')
+		# Only plot legend if there active legend handles
+		if self.ax.get_legend_handles_labels()[0]:
+			# handles, labels = self.ax.get_legend_handles_labels()
+			# sort both labels and handles by labels
+			# labels, handles = zip(*sorted(zip(labels, handles), key=lambda t: t[0]))
+			self.ax.legend(loc=plotData.plotdict["legloc"])
 
 		if self.mpl_version >= 121:
 			plt.tight_layout()
@@ -230,8 +235,7 @@ class PlotMpl(plotbase.PlotBase):
 			self.fig.savefig(output_filename)
 			log.info("Created plot \"%s\"." % output_filename)
 
-	@staticmethod
-	def set_matplotlib_defaults():
+	def set_matplotlib_defaults(self):
 		# Set matplotlib rc settings
 		# matplotlib.rcParams['font.family'] = 'sans-serif'
 		matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
@@ -245,14 +249,18 @@ class PlotMpl(plotbase.PlotBase):
 		matplotlib.rcParams['axes.labelsize'] = 20
 		matplotlib.rcParams['xtick.labelsize'] = 16
 		matplotlib.rcParams['xtick.major.size'] = 8
-		#matplotlib.rcParams['xtick.major.width'] = 1.5
+		if self.mpl_version >= 121:
+			matplotlib.rcParams['xtick.major.width'] = 1.5
 		matplotlib.rcParams['xtick.minor.size'] = 6
-		#matplotlib.rcParams['xtick.minor.width'] = 1.
+		if self.mpl_version >= 121:
+			matplotlib.rcParams['xtick.minor.width'] = 1.
 		matplotlib.rcParams['ytick.labelsize'] = 16
-		#matplotlib.rcParams['ytick.major.width'] = 1.5
+		if self.mpl_version >= 121:
+			matplotlib.rcParams['ytick.major.width'] = 1.5
 		matplotlib.rcParams['ytick.major.size'] = 8
 		matplotlib.rcParams['ytick.minor.size'] = 6
-		#matplotlib.rcParams['ytick.minor.width'] = 1.
+		if self.mpl_version >= 121:
+			matplotlib.rcParams['ytick.minor.width'] = 1.
 		matplotlib.rcParams['lines.markersize'] = 8
 		# default color cycle
 		matplotlib.rcParams['axes.color_cycle'] = [(0.0, 0.0, 0.0),
@@ -294,7 +302,15 @@ class PlotMpl(plotbase.PlotBase):
 		return newarr
 
 	def plot_errorbar(self, hist, step=False, show_xerr=True, show_yerr=True, emptybins=True, ax=None, **kwargs):
-		""" Produce an errorbar plots with or without connecting lines. """
+		""" Produce an errorbar plots with or without connecting lines.
+		
+		Args:
+		    hist: MplHisto representation of a root histogram.
+		    ax: Axis to plot on. If not specified current global axis will be used.
+		    show_xerr: If True, x errorbars will be plotted.
+		    show_yerr: If True, y errorbars will be plotted.
+		    emptybins: Not Implemented. Supposed to ignore/plot empty bins.
+		"""
 	
 		# if no axis passed use current global axis
 		if ax is None:
@@ -332,11 +348,20 @@ class PlotMpl(plotbase.PlotBase):
 				ax.step(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(y), linestyle=linestyle, **kwargs)
 			else:
 				ax.plot(x, y, linestyle=linestyle, **kwargs)
-		ax.errorbar(x, y, xerr=xerr, yerr=yerr, label=label, capsize=capsize, fmt=fmt, linestyle='None', **kwargs)
+		artist = ax.errorbar(x, y, xerr=xerr, yerr=yerr, label=label, capsize=capsize, fmt=fmt, linestyle='None', **kwargs)
+		return artist
 
 	def plot_hist1d(self, hist, style='fill', ax=None, show_xerr=False, show_yerr=False, **kwargs):
+		""" Plot a one-dimensional histogram.
+		
+		Args:
+		    hist: MplHisto representation of a root histogram.
+		    ax: Axis to plot on. If not specified current global axis will be used.
+		    style: Mpl function to draw the bars, possible options are ['fill', 'bar']
+		    show_xerr: If True, x errorbars will be plotted.
+		    show_yerr: If True, y errorbars will be plotted.
+		"""
 
-		# if no axis passed use current global axis
 		if ax is None:
 			ax = plt.gca()
 
@@ -348,14 +373,12 @@ class PlotMpl(plotbase.PlotBase):
 			ax.fill_between(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(hist.bincontents), 
 			                y2=bottom, color=color, alpha=1.0, zorder=1)
 			# draw the legend proxy
-			proxy = plt.Rectangle((0, 0), 0, 0, label=label, facecolor=color, edgecolor='black', alpha=1.0)
-			ax.add_patch(proxy)
+			artist = plt.Rectangle((0, 0), 0, 0, label=label, facecolor=color, edgecolor='black', alpha=1.0)
+			ax.add_patch(artist)
 		elif style == 'bar':
-			ax.bar(hist.xl, hist.bincontents, hist.xbinwidth, bottom=bottom,
-			       label=label, fill=True, facecolor=color, edgecolor=color, ecolor=color, alpha=1.0)
+			artist = ax.bar(hist.xl, hist.bincontents, hist.xbinwidth, bottom=bottom,
+			                label=label, fill=True, facecolor=color, edgecolor=color, ecolor=color, alpha=1.0)
 
-
-		# No idea if xerr is ever needed
 		if show_xerr:
 			xerr = np.array((hist.xerrl, hist.xerru))
 		else:
@@ -371,7 +394,21 @@ class PlotMpl(plotbase.PlotBase):
 		if show_xerr or show_yerr:
 			ax.errorbar(hist.x, hist.bincontents, yerr=yerr, xerr=xerr, color=color, fmt='', capsize=0, zorder=1, linestyle='')
 
+		return artist
+
 	def plot_contour1d(self, hist, ax=None, z_log=False, vmin=None, vmax=None, cmap='afmhot'):
+		"""One dimensional contour plot.
+
+		Args:
+		    hist: MplHisto representation of a root histogram.
+		    ax: Axis to plot on. If not specified current global axis will be used.
+		    z_log: If True, z axis will be logarithmic.
+		    vmin: Lower limit of z axis
+		    vmax: Upper limit of z axis
+		    cmap: Colormap used to
+		"""
+		if ax is None:
+			ax = plt.gca()
 
 		arr = hist.bincontents
 		if z_log:
@@ -382,9 +419,8 @@ class PlotMpl(plotbase.PlotBase):
 
 		# TODO Masked values are currently plotted black. Needs to be adapted to chosen colorbar
 		cmap.set_bad('black', alpha=None)
-		self.image = self.ax.pcolormesh(hist.xbinedges, hist.ybinedges, arr,
-		                            cmap=cmap,
-		                            norm=norm)
+		artist = self.ax.pcolormesh(hist.xbinedges, hist.ybinedges, arr, cmap=cmap, norm=norm)
+		return artist
 
 	def get_zip_arguments(self, plotData):
 		zip_arguments = (list(plotData.plotdict["nicks"]),

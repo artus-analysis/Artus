@@ -67,6 +67,7 @@ public:
 			
 			if (m_objectMetaInfoAvailable)
 			{
+				assert((event.*m_objectMetaInfo));
 				m_currentObjectMetaInfo = *(event.*m_objectMetaInfo);
 			}
 			

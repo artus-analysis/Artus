@@ -6,7 +6,7 @@ ValidJetsProducer::ValidJetsProducer() : ValidJetsProducerBase<KBasicJet, KBasic
                                                                             &KappaProduct::m_correctedJets,
                                                                             &KappaProduct::m_validJets)
 {
-};
+}
 
 std::string ValidJetsProducer::GetProducerId() const {
 	return "ValidJetsProducer";
@@ -16,7 +16,7 @@ ValidTaggedJetsProducer::ValidTaggedJetsProducer() : ValidJetsProducerBase<KJet,
                                                                                         &KappaProduct::m_correctedTaggedJets,
                                                                                         &KappaProduct::m_validJets)
 {
-};
+}
 
 std::string ValidTaggedJetsProducer::GetProducerId() const {
 	return "ValidTaggedJetsProducer";
@@ -61,6 +61,8 @@ void ValidTaggedJetsProducer::Init(KappaSettings const& settings)
 bool ValidTaggedJetsProducer::AdditionalCriteria(KJet* jet, KappaEvent const& event,
                                                  KappaProduct& product, KappaSettings const& settings) const
 {
+	assert(event.m_jetMetadata);
+	
 	bool validJet = ValidJetsProducerBase<KJet, KBasicJet>::AdditionalCriteria(jet, event, product, settings);
 	
 	// PU Jet ID

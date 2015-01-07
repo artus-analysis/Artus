@@ -31,10 +31,29 @@ class HarryPlotter(object):
 		harry_core.run()
 	
 	def multi_plots(self, list_of_harry_args, n_processes=1):
-		pool = Pool(processes=n_processes)
-		results = pool.map_async(pool_plot, zip([self]*len(list_of_harry_args), list_of_harry_args))
+		failed_plots = []
 		
-		failed_plots = [result for result in results.get() if not result is None and result != (None,)]
+		# multi processing of multiple plots
+		if len(list_of_harry_args) > 1 and n_processes > 1:
+			pool = Pool(processes=n_processes)
+			results = pool.map_async(pool_plot, zip([self]*len(list_of_harry_args), list_of_harry_args))
+			failed_plots = [result for result in results.get() if not result is None and result != (None,)]
+		
+		# single processing of multiple plots
+		elif len(list_of_harry_args) > 1:
+			for harry_args in list_of_harry_args:
+				try:
+					self.plot(harry_args)
+				except SystemExit as e:
+					failed_plots.append(harry_args)
+				except Exception as e:
+					log.info(str(e))
+					failed_plots.append(harry_args)
+		
+		# single plot
+		elif len(list_of_harry_args) > 0:
+			self.plot(list_of_harry_args[0])
+		
 		if len(failed_plots) > 0:
 			log.error("%d failed plots:" % len(failed_plots))
 			for failed_plot in failed_plots:

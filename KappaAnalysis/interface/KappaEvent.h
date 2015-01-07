@@ -60,6 +60,12 @@ public:
 	/// pointer to primary vertex summary
 	KVertexSummary* m_vertexSummary = 0;
 
+	/// pointer to track summary
+	KTrackSummary* m_trackSummary = 0;
+
+	/// pointer to HCALNoise summary
+	KHCALNoiseSummary* m_hcalNoiseSummary = 0;
+
 	/// pointer to generator particles
 	KGenParticles* m_genParticles = 0;
 

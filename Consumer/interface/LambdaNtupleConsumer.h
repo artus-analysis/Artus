@@ -34,6 +34,7 @@ public:
 	static std::map<std::string, std::function<float(EventBase const&, ProductBase const& ) >> CommonFloatQuantities;
 	static std::map<std::string, std::function<double(EventBase const&, ProductBase const& ) >> CommonDoubleQuantities;
 	static std::map<std::string, std::function<std::vector<double>(EventBase const&, ProductBase const& ) >> CommonVDoubleQuantities;
+	static std::map<std::string, std::function<std::vector<float>(EventBase const&, ProductBase const& ) >> CommonVFloatQuantities;
 	static std::map<std::string, std::function<std::string(EventBase const&, ProductBase const& ) >> CommonStringQuantities;
 
 };
@@ -53,6 +54,7 @@ public:
 	typedef std::function<float(EventBase const&, ProductBase const&)> float_extractor_lambda_base;
 	typedef std::function<double(EventBase const&, ProductBase const&)> double_extractor_lambda_base;
 	typedef std::function<std::vector<double>(EventBase const&, ProductBase const&)> vDouble_extractor_lambda_base;
+	typedef std::function<std::vector<float>(EventBase const&, ProductBase const&)> vFloat_extractor_lambda_base;
 	typedef std::function<std::string(EventBase const&, ProductBase const&)> string_extractor_lambda_base;
 
 	
@@ -116,6 +118,17 @@ public:
 			return valueExtractor(specEv, specPd);
 		};
 	}
+	static void AddVFloatQuantity(std::string const& name,
+	                              std::function<std::vector<double>(event_type const&, product_type const&)> valueExtractor)
+	{
+		LambdaNtupleQuantities::CommonVFloatQuantities[name] = [valueExtractor](EventBase const& ev, ProductBase const& pd) -> std::vector<double>
+		{ 
+			auto const& specEv = static_cast<event_type const&>(ev);
+			auto const& specPd = static_cast<product_type const&>(pd);
+			return valueExtractor(specEv, specPd);
+		};
+	}
+
 	static void AddStringQuantity(std::string const& name,
 	                              std::function<std::string(event_type const&, product_type const&)> valueExtractor)
 	{
@@ -145,6 +158,10 @@ public:
 	static std::map<std::string, std::function<std::vector<double>(EventBase const&, ProductBase const& ) >> & GetVDoubleQuantities () {
 		return LambdaNtupleQuantities::CommonVDoubleQuantities;
 	}
+	static std::map<std::string, std::function<std::vector<float>(EventBase const&, ProductBase const& ) >> & GetVFloatQuantities () {
+		return LambdaNtupleQuantities::CommonVFloatQuantities;
+	}
+
 	static std::map<std::string, std::function<std::string(EventBase const&, ProductBase const& ) >> & GetStringQuantities () {
 		return LambdaNtupleQuantities::CommonStringQuantities;
 	}
@@ -159,6 +176,7 @@ public:
 		m_doubleValueExtractors.clear();
 
 		m_vDoubleValueExtractors.clear();
+		m_vFloatValueExtractors.clear();
 		m_stringValueExtractors.clear();
 		m_boolValueExtractors.clear();
 		
@@ -186,6 +204,10 @@ public:
 			{
 				m_vDoubleValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetVDoubleQuantities(), *quantity));
 			}
+			else if (LambdaNtupleConsumer<TTypes>::GetVFloatQuantities().count(*quantity) > 0)
+			{
+				m_vFloatValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetVFloatQuantities(), *quantity));
+			}
 			else if (LambdaNtupleConsumer<TTypes>::GetBoolQuantities().count(*quantity) > 0)
 			{
 				m_boolValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetBoolQuantities(), *quantity));
@@ -212,6 +234,7 @@ public:
 		m_floatValues.resize(m_floatValueExtractors.size());
 		m_doubleValues.resize(m_doubleValueExtractors.size());
 		m_vDoubleValues.resize(m_vDoubleValueExtractors.size());
+		m_vFloatValues.resize(m_vFloatValueExtractors.size());
 		m_stringValues.resize(m_stringValueExtractors.size());
 		
 		size_t boolQuantityIndex = 0;
@@ -220,6 +243,7 @@ public:
 		size_t floatQuantityIndex = 0;
 		size_t doubleQuantityIndex = 0;
 		size_t vDoubleQuantityIndex = 0;
+		size_t vFloatQuantityIndex = 0;
 		size_t stringQuantityIndex = 0;
 		for (std::vector<std::string>::iterator quantity = settings.GetQuantities().begin();
 		     quantity != settings.GetQuantities().end(); ++quantity)
@@ -248,6 +272,11 @@ public:
 			{
 				m_tree->Branch(quantity->c_str(), &(m_vDoubleValues[vDoubleQuantityIndex]));
 				vDoubleQuantityIndex++;
+			}
+			else if (LambdaNtupleQuantities::CommonVFloatQuantities.count(*quantity) > 0)
+			{
+				m_tree->Branch(quantity->c_str(), &(m_vFloatValues[vFloatQuantityIndex]));
+				vFloatQuantityIndex++;
 			}
 			else if (LambdaNtupleQuantities::CommonBoolQuantities.count(*quantity) > 0)
 			{
@@ -313,7 +342,13 @@ public:
 			m_vDoubleValues[vDoubleValueIndex] = (*valueExtractor)(event, product);
 			vDoubleValueIndex++;
 		}
-
+		size_t vFloatValueIndex = 0;
+		for(typename std::vector<vFloat_extractor_lambda_base>::iterator valueExtractor = m_vFloatValueExtractors.begin();
+		    valueExtractor != m_vFloatValueExtractors.end(); ++valueExtractor)
+		{
+			m_vFloatValues[vFloatValueIndex] = (*valueExtractor)(event, product);
+			vFloatValueIndex++;
+		}
 		size_t stringValueIndex = 0;
 		for(typename std::vector<string_extractor_lambda_base>::iterator valueExtractor = m_stringValueExtractors.begin();
 		    valueExtractor != m_stringValueExtractors.end(); ++valueExtractor)
@@ -342,6 +377,7 @@ private:
 	std::vector<float_extractor_lambda_base> m_floatValueExtractors;
 	std::vector<double_extractor_lambda_base> m_doubleValueExtractors;
 	std::vector<vDouble_extractor_lambda_base> m_vDoubleValueExtractors;
+	std::vector<vFloat_extractor_lambda_base> m_vFloatValueExtractors;
 	std::vector<string_extractor_lambda_base> m_stringValueExtractors;
 	
 	std::vector<char> m_boolValues; // needs to be char vector because of bitset treatment of bool vector
@@ -350,6 +386,7 @@ private:
 	std::vector<float> m_floatValues;
 	std::vector<double> m_doubleValues;
 	std::vector<std::vector<double>> m_vDoubleValues;
+	std::vector<std::vector<float>> m_vFloatValues;
 	std::vector<std::string> m_stringValues;
 };
 

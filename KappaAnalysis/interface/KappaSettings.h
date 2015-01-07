@@ -59,6 +59,12 @@ public:
 	/// name of vertexSummary collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, VertexSummary, "");
 	
+	/// name of track summary collection in kappa tuple
+	IMPL_SETTING_DEFAULT(std::string, TrackSummary, "");
+
+	/// name of HCALNoise summary collection in kappa tuple
+	IMPL_SETTING_DEFAULT(std::string, HCALNoiseSummary, "");
+
 	/// name of trigger infos and objects collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, TriggerInfos, "");
 	IMPL_SETTING_DEFAULT(std::string, TriggerObjects, "");
@@ -86,9 +92,17 @@ public:
 	IMPL_SETTING(int, NumberGeneratedEvents);
 	
 	IMPL_SETTING_STRINGLIST(JsonFiles);
-	IMPL_SETTING_DEFAULT(int, PassRunLow, 1);
+	IMPL_SETTING_DEFAULT(int, PassRunLow, 0);
 	IMPL_SETTING_DEFAULT(int, PassRunHigh, 0);
 	
+	// Good Primary Vertex Filter
+	IMPL_SETTING(float, MaxPrimaryVertexZ);
+	IMPL_SETTING(float, MaxPrimaryVertexRho);
+	IMPL_SETTING(int, MinPrimaryVertexFitnDOF);
+
+	// Beam Scraping Filter
+	IMPL_SETTING(double, MinPurityRatio);
+
 	IMPL_SETTING_UINT64LIST(RunWhitelist);
 	IMPL_SETTING_UINT64LIST(RunBlacklist);
 	IMPL_SETTING_UINT64LIST(LumiWhitelist);

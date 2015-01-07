@@ -26,9 +26,9 @@ from Artus.HarryPlotter.plotbase import PlotBase
 
 import Artus.HarryPlotter.processor as processor
 
-import Artus.Utility.jsonTools as json_tools
+from Artus.Utility.jsonTools import JsonDict
 
-json_tools.JsonDict.COMMENT_DELIMITER = "@"
+JsonDict.COMMENT_DELIMITER = "@"
 
 
 class HarryCore(object):
@@ -60,9 +60,6 @@ class HarryCore(object):
 			default_modules_dirs += additional_modules_dirs
 		for directory in default_modules_dirs:
 			self.register_modules_dir(directory)
-
-
-
 
 	def _detect_available_processors(self):
 		"""Detect all valid processors in modules_dirs and add them to avalaible processors."""
@@ -99,11 +96,12 @@ class HarryCore(object):
 		self._detect_available_processors()
 
 		json_default_initialisation = None
-		if self.args["json_defaults"] != None:
+		if self.args["json_defaults"] is not None:
 			json_default_initialisation = self.args["json_defaults"]
-			json_defaults = json_tools.JsonDict(self.args["json_defaults"]).doIncludes().doComments()
+			json_defaults = JsonDict(self.args["json_defaults"]).doIncludes().doComments()
 			#set_defaults will overwrite/ignore the json_default argument. Cannot be used.
-			self.args.update(json_defaults)
+			no_default_args = dict((k,v) for (k,v) in self.args.items() if not self.parser.get_default(k) == self.args[k] )
+			self.args = dict(json_defaults.items() + no_default_args.items())
 
 		# replace 'json_defaults' from imported json file to actual name of imported json file
 		if json_default_initialisation != None:
@@ -151,7 +149,7 @@ class HarryCore(object):
 		
 		# overwrite defaults by defaults from json files
 		if self.args["json_defaults"] != None:
-			self.parser.set_defaults(**(json_tools.JsonDict(self.args["json_defaults"]).doIncludes().doComments()))
+			self.parser.set_defaults(**(JsonDict(self.args["json_defaults"]).doIncludes().doComments()))
 		
 		self.args = vars(self.parser.parse_args(self._args_from_script))
 		plotData = plotdata.PlotData(self.args)
@@ -175,7 +173,7 @@ class HarryCore(object):
 				save_name = self.args["json_defaults"][0]
 
 			if save_name != None:
-				json_tools.JsonDict(save_args).save(save_name, indent=4)
+				JsonDict(save_args).save(save_name, indent=4)
 			else: log.warning("No JSON could be exported. Please provide a filename.")
 		
 		# prepare aguments for all processors before running them
