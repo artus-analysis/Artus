@@ -38,7 +38,7 @@ public: \
 		try { \
 			val = GetPropTree()->get< TYPE >( FullKey##SNAME ()); \
 		} catch(...) { \
-			LOG(FATAL) << "Could not read value for config tag \"" << (#SNAME) << "\"! It is probably not specified!"; \
+			LOG(FATAL) << "Could not read value for config tag \"" << (#SNAME) << "\"! It is either not specified or the specified type is incompatible!"; \
 		} \
 		Cache##SNAME.SetCache( val ); \
 		return val; \
