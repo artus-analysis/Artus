@@ -45,7 +45,7 @@ def main():
 	
 	for skimming_dir in skimming_dirs:
 		nick = os.path.basename(skimming_dir)
-		files = glob.glob(os.path.join(skimming_dir, "*.root"))
+		files = sorted(glob.glob(os.path.join(skimming_dir, "*.root")))
 		filelists = os.path.join(args.output_dir, "%s_sample_%s_%s.txt" % ("%s", nick, "%s"))
 		
 		dcache_settings = {
