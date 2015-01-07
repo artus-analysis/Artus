@@ -159,22 +159,16 @@ class HarryCore(object):
 		ROOT.TH1.SetDefaultSumw2(True)
 		ROOT.gROOT.SetBatch(True)
 		
-		# export arguments into JSON file
+		# export arguments into JSON file (1)
 		# remove entries from dictionary that are not meant to be exported
-		if self.args["export_json"] != None:
-			save_args = dict(self.args)
-			save_args.pop("quantities")
-			save_args.pop("export_json")
-			save_args.pop("live")
-			save_args.pop("json_defaults")
-			if self.args["export_json"] != "":
-				save_name = self.args["export_json"]
-			else:
-				save_name = self.args["json_defaults"][0]
-
-			if save_name != None:
-				JsonDict(save_args).save(save_name, indent=4)
-			else: log.warning("No JSON could be exported. Please provide a filename.")
+		export_args = JsonDict(copy.deepcopy(plotData.plotdict))
+		export_args.pop("quantities")
+		export_args.pop("export_json")
+		export_args.pop("live")
+		export_args.pop("json_defaults")
+		
+		if plotData.plotdict["export_json"] == "update":
+			plotData.plotdict["export_json"] = "default" if plotData.plotdict["json_defaults"] is None else plotData.plotdict["json_defaults"][0]
 		
 		# prepare aguments for all processors before running them
 		for processor in self.processors:
@@ -183,6 +177,11 @@ class HarryCore(object):
 			processor.run(tmpPlotData)
 			if not isinstance(processor, PlotBase):
 				plotData = tmpPlotData
+		plotData = tmpPlotData
+		
+		# export arguments into JSON file (2)
+		if plotData.plotdict["export_json"] != "default":
+			export_args.save(plotData.plotdict["export_json"], indent=4)
 		
 		del(plotData)
 	
