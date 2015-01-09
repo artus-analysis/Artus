@@ -31,6 +31,8 @@ public:
 	/// pointer to tau collection
 	KTaus* m_taus = 0;
 	KTauMetadata* m_tauMetadata = 0;
+	KGenTaus* m_genTaus = 0;
+	KGenJets* m_genTauJets = 0;
 
 	/// pointer to jet collection
 	KBasicJets* m_basicJets = 0;
@@ -68,9 +70,6 @@ public:
 
 	/// pointer to generator particles
 	KGenParticles* m_genParticles = 0;
-
-	/// pointer to generator particles
-	KGenTaus* m_genTaus = 0;
 
 	/// pointer to trigger infos and objects
 	KTriggerObjectMetadata* m_triggerObjectMetadata = 0;

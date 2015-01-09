@@ -37,10 +37,12 @@ public:
 		// Taus
 		if (! settings.GetTaus().empty())
 			this->m_event.m_taus = this->template SecureFileInterfaceGet<KTaus>(settings.GetTaus());
-		if (! settings.GetGenTaus().empty())
-			this->m_event.m_genTaus = this->template SecureFileInterfaceGet<KGenTaus>(settings.GetGenTaus());
 		if (! settings.GetTauMetadata().empty())
 			this->m_event.m_tauMetadata = this->template SecureFileInterfaceGetMeta<KTauMetadata>(settings.GetTauMetadata());
+		if (! settings.GetGenTaus().empty())
+			this->m_event.m_genTaus = this->template SecureFileInterfaceGet<KGenTaus>(settings.GetGenTaus());
+		if (! settings.GetGenTauJets().empty())
+			this->m_event.m_genTauJets = this->template SecureFileInterfaceGet<KGenJets>(settings.GetGenTauJets());
 
 		// Jets
 		if (! settings.GetBasicJets().empty())

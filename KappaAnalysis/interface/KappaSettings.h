@@ -30,6 +30,7 @@ public:
 	IMPL_SETTING_DEFAULT(std::string, Taus, "");
 	IMPL_SETTING_DEFAULT(std::string, TauMetadata, "");
 	IMPL_SETTING_DEFAULT(std::string, GenTaus, "");
+	IMPL_SETTING_DEFAULT(std::string, GenTauJets, "");
 
 	/// name of jet collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, BasicJets, "");
