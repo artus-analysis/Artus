@@ -15,6 +15,7 @@
 #include <Math/DisplacementVector3D.h>
 #include <Math/Cartesian3D.h>
 #include <Math/SMatrix.h>
+#include <Math/VectorUtil.h>
 
 #include "Artus/Core/interface/Cpp11Support.h"
 
@@ -200,6 +201,24 @@ namespace Utility {
 		std::vector<T> sortedVector = vectorToSort;
 		std::sort(sortedVector.begin(), sortedVector.end());
 		return sortedVector;
+	}
+	
+	template<class T1, class T2>
+	std::map<T1*, T2*> MatchDeltaR(std::vector<T1> const& lorentsVectors1, std::vector<T2> const& lorentsVectors2, float maxDeltaR)
+	{
+		std::map<T1*, T2*> matches;
+		for (typename std::vector<T1>::const_iterator v1 = lorentsVectors1.begin(); v1 != lorentsVectors1.end(); ++v1)
+		{
+			for (typename std::vector<T2>::const_iterator v2 = lorentsVectors2.begin(); v2 != lorentsVectors2.end(); ++v2)
+			{
+				if (ROOT::Math::VectorUtil::DeltaR(v1->p4, v2->p4) < maxDeltaR)
+				{
+					matches[&(*v1)] = &(*v2);
+					break;
+				}
+			}
+		}
+		return matches;
 	}
 }
 
