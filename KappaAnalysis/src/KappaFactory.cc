@@ -16,7 +16,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/ValidJetsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidBTaggedJetsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/TriggerMatchingProducers.h"
-#include "Artus/KappaAnalysis/interface/Producers/GenMatchingProducers.h"
+#include "Artus/KappaAnalysis/interface/Producers/GenParticleMatchingProducers.h"
 #include "Artus/KappaAnalysis/interface/Producers/MatchedLeptonsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidLeptonsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/PUWeightProducer.h"
@@ -100,8 +100,8 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new MuonGenMatchingProducer();
 	else if(id == TauGenMatchingProducer().GetProducerId())
 		return new TauGenMatchingProducer();
-	else if(id == JetGenMatchingProducer().GetProducerId())
-		return new JetGenMatchingProducer();
+	else if(id == RecoJetGenParticleMatchingProducer().GetProducerId())
+		return new RecoJetGenParticleMatchingProducer();
 	else if(id == MatchedLeptonsProducer().GetProducerId())
 		return new MatchedLeptonsProducer();
 	else if(id == ValidLeptonsProducer().GetProducerId())

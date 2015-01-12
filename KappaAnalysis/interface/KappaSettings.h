@@ -128,11 +128,21 @@ public:
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonMatchingTaus, true);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonMatchingJets, true);
 	
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoElectronsGenParticle, 0.5);
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoMuonGenParticle, 0.5);
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoTauGenParticle, 0.5);
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoJetGenParticle, 0.3);
+	
+	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenParticleMatchingRecoElectrons, false);
+	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenParticleMatchingRecoMuons, false);
+	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenParticleMatchingRecoTaus, false);
+	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenParticleMatchingRecoJets, false);
+	IMPL_SETTING_DEFAULT(std::string, JetMatchingAlgorithm, "algorithmic");
+	
 	IMPL_SETTING_DEFAULT(float, DeltaRGenMatchingElectrons, 0.5);
 	IMPL_SETTING_DEFAULT(float, DeltaRGenMatchingMuons, 0.5);
 	IMPL_SETTING_DEFAULT(float, DeltaRGenMatchingTaus, 0.5);
 	IMPL_SETTING_DEFAULT(float, DeltaRGenMatchingJets, 0.3);
-	IMPL_SETTING_DEFAULT(std::string, MatchingAlgorithmusJets, "algorithmic");
 	
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenMatchingElectrons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenMatchingMuons, false);
