@@ -228,8 +228,9 @@ def initLogger(argParserArgs=None, name="", logLevel="debug", logFiles=[], logSt
 	else:
 		raise ValueError('Invalid stream designator for logging: %s' % logStream)
 	for logFile in logFiles:
-		if not os.path.exists(os.path.dirname(logFile)):
-			os.makedirs(os.path.dirname(logFile))
+		logFileDir = os.path.dirname(logFile)
+		if not os.path.exists(logFileDir) and logFileDir != "":
+			os.makedirs(logFileDir)
 		if os.path.exists(logFile):
 			os.remove(logFile)
 		loggingHandlers.append(logging.FileHandler(logFile))
