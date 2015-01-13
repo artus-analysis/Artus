@@ -1,4 +1,6 @@
 
+#include "Artus/Utility/interface/DefaultValues.h"
+
 #include "Artus/KappaAnalysis/interface/Producers/GenParticleMatchingProducers.h"
 
 
@@ -101,15 +103,15 @@ void RecoJetGenParticleMatchingProducer::Produce(event_type const& event, produc
 				{
 					if(hardestBQuark)
 					{
-						product.m_genMatchedJets[*validJet] = &(*hardestBQuark);
+						product.m_genParticleMatchedJets[*validJet] = &(*hardestBQuark);
 					}
 					else if(hardestCQuark)
 					{
-						product.m_genMatchedJets[*validJet] = &(*hardestCQuark);
+						product.m_genParticleMatchedJets[*validJet] = &(*hardestCQuark);
 					}
 					else
 					{
-						product.m_genMatchedJets[*validJet] = &(*hardestParton);
+						product.m_genParticleMatchedJets[*validJet] = &(*hardestParton);
 					}
 					jetMatched = true;
 				}
@@ -118,7 +120,7 @@ void RecoJetGenParticleMatchingProducer::Produce(event_type const& event, produc
 			{
 				if (jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
 				{
-					product.m_genMatchedJets[*validJet] = &(*hardestBQuark);
+					product.m_genParticleMatchedJets[*validJet] = &(*hardestBQuark);
 					jetMatched = true;
 				}
 			}
@@ -126,7 +128,7 @@ void RecoJetGenParticleMatchingProducer::Produce(event_type const& event, produc
 			{
 				if (jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
 				{
-					product.m_genMatchedJets[*validJet] = &(*hardestCQuark);
+					product.m_genParticleMatchedJets[*validJet] = &(*hardestCQuark);
 					jetMatched = true;
 				}
 			}
@@ -134,7 +136,7 @@ void RecoJetGenParticleMatchingProducer::Produce(event_type const& event, produc
 			{
 				if (jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
 				{
-					product.m_genMatchedJets[*validJet] = &(*hardestParton);
+					product.m_genParticleMatchedJets[*validJet] = &(*hardestParton);
 					jetMatched = true;
 				}
 			}
@@ -145,7 +147,7 @@ void RecoJetGenParticleMatchingProducer::Produce(event_type const& event, produc
 			{
 				if (jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
 				{
-					product.m_genMatchedJets[*validJet] = &(*hardestPhysParton);
+					product.m_genParticleMatchedJets[*validJet] = &(*hardestPhysParton);
 					jetMatched = true;
 				}
 			}
@@ -174,47 +176,47 @@ void RecoJetGenParticleMatchingProducer::Produce(event_type const& event, produc
 
 
 
-std::string ElectronGenMatchingProducer::GetProducerId() const {
-	return "ElectronGenMatchingProducer";
+std::string RecoElectronGenParticleMatchingProducer::GetProducerId() const {
+	return "RecoElectronGenParticleMatchingProducer";
 }
 
-ElectronGenMatchingProducer::ElectronGenMatchingProducer() :
-	GenMatchingProducerBase<KDataElectron>(&product_type::m_genMatchedElectrons,
-	                                       &product_type::m_validElectrons,
-	                                       &product_type::m_invalidElectrons,
-	                                       ElectronGenMatchingProducer::TauDecayMode::E,
-	                                       &setting_type::GetDeltaRGenMatchingElectrons,
-	                                       &setting_type::GetInvalidateNonGenMatchingElectrons)
+RecoElectronGenParticleMatchingProducer::RecoElectronGenParticleMatchingProducer() :
+	RecoLeptonGenParticleMatchingProducerBase<KDataElectron>(&product_type::m_genParticleMatchedElectrons,
+	                                                         &product_type::m_validElectrons,
+	                                                         &product_type::m_invalidElectrons,
+	                                                         DefaultValues::pdgIdElectron,
+	                                                         &setting_type::GetDeltaRMatchingRecoElectronsGenParticle,
+	                                                         &setting_type::GetInvalidateNonGenParticleMatchingRecoElectrons)
 {
 }
 
 
-std::string MuonGenMatchingProducer::GetProducerId() const {
-	return "MuonGenMatchingProducer";
+std::string RecoMuonGenParticleMatchingProducer::GetProducerId() const {
+	return "RecoMuonGenParticleMatchingProducer";
 }
 
-MuonGenMatchingProducer::MuonGenMatchingProducer() :
-	GenMatchingProducerBase<KDataMuon>(&product_type::m_genMatchedMuons,
-	                                   &product_type::m_validMuons,
-	                                   &product_type::m_invalidMuons,
-	                                   MuonGenMatchingProducer::TauDecayMode::M,
-	                                   &setting_type::GetDeltaRGenMatchingMuons,
-	                                   &setting_type::GetInvalidateNonGenMatchingMuons)
+RecoMuonGenParticleMatchingProducer::RecoMuonGenParticleMatchingProducer() :
+	RecoLeptonGenParticleMatchingProducerBase<KDataMuon>(&product_type::m_genParticleMatchedMuons,
+	                                                     &product_type::m_validMuons,
+	                                                     &product_type::m_invalidMuons,
+	                                                     DefaultValues::pdgIdMuon,
+	                                                     &setting_type::GetDeltaRMatchingRecoMuonGenParticle,
+	                                                     &setting_type::GetInvalidateNonGenParticleMatchingRecoMuons)
 {
 }
 
 
-std::string TauGenMatchingProducer::GetProducerId() const {
-	return "TauGenMatchingProducer";
+std::string RecoTauGenParticleMatchingProducer::GetProducerId() const {
+	return "RecoTauGenParticleMatchingProducer";
 }
 
-TauGenMatchingProducer::TauGenMatchingProducer() :
-	GenMatchingProducerBase<KDataPFTau>(&product_type::m_genMatchedTaus,
-	                                    &product_type::m_validTaus,
-	                                    &product_type::m_invalidTaus,
-	                                    TauGenMatchingProducer::TauDecayMode::T,
-	                                    &setting_type::GetDeltaRGenMatchingTaus,
-	                                    &setting_type::GetInvalidateNonGenMatchingTaus)
+RecoTauGenParticleMatchingProducer::RecoTauGenParticleMatchingProducer() :
+	RecoLeptonGenParticleMatchingProducerBase<KDataPFTau>(&product_type::m_genParticleMatchedTaus,
+	                                                      &product_type::m_validTaus,
+	                                                      &product_type::m_invalidTaus,
+	                                                      DefaultValues::pdgIdTau,
+	                                                      &setting_type::GetDeltaRMatchingRecoTauGenParticle,
+	                                                      &setting_type::GetInvalidateNonGenParticleMatchingRecoTaus)
 {
 }
 

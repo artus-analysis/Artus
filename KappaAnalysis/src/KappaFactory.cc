@@ -94,12 +94,12 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new TauTriggerMatchingProducer();
 	else if(id == JetTriggerMatchingProducer().GetProducerId())
 		return new JetTriggerMatchingProducer();
-	else if(id == ElectronGenMatchingProducer().GetProducerId())
-		return new ElectronGenMatchingProducer();
-	else if(id == MuonGenMatchingProducer().GetProducerId())
-		return new MuonGenMatchingProducer();
-	else if(id == TauGenMatchingProducer().GetProducerId())
-		return new TauGenMatchingProducer();
+	else if(id == RecoElectronGenParticleMatchingProducer().GetProducerId())
+		return new RecoElectronGenParticleMatchingProducer();
+	else if(id == RecoMuonGenParticleMatchingProducer().GetProducerId())
+		return new RecoMuonGenParticleMatchingProducer();
+	else if(id == RecoTauGenParticleMatchingProducer().GetProducerId())
+		return new RecoTauGenParticleMatchingProducer();
 	else if(id == RecoJetGenParticleMatchingProducer().GetProducerId())
 		return new RecoJetGenParticleMatchingProducer();
 	else if(id == MatchedLeptonsProducer().GetProducerId())

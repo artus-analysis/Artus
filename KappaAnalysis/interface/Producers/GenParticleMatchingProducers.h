@@ -52,203 +52,174 @@ private:
 
 };
 
-/** Abstract Producer class for trigger matching valid objects
+
+
+/** Abstract Producer class for trigger matching valid leptons
  *
- *	Needs to run after the valid object producers.
+ *	Needs to run after the valid lepton producers.
  */
-template<class TValidObject>
-class GenMatchingProducerBase: public KappaProducerBase
+template<class TLepton>
+class RecoLeptonGenParticleMatchingProducerBase: public KappaProducerBase
 {
 
 public:
-	
-	enum class TauDecayMode : int
-	{
-			NONE = -1,
-		E   = 0,
-		M   = 1,
-		T   = 2
-	};
 
 	typedef typename KappaTypes::event_type event_type;
 	typedef typename KappaTypes::product_type product_type;
 	typedef typename KappaTypes::setting_type setting_type;
 	
-	GenMatchingProducerBase(std::map<TValidObject*, KGenParticle*> product_type::*genMatchedObjects, //changed to KGenParticle from const KDataLV
-							std::vector<TValidObject*> product_type::*validObjects,
-							std::vector<TValidObject*> product_type::*invalidObjects,
-							TauDecayMode tauDecayMode,
-							float (setting_type::*GetDeltaRGenMatchingObjects)(void) const,
-							bool (setting_type::*GetInvalidateNonGenMatchingObjects)(void) const) :
-		m_genMatchedObjects(genMatchedObjects),
-		m_validObjects(validObjects),
-		m_invalidObjects(invalidObjects),
-		tauDecayMode(tauDecayMode),
-		GetDeltaRGenMatchingObjects(GetDeltaRGenMatchingObjects),
-		GetInvalidateNonGenMatchingObjects(GetInvalidateNonGenMatchingObjects)
+	RecoLeptonGenParticleMatchingProducerBase(std::map<TLepton*, KGenParticle*> product_type::*genParticleMatchedLeptons,
+	                                std::vector<TLepton*> product_type::*validLeptons,
+	                                std::vector<TLepton*> product_type::*invalidLeptons,
+	                                int absLeptonPdgId,
+	                                float (setting_type::*GetDeltaRMatchingRecoLeptonsGenParticle)(void) const,
+	                                bool (setting_type::*GetInvalidateNonGenParticleMatchingLeptons)(void) const) :
+		m_genParticleMatchedLeptons(genParticleMatchedLeptons),
+		m_validLeptons(validLeptons),
+		m_invalidLeptons(invalidLeptons),
+		m_absLeptonPdgId(absLeptonPdgId),
+		GetDeltaRMatchingRecoLeptonsGenParticle(GetDeltaRMatchingRecoLeptonsGenParticle),
+		GetInvalidateNonGenParticleMatchingLeptons(GetInvalidateNonGenParticleMatchingLeptons)
 	{
 	}
 
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE 
 	{
 		KappaProducerBase::Init(settings);
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("ratioGenMatched", [](event_type const & event, product_type const & product)
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("ratioGenParticleMatched", [](event_type const & event, product_type const & product)
 		{
-			return product.m_ratioGenMatched;
+			return product.m_ratioGenParticleMatched;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genMatchDeltaR", [](event_type const & event, product_type const & product)
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genParticleMatchDeltaR", [](event_type const & event, product_type const & product)
 		{
-			return product.m_genMatchDeltaR;
+			return product.m_genParticleMatchDeltaR;
 		});
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
 						 setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
-		float ratioGenMatched = 0;
-	
-		assert(event.m_genTaus);
+		assert(event.m_genParticles);
 		
-		if ((settings.*GetDeltaRGenMatchingObjects)() > 0.0)
+		float ratioGenParticleMatched = 0;
+		
+		if ((settings.*GetDeltaRMatchingRecoLeptonsGenParticle)() > 0.0)
 		{
-			// loop over all valid objects to check
-			for (typename std::vector<TValidObject*>::iterator validObject = (product.*m_validObjects).begin();
-				 validObject != (product.*m_validObjects).end();)
+			// loop over all valid leptons to check
+			for (typename std::vector<TLepton*>::iterator validLepton = (product.*m_validLeptons).begin();
+				 validLepton != (product.*m_validLeptons).end();)
 			{
-				bool objectMatched = false;
-				float deltaR = 0;
+				bool leptonMatched = false;
+				float deltaR = 0.0;
 				
-				// loop over all genTaus
-				for (typename std::vector<KDataGenTau>::iterator genTau = event.m_genTaus->begin();
-					 !objectMatched && genTau != event.m_genTaus->end();++genTau) 
+				// loop over all genParticles
+				for (typename std::vector<KGenParticle>::iterator genParticle = event.m_genParticles->begin();
+					 !leptonMatched && genParticle != event.m_genParticles->end(); ++genParticle) 
 				{
-					// only use genTaus that will decay into comparable particles
-					if (MatchDecayMode(*genTau,tauDecayMode))
+					// only use genParticles that will decay into comparable particles
+					if (std::abs(genParticle->pdgid) == m_absLeptonPdgId)
 					{
-						deltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, genTau->p4_vis);
-						if(deltaR<(settings.*GetDeltaRGenMatchingObjects)())
+						deltaR = ROOT::Math::VectorUtil::DeltaR((*validLepton)->p4, genParticle->p4);
+						if(deltaR<(settings.*GetDeltaRMatchingRecoLeptonsGenParticle)())
 						{
-							(product.*m_genMatchedObjects)[*validObject] = &(*genTau);
-							ratioGenMatched += 1./(product.*m_validObjects).size();
-							product.m_genMatchDeltaR = deltaR;
-							objectMatched = true;
+							(product.*m_genParticleMatchedLeptons)[*validLepton] = &(*genParticle);
+							ratioGenParticleMatched += (1.0 / (product.*m_validLeptons).size());
+							product.m_genParticleMatchDeltaR = deltaR;
+							leptonMatched = true;
 						}
-						else product.m_genMatchDeltaR = DefaultValues::UndefinedFloat;
+						else product.m_genParticleMatchDeltaR = DefaultValues::UndefinedFloat;
 					}
-					else product.m_genMatchDeltaR = DefaultValues::UndefinedFloat;
+					else product.m_genParticleMatchDeltaR = DefaultValues::UndefinedFloat;
 				}
-				// invalidate the object if the trigger has not matched
-				if ((! objectMatched) && (settings.*GetInvalidateNonGenMatchingObjects)())
+				// invalidate the lepton if the trigger has not matched
+				if ((! leptonMatched) && (settings.*GetInvalidateNonGenParticleMatchingLeptons)())
 				{
-					(product.*m_invalidObjects).push_back(*validObject);
-					validObject = (product.*m_validObjects).erase(validObject);
+					(product.*m_invalidLeptons).push_back(*validLepton);
+					validLepton = (product.*m_validLeptons).erase(validLepton);
 				}
 				else
 				{
-					++validObject;
+					++validLepton;
 				}
 			}
-			// preserve sorting of invalid objects
-			if ((settings.*GetInvalidateNonGenMatchingObjects)())
+			// preserve sorting of invalid leptons
+			if ((settings.*GetInvalidateNonGenParticleMatchingLeptons)())
 			{
-				std::sort((product.*m_invalidObjects).begin(), (product.*m_invalidObjects).end(),
-						  [](TValidObject const* object1, TValidObject const* object2) -> bool
-						  { return object1->p4.Pt() > object2->p4.Pt(); });
+				std::sort((product.*m_invalidLeptons).begin(), (product.*m_invalidLeptons).end(),
+						  [](TLepton const* lepton1, TLepton const* lepton2) -> bool
+						  { return lepton1->p4.Pt() > lepton2->p4.Pt(); });
 			}
 		}
 		else
 		{
-			product.m_genMatchDeltaR = DefaultValues::UndefinedFloat;
+			product.m_genParticleMatchDeltaR = DefaultValues::UndefinedFloat;
 		}
 		
-		product.m_ratioGenMatched = ratioGenMatched;
+		product.m_ratioGenParticleMatched = ratioGenParticleMatched;
 	}
-	
-	virtual bool MatchDecayMode(KDataGenTau const &genTau, TauDecayMode tauDecayMode) const
-	{
-		bool decayModeMatched = false;
-		switch(tauDecayMode) 
-  		{	
-				case TauDecayMode::NONE:
-					LOG(ERROR) << "tauDecayMode == NONE"; //used for jets
-					break;
-				case TauDecayMode::E:
-					if (genTau.isElectronicDecay())
-						decayModeMatched = true;
-					break;
-				case TauDecayMode::M: 
-					if (genTau.isMuonicDecay())
-						decayModeMatched = true;
-					break;
-				case TauDecayMode::T:
-					if (genTau.isHadronicDecay())
-						decayModeMatched = true;
-					break;
-		};
-		return decayModeMatched;
-	}
-	
+
+
 private:
-	std::map<TValidObject*, KGenParticle*> product_type::*m_genMatchedObjects; //changed to KGenParticle from const KDataLV
-	std::vector<TValidObject*> product_type::*m_validObjects;
-	std::vector<TValidObject*> product_type::*m_invalidObjects;
-	TauDecayMode tauDecayMode;
-	float (setting_type::*GetDeltaRGenMatchingObjects)(void) const;
-	bool (setting_type::*GetInvalidateNonGenMatchingObjects)(void) const;
+	std::map<TLepton*, KGenParticle*> product_type::*m_genParticleMatchedLeptons; //changed to KGenParticle from const KDataLV
+	std::vector<TLepton*> product_type::*m_validLeptons;
+	std::vector<TLepton*> product_type::*m_invalidLeptons;
+	int m_absLeptonPdgId;
+	float (setting_type::*GetDeltaRMatchingRecoLeptonsGenParticle)(void) const;
+	bool (setting_type::*GetInvalidateNonGenParticleMatchingLeptons)(void) const;
 	
-	std::map<size_t, std::vector<std::string> > m_objectTriggerFiltersByIndex;
-	std::map<std::string, std::vector<std::string> > m_objectTriggerFiltersByHltName;
+	std::map<size_t, std::vector<std::string> > m_leptonTriggerFiltersByIndex;
+	std::map<std::string, std::vector<std::string> > m_leptonTriggerFiltersByHltName;
 
 };
 
 
 /** Producer for gen matched electrons
  *  Required config tags:
- *  - DeltaRGenMatchingElectrons (default provided)
- *  - InvalidateNonMatchingElectrons (default provided)
+ *  - DeltaRMatchingRecoElectronsGenParticle (default provided)
+ *  - InvalidateNonGenParticleMatchingRecoElectrons (default provided)
  */
-class ElectronGenMatchingProducer: public GenMatchingProducerBase<KDataElectron>
+class RecoElectronGenParticleMatchingProducer: public RecoLeptonGenParticleMatchingProducerBase<KDataElectron>
 {
 
 public:
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
 
-	ElectronGenMatchingProducer();
+	RecoElectronGenParticleMatchingProducer();
 
 };
 
 
 /** Producer for gen matched muons
  *  Required config tags:
- *  - DeltaRGenMatchingMuons (default provided)
- *  - InvalidateNonMatchingMuons (default provided)
+ *  - DeltaRMatchingRecoMuonGenParticle (default provided)
+ *  - InvalidateNonGenParticleMatchingRecoMuons (default provided)
  */
-class MuonGenMatchingProducer: public GenMatchingProducerBase<KDataMuon>
+class RecoMuonGenParticleMatchingProducer: public RecoLeptonGenParticleMatchingProducerBase<KDataMuon>
 {
 
 public:
 	
 	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
 	
-	MuonGenMatchingProducer();
+	RecoMuonGenParticleMatchingProducer();
 
 };
 
 
 /** Producer for gen matched taus
  *  Required config tags:
- *  - DeltaRGenMatchingTaus (default provided)
- *  - InvalidateNonMatchingTaus (default provided)
+ *  - DeltaRMatchingRecoTauGenParticle (default provided)
+ *  - InvalidateNonGenParticleMatchingRecoTaus (default provided)
  */
-class TauGenMatchingProducer: public GenMatchingProducerBase<KDataPFTau>
+class RecoTauGenParticleMatchingProducer: public RecoLeptonGenParticleMatchingProducerBase<KDataPFTau>
 {
 
 public:
 	
-		virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
 	
-	TauGenMatchingProducer();
+	RecoTauGenParticleMatchingProducer();
 
 };
 

@@ -9,13 +9,13 @@ void MatchedLeptonsProducer::Produce(KappaEvent const& event, KappaProduct& prod
                      KappaSettings const& settings) const
 {
 	// start with empty vectors
-	product.m_genMatchedLeptons.clear();
+	product.m_genParticleMatchedLeptons.clear();
 
-	product.m_genMatchedLeptons.insert(product.m_genMatchedElectrons.begin(), product.m_genMatchedElectrons.end());
+	product.m_genParticleMatchedLeptons.insert(product.m_genParticleMatchedElectrons.begin(), product.m_genParticleMatchedElectrons.end());
 
-	product.m_genMatchedLeptons.insert(product.m_genMatchedMuons.begin(), product.m_genMatchedMuons.end());
+	product.m_genParticleMatchedLeptons.insert(product.m_genParticleMatchedMuons.begin(), product.m_genParticleMatchedMuons.end());
 
-	product.m_genMatchedLeptons.insert(product.m_genMatchedTaus.begin(), product.m_genMatchedTaus.end());
+	product.m_genParticleMatchedLeptons.insert(product.m_genParticleMatchedTaus.begin(), product.m_genParticleMatchedTaus.end());
 
 
 	//Maybe create inverse map 

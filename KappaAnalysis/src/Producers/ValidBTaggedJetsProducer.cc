@@ -65,7 +65,7 @@ void ValidBTaggedJetsProducer::Produce(KappaEvent const& event, KappaProduct& pr
 			if (bTagSFMethod == BTagScaleFactorMethod::PROMOTIONDEMOTION) {
 			
 				int jetflavor = 1;
-				for (auto iterator=product.m_genMatchedJets.begin(); iterator!=product.m_genMatchedJets.end(); ++iterator)
+				for (auto iterator = product.m_genParticleMatchedJets.begin(); iterator != product.m_genParticleMatchedJets.end(); ++iterator)
 				{
 					if ( iterator->first->p4 == tjet->p4 )
 					{
