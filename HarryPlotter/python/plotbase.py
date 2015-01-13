@@ -221,6 +221,9 @@ class PlotBase(processor.Processor):
 		plotData.plotdict["output_filenames"] = []
 		for plot_format in plotData.plotdict["formats"]:
 			plotData.plotdict["output_filenames"].append(os.path.join(plotData.plotdict["output_dir"], plotData.plotdict["filename"]+"."+plot_format))
+		
+		if plotData.plotdict["export_json"] == "default":
+			plotData.plotdict["export_json"] = os.path.join(plotData.plotdict["output_dir"], plotData.plotdict["filename"]+".json")
 
 		# prepare nicknames for stacked plots
 		stack = plotData.plotdict["stack"]

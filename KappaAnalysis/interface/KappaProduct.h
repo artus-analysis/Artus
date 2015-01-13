@@ -104,14 +104,13 @@ public:
 	std::map<KJet*, KLV*> m_triggerMatchedTaggedJets;
 
 	/// added by GenMatchingProducer
-	std::map<KElectron*, KGenParticle*> m_genMatchedElectrons; //changed to KGenParticle from const KLV
-	std::map<KMuon*, KGenParticle*> m_genMatchedMuons; //changed to KGenParticle from const KLV
-	std::map<KTau*, KGenParticle*> m_genMatchedTaus; //changed to KGenParticle from const KLV
-	std::map<KBasicJet*, KGenParticle*> m_genMatchedJets; //changed to KGenParticle from const KLV
-	float m_ratioGenMatched;
-	float m_genMatchDeltaR;
-
-	std::map<KLepton*, const KGenParticle*> m_genMatchedLeptons;
+	std::map<KElectron*, KGenParticle*> m_genParticleMatchedElectrons;
+	std::map<KMuon*, KGenParticle*> m_genParticleMatchedMuons;
+	std::map<KTau*, KGenParticle*> m_genParticleMatchedTaus;
+	std::map<KBasicJet*, KGenParticle*> m_genParticleMatchedJets;
+	std::map<KLepton*, const KGenParticle*> m_genParticleMatchedLeptons;
+	float m_ratioGenParticleMatched;
+	float m_genParticleMatchDeltaR;
 	
 	// MVA outputs
 	std::vector<double> m_discriminators;

@@ -22,13 +22,13 @@ public:
 	KappaCollectionsConsumerBase(std::string treeName,
 	                             std::vector<TObject*> product_type::*validObjects,
 	                             bool (setting_type::*GetBranchGenMatchedObjects)(void) const,
-	                             std::map<TObject*, KGenParticle*> product_type::*genMatchedObjects = 0,
+	                             std::map<TObject*, KGenParticle*> product_type::*genParticleMatchedObjects = 0,
 	                             TObjectMetaInfo* event_type::*objectMetaInfo = 0) :
 		ConsumerBase<KappaTypes>(),
 		m_treeName(treeName),
 		m_validObjects(validObjects),
 		GetBranchGenMatchedObjects(GetBranchGenMatchedObjects),
-		m_genMatchedObjects(genMatchedObjects),
+		m_genParticleMatchedObjects(genParticleMatchedObjects),
 		m_objectMetaInfo(objectMetaInfo),
 		m_objectMetaInfoAvailable(objectMetaInfo != 0)
 	{
@@ -73,7 +73,7 @@ public:
 			
 			if ((settings.*GetBranchGenMatchedObjects)())
 			{
-				KGenParticle* current = SafeMap::GetWithDefault((product.*m_genMatchedObjects), *validObject, (KGenParticle*)(0));
+				KGenParticle* current = SafeMap::GetWithDefault((product.*m_genParticleMatchedObjects), *validObject, (KGenParticle*)(0));
 				m_currentGenObject = (current != 0 ? *(static_cast<TGenObject*>(current)) : TGenObject());
 				m_currentGenObjectMatched = (current != 0);
 			}
@@ -95,7 +95,7 @@ private:
 	std::string m_treeName;
 	std::vector<TObject*> product_type::*m_validObjects;
 	bool (setting_type::*GetBranchGenMatchedObjects)(void) const;
-	std::map<TObject*, KGenParticle*> product_type::*m_genMatchedObjects;
+	std::map<TObject*, KGenParticle*> product_type::*m_genParticleMatchedObjects;
 	TObjectMetaInfo* event_type::*m_objectMetaInfo;
 	bool m_objectMetaInfoAvailable = false;
 	
@@ -116,7 +116,7 @@ public:
 	KappaElectronsConsumer(std::string treeName = "electrons",
 	                       std::vector<KElectron*> product_type::*validObjects = &product_type::m_validElectrons,
 	                       bool (setting_type::*GetBranchGenMatchedObjects)(void) const = &setting_type::GetBranchGenMatchedElectrons,
-	                       std::map<KElectron*, KGenParticle*> product_type::*genMatchedObjects = &product_type::m_genMatchedElectrons);
+	                       std::map<KElectron*, KGenParticle*> product_type::*genParticleMatchedObjects = &product_type::m_genParticleMatchedElectrons);
 
 	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE;
 };
@@ -130,7 +130,7 @@ public:
 	KappaMuonsConsumer(std::string treeName = "muons",
 	                   std::vector<KMuon*> product_type::*validObjects = &product_type::m_validMuons,
 	                   bool (setting_type::*GetBranchGenMatchedObjects)(void) const = &setting_type::GetBranchGenMatchedMuons,
-	                   std::map<KMuon*, KGenParticle*> product_type::*genMatchedObjects = &product_type::m_genMatchedMuons);
+	                   std::map<KMuon*, KGenParticle*> product_type::*genParticleMatchedObjects = &product_type::m_genParticleMatchedMuons);
 
 	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE;
 };
@@ -144,7 +144,7 @@ public:
 	KappaTausConsumer(std::string treeName = "taus",
 	                  std::vector<KTau*> product_type::*validObjects = &product_type::m_validTaus,
 	                  bool (setting_type::*GetBranchGenMatchedObjects)(void) const = &setting_type::GetBranchGenMatchedTaus,
-	                  std::map<KTau*, KGenParticle*> product_type::*genMatchedObjects = &product_type::m_genMatchedTaus,
+	                  std::map<KTau*, KGenParticle*> product_type::*genParticleMatchedObjects = &product_type::m_genParticleMatchedTaus,
 	                  KTauMetadata* event_type::*objectMetaInfo = &event_type::m_tauMetadata);
 
 	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE;
@@ -159,7 +159,7 @@ public:
 	KappaJetsConsumer(std::string treeName = "jets",
 	                  std::vector<KBasicJet*> product_type::*validObjects = &product_type::m_validJets,
 	                  bool (setting_type::*GetBranchGenMatchedObjects)(void) const = &setting_type::GetBranchGenMatchedJets,
-	                  std::map<KBasicJet*, KGenParticle*> product_type::*genMatchedObjects = &product_type::m_genMatchedJets);
+	                  std::map<KBasicJet*, KGenParticle*> product_type::*genParticleMatchedObjects = &product_type::m_genParticleMatchedJets);
 
 	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE;
 };
@@ -173,7 +173,7 @@ public:
 	KappaTaggedJetsConsumer(std::string treeName = "jets",
 	                        std::vector<KDataPFTaggedJet*> product_type::*validObjects = &product_type::m_validJets,
 	                        bool (setting_type::*GetBranchGenMatchedObjects)(void) const = &setting_type::GetBranchGenMatchedJets,
-	                        std::map<KDataPFTaggedJet*, KGenParticle*> product_type::*genMatchedObjects = &product_type::m_genMatchedJets,
+	                        std::map<KDataPFTaggedJet*, KGenParticle*> product_type::*genParticleMatchedObjects = &product_type::m_genParticleMatchedJets,
 	                        KTaggerMetadata* event_type::*objectMetaInfo = &event_type::m_taggerMetadata);
 
 	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE;

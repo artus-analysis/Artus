@@ -159,22 +159,16 @@ class HarryCore(object):
 		ROOT.TH1.SetDefaultSumw2(True)
 		ROOT.gROOT.SetBatch(True)
 		
-		# export arguments into JSON file
+		# export arguments into JSON file (1)
 		# remove entries from dictionary that are not meant to be exported
-		if self.args["export_json"] != None:
-			save_args = dict(self.args)
-			save_args.pop("quantities")
-			save_args.pop("export_json")
-			save_args.pop("live")
-			save_args.pop("json_defaults")
-			if self.args["export_json"] != "":
-				save_name = self.args["export_json"]
-			else:
-				save_name = self.args["json_defaults"][0]
-
-			if save_name != None:
-				JsonDict(save_args).save(save_name, indent=4)
-			else: log.warning("No JSON could be exported. Please provide a filename.")
+		export_args = JsonDict(copy.deepcopy(plotData.plotdict))
+		export_args.pop("quantities")
+		export_args.pop("export_json")
+		export_args.pop("live")
+		export_args.pop("json_defaults")
+		
+		if plotData.plotdict["export_json"] == "update":
+			plotData.plotdict["export_json"] = "default" if plotData.plotdict["json_defaults"] is None else plotData.plotdict["json_defaults"][0]
 		
 		# prepare aguments for all processors before running them
 		for processor in self.processors:
@@ -183,6 +177,11 @@ class HarryCore(object):
 			processor.run(tmpPlotData)
 			if not isinstance(processor, PlotBase):
 				plotData = tmpPlotData
+		plotData = tmpPlotData
+		
+		# export arguments into JSON file (2)
+		if plotData.plotdict["export_json"] != "default":
+			export_args.save(plotData.plotdict["export_json"], indent=4)
 		
 		del(plotData)
 	
@@ -221,25 +220,25 @@ class HarryCore(object):
 	def _print_available_modules(self):
 		"""Prints all available modules to stdout."""
 
-		print "Input modules:"
+		log.info("Input modules:")
 		input_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], InputBase)])
 		for module in input_modules:
-			print "\t{}".format(module)
+			log.info("\t{}".format(module))
 			if inspect.getdoc(self.available_processors[module]):
-				print "\t\t{}".format(inspect.getdoc(self.available_processors[module]))
-		print ""
-		print "Analysis modules:"
+				log.info("\t\t{}".format(inspect.getdoc(self.available_processors[module])))
+		log.info("")
+		log.info("Analysis modules:")
 		analysis_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], AnalysisBase)])
 		for module in analysis_modules:
-			print "\t{}".format(module)
+			log.info("\t{}".format(module))
 			if inspect.getdoc(self.available_processors[module]):
-				print "\t\t{}".format(inspect.getdoc(self.available_processors[module]))
-		print ""
-		print "Plot modules:"
+				log.info("\t\t{}".format(inspect.getdoc(self.available_processors[module])))
+		log.info("")
+		log.info("Plot modules:")
 		plot_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], PlotBase)])
 		for module in plot_modules:
-			print "\t{}".format(module)
+			log.info("\t{}".format(module))
 			if inspect.getdoc(self.available_processors[module]):
-				print "\t{}".format(inspect.getdoc(self.available_processors[module]))
+				log.info("\t{}".format(inspect.getdoc(self.available_processors[module])))
 
 

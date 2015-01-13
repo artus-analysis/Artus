@@ -16,9 +16,9 @@ class GenMatchingFilterBase: public FilterBase<KappaTypes>
 
 public:
 	
-	GenMatchingFilterBase(std::map<TValidObject*, KGenParticle*> KappaProduct::*genMatchedObjects,
-	                          std::vector<TValidObject*> KappaProduct::*validObjects) :
-		m_genMatchedObjects(genMatchedObjects),
+	GenMatchingFilterBase(std::map<TValidObject*, KGenParticle*> KappaProduct::*genParticleMatchedObjects,
+	                      std::vector<TValidObject*> KappaProduct::*validObjects) :
+		m_genParticleMatchedObjects(genParticleMatchedObjects),
 		m_validObjects(validObjects)
 	{
 	}
@@ -26,7 +26,7 @@ public:
 	virtual bool DoesEventPass(KappaEvent const& event, KappaProduct const& product,
 	                           KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
 	{
-		if ((product.*m_genMatchedObjects).size() == 0) 
+		if ((product.*m_genParticleMatchedObjects).size() == 0) 
 		{
 			return false;
 		}
@@ -38,7 +38,7 @@ public:
 
 
 private:
-	std::map<TValidObject*, KGenParticle*> KappaProduct::*m_genMatchedObjects;
+	std::map<TValidObject*, KGenParticle*> KappaProduct::*m_genParticleMatchedObjects;
 	std::vector<TValidObject*> KappaProduct::*m_validObjects;
 
 };
@@ -59,8 +59,8 @@ public:
 	}
 	
 	ElectronGenMatchingFilter() :
-		GenMatchingFilterBase<KElectron>(&KappaProduct::m_genMatchedElectrons,
-		                                     &KappaProduct::m_validElectrons)
+		GenMatchingFilterBase<KElectron>(&KappaProduct::m_genParticleMatchedElectrons,
+		                                 &KappaProduct::m_validElectrons)
 	{
 	}
 
@@ -82,8 +82,8 @@ public:
 	}
 	
 	MuonGenMatchingFilter() :
-		GenMatchingFilterBase<KMuon>(&KappaProduct::m_genMatchedMuons,
-		                                 &KappaProduct::m_validMuons)
+		GenMatchingFilterBase<KMuon>(&KappaProduct::m_genParticleMatchedMuons,
+		                             &KappaProduct::m_validMuons)
 	{
 	}
 
@@ -105,8 +105,8 @@ public:
 	}
 	
 	TauGenMatchingFilter() :
-		GenMatchingFilterBase<KTau>(&KappaProduct::m_genMatchedTaus,
-		                                  &KappaProduct::m_validTaus)
+		GenMatchingFilterBase<KTau>(&KappaProduct::m_genParticleMatchedTaus,
+		                            &KappaProduct::m_validTaus)
 	{
 	}
 
@@ -128,8 +128,8 @@ public:
 	}
 	
 	JetGenMatchingFilter() :
-		GenMatchingFilterBase<KBasicJet>(&KappaProduct::m_genMatchedJets,
-		                                  &KappaProduct::m_validJets)
+		GenMatchingFilterBase<KBasicJet>(&KappaProduct::m_genParticleMatchedJets,
+		                                 &KappaProduct::m_validJets)
 	{
 	}
 

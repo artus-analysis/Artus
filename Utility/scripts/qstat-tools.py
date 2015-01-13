@@ -44,7 +44,7 @@ def main():
 	# parse output
 	parsed_qstat_output = {}
 	for job in qstat_output:
-		parsed_job = re.match("(?P<jobid>\d+)\s+"+
+		parsed_job = re.match("\s*(?P<jobid>\d+)\s+"+
 		                      "(?P<prior>\d+.?\d*)\s+"+
 		                      "(?P<name>\S+)\s+"+
 		                      "(?P<user>\S+)\s+"+
