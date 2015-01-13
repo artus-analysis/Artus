@@ -27,12 +27,12 @@ def main():
 	lumis.GetEntry(0)
 	
 	log.info("\nNames of available binary discriminators:")
-	binaryDiscriminators = lumis.hpsPFTaus.binaryDiscriminatorNames
+	binaryDiscriminators = lumis.taus.binaryDiscriminatorNames
 	for binaryDiscriminator in binaryDiscriminators:
 		log.info("\t" + binaryDiscriminator)
 	
 	log.info("\nNames of available floating-point-type discriminators:")
-	floatDiscriminators = lumis.hpsPFTaus.floatDiscriminatorNames
+	floatDiscriminators = lumis.taus.floatDiscriminatorNames
 	for floatDiscriminator in floatDiscriminators:
 		log.info("\t" + floatDiscriminator)
 

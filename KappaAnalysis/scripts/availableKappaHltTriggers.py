@@ -26,7 +26,7 @@ def main():
 	lumis = root_file.Get("Lumis")
 	lumis.GetEntry(0)
 	
-	hltNames = lumis.KLumiMetadata.hltNames
+	hltNames = lumis.lumiInfo.hltNames
 	for hltName in hltNames:
 		log.info(hltName)
 

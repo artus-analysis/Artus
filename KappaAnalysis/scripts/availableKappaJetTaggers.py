@@ -27,14 +27,14 @@ def main():
 	lumis.GetEntry(0)
 	
 	log.info("\nNames of available jet taggers:")
-	taggernames = lumis.KTaggerMetadata.taggernames
-	for taggername in taggernames:
-		log.info("\t" + taggername)
+	tagNames = lumis.jetMetadata.tagNames
+	for tagName in tagNames:
+		log.info("\t" + tagName)
 	
-	log.info("\nNames of available PU jet IDs:")
-	pujetidnames = lumis.KTaggerMetadata.pujetidnames
-	for pujetidname in pujetidnames:
-		log.info("\t" + pujetidname)
+	log.info("\nNames of available jet IDs:")
+	idNames = lumis.jetMetadata.idNames
+	for idName in idNames:
+		log.info("\t" + idName)
 
 
 if __name__ == "__main__":
