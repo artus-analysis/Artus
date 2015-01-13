@@ -76,7 +76,9 @@ class ArtusWrapper(object):
 				log.info("$%s = %s" % (envvar, os.environ.get(envvar, "")))
 
 		#Run Artus if desired
-		if self._args.batch:
+		if self._args.profile:
+			exitCode = self.measurePerformance()
+		elif self._args.batch:
 			exitCode = self.sendToBatchSystem()
 		elif not self._args.no_run:
 			exitCode = self.callExecutable()
@@ -334,6 +336,8 @@ class ArtusWrapper(object):
 		runningOptionsGroup = self._parser.add_argument_group("Running options")
 		runningOptionsGroup.add_argument("--no-run", default=False, action="store_true",
 		                                 help="Exit before running Artus to only check the configs.")
+		runningOptionsGroup.add_argument("--profile", default=False, action="store_true",
+		                                 help="Measure performance with profiler.")
 		runningOptionsGroup.add_argument("-r", "--root", default=False, action="store_true",
 		                                 help="Open output file in ROOT TBrowser after completion.")
 		runningOptionsGroup.add_argument("-b", "--batch", default=False, action="store_true",
@@ -434,6 +438,35 @@ class ArtusWrapper(object):
 			log.info(self._configFilename)
 
 		return exitCode
+
+
+	def measurePerformance(self):
+		"""run Artus with profiler"""
+
+		# check output directory
+		outputDir = os.path.dirname(self._args.output_file)
+		if outputDir and not os.path.exists(outputDir):
+			os.makedirs(outputDir)
+
+		# call C++ executable with profiler
+		profile_outputs = [os.path.join(outputDir, filename) for filename in ["igprof.pp.gz", "igprof.analyse.txt", "igprof.analyse.sql3"]]
+		
+		commands = [
+			# "valgrind --tool=callgrind --callgrind-out-file=" + profile_output + " " + self._executable + " " + self._configFilename,
+			# "callgrind_annotate --auto=yes " + profile_output,
+			"igprof -d -pp -z -o " + profile_outputs[0] + " " + self._executable + " " + self._configFilename,
+			"execute-command.sh \"igprof-analyse -d -v -g " + profile_outputs[0] + " > " + profile_outputs[1] + "\"",
+			"execute-command.sh \"igprof-analyse --sqlite -d -v -g " + profile_outputs[0] + " | sqlite3 " + profile_outputs[2] + "\"",
+			"igprof-navigator " + profile_outputs[2],
+		]
+		
+		for command in commands:
+			log.info("Execute \"%s\"." % command)
+			logger.subprocessCall(command.split(), shell=True)
+		
+		log.info("Profiling output is written to \"%s\"." % "\", \"".join(profile_outputs))
+
+		return 0
 
 
 	def callExecutable(self):

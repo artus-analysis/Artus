@@ -12,6 +12,8 @@ import getpass
 import math
 import re
 import subprocess
+import sys
+import time
 
 
 def progress_bar(n_running, n_all, n_norm, size):
@@ -24,17 +26,7 @@ def progress_bar(n_running, n_all, n_norm, size):
 	return "%s%s%s" % (running_char*n_running_chars, queued_char*n_queued_chars, free_char*n_free_chars)
 
 
-def main():
-	
-	parser = argparse.ArgumentParser(description="Print qstat summary table.", parents=[logger.loggingParser])
-	
-	parser.add_argument("-s", "--sort-state", default="r",
-	                    help="State to be used for sorting. [Default: %(default)s]")
-	parser.add_argument("--norm-total-jobs", default=False, action="store_true",
-	                    help="Norm progress bar to total number of jobs in batch system. [Default: Norm to user with most job in system.]")
-	
-	args = parser.parse_args()
-	logger.initLogger(args)
+def print_qstat_table(args):
 	
 	# call qstat
 	qstat_command = "qstat -u '*' -s prs"
@@ -92,7 +84,27 @@ def main():
 		qstat_table += ("\n" + (("\033[0;31;47m"+line+"\033[0m") if user == getpass.getuser() else line))
 	
 	# output table
-	log.info(qstat_table)
+	sys.stdout.write("\033[2J")
+	sys.stdout.write(qstat_table)
+	sys.stdout.flush()
+
+
+def main():
+	
+	parser = argparse.ArgumentParser(description="Print qstat summary table.", parents=[logger.loggingParser])
+	
+	parser.add_argument("-s", "--sort-state", default="r",
+	                    help="State to be used for sorting. [Default: %(default)s]")
+	parser.add_argument("--norm-total-jobs", default=False, action="store_true",
+	                    help="Norm progress bar to total number of jobs in batch system. [Default: Norm to user with most job in system.]")
+	
+	args = parser.parse_args()
+	logger.initLogger(args)
+	
+	while True:
+		print_qstat_table(args)
+		break
+		time.sleep(2)
 
 
 if __name__ == "__main__":

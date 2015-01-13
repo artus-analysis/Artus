@@ -38,7 +38,7 @@ class InputFile(inputbase.InputBase):
 				tmp_file = os.path.join(directory, file_arg) if directory else file_arg
 				files.extend(glob.glob(tmp_file))
 			if len(files) == 0:
-				log.error("Input argument %d does not contain any existing files!" % index)
+				log.error("Input argument %d (%s) does not contain any existing files!" % (index, file_args))
 				sys.exit(1)
 			plotData.plotdict["files"][index] = files
 	
