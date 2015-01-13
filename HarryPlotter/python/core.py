@@ -101,7 +101,7 @@ class HarryCore(object):
 			json_defaults = JsonDict(self.args["json_defaults"]).doIncludes().doComments()
 			#set_defaults will overwrite/ignore the json_default argument. Cannot be used.
 			no_default_args = dict((k,v) for (k,v) in self.args.items() if not self.parser.get_default(k) == self.args[k] )
-			self.args = dict(json_defaults.items() + no_default_args.items())
+			self.args.update(dict(json_defaults.items() + no_default_args.items()))
 
 		# replace 'json_defaults' from imported json file to actual name of imported json file
 		if json_default_initialisation != None:
