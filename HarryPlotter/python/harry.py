@@ -57,5 +57,5 @@ class HarryPlotter(object):
 		if len(failed_plots) > 0:
 			log.error("%d failed plots:" % len(failed_plots))
 			for failed_plot in failed_plots:
-				log.info("\t%s" % " ".join(failed_plot))
+				log.info("\t%s" % failed_plot)
 
