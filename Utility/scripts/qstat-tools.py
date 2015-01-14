@@ -27,12 +27,12 @@ def progress_bar(n_running, n_all, n_norm, size):
 
 
 def print_qstat_table(args):
-	
+
 	# call qstat
 	qstat_command = "qstat -u '*' -s prs"
 	qstat_output = subprocess.Popen(qstat_command, stdout=subprocess.PIPE, shell=True).communicate()[0].split("\n")[2:]
 	qstat_output = [job for job in qstat_output if job != ""]
-	
+
 	# parse output
 	parsed_qstat_output = {}
 	for job in qstat_output:
@@ -45,7 +45,7 @@ def print_qstat_table(args):
 		                      ".*", job).groupdict()
 		parsed_qstat_output.setdefault(parsed_job["user"], {}).setdefault(parsed_job["state"], []).append(parsed_job["jobid"])
 		parsed_qstat_output.setdefault(parsed_job["user"], {}).setdefault("all", []).append(parsed_job["jobid"])
-	
+
 	# check states
 	states = list(set([state for states in [state_jobids.keys() for state_jobids in parsed_qstat_output.values()] for state in states if (not args.simple_mode or state in ['all', 'r'])]))
 	sort_state = args.sort_state if args.sort_state in states else states[-1]
@@ -53,7 +53,7 @@ def print_qstat_table(args):
 	states.sort()
 	states.append(states.pop(states.index("all")))
 	states.insert(0, states.pop(states.index(sort_state)))
-	
+
 	# check users
 	users = sorted(parsed_qstat_output.keys(), reverse=True,
 	               key=lambda user: len(parsed_qstat_output[user].get(sort_state, [])))
@@ -91,29 +91,38 @@ def print_qstat_table(args):
 		qstat_table += ("\n" + (("\033[0;31;47m"+line+"\033[0m") if user == getpass.getuser() else line))
 
 	# output table
-	sys.stdout.write("\033[2J")
+	if args.continuous_mode != 0:
+		sys.stdout.write("\033[?1049h\033[2J") # switch to alternative buffer, like e.g. screen does
 	sys.stdout.write(qstat_table)
 	sys.stdout.flush()
 
 
 def main():
-	
+
 	parser = argparse.ArgumentParser(description="Print qstat summary table.", parents=[logger.loggingParser])
-	
+
 	parser.add_argument("-s", "--sort-state", default="r",
 	                    help="State to be used for sorting. [Default: %(default)s]")
 	parser.add_argument("--norm-total-jobs", default=False, action="store_true",
 	                    help="Norm progress bar to total number of jobs in batch system. [Default: Norm to user with most job in system.]")
 	parser.add_argument("-S", "--simple-mode", default=False, action="store_true",
-	                    help="Simple mode. Only display running and all jobs.")
-	
+	                    help="Simple mode. Only display all and running jobs.")
+	parser.add_argument("-c", "--continuous-mode", default=0, type=int,
+	                    help="Continuous mode. Argument is refresh interval. Default is non-continuous mode.")
+
 	args = parser.parse_args()
 	logger.initLogger(args)
-	
+
 	while True:
-		print_qstat_table(args)
-		break # TODO remove this after completion of continous mode functionality
-		time.sleep(2)
+		try:
+			print_qstat_table(args)
+			if args.continuous_mode == 0:
+				break
+			time.sleep(args.continuous_mode)
+		except:
+			sys.stdout.write("\033[?1049l") # switch back to default buffer
+			sys.stdout.flush()
+			sys.exit(0)
 
 
 if __name__ == "__main__":
