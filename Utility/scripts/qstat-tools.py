@@ -58,31 +58,38 @@ def print_qstat_table(args):
 	users = sorted(parsed_qstat_output.keys(), reverse=True,
 	               key=lambda user: len(parsed_qstat_output[user].get(sort_state, [])))
 	max_len_users = max([len(user) for user in users])
-	
+
 	tty_width = tools.get_tty_size()[1]
-	
+
 	n_total_jobs = sum([len(state_jobids.get("all", [])) for state_jobids in parsed_qstat_output.values()])
 	max_n_jobs = max([len(state_jobids.get("all", [])) for state_jobids in parsed_qstat_output.values()])
-	
+	max_n_jobs_len = max(len(str(max_n_jobs)), max([len(s) for s in states]))
+
+	# get length of maximum number of jobs per state (to adjust column width)
+	length_dict = {}
+	for state in states:
+		length_dict[state] = max([len(str(max([len(state_jobids.get(state, [])) for state_jobids in parsed_qstat_output.values()]))), len(state)])
+
 	# format table header
 	qstat_table = ((" \033[0;1m%" + ("%d" % max_len_users) + "s\033[0m | ") % "User")
+	line = ("-" * (max_len_users+2))
 	for state in states:
-		qstat_table += ("\033[0;1m%6s\033[0m | " % state)
-	line = (("-" * (max_len_users+2)) + (("|" + ("-"*8)) * len(states)) + "|")
-	line += ("-" * (tty_width-len(line)))
+		qstat_table += ("\033[0;1m%*s\033[0m | " % (length_dict[state] ,state))
+		line += "|" + "-" * (length_dict[state] +2)
+	line += "|"+ ("-" * (tty_width-len(line)-1))
 	qstat_table += ("\n" + line)
-	
+
 	# format table body
 	for user in users:
-		line = ((" %" + ("%d" % max_len_users) + "s | ") % user)
+		line = ((" %" + ("%*d" % (max_n_jobs_len, max_len_users)) + "s | ") % user)
 		for state in states:
-			line += ("%6d | " % len(parsed_qstat_output[user].get(state, [])))
+			line += ("%*d | " % (length_dict[state], len(parsed_qstat_output[user].get(state, [])))   )
 		line += progress_bar(len(parsed_qstat_output[user].get("r", [])),
 		                     len(parsed_qstat_output[user].get("all", [])),
 		                     n_total_jobs if args.norm_total_jobs else max_n_jobs,
 		                     tty_width-len(line))
 		qstat_table += ("\n" + (("\033[0;31;47m"+line+"\033[0m") if user == getpass.getuser() else line))
-	
+
 	# output table
 	sys.stdout.write("\033[2J")
 	sys.stdout.write(qstat_table)
@@ -103,7 +110,7 @@ def main():
 	
 	while True:
 		print_qstat_table(args)
-		break
+		break # TODO remove this after completion of continous mode functionality
 		time.sleep(2)
 
 
