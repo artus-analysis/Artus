@@ -47,7 +47,7 @@ def print_qstat_table(args):
 		parsed_qstat_output.setdefault(parsed_job["user"], {}).setdefault("all", []).append(parsed_job["jobid"])
 	
 	# check states
-	states = list(set([state for states in [state_jobids.keys() for state_jobids in parsed_qstat_output.values()] for state in states]))
+	states = list(set([state for states in [state_jobids.keys() for state_jobids in parsed_qstat_output.values()] for state in states if (not args.simple_mode or state in ['all', 'r'])]))
 	sort_state = args.sort_state if args.sort_state in states else states[-1]
 	#states.sort(cmp=lambda s1, s2: -1 if sort_state in (s1, s2) else (+1 if "all" in (s1, s2) else cmp(s1, s2)))
 	states.sort()
@@ -104,6 +104,8 @@ def main():
 	                    help="State to be used for sorting. [Default: %(default)s]")
 	parser.add_argument("--norm-total-jobs", default=False, action="store_true",
 	                    help="Norm progress bar to total number of jobs in batch system. [Default: Norm to user with most job in system.]")
+	parser.add_argument("-S", "--simple-mode", default=False, action="store_true",
+	                    help="Simple mode. Only display running and all jobs.")
 	
 	args = parser.parse_args()
 	logger.initLogger(args)
