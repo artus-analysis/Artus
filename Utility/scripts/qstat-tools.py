@@ -26,7 +26,7 @@ def progress_bar(n_running, n_all, n_norm, size):
 	return "%s%s%s" % (running_char*n_running_chars, queued_char*n_queued_chars, free_char*n_free_chars)
 
 
-def print_qstat_table(args):
+def print_qstat_table(args, previous_users=[]):
 
 	# call qstat
 	qstat_command = "qstat -u '*' -s prs"
@@ -58,8 +58,25 @@ def print_qstat_table(args):
 	users = sorted(parsed_qstat_output.keys(), reverse=True,
 	               key=lambda user: len(parsed_qstat_output[user].get(sort_state, [])))
 	max_len_users = max([len(user) for user in users])
-
 	tty_width = tools.get_tty_size()[1]
+
+	# get a list of up/down arrow symbols by comparing rank to previous rank
+	symbols = []
+	for rank, user in enumerate(users):
+		# get previous rank
+		if user in previous_users:
+			previous_rank = previous_users.index(user)
+		else:
+			previous_rank = -1
+		# get symbol according to rank - previous-rank comparison
+		if previous_rank == -1:
+			symbols += [" "]
+		elif rank<previous_rank:
+			symbols += ["\033[1;32m%s\033[0m" % u"\u2191".encode('utf8')]
+		elif rank>previous_rank:
+			symbols += ["\033[1;31m%s\033[0m" % u"\u2193".encode('utf8')]
+		else:
+			symbols += [" "]
 
 	n_total_jobs = sum([len(state_jobids.get("all", [])) for state_jobids in parsed_qstat_output.values()])
 	max_n_jobs = max([len(state_jobids.get("all", [])) for state_jobids in parsed_qstat_output.values()])
@@ -71,30 +88,31 @@ def print_qstat_table(args):
 		length_dict[state] = max([len(str(max([len(state_jobids.get(state, [])) for state_jobids in parsed_qstat_output.values()]))), len(state)])
 
 	# format table header
-	qstat_table = ((" \033[0;1m%" + ("%d" % max_len_users) + "s\033[0m | ") % "User")
-	line = ("-" * (max_len_users+2))
+	qstat_table = ((" \033[0;1m%" + ("%d" % (max_len_users + 1)) + "s\033[0m | ") % "User")
+	second_line = ("-" * (max_len_users+3))
 	for state in states:
 		qstat_table += ("\033[0;1m%*s\033[0m | " % (length_dict[state] ,state))
-		line += "|" + "-" * (length_dict[state] +2)
-	line += "|"+ ("-" * (tty_width-len(line)-1))
-	qstat_table += ("\n" + line)
+		second_line += "|" + "-" * (length_dict[state] +2)
+	second_line += "|"+ ("-" * (tty_width-len(second_line)-1))
+	qstat_table += ("\n" + second_line)
 
 	# format table body
-	for user in users:
-		line = ((" %" + ("%*d" % (max_n_jobs_len, max_len_users)) + "s | ") % user)
+	for user, symbol in zip(users, symbols):
+		line = (("%" + ("%*d" % (max_n_jobs_len, max_len_users)) + "s | ") % user)
 		for state in states:
-			line += ("%*d | " % (length_dict[state], len(parsed_qstat_output[user].get(state, [])))   )
+			line += ("%*d | " % (length_dict[state], len(parsed_qstat_output[user].get(state, []))) )
 		line += progress_bar(len(parsed_qstat_output[user].get("r", [])),
 		                     len(parsed_qstat_output[user].get("all", [])),
 		                     n_total_jobs if args.norm_total_jobs else max_n_jobs,
-		                     tty_width-len(line))
-		qstat_table += ("\n" + (("\033[0;31;47m"+line+"\033[0m") if user == getpass.getuser() else line))
+		                     tty_width-len(line)-2)
+		qstat_table += ("\n" + symbol + " " + (("\033[0;31;47m"+line+"\033[0m") if user == getpass.getuser() else line))
 
 	# output table
 	if args.continuous_mode != 0:
 		sys.stdout.write("\033[?1049h\033[2J") # switch to alternative buffer, like e.g. screen does
 	sys.stdout.write(qstat_table)
 	sys.stdout.flush()
+	return users
 
 
 def main():
@@ -113,9 +131,10 @@ def main():
 	args = parser.parse_args()
 	logger.initLogger(args)
 
+	users = []
 	while True:
 		try:
-			print_qstat_table(args)
+			users = print_qstat_table(args, users)
 			if args.continuous_mode == 0:
 				break
 			time.sleep(args.continuous_mode)
