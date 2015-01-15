@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 project (Artus)
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wfatal-errors -std=c++0x -fpic -Wall -O2 -g")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wfatal-errors -std=c++0x -fpic -Wall -O2 -g -Wno-unused-local-typedefs")
 
 # to compile with clang, use: cmake . -DCMAKE_CXX_COMPILER=/usr/bin/clang++ -DCMAKE_C_COMPILER=/usr/bin/clang
 
@@ -50,7 +50,7 @@ add_library(artus_configuration SHARED
 
 if ( USE_BOOST_CMSSW )
 	target_link_libraries( artus_configuration
-			-L${BOOST_LIB_DIR 	
+			-L${BOOST_LIB_DIR}
 	        boost_program_options)
 else()
 	target_link_libraries( artus_configuration 	
