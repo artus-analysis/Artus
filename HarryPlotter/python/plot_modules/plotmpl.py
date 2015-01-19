@@ -108,7 +108,7 @@ class PlotMpl(plotbase.PlotBase):
 			self.ax2.set_ylim(plotData.plotdict["y_ratio_lims"][0],plotData.plotdict["y_ratio_lims"][1])
 
 	def prepare_histograms(self, plotData):
-		self.bottom_y_values = {}
+		super(PlotMpl, self).prepare_histograms(plotData)
 
 
 	def make_plots(self, plotData):
