@@ -111,6 +111,18 @@ public:
 	std::map<KLepton*, const KGenParticle*> m_genParticleMatchedLeptons;
 	float m_ratioGenParticleMatched;
 	float m_genParticleMatchDeltaR;
+
+	/// added by GenTauMatchingProducers
+	std::map<KElectron*, KGenTau*> m_genTauMatchedElectrons;
+	std::map<KMuon*, KGenTau*> m_genTauMatchedMuons;
+	std::map<KTau*, KGenTau*> m_genTauMatchedTaus;
+	float m_ratioGenTauMatched;
+	float m_genTauMatchDeltaR;
+
+	/// added by GenTauJetMatchingProducers
+	std::map<KElectron*, KGenJet*> m_genTauJetMatchedElectrons;
+	std::map<KMuon*, KGenJet*> m_genTauJetMatchedMuons;
+	std::map<KTau*, KGenJet*> m_genTauJetMatchedTaus;
 	
 	// MVA outputs
 	std::vector<double> m_discriminators;

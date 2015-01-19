@@ -29,6 +29,8 @@
 #include "Artus/KappaAnalysis/interface/Producers/GenPartonCounterProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/EmbeddingWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/NicknameProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/GenTauMatchingProducers.h"
+#include "Artus/KappaAnalysis/interface/Producers/GenTauJetMatchingProducers.h"
 
 // filter
 #include "Artus/KappaAnalysis/interface/Filters/RunLumiEventFilter.h"
@@ -127,6 +129,18 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new EmbeddingWeightProducer();
 	else if(id == NicknameProducer().GetProducerId())
 		return new NicknameProducer();
+	else if(id == RecoElectronGenTauMatchingProducer().GetProducerId())
+		return new RecoElectronGenTauMatchingProducer();
+	else if(id == RecoMuonGenTauMatchingProducer().GetProducerId())
+		return new RecoMuonGenTauMatchingProducer();
+	else if(id == RecoTauGenTauMatchingProducer().GetProducerId())
+		return new RecoTauGenTauMatchingProducer();
+	else if(id == RecoElectronGenTauJetMatchingProducer().GetProducerId())
+		return new RecoElectronGenTauJetMatchingProducer();
+	else if(id == RecoMuonGenTauJetMatchingProducer().GetProducerId())
+		return new RecoMuonGenTauJetMatchingProducer();
+	else if(id == RecoTauGenTauJetMatchingProducer().GetProducerId())
+		return new RecoTauGenTauJetMatchingProducer();
 	else
 		return FactoryBase::createProducer( id );	
 }

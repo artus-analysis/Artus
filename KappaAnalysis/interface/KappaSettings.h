@@ -141,6 +141,22 @@ public:
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenParticleMatchingRecoMuons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenParticleMatchingRecoTaus, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenParticleMatchingRecoJets, false);
+
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoElectronGenTau, 0.5);
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoMuonGenTau, 0.5);
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoTauGenTau, 0.5);
+	
+	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenTauMatchingRecoElectrons, false);
+	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenTauMatchingRecoMuons, false);
+	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenTauMatchingRecoTaus, false);
+
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoElectronGenTauJet, 0.5);
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoMuonGenTauJet, 0.5);
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoTauGenTauJet, 0.5);
+	
+	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenTauJetMatchingRecoElectrons, false);
+	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenTauJetMatchingRecoMuons, false);
+	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenTauJetMatchingRecoTaus, false);
 	
 	IMPL_SETTING(int, Year);
 	
