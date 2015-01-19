@@ -32,6 +32,8 @@ class PlotMpl(plotbase.PlotBase):
 		super(PlotMpl, self).modify_argument_parser(parser, args)
 		self.formatting_options.add_argument("--colormap", default="afmhot", nargs="?",
 		                                     help="Colormap for matplotlib [Default: 'afmhot']")
+		self.formatting_options.add_argument("--edgecolors", nargs="+",
+		                                     help="Edgecolor to be passed to plot objects.")
 		self.formatting_options.add_argument("--step", default=False, type='bool', nargs="+",
 		                                     help="Step lines according to bin edges instead of connecting points.")
 		self.formatting_options.add_argument("--zorder", type=int, nargs="+",
@@ -40,7 +42,7 @@ class PlotMpl(plotbase.PlotBase):
 	def prepare_args(self, parser, plotData):
 		super(PlotMpl, self).prepare_args(parser, plotData)
 
-		self.prepare_list_args(plotData, ["nicks", "step", "zorder"])
+		self.prepare_list_args(plotData, ["nicks", "step", "zorder", "edgecolors"])
 		
 		# Set default values for colors if not provided
 		default_colorcycle = cycle(matplotlib.rcParams['axes.color_cycle'])
@@ -49,6 +51,10 @@ class PlotMpl(plotbase.PlotBase):
 				plotData.plotdict["colors"][index] = next(default_colorcycle)
 			else:
 				plotData.plotdict["colors"][index] = color
+		# for index, edgecolor in enumerate(plotData.plotdict["edgecolors"]):
+		# 	if edgecolor is None:
+		# 		plotData.plotdict["edgecolors"][index] = 'black'
+
 		self.set_default_ratio_colors(plotData)
 
 		if plotData.plotdict["legloc"] is None:
@@ -114,7 +120,7 @@ class PlotMpl(plotbase.PlotBase):
 	def make_plots(self, plotData):
 		zip_arguments = self.get_zip_arguments(plotData)
 
-		for nick, color, label, marker, x_error, y_error, linestyle, step, zorder in zip(*zip_arguments):
+		for nick, color, edgecolor, label, marker, x_error, y_error, linestyle, step, zorder in zip(*zip_arguments):
 			log.info("Process nick: {0}".format(nick))
 			root_object = plotData.plotdict["root_objects"][nick]
 
@@ -139,9 +145,9 @@ class PlotMpl(plotbase.PlotBase):
 				self.plot_dimension = mplhist.dimension
 
 				if marker=="bar":
-					self.plot_hist1d(mplhist, style='bar', ax=self.ax, show_yerr=y_error, label=label, color=color, alpha=1.0, zorder=zorder)
+					self.plot_hist1d(mplhist, style='bar', ax=self.ax, show_yerr=y_error, label=label, color=color, edgecolor=edgecolor, alpha=1.0, zorder=zorder)
 				elif marker=='fill':
-					self.plot_hist1d(mplhist, style='fill', ax=self.ax, show_yerr=y_error, label=label, color=color, alpha=1.0, zorder=zorder)
+					self.plot_hist1d(mplhist, style='fill', ax=self.ax, show_yerr=y_error, label=label, color=color, edgecolor=edgecolor, alpha=1.0, zorder=zorder)
 				else:
 					self.plot_errorbar(mplhist, ax=self.ax,
 					                   show_xerr=x_error, show_yerr=y_error,
@@ -366,18 +372,19 @@ class PlotMpl(plotbase.PlotBase):
 			ax = plt.gca()
 
 		color = kwargs.pop('color')
+		edgecolor = kwargs.pop('edgecolor') if kwargs['edgecolor'] else color
 		bottom = kwargs.pop('bottom', 0.)
 		label = kwargs.pop('label', '')
 
 		if style == 'fill':
 			ax.fill_between(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(hist.bincontents), 
-			                y2=bottom, color=color, alpha=1.0, zorder=1)
+			                y2=bottom, color=color, edgecolor=edgecolor, alpha=1.0, zorder=1)
 			# draw the legend proxy
-			artist = plt.Rectangle((0, 0), 0, 0, label=label, facecolor=color, edgecolor='black', alpha=1.0)
+			artist = plt.Rectangle((0, 0), 0, 0, label=label, facecolor=color, edgecolor=edgecolor, alpha=1.0)
 			ax.add_patch(artist)
 		elif style == 'bar':
 			artist = ax.bar(hist.xl, hist.bincontents, hist.xbinwidth, bottom=bottom,
-			                label=label, fill=True, facecolor=color, edgecolor=color, ecolor=color, alpha=1.0)
+			                label=label, fill=True, facecolor=color, edgecolor=edgecolor, ecolor=color, alpha=1.0)
 
 		if show_xerr:
 			xerr = np.array((hist.xerrl, hist.xerru))
@@ -425,6 +432,7 @@ class PlotMpl(plotbase.PlotBase):
 	def get_zip_arguments(self, plotData):
 		zip_arguments = (list(plotData.plotdict["nicks"]),
 		                                 plotData.plotdict["colors"],
+		                                 plotData.plotdict["edgecolors"],
 		                                 plotData.plotdict["labels"],
 		                                 plotData.plotdict["markers"],
 		                                 plotData.plotdict["x_errors"],
