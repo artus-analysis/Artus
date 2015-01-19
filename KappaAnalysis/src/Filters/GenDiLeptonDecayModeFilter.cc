@@ -21,14 +21,16 @@ void GenDiLeptonDecayModeFilter::Init(setting_type const& settings)
 bool GenDiLeptonDecayModeFilter::DoesEventPass(KappaEvent const& event, KappaProduct const& product,
                                                KappaSettings const& settings) const 
 {
+	bool valid = true;
 	if (m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::LL)
 	{
-		return ((product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::EE) ||
-		        (product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::MM) ||
-		        (product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::TT));
+		valid = ((product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::EE) ||
+		         (product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::MM) ||
+		         (product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::TT));
 	}
 	else {
-		return (product.m_genDiLeptonDecayMode == m_genDiLeptonDecayMode);
+		valid = (product.m_genDiLeptonDecayMode == m_genDiLeptonDecayMode);
 	}
+	return (valid != settings.GetInvertGenDiLeptonDecayMode());
 }
 

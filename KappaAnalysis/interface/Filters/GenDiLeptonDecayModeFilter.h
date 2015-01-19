@@ -11,6 +11,7 @@
 /** Filter events by di-lepton decay modes (used for DY events)
  *  Config tags:
  *   - GenDiLeptonDecayMode
+ *   - InvertGenDiLeptonDecayMode (default provided)
  */
 class GenDiLeptonDecayModeFilter: public FilterBase<KappaTypes>
 {
