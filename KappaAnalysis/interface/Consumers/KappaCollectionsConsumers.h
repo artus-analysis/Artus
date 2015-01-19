@@ -9,7 +9,7 @@
 #include "Artus/KappaAnalysis/interface/KappaTypes.h"
 
 
-template<class TObject, class TObjectMetaInfo, class TGenObject>
+template<class TObject, class TObjectMetaInfo>
 class KappaCollectionsConsumerBase: public ConsumerBase<KappaTypes>
 {
 
@@ -23,14 +23,18 @@ public:
 	                             std::vector<TObject*> product_type::*validObjects,
 	                             bool (setting_type::*GetBranchGenMatchedObjects)(void) const,
 	                             TObjectMetaInfo* event_type::*objectMetaInfo = 0,
-	                             std::map<TObject*, TGenObject*> product_type::*genParticleMatchedObjects = 0) :
+	                             std::map<TObject*, KGenParticle*> product_type::*genParticleMatchedObjects = 0,
+	                             std::map<TObject*, KGenTau*> product_type::*genTauMatchedObjects = 0,
+	                             std::map<TObject*, KGenJet*> product_type::*genTauJetMatchedObjects = 0) :
 		ConsumerBase<KappaTypes>(),
 		m_treeName(treeName),
 		m_validObjects(validObjects),
 		GetBranchGenMatchedObjects(GetBranchGenMatchedObjects),
 		m_objectMetaInfo(objectMetaInfo),
 		m_objectMetaInfoAvailable(objectMetaInfo != 0),
-		m_genParticleMatchedObjects(genParticleMatchedObjects)
+		m_genParticleMatchedObjects(genParticleMatchedObjects),
+		m_genTauMatchedObjects(genTauMatchedObjects),
+		m_genTauJetMatchedObjects(genTauJetMatchedObjects)
 	{
 	}
 	
@@ -52,8 +56,14 @@ public:
 		
 		if ((settings.*GetBranchGenMatchedObjects)())
 		{
-			m_tree->Branch("genObject", &m_currentGenObject);
-			m_tree->Branch("genObjectMatched", &m_currentGenObjectMatched, "genObjectMatched/O");
+			m_tree->Branch("genParticle", &m_currentGenParticle);
+			m_tree->Branch("genParticleMatched", &m_currentGenParticleMatched, "genParticleMatched/O");
+			
+			m_tree->Branch("genTau", &m_currentGenTau);
+			m_tree->Branch("genTauMatched", &m_currentGenTauMatched, "genTauMatched/O");
+			
+			m_tree->Branch("genTauJet", &m_currentGenTauJet);
+			m_tree->Branch("genTauJetMatched", &m_currentGenTauJetMatched, "genTauJetMatched/O");
 		}
 	}
 	
@@ -73,9 +83,17 @@ public:
 			
 			if ((settings.*GetBranchGenMatchedObjects)())
 			{
-				KGenParticle* current = SafeMap::GetWithDefault((product.*m_genParticleMatchedObjects), *validObject, (KGenParticle*)(0));
-				m_currentGenObject = (current != 0 ? *(static_cast<TGenObject*>(current)) : TGenObject());
-				m_currentGenObjectMatched = (current != 0);
+				KGenParticle* currentGenParticle = SafeMap::GetWithDefault((product.*m_genParticleMatchedObjects), *validObject, (KGenParticle*)(0));
+				m_currentGenParticle = (currentGenParticle != 0 ? *(static_cast<KGenParticle*>(currentGenParticle)) : KGenParticle());
+				m_currentGenParticleMatched = (currentGenParticle != 0);
+				
+				KGenTau* currentGenTau = SafeMap::GetWithDefault((product.*m_genTauMatchedObjects), *validObject, (KGenTau*)(0));
+				m_currentGenTau = (currentGenTau != 0 ? *(static_cast<KGenTau*>(currentGenTau)) : KGenTau());
+				m_currentGenTauMatched = (currentGenTau != 0);
+				
+				KGenJet* currentGenTauJet = SafeMap::GetWithDefault((product.*m_genTauJetMatchedObjects), *validObject, (KGenJet*)(0));
+				m_currentGenTauJet = (currentGenTauJet != 0 ? *(static_cast<KGenJet*>(currentGenTauJet)) : KGenJet());
+				m_currentGenTauJetMatched = (currentGenTauJet != 0);
 			}
 			
 			m_tree->Fill();
@@ -97,19 +115,25 @@ private:
 	bool (setting_type::*GetBranchGenMatchedObjects)(void) const;
 	TObjectMetaInfo* event_type::*m_objectMetaInfo;
 	bool m_objectMetaInfoAvailable = false;
-	std::map<TObject*, TGenObject*> product_type::*m_genParticleMatchedObjects;
+	std::map<TObject*, KGenParticle*> product_type::*m_genParticleMatchedObjects;
+	std::map<TObject*, KGenTau*> product_type::*m_genTauMatchedObjects;
+	std::map<TObject*, KGenJet*> product_type::*m_genTauJetMatchedObjects;
 	
 	TTree* m_tree = 0;
 	
 	TObject m_currentObject;
 	TObjectMetaInfo m_currentObjectMetaInfo;
-	TGenObject m_currentGenObject;
-	char m_currentGenObjectMatched;
+	KGenParticle m_currentGenParticle;
+	char m_currentGenParticleMatched;
+	KGenTau m_currentGenTau;
+	char m_currentGenTauMatched;
+	KGenJet m_currentGenTauJet;
+	char m_currentGenTauJetMatched;
 };
 
 
 
-class KappaElectronsConsumer: public KappaCollectionsConsumerBase<KElectron, int, KGenParticle>
+class KappaElectronsConsumer: public KappaCollectionsConsumerBase<KElectron, int>
 {
 
 public:
@@ -119,7 +143,7 @@ public:
 
 
 
-class KappaMuonsConsumer: public KappaCollectionsConsumerBase<KMuon, int, KGenParticle>
+class KappaMuonsConsumer: public KappaCollectionsConsumerBase<KMuon, int>
 {
 
 public:
@@ -129,7 +153,7 @@ public:
 
 
 
-class KappaTausConsumer: public KappaCollectionsConsumerBase<KTau, KTauMetadata, KGenParticle>
+class KappaTausConsumer: public KappaCollectionsConsumerBase<KTau, KTauMetadata>
 {
 
 public:
@@ -139,7 +163,7 @@ public:
 
 
 
-class KappaJetsConsumer: public KappaCollectionsConsumerBase<KBasicJet, int, KGenParticle>
+class KappaJetsConsumer: public KappaCollectionsConsumerBase<KBasicJet, int>
 {
 
 public:
@@ -149,7 +173,7 @@ public:
 
 
 /* TODO
-class KappaTaggedJetsConsumer: public KappaCollectionsConsumerBase<KDataPFTaggedJets, KJetMetadata, KGenParticle>
+class KappaTaggedJetsConsumer: public KappaCollectionsConsumerBase<KDataPFTaggedJets, KJetMetadata>
 {
 
 public:

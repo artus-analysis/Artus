@@ -7,7 +7,9 @@ KappaElectronsConsumer::KappaElectronsConsumer() :
 	                             &product_type::m_validElectrons,
 	                             &setting_type::GetBranchGenMatchedElectrons,
 	                             0,
-	                             &product_type::m_genParticleMatchedElectrons)
+	                             &product_type::m_genParticleMatchedElectrons,
+	                             &product_type::m_genTauMatchedElectrons,
+	                             &product_type::m_genTauJetMatchedElectrons)
 {
 }
 
@@ -23,7 +25,9 @@ KappaMuonsConsumer::KappaMuonsConsumer() :
 	                             &product_type::m_validMuons,
 	                             &setting_type::GetBranchGenMatchedMuons,
 	                             0,
-	                             &product_type::m_genParticleMatchedMuons)
+	                             &product_type::m_genParticleMatchedMuons,
+	                             &product_type::m_genTauMatchedMuons,
+	                             &product_type::m_genTauJetMatchedMuons)
 {
 }
 
@@ -39,7 +43,9 @@ KappaTausConsumer::KappaTausConsumer() :
 	                             &product_type::m_validTaus,
 	                             &setting_type::GetBranchGenMatchedTaus,
 	                             &event_type::m_tauMetadata,
-	                             &product_type::m_genParticleMatchedTaus)
+	                             &product_type::m_genParticleMatchedTaus,
+	                             &product_type::m_genTauMatchedTaus,
+	                             &product_type::m_genTauJetMatchedTaus)
 {
 }
 
@@ -55,7 +61,9 @@ KappaJetsConsumer::KappaJetsConsumer() :
 	                             &product_type::m_validJets,
 	                             &setting_type::GetBranchGenMatchedJets,
 	                             0,
-	                             &product_type::m_genParticleMatchedJets)
+	                             &product_type::m_genParticleMatchedJets,
+	                             0,
+	                             0)
 {
 }
 
@@ -71,8 +79,9 @@ KappaTaggedJetsConsumer::KappaTaggedJetsConsumer() :
 	                             &product_type::m_validJets,
 	                             &setting_type::GetBranchGenMatchedJets,
 	                             &event_type::m_jetMetadata,
-	                             &product_type::m_genParticleMatchedJets)
-{
+	                             &product_type::m_genParticleMatchedJets,
+	                             0,
+	                             0) {
 }
 
 std::string KappaTaggedJetsConsumer::GetConsumerId() const
