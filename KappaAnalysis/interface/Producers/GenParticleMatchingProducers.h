@@ -9,12 +9,14 @@
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
 #include "Artus/Utility/interface/DefaultValues.h"
+#include "Artus/Utility/interface/Utility.h"
 
 
 /** Producer for gen matched jets
  *  Required config tags:
  *  - DeltaRMatchingRecoJetGenParticle (default provided)
  *  - InvalidateNonGenParticleMatchingRecoJets (default provided) 
+ *  - InvalidateGenParticleMatchingRecoJets (default provided) 
  *  - JetMatchingAlgorithm (default provided)
  */
 class RecoJetGenParticleMatchingProducer: public KappaProducerBase
@@ -69,17 +71,19 @@ public:
 	typedef typename KappaTypes::setting_type setting_type;
 	
 	RecoLeptonGenParticleMatchingProducerBase(std::map<TLepton*, KGenParticle*> product_type::*genParticleMatchedLeptons,
-	                                std::vector<TLepton*> product_type::*validLeptons,
-	                                std::vector<TLepton*> product_type::*invalidLeptons,
-	                                int absLeptonPdgId,
-	                                float (setting_type::*GetDeltaRMatchingRecoLeptonsGenParticle)(void) const,
-	                                bool (setting_type::*GetInvalidateNonGenParticleMatchingLeptons)(void) const) :
+	                                          std::vector<TLepton*> product_type::*validLeptons,
+	                                          std::vector<TLepton*> product_type::*invalidLeptons,
+	                                          std::vector<int>& (setting_type::*GetRecoLeptonMatchingGenParticlePdgIds)(void) const,
+	                                          float (setting_type::*GetDeltaRMatchingRecoLeptonsGenParticle)(void) const,
+	                                          bool (setting_type::*GetInvalidateNonGenParticleMatchingLeptons)(void) const,
+	                                          bool (setting_type::*GetInvalidateGenParticleMatchingLeptons)(void) const) :
 		m_genParticleMatchedLeptons(genParticleMatchedLeptons),
 		m_validLeptons(validLeptons),
 		m_invalidLeptons(invalidLeptons),
-		m_absLeptonPdgId(absLeptonPdgId),
+		GetRecoLeptonMatchingGenParticlePdgIds(GetRecoLeptonMatchingGenParticlePdgIds),
 		GetDeltaRMatchingRecoLeptonsGenParticle(GetDeltaRMatchingRecoLeptonsGenParticle),
-		GetInvalidateNonGenParticleMatchingLeptons(GetInvalidateNonGenParticleMatchingLeptons)
+		GetInvalidateNonGenParticleMatchingLeptons(GetInvalidateNonGenParticleMatchingLeptons),
+		GetInvalidateGenParticleMatchingLeptons(GetInvalidateGenParticleMatchingLeptons)
 	{
 	}
 
@@ -117,7 +121,8 @@ public:
 					 !leptonMatched && genParticle != event.m_genParticles->end(); ++genParticle) 
 				{
 					// only use genParticles that will decay into comparable particles
-					if (std::abs(genParticle->pdgId()) == m_absLeptonPdgId)
+					if ((settings.*GetRecoLeptonMatchingGenParticlePdgIds)().empty() ||
+					    Utility::Contains((settings.*GetRecoLeptonMatchingGenParticlePdgIds)(), std::abs(genParticle->pdgId())))
 					{
 						deltaR = ROOT::Math::VectorUtil::DeltaR((*validLepton)->p4, genParticle->p4);
 						if(deltaR<(settings.*GetDeltaRMatchingRecoLeptonsGenParticle)())
@@ -126,14 +131,15 @@ public:
 							ratioGenParticleMatched += (1.0 / (product.*m_validLeptons).size());
 							product.m_genParticleMatchDeltaR = deltaR;
 							leptonMatched = true;
-							//LOG(INFO) << this->GetProducerId() << " (event " << event.m_eventInfo->nEvent << "): " << (*validLepton)->p4 << " --> " << genParticle->p4;
+							//LOG(INFO) << this->GetProducerId() << " (event " << event.m_eventInfo->nEvent << "): " << (*validLepton)->p4 << " --> " << genParticle->p4 << ", pdg=" << genParticle->pdgId();
 						}
 						else product.m_genParticleMatchDeltaR = DefaultValues::UndefinedFloat;
 					}
 					else product.m_genParticleMatchDeltaR = DefaultValues::UndefinedFloat;
 				}
-				// invalidate the lepton if the trigger has not matched
-				if ((! leptonMatched) && (settings.*GetInvalidateNonGenParticleMatchingLeptons)())
+				// invalidate (non) matching lepton if requested
+				if (((! leptonMatched) && (settings.*GetInvalidateNonGenParticleMatchingLeptons)()) ||
+				    (leptonMatched && (settings.*GetInvalidateGenParticleMatchingLeptons)()))
 				{
 					(product.*m_invalidLeptons).push_back(*validLepton);
 					validLepton = (product.*m_validLeptons).erase(validLepton);
@@ -144,7 +150,7 @@ public:
 				}
 			}
 			// preserve sorting of invalid leptons
-			if ((settings.*GetInvalidateNonGenParticleMatchingLeptons)())
+			if ((settings.*GetInvalidateNonGenParticleMatchingLeptons)() || (settings.*GetInvalidateGenParticleMatchingLeptons)())
 			{
 				std::sort((product.*m_invalidLeptons).begin(), (product.*m_invalidLeptons).end(),
 						  [](TLepton const* lepton1, TLepton const* lepton2) -> bool
@@ -164,9 +170,10 @@ private:
 	std::map<TLepton*, KGenParticle*> product_type::*m_genParticleMatchedLeptons; //changed to KGenParticle from const KDataLV
 	std::vector<TLepton*> product_type::*m_validLeptons;
 	std::vector<TLepton*> product_type::*m_invalidLeptons;
-	int m_absLeptonPdgId;
+	std::vector<int>& (setting_type::*GetRecoLeptonMatchingGenParticlePdgIds)(void) const;
 	float (setting_type::*GetDeltaRMatchingRecoLeptonsGenParticle)(void) const;
 	bool (setting_type::*GetInvalidateNonGenParticleMatchingLeptons)(void) const;
+	bool (setting_type::*GetInvalidateGenParticleMatchingLeptons)(void) const;
 	
 	std::map<size_t, std::vector<std::string> > m_leptonTriggerFiltersByIndex;
 	std::map<std::string, std::vector<std::string> > m_leptonTriggerFiltersByHltName;
@@ -176,8 +183,10 @@ private:
 
 /** Producer for gen matched electrons
  *  Required config tags:
+ *  - RecoElectronMatchingGenParticlePdgIds (default provided)
  *  - DeltaRMatchingRecoElectronsGenParticle (default provided)
  *  - InvalidateNonGenParticleMatchingRecoElectrons (default provided)
+ *  - InvalidateGenParticleMatchingRecoElectrons (default provided)
  */
 class RecoElectronGenParticleMatchingProducer: public RecoLeptonGenParticleMatchingProducerBase<KElectron>
 {
@@ -193,8 +202,10 @@ public:
 
 /** Producer for gen matched muons
  *  Required config tags:
+ *  - RecoMuonMatchingGenParticlePdgIds (default provided)
  *  - DeltaRMatchingRecoMuonGenParticle (default provided)
  *  - InvalidateNonGenParticleMatchingRecoMuons (default provided)
+ *  - InvalidateGenParticleMatchingRecoMuons (default provided)
  */
 class RecoMuonGenParticleMatchingProducer: public RecoLeptonGenParticleMatchingProducerBase<KMuon>
 {
@@ -210,8 +221,10 @@ public:
 
 /** Producer for gen matched taus
  *  Required config tags:
+ *  - RecoTauMatchingGenParticlePdgIds (default provided)
  *  - DeltaRMatchingRecoTauGenParticle (default provided)
  *  - InvalidateNonGenParticleMatchingRecoTaus (default provided)
+ *  - InvalidateGenParticleMatchingRecoTaus (default provided)
  */
 class RecoTauGenParticleMatchingProducer: public RecoLeptonGenParticleMatchingProducerBase<KTau>
 {

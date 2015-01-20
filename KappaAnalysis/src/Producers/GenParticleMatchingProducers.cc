@@ -1,6 +1,4 @@
 
-#include "Artus/Utility/interface/DefaultValues.h"
-
 #include "Artus/KappaAnalysis/interface/Producers/GenParticleMatchingProducers.h"
 
 
@@ -152,8 +150,9 @@ void RecoJetGenParticleMatchingProducer::Produce(event_type const& event, produc
 				}
 			}
 
-			// invalidate not matching jets
-			if ((! jetMatched) && settings.GetInvalidateNonGenParticleMatchingRecoJets())
+			// invalidate (non) matching jets if requested
+			if (((! jetMatched) && settings.GetInvalidateNonGenParticleMatchingRecoJets()) ||
+			    (jetMatched && settings.GetInvalidateGenParticleMatchingRecoJets()))
 			{
 				product.m_invalidJets.push_back(*validJet);
 				validJet = product.m_validJets.erase(validJet);
@@ -165,7 +164,7 @@ void RecoJetGenParticleMatchingProducer::Produce(event_type const& event, produc
 		}
 		
 		// preserve sorting of invalid jets
-		if (settings.GetInvalidateNonGenParticleMatchingRecoJets())
+		if (settings.GetInvalidateNonGenParticleMatchingRecoJets() || settings.GetInvalidateGenParticleMatchingRecoJets())
 		{
 			std::sort(product.m_invalidJets.begin(), product.m_invalidJets.end(),
 					  [](KBasicJet const* jet1, KBasicJet const* jet2) -> bool
@@ -182,11 +181,12 @@ std::string RecoElectronGenParticleMatchingProducer::GetProducerId() const {
 
 RecoElectronGenParticleMatchingProducer::RecoElectronGenParticleMatchingProducer() :
 	RecoLeptonGenParticleMatchingProducerBase<KElectron>(&product_type::m_genParticleMatchedElectrons,
-	                                                         &product_type::m_validElectrons,
-	                                                         &product_type::m_invalidElectrons,
-	                                                         DefaultValues::pdgIdElectron,
-	                                                         &setting_type::GetDeltaRMatchingRecoElectronsGenParticle,
-	                                                         &setting_type::GetInvalidateNonGenParticleMatchingRecoElectrons)
+	                                                     &product_type::m_validElectrons,
+	                                                     &product_type::m_invalidElectrons,
+	                                                     &setting_type::GetRecoElectronMatchingGenParticlePdgIds,
+	                                                     &setting_type::GetDeltaRMatchingRecoElectronsGenParticle,
+	                                                     &setting_type::GetInvalidateNonGenParticleMatchingRecoElectrons,
+	                                                     &setting_type::GetInvalidateGenParticleMatchingRecoElectrons)
 {
 }
 
@@ -197,11 +197,12 @@ std::string RecoMuonGenParticleMatchingProducer::GetProducerId() const {
 
 RecoMuonGenParticleMatchingProducer::RecoMuonGenParticleMatchingProducer() :
 	RecoLeptonGenParticleMatchingProducerBase<KMuon>(&product_type::m_genParticleMatchedMuons,
-	                                                     &product_type::m_validMuons,
-	                                                     &product_type::m_invalidMuons,
-	                                                     DefaultValues::pdgIdMuon,
-	                                                     &setting_type::GetDeltaRMatchingRecoMuonGenParticle,
-	                                                     &setting_type::GetInvalidateNonGenParticleMatchingRecoMuons)
+	                                                 &product_type::m_validMuons,
+	                                                 &product_type::m_invalidMuons,
+	                                                 &setting_type::GetRecoMuonMatchingGenParticlePdgIds,
+	                                                 &setting_type::GetDeltaRMatchingRecoMuonGenParticle,
+	                                                 &setting_type::GetInvalidateNonGenParticleMatchingRecoMuons,
+	                                                 &setting_type::GetInvalidateGenParticleMatchingRecoMuons)
 {
 }
 
@@ -212,11 +213,12 @@ std::string RecoTauGenParticleMatchingProducer::GetProducerId() const {
 
 RecoTauGenParticleMatchingProducer::RecoTauGenParticleMatchingProducer() :
 	RecoLeptonGenParticleMatchingProducerBase<KTau>(&product_type::m_genParticleMatchedTaus,
-	                                                      &product_type::m_validTaus,
-	                                                      &product_type::m_invalidTaus,
-	                                                      DefaultValues::pdgIdTau,
-	                                                      &setting_type::GetDeltaRMatchingRecoTauGenParticle,
-	                                                      &setting_type::GetInvalidateNonGenParticleMatchingRecoTaus)
+	                                                &product_type::m_validTaus,
+	                                                &product_type::m_invalidTaus,
+	                                                &setting_type::GetRecoTauMatchingGenParticlePdgIds,
+	                                                &setting_type::GetDeltaRMatchingRecoTauGenParticle,
+	                                                &setting_type::GetInvalidateNonGenParticleMatchingRecoTaus,
+	                                                &setting_type::GetInvalidateGenParticleMatchingRecoTaus)
 {
 }
 

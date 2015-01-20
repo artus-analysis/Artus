@@ -133,14 +133,23 @@ public:
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoElectronsGenParticle, 0.5);
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoMuonGenParticle, 0.5);
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoTauGenParticle, 0.5);
-	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoJetGenParticle, 0.3);
 	
+	IMPL_SETTING_INTLIST(RecoElectronMatchingGenParticlePdgIds);
+	IMPL_SETTING_INTLIST(RecoMuonMatchingGenParticlePdgIds);
+	IMPL_SETTING_INTLIST(RecoTauMatchingGenParticlePdgIds);
+	
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoJetGenParticle, 0.3);
 	IMPL_SETTING_DEFAULT(std::string, JetMatchingAlgorithm, "algorithmic");
 	
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenParticleMatchingRecoElectrons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenParticleMatchingRecoMuons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenParticleMatchingRecoTaus, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenParticleMatchingRecoJets, false);
+	
+	IMPL_SETTING_DEFAULT(bool, InvalidateGenParticleMatchingRecoElectrons, false);
+	IMPL_SETTING_DEFAULT(bool, InvalidateGenParticleMatchingRecoMuons, false);
+	IMPL_SETTING_DEFAULT(bool, InvalidateGenParticleMatchingRecoTaus, false);
+	IMPL_SETTING_DEFAULT(bool, InvalidateGenParticleMatchingRecoJets, false);
 
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoElectronGenTau, 0.5);
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoMuonGenTau, 0.5);
