@@ -60,7 +60,7 @@ public:
 
 		//GenMET info
 		if (! settings.GetGenMet().empty())
-			this->m_event.m_genMet = this->template SecureFileInterfaceGet<KMET>(settings.GetGenMet());
+			this->m_event.m_genMet = this->template SecureFileInterfaceGet<KBasicMET>(settings.GetGenMet());
 
 		// PF candidates info
 		if (! settings.GetPFChargedHadronsPileUp().empty())

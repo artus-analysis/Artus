@@ -77,6 +77,7 @@ public:
 					{
 						(product.*m_genTauJetMatchedObjects)[*validObject] = &(*genTauJet);
 						objectMatched = true;
+						//LOG(INFO) << this->GetProducerId() << " (event " << event.m_eventInfo->nEvent << "): " << (*validObject)->p4 << " --> " << genTauJet->p4;
 					}
 				}
 				// invalidate the object if the trigger has not matched

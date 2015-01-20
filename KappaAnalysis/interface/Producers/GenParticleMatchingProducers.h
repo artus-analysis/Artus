@@ -126,6 +126,7 @@ public:
 							ratioGenParticleMatched += (1.0 / (product.*m_validLeptons).size());
 							product.m_genParticleMatchDeltaR = deltaR;
 							leptonMatched = true;
+							//LOG(INFO) << this->GetProducerId() << " (event " << event.m_eventInfo->nEvent << "): " << (*validLepton)->p4 << " --> " << genParticle->p4;
 						}
 						else product.m_genParticleMatchDeltaR = DefaultValues::UndefinedFloat;
 					}

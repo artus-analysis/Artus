@@ -89,6 +89,7 @@ public:
 							ratioGenTauMatched += 1./(product.*m_validObjects).size();
 							product.m_genTauMatchDeltaR = deltaR;
 							objectMatched = true;
+							//LOG(INFO) << this->GetProducerId() << " (event " << event.m_eventInfo->nEvent << "): " << (*validObject)->p4 << " --> " << genTau->visible.p4;
 						}
 						else product.m_genTauMatchDeltaR = DefaultValues::UndefinedFloat;
 					}
