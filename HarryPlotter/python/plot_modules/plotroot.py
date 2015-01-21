@@ -148,26 +148,34 @@ class PlotRoot(plotbase.PlotBase):
 		self.plot_sequence_indices.sort(key=lambda index: "e" in plotData.plotdict["markers"][index].lower())
 		for index, plot_index in enumerate(self.plot_sequence_indices):
 			root_object = plotData.plotdict["root_objects"][plotData.plotdict["nicks"][plot_index]]
-			marker = plotData.plotdict["markers"][plot_index]
-			option = marker + ("" if index == 0 else " same")
-			root_object.Draw(option)
-			if index == 0: self.first_plotted_histogram = root_object
 			
-			# trace min. and max. values of axes
-			if root_object.GetXaxis().GetXmin() < self.x_min: self.x_min = root_object.GetXaxis().GetXmin()
-			if root_object.GetXaxis().GetXmax() > self.x_max: self.x_max = root_object.GetXaxis().GetXmax()
-			if root_object.GetDimension() > 1:
-				if root_object.GetYaxis().GetXmin() < self.y_min: self.y_min = root_object.GetYaxis().GetXmin()
-				if root_object.GetYaxis().GetXmax() > self.y_max: self.y_max = root_object.GetYaxis().GetXmax()
+			marker = plotData.plotdict["markers"][plot_index]
+			draw_option = marker + ("" if index == 0 else " same")
+			
+			axes_histogram = None
+			if isinstance(root_object, ROOT.TH1):
+				axes_histogram = self._draw_histogram(self.plot_pad, root_object, draw_option, set_first_plotted_histogram=(index == 0))
+			elif isinstance(root_object, ROOT.TGraph):
+				axes_histogram = self._draw_graph(self.plot_pad, root_object, draw_option, set_first_plotted_histogram=(index == 0))
 			else:
-				if root_object.GetMinimum() < self.y_min: self.y_min = root_object.GetMinimum()
-				if root_object.GetMaximum() > self.y_max: self.y_max = root_object.GetMaximum()
-			if root_object.GetDimension() > 2:
-				if root_object.GetZaxis().GetXmin() < self.z_min: self.z_min = root_object.GetZaxis().GetXmin()
-				if root_object.GetZaxis().GetXmax() > self.z_max: self.z_max = root_object.GetZaxis().GetXmax()
-			else:
-				if root_object.GetMinimum() < self.z_min: self.z_min = root_object.GetMinimum()
-				if root_object.GetMaximum() > self.z_max: self.z_max = root_object.GetMaximum()
+				log.error("ROOT plotting is not (yet) implemented for objects of type %s!" % type(root_object))
+			
+			if axes_histogram:
+				# trace min. and max. values of axes
+				if axes_histogram.GetXaxis().GetXmin() < self.x_min: self.x_min = axes_histogram.GetXaxis().GetXmin()
+				if axes_histogram.GetXaxis().GetXmax() > self.x_max: self.x_max = axes_histogram.GetXaxis().GetXmax()
+				if axes_histogram.GetDimension() > 1:
+					if axes_histogram.GetYaxis().GetXmin() < self.y_min: self.y_min = axes_histogram.GetYaxis().GetXmin()
+					if axes_histogram.GetYaxis().GetXmax() > self.y_max: self.y_max = axes_histogram.GetYaxis().GetXmax()
+				else:
+					if axes_histogram.GetMinimum() < self.y_min: self.y_min = axes_histogram.GetMinimum()
+					if axes_histogram.GetMaximum() > self.y_max: self.y_max = axes_histogram.GetMaximum()
+				if axes_histogram.GetDimension() > 2:
+					if axes_histogram.GetZaxis().GetXmin() < self.z_min: self.z_min = axes_histogram.GetZaxis().GetXmin()
+					if axes_histogram.GetZaxis().GetXmax() > self.z_max: self.z_max = axes_histogram.GetZaxis().GetXmax()
+				else:
+					if axes_histogram.GetMinimum() < self.z_min: self.z_min = axes_histogram.GetMinimum()
+					if axes_histogram.GetMaximum() > self.z_max: self.z_max = axes_histogram.GetMaximum()
 		
 		# draw shaded error band for the chosen stacked histograms
 		if (plotData.plotdict["stacks_errband"] == True):
@@ -196,7 +204,23 @@ class PlotRoot(plotbase.PlotBase):
 				# trace min. and max. values of axes
 				if root_object.GetMinimum() < self.ratio_y_min: self.ratio_y_min = root_object.GetMinimum()
 				if root_object.GetMaximum() > self.ratio_y_max: self.ratio_y_max = root_object.GetMaximum()
-			
+	
+	def _draw_histogram(self, pad, root_histogram, draw_option, set_first_plotted_histogram=False):
+		assert isinstance(root_histogram, ROOT.TH1)
+		pad.cd()
+		root_histogram.Draw(draw_option)
+		if set_first_plotted_histogram:
+			self.first_plotted_histogram = root_histogram
+		return root_histogram
+	
+	def _draw_graph(self, pad, root_graph, draw_option, set_first_plotted_histogram=False):
+		assert isinstance(root_graph, ROOT.TGraph)
+		pad.cd()
+		root_graph.Draw(draw_option+"AP")
+		root_histogram = root_graph.GetHistogram()
+		if set_first_plotted_histogram:
+			self.first_plotted_histogram = root_histogram
+		return root_histogram
 	
 	def modify_axes(self, plotData):
 		super(PlotRoot, self).modify_axes(plotData)
