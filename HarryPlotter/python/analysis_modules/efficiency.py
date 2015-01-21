@@ -11,26 +11,55 @@ import Artus.HarryPlotter.analysisbase as analysisbase
 
 
 class Efficiency(analysisbase.AnalysisBase):
+	"""Build efficiency graphs from two histograms"""
 
 	def __init__(self):
 		super(Efficiency, self).__init__()
 
 	def modify_argument_parser(self, parser, args):
 		super(Efficiency, self).modify_argument_parser(parser, args)
+		
+		self.efficiency_options = parser.add_argument_group("efficiency factor options")
+		self.efficiency_options.add_argument("--efficiency-numerator-nicks", nargs="+", required=True,
+				help="Nick names for the numerators of the efficiencies.")
+		self.efficiency_options.add_argument("--efficiency-denominator-nicks", nargs="+", required=True,
+				help="Nick names for the denominator of the efficiencies.")
+		self.efficiency_options.add_argument("--efficiency-nicks", nargs="+", default=[None],
+				help="Nick names for the resulting efficiency graphs.")
+		self.efficiency_options.add_argument("--efficiency-methods", nargs="+", default=["cp"],
+				help="(Error) calculation methods. See TGraphAsymmErrors.Divide for further information. [Default: %(default)s]")
 
 	def prepare_args(self, parser, plotData):
 		super(Efficiency, self).prepare_args(parser, plotData)
-
+		
+		plotData.plotdict["efficiency_numerator_nicks"] = [nick for nick in plotData.plotdict["efficiency_numerator_nicks"] if nick in plotData.plotdict["root_objects"]]
+		plotData.plotdict["efficiency_denominator_nicks"] = [nick for nick in plotData.plotdict["efficiency_denominator_nicks"] if nick in plotData.plotdict["root_objects"]]
+		plotData.plotdict["efficiency_nicks"] = [nick for nick in plotData.plotdict["efficiency_nicks"] if nick in plotData.plotdict["root_objects"]]
+		self.prepare_list_args(plotData, ["efficiency_numerator_nicks", "efficiency_denominator_nicks", "efficiency_nicks", "efficiency_methods"])
+		
+		for index, nick in enumerate(plotData.plotdict["efficiency_nicks"]):
+			if not nick:
+				nick = plotData.plotdict["efficiency_numerator_nicks"][index] + "_" + plotData.plotdict["efficiency_denominator_nicks"][index]
+				plotData.plotdict["efficiency_nicks"][index] = nick
 
 	def run(self, plotData=None):
 		super(Efficiency, self).run(plotData)
-
-		if not len(plotData.plotdict['nicks']) >= 2:
-			raise ValueError("At least two root histograms must be input.")
-		eff = ROOT.TEfficiency(plotData.plotdict["root_objects"][plotData.plotdict['nicks'][0]], 
-				plotData.plotdict["root_objects"][plotData.plotdict['nicks'][1]])
-		graph = eff.CreateGraph()
-		histogram_nick = "{0}_vs_{1}".format(plotData.plotdict['nicks'][0], plotData.plotdict['nicks'][1])
-		plotData.plotdict['nicks'].append(histogram_nick)
-		plotData.plotdict["root_objects"][histogram_nick] = graph
+		
+		for index, (efficiency_numerator_nick, efficiency_denominator_nick, efficiency_nick, efficiency_method) in enumerate(zip(
+				plotData.plotdict["efficiency_numerator_nicks"],
+				plotData.plotdict["efficiency_denominator_nicks"],
+				plotData.plotdict["efficiency_nicks"],
+				plotData.plotdict["efficiency_methods"]
+		)):
+			
+			efficiency_graph_name = "histogram_" + hashlib.md5("_".join([plotData.plotdict["root_objects"][efficiency_numerator_nick].GetName(),
+			                                                             plotData.plotdict["root_objects"][efficiency_denominator_nick].GetName()])).hexdigest()
+			
+			efficiency_graph = ROOT.TGraphAsymmErrors(
+					plotData.plotdict["root_objects"][efficiency_numerator_nick],
+					plotData.plotdict["root_objects"][efficiency_denominator_nick],
+					efficiency_method
+			)
+			efficiency_graph.SetName(eff_graph_name)
+			plotData.plotdict["root_objects"][efficiency_nick] = eff_graph
 
