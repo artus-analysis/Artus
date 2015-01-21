@@ -45,7 +45,7 @@ class JsonDict(dict):
 			if os.path.exists(os.path.expandvars(jsonDict)):
 				dict.__init__(self, JsonDict.readJsonDict(jsonDict))
 			else:
-				dict.__init__(self, json.loads(jsonDict))
+				dict.__init__(self, json.loads(jsonDict.replace("'", "\"")))
 		elif isinstance(jsonDict, collections.Iterable):
 			dict.__init__(self, JsonDict.mergeAll(*jsonDict))
 		else:
