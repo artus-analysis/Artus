@@ -5,6 +5,8 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
+import hashlib
+
 import ROOT
 
 import Artus.HarryPlotter.analysisbase as analysisbase
@@ -34,13 +36,15 @@ class Efficiency(analysisbase.AnalysisBase):
 		
 		plotData.plotdict["efficiency_numerator_nicks"] = [nick for nick in plotData.plotdict["efficiency_numerator_nicks"] if nick in plotData.plotdict["root_objects"]]
 		plotData.plotdict["efficiency_denominator_nicks"] = [nick for nick in plotData.plotdict["efficiency_denominator_nicks"] if nick in plotData.plotdict["root_objects"]]
-		plotData.plotdict["efficiency_nicks"] = [nick for nick in plotData.plotdict["efficiency_nicks"] if nick in plotData.plotdict["root_objects"]]
+		plotData.plotdict["efficiency_nicks"] = plotData.plotdict["efficiency_nicks"]
 		self.prepare_list_args(plotData, ["efficiency_numerator_nicks", "efficiency_denominator_nicks", "efficiency_nicks", "efficiency_methods"])
 		
 		for index, nick in enumerate(plotData.plotdict["efficiency_nicks"]):
 			if not nick:
 				nick = plotData.plotdict["efficiency_numerator_nicks"][index] + "_" + plotData.plotdict["efficiency_denominator_nicks"][index]
 				plotData.plotdict["efficiency_nicks"][index] = nick
+			if not nick in plotData.plotdict["nicks"]:
+				plotData.plotdict["nicks"].insert(plotData.plotdict["nicks"].index(plotData.plotdict["efficiency_denominator_nicks"][index])+1, nick)
 
 	def run(self, plotData=None):
 		super(Efficiency, self).run(plotData)
@@ -60,6 +64,7 @@ class Efficiency(analysisbase.AnalysisBase):
 					plotData.plotdict["root_objects"][efficiency_denominator_nick],
 					efficiency_method
 			)
-			efficiency_graph.SetName(eff_graph_name)
-			plotData.plotdict["root_objects"][efficiency_nick] = eff_graph
+			efficiency_graph.SetName(efficiency_graph_name)
+			efficiency_graph.SetTitle("")
+			plotData.plotdict["root_objects"][efficiency_nick] = efficiency_graph
 
