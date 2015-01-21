@@ -4,6 +4,7 @@
 """
 import os
 import fnmatch
+import shlex
 import sys
 import imp
 import inspect
@@ -45,7 +46,7 @@ class HarryCore(object):
 
 		# First time parsing of cmd arguments
 		self.parser = harryparser.HarryParser()
-		self._args_from_script = args_from_script.split() if args_from_script else None
+		self._args_from_script = shlex.split(args_from_script) if args_from_script else None
 		args, unknown_args = self.parser.parse_known_args(self._args_from_script)
 		self.args = vars(args)
 
