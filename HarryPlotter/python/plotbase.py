@@ -34,8 +34,8 @@ class PlotBase(processor.Processor):
 		                                   help="Nick names for denominators of ratio. Multiple nicks in one argument (ws-separated) are summed. [Default: all but first nick]")
 		self.plotting_options.add_argument("--nicks-whitelist", nargs="+",
 		                                   help="Whitelist of (regexp) nick names for objects to be plotted.")
-		self.plotting_options.add_argument("--nicks-blacklist", nargs="+",
-		                                   help="Blacklist of (regexp) nick names for objects to be excluded from plotting.")
+		self.plotting_options.add_argument("--nicks-blacklist", nargs="+", default=["noplot"],
+		                                   help="Blacklist of (regexp) nick names for objects to be excluded from plotting. [Default: %(default)s]")
 		
 		# axis settings
 		self.axis_options = parser.add_argument_group("Axis options")
