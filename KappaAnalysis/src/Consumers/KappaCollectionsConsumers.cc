@@ -73,19 +73,20 @@ std::string KappaJetsConsumer::GetConsumerId() const
 }
 
 
-/* TODO
+
 KappaTaggedJetsConsumer::KappaTaggedJetsConsumer() :
-	KappaCollectionsConsumerBase("jets",
+	KappaCollectionsConsumerBase("tjets",
 	                             &product_type::m_validJets,
 	                             &setting_type::GetBranchGenMatchedJets,
 	                             &event_type::m_jetMetadata,
 	                             &product_type::m_genParticleMatchedJets,
 	                             0,
-	                             0) {
+	                             0)
+{
 }
 
 std::string KappaTaggedJetsConsumer::GetConsumerId() const
 {
 	return "KappaTaggedJetsConsumer";
 }
-*/
+

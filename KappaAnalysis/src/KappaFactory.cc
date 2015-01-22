@@ -247,8 +247,8 @@ ConsumerBaseUntemplated * KappaFactory::createConsumer ( std::string const& id )
 		return new KappaTausConsumer();
 	else if(id == KappaJetsConsumer().GetConsumerId())
 		return new KappaJetsConsumer();
-	//else if(id == KappaTaggedJetsConsumer().GetConsumerId())
-	//	return new KappaTaggedJetsConsumer();
+	else if(id == KappaTaggedJetsConsumer().GetConsumerId())
+		return new KappaTaggedJetsConsumer();
 	else
 		return FactoryBase::createConsumer( id );
 }

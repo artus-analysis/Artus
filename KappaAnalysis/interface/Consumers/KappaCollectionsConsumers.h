@@ -33,8 +33,11 @@ public:
 		m_objectMetaInfo(objectMetaInfo),
 		m_objectMetaInfoAvailable(objectMetaInfo != 0),
 		m_genParticleMatchedObjects(genParticleMatchedObjects),
+		m_genParticleMatchedObjectsAvailable(genParticleMatchedObjects != 0),
 		m_genTauMatchedObjects(genTauMatchedObjects),
-		m_genTauJetMatchedObjects(genTauJetMatchedObjects)
+		m_genTauMatchedObjectsAvailable(genTauMatchedObjects != 0),
+		m_genTauJetMatchedObjects(genTauJetMatchedObjects),
+		m_genTauJetMatchedObjectsAvailable(genTauJetMatchedObjects != 0)
 	{
 	}
 	
@@ -83,17 +86,26 @@ public:
 			
 			if ((settings.*GetBranchGenMatchedObjects)())
 			{
-				KGenParticle* currentGenParticle = SafeMap::GetWithDefault((product.*m_genParticleMatchedObjects), *validObject, (KGenParticle*)(0));
-				m_currentGenParticle = (currentGenParticle != 0 ? *(static_cast<KGenParticle*>(currentGenParticle)) : KGenParticle());
-				m_currentGenParticleMatched = (currentGenParticle != 0);
+				if (m_genParticleMatchedObjectsAvailable)
+				{
+					KGenParticle* currentGenParticle = SafeMap::GetWithDefault((product.*m_genParticleMatchedObjects), *validObject, (KGenParticle*)(0));
+					m_currentGenParticle = (currentGenParticle != 0 ? *(static_cast<KGenParticle*>(currentGenParticle)) : KGenParticle());
+					m_currentGenParticleMatched = (currentGenParticle != 0);
+				}
 				
-				KGenTau* currentGenTau = SafeMap::GetWithDefault((product.*m_genTauMatchedObjects), *validObject, (KGenTau*)(0));
-				m_currentGenTau = (currentGenTau != 0 ? *(static_cast<KGenTau*>(currentGenTau)) : KGenTau());
-				m_currentGenTauMatched = (currentGenTau != 0);
+				if (m_genTauMatchedObjectsAvailable)
+				{
+					KGenTau* currentGenTau = SafeMap::GetWithDefault((product.*m_genTauMatchedObjects), *validObject, (KGenTau*)(0));
+					m_currentGenTau = (currentGenTau != 0 ? *(static_cast<KGenTau*>(currentGenTau)) : KGenTau());
+					m_currentGenTauMatched = (currentGenTau != 0);
+				}
 				
-				KGenJet* currentGenTauJet = SafeMap::GetWithDefault((product.*m_genTauJetMatchedObjects), *validObject, (KGenJet*)(0));
-				m_currentGenTauJet = (currentGenTauJet != 0 ? *(static_cast<KGenJet*>(currentGenTauJet)) : KGenJet());
-				m_currentGenTauJetMatched = (currentGenTauJet != 0);
+				if (m_genTauJetMatchedObjectsAvailable)
+				{
+					KGenJet* currentGenTauJet = SafeMap::GetWithDefault((product.*m_genTauJetMatchedObjects), *validObject, (KGenJet*)(0));
+					m_currentGenTauJet = (currentGenTauJet != 0 ? *(static_cast<KGenJet*>(currentGenTauJet)) : KGenJet());
+					m_currentGenTauJetMatched = (currentGenTauJet != 0);
+				}
 			}
 			
 			m_tree->Fill();
@@ -116,8 +128,11 @@ private:
 	TObjectMetaInfo* event_type::*m_objectMetaInfo;
 	bool m_objectMetaInfoAvailable = false;
 	std::map<TObject*, KGenParticle*> product_type::*m_genParticleMatchedObjects;
+	bool m_genParticleMatchedObjectsAvailable = false;
 	std::map<TObject*, KGenTau*> product_type::*m_genTauMatchedObjects;
+	bool m_genTauMatchedObjectsAvailable = false;
 	std::map<TObject*, KGenJet*> product_type::*m_genTauJetMatchedObjects;
+	bool m_genTauJetMatchedObjectsAvailable = false;
 	
 	TTree* m_tree = 0;
 	
@@ -172,12 +187,12 @@ public:
 };
 
 
-/* TODO
-class KappaTaggedJetsConsumer: public KappaCollectionsConsumerBase<KDataPFTaggedJets, KJetMetadata>
+
+class KappaTaggedJetsConsumer: public KappaCollectionsConsumerBase<KBasicJet, KJetMetadata>
 {
 
 public:
 	KappaTaggedJetsConsumer();
 	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE;
 };
-*/
+
