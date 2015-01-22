@@ -171,22 +171,22 @@ public:
 			float maxNeutralFraction = this->GetMaxNeutralFraction();
 			
 			validJet = validJet
-					   && (*jet)->neutralHadronFraction + (*jet)->hfHadronFraction < maxNeutralFraction
-					   && (*jet)->photonFraction + (*jet)->hfEMFraction < maxNeutralFraction
-					   && (*jet)->nConstituents > 1;
+					   && ((*jet)->neutralHadronFraction + (*jet)->hfHadronFraction < maxNeutralFraction)
+					   && ((*jet)->photonFraction + (*jet)->hfEMFraction < maxNeutralFraction)
+					   && ((*jet)->nConstituents > 1);
 			// jets, |eta| < 2.4 (tracker)
 			if (std::abs((*jet)->p4.eta()) < 2.4)
 			{
 				validJet = validJet
-						   && (*jet)->chargedHadronFraction > 0.0
-						   && (*jet)->nCharged > 0
-						   && (*jet)->electronFraction < 0.99;
+						   && ((*jet)->chargedHadronFraction > 0.0)
+						   && ((*jet)->nCharged > 0)
+						   && ((*jet)->electronFraction < 0.99);
 			}
 			if (jetIDVersion == JetIDVersion::ID2014) 
 			{
 				validJet = validJet
-						   && (*jet)->muonFraction < 0.8
-						   && (*jet)->electronFraction < 0.9;
+						   && ((*jet)->muonFraction < 0.8)
+						   && ((*jet)->electronFraction < 0.9);
 			}
 			
 			// remove leptons from list of jets via simple DeltaR isolation
