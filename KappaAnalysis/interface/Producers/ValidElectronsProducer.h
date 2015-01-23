@@ -308,28 +308,27 @@ private:
 	{
 		bool validElectron = true;
 
-		// Electron ID mva non trig
+		// Electron ID mva non trig (run 1)
 		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentification#Non_triggering_MVA
 		// different thresholds depending on electron pT, eta
-        // hardcoded mvaIds.at(2) = mvaNonTrigV050nsCSA14 has to be modified to make sure the right mvaId is used.
 		validElectron = validElectron &&
 			(
 				(
 					(electron->p4.Pt() < 10.0)
 					&&
 					(
-						(abs(electron->p4.Eta()) < 0.8 && electron->getId("mvaNonTrigV050nsCSA14", electronMeta) > 0.47)
-						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("mvaNonTrigV050nsCSA14", electronMeta) > 0.004)
-						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getId("mvaNonTrigV050nsCSA14", electronMeta) > 0.295)
+						(abs(electron->p4.Eta()) < 0.8 && electron->getId("idMvaNonTrigV0", electronMeta) > 0.47)
+						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("idMvaNonTrigV0", electronMeta) > 0.004)
+						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getId("idMvaNonTrigV0", electronMeta) > 0.295)
 					)
 				)
 				||
 				(
 					(electron->p4.Pt() >= 10.0) &&
 					(
-						(abs(electron->p4.Eta()) < 0.8 && electron->getId("mvaNonTrigV050nsCSA14", electronMeta) > -0.34)
-						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("mvaNonTrigV050nsCSA14", electronMeta) > -0.65)
-						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getId("mvaNonTrigV050nsCSA14", electronMeta) > 0.6)
+						(abs(electron->p4.Eta()) < 0.8 && electron->getId("idMvaNonTrigV0", electronMeta) > -0.34)
+						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("idMvaNonTrigV0", electronMeta) > -0.65)
+						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getId("idMvaNonTrigV0", electronMeta) > 0.6)
 					)
 				)
 			);
@@ -341,7 +340,7 @@ private:
 	{
 		bool validElectron = true;
 
-		// Electron ID mva trig
+		// Electron ID mva trig (run 1)
 		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentification#Triggering_MVA
 		// different thresholds depending on electron pT, eta
 		validElectron = validElectron &&
@@ -352,18 +351,18 @@ private:
 					(electron->p4.Pt() < 20.0)
 					&&
 					(
-						(abs(electron->p4.Eta()) < 0.8 && electron->getId("mvaTrigV050nsCSA14", electronMeta) > 0.0)
-						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("mvaTrigV050nsCSA14", electronMeta) > 0.1)
-						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getId("mvaTrigV050nsCSA14", electronMeta) > 0.62)
+						(abs(electron->p4.Eta()) < 0.8 && electron->getId("idMvaTrigV0", electronMeta) > 0.0)
+						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("idMvaTrigV0", electronMeta) > 0.1)
+						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getId("idMvaTrigV0", electronMeta) > 0.62)
 					)
 				)
 				||
 				(
 					(electron->p4.Pt() >= 20.0) &&
 					(
-						(abs(electron->p4.Eta()) < 0.8 && electron->getId("mvaTrigV050nsCSA14", electronMeta) > 0.94)
-						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("mvaTrigV050nsCSA14", electronMeta) > 0.85)
-						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getId("mvaTrigV050nsCSA14", electronMeta) > 0.92)
+						(abs(electron->p4.Eta()) < 0.8 && electron->getId("idMvaTrigV0", electronMeta) > 0.94)
+						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("idMvaTrigV0", electronMeta) > 0.85)
+						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getId("idMvaTrigV0", electronMeta) > 0.92)
 					)
 				)
 			);
