@@ -186,34 +186,42 @@ public:
 		{
 			if (LambdaNtupleConsumer<TTypes>::GetFloatQuantities().count(*quantity) > 0)
 			{
+				//LOG(DEBUG) << "Init float quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
 				m_floatValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetFloatQuantities(), *quantity));
 			}
 			else if (LambdaNtupleConsumer<TTypes>::GetIntQuantities().count(*quantity) > 0)
 			{
+				//LOG(DEBUG) << "Init int quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
 				m_intValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetIntQuantities(), *quantity));
 			}
 			else if (LambdaNtupleConsumer<TTypes>::GetUInt64Quantities().count(*quantity) > 0)
 			{
+				//LOG(DEBUG) << "Init uint64 quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
 				m_uint64ValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetUInt64Quantities(), *quantity));
 			}
 			else if (LambdaNtupleConsumer<TTypes>::GetDoubleQuantities().count(*quantity) > 0)
 			{
+				//LOG(DEBUG) << "Init double quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
 				m_doubleValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetDoubleQuantities(), *quantity));
 			}
 			else if (LambdaNtupleConsumer<TTypes>::GetVDoubleQuantities().count(*quantity) > 0)
 			{
+				//LOG(DEBUG) << "Init vDouble quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
 				m_vDoubleValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetVDoubleQuantities(), *quantity));
 			}
 			else if (LambdaNtupleConsumer<TTypes>::GetVFloatQuantities().count(*quantity) > 0)
 			{
+				//LOG(DEBUG) << "Init vFloat quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
 				m_vFloatValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetVFloatQuantities(), *quantity));
 			}
 			else if (LambdaNtupleConsumer<TTypes>::GetBoolQuantities().count(*quantity) > 0)
 			{
+				//LOG(DEBUG) << "Init bool quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
 				m_boolValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetBoolQuantities(), *quantity));
 			}
 			else if (LambdaNtupleConsumer<TTypes>::GetStringQuantities().count(*quantity) > 0)
 			{
+				//LOG(DEBUG) << "Init string quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
 				m_stringValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetStringQuantities(), *quantity));
 			}
 			else
@@ -300,6 +308,7 @@ public:
 		for(typename std::vector<bool_extractor_lambda_base>::iterator valueExtractor = m_boolValueExtractors.begin();
 		    valueExtractor != m_boolValueExtractors.end(); ++valueExtractor)
 		{
+			//LOG(DEBUG) << "Retrieving bool value for float quantity (index " << floatValueIndex << ") ...";
 			m_boolValues[boolValueIndex] = (*valueExtractor)(event, product);
 			boolValueIndex++;
 		}
@@ -308,6 +317,7 @@ public:
 		for(typename std::vector<int_extractor_lambda_base>::iterator valueExtractor = m_intValueExtractors.begin();
 		    valueExtractor != m_intValueExtractors.end(); ++valueExtractor)
 		{
+			//LOG(DEBUG) << "Retrieving int value for float quantity (index " << floatValueIndex << ") ...";
 			m_intValues[intValueIndex] = (*valueExtractor)(event, product);
 			intValueIndex++;
 		}
@@ -316,6 +326,7 @@ public:
 		for(typename std::vector<uint64_extractor_lambda_base>::iterator valueExtractor = m_uint64ValueExtractors.begin();
 		    valueExtractor != m_uint64ValueExtractors.end(); ++valueExtractor)
 		{
+			//LOG(DEBUG) << "Retrieving uint64 value for float quantity (index " << floatValueIndex << ") ...";
 			m_uint64Values[uint64ValueIndex] = (*valueExtractor)(event, product);
 			uint64ValueIndex++;
 		}
@@ -324,6 +335,7 @@ public:
 		for(typename std::vector<float_extractor_lambda_base>::iterator valueExtractor = m_floatValueExtractors.begin();
 		    valueExtractor != m_floatValueExtractors.end(); ++valueExtractor)
 		{
+			//LOG(DEBUG) << "Retrieving float value for float quantity (index " << floatValueIndex << ") ...";
 			m_floatValues[floatValueIndex] = (*valueExtractor)(event, product);
 			floatValueIndex++;
 		}
@@ -332,6 +344,7 @@ public:
 		for(typename std::vector<double_extractor_lambda_base>::iterator valueExtractor = m_doubleValueExtractors.begin();
 		    valueExtractor != m_doubleValueExtractors.end(); ++valueExtractor)
 		{
+			//LOG(DEBUG) << "Retrieving double value for float quantity (index " << floatValueIndex << ") ...";
 			m_doubleValues[doubleValueIndex] = (*valueExtractor)(event, product);
 			doubleValueIndex++;
 		}
@@ -339,6 +352,7 @@ public:
 		for(typename std::vector<vDouble_extractor_lambda_base>::iterator valueExtractor = m_vDoubleValueExtractors.begin();
 		    valueExtractor != m_vDoubleValueExtractors.end(); ++valueExtractor)
 		{
+			//LOG(DEBUG) << "Retrieving vDouble value for float quantity (index " << floatValueIndex << ") ...";
 			m_vDoubleValues[vDoubleValueIndex] = (*valueExtractor)(event, product);
 			vDoubleValueIndex++;
 		}
@@ -346,6 +360,7 @@ public:
 		for(typename std::vector<vFloat_extractor_lambda_base>::iterator valueExtractor = m_vFloatValueExtractors.begin();
 		    valueExtractor != m_vFloatValueExtractors.end(); ++valueExtractor)
 		{
+			//LOG(DEBUG) << "Retrieving vFloat value for float quantity (index " << floatValueIndex << ") ...";
 			m_vFloatValues[vFloatValueIndex] = (*valueExtractor)(event, product);
 			vFloatValueIndex++;
 		}
@@ -353,6 +368,7 @@ public:
 		for(typename std::vector<string_extractor_lambda_base>::iterator valueExtractor = m_stringValueExtractors.begin();
 		    valueExtractor != m_stringValueExtractors.end(); ++valueExtractor)
 		{
+			//LOG(DEBUG) << "Retrieving string value for float quantity (index " << floatValueIndex << ") ...";
 			m_stringValues[stringValueIndex] = (*valueExtractor)(event, product);
 			stringValueIndex++;
 		}
