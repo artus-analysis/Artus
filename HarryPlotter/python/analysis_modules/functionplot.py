@@ -22,10 +22,12 @@ class FunctionPlot(analysisbase.AnalysisBase):
 						help="Fit function to histogram with nickname as argument")
 		self.function_options.add_argument("--function-ranges", type=str, nargs="+", default=None,
 						help="Function range. Default is whole plot range if histogram is drawn. Format x_min,x_max.")
+		self.function_options.add_argument("--fit-backend", type=str, nargs="+", default="ROOT",
+						help="Fit backend. ROOT and RooFit are available. Check sourcecode which parts of RooFit are implemented. [Default: %(default)s]")
 
 	def prepare_args(self, parser, plotData):
 		self.prepare_list_args(plotData, ["functions", "function_parameters", "function_nicknames",
-						                  "function_fit", "function_ranges"])
+						                  "function_fit", "function_ranges", "fit_backend"])
 		tmp_x_range = []
 		for x_range in plotData.plotdict["function_ranges"]:
 			if x_range==None:
@@ -63,25 +65,27 @@ class FunctionPlot(analysisbase.AnalysisBase):
 			log.info("You are using the FunctionPlot module. Please provide at least one input function with --function")
 			os.exit(1)
 		else:
-			for i, (function, function_nick, function_parameters, fit_nickname, x_range) in enumerate(zip( 
+			for i, (function, function_nick, function_parameters, fit_nickname, x_range, fit_backend) in enumerate(zip( 
 			                                                 plotData.plotdict["functions"], 
 			                                                 plotData.plotdict["function_nicknames"],
 			                                                 plotData.plotdict["function_parameters"],
 			                                                 plotData.plotdict["function_fit"],
-			                                                 plotData.plotdict["function_ranges"])):
+			                                                 plotData.plotdict["function_ranges"],
+			                                                 plotData.plotdict["fit_backend"])):
 				if fit_nickname != None and fit_nickname in plotData.plotdict["root_objects"].keys(): 
 					root_histogram = plotData.plotdict["root_objects"][fit_nickname]
 					plotData.plotdict["root_objects"][function_nick] = self.create_function(function, x_range[0], x_range[1], 
 					                                           function_parameters, 
 					                                           nick=fit_nickname, 
-					                                           root_histogram=root_histogram)
+					                                           root_histogram=root_histogram,
+					                                           fit_backend=fit_backend)
 				else: 
 					plotData.plotdict["root_objects"][function_nick] = self.create_function(function, x_range[0], x_range[1], function_parameters)
 
 
-	def create_function(self, function, x_min, x_max, start_parameters, nick="", root_histogram=None):
+	def create_function(self, function, x_min, x_max, start_parameters, nick="", root_histogram=None, fit_backend="ROOT"):
 		"""
-		creates a TF1 function from input formula
+		creates a function from input formula from either ROOT or RooFit backend.
 
 		does the fit and adds the fitted function to the dictionary
 		"""
@@ -89,12 +93,54 @@ class FunctionPlot(analysisbase.AnalysisBase):
 		                                                                str(start_parameters), str(nick), 
 		                                                                str(root_histogram.GetName() if root_histogram != None else "")])).hexdigest())
 		# todo: ensure to have as many start parameters as parameters in formula
-		root_function = ROOT.TF1(formula_name, function, x_min, x_max)
-		# set parameters for fit or just for drawing the function
-		for parameter_index in range(root_function.GetNpar()):
-			root_function.SetParameter(parameter_index, start_parameters[parameter_index])
-		if root_histogram != None:
-			root_histogram.Fit(formula_name, "", "", x_min, x_max)
+		if fit_backend == "RooFit":
+			hmin = root_histogram.GetXaxis().GetXmin()
+			hmax = root_histogram.GetXaxis().GetXmax()
+			integral = root_histogram.Integral()
+			x = ROOT.RooRealVar("x", "x", hmin, hmax)
+			dh = ROOT.RooDataHist("dh", "dh", ROOT.RooArgList(x), root_histogram)
+
+			frame = x.frame()
+			ROOT.RooAbsData.plotOn(dh, frame)
+
+			mean  = ROOT.RooRealVar("mean", "mean", start_parameters[0],
+			                                        start_parameters[1],
+			                                        start_parameters[2])
+			sigma = ROOT.RooRealVar("sigma","sigma",start_parameters[3],
+			                                        start_parameters[4],
+			                                        start_parameters[5])
+			width = ROOT.RooRealVar("width","width",start_parameters[6],
+			                                        start_parameters[7],
+			                                        start_parameters[8])
+			if (function == "voigtian"):
+				function = ROOT.RooVoigtian("func","func",x,mean,width,sigma)
+			elif (function == "breitwiegner"):
+				function = ROOT.RooBreitWiegner("func","func",x,mean,sigma)
+			elif (function == "gaus"):
+				function = ROOT.RooGaussian("func","func",x,mean,sigma)
+			else:
+				print "selected fit function" + function + " currently not supported from functionplot modul with RooFit backend."
+				exit()
+			
+			filters = function.fitTo(dh,ROOT.RooLinkedList())
+			function.plotOn(frame, ROOT.RooLinkedList())
+			#TODO: normalization does not work for some reason
+			#function.plotOn(frame, ROOT.RooFit.Normalization(1.0, ROOT.RooAbsReal.Relative))
+			root_function = ROOT.RooCurve(function, x, hmin, hmax, 1000)
+			#print "mean: " + str(mean.getVal())
+			#print "sigma: " + str(sigma.getVal())
+			#print "width: " + str(width.getVal())
+
+		elif fit_backend == "ROOT":
+			root_function = ROOT.TF1(formula_name, function, x_min, x_max)
+			# set parameters for fit or just for drawing the function
+			for parameter_index in range(root_function.GetNpar()):
+				root_function.SetParameter(parameter_index, start_parameters[parameter_index])
+			if root_histogram != None:
+				root_histogram.Fit(formula_name, "", "", x_min, x_max)
+		else:
+			print "No valid fit backend selected"
+			exit()
 		return root_function
 
 
