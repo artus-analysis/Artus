@@ -141,7 +141,7 @@ class FunctionPlot(analysisbase.AnalysisBase):
 		elif (function == "gaus"):
 			function = ROOT.RooGaussian("func","func",x,mean,sigma)
 		else:
-			print "selected fit function" + function + " currently not supported from functionplot modul with RooFit backend."
+			print "selected fit function " + function + " currently not supported from functionplot modul with RooFit backend."
 			exit()
 		
 		filters = function.fitTo(dh,ROOT.RooLinkedList())
@@ -149,15 +149,12 @@ class FunctionPlot(analysisbase.AnalysisBase):
 		#TODO: normalization does not work for some reason
 		#function.plotOn(frame, ROOT.RooFit.Normalization(1.0, ROOT.RooAbsReal.Relative))
 		root_function = ROOT.RooCurve(function, x, x_min, x_max, 1000)
-		#print "mean: " + str(mean.getVal())
-		#print "sigma: " + str(sigma.getVal())
-		#print "width: " + str(width.getVal())
 		return root_function, mean, sigma, width
 
 	@staticmethod
 	def get_roofit_parameter(function, x_min, x_max, start_parameters, root_histogram, parameter):
-		retVal = []
-		root_function, retVal[0], retVal[1], retVal[2] = self.do_roofit(function, x_min, x_max, start_parameters, root_histogram)
+		retVal = [0,0,0]
+		root_function, retVal[0], retVal[1], retVal[2] = FunctionPlot.do_roofit(function, x_min, x_max, start_parameters, root_histogram)
 		return retVal[parameter].getVal(), retVal[parameter].getError()
 
 	def get_parameters(self, root_function):
