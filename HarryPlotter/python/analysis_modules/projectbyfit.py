@@ -63,8 +63,7 @@ class ProjectByFit(analysisbase.AnalysisBase):
 				fit_max = histogram_2D.GetYaxis().GetXmax()
 			start_parameters = [float(x) for x in start_parameter.split(",")]
 
-			FunctionPlot = functionplot.FunctionPlot()
-			root_function = FunctionPlot.create_function(function, fit_min, fit_max, start_parameters, nick=nick)
+			root_function = functionplot.FunctionPlot.create_tf1(function, fit_min, fit_max, start_parameters, nick=nick)
 
 			histogram_2D.FitSlicesY(root_function)
 			fitted_histogram = copy.deepcopy(ROOT.gDirectory.Get(histogram_2D.GetName() + "_" + str(output_selection) ))

@@ -89,60 +89,76 @@ class FunctionPlot(analysisbase.AnalysisBase):
 
 		does the fit and adds the fitted function to the dictionary
 		"""
-		formula_name = ("function_" + nick).format(hashlib.md5("_".join([str(function), str(x_min), str(x_max),
-		                                                                str(start_parameters), str(nick), 
-		                                                                str(root_histogram.GetName() if root_histogram != None else "")])).hexdigest())
 		# todo: ensure to have as many start parameters as parameters in formula
 		if fit_backend == "RooFit":
-			hmin = root_histogram.GetXaxis().GetXmin()
-			hmax = root_histogram.GetXaxis().GetXmax()
-			integral = root_histogram.Integral()
-			x = ROOT.RooRealVar("x", "x", hmin, hmax)
-			dh = ROOT.RooDataHist("dh", "dh", ROOT.RooArgList(x), root_histogram)
-
-			frame = x.frame()
-			ROOT.RooAbsData.plotOn(dh, frame)
-
-			mean  = ROOT.RooRealVar("mean", "mean", start_parameters[0],
-			                                        start_parameters[1],
-			                                        start_parameters[2])
-			sigma = ROOT.RooRealVar("sigma","sigma",start_parameters[3],
-			                                        start_parameters[4],
-			                                        start_parameters[5])
-			width = ROOT.RooRealVar("width","width",start_parameters[6],
-			                                        start_parameters[7],
-			                                        start_parameters[8])
-			if (function == "voigtian"):
-				function = ROOT.RooVoigtian("func","func",x,mean,width,sigma)
-			elif (function == "breitwiegner"):
-				function = ROOT.RooBreitWiegner("func","func",x,mean,sigma)
-			elif (function == "gaus"):
-				function = ROOT.RooGaussian("func","func",x,mean,sigma)
-			else:
-				print "selected fit function" + function + " currently not supported from functionplot modul with RooFit backend."
-				exit()
-			
-			filters = function.fitTo(dh,ROOT.RooLinkedList())
-			function.plotOn(frame, ROOT.RooLinkedList())
-			#TODO: normalization does not work for some reason
-			#function.plotOn(frame, ROOT.RooFit.Normalization(1.0, ROOT.RooAbsReal.Relative))
-			root_function = ROOT.RooCurve(function, x, hmin, hmax, 1000)
-			#print "mean: " + str(mean.getVal())
-			#print "sigma: " + str(sigma.getVal())
-			#print "width: " + str(width.getVal())
-
+			root_function, mean, sigma, width = self.do_roofit(function, x_min, x_max, start_parameters, root_histogram)
 		elif fit_backend == "ROOT":
-			root_function = ROOT.TF1(formula_name, function, x_min, x_max)
-			# set parameters for fit or just for drawing the function
-			for parameter_index in range(root_function.GetNpar()):
-				root_function.SetParameter(parameter_index, start_parameters[parameter_index])
-			if root_histogram != None:
-				root_histogram.Fit(formula_name, "", "", x_min, x_max)
+			root_function = self.do_rootfit(function, x_min, x_max, start_parameters, nick, root_histogram)
 		else:
 			print "No valid fit backend selected"
 			exit()
 		return root_function
 
+	@staticmethod
+	def create_tf1(function, x_min, x_max, start_parameters, nick="", root_histogram=None):
+		formula_name = ("function_" + nick).format(hashlib.md5("_".join([str(function), str(x_min), str(x_max),
+		                                                                str(start_parameters), str(nick), 
+		                                                                str(root_histogram.GetName() if root_histogram != None else "")])).hexdigest())
+		return ROOT.TF1(formula_name, function, x_min, x_max)
+
+	@staticmethod
+	def do_rootfit(function, x_min, x_max, start_parameters, nick="", root_histogram=None):
+		root_function = FunctionPlot.create_tf1(function, x_min, x_max, start_parameters, nick, root_histogram)
+		# set parameters for fit or just for drawing the function
+		for parameter_index in range(root_function.GetNpar()):
+			root_function.SetParameter(parameter_index, start_parameters[parameter_index])
+		root_histogram.Fit(root_function.GetName(), "", "", x_min, x_max)
+		return root_function
+
+	@staticmethod
+	def do_roofit(function, x_min, x_max, start_parameters, root_histogram):
+
+		integral = root_histogram.Integral()
+		x = ROOT.RooRealVar("x", "x", x_min, x_max)
+		dh = ROOT.RooDataHist("dh", "dh", ROOT.RooArgList(x), root_histogram)
+
+		frame = x.frame()
+		ROOT.RooAbsData.plotOn(dh, frame)
+
+		mean  = ROOT.RooRealVar("mean", "mean", start_parameters[0],
+			                                    start_parameters[1],
+			                                    start_parameters[2])
+		sigma = ROOT.RooRealVar("sigma","sigma",start_parameters[3],
+			                                    start_parameters[4],
+			                                    start_parameters[5])
+		width = ROOT.RooRealVar("width","width",start_parameters[6],
+			                                    start_parameters[7],
+			                                    start_parameters[8])
+		if (function == "voigtian"):
+			function = ROOT.RooVoigtian("func","func",x,mean,width,sigma)
+		elif (function == "breitwiegner"):
+			function = ROOT.RooBreitWiegner("func","func",x,mean,sigma)
+		elif (function == "gaus"):
+			function = ROOT.RooGaussian("func","func",x,mean,sigma)
+		else:
+			print "selected fit function" + function + " currently not supported from functionplot modul with RooFit backend."
+			exit()
+		
+		filters = function.fitTo(dh,ROOT.RooLinkedList())
+		function.plotOn(frame, ROOT.RooLinkedList())
+		#TODO: normalization does not work for some reason
+		#function.plotOn(frame, ROOT.RooFit.Normalization(1.0, ROOT.RooAbsReal.Relative))
+		root_function = ROOT.RooCurve(function, x, x_min, x_max, 1000)
+		#print "mean: " + str(mean.getVal())
+		#print "sigma: " + str(sigma.getVal())
+		#print "width: " + str(width.getVal())
+		return root_function, mean, sigma, width
+
+	@staticmethod
+	def get_roofit_parameter(function, x_min, x_max, start_parameters, root_histogram, parameter):
+		retVal = []
+		root_function, retVal[0], retVal[1], retVal[2] = self.do_roofit(function, x_min, x_max, start_parameters, root_histogram)
+		return retVal[parameter].getVal(), retVal[parameter].getError()
 
 	def get_parameters(self, root_function):
 		parameters = []
