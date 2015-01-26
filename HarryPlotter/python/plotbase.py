@@ -9,6 +9,7 @@ log = logging.getLogger(__name__)
 
 import hashlib
 import os
+import subprocess
 import re
 import pprint
 
@@ -143,6 +144,8 @@ class PlotBase(processor.Processor):
 		                                 help="Print available quantities in given folder")
 		self.other_options.add_argument("--live", default=None, nargs='?', const='gthumb',
 		                                 help="Open plot in viewer after its creation. Parameter is the name of your desired viewer.")
+		self.other_options.add_argument("--userpc", default=False, action='store_true',
+		                                 help="If 'live' is enabled, the image will be copied to the user desktop (via ssh) and the image viewer will be started on the user desktop with this option.")
 		self.other_options.add_argument("--dict", action="store_true", default=False,
 		                                 help="Print out plot dictionary when plotting.")
 	
@@ -330,9 +333,20 @@ class PlotBase(processor.Processor):
 		pass
 
 	def plot_end(self, plotData):
-		if not (plotData.plotdict["live"]==None) :
+		if not (plotData.plotdict["live"]==None):
+			# if 'userpc', get the username and name of desktop machine
+			if plotData.plotdict["userpc"]:
+				user = os.environ["USER"]
+				p = subprocess.Popen([r"who am i | sed 's/.*(\([^]]*\)).*/\1/g'"], stdout=subprocess.PIPE, shell=True)
+				out, err = p.communicate()
+				userpc = ("%s@%s" % (user, out)).replace("\n", "")
+
 			for output_filename in plotData.plotdict["output_filenames"]:
-				extrafunctions.show_plot(output_filename, plotData.plotdict["live"])
+				if plotData.plotdict["userpc"]:
+					extrafunctions.show_plot_userpc(output_filename, plotData.plotdict["live"], user, userpc)
+				else:
+					extrafunctions.show_plot(output_filename, plotData.plotdict["live"])
+
 		if plotData.plotdict["dict"]:
 			pprint.pprint(plotData.plotdict)
 

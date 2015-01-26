@@ -166,6 +166,7 @@ class HarryCore(object):
 		export_args.pop("quantities")
 		export_args.pop("export_json")
 		export_args.pop("live")
+		export_args.pop("userpc")
 		export_args.pop("json_defaults")
 		
 		if plotData.plotdict["export_json"] == "update":
