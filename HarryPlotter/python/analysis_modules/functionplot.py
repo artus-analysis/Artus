@@ -53,9 +53,6 @@ class FunctionPlot(analysisbase.AnalysisBase):
 		for function_parameter in plotData.plotdict["function_parameters"]:
 			tmp_function_parameters.append([float (x) for x in  function_parameter.split(",")])
 		plotData.plotdict["function_parameters"] = tmp_function_parameters
-		for function_nickname in plotData.plotdict["function_nicknames"]:
-			plotData.plotdict["nicks"].append(function_nickname)
-			plotData.plotdict["root_objects"][function_nickname] = None
 
 		super(FunctionPlot, self).prepare_args(parser, plotData)
 
