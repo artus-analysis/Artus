@@ -10,8 +10,8 @@ import ROOT
 class MplGraph:
 
 	def __init__(self, rootgraph):
-		if not rootgraph.ClassName() in ['TGraph', 'TGraphErrors', 'TGraphAsymmErrors']:
-			raise TypeError('No valid TH1D, TH1F or TProfile passed.')
+		if not isinstance(rootgraph, ROOT.TGraph): 
+			raise TypeError(str(rootgraph.ClassName()) + ' does not inherit from TGraph.')
 		self.name = rootgraph.GetName()
 		self.rootgraph = rootgraph
 		# self.classname = roothisto.ClassName()
