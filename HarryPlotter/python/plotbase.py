@@ -188,6 +188,8 @@ class PlotBase(processor.Processor):
 			if plotData.plotdict[labelKey] == None: plotData.plotdict[labelKey] = ""
 
 		# formatting options
+		if plotData.plotdict["labels"] == []:
+			plotData.plotdict["labels"] = plotData.plotdict["nicks"]
 		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "linestyles", "x_errors", "y_errors", "stack"])
 		
 		for index, error in enumerate(plotData.plotdict["x_errors"]):
