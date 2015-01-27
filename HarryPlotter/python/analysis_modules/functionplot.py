@@ -80,7 +80,7 @@ class FunctionPlot(analysisbase.AnalysisBase):
 					                                           root_histogram=root_histogram,
 					                                           fit_backend=fit_backend)
 				else: 
-					plotData.plotdict["root_objects"][function_nick] = self.create_function(function, x_range[0], x_range[1], function_parameters)
+					plotData.plotdict["root_objects"][function_nick] = self.create_tf1(function, x_range[0], x_range[1], function_parameters)
 
 
 	def create_function(self, function, x_min, x_max, start_parameters, nick="", root_histogram=None, fit_backend="ROOT"):
