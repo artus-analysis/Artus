@@ -88,6 +88,7 @@ class PlotMpl(plotbase.PlotBase):
 		for argument in zip_arguments:
 			if len(argument) != len(zip_arguments[0]):
 				log.warning("The PlotMpl module is trying to make plots with invalid inputs. The Plot will eventually not contain all requested information.")
+				log.warning("This the invalid input: %s" % argument)
 				break
 
 	def run(self, plotData):

@@ -315,7 +315,12 @@ class PlotBase(processor.Processor):
 					if count == 0:
 						plotData.plotdict["root_stack_histos"][stack1] = plotData.plotdict["root_objects"][nick2].Clone()
 					count = count+1
-	
+
+			# some debug infos
+			if log.isEnabledFor(logging.DEBUG):
+				log.debug("\nContents of stack %s, nick %s:" % (stack1, nick1))
+				plotData.plotdict["root_stack_histos"][stack1].Print("range")
+
 	def make_plots(self, plotData):
 		pass
 	

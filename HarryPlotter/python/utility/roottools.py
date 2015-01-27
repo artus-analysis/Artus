@@ -240,6 +240,9 @@ class RootTools(object):
 		tree.AddBranchToCache("*", True)
 		
 		# draw histogram
+		log.debug("Creating histogram %s of quantity %s with weights %s" % (
+			name, variable_expression, weight_selection
+		))
 		if root_histogram == None or option.find("prof")!=-1:
 			tree.Draw(variable_expression + ">>" + name + binning, str(weight_selection), option + " GOFF")
 		else:
