@@ -282,7 +282,7 @@ class PlotBase(processor.Processor):
 			if keep:
 				nicks_to_keep.append(nick)
 			else:
-				log.debug("Exclude object with nick \"%s\" from beeing plotted." % nick)
+				log.debug("Exclude object with nick \"%s\" from being plotted." % nick)
 		
 		# change only the list of nicks
 		plotData.plotdict["nicks"] = nicks_to_keep

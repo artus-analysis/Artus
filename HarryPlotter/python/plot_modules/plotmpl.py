@@ -220,10 +220,12 @@ class PlotMpl(plotbase.PlotBase):
 			self.ax.set_title(plotData.plotdict["title"], fontsize=14)
 
 		if not (plotData.plotdict["lumi"]==None):
-			plt.text(-0.0, 1.030, "$\mathcal{L}=" + str(plotData.plotdict["lumi"]) + "\mathrm{fb^{-1}}$", transform=self.ax.transAxes, fontsize=10)
+			plt.text(-0.0, 1.030, "$\mathcal{L}=%s\mathrm{fb^{-1}}$" % plotData.plotdict["lumi"],
+				transform=self.ax.transAxes, fontsize=18)
 		if not (plotData.plotdict["energy"] == None):
 			energy = "+".join(plotData.plotdict["energy"])
-			plt.text(1.0, 1.030, "$\sqrt{s}=" + energy + "\\ \mathrm{TeV}$", transform=self.ax.transAxes, fontsize=10, horizontalalignment="right")
+			plt.text(1.0, 1.030, "$\sqrt{s}=" + energy + "\\ \mathrm{TeV}$", 
+				transform=self.ax.transAxes, fontsize=18, horizontalalignment="right")
 
 		# Only plot legend if there active legend handles
 		if self.ax.get_legend_handles_labels()[0]:
@@ -252,7 +254,7 @@ class PlotMpl(plotbase.PlotBase):
 		# figure
 		matplotlib.rcParams['figure.figsize'] = 7., 7.
 		# axes
-		matplotlib.rcParams['axes.linewidth'] = 2
+		matplotlib.rcParams['axes.linewidth'] = 1
 		matplotlib.rcParams['axes.labelsize'] = 20
 		matplotlib.rcParams['xtick.labelsize'] = 16
 		matplotlib.rcParams['xtick.major.size'] = 8
