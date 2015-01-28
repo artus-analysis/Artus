@@ -79,6 +79,13 @@ class PlotBase(processor.Processor):
 		                               help="Custom ticks for the Z-axis")
 		self.axis_options.add_argument("--z-tick-labels", type=float, nargs="+",
 		                               help="Custom tick labels for the Z-axis")
+		self.axis_options.add_argument("--n-axes-x", type=int, default=1,
+		                                     help="Number of axis/pad element(s) in x-direction. Default is %(default)s")
+		self.axis_options.add_argument("--n-axes-y", type=int, default=1,
+		                                     help="Number of axis/pad element(s) in y-directiond. Default is %(default)s")
+		self.axis_options.add_argument("--axes", type=int, nargs="+", default=0,
+		                                     help="Index/Indices of axis/pad element(s) on which a plot is plotted. Default is %(default)s")
+
 
 		#plot formatting
 		self.formatting_options = parser.add_argument_group("Formatting options")
@@ -180,7 +187,7 @@ class PlotBase(processor.Processor):
 		if problems_with_ratio_nicks:
 			log.warning("Continue without ratio subplot!")
 			plotData.plotdict["ratio"] = False
-		self.prepare_list_args(plotData, ["ratio_num", "ratio_denom", "ratio_colors", "ratio_labels", "ratio_markers", "ratio_x_errors", "ratio_y_errors"])
+		self.prepare_list_args(plotData, ["ratio_num", "ratio_denom", "ratio_colors", "ratio_labels", "ratio_markers", "ratio_x_errors", "ratio_y_errors", "axes"])
 		
 		# construct labels from x/y/z expressions if not specified by user
 		for labelKey, expressionKey in zip(["x_label", "y_label", "z_label"],
@@ -195,7 +202,7 @@ class PlotBase(processor.Processor):
 		# formatting options
 		if plotData.plotdict["labels"] == []:
 			plotData.plotdict["labels"] = plotData.plotdict["nicks"]
-		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "linestyles", "x_errors", "y_errors", "stack"])
+		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "linestyles", "x_errors", "y_errors", "stack", "axes"])
 		
 		for index, error in enumerate(plotData.plotdict["x_errors"]):
 			if error is None:
