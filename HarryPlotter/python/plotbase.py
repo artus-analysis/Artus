@@ -12,6 +12,7 @@ import os
 import subprocess
 import re
 import pprint
+import datetime
 
 import Artus.HarryPlotter.processor as processor
 import Artus.HarryPlotter.utility.roottools as roottools
@@ -148,6 +149,10 @@ class PlotBase(processor.Processor):
 		                                 help="If 'live' is enabled, the image will be copied to the user desktop (via ssh) and the image viewer will be started on the user desktop with this option.")
 		self.other_options.add_argument("--dict", action="store_true", default=False,
 		                                 help="Print out plot dictionary when plotting.")
+		self.other_options.add_argument("--www", type=str, default="", nargs='?',
+		                                 help="""Push output plots directly to your public EKP webspace.
+		                                 Default location is http://www-ekp.physik.uni-karlsruhe.de/~<USER>/plots_archive/<DATE>
+		                                 Optional argument is the name of a subdirectory that will appended to the default location.""")
 	
 	def prepare_args(self, parser, plotData):
 		super(PlotBase, self).prepare_args(parser, plotData)
@@ -198,6 +203,8 @@ class PlotBase(processor.Processor):
 		for index, error in enumerate(plotData.plotdict["y_errors"]):
 			if error is None:
 				plotData.plotdict["y_errors"][index] = True if index == 0 else False
+		if plotData.plotdict["www"] and plotData.plotdict["www"] is not "":
+			plotData.plotdict["output_dir"] = "/".join(['websync', datetime.date.today().strftime('%Y_%m_%d'), (plotData.plotdict["output_dir"] or "")])
 		# create output directory if not exisiting
 		if not os.path.exists(plotData.plotdict["output_dir"]):
 			os.makedirs(plotData.plotdict["output_dir"])
@@ -354,6 +361,46 @@ class PlotBase(processor.Processor):
 				else:
 					extrafunctions.show_plot(output_filename, plotData.plotdict["live"])
 
+		# web plotting
+		# TODO: make this more configurable if users want to user other webspaces etc.
+		if plotData.plotdict["www"] and not plotData.plotdict["www"] == "":
+			# set some needed variables
+			sshpc = "ekplx33.physik.uni-karlsruhe.de"
+			user = os.environ["USER"]
+			date = datetime.date.today().strftime('%Y_%m_%d')
+			remote_path = 'plots_archive/%s/%s/' % (date, (plotData.plotdict["www"] if type(plotData.plotdict["www"])==str else ""))
+			remote_full_path = '/disks/ekpwww/web/%s/public_html/%s' % (user, remote_path)
+			overview_filename = 'overview.html'
+			url = "http://www-ekp.physik.uni-karlsruhe.de/~%s/%s/%s" % (user, remote_path, overview_filename)
+			plots = sorted(os.listdir(plotData.plotdict["output_dir"]))
+			content = ""
+			n_plots_copied = 0
+
+			log.info("Copying plots to webspace...")
+			# loop over plots, make gallery
+			for plot in [p for p in plots if '.png' in p]:
+				log.debug("File %s will be copied" % plot)
+				# try to link to pdf file, if it exists
+				href = plot.replace('.png', '.pdf')
+				if href not in plots:
+					href = plot
+				title = plot.split('/')[-1][:-4].replace('_', ' ')
+				content += htmlTemplatePlot % (title, href, title, plot)
+				n_plots_copied += 1
+			with open(plotData.plotdict["output_dir"] + '/' + overview_filename, 'w') as f:
+				f.write(htmlTemplate % (url, content))
+			if os.path.basename(url) not in plots:
+				plots.append(os.path.basename(url))
+
+			# create remote dir, copy plots and overview file
+			create_dir_command = ['ssh', sshpc, 'mkdir -p', remote_full_path]
+			log.debug("\nIssueing mkdir command: " + " ".join(create_dir_command))
+			subprocess.call(create_dir_command)
+			rsync_command =['rsync', '-u'] + [os.path.join(plotData.plotdict["output_dir"], p) for p in plots] + ["%s:%s" % (sshpc, remote_full_path)]
+			log.debug("\nIssueing rsync command: " + " ".join(rsync_command) + "\n")
+			subprocess.call(rsync_command)
+			log.info("Copied %d plot(s) to %s" % (n_plots_copied, url))
+
 		if plotData.plotdict["dict"]:
 			pprint.pprint(plotData.plotdict)
 
@@ -365,3 +412,25 @@ class PlotBase(processor.Processor):
 			color, ratio_color = color_ratio_color
 			if ratio_color == None:
 				plotData.plotdict["ratio_colors"][index] = plotData.plotdict["colors"][index] # TODO
+
+
+
+# these html templates are needed to create the web galleries
+htmlTemplate = """<!DOCTYPE html>
+<html>
+<head>
+<style type="text/css">
+div { float:left; }
+pre { display: inline; padding: 3px 7px; font-size: 16px; background-color: #F5F5F5; border: 1px solid rgba(0, 0, 0, 0.15); border-radius: 4px; }
+h3 { color: #888; font-size: 16px; }
+</style>
+</head>
+<body>
+<h1>Plot overview</h1>
+<p>A <a href=".">file list</a> is also available and all plots can be downloaded using</p>
+<p><code>wget -r -l 1 %s</code></p>
+%s
+</body>
+</html>
+"""
+htmlTemplatePlot = """<div><h3>%s</h3><a href="%s" title="%s"><img src="%s" height="400"></a></div>\n"""
