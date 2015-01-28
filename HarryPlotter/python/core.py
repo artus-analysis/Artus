@@ -155,6 +155,9 @@ class HarryCore(object):
 		self.args = vars(self.parser.parse_args(self._args_from_script))
 		plotData = plotdata.PlotData(self.args)
 		
+		if not plotData.plotdict['no_logo']:
+			self._logo()
+
 		# general ROOT settings
 		log.debug("Setting ROOT TH1 DefaultSumw2 to True.")
 		ROOT.TH1.SetDefaultSumw2(True)
@@ -243,4 +246,19 @@ class HarryCore(object):
 			if inspect.getdoc(self.available_processors[module]):
 				log.info("\t{}".format(inspect.getdoc(self.available_processors[module])))
 
-
+	def _logo(self):
+		log.info("            _              _   ,                        ")
+		log.info("       /b_,dM\__,_        ( |_|                         ")
+		log.info("     _/MMMMMMMMMMMm,        | |_)arry                   ")
+		log.info("    _YMMMMMMMMMMMM(          ___                        ")
+		log.info("   `MMMMMM/   /   \         '_|_)                       ")
+		log.info("    MMM|  __  / __/           | lotter                  ")
+		log.info("    YMM/_/# \__/# \                      ______________ ")
+		log.info("    (.   \__/  \__/                     |         |data|")
+		log.info("      )       _,  | 'EXPLOTIARMUS!'     |       s |MC  |")
+		log.info(" _____/\     _   /                   *  |       d '----|")
+		log.info("     \  `._____,'                  *    |       d:     |")
+		log.info("      `..___(__             * * * *  *  |      yNh     |")
+		log.info("               ``-.        /    * *   * |      yMh     |")
+		log.info("                   \      /      *  *   |     :mMm/    |")
+		log.info("                         /3           * |__.-omMMMm+-__|\n")
