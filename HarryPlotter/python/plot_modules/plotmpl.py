@@ -10,6 +10,7 @@ import ROOT
 import Artus.HarryPlotter.plotbase as plotbase
 
 from Artus.HarryPlotter.utility.mplhisto import MplHisto, MplGraph
+import Artus.HarryPlotter.utility.labels as labels
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -195,8 +196,8 @@ class PlotMpl(plotbase.PlotBase):
 			ax.grid(plotData.plotdict["grid"])
 
 			if not plotData.plotdict["ratio"]:
-				ax.set_xlabel(plotData.plotdict["x_label"], position=(1., 0.), va='top', ha='right')
-			ax.set_ylabel(plotData.plotdict["y_label"], position=(0., 1.), va='top', ha='right')
+				ax.set_xlabel(labels.get_nice_label(plotData.plotdict["x_label"]), position=(1., 0.), va='top', ha='right')
+			ax.set_ylabel(labels.get_nice_label(plotData.plotdict["y_label"]), position=(0., 1.), va='top', ha='right')
 			ax.ticklabel_format(style='sci',scilimits=(-3,4),axis='both')
 
 			# do special things for 1D Plots
