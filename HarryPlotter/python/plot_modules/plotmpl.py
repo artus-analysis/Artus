@@ -198,8 +198,8 @@ class PlotMpl(plotbase.PlotBase):
 			if plotData.plotdict["y_lims"] is not None:
 				ax.set_ylim(plotData.plotdict["y_lims"][0],plotData.plotdict["y_lims"][1])
 			else:
-				if ax.dataLim.min >= 0.0 and ax.get_ylim()[0] < 0.:
-					ax.set_ylim(0.0)
+				if ax.dataLim.min[1] >= 0.0 and ax.get_ylim()[0] < 0.:
+					ax.set_ylim(ymin=0.0)
 
 			# do special things for 1D Plots
 			if self.plot_dimension == 1:
