@@ -22,7 +22,7 @@ class HarryParser(argparse.ArgumentParser):
 		
 		self.add_argument("-h", "--help", default=False, action="store_true",
 		                  help="show this help message and exit")
-		self.add_argument("--no-logo", default=False, action="store_true",
+		self.add_argument("--no-logo", default=True, action="store_true",
 		                  help="dont show the HarryPlotter logo at startup")
 		
 		self.module_options = self.add_argument_group('Modules')
