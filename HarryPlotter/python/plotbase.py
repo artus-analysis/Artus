@@ -156,7 +156,7 @@ class PlotBase(processor.Processor):
 		                                 help="If 'live' is enabled, the image will be copied to the user desktop (via ssh) and the image viewer will be started on the user desktop with this option.")
 		self.other_options.add_argument("--dict", action="store_true", default=False,
 		                                 help="Print out plot dictionary when plotting.")
-		self.other_options.add_argument("--www", type=str, default="", nargs='?',
+		self.other_options.add_argument("--www", type=str, default=None, nargs='?', const="",
 		                                 help="""Push output plots directly to your public EKP webspace.
 		                                 Default location is http://www-ekp.physik.uni-karlsruhe.de/~<USER>/plots_archive/<DATE>
 		                                 Optional argument is the name of a subdirectory that will appended to the default location.""")
@@ -210,8 +210,8 @@ class PlotBase(processor.Processor):
 		for index, error in enumerate(plotData.plotdict["y_errors"]):
 			if error is None:
 				plotData.plotdict["y_errors"][index] = True if index == 0 else False
-		if plotData.plotdict["www"] and plotData.plotdict["www"] is not "":
-			plotData.plotdict["output_dir"] = "/".join(['websync', datetime.date.today().strftime('%Y_%m_%d'), (plotData.plotdict["output_dir"] or "")])
+		if plotData.plotdict["www"] != None:
+			plotData.plotdict["output_dir"] = "/".join(['websync', datetime.date.today().strftime('%Y_%m_%d'), (plotData.plotdict["www"] or "")])
 		# create output directory if not exisiting
 		if not os.path.exists(plotData.plotdict["output_dir"]):
 			os.makedirs(plotData.plotdict["output_dir"])
@@ -370,7 +370,7 @@ class PlotBase(processor.Processor):
 
 		# web plotting
 		# TODO: make this more configurable if users want to user other webspaces etc.
-		if plotData.plotdict["www"] and not plotData.plotdict["www"] == "":
+		if plotData.plotdict["www"] != None:
 			# set some needed variables
 			sshpc = "ekplx33.physik.uni-karlsruhe.de"
 			user = os.environ["USER"]
@@ -385,7 +385,7 @@ class PlotBase(processor.Processor):
 
 			log.info("Copying plots to webspace...")
 			# loop over plots, make gallery
-			for plot in [p for p in plots if '.png' in p]:
+			for plot in [p for p in plots if (('.png' in p) or ('.pdf' in p))]:
 				log.debug("File %s will be copied" % plot)
 				# try to link to pdf file, if it exists
 				href = plot.replace('.png', '.pdf')
