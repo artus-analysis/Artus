@@ -141,9 +141,6 @@ class HarryCore(object):
 			else:
 				log.critical("Plot module \"{0}\" not found!".format(module))
 
-		# print the final processor chain
-		log.debug('Processors will be run in the following order')
-		log.debug(' => '.join([processor.name() for processor in self.processors]))
 		# let processors modify the parser and then parse the arguments again
 		for processor in self.processors:
 			processor.modify_argument_parser(self.parser, self.args)
@@ -155,6 +152,10 @@ class HarryCore(object):
 		self.args = vars(self.parser.parse_args(self._args_from_script))
 		plotData = plotdata.PlotData(self.args)
 		
+		# print the final processor chain
+		log.debug('Processors will be run in the following order')
+		log.debug(' => '.join([processor.name() for processor in self.processors]))
+
 		if not plotData.plotdict['no_logo']:
 			self._logo()
 
@@ -206,8 +207,10 @@ class HarryCore(object):
 		if os.path.isdir(module_dir):
 			self._modules_dirs.append(module_dir)
 		# relative path to current file
-		if os.path.isdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), module_dir)):
+		elif os.path.isdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), module_dir)):
 			self._modules_dirs.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), module_dir))
+		else:
+			log.critical("Couldnt append %s to list of module directories!" % module_dir)
 
 	def _isvalid_processor(self, processor_name, processor_type=None):
 		"""Check if a processor is valid."""
