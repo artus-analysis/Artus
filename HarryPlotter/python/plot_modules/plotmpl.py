@@ -111,13 +111,6 @@ class PlotMpl(plotbase.PlotBase):
 			for i in range(plotData.plotdict['n_axes_x'] * plotData.plotdict['n_axes_y']):
 				self.axes += [self.fig.add_subplot(plotData.plotdict['n_axes_x'], plotData.plotdict['n_axes_y'], i)]
 
-		if plotData.plotdict["x_lims"] is not None:
-			for ax in self.axes:
-				ax.set_xlim([plotData.plotdict["x_lims"][0],plotData.plotdict["x_lims"][1]])
-		if plotData.plotdict["y_lims"] is not None:
-			for ax in self.axes:
-				ax.set_ylim(plotData.plotdict["y_lims"][0],plotData.plotdict["y_lims"][1])
-
 		if plotData.plotdict["ratio"] and plotData.plotdict["y_ratio_lims"] != None:
 			self.ax2.set_ylim(plotData.plotdict["y_ratio_lims"][0],plotData.plotdict["y_ratio_lims"][1])
 
@@ -199,6 +192,14 @@ class PlotMpl(plotbase.PlotBase):
 				ax.set_xlabel(labels.get_nice_label(plotData.plotdict["x_label"]), position=(1., 0.), va='top', ha='right')
 			ax.set_ylabel(labels.get_nice_label(plotData.plotdict["y_label"]), position=(0., 1.), va='top', ha='right')
 			ax.ticklabel_format(style='sci',scilimits=(-3,4),axis='both')
+
+			if plotData.plotdict["x_lims"] is not None:
+				ax.set_xlim([plotData.plotdict["x_lims"][0],plotData.plotdict["x_lims"][1]])
+			if plotData.plotdict["y_lims"] is not None:
+				ax.set_ylim(plotData.plotdict["y_lims"][0],plotData.plotdict["y_lims"][1])
+			else:
+				if ax.dataLim.min >= 0.0 and ax.get_ylim()[0] < 0.:
+					ax.set_ylim(0.0)
 
 			# do special things for 1D Plots
 			if self.plot_dimension == 1:
