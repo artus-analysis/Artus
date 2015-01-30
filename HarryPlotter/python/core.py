@@ -34,7 +34,7 @@ JsonDict.COMMENT_DELIMITER = "@"
 
 class HarryCore(object):
 
-	def __init__(self, additional_modules_dirs=None, args_from_script=None):
+	def __init__(self, additional_modules_dirs=None, args_from_script=None, parser=None):
 		super(HarryCore, self).__init__()
 
 		# List of absolute paths to all module directories
@@ -45,7 +45,9 @@ class HarryCore(object):
 		self.processors = []
 
 		# First time parsing of cmd arguments
-		self.parser = harryparser.HarryParser()
+		if parser == None:
+			parser = harryparser.HarryParser()
+		self.parser = parser
 		self._args_from_script = shlex.split(args_from_script) if args_from_script else None
 		args, unknown_args = self.parser.parse_known_args(self._args_from_script)
 		self.args = vars(args)
