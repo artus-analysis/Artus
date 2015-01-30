@@ -326,6 +326,10 @@ class PlotRoot(plotbase.PlotBase):
 		super(PlotRoot, self).save_canvas(plotData)
 		
 		self.canvas.RedrawAxis()
+		if self.plot_pad:
+			self.plot_pad.RedrawAxis()
+		if self.ratio_pad:
+			self.ratio_pad.RedrawAxis()
 		
 		for output_filename in plotData.plotdict["output_filenames"]:
 			self.canvas.SaveAs(output_filename)
