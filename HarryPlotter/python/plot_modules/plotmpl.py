@@ -28,6 +28,7 @@ class PlotMpl(plotbase.PlotBase):
 		super(PlotMpl, self).__init__()
 		self.mpl_version = int(matplotlib.__version__.replace(".", ""))
 		self.set_matplotlib_defaults()
+		self.nicelabels = labels.LabelsDict()
 
 	def modify_argument_parser(self, parser, args):
 		super(PlotMpl, self).modify_argument_parser(parser, args)
@@ -189,8 +190,8 @@ class PlotMpl(plotbase.PlotBase):
 			ax.grid(plotData.plotdict["grid"])
 
 			if not plotData.plotdict["ratio"]:
-				ax.set_xlabel(labels.get_nice_label(plotData.plotdict["x_label"]), position=(1., 0.), va='top', ha='right')
-			ax.set_ylabel(labels.get_nice_label(plotData.plotdict["y_label"]), position=(0., 1.), va='top', ha='right')
+				ax.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]), position=(1., 0.), va='top', ha='right')
+			ax.set_ylabel(self.nicelabels.get_nice_label(plotData.plotdict["y_label"]), position=(0., 1.), va='top', ha='right')
 			ax.ticklabel_format(style='sci',scilimits=(-3,4),axis='both')
 
 			if plotData.plotdict["x_lims"] is not None:
@@ -209,7 +210,7 @@ class PlotMpl(plotbase.PlotBase):
 					ax.set_yscale('log', nonposy='clip')
 
 				if plotData.plotdict["ratio"]:
-					self.ax2.set_xlabel(plotData.plotdict["x_label"],position=(1., 0.), va='top', ha='right')
+					self.ax2.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]),position=(1., 0.), va='top', ha='right')
 					self.ax2.set_ylabel(plotData.plotdict["y_ratio_label"])
 					self.ax2.grid(plotData.plotdict["ratio_grid"])
 					# Don't show ticklabels on main plot
