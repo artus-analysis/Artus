@@ -12,6 +12,7 @@ import ROOT
 import sys
 
 import Artus.HarryPlotter.plotbase as plotbase
+import Artus.HarryPlotter.utility.extrafunctions as extrafunctions
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
@@ -321,6 +322,29 @@ class PlotRoot(plotbase.PlotBase):
 	
 	def add_texts(self, plotData):
 		super(PlotRoot, self).add_texts(plotData)
+		
+		self.plot_pad.cd()
+		if plotData.plotdict["text"] != None:
+			#reasonable default coordinates
+			x1 = 0.5
+			y1 = 0.8
+			text = plotData.plotdict["text"]
+	
+			textsplit = plotData.plotdict["text"].split(",")
+			if len(textsplit) >= 3:
+				if extrafunctions.isfloat(textsplit[len(textsplit) - 1]):
+					y1 = textsplit[len(textsplit) - 1]
+					text = ",".join(textsplit[:len(textsplit) - 1])
+				if extrafunctions.isfloat(textsplit[len(textsplit) - 2]):
+					x1 = textsplit[len(textsplit) - 2]
+					text = ",".join(textsplit[:len(textsplit) - 2])
+			
+			self.text = ROOT.TPaveText(float(x1), float(y1), 0.9, 0.9, "NDC")  
+			self.text.AddText(text)
+			self.text.SetLineColor(0)
+			self.text.SetFillColor(0)
+			self.text.SetShadowColor(0)
+			self.text.Draw()
 	
 	def save_canvas(self, plotData):
 		super(PlotRoot, self).save_canvas(plotData)
