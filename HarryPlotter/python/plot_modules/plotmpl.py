@@ -208,6 +208,8 @@ class PlotMpl(plotbase.PlotBase):
 					ax.set_xscale('log', nonposx='clip')
 				if plotData.plotdict["y_log"]: 
 					ax.set_yscale('log', nonposy='clip')
+					if plotData.plotdict["y_lims"] is None:
+						ax.set_ylim(ymin=0.9, ymax=ax.get_ylim()[1]*2)
 
 				if plotData.plotdict["ratio"]:
 					self.ax2.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]),position=(1., 0.), va='top', ha='right')
