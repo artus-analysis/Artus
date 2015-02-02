@@ -29,7 +29,7 @@ class RootTools(object):
 		self.z_bin_edges = {}
 
 	@staticmethod
-	def check_type(root_file_names, path_to_objects):
+	def check_type(root_file_names, path_to_objects, print_quantities=False):
 		if isinstance(root_file_names, basestring):
 			root_file_names = [root_file_names]
 		if isinstance(path_to_objects, basestring):
@@ -42,8 +42,20 @@ class RootTools(object):
 		root_object = root_file.Get(path_to_objects[0])
 		if root_object:
 			if isinstance(root_object, ROOT.TTree):
+				if print_quantities:
+					log.info("List of all tree quantities (in the first file):")
+					for leaf in root_object.GetListOfLeaves():
+						quantity = leaf.GetName()
+						if leaf.GetBranch().GetMother().GetName() != leaf.GetName():
+							quantity = leaf.GetBranch().GetMother().GetName()+"."+quantity
+						log.info("\t%s (%s)" % (quantity, leaf.GetTypeName()))
 				return ROOT.TTree
 			elif isinstance(root_object, ROOT.TDirectory):
+				if print_quantities:
+					log.info("List of all histogram/graph/function quantities (in the first file):")
+					for key in root_object.GetListOfKeys():
+						if key.GetClassName().startswith("TH") or key.GetClassName().startswith("TF") or "Graph" in key.GetClassName():
+							log.info("\t%s (%s)" % (key.GetName(), key.GetClassName()))
 				return ROOT.TH1
 			else:
 				log.error("Usage of ROOT objects of Type \"" + root_objects[0].ClassName() + "\" is not yet implemented!")

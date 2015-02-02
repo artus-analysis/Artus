@@ -15,7 +15,6 @@ import ROOT
 import Artus.HarryPlotter.inputbase as inputbase
 import Artus.HarryPlotter.input_modules.inputfile as inputfile
 import Artus.HarryPlotter.utility.roottools as roottools
-import Artus.HarryPlotter.extrafunctions as extrafunctions
 import Artus.Utility.progressiterator as pi
 
 
@@ -32,6 +31,8 @@ class InputRoot(inputfile.InputFile):
 		                                help="Names of trees to be used as friends. Seperate different plots with space, seperate for same plot with whitespace.", default=None)
 		self.input_options.add_argument("--friend-filenames", type=str, nargs="+",
 		                                help="Filenames to be added as friends. Seperate different plots with space, seperate for same plot with whitespace.", default=None)
+		self.input_options.add_argument("--quantities", action="store_true", default=False,
+		                                help="Print available quantities in given folder")
 		self.input_options.add_argument("-x", "--x-expressions", type=str, nargs="+",
 		                                help="x-axis variable expression(s)")
 		self.input_options.add_argument("-y", "--y-expressions", type=str, nargs="+",
@@ -72,15 +73,13 @@ class InputRoot(inputfile.InputFile):
 	
 	def run(self, plotData):
 		
-		if plotData.plotdict["quantities"]:
-			extrafunctions.print_quantities(root_files=plotData.plotdict["files"], root_folders=plotData.plotdict["folders"])
-			sys.exit(0)
 		root_tools = roottools.RootTools()
 		for index, (root_files, folders, x_expression, y_expression, z_expression, weight, nick, friend_trees) in enumerate(pi.ProgressIterator(zip(*
 			[plotData.plotdict[key] for key in ["files", "folders", "x_expressions", "y_expressions", "z_expressions", "weights", "nicks", "friend_trees"]]),
 			description="Reading ROOT inputs")):
 			# check whether to read from tree or directly from histograms
-			root_object_type = roottools.RootTools.check_type(root_files, folders)
+			root_object_type = roottools.RootTools.check_type(root_files, folders,
+			                                                  print_quantities=plotData.plotdict["quantities"])
 			root_tree_chain = None
 			root_histogram = None
 			

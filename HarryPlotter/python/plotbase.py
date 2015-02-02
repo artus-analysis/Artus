@@ -148,8 +148,6 @@ class PlotBase(processor.Processor):
 
 		# settings to increase usability
 		self.other_options = parser.add_argument_group("Other features")
-		self.other_options.add_argument("--quantities", action="store_true", default=False,
-		                                 help="Print available quantities in given folder")
 		self.other_options.add_argument("--live", default=None, nargs='?', const='gthumb',
 		                                 help="Open plot in viewer after its creation. Parameter is the name of your desired viewer.")
 		self.other_options.add_argument("--userpc", default=False, action='store_true',
