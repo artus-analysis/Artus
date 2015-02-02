@@ -9,6 +9,8 @@ import collections
 from multiprocessing import Pool
 
 import ROOT
+ROOT.PyConfig.IgnoreCommandLineOptions = True
+ROOT.gErrorIgnoreLevel = ROOT.kError
 
 import Artus.Utility.jsonTools as jsonTools
 import Artus.HarryPlotter.core as harrycore
