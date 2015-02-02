@@ -88,6 +88,7 @@ class InputRoot(inputfile.InputFile):
 				                                  y_expression + ":" if y_expression else "",
 				                                  x_expression)
 				option = plotData.plotdict["root_histogram_draw_options"]
+				weight = self.auto_detect_type_and_modify_weight(weight, root_files, plotData)
 				root_tree_chain, root_histogram = root_tools.histogram_from_tree(
 						root_files, folders,
 						x_expression, y_expression, z_expression,
@@ -123,3 +124,10 @@ class InputRoot(inputfile.InputFile):
 
 		# run upper class function at last
 		super(InputRoot, self).run(plotData)
+
+	def auto_detect_type_and_modify_weight(self, weight, root_files, plotData):
+		""" This function checks the type (data/MC) of the input file(s) and
+			modifies the weights accordingly. Actual implementation is
+			analysis-specific.
+		"""
+		return weight
