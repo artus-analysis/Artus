@@ -35,3 +35,11 @@ def show_plot_userpc(filename, viewer, user, userpc):
 		print "\nOpening %s..." % viewer
 		subprocess.Popen(['ssh', userpc,
 		'DISPLAY=:0 %s /usr/users/%s/plot.%s &' % (viewer, user, filename.split(".")[-1])])
+
+def isfloat(element):
+	try:
+		float(element)
+		return True
+	except ValueError:
+		return False
+
