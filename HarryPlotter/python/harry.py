@@ -8,6 +8,8 @@ log = logging.getLogger(__name__)
 import collections
 from multiprocessing import Pool
 
+import ROOT
+
 import Artus.Utility.jsonTools as jsonTools
 import Artus.HarryPlotter.core as harrycore
 
@@ -24,6 +26,9 @@ def pool_plot(args):
 
 class HarryPlotter(object):
 	def __init__(self, list_of_config_dicts=None, list_of_args_strings=None, n_processes=1):
+		# load Kappa library # TODO: check if available
+		ROOT.gSystem.Load("libKappa")
+		
 		self.multi_plots(list_of_config_dicts=list_of_config_dicts,
 		                 list_of_args_strings=list_of_args_strings,
 		                 n_processes=n_processes)
