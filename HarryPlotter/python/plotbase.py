@@ -16,7 +16,7 @@ import datetime
 
 import Artus.HarryPlotter.processor as processor
 import Artus.HarryPlotter.utility.roottools as roottools
-import Artus.HarryPlotter.extrafunctions as extrafunctions
+import Artus.HarryPlotter.utility.extrafunctions as extrafunctions
 
 class PlotBase(processor.Processor):
 	
