@@ -12,6 +12,7 @@ import hashlib
 import Artus.HarryPlotter.analysisbase as analysisbase
 
 import Artus.HarryPlotter.analysis_modules.functionplot as functionplot
+import Artus.HarryPlotter.analysis_modules.projectionY as projectionY
 import copy
 
 class ProjectByFit(analysisbase.AnalysisBase):
@@ -88,15 +89,15 @@ class ProjectByFit(analysisbase.AnalysisBase):
 		                         histogram_2D.GetXaxis().GetXmin(),
 		                         histogram_2D.GetXaxis().GetXmax())
 
-		for ibin in range(histogram_2D.GetNbinsX()):
-			fit_histogram = histogram_2D.ProjectionY("tmp_"+str(ibin), ibin, ibin+1)
+		slice_generator =  projectionY.ProjectionY.histoSlice(histogram_2D)
+		for ibin, fit_histogram in enumerate(slice_generator):
 			val, error = functionplot.FunctionPlot.get_roofit_parameter(function, 
 			                                  fit_histogram.GetXaxis().GetXmin(), 
 			                                  fit_histogram.GetXaxis().GetXmax(),
 			                                  start_parameters,
 			                                  fit_histogram,
 			                                  output_selection)
-			result_histo.SetBinContent(ibin, val)
-			result_histo.SetBinError(ibin, error)
+			result_histo.SetBinContent(ibin+1, val)
+			result_histo.SetBinError(ibin+1, error)
 		return result_histo
 
