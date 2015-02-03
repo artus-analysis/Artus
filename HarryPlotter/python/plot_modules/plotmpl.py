@@ -109,7 +109,7 @@ class PlotMpl(plotbase.PlotBase):
 		else:
 			self.axes = []
 			for i in range(plotData.plotdict['n_axes_x'] * plotData.plotdict['n_axes_y']):
-				self.axes += [self.fig.add_subplot(plotData.plotdict['n_axes_x'], plotData.plotdict['n_axes_y'], i)]
+				self.axes += [self.fig.add_subplot(plotData.plotdict['n_axes_y'], plotData.plotdict['n_axes_x'], i)]
 
 		if plotData.plotdict["ratio"] and plotData.plotdict["y_ratio_lims"] != None:
 			self.ax2.set_ylim(plotData.plotdict["y_ratio_lims"][0],plotData.plotdict["y_ratio_lims"][1])
