@@ -16,6 +16,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 from matplotlib.colors import Normalize
+from mpl_toolkits.mplot3d import Axes3D
 
 from itertools import cycle
 
@@ -40,6 +41,8 @@ class PlotMpl(plotbase.PlotBase):
 		                                     help="Step lines according to bin edges instead of connecting points.")
 		self.formatting_options.add_argument("--zorder", type=int, nargs="+",
 		                                     help="Order in which plots are layered. Default is first nick always on top, then zorder increases.")
+		self.formatting_options.add_argument("--3d", type=int, nargs="?", default=False, const=0,
+		                                     help="If set, a 2D histogram is plotted in 3D. Optional Argument is the viewing angle. Default: %(default)s")
 		self.formatting_options.set_defaults(legloc="upper right")
 
 	def prepare_args(self, parser, plotData):
@@ -109,7 +112,8 @@ class PlotMpl(plotbase.PlotBase):
 		else:
 			self.axes = []
 			for i in range(plotData.plotdict['n_axes_x'] * plotData.plotdict['n_axes_y']):
-				self.axes += [self.fig.add_subplot(plotData.plotdict['n_axes_y'], plotData.plotdict['n_axes_x'], i)]
+				self.axes += [self.fig.add_subplot( plotData.plotdict['n_axes_y'], plotData.plotdict['n_axes_x'], i,
+					**({'projection':'3d'} if (plotData.plotdict['3d'] is not False) else {}))]
 
 		if plotData.plotdict["ratio"] and plotData.plotdict["y_ratio_lims"] != None:
 			self.ax2.set_ylim(plotData.plotdict["y_ratio_lims"][0],plotData.plotdict["y_ratio_lims"][1])
@@ -135,11 +139,19 @@ class PlotMpl(plotbase.PlotBase):
 
 			elif isinstance(root_object, ROOT.TH2):
 				mplhist = MplHisto(root_object)
-				self.plot_dimension = mplhist.dimension
+				if plotData.plotdict['3d'] is not False:
+					self.plot_dimension = 3
+				else:
+					self.plot_dimension = mplhist.dimension
 				vmin = plotData.plotdict["z_lims"][0] if plotData.plotdict["z_lims"] else None
 				vmax = plotData.plotdict["z_lims"][1] if plotData.plotdict["z_lims"] else None
 				cmap = plt.cm.get_cmap(plotData.plotdict["colormap"])
-				self.image = self.plot_contour1d(mplhist, ax=self.axes[n_ax], vmin=vmin, vmax=vmax, z_log=plotData.plotdict["z_log"], cmap=cmap)
+
+
+				if plotData.plotdict["3d"] is not False:
+					self.image = self.plot_3d(mplhist, ax=self.axes[n_ax], cmap=cmap, angle=plotData.plotdict["3d"])
+				else:
+					self.image = self.plot_contour1d(mplhist, ax=self.axes[n_ax], vmin=vmin, vmax=vmax, z_log=plotData.plotdict["z_log"], cmap=cmap)
 
 			elif isinstance(root_object, ROOT.TH1):
 				mplhist = MplHisto(root_object)
@@ -187,19 +199,18 @@ class PlotMpl(plotbase.PlotBase):
 		for ax in self.axes:
 
 			ax.grid(plotData.plotdict["grid"])
-
 			if not plotData.plotdict["ratio"]:
 				ax.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]), position=(1., 0.), va='top', ha='right')
 			ax.set_ylabel(self.nicelabels.get_nice_label(plotData.plotdict["y_label"]), position=(0., 1.), va='top', ha='right')
 			ax.ticklabel_format(style='sci',scilimits=(-3,4),axis='both')
-
-			if plotData.plotdict["x_lims"] is not None:
-				ax.set_xlim([plotData.plotdict["x_lims"][0],plotData.plotdict["x_lims"][1]])
-			if plotData.plotdict["y_lims"] is not None:
-				ax.set_ylim(plotData.plotdict["y_lims"][0],plotData.plotdict["y_lims"][1])
-			else:
-				if ax.dataLim.min[1] >= (-1E-6) and ax.get_ylim()[0] < 0.:
-					ax.set_ylim(ymin=0.0)
+			if self.plot_dimension != 3:
+				if plotData.plotdict["x_lims"] is not None:
+					ax.set_xlim([plotData.plotdict["x_lims"][0],plotData.plotdict["x_lims"][1]])
+				if plotData.plotdict["y_lims"] is not None:
+					ax.set_ylim(plotData.plotdict["y_lims"][0],plotData.plotdict["y_lims"][1])
+				else:
+					if ax.dataLim.min[1] >= (-1E-6) and ax.get_ylim()[0] < 0.:
+						ax.set_ylim(ymin=0.0)
 
 			# do special things for 1D Plots
 			if self.plot_dimension == 1:
@@ -225,6 +236,9 @@ class PlotMpl(plotbase.PlotBase):
 				cb = self.fig.colorbar(self.image, ax=ax)
 				if plotData.plotdict["z_label"]:
 					cb.set_label(plotData.plotdict["z_label"])
+			elif self.plot_dimension == 3:
+				if plotData.plotdict["z_label"]:
+					ax.set_zlabel(plotData.plotdict["z_label"])
 
 	def add_labels(self, plotData):
 		super(PlotMpl, self).add_labels(plotData)
@@ -235,13 +249,14 @@ class PlotMpl(plotbase.PlotBase):
 			if plotData.plotdict["title"]:
 				ax.set_title(plotData.plotdict["title"], fontsize=14)
 
-			if not (plotData.plotdict["lumi"]==None):
-				plt.text(-0.0, 1.030, "$\mathcal{L}=%s\mathrm{fb^{-1}}$" % plotData.plotdict["lumi"],
-					transform=ax.transAxes, fontsize=18)
-			if not (plotData.plotdict["energy"] == None):
-				energy = "+".join(plotData.plotdict["energy"])
-				plt.text(1.0, 1.030, "$\sqrt{s}=" + energy + "\\ \mathrm{TeV}$", 
-					transform=ax.transAxes, fontsize=18, horizontalalignment="right")
+			if not self.plot_dimension == 3:
+				if not (plotData.plotdict["lumi"]==None):
+					plt.text(-0.0, 1.030, "$\mathcal{L}=%s\mathrm{fb^{-1}}$" % plotData.plotdict["lumi"],
+						transform=ax.transAxes, fontsize=18)
+				if not (plotData.plotdict["energy"] == None):
+					energy = "+".join(plotData.plotdict["energy"])
+					plt.text(1.0, 1.030, "$\sqrt{s}=" + energy + "\\ \mathrm{TeV}$", 
+						transform=ax.transAxes, fontsize=18, horizontalalignment="right")
 
 			# Only plot legend if there active legend handles
 			if ax.get_legend_handles_labels()[0] and plotData.plotdict["legloc"] is not None:
@@ -253,7 +268,7 @@ class PlotMpl(plotbase.PlotBase):
 			if self.mpl_version >= 121:
 				plt.tight_layout()
 			# Decrease vertical distance between subplots
-			if self.plot_dimension != 2:
+			if self.plot_dimension < 2:
 				plt.subplots_adjust(hspace=0.2)
 
 	def save_canvas(self, plotData):
@@ -447,6 +462,19 @@ class PlotMpl(plotbase.PlotBase):
 		# TODO Masked values are currently plotted black. Needs to be adapted to chosen colorbar
 		cmap.set_bad('black', alpha=None)
 		artist = ax.pcolormesh(hist.xbinedges, hist.ybinedges, arr, cmap=cmap, norm=norm)
+		return artist
+
+	def plot_3d(self, hist, ax, cmap='afmhot', angle=0):
+		""" Three-dimensional plot. 
+		"""
+		ax.view_init(20, angle-120)
+		
+		y = np.linspace(hist.y[0], hist.y[-1], len(hist.y))
+		x = np.linspace(hist.x[0], hist.x[-1], len(hist.x))
+		X, Y = np.meshgrid(x, y)
+
+		artist = ax.plot_surface(X, Y, hist.bincontents, rstride=1, cstride=1,
+			cmap=cmap, linewidth=0, antialiased=True, shade=False)
 		return artist
 
 	def get_zip_arguments(self, plotData):
