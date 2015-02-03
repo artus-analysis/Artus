@@ -223,7 +223,7 @@ class PlotMpl(plotbase.PlotBase):
 						self.ax2.set_xscale('log', nonposx='clip')
 			# do special things for 2D Plots
 			elif self.plot_dimension == 2:
-				cb = self.fig.colorbar(self.image, ax=self.axes[n_ax])
+				cb = self.fig.colorbar(self.image, ax=ax)
 				if plotData.plotdict["z_label"]:
 					cb.set_label(plotData.plotdict["z_label"])
 
