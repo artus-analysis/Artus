@@ -19,9 +19,13 @@ class ExportRoot(plotbase.PlotBase):
 	def modify_argument_parser(self, parser, args):
 		super(ExportRoot, self).modify_argument_parser(parser, args)
 		
+		self.root_export_options = parser.add_argument_group("ROOT Export options")
+		self.root_export_options.add_argument("--file-mode", default="RECREATE",
+		                                      help="Mode for opening ROOT output file. [Default: %(default)s]")
+		
 		self.formatting_options.add_argument("-L", "--labels", type=str, nargs="+",
 		                                     help="Paths for the ROOT objects in the file.")
-		                                     
+		
 		self.output_options.set_defaults(formats=["root"])
 	
 	def prepare_args(self, parser, plotData):
@@ -44,7 +48,7 @@ class ExportRoot(plotbase.PlotBase):
 		pass
 		
 	def create_canvas(self, plotData):
-		self.root_output_files = [ROOT.TFile(output_filename, "RECREATE") for output_filename in self.output_filenames]
+		self.root_output_files = [ROOT.TFile(output_filename, plotData.plotdict["file_mode"]) for output_filename in self.output_filenames]
 		
 	def prepare_histograms(self, plotData):
 		pass
