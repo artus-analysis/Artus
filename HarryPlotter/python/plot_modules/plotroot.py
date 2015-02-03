@@ -32,7 +32,7 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Place an x-axes grid on the plot.")
 		self.formatting_options.add_argument("--y-grid", action='store_true', default=False,
 		                                     help="Place an y-axes grid on the plot.")
-		self.formatting_options.add_argument("-g", "--legloc", type=float, nargs=2, default=[0.6, 0.6],
+		self.formatting_options.add_argument("-g", "--legloc", type=float, nargs=2, default=None,
 		                                     help="Location (x/y coordinates) of the legend. [Default: %(default)s]")
 		self.formatting_options.add_argument("--stacks-errband", action='store_true', default=False,
 		                                     help="Draw error band on top of the stacked plots.")
@@ -311,14 +311,16 @@ class PlotRoot(plotbase.PlotBase):
 		super(PlotRoot, self).add_labels(plotData)
 		
 		self.plot_pad.cd()
-		self.legend = ROOT.TLegend(plotData.plotdict["legloc"][0], plotData.plotdict["legloc"][1], 0.9, 0.9);
-		for plot_index in self.plot_sequence_indices[::-1]:
-			root_object = plotData.plotdict["root_objects"][plotData.plotdict["nicks"][plot_index]]
-			marker = plotData.plotdict["markers"][plot_index]
-			label = plotData.plotdict["labels"][plot_index]
-			if label != None:
-				self.legend.AddEntry(root_object, label, "LP" if "e" in marker.lower() else "F")
-		self.legend.Draw()
+		self.legend = None
+		if plotData.plotdict["legloc"] != None:
+			self.legend = ROOT.TLegend(plotData.plotdict["legloc"][0], plotData.plotdict["legloc"][1], 0.9, 0.9);
+			for plot_index in self.plot_sequence_indices[::-1]:
+				root_object = plotData.plotdict["root_objects"][plotData.plotdict["nicks"][plot_index]]
+				marker = plotData.plotdict["markers"][plot_index]
+				label = plotData.plotdict["labels"][plot_index]
+				if label != None:
+					self.legend.AddEntry(root_object, label, "LP" if "e" in marker.lower() else "F")
+			self.legend.Draw()
 	
 	def add_texts(self, plotData):
 		super(PlotRoot, self).add_texts(plotData)
