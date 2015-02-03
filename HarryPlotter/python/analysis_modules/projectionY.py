@@ -21,16 +21,12 @@ class ProjectionY(analysisbase.AnalysisBase):
 			if isinstance(histogram_2D, ROOT.TH2):
 				slice_generator = self.histoSlice(histogram_2D, nick=nick, label=label)
 				for slice in slice_generator:
-					print slice.GetName()
-					print slice.GetTitle()
 					plotData.plotdict["root_objects"][slice.GetName()] = slice
 					plotData.plotdict["nicks"].append(slice.GetName())
 					plotData.plotdict["labels"].append(slice.GetTitle())
-			print "removing " + nick
 			plotData.plotdict["nicks"].remove(nick)
 			plotData.plotdict["labels"].remove(label)
 			del plotData.plotdict["root_objects"][nick]
-		pprint.pprint(plotData.plotdict)
 
 
 	""" Generator to return slices of 2D histograms with proper labeling """
@@ -40,7 +36,6 @@ class ProjectionY(analysisbase.AnalysisBase):
 			iter_range = range(histogram_2D.GetNbinsX())
 		else:
 			iter_range = range(1, histogram_2D.GetNbinsX()+1, 1)
-		print iter_range
 		if nick == None:
 			nick = histogram_2D.GetName()
 		for ibin in iter_range:
