@@ -119,6 +119,7 @@ class FunctionPlot(analysisbase.AnalysisBase):
 	def do_roofit(function, x_min, x_max, start_parameters, root_histogram):
 
 		integral = root_histogram.Integral()
+		maximum = root_histogram.GetMaximum(integral)
 		x = ROOT.RooRealVar("x", "x", x_min, x_max)
 		dh = ROOT.RooDataHist("dh", "dh", ROOT.RooArgList(x), root_histogram)
 
@@ -145,10 +146,7 @@ class FunctionPlot(analysisbase.AnalysisBase):
 			exit()
 		
 		filters = function.fitTo(dh,ROOT.RooLinkedList())
-		function.plotOn(frame, ROOT.RooLinkedList())
-		#TODO: normalization does not work for some reason
-		#function.plotOn(frame, ROOT.RooFit.Normalization(1.0, ROOT.RooAbsReal.Relative))
-		root_function = ROOT.RooCurve(function, x, x_min, x_max, 1000)
+		root_function = ROOT.RooCurve(function, x, x_min, x_max, 1000, maximum)
 		return root_function, mean, sigma, width
 
 	@staticmethod
