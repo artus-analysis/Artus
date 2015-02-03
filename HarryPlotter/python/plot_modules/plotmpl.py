@@ -43,7 +43,7 @@ class PlotMpl(plotbase.PlotBase):
 		                                     help="Order in which plots are layered. Default is first nick always on top, then zorder increases.")
 		self.formatting_options.add_argument("--3d", type=int, nargs="?", default=False, const=0,
 		                                     help="If set, a 2D histogram is plotted in 3D. Optional Argument is the viewing angle. Default: %(default)s")
-		self.formatting_options.set_defaults(legloc="upper right")
+		self.formatting_options.set_defaults(legend="upper right")
 
 	def prepare_args(self, parser, plotData):
 		super(PlotMpl, self).prepare_args(parser, plotData)
@@ -259,11 +259,11 @@ class PlotMpl(plotbase.PlotBase):
 						transform=ax.transAxes, fontsize=18, horizontalalignment="right")
 
 			# Only plot legend if there active legend handles
-			if len(ax.get_legend_handles_labels()[0]) > 1 and plotData.plotdict["legloc"] is not None:
+			if len(ax.get_legend_handles_labels()[0]) > 1 and plotData.plotdict["legend"] is not None:
 				# handles, labels = ax.get_legend_handles_labels()
 				# sort both labels and handles by labels
 				# labels, handles = zip(*sorted(zip(labels, handles), key=lambda t: t[0]))
-				legend = ax.legend(loc=plotData.plotdict["legloc"])
+				legend = ax.legend(loc=plotData.plotdict["legend"])
 				legend.set_zorder(100)
 
 			if self.mpl_version >= 121:

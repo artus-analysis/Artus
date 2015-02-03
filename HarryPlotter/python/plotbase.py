@@ -111,7 +111,7 @@ class PlotBase(processor.Processor):
 		                                     help="Show x errors in the ratio subplots. [Default: True]")
 		self.formatting_options.add_argument("--ratio-y-errors", type='bool', nargs="+", default=[True],
 		                                     help="Show y errors in the ratio subplots. [Default: True]")
-		self.formatting_options.add_argument("--legloc", type=str, nargs="?",
+		self.formatting_options.add_argument("--legend", type=str, nargs="?",
 		                                     help="Location of the legend. Use 'None' to not set any legend")
 		self.formatting_options.add_argument("-G", "--grid", action="store_true", default=False,
 		                                     help="Place an axes grid on the plot.")
