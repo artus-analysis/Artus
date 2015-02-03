@@ -144,6 +144,12 @@ public:
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuonEta", [](event_type const& event, product_type const& product) {
 			return product.m_validMuons.size() >= 1 ? product.m_validMuons[0]->p4.Eta() : DefaultValues::UndefinedDouble;
 		});
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("trailingMuonPt", [](event_type const& event, product_type const& product) {
+			return product.m_validMuons.size() >= 2 ? product.m_validMuons[1]->p4.Pt() : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("trailingMuonEta", [](event_type const& event, product_type const& product) {
+			return product.m_validMuons.size() >= 2 ? product.m_validMuons[1]->p4.Eta() : DefaultValues::UndefinedDouble;
+		});
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
