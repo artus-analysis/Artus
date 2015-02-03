@@ -251,7 +251,7 @@ class PlotMpl(plotbase.PlotBase):
 
 			if not self.plot_dimension == 3:
 				if not (plotData.plotdict["lumi"]==None):
-					plt.text(-0.0, 1.030, "$\mathcal{L}=%s\mathrm{fb^{-1}}$" % plotData.plotdict["lumi"],
+					plt.text(-0.0, 1.030, "$\mathcal{L}=%.1f\mathrm{fb^{-1}}$" % plotData.plotdict["lumi"],
 						transform=ax.transAxes, fontsize=18)
 				if not (plotData.plotdict["energy"] == None):
 					energy = "+".join(plotData.plotdict["energy"])
@@ -259,7 +259,7 @@ class PlotMpl(plotbase.PlotBase):
 						transform=ax.transAxes, fontsize=18, horizontalalignment="right")
 
 			# Only plot legend if there active legend handles
-			if ax.get_legend_handles_labels()[0] and plotData.plotdict["legloc"] is not None:
+			if len(ax.get_legend_handles_labels()[0]) > 1 and plotData.plotdict["legloc"] is not None:
 				# handles, labels = ax.get_legend_handles_labels()
 				# sort both labels and handles by labels
 				# labels, handles = zip(*sorted(zip(labels, handles), key=lambda t: t[0]))
