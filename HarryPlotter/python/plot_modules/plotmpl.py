@@ -40,6 +40,7 @@ class PlotMpl(plotbase.PlotBase):
 		                                     help="Step lines according to bin edges instead of connecting points.")
 		self.formatting_options.add_argument("--zorder", type=int, nargs="+",
 		                                     help="Order in which plots are layered. Default is first nick always on top, then zorder increases.")
+		self.formatting_options.set_defaults(legloc="upper right")
 
 	def prepare_args(self, parser, plotData):
 		super(PlotMpl, self).prepare_args(parser, plotData)
@@ -59,8 +60,6 @@ class PlotMpl(plotbase.PlotBase):
 
 		self.set_default_ratio_colors(plotData)
 
-		if plotData.plotdict["legloc"] is None:
-			plotData.plotdict["legloc"] = "upper right"
 		# defaults for markers
 		for index, marker in enumerate(plotData.plotdict["markers"]):
 			if marker is None:
@@ -245,7 +244,7 @@ class PlotMpl(plotbase.PlotBase):
 					transform=ax.transAxes, fontsize=18, horizontalalignment="right")
 
 			# Only plot legend if there active legend handles
-			if ax.get_legend_handles_labels()[0]:
+			if ax.get_legend_handles_labels()[0] and plotData.plotdict["legloc"] is not None:
 				# handles, labels = ax.get_legend_handles_labels()
 				# sort both labels and handles by labels
 				# labels, handles = zip(*sorted(zip(labels, handles), key=lambda t: t[0]))
