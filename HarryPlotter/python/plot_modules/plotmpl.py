@@ -263,7 +263,8 @@ class PlotMpl(plotbase.PlotBase):
 				# handles, labels = ax.get_legend_handles_labels()
 				# sort both labels and handles by labels
 				# labels, handles = zip(*sorted(zip(labels, handles), key=lambda t: t[0]))
-				ax.legend(loc=plotData.plotdict["legloc"])
+				legend = ax.legend(loc=plotData.plotdict["legloc"])
+				legend.set_zorder(100)
 
 			if self.mpl_version >= 121:
 				plt.tight_layout()
