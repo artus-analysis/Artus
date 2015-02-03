@@ -200,7 +200,8 @@ class PlotBase(processor.Processor):
 		# formatting options
 		if plotData.plotdict["labels"] == None or all([i == None for i in plotData.plotdict["labels"]]):
 			plotData.plotdict["labels"] = plotData.plotdict["nicks"]
-		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "linestyles", "x_errors", "y_errors", "stack", "axes"])
+		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "linestyles", "x_errors", "y_errors", "stack", "axes"],
+				n_items = max([len(plotData.plotdict[l]) for l in ['nicks', 'stack']]))
 		
 		for index, error in enumerate(plotData.plotdict["x_errors"]):
 			if error is None:
