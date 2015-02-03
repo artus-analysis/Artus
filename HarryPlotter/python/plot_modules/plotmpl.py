@@ -253,7 +253,8 @@ class PlotMpl(plotbase.PlotBase):
 			if self.mpl_version >= 121:
 				plt.tight_layout()
 			# Decrease vertical distance between subplots
-			plt.subplots_adjust(hspace=0.2)
+			if self.plot_dimension != 2:
+				plt.subplots_adjust(hspace=0.2)
 
 	def save_canvas(self, plotData):
 		for output_filename in plotData.plotdict["output_filenames"]:
