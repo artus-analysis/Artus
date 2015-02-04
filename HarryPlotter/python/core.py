@@ -169,12 +169,9 @@ class HarryCore(object):
 		# export arguments into JSON file (1)
 		# remove entries from dictionary that are not meant to be exported
 		export_args = JsonDict(copy.deepcopy(plotData.plotdict))
-		export_args.pop("quantities")
-		export_args.pop("export_json")
-		export_args.pop("live")
-		export_args.pop("userpc")
-		export_args.pop("json_defaults")
-		
+		for arg in ["quantities", "export_json", "live", "userpc", "json_defaults"]:
+			export_args.pop(arg, None)
+
 		if plotData.plotdict["export_json"] == "update":
 			plotData.plotdict["export_json"] = "default" if plotData.plotdict["json_defaults"] is None else plotData.plotdict["json_defaults"][0]
 		
