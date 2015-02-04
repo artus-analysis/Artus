@@ -29,17 +29,14 @@ class ExportRoot(plotbase.PlotBase):
 		self.output_options.set_defaults(formats=["root"])
 	
 	def prepare_args(self, parser, plotData):
-		if not "root" in plotData.plotdict["formats"]:
-			plotData.plotdict["formats"].append("root")
+		#if not "root" in plotData.plotdict["formats"]:
+		plotData.plotdict["formats"] = ["root"]
 	
 		super(ExportRoot, self).prepare_args(parser, plotData)
 		
 		for index, (nick, path) in enumerate(zip(plotData.plotdict["nicks"], plotData.plotdict["labels"])):
 			if path == None:
 				plotData.plotdict["labels"][index] = nick
-			
-		self.output_filenames = [filename for filename in plotData.plotdict["output_filenames"] if filename.endswith(".root")]
-		plotData.plotdict["output_filenames"] = [filename for filename in plotData.plotdict["output_filenames"] if not filename.endswith(".root")]
 	
 	def run(self, plotdict=None):
 		super(ExportRoot, self).run(plotdict)
@@ -48,7 +45,7 @@ class ExportRoot(plotbase.PlotBase):
 		pass
 		
 	def create_canvas(self, plotData):
-		self.root_output_files = [ROOT.TFile(output_filename, plotData.plotdict["file_mode"]) for output_filename in self.output_filenames]
+		self.root_output_files = [ROOT.TFile(output_filename, plotData.plotdict["file_mode"]) for output_filename in plotData.plotdict["output_filenames"]]
 		
 	def prepare_histograms(self, plotData):
 		pass
@@ -71,7 +68,7 @@ class ExportRoot(plotbase.PlotBase):
 		pass
 		
 	def save_canvas(self, plotData):
-		for root_output_file, output_filename in zip(self.root_output_files, self.output_filenames):
+		for root_output_file, output_filename in zip(self.root_output_files, plotData.plotdict["output_filenames"]):
 			root_output_file.Write()
 			root_output_file.Close()
 			log.info("Exported root objects to \"%s\"." % output_filename)
