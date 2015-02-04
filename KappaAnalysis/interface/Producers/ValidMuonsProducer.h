@@ -150,6 +150,46 @@ public:
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("trailingMuonEta", [](event_type const& event, product_type const& product) {
 			return product.m_validMuons.size() >= 2 ? product.m_validMuons[1]->p4.Eta() : DefaultValues::UndefinedDouble;
 		});
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuMinusPt", [](event_type const& event, product_type const& product) {
+			for (int i = 0; i < product.m_validMuons.size(); i++)
+			{
+				if (product.m_validMuons[i]->charge() < 0)
+				{
+					return product.m_validMuons[i]->p4.Pt();
+				}
+			}
+			return DefaultValues::UndefinedFloat;
+		});
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuPlusPt", [](event_type const& event, product_type const& product) {
+			for (int i = 0; i < product.m_validMuons.size(); i++)
+			{
+				if (product.m_validMuons[i]->charge() > 0)
+				{
+					return product.m_validMuons[i]->p4.Pt();
+				}
+			}
+			return DefaultValues::UndefinedFloat;
+		});
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuMinusEta", [](event_type const& event, product_type const& product) {
+			for (int i = 0; i < product.m_validMuons.size(); i++)
+			{
+				if (product.m_validMuons[i]->charge() < 0)
+				{
+					return product.m_validMuons[i]->p4.Eta();
+				}
+			}
+			return DefaultValues::UndefinedFloat;
+		});
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuPlusEta", [](event_type const& event, product_type const& product) {
+			for (int i = 0; i < product.m_validMuons.size(); i++)
+			{
+				if (product.m_validMuons[i]->charge() > 0)
+				{
+					return product.m_validMuons[i]->p4.Eta();
+				}
+			}
+			return DefaultValues::UndefinedFloat;
+		});
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
