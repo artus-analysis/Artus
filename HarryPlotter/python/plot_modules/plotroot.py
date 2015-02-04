@@ -91,8 +91,8 @@ class PlotRoot(plotbase.PlotBase):
 			self.canvas = ROOT.TCanvas()
 
 		#Modify right side margin for 2d-plots
-		if not isinstance(root_object, ROOT.TGraph)
-			if plotData.plotdict["root_objects"][plotData.plotdict["nicks"][0]].GetDimension():
+		if not isinstance(plotData.plotdict["root_objects"][plotData.plotdict["nicks"][0]], ROOT.TGraph):
+			if plotData.plotdict["root_objects"][plotData.plotdict["nicks"][0]].GetDimension() == 2:
 				self.canvas.SetRightMargin(0.15)
 
 		if (plotData.plotdict["ratio"] == True):
