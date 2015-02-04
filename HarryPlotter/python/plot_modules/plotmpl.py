@@ -206,6 +206,10 @@ class PlotMpl(plotbase.PlotBase):
 			if self.plot_dimension != 3:
 				if plotData.plotdict["x_lims"] is not None:
 					ax.set_xlim([plotData.plotdict["x_lims"][0],plotData.plotdict["x_lims"][1]])
+				else:
+					ax.set_xlim(plotData.plotdict['root_objects'][plotData.plotdict['nicks'][0]].GetXaxis().GetBinLowEdge(1),
+							plotData.plotdict['root_objects'][plotData.plotdict['nicks'][0]].GetXaxis().GetBinUpEdge(
+								plotData.plotdict['root_objects'][plotData.plotdict['nicks'][0]].GetNbinsX()))
 				if plotData.plotdict["y_lims"] is not None:
 					ax.set_ylim(plotData.plotdict["y_lims"][0],plotData.plotdict["y_lims"][1])
 				else:
