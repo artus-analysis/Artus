@@ -29,7 +29,6 @@ class ExportRoot(plotbase.PlotBase):
 		self.output_options.set_defaults(formats=["root"])
 	
 	def prepare_args(self, parser, plotData):
-		#if not "root" in plotData.plotdict["formats"]:
 		plotData.plotdict["formats"] = ["root"]
 	
 		super(ExportRoot, self).prepare_args(parser, plotData)
