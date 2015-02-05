@@ -404,6 +404,6 @@ class RootTools(object):
 				root_directory.mkdir(directory)
 			directory = root_directory.Get(directory)
 			directory.cd()
-		root_object.Write(path.split("/")[-1])
+		root_object.Write(path.split("/")[-1], ROOT.TObject.kWriteDelete)
 		root_file.cd()
 
