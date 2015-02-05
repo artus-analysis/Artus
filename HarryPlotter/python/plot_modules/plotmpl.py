@@ -43,6 +43,8 @@ class PlotMpl(plotbase.PlotBase):
 		                                     help="Order in which plots are layered. Default is first nick always on top, then zorder increases.")
 		self.formatting_options.add_argument("--3d", type=int, nargs="?", default=False, const=0,
 		                                     help="If set, a 2D histogram is plotted in 3D. Optional Argument is the viewing angle. Default: %(default)s")
+		self.formatting_options.add_argument("--save-legend", type=str, nargs="?", default=False, const="legend",
+		                                     help="If set, the legend is saved as a separate file. Argument is the filename. Default: %(default)s")
 		self.formatting_options.set_defaults(legend="upper right")
 
 	def prepare_args(self, parser, plotData):
@@ -280,6 +282,26 @@ class PlotMpl(plotbase.PlotBase):
 		for output_filename in plotData.plotdict["output_filenames"]:
 			self.fig.savefig(output_filename)
 			log.info("Created plot \"%s\"." % output_filename)
+
+		#save legend separate
+		if plotData.plotdict['save_legend'] is not False:
+			legend_fig = plt.figure()
+			legend_ax = legend_fig.add_subplot(111, frameon=False)
+			legend_ax.xaxis.set_visible(False)
+			legend_ax.yaxis.set_visible(False)
+			legend = legend_ax.legend(*self.axes[0].get_legend_handles_labels(), loc='center')
+			for suffix in plotData.plotdict['formats']:
+				full_name = "%s/%s.%s" % (plotData.plotdict['output_dir'], plotData.plotdict['save_legend'], suffix)
+				legend_fig.savefig(
+					full_name,
+					# TODO cleanly crop figure to legend size
+					# the arguments below are just workarounds :(
+					bbox_inches='tight',
+					pad_inches=-1
+				)
+			log.info("Legend saved to " + full_name)
+
+
 
 	def set_matplotlib_defaults(self):
 		# Set matplotlib rc settings
