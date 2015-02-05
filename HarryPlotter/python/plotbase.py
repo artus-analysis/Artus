@@ -144,7 +144,7 @@ class PlotBase(processor.Processor):
 		                                 help="Output directory for plots. [Default: %(default)s]")
 		self.output_options.add_argument("--filename",
 		                                 help="Filename of the plot without extension. By default, it is constructed from the x/y/z expressions.")
-		self.output_options.add_argument("-f", "--formats", nargs="+", default=["png"],
+		self.output_options.add_argument("--formats", nargs="+", default=["png"],
 		                                 help="Format of the plots. [Default: %(default)s]")
 
 		# settings to increase usability

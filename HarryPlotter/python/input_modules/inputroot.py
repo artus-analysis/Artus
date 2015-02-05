@@ -25,7 +25,7 @@ class InputRoot(inputfile.InputFile):
 	def modify_argument_parser(self, parser, args):
 		super(InputRoot, self).modify_argument_parser(parser, args)
 		
-		self.input_options.add_argument("--folders", type=str, nargs='*',
+		self.input_options.add_argument("-f", "--folders", type=str, nargs='*',
 		                                help="Path(s) to ROOT objects.")
 		self.input_options.add_argument("--friend-treenames", type=str, nargs="+",
 		                                help="Names of trees to be used as friends. Seperate different plots with space, seperate for same plot with whitespace.", default=None)
