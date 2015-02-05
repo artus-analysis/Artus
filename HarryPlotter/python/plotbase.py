@@ -22,6 +22,7 @@ class PlotBase(processor.Processor):
 	
 	def __init__(self):
 		super(PlotBase, self).__init__()
+		self.sshpc = "ekplx33.physik.uni-karlsruhe.de"  # needed for web plotting
 	
 	def modify_argument_parser(self, parser, args):
 		super(PlotBase, self).modify_argument_parser(parser, args)
@@ -371,7 +372,7 @@ class PlotBase(processor.Processor):
 		# TODO: make this more configurable if users want to user other webspaces etc.
 		if plotData.plotdict["www"] != None:
 			# set some needed variables
-			sshpc = "ekplx33.physik.uni-karlsruhe.de"
+
 			user = os.environ["USER"]
 			date = datetime.date.today().strftime('%Y_%m_%d')
 			remote_path = 'plots_archive/%s/%s/' % (date, (plotData.plotdict["www"] if type(plotData.plotdict["www"])==str else ""))
@@ -399,10 +400,10 @@ class PlotBase(processor.Processor):
 				plots.append(os.path.basename(url))
 
 			# create remote dir, copy plots and overview file
-			create_dir_command = ['ssh', sshpc, 'mkdir -p', remote_full_path]
+			create_dir_command = ['ssh', self.sshpc, 'mkdir -p', remote_full_path]
 			log.debug("\nIssueing mkdir command: " + " ".join(create_dir_command))
 			subprocess.call(create_dir_command)
-			rsync_command =['rsync', '-u'] + [os.path.join(plotData.plotdict["output_dir"], p) for p in plots] + ["%s:%s" % (sshpc, remote_full_path)]
+			rsync_command =['rsync', '-u'] + [os.path.join(plotData.plotdict["output_dir"], p) for p in plots] + ["%s:%s" % (self.sshpc, remote_full_path)]
 			log.debug("\nIssueing rsync command: " + " ".join(rsync_command) + "\n")
 			subprocess.call(rsync_command)
 			log.info("Copied %d plot(s) to %s" % (n_plots_copied, url))
