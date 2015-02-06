@@ -201,10 +201,20 @@ class PlotMpl(plotbase.PlotBase):
 		for ax in self.axes:
 
 			ax.grid(plotData.plotdict["grid"])
+
+			# set axis labels
 			if not plotData.plotdict["ratio"]:
 				ax.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]), position=(1., 0.), va='top', ha='right')
 			ax.set_ylabel(self.nicelabels.get_nice_label(plotData.plotdict["y_label"]), position=(0., 1.), va='top', ha='right')
+
+			# set axis ticks
+			if plotData.plotdict["x_ticks"] is not None:
+				ax.set_xticks(plotData.plotdict["x_ticks"])
+			if plotData.plotdict["y_ticks"] is not None:
+				ax.set_yticks(plotData.plotdict["y_ticks"])
 			ax.ticklabel_format(style='sci',scilimits=(-3,4),axis='both')
+
+			# set axis limits
 			if self.plot_dimension != 3:
 				if plotData.plotdict["x_lims"] is not None:
 					ax.set_xlim([plotData.plotdict["x_lims"][0],plotData.plotdict["x_lims"][1]])
@@ -222,6 +232,11 @@ class PlotMpl(plotbase.PlotBase):
 			if self.plot_dimension == 1:
 				if plotData.plotdict["x_log"]: 
 					ax.set_xscale('log', nonposx='clip')
+					# for log plots, we have to set the ticks again and set the formatter:
+					if plotData.plotdict["x_ticks"] is not None:
+						ax.set_xticks(plotData.plotdict["x_ticks"])
+						ax.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+
 				if plotData.plotdict["y_log"]: 
 					ax.set_yscale('log', nonposy='clip')
 					if plotData.plotdict["y_lims"] is None:
