@@ -217,7 +217,7 @@ class RootTools(object):
 		root_histogram = None
 		if any([bin_edges != None for bin_edges in [self.x_bin_edges[histo_type], self.y_bin_edges[histo_type], self.z_bin_edges[histo_type]]]):
 			if any([bin_edges == None and expression != None for (bin_edges, expression) in zip([self.x_bin_edges[histo_type], self.y_bin_edges[histo_type], self.z_bin_edges[histo_type]],
-			                                                                                    [x_expression, y_expression, z_expression])]):
+                                                                            [x_expression, y_expression, z_expression])]) and "prof" not in option:
 				log.warning("Bin edges need to be specified either for no or for all axes!")
 			else:
 				if z_expression != None:
@@ -226,7 +226,11 @@ class RootTools(object):
 							                   len(self.y_bin_edges[histo_type])-1, self.y_bin_edges[histo_type],
 								               len(self.z_bin_edges[histo_type])-1, self.z_bin_edges[histo_type])
 				elif y_expression != None:
-					root_histogram = ROOT.TH2F(name, "",
+					if "prof" in option:
+						root_histogram = ROOT.TProfile(name, "",
+												len(self.x_bin_edges[histo_type])-1, self.x_bin_edges[histo_type])
+					else:
+						root_histogram = ROOT.TH2F(name, "",
 							                   len(self.x_bin_edges[histo_type])-1, self.x_bin_edges[histo_type],
 							                   len(self.y_bin_edges[histo_type])-1, self.y_bin_edges[histo_type])
 				else:
@@ -259,7 +263,7 @@ class RootTools(object):
 		log.debug("Creating histogram %s of quantity %s with weights %s" % (
 			name, variable_expression, weight_selection
 		))
-		if root_histogram == None or option.find("prof")!=-1:
+		if root_histogram == None:
 			tree.Draw(variable_expression + ">>" + name + binning, str(weight_selection), option + " GOFF")
 		else:
 			tree.Project(name, variable_expression, str(weight_selection), option + " GOFF")
