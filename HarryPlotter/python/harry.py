@@ -73,7 +73,9 @@ class HarryPlotter(object):
 		if len(harry_args) > 1 and n_processes > 1:
 			pool = Pool(processes=n_processes)
 			results = pool.map_async(pool_plot, zip([self]*len(harry_args), harry_args))
-			output_filenames, failed_plots = zip*([result for result in results.get() if not result is None and result != (None,)])
+			tmp_output_filenames, tmp_failed_plots = zip(*([result for result in results.get() if not result is None and result != (None,)]))
+			output_filenames = [output_filename for output_filename in tmp_output_filenames if not output_filename is None]
+			failed_plots = [failed_plot for failed_plot in tmp_failed_plots if not failed_plot is None]
 		
 		# single processing of multiple plots
 		elif len(harry_args) > 1:
