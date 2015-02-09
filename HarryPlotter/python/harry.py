@@ -37,7 +37,8 @@ class HarryPlotter(object):
 		)
 	
 	def plot(self, harry_args):
-		log.debug("harry.py " + harry_args)
+		if not harry_args is None:
+			log.debug("harry.py " + harry_args)
 		harry_core = harrycore.HarryCore(args_from_script=harry_args)
 		return harry_core.run()
 	
