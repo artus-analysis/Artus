@@ -252,6 +252,10 @@ class PlotMpl(plotbase.PlotBase):
 					self.ax2.set_xlim(ax.get_xlim())
 					if plotData.plotdict["x_log"]: 
 						self.ax2.set_xscale('log', nonposx='clip')
+					if plotData.plotdict["x_ticks"] is not None:
+						self.ax2.set_xticks(plotData.plotdict["x_ticks"])
+						if plotData.plotdict["x_log"]:
+							self.ax2.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
 			# do special things for 2D Plots
 			elif self.plot_dimension == 2:
 				cb = self.fig.colorbar(self.image, ax=ax)
