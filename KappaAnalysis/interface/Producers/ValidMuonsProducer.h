@@ -196,7 +196,6 @@ public:
 	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
 		assert(event.m_muons);
-		assert(event.m_vertexSummary);
 		
 		// select input source
 		std::vector<KMuon*> muons;
