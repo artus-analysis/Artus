@@ -22,7 +22,6 @@ class PlotBase(processor.Processor):
 	
 	def __init__(self):
 		super(PlotBase, self).__init__()
-		self.sshpc = "ekplx33.physik.uni-karlsruhe.de"  # needed for web plotting
 	
 	def modify_argument_parser(self, parser, args):
 		super(PlotBase, self).modify_argument_parser(parser, args)
@@ -357,14 +356,11 @@ class PlotBase(processor.Processor):
 		if not (plotData.plotdict["live"]==None):
 			# if 'userpc', get the username and name of desktop machine
 			if plotData.plotdict["userpc"]:
-				user = os.environ["USER"]
-				p = subprocess.Popen([r"who am i | sed 's/.*(\([^]]*\)).*/\1/g'"], stdout=subprocess.PIPE, shell=True)
-				out, err = p.communicate()
-				userpc = ("%s@%s" % (user, out)).replace("\n", "")
+				userpc = ("%s@%s" % (os.environ["USER"], os.environ["HARRY_USERPC"])).replace("\n", "")
 
 			for output_filename in plotData.plotdict["output_filenames"]:
 				if plotData.plotdict["userpc"]:
-					extrafunctions.show_plot_userpc(output_filename, plotData.plotdict["live"], user, userpc)
+					extrafunctions.show_plot_userpc(output_filename, plotData.plotdict["live"], os.environ['USER'], userpc)
 				else:
 					extrafunctions.show_plot(output_filename, plotData.plotdict["live"])
 
@@ -372,13 +368,12 @@ class PlotBase(processor.Processor):
 		# TODO: make this more configurable if users want to user other webspaces etc.
 		if plotData.plotdict["www"] != None:
 			# set some needed variables
-
-			user = os.environ["USER"]
-			date = datetime.date.today().strftime('%Y_%m_%d')
-			remote_path = 'plots_archive/%s/%s/' % (date, (plotData.plotdict["www"] if type(plotData.plotdict["www"])==str else ""))
-			remote_full_path = '/disks/ekpwww/web/%s/public_html/%s' % (user, remote_path)
+			user = os.environ["HARRY_REMOTE_USER"]
 			overview_filename = 'overview.html'
-			url = "http://www-ekp.physik.uni-karlsruhe.de/~%s/%s/%s" % (user, remote_path, overview_filename)
+			date = datetime.date.today().strftime('%Y_%m_%d')
+			remote_dir = os.environ['HARRY_REMOTE_DIR']+'/%s/%s/' % (date, (plotData.plotdict["www"] if type(plotData.plotdict["www"])==str else ""))
+			remote_path = os.environ['HARRY_REMOTE_PATH'] + '/%s' % remote_dir
+			url = os.environ['HARRY_URL'] + "/%s/%s" % (remote_dir, overview_filename)
 			plots = sorted(os.listdir(plotData.plotdict["output_dir"]))
 			content = ""
 			n_plots_copied = 0
@@ -400,10 +395,10 @@ class PlotBase(processor.Processor):
 				plots.append(os.path.basename(url))
 
 			# create remote dir, copy plots and overview file
-			create_dir_command = ['ssh', self.sshpc, 'mkdir -p', remote_full_path]
+			create_dir_command = ['ssh', os.environ['HARRY_SSHPC'], 'mkdir -p', remote_path]
 			log.debug("\nIssueing mkdir command: " + " ".join(create_dir_command))
 			subprocess.call(create_dir_command)
-			rsync_command =['rsync', '-u'] + [os.path.join(plotData.plotdict["output_dir"], p) for p in plots] + ["%s:%s" % (self.sshpc, remote_full_path)]
+			rsync_command =['rsync', '-u'] + [os.path.join(plotData.plotdict["output_dir"], p) for p in plots] + ["%s:%s" % (self.sshpc, remote_path)]
 			log.debug("\nIssueing rsync command: " + " ".join(rsync_command) + "\n")
 			subprocess.call(rsync_command)
 			log.info("Copied %d plot(s) to %s" % (n_plots_copied, url))
