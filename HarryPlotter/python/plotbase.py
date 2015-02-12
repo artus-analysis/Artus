@@ -14,6 +14,8 @@ import re
 import pprint
 import datetime
 
+import ROOT
+
 import Artus.HarryPlotter.processor as processor
 import Artus.HarryPlotter.utility.roottools as roottools
 import Artus.HarryPlotter.utility.extrafunctions as extrafunctions
@@ -334,6 +336,19 @@ class PlotBase(processor.Processor):
 			if log.isEnabledFor(logging.DEBUG):
 				log.debug("\nContents of stack %s, nick %s:" % (stack1, nick1))
 				plotData.plotdict["root_stack_histos"][stack1].Print("range")
+		
+		# remove underflow/overflow bin contents
+		for nick in plotData.plotdict["nicks"]:
+			root_object = plotData.plotdict["root_objects"][nick]
+			if isinstance(root_object, ROOT.TH1):
+				if root_object.GetDimension() == 1:
+					root_object.SetBinContent(0, 0.0)
+					root_object.SetBinError(0, 0.0)
+					root_object.SetBinContent(root_object.GetNbinsX()+1, 0.0)
+					root_object.SetBinError(root_object.GetNbinsX()+1, 0.0)
+				else:
+					# TODO: iterate over multidim. under-/overflow bins
+					pass
 
 	def make_plots(self, plotData):
 		pass
