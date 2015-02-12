@@ -49,11 +49,21 @@ class Processor(object):
 			if not isinstance(plotData.plotdict[key], collections.Iterable) or isinstance(plotData.plotdict[key], basestring):
 				plotData.plotdict[key] = [plotData.plotdict[key]]
 		
-		# expand/cut lists that are too short/long
+		
 		max_n_inputs = n_items if n_items != None else max([len(plotData.plotdict[key]) for key in keys_of_list_args])
+		
+		# expand/cut warnings, if needed
+		warning = False
 		for key, plot_list in [(key, plotData.plotdict[key]) for key in keys_of_list_args]:
 			if len(plot_list) != 1 and len(plot_list) < max_n_inputs:
-				log.warning("Argument '%s' with length %.0f will be repeated until length %.0f! Is this correct?" % (key, len(plot_list), max_n_inputs))
+				warning = True
+				log.warning("Argument '%s' with length %d will be repeated until length %d! Is this correct?" % (key, len(plot_list), max_n_inputs))
+		if warning:
+			for key in [key for key in keys_of_list_args if len(plotData.plotdict[key]) == max_n_inputs]:
+				log.warning("Argument '%s' has length %d! Is this correct?" % (key, max_n_inputs))
+
+		# expand/cut lists that are too short/long
+		for key, plot_list in [(key, plotData.plotdict[key]) for key in keys_of_list_args]:
 			plotData.plotdict[key] = (plot_list * max_n_inputs)[:max_n_inputs]
 	
 	@classmethod
