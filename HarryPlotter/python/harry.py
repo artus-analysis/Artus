@@ -37,9 +37,9 @@ class HarryPlotter(object):
 		)
 	
 	def plot(self, harry_args):
+		harry_core = harrycore.HarryCore(args_from_script=harry_args)
 		if not harry_args is None:
 			log.debug("harry.py " + harry_args)
-		harry_core = harrycore.HarryCore(args_from_script=harry_args)
 		return harry_core.run()
 	
 	def multi_plots(self, list_of_config_dicts, list_of_args_strings, n_processes=1):
