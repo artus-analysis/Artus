@@ -40,6 +40,11 @@ public:
 
 	virtual ~ConsumerBaseUntemplated() {}
 
+	/*
+	 * Must return a unique id of the Consumer.
+	 */
+	virtual std::string GetConsumerId() const = 0;
+
 protected:
 	// will be implemented by the ConsumerBase class
 	virtual void baseProcess( SettingsBase const& setting ) = 0;
@@ -130,11 +135,6 @@ public:
 	 * Called after the last event. Overwrite this to store your histograms etc. to disk
 	 */
 	virtual void Finish(setting_type const& setting) = 0;
-
-	/*
-	 * Must return a unique id of the Consumer.
-	 */
-	virtual std::string GetConsumerId() const = 0;
 
 	/*
 	 * Return a reference to the settings used for this consumer

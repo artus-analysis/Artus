@@ -187,15 +187,15 @@ public:
 				break;
 			
 			if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
-				ProducerBaseAccess(	static_cast< ProducerForThisPipeline &> ( *it )	)
-						. Produce(evt, localProduct,
-						m_pipelineSettings);
+				ProducerForThisPipeline& prod = static_cast<ProducerForThisPipeline&>(*it);
+				//LOG(DEBUG) << prod.GetProducerId() << "::Produce (pipeline: " << m_pipelineSettings.GetName() << ")";
+				ProducerBaseAccess(prod).Produce(evt, localProduct, m_pipelineSettings);
 			}
 			else if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
-				FilterForThisPipeline & flt = static_cast<FilterForThisPipeline &> ( *it );
-				const bool filterResult = FilterBaseAccess( flt ) . DoesEventPass(evt, localProduct,
-				                                                   m_pipelineSettings);
-				localFilterResult.SetFilterDecision( flt.GetFilterId(), filterResult );
+				FilterForThisPipeline & flt = static_cast<FilterForThisPipeline&>(*it);
+				//LOG(DEBUG) << flt.GetFilterId() << "::DoesEventPass (pipeline: " << m_pipelineSettings.GetName() << ")";
+				const bool filterResult = FilterBaseAccess(flt).DoesEventPass(evt, localProduct, m_pipelineSettings);
+				localFilterResult.SetFilterDecision(flt.GetFilterId(), filterResult);
 			}
 			else {
 				LOG(FATAL) << "ProcessNodeType not supported by the pipeline!";
@@ -203,13 +203,13 @@ public:
 		}
 
 		// run Consumers
-		for (ConsumerVectorIterator itcons = m_consumer.begin();
-				itcons != m_consumer.end(); itcons++) {
+		for (ConsumerVectorIterator itcons = m_consumer.begin(); itcons != m_consumer.end(); itcons++) {
+			//LOG(DEBUG) << itcons->GetConsumerId() << "::ProcessFilteredEvent/ProcessEvent (pipeline: " << m_pipelineSettings.GetName() << ")";
 			if (localFilterResult.HasPassed()) {
-				ConsumerBaseAccess( *itcons ).ProcessFilteredEvent(evt, localProduct, GetSettings());
+				ConsumerBaseAccess(*itcons).ProcessFilteredEvent(evt, localProduct, GetSettings());
 			}
 
-			ConsumerBaseAccess( *itcons ).ProcessEvent(evt, localProduct, GetSettings(), localFilterResult);
+			ConsumerBaseAccess(*itcons).ProcessEvent(evt, localProduct, GetSettings(), localFilterResult);
 		}
 
 		return localFilterResult.HasPassed();
