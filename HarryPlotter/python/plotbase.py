@@ -309,8 +309,6 @@ class PlotBase(processor.Processor):
 				ratio_histogram = numerator_histogram.Clone(name + "_ratio")
 				ratio_histogram.Divide(denominator_histogram)
 				plotData.plotdict.setdefault("root_ratio_histos", []).append(ratio_histogram)
-				denominator_histogram.Divide(denominator_histogram)
-				plotData.plotdict.setdefault("root_ratio_histos", []).append(denominator_histogram)
 	
 	def create_canvas(self, plotData):
 		pass
