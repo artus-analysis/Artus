@@ -51,7 +51,7 @@ class PlotBase(processor.Processor):
 		                               help="Logarithmic x-axis.")
 		self.axis_options.add_argument("--x-ticks", type=float, nargs="+",
 		                               help="Custom ticks for the X-axis")
-		self.axis_options.add_argument("--x-tick-labels", type=float, nargs="+",
+		self.axis_options.add_argument("--x-tick-labels", type=str, nargs="+",
 		                               help="Custom tick labels for the X-axis")
 		#self.axis_options.add_argument("--xview", type=float, nargs=2, default=xview,
 		#                               help="Lower and Upper limit for x-axis viewing in the plot")
@@ -68,7 +68,7 @@ class PlotBase(processor.Processor):
 		                               help="Logarithmic y-axis.")
 		self.axis_options.add_argument("--y-ticks", type=float, nargs="+",
 		                               help="Custom ticks for the Y-axis")
-		self.axis_options.add_argument("--y-tick-labels", type=float, nargs="+",
+		self.axis_options.add_argument("--y-tick-labels", type=str, nargs="+",
 		                               help="Custom tick labels for the Y-axis")
 		
 		self.axis_options.add_argument("--z-lims", type=float, nargs=2,
@@ -79,7 +79,7 @@ class PlotBase(processor.Processor):
 		                               help="Logarithmic z-axis.")
 		self.axis_options.add_argument("--z-ticks", type=float, nargs="+",
 		                               help="Custom ticks for the Z-axis")
-		self.axis_options.add_argument("--z-tick-labels", type=float, nargs="+",
+		self.axis_options.add_argument("--z-tick-labels", type=str, nargs="+",
 		                               help="Custom tick labels for the Z-axis")
 		self.axis_options.add_argument("--n-axes-x", type=int, default=1,
 		                                     help="Number of axis/pad element(s) in x-direction. Default is %(default)s")
