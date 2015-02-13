@@ -35,6 +35,46 @@ class NormalizeToUnity(analysisbase.AnalysisBase):
 				root_histogram.Sumw2()
 				root_histogram.Scale(1.0 / root_histogram.Integral())
 
+class NormalizeColumnsToUnity(analysisbase.AnalysisBase):
+	"""In a TH2 histo, normalize each column such that sum(rows) = 1."""
+	def __init__(self):
+		super(NormalizeColumnsToUnity, self).__init__()
+
+	def run(self, plotData=None):
+		super(NormalizeColumnsToUnity, self).run(plotData)
+		
+		for nick, root_histogram in plotData.plotdict["root_objects"].iteritems():
+			if isinstance(root_histogram, ROOT.TH2):
+				root_histogram.Sumw2()
+				sumBinContentColumn = 0
+				for iBinX in range(1, root_histogram.GetNbinsX()+1):
+					for iBinY in range(1, root_histogram.GetNbinsY()+1):
+						sumBinContentColumn += root_histogram.GetBinContent(iBinX, iBinY)
+					for iBinY in range(1, root_histogram.GetNbinsY()+1):
+						binContent = root_histogram.GetBinContent(iBinX, iBinY)
+						root_histogram.SetBinContent(iBinX, iBinY, binContent/sumBinContentColumn)
+					sumBinContentColumn = 0
+
+class NormalizeRowsToUnity(analysisbase.AnalysisBase):
+	"""In a TH2 histo, normalize each row such that sum(columns) = 1."""
+	def __init__(self):
+		super(NormalizeRowsToUnity, self).__init__()
+
+	def run(self, plotData=None):
+		super(NormalizeRowsToUnity, self).run(plotData)
+		
+		for nick, root_histogram in plotData.plotdict["root_objects"].iteritems():
+			if isinstance(root_histogram, ROOT.TH2):
+				root_histogram.Sumw2()
+				sumBinContentRow = 0
+				for iBinY in range(1, root_histogram.GetNbinsY()+1):
+					for iBinX in range(1, root_histogram.GetNbinsX()+1):
+						sumBinContentRow += root_histogram.GetBinContent(iBinX, iBinY)
+					for iBinX in range(1, root_histogram.GetNbinsX()+1):
+						binContent = root_histogram.GetBinContent(iBinX, iBinY)
+						root_histogram.SetBinContent(iBinX, iBinY, binContent/sumBinContentRow)
+					sumBinContentRow = 0
+
 class NormalizeToFirstHisto(analysisbase.AnalysisBase):
 	"""Normalize histograms to first histogram."""
 	def __init__(self):
