@@ -90,7 +90,6 @@ add_library(artus_externalcorr SHARED
 	../CondFormats/JetMETObjects/src/JetResolution.cc
 	../CondFormats/JetMETObjects/src/SimpleJetCorrectionUncertainty.cc
 	../CondFormats/JetMETObjects/src/SimpleJetCorrector.cc
-	../CondFormats/JetMETObjects/src/Utilities.cc
 )
 else()
 	message(STATUS "Looking for offline corrections: not found and not compiled.")
