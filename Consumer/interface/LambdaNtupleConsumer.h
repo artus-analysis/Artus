@@ -119,9 +119,9 @@ public:
 		};
 	}
 	static void AddVFloatQuantity(std::string const& name,
-	                              std::function<std::vector<double>(event_type const&, product_type const&)> valueExtractor)
+	                              std::function<std::vector<float>(event_type const&, product_type const&)> valueExtractor)
 	{
-		LambdaNtupleQuantities::CommonVFloatQuantities[name] = [valueExtractor](EventBase const& ev, ProductBase const& pd) -> std::vector<double>
+		LambdaNtupleQuantities::CommonVFloatQuantities[name] = [valueExtractor](EventBase const& ev, ProductBase const& pd) -> std::vector<float>
 		{ 
 			auto const& specEv = static_cast<event_type const&>(ev);
 			auto const& specPd = static_cast<product_type const&>(pd);
