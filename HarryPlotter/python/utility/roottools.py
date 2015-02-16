@@ -221,12 +221,17 @@ class RootTools(object):
 				log.warning("Bin edges need to be specified either for no or for all axes!")
 			else:
 				if z_expression != None:
-					root_histogram = ROOT.TH3F(name, "",
+					if "prof" in option.lower():
+						root_histogram = ROOT.TProfile2D(name, "",
+							                   len(self.x_bin_edges[histo_type])-1, self.x_bin_edges[histo_type],
+							                   len(self.y_bin_edges[histo_type])-1, self.y_bin_edges[histo_type])
+					else:
+						root_histogram = ROOT.TH3F(name, "",
 							                   len(self.x_bin_edges[histo_type])-1, self.x_bin_edges[histo_type],
 							                   len(self.y_bin_edges[histo_type])-1, self.y_bin_edges[histo_type],
 								               len(self.z_bin_edges[histo_type])-1, self.z_bin_edges[histo_type])
 				elif y_expression != None:
-					if "prof" in option:
+					if "prof" in option.lower():
 						root_histogram = ROOT.TProfile(name, "",
 												len(self.x_bin_edges[histo_type])-1, self.x_bin_edges[histo_type])
 					else:
