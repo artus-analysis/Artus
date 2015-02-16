@@ -497,17 +497,23 @@ class PlotMpl(plotbase.PlotBase):
 		"""
 		if ax is None:
 			ax = plt.gca()
+		if (vmin, vmax) == (None,)*2:
+			vmin, vmax = np.amin(hist.bincontents), np.amax(hist.bincontents)
+		norm = (LogNorm if z_log else Normalize)(vmin=vmin, vmax=vmax)
 
-		arr = hist.bincontents
-		if z_log:
-			norm = LogNorm(vmin=vmin, vmax=vmax)
-			arr = np.ma.masked_equal(arr, 0.0)
-		else:
-			norm = Normalize(vmin=vmin, vmax=vmax)
+		# special settings for masked arrays (TProfile2Ds):
+		if type(hist.bincontents) == np.ma.core.MaskedArray:
+			min_color, max_color = cmap(norm(vmin))[:3], cmap(norm(vmax))[:3]  # get min and max colors from colorbar as rgb-tuples
 
-		# TODO Masked values are currently plotted black. Needs to be adapted to chosen colorbar
-		cmap.set_bad('black', alpha=None)
-		artist = ax.pcolormesh(hist.xbinedges, hist.ybinedges, arr, cmap=cmap, norm=norm)
+			# set color for masked entries depending on min and max color of colorbar
+			mask_color = 'white'
+			if any([all([i>0.95 for i in color]) for color in [min_color, max_color]]):  # check if white is min or max color
+				mask_color = 'black'
+				if any([all([i<0.05 for i in color]) for color in [min_color, max_color]]):  # check if black is min or max color
+					mask_color = 'red'
+			cmap.set_bad(mask_color, alpha=None)
+
+		artist = ax.pcolormesh(hist.xbinedges, hist.ybinedges, hist.bincontents, cmap=cmap, norm=norm)
 		return artist
 
 	def plot_3d(self, hist, ax, cmap='afmhot', angle=0):
