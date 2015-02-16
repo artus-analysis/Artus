@@ -84,10 +84,14 @@ class PlotMpl(plotbase.PlotBase):
 			if marker is None:
 					plotData.plotdict["ratio_markers"][index] = '.'
 
-		# default for linestyles
-		for index, linestyle in enumerate(plotData.plotdict["linestyles"]):
-			if linestyle is None:
-				plotData.plotdict["linestyles"][index] = ""
+		# remove escape slashes
+		for index, line_style in enumerate(plotData.plotdict["line_styles"]):
+			plotData.plotdict["line_styles"][index] = line_style.replace("\\", "") if line_style else line_style
+
+		# default for line styles
+		for index, line_style in enumerate(plotData.plotdict["line_styles"]):
+			if line_style is None:
+				plotData.plotdict["line_styles"][index] = ""
 
 		# validate length of parameters first
 		zip_arguments = self.get_zip_arguments(plotData)
@@ -127,7 +131,7 @@ class PlotMpl(plotbase.PlotBase):
 	def make_plots(self, plotData):
 		zip_arguments = self.get_zip_arguments(plotData)
 
-		for nick, color, edgecolor, label, marker, x_error, y_error, linestyle, step, zorder, n_ax in zip(*zip_arguments):
+		for nick, color, edgecolor, label, marker, x_error, y_error, line_style, step, zorder, n_ax in zip(*zip_arguments):
 			log.info("Process nick: {0}".format(nick))
 			root_object = plotData.plotdict["root_objects"][nick]
 
@@ -137,7 +141,7 @@ class PlotMpl(plotbase.PlotBase):
 				self.plot_errorbar(mplhist, ax=self.axes[n_ax],
 				                   show_xerr=x_error, show_yerr=y_error,
 				                   color=color, fmt=marker, capsize=0,
-				                   linestyle=linestyle, label=label, zorder=zorder)
+				                   linestyle=line_style, label=label, zorder=zorder)
 
 			elif isinstance(root_object, ROOT.TH2):
 				mplhist = MplHisto(root_object)
@@ -167,7 +171,7 @@ class PlotMpl(plotbase.PlotBase):
 					self.plot_errorbar(mplhist, ax=self.axes[n_ax],
 					                   show_xerr=x_error, show_yerr=y_error,
 					                   step=step, color=color, fmt=marker,
-					                   capsize=2, linestyle=linestyle, label=label, zorder=zorder)
+					                   capsize=2, linestyle=line_style, label=label, zorder=zorder)
 
 			# draw functions from dictionary
 			elif isinstance(root_object, ROOT.TF1):
@@ -178,7 +182,7 @@ class PlotMpl(plotbase.PlotBase):
 				for x in np.arange(x_range[0], x_range[1], (float(x_range[1])-float(x_range[0]))/sampling_points):
 					x_values.append(x)
 					y_values.append(root_object.Eval(x))
-				self.axes[n_ax].plot(x_values, y_values, label=label, color=color, linestyle=linestyle, linewidth=2)
+				self.axes[n_ax].plot(x_values, y_values, label=label, color=color, linestyle=line_style, linewidth=2)
 
 		if plotData.plotdict["ratio"]:
 			for root_object, ratio_color, ratio_x_error, ratio_y_error, ratio_marker, in zip(plotData.plotdict["root_ratio_histos"],
@@ -191,7 +195,7 @@ class PlotMpl(plotbase.PlotBase):
 				self.plot_errorbar(mplhist_ratio, ax=self.ax2,
 				                   show_xerr=ratio_x_error, show_yerr=ratio_y_error,
 				                   step=step, color=ratio_color, fmt=ratio_marker,
-				                   capsize=0, linestyle=linestyle, zorder=zorder)
+				                   capsize=0, linestyle=line_style, zorder=zorder)
 
 	def modify_axes(self, plotData):
 		# do what is needed for all plots:
@@ -420,21 +424,21 @@ class PlotMpl(plotbase.PlotBase):
 		else:
 			yerr = None
 
-		linestyle = kwargs.pop('linestyle', '')
+		line_style = kwargs.pop('linestyle', '')
 		capsize = kwargs.pop('capsize', 0)
 		fmt = kwargs.pop('fmt', '')
 		if fmt in ['bar', 'fill']:
 			log.warning('Invalid marker style. Default to \'.\'')
 			fmt = '.'
 		label = kwargs.pop('label', '')
-		# Due to a bug in matplotlib v1.1 errorbar does not always respect linestyle when fmt is passed.
+		# Due to a bug in matplotlib v1.1 errorbar does not always respect line style when fmt is passed.
 		# Workaround by plotting line and errorbars separately.
 		# http://stackoverflow.com/a/18499120/3243729
-		if linestyle:
+		if line_style:
 			if step:
-				ax.step(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(y), linestyle=linestyle, **kwargs)
+				ax.step(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(y), linestyle=line_style, **kwargs)
 			else:
-				ax.plot(x, y, linestyle=linestyle, **kwargs)
+				ax.plot(x, y, linestyle=line_style, **kwargs)
 		artist = ax.errorbar(x, y, xerr=xerr, yerr=yerr, label=label, capsize=capsize, fmt=fmt, linestyle='None', **kwargs)
 		return artist
 
@@ -537,7 +541,7 @@ class PlotMpl(plotbase.PlotBase):
 		                                 plotData.plotdict["markers"],
 		                                 plotData.plotdict["x_errors"],
 		                                 plotData.plotdict["y_errors"],
-		                                 plotData.plotdict["linestyles"],
+		                                 plotData.plotdict["line_styles"],
 		                                 plotData.plotdict["step"],
 		                                 plotData.plotdict["zorder"],
 		                                 plotData.plotdict["axes"])

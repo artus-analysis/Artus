@@ -103,8 +103,8 @@ class PlotBase(processor.Processor):
 		                                     help="Style for the plots.")
 		self.formatting_options.add_argument("--ratio-markers", type=str, nargs="+",
 		                                     help="Style for the ratio subplots.")
-		self.formatting_options.add_argument("--linestyles", nargs="+",
-                                             help="Linestyle of plots line. [Default: '-']")
+		self.formatting_options.add_argument("--line-styles", nargs="+",
+                                             help="Line style of plots line. [Default: %(default)s]")
 		self.formatting_options.add_argument("--x-errors", type='bool', nargs="+",
 		                                     help="Show x errors for the nicks. [Default: True for first plot, False otherwise]")
 		self.formatting_options.add_argument("--y-errors", type='bool', nargs="+",
@@ -202,7 +202,7 @@ class PlotBase(processor.Processor):
 		# formatting options
 		if plotData.plotdict["labels"] == None or all([i == None for i in plotData.plotdict["labels"]]):
 			plotData.plotdict["labels"] = plotData.plotdict["nicks"]
-		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "linestyles", "x_errors", "y_errors", "stack", "axes"],
+		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles", "x_errors", "y_errors", "stack", "axes"],
 				n_items = max([len(plotData.plotdict[l]) for l in ['nicks', 'stack'] if plotData.plotdict[l] is not None]))
 		
 		for index, error in enumerate(plotData.plotdict["x_errors"]):
@@ -248,10 +248,6 @@ class PlotBase(processor.Processor):
 		# prepare nicknames for stacked plots
 		stack = plotData.plotdict["stack"]
 		plotData.plotdict["stack"] = [stack if stack != None else ("stack%d" % index) for index, stack in enumerate(plotData.plotdict["stack"])]
-
-		# remove escape slashes
-		for index, linestyle in enumerate(plotData.plotdict["linestyles"]):
-			plotData.plotdict["linestyles"][index] = linestyle.replace("\\", "") if linestyle else linestyle
 
 	def run(self, plotData):
 		super(PlotBase, self).run(plotData)

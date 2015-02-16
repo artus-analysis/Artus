@@ -34,6 +34,8 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Place an y-axes grid on the plot.")
 		self.formatting_options.add_argument("--fill-styles", type=str, nargs="+",
 		                                     help="Fill styles for histograms. Defaults choosen according to draw options.")
+		self.formatting_options.add_argument("--line-styles", nargs="+", default=[1], type=int,
+                                             help="Line style of plots line. [Default: %(default)s]")
 		self.formatting_options.add_argument("--legend", type=float, nargs=2, default=None,
 		                                     help="Location of the legend. Use 'None' to not set any legend. [Default: %(default)s]")
 		self.formatting_options.add_argument("--stacks-errband", action='store_true', default=False,
@@ -44,7 +46,7 @@ class PlotRoot(plotbase.PlotBase):
 	def prepare_args(self, parser, plotData):
 		super(PlotRoot, self).prepare_args(parser, plotData)
 		
-		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "linestyles", "x_errors", "y_errors", "stack", "axes",
+		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles", "x_errors", "y_errors", "stack", "axes",
 		                                  "fill_styles"],
 				n_items = max([len(plotData.plotdict[l]) for l in ['nicks', 'stack'] if plotData.plotdict[l] is not None]))
 		
@@ -130,13 +132,18 @@ class PlotRoot(plotbase.PlotBase):
 	def prepare_histograms(self, plotData):
 		super(PlotRoot, self).prepare_histograms(plotData)
 		
-		for nick, color, fill_style in zip(plotData.plotdict["nicks"], plotData.plotdict["colors"], plotData.plotdict["fill_styles"]):
+		for nick, color, fill_style, line_style in zip(plotData.plotdict["nicks"],
+		                                               plotData.plotdict["colors"],
+		                                               plotData.plotdict["fill_styles"],
+		                                               plotData.plotdict["line_styles"]):
 			root_object = plotData.plotdict["root_objects"][nick]
 			
 			root_object.SetLineColor(color)
 			root_object.SetMarkerColor(color)
 			
 			root_object.SetFillStyle(fill_style)
+			
+			root_object.SetLineStyle(line_style)
 			
 			# tick labels
 			if plotData.plotdict["x_tick_labels"] and len(plotData.plotdict["x_tick_labels"]) > 0:
