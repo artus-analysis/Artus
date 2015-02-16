@@ -32,8 +32,10 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Place an x-axes grid on the plot.")
 		self.formatting_options.add_argument("--y-grid", action='store_true', default=False,
 		                                     help="Place an y-axes grid on the plot.")
-		self.formatting_options.add_argument("-g", "--legend", type=float, nargs=2, default=None,
-		                                     help="Location (x/y coordinates) of the legend. [Default: %(default)s]")
+		self.formatting_options.add_argument("--fill-styles", type=str, nargs="+",
+		                                     help="Fill styles for histograms. Defaults choosen according to draw options.")
+		self.formatting_options.add_argument("--legend", type=float, nargs=2, default=None,
+		                                     help="Location of the legend. Use 'None' to not set any legend. [Default: %(default)s]")
 		self.formatting_options.add_argument("--stacks-errband", action='store_true', default=False,
 		                                     help="Draw error band on top of the stacked plots.")
 		self.formatting_options.add_argument("--stacks-errband-names", nargs="+",
@@ -41,6 +43,10 @@ class PlotRoot(plotbase.PlotBase):
 		
 	def prepare_args(self, parser, plotData):
 		super(PlotRoot, self).prepare_args(parser, plotData)
+		
+		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "linestyles", "x_errors", "y_errors", "stack", "axes",
+		                                  "fill_styles"],
+				n_items = max([len(plotData.plotdict[l]) for l in ['nicks', 'stack'] if plotData.plotdict[l] is not None]))
 		
 		# defaults for colors
 		for index, color in enumerate(plotData.plotdict["colors"]):
@@ -58,9 +64,16 @@ class PlotRoot(plotbase.PlotBase):
 		self.set_default_ratio_colors(plotData)
 		
 		# defaults for markers
-		for index, marker in enumerate(plotData.plotdict["markers"]):
-			if marker == None:
-				plotData.plotdict["markers"][index] = "E" if index == 0 else "HIST"
+		for index, (marker, fill_style) in enumerate(zip(plotData.plotdict["markers"], plotData.plotdict["fill_styles"])):
+			if marker is None:
+				plotData.plotdict["markers"][index] = "E" if index == 0 else "L"
+			if fill_style is None:
+				plotData.plotdict["fill_styles"][index] = 0
+				if "HIST" in plotData.plotdict["markers"][index].upper():
+					plotData.plotdict["fill_styles"][index] = 1001
+				elif "L" in plotData.plotdict["markers"][index].upper():
+					plotData.plotdict["markers"][index] = plotData.plotdict["markers"][index].replace("l", "HIST").replace("L", "HIST")
+					plotData.plotdict["fill_styles"][index] = 0
 		
 		# defaults for stacked plots shaded error band
 		if plotData.plotdict["stacks_errband_names"] == None: plotData.plotdict["stacks_errband_names"] = [" ".join(set(plotData.plotdict["stack"][1:]))]
@@ -117,13 +130,13 @@ class PlotRoot(plotbase.PlotBase):
 	def prepare_histograms(self, plotData):
 		super(PlotRoot, self).prepare_histograms(plotData)
 		
-		for nick, color in zip(plotData.plotdict["nicks"], plotData.plotdict["colors"]):
+		for nick, color, fill_style in zip(plotData.plotdict["nicks"], plotData.plotdict["colors"], plotData.plotdict["fill_styles"]):
 			root_object = plotData.plotdict["root_objects"][nick]
 			
 			root_object.SetLineColor(color)
-			root_object.SetFillColor(color)
-			root_object.SetFillStyle(1)
 			root_object.SetMarkerColor(color)
+			
+			root_object.SetFillStyle(fill_style)
 			
 			# tick labels
 			if plotData.plotdict["x_tick_labels"] and len(plotData.plotdict["x_tick_labels"]) > 0:
