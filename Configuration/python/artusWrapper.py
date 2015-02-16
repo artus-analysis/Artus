@@ -328,7 +328,7 @@ class ArtusWrapper(object):
 		                                help="Save the JSON config to FILENAME.")
 		configOptionsGroup.add_argument('-f', '--fast', type=int, default=False,
 		                                help="limit number of input files or grid-control jobs. 3=files[0:3].")
-		configOptionsGroup.add_argument("--gc-config", default="$ARTUSPATH/Configuration/data/grid-control_base_config.conf",
+		configOptionsGroup.add_argument("--gc-config", default="$CMSSW_BASE/src/Artus/Configuration/data/grid-control_base_config.conf",
 		                                help="Path to grid-control base config that is replace by the wrapper. [Default: %(default)s]")
 		configOptionsGroup.add_argument("--gc-config-includes", nargs="+",
 		                                help="Path to grid-control configs to include in the base config.")
@@ -401,19 +401,21 @@ class ArtusWrapper(object):
 		sepath = "se path = " + (self._args.se_path if self._args.se_path else sepathRaw)
 		workdir = "workdir = " + os.path.join(self.projectPath, "workdir")
 
-		replacingDict = dict(include = (("include = " + " ".join(self._args.gc_config_includes)) if self._args.gc_config_includes else ""),
-		                     epilogexecutable = "epilog executable = $CMSSW_BASE/bin/" + os.path.join(os.path.expandvars("$SCRAM_ARCH"), os.path.basename(sys.argv[0])),
-		                     sepath = sepath,
-		                     workdir = workdir,
-		                     jobs = "" if not self._args.fast else "jobs = " + str(self._args.fast),
-		                     inputfiles = "input files = \n\t" + self._configFilename,
-		                     filesperjob = "files per job = " + str(self._args.files_per_job),
-		                     walltime = "wall time = " + self._args.wall_time,
-		                     memory = "memory = " + str(self._args.memory),
-		                     cmdargs = "cmdargs = " + self._args.cmdargs,
-		                     dataset = "dataset = \n\t:list:" + dbsFileBasepath,
-		                     epilogarguments = epilogArguments,
-		                     seoutputfiles = "se output files = *.txt *.root" if self._args.no_log_to_se else "se output files = *.root")
+		replacingDict = dict(
+				include = ("include = " + " ".join([os.path.expandvars(include) for include in self._args.gc_config_includes]) if self._args.gc_config_includes else ""),
+				epilogexecutable = "epilog executable = $CMSSW_BASE/bin/" + os.path.join(os.path.expandvars("$SCRAM_ARCH"), os.path.basename(sys.argv[0])),
+				sepath = sepath,
+				workdir = workdir,
+				jobs = "" if not self._args.fast else "jobs = " + str(self._args.fast),
+				inputfiles = "input files = \n\t" + self._configFilename,
+				filesperjob = "files per job = " + str(self._args.files_per_job),
+				walltime = "wall time = " + self._args.wall_time,
+				memory = "memory = " + str(self._args.memory),
+				cmdargs = "cmdargs = " + self._args.cmdargs,
+				dataset = "dataset = \n\t:list:" + dbsFileBasepath,
+				epilogarguments = epilogArguments,
+				seoutputfiles = "se output files = *.txt *.root" if self._args.no_log_to_se else "se output files = *.root"
+		)
 
 		self.replaceLines(gcConfigFileContent, replacingDict)
 		for index, line in enumerate(gcConfigFileContent):
