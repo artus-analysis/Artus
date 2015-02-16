@@ -95,6 +95,8 @@ class MplHisto(object):
 			self.yu = np.array([roothisto.GetYaxis().GetBinUpEdge(i) for i in xrange(1, roothisto.GetNbinsY() +1)])
 
 			self.bincontents = np.zeros((roothisto.GetNbinsY(), roothisto.GetNbinsX()))
+			if roothisto.ClassName() == 'TProfile2D':
+				self.bincontents = np.ma.masked_equal(self.bincontents, 0.0)
 			self.binerrl = np.zeros((roothisto.GetNbinsY(), roothisto.GetNbinsX()))
 			self.binerru = np.zeros((roothisto.GetNbinsY(), roothisto.GetNbinsX()))
 			for y in xrange(1, roothisto.GetNbinsY() + 1):
