@@ -171,6 +171,12 @@ class HarryCore(object):
 		export_args = JsonDict(copy.deepcopy(plotData.plotdict))
 		for arg in ["quantities", "export_json", "live", "userpc", "json_defaults"]:
 			export_args.pop(arg, None)
+		# remove defaults
+		for key in export_args.keys():
+			if (key in self.args and self.parser.get_default(key) == export_args[key]
+						and (self.args.get("json_defaults", None) is None or
+						key not in JsonDict(self.args["json_defaults"]).doIncludes().doComments())):
+				export_args.pop(key, None)
 
 		if plotData.plotdict["export_json"] == "update":
 			plotData.plotdict["export_json"] = "default" if plotData.plotdict["json_defaults"] is None else plotData.plotdict["json_defaults"][0]
