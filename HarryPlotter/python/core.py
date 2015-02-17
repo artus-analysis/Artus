@@ -257,7 +257,7 @@ class HarryCore(object):
 		for module in plot_modules:
 			log.info("\t{}".format(module))
 			if inspect.getdoc(self.available_processors[module]):
-				log.info("\t{}".format(inspect.getdoc(self.available_processors[module])))
+				log.info("\t\t{}".format(inspect.getdoc(self.available_processors[module])))
 
 	def _logo(self):
 		log.info("            _              _   ,                        ")
