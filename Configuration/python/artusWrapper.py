@@ -70,6 +70,12 @@ class ArtusWrapper(object):
 		if self._args.print_config:
 			log.info(self._config)
 		
+		# set LD_LIBRARY_PATH
+		if not self._args.ld_library_paths is None:
+			for path in self._args.ld_library_paths:
+				if path not in os.environ.get("LD_LIBRARY_PATH", ""):
+					os.environ["LD_LIBRARY_PATH"] = path+":"+os.environ.get("LD_LIBRARY_PATH", "")
+		
 		# print environment variables
 		if self._args.print_envvars:
 			for envvar in self._args.print_envvars:
@@ -82,7 +88,6 @@ class ArtusWrapper(object):
 			exitCode = self.sendToBatchSystem()
 		elif not self._args.no_run:
 			exitCode = self.callExecutable()
-
 
 		if exitCode < 256:
 			return exitCode
@@ -336,6 +341,8 @@ class ArtusWrapper(object):
 		runningOptionsGroup = self._parser.add_argument_group("Running options")
 		runningOptionsGroup.add_argument("--no-run", default=False, action="store_true",
 		                                 help="Exit before running Artus to only check the configs.")
+		runningOptionsGroup.add_argument("--ld-library-paths", nargs="+",
+		                                 help="Add paths to environment variable LD_LIBRARY_PATH.")
 		runningOptionsGroup.add_argument("--profile", default=False, action="store_true",
 		                                 help="Measure performance with profiler.")
 		runningOptionsGroup.add_argument("-r", "--root", default=False, action="store_true",
@@ -393,16 +400,18 @@ class ArtusWrapper(object):
 			epilogArguments += r"--log-files log.txt "
 		else:
 			epilogArguments += r"--log-files " + os.path.join(sepathRaw, "${DATASETNICK}", "${DATASETNICK}_job_${MY_JOBID}_log.txt") + " "
-		epilogArguments += r"--print-envvars ROOTSYS CMSSW_BASE DATASETNICK FILE_NAMES "
+		epilogArguments += r"--print-envvars ROOTSYS CMSSW_BASE DATASETNICK FILE_NAMES LD_LIBRARY_PATH "
 		epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
 		epilogArguments += "--nick $DATASETNICK "
-		epilogArguments += '-i $FILE_NAMES '
-
+		epilogArguments += "-i $FILE_NAMES "
+		if not self._args.ld_library_paths is None:
+			epilogArguments += ("--ld-library-paths %s" % " ".join(self._args.ld_library_paths))
+		
 		sepath = "se path = " + (self._args.se_path if self._args.se_path else sepathRaw)
 		workdir = "workdir = " + os.path.join(self.projectPath, "workdir")
 
 		replacingDict = dict(
-				include = ("include = " + " ".join([os.path.expandvars(include) for include in self._args.gc_config_includes]) if self._args.gc_config_includes else ""),
+				include = ("include = " + " ".join(self._args.gc_config_includes) if self._args.gc_config_includes else ""),
 				epilogexecutable = "epilog executable = $CMSSW_BASE/bin/" + os.path.join(os.path.expandvars("$SCRAM_ARCH"), os.path.basename(sys.argv[0])),
 				sepath = sepath,
 				workdir = workdir,
