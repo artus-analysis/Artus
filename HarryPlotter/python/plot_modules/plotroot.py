@@ -66,16 +66,25 @@ class PlotRoot(plotbase.PlotBase):
 		self.set_default_ratio_colors(plotData)
 		
 		# defaults for markers
-		for index, (marker, fill_style) in enumerate(zip(plotData.plotdict["markers"], plotData.plotdict["fill_styles"])):
+		for index, (marker, fill_style, stack) in enumerate(zip(plotData.plotdict["markers"],
+		                                                        plotData.plotdict["fill_styles"],
+		                                                        plotData.plotdict["stack"])):
 			if marker is None:
-				plotData.plotdict["markers"][index] = "E" if index == 0 else "L"
+				if index == 0:
+					marker = "E"
+				else:
+					marker = "L" if plotData.plotdict["stack"].count(stack) == 1 else "HIST"
+			
 			if fill_style is None:
-				plotData.plotdict["fill_styles"][index] = 0
-				if "HIST" in plotData.plotdict["markers"][index].upper():
-					plotData.plotdict["fill_styles"][index] = 1001
-				elif "L" in plotData.plotdict["markers"][index].upper():
-					plotData.plotdict["markers"][index] = plotData.plotdict["markers"][index].replace("l", "HIST").replace("L", "HIST")
-					plotData.plotdict["fill_styles"][index] = 0
+				fill_style = 0
+				if "HIST" in marker.upper():
+					fill_style = 1001
+				elif "L" in marker.upper():
+					marker = marker.replace("l", "HIST").replace("L", "HIST")
+					fill_style = 0
+			
+			plotData.plotdict["markers"][index] = marker
+			plotData.plotdict["fill_styles"][index] = fill_style
 		
 		# defaults for stacked plots shaded error band
 		if plotData.plotdict["stacks_errband_names"] == None: plotData.plotdict["stacks_errband_names"] = [" ".join(set(plotData.plotdict["stack"][1:]))]
@@ -176,7 +185,7 @@ class PlotRoot(plotbase.PlotBase):
 			root_object = plotData.plotdict["root_objects"][plotData.plotdict["nicks"][plot_index]]
 			
 			marker = plotData.plotdict["markers"][plot_index]
-			draw_option = marker + ("" if index == 0 else " same")
+			draw_option = marker + ("" if index == 0 else " SAME")
 			
 			axes_histogram = None
 			if isinstance(root_object, ROOT.TH1):
