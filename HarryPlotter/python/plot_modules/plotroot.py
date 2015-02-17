@@ -71,7 +71,7 @@ class PlotRoot(plotbase.PlotBase):
 		                                                        plotData.plotdict["stack"])):
 			if marker is None:
 				if index == 0:
-					marker = "E"
+					marker = "E" if len(plotData.plotdict["markers"]) > 1 else "HIST"
 				else:
 					marker = "L" if plotData.plotdict["stack"].count(stack) == 1 else "HIST"
 			
