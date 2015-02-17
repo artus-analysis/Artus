@@ -53,9 +53,10 @@ class RootTools(object):
 			elif isinstance(root_object, ROOT.TDirectory):
 				if print_quantities:
 					log.info("List of all histogram/graph/function quantities (in the first file):")
-					for key in root_object.GetListOfKeys():
+					elements = walk_root_directory(root_object)
+					for key, path in elements:
 						if key.GetClassName().startswith("TH") or key.GetClassName().startswith("TF") or "Graph" in key.GetClassName():
-							log.info("\t%s (%s)" % (key.GetName(), key.GetClassName()))
+							log.info("\t%s (%s)" % (path, key.GetClassName()))
 				return ROOT.TH1
 			else:
 				log.error("Usage of ROOT objects of Type \"" + root_objects[0].ClassName() + "\" is not yet implemented!")
@@ -415,4 +416,15 @@ class RootTools(object):
 			directory.cd()
 		root_object.Write(path.split("/")[-1], ROOT.TObject.kWriteDelete)
 		root_file.cd()
+	
+	@staticmethod
+	def walk_root_directory(root_directory, path=""):
+		elements = []
+		for key in root_directory.GetListOfKeys():
+			if key.GetClassName().startswith("TDirectory"):
+				elements.extend(RootTools.walk_root_directory(root_directory.Get(key.GetName()),
+					                                          os.path.join(path, key.GetName())))
+			else:
+				elements.append((key, os.path.join(path, key.GetName())))
+		return elements
 
