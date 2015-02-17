@@ -31,4 +31,21 @@ if __name__ == "__main__":
 	for key, path in elements:
 		if key.GetClassName().startswith("TH"):
 			histogram = root_file.Get(path)
-			log.info("%s: %s" % (path, str(list(roottools.RootTools.get_binning(histogram)))))
+			if histogram.GetDimension() == 1:
+				log.info("%s: %s" % (
+						path,
+						str(list(roottools.RootTools.get_binning(histogram, 0)))
+				))
+			elif histogram.GetDimension() == 2:
+				log.info("%s: %s x %s" % (
+						path,
+						str(list(roottools.RootTools.get_binning(histogram, 0))),
+						str(list(roottools.RootTools.get_binning(histogram, 1)))
+				))
+			else:
+				log.info("%s: %s x %s x %s" % (
+						path,
+						str(list(roottools.RootTools.get_binning(histogram, 0))),
+						str(list(roottools.RootTools.get_binning(histogram, 1))),
+						str(list(roottools.RootTools.get_binning(histogram, 2)))
+				))
