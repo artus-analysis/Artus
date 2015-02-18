@@ -83,6 +83,8 @@ class PlotRoot(plotbase.PlotBase):
 				elif "L" in marker.upper() and "COL" not in marker.upper():
 					marker = marker.replace("l", "HIST").replace("L", "HIST")
 					fill_style = 0
+				elif "E" in marker.upper():
+					fill_style = 3003
 			
 			plotData.plotdict["markers"][index] = marker
 			plotData.plotdict["fill_styles"][index] = fill_style
@@ -142,18 +144,21 @@ class PlotRoot(plotbase.PlotBase):
 	def prepare_histograms(self, plotData):
 		super(PlotRoot, self).prepare_histograms(plotData)
 		
-		for nick, color, fill_style, line_style in zip(plotData.plotdict["nicks"],
-		                                               plotData.plotdict["colors"],
-		                                               plotData.plotdict["fill_styles"],
-		                                               plotData.plotdict["line_styles"]):
+		for nick, color, marker, fill_style, line_style in zip(plotData.plotdict["nicks"],
+		                                                       plotData.plotdict["colors"],
+		                                                       plotData.plotdict["markers"],
+		                                                       plotData.plotdict["fill_styles"],
+		                                                       plotData.plotdict["line_styles"]):
 			root_object = plotData.plotdict["root_objects"][nick]
 			
 			root_object.SetLineColor(color)
+			root_object.SetLineStyle(line_style)
+			
 			root_object.SetMarkerColor(color)
+			root_object.SetMarkerStyle(0 if "E2" in marker.upper() and fill_style > 3000 else 20)
 			
 			root_object.SetFillStyle(fill_style)
 			
-			root_object.SetLineStyle(line_style)
 			
 			# tick labels
 			if plotData.plotdict["x_tick_labels"] and len(plotData.plotdict["x_tick_labels"]) > 0:
