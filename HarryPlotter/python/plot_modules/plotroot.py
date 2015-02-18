@@ -46,7 +46,7 @@ class PlotRoot(plotbase.PlotBase):
 	def prepare_args(self, parser, plotData):
 		super(PlotRoot, self).prepare_args(parser, plotData)
 		
-		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles", "x_errors", "y_errors", "stack", "axes",
+		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles", "x_errors", "y_errors", "stacks", "axes",
 		                                  "fill_styles"],
 				n_items = max([len(plotData.plotdict[l]) for l in ['nicks', 'stack'] if plotData.plotdict[l] is not None]))
 		
@@ -68,12 +68,12 @@ class PlotRoot(plotbase.PlotBase):
 		# defaults for markers
 		for index, (marker, fill_style, stack) in enumerate(zip(plotData.plotdict["markers"],
 		                                                        plotData.plotdict["fill_styles"],
-		                                                        plotData.plotdict["stack"])):
+		                                                        plotData.plotdict["stacks"])):
 			if marker is None:
 				if index == 0:
 					marker = "E" if len(plotData.plotdict["markers"]) > 1 else "HIST"
 				else:
-					marker = "L" if plotData.plotdict["stack"].count(stack) == 1 else "HIST"
+					marker = "L" if plotData.plotdict["stacks"].count(stack) == 1 else "HIST"
 				# TODO: defaults for 2D/3D histograms
 			
 			if fill_style is None:
@@ -88,11 +88,11 @@ class PlotRoot(plotbase.PlotBase):
 			plotData.plotdict["fill_styles"][index] = fill_style
 		
 		# defaults for stacked plots shaded error band
-		if plotData.plotdict["stacks_errband_names"] == None: plotData.plotdict["stacks_errband_names"] = [" ".join(set(plotData.plotdict["stack"][1:]))]
+		if plotData.plotdict["stacks_errband_names"] == None: plotData.plotdict["stacks_errband_names"] = [" ".join(set(plotData.plotdict["stacks"][1:]))]
 		plotData.plotdict["stacks_errband_names"] = [nicks.split() for nicks in plotData.plotdict["stacks_errband_names"]]
 		for nicks in plotData.plotdict["stacks_errband_names"]:
 			for nick in nicks:
-				if nick not in plotData.plotdict["stack"]:
+				if nick not in plotData.plotdict["stacks"]:
 					log.critical("Stack name \"%s\" of argument --%s does not exist in argument --stack!" % (nick, "stacks_errband_names".replace("_", "-")))
 					sys.exit(1)
 	

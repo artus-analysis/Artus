@@ -202,7 +202,7 @@ class PlotBase(processor.Processor):
 		# formatting options
 		if plotData.plotdict["labels"] == None or all([i == None for i in plotData.plotdict["labels"]]):
 			plotData.plotdict["labels"] = plotData.plotdict["nicks"]
-		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles", "x_errors", "y_errors", "stack", "axes"],
+		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles", "x_errors", "y_errors", "stacks", "axes"],
 				n_items = max([len(plotData.plotdict[l]) for l in ['nicks', 'stack'] if plotData.plotdict[l] is not None]))
 		
 		for index, error in enumerate(plotData.plotdict["x_errors"]):
@@ -246,8 +246,8 @@ class PlotBase(processor.Processor):
 			plotData.plotdict["export_json"] = os.path.join(plotData.plotdict["output_dir"], plotData.plotdict["filename"]+".json")
 
 		# prepare nicknames for stacked plots
-		stack = plotData.plotdict["stack"]
-		plotData.plotdict["stack"] = [stack if stack != None else ("stack%d" % index) for index, stack in enumerate(plotData.plotdict["stack"])]
+		stacks = plotData.plotdict["stacks"]
+		plotData.plotdict["stacks"] = [stack if stack != None else ("stack%d" % index) for index, stack in enumerate(plotData.plotdict["stacks"])]
 
 	def run(self, plotData):
 		super(PlotBase, self).run(plotData)
@@ -313,11 +313,11 @@ class PlotBase(processor.Processor):
 		# handle stacks
 		# todo: define how functions should act when stacked
 		plotData.plotdict["root_stack_histos"] = {}
-		for index, (nick1, stack1) in enumerate(zip(plotData.plotdict["nicks"], plotData.plotdict["stack"])):
+		for index, (nick1, stack1) in enumerate(zip(plotData.plotdict["nicks"], plotData.plotdict["stacks"])):
 			plotData.plotdict["root_stack_histos"][stack1] = plotData.plotdict["root_objects"][nick1].Clone()
 			
 			count = 0
-			for nick2, stack2 in zip(plotData.plotdict["nicks"], plotData.plotdict["stack"])[:index]:
+			for nick2, stack2 in zip(plotData.plotdict["nicks"], plotData.plotdict["stacks"])[:index]:
 				if stack1 == stack2:
 					plotData.plotdict["root_objects"][nick2].Add(plotData.plotdict["root_objects"][nick1])
 					
