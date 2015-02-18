@@ -187,7 +187,7 @@ class PlotBase(processor.Processor):
 		if problems_with_ratio_nicks:
 			log.warning("Continue without ratio subplot!")
 			plotData.plotdict["ratio"] = False
-		self.prepare_list_args(plotData, ["ratio_num", "ratio_denom", "ratio_colors", "ratio_labels", "ratio_markers", "ratio_x_errors", "ratio_y_errors", "axes"])
+		self.prepare_list_args(plotData, ["ratio_num", "ratio_denom", "ratio_colors", "ratio_labels", "ratio_markers", "ratio_x_errors", "ratio_y_errors"])
 		
 		# construct labels from x/y/z expressions if not specified by user
 		for labelKey, expressionKey in zip(["x_label", "y_label", "z_label"],
