@@ -105,6 +105,8 @@ class PlotBase(processor.Processor):
 		                                     help="Style for the ratio subplots.")
 		self.formatting_options.add_argument("--line-styles", nargs="+",
                                              help="Line style of plots line. [Default: %(default)s]")
+		self.formatting_options.add_argument("--ratio-line-styles", nargs="+",
+                                             help="Line styles for the ratio subplots. [Default: %(default)s]")
 		self.formatting_options.add_argument("--x-errors", type='bool', nargs="+",
 		                                     help="Show x errors for the nicks. [Default: True for first plot, False otherwise]")
 		self.formatting_options.add_argument("--y-errors", type='bool', nargs="+",
@@ -187,7 +189,7 @@ class PlotBase(processor.Processor):
 		if problems_with_ratio_nicks:
 			log.warning("Continue without ratio subplot!")
 			plotData.plotdict["ratio"] = False
-		self.prepare_list_args(plotData, ["ratio_num", "ratio_denom", "ratio_colors", "ratio_labels", "ratio_markers", "ratio_x_errors", "ratio_y_errors"])
+		self.prepare_list_args(plotData, ["ratio_num", "ratio_denom", "ratio_colors", "ratio_labels", "ratio_markers", "ratio_x_errors", "ratio_y_errors", "ratio_line_styles"])
 		
 		# construct labels from x/y/z expressions if not specified by user
 		for labelKey, expressionKey in zip(["x_label", "y_label", "z_label"],

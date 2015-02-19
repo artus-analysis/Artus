@@ -185,18 +185,19 @@ class PlotMpl(plotbase.PlotBase):
 				self.axes[n_ax].plot(x_values, y_values, label=label, color=color, linestyle=line_style, linewidth=2)
 
 		if plotData.plotdict["ratio"]:
-			for root_object, ratio_color, ratio_x_error, ratio_y_error, ratio_marker, ratio_label in zip(plotData.plotdict["root_ratio_histos"],
+			for root_object, ratio_color, ratio_x_error, ratio_y_error, ratio_marker, ratio_label, ratio_line_style in zip(plotData.plotdict["root_ratio_histos"],
 				                                               plotData.plotdict["ratio_colors"],
 				                                               plotData.plotdict["ratio_x_errors"],
 				                                               plotData.plotdict["ratio_y_errors"],
 				                                               plotData.plotdict["ratio_markers"],
-				                                               plotData.plotdict["ratio_labels"]):
+				                                               plotData.plotdict["ratio_labels"],
+				                                               plotData.plotdict["ratio_line_styles"]):
 				self.ax2.axhline(1.0, color='black')
 				mplhist_ratio = MplHisto(root_object)
 				self.plot_errorbar(mplhist_ratio, ax=self.ax2, label=ratio_label,
 				                   show_xerr=ratio_x_error, show_yerr=ratio_y_error,
 				                   step=step, color=ratio_color, fmt=ratio_marker,
-				                   capsize=0, linestyle=line_style, zorder=zorder)
+				                   capsize=0, linestyle=ratio_line_style, zorder=zorder)
 
 	def modify_axes(self, plotData):
 		# do what is needed for all plots:
