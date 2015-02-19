@@ -277,7 +277,7 @@ class PlotMpl(plotbase.PlotBase):
 		for ax in self.axes:
 
 			if plotData.plotdict["title"]:
-				ax.set_title(plotData.plotdict["title"], fontsize=14)
+				ax.set_title(plotData.plotdict["title"], fontsize=18)
 
 			if not self.plot_dimension == 3:
 				if not (plotData.plotdict["lumi"]==None):
