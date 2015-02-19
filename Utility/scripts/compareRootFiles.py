@@ -5,30 +5,41 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
+import argparse
+
 import ROOT
 import sys
 
 opt_all = False
 
-"""ROOT file compare tool
-Usage: %s file1.root file2.root [-a]
-2 files are required!
--a checks for all differences (otherwise the tool stops at the first difference)
-"""
 
 def main():
 	global opt_all
-	if len(sys.argv) < 3:
-		log.info(__doc__)
-		exit(2)
-	inputFile1 = ROOT.TFile(sys.argv[1])
-	inputFile2 = ROOT.TFile(sys.argv[2])
-	opt_all = (len(sys.argv) > 3 and sys.argv[3] == "-a")
-	if compareTree(inputFile1, inputFile2):
-		log.info("The files \"" + inputFile1.GetName() + "\" and \"" + inputFile2.GetName(), "\" are identical.")
+
+	parser = argparse.ArgumentParser(description="ROOT file compare tool.",
+	                                 parents=[logger.loggingParser])
+
+	parser.add_argument("files", nargs=2,
+	                    help="Two ROOT files to compare.")
+	parser.add_argument("-a", "--all-differences", default=False, action="store_true",
+	                    help="Check for all differences instead of stopping after the first difference. [Default: %(default)s]")
+	
+	args = parser.parse_args()
+	logger.initLogger(args)
+	
+	inputFile1 = ROOT.TFile(args.files[0])
+	inputFile2 = ROOT.TFile(args.files[1])
+	opt_all = args.all_differences
+	
+	files_equal = compareTree(inputFile1, inputFile2)
+	inputFile1.Close()
+	inputFile2.Close()
+	
+	if files_equal:
+		log.info("The files \"" + args.files[0] + "\" and \"" + args.files[1] + "\" are identical.")
 		exit(0)
 	else:
-		log.warning("The files \"" + inputFile1.GetName() + "\" and \"" + inputFile2.GetName(), "\" are NOT identical.")
+		log.warning("The files \"" + args.files[0] + "\" and \"" + args.files[1] + "\" are NOT identical.")
 		exit(1)
 
 
