@@ -150,7 +150,8 @@ class PlotRoot(plotbase.PlotBase):
 		                                                       plotData.plotdict["fill_styles"],
 		                                                       plotData.plotdict["line_styles"]):
 			root_object = plotData.plotdict["root_objects"][nick]
-			
+			if plotData.plotdict["title"]:
+				root_object.SetTitle(plotData.plotdict["title"])
 			root_object.SetLineColor(color)
 			root_object.SetLineStyle(line_style)
 			
