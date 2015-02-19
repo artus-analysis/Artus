@@ -119,7 +119,7 @@ class PlotBase(processor.Processor):
 		                                     help="Place an axes grid on the plot.")
 		self.formatting_options.add_argument("--ratio-grid", action="store_true", default=False,
 		                                     help="Place an axes grid on the ratio subplot.")
-		self.formatting_options.add_argument("--stack", type=str, nargs="+",
+		self.formatting_options.add_argument("--stacks", type=str, nargs="+",
 		                                     help="Defines nick names for stacking. Inputs with the same nick name will be stacked. By default, every input gets a unique nick name.")
 
 		# plot labelling

@@ -48,7 +48,7 @@ class PlotRoot(plotbase.PlotBase):
 		
 		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles", "x_errors", "y_errors", "stacks", "axes",
 		                                  "fill_styles"],
-				n_items = max([len(plotData.plotdict[l]) for l in ['nicks', 'stack'] if plotData.plotdict[l] is not None]))
+				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]))
 		
 		# defaults for colors
 		for index, color in enumerate(plotData.plotdict["colors"]):
