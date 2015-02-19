@@ -171,16 +171,18 @@ public:
 
 				if ( it->GetProcessNodeType () == ProcessNodeType::Producer )
 				{
-					ProducerBaseAccess ( static_cast<producer_base_type&> ( *it ) )
-					. Produce(evtProvider.GetCurrentEvent(),
+					producer_base_type& prod = static_cast<producer_base_type&>(*it);
+					//LOG(DEBUG) << prod.GetProducerId() << "::Produce";
+					ProducerBaseAccess(prod).Produce(evtProvider.GetCurrentEvent(),
 							productGlobal, settings);
 				}
 				else if ( it->GetProcessNodeType () == ProcessNodeType::Filter )
 				{
-					filter_base_type & flt = static_cast<filter_base_type&> ( *it );
-					const bool filterResult = FilterBaseAccess( flt ). DoesEventPass(evtProvider.GetCurrentEvent(),
+					filter_base_type& flt = static_cast<filter_base_type&>(*it);
+					//LOG(DEBUG) << flt.GetFilterId() << "::DoesEventPass";
+					const bool filterResult = FilterBaseAccess(flt).DoesEventPass(evtProvider.GetCurrentEvent(),
 							productGlobal, settings);
-					globalFilterResult.SetFilterDecision( flt.GetFilterId(), filterResult );
+					globalFilterResult.SetFilterDecision(flt.GetFilterId(), filterResult);
 				}
 				else
 				{

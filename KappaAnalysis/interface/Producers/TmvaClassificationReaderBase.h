@@ -4,7 +4,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/trim.hpp>
 
-#include "TMVA/Reader.h"
+#include <TMVA/Reader.h>
 
 #include "Artus/Core/interface/ProducerBase.h"
 #include "Artus/KappaAnalysis/interface/Consumers/KappaLambdaNtupleConsumer.h"

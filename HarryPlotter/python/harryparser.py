@@ -41,8 +41,8 @@ class HarryParser(argparse.ArgumentParser):
 		self.json_options = self.add_argument_group('JSON Configs')
 		self.json_options.add_argument("-j", "--json-defaults", nargs="+",
 		                               help="JSON config file(s) containing default settings (for a certain plot).")
-		self.json_options.add_argument("--export-json", default="default",
-		                               help="Export arguments to specified JSON config file. Specify \"update\" to overwrite the input JSON config file. [Default: <plot output filename>.json]")
+		self.json_options.add_argument("--export-json", default="default", const="update", nargs="?",
+		                               help="Export arguments to specified JSON config file. Specify \"update\" or no argument to overwrite the input JSON config file. [Default: <plot output filename>.json]")
 
 		# Register new keyword 'bool' for parser
 		self.register('type','bool',self._str2bool) 

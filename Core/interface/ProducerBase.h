@@ -35,6 +35,9 @@ public:
 
 	virtual ~ProducerBaseUntemplated() {}
 
+	/// Must return a unique id of the producer.
+	virtual std::string GetProducerId() const = 0;
+
 protected:
 	// will be implemented by the ConsumerBase class
 	virtual void baseInit ( SettingsBase const& settings ) = 0;
@@ -81,9 +84,6 @@ public:
 
 	virtual void Produce(event_type const& event, product_type& product,
 	                     setting_type const& globalSettings) const = 0;
-
-	/// Must return a unique id of the producer.
-	virtual std::string GetProducerId() const = 0;
 
 	virtual ProcessNodeType GetProcessNodeType () const
 		ARTUS_CPP11_FINAL

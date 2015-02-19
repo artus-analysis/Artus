@@ -48,8 +48,8 @@ class InputRoot(inputfile.InputFile):
 		                                help="Bining for y-axis of 2D/3D histograms. In case only one argument is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [Default: %(default)s]")
 		self.input_options.add_argument("--z-bins", type=str, nargs='+', default=["25"],
 		                                help="Bining for z-axis of 3D histograms. In case only one argument is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [Default: %(default)s]")
-		self.input_options.add_argument("--root-histogram-draw-options", type=str, default="",
-		                                help="Optional argument for TTree:Draw() call. Use e.g. 'prof' or 'profs' for projections of 2D-Histograms to 1D. See also http://root.cern.ch/root/html/TTree.html#TTree:Draw.")
+		self.input_options.add_argument("--tree-draw-options", nargs='+', type=str, default="",
+		                                help="Optional argument for TTree:Draw() call. Use e.g. 'prof' or 'profs' for projections of 2D-Histograms to 1D. See also http://root.cern.ch/ooot/html/TTree.html#TTree:Draw.")
 
 	def prepare_args(self, parser, plotData):
 		super(InputRoot, self).prepare_args(parser, plotData)
@@ -66,7 +66,7 @@ class InputRoot(inputfile.InputFile):
 		else:
 			plotData.plotdict["friend_trees"] = [None]
 
-		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "scale_factors", "files", "directories", "folders", "weights", "friend_trees"])
+		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "scale_factors", "files", "directories", "folders", "weights", "friend_trees", "tree_draw_options"])
 		plotData.plotdict["folders"] = [folders.split() if folders else [""] for folders in plotData.plotdict["folders"]]
 		
 		inputbase.InputBase.prepare_nicks(plotData)
@@ -74,8 +74,8 @@ class InputRoot(inputfile.InputFile):
 	def run(self, plotData):
 		
 		root_tools = roottools.RootTools()
-		for index, (root_files, folders, x_expression, y_expression, z_expression, weight, nick, friend_trees) in enumerate(pi.ProgressIterator(zip(*
-			[plotData.plotdict[key] for key in ["files", "folders", "x_expressions", "y_expressions", "z_expressions", "weights", "nicks", "friend_trees"]]),
+		for index, (root_files, folders, x_expression, y_expression, z_expression, weight, nick, friend_trees, option) in enumerate(pi.ProgressIterator(zip(*
+			[plotData.plotdict[key] for key in ["files", "folders", "x_expressions", "y_expressions", "z_expressions", "weights", "nicks", "friend_trees", "tree_draw_options"]]),
 			description="Reading ROOT inputs")):
 			# check whether to read from tree or directly from histograms
 			root_object_type = roottools.RootTools.check_type(root_files, folders,
@@ -87,7 +87,6 @@ class InputRoot(inputfile.InputFile):
 				variable_expression = "%s%s%s" % (z_expression + ":" if z_expression else "",
 				                                  y_expression + ":" if y_expression else "",
 				                                  x_expression)
-				option = plotData.plotdict["root_histogram_draw_options"]
 				weight = self.auto_detect_type_and_modify_weight(weight, root_files, plotData)
 				root_tree_chain, root_histogram = root_tools.histogram_from_tree(
 						root_files, folders,

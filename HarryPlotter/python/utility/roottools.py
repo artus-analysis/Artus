@@ -53,9 +53,10 @@ class RootTools(object):
 			elif isinstance(root_object, ROOT.TDirectory):
 				if print_quantities:
 					log.info("List of all histogram/graph/function quantities (in the first file):")
-					for key in root_object.GetListOfKeys():
+					elements = walk_root_directory(root_object)
+					for key, path in elements:
 						if key.GetClassName().startswith("TH") or key.GetClassName().startswith("TF") or "Graph" in key.GetClassName():
-							log.info("\t%s (%s)" % (key.GetName(), key.GetClassName()))
+							log.info("\t%s (%s)" % (path, key.GetClassName()))
 				return ROOT.TH1
 			else:
 				log.error("Usage of ROOT objects of Type \"" + root_objects[0].ClassName() + "\" is not yet implemented!")
@@ -221,12 +222,17 @@ class RootTools(object):
 				log.warning("Bin edges need to be specified either for no or for all axes!")
 			else:
 				if z_expression != None:
-					root_histogram = ROOT.TH3F(name, "",
+					if "prof" in option.lower():
+						root_histogram = ROOT.TProfile2D(name, "",
+							                   len(self.x_bin_edges[histo_type])-1, self.x_bin_edges[histo_type],
+							                   len(self.y_bin_edges[histo_type])-1, self.y_bin_edges[histo_type])
+					else:
+						root_histogram = ROOT.TH3F(name, "",
 							                   len(self.x_bin_edges[histo_type])-1, self.x_bin_edges[histo_type],
 							                   len(self.y_bin_edges[histo_type])-1, self.y_bin_edges[histo_type],
 								               len(self.z_bin_edges[histo_type])-1, self.z_bin_edges[histo_type])
 				elif y_expression != None:
-					if "prof" in option:
+					if "prof" in option.lower():
 						root_histogram = ROOT.TProfile(name, "",
 												len(self.x_bin_edges[histo_type])-1, self.x_bin_edges[histo_type])
 					else:
@@ -410,4 +416,15 @@ class RootTools(object):
 			directory.cd()
 		root_object.Write(path.split("/")[-1], ROOT.TObject.kWriteDelete)
 		root_file.cd()
+	
+	@staticmethod
+	def walk_root_directory(root_directory, path=""):
+		elements = []
+		for key in root_directory.GetListOfKeys():
+			if key.GetClassName().startswith("TDirectory"):
+				elements.extend(RootTools.walk_root_directory(root_directory.Get(key.GetName()),
+					                                          os.path.join(path, key.GetName())))
+			else:
+				elements.append((key, os.path.join(path, key.GetName())))
+		return elements
 
