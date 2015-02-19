@@ -124,6 +124,8 @@ class PlotRoot(plotbase.PlotBase):
 			root_object.SetFillColor(color)
 			root_object.SetFillStyle(1)
 			root_object.SetMarkerColor(color)
+			if plotData.plotdict["title"]:
+				root_object.SetTitle(plotData.plotdict["title"])
 			
 			# tick labels
 			if plotData.plotdict["x_tick_labels"] and len(plotData.plotdict["x_tick_labels"]) > 0:
