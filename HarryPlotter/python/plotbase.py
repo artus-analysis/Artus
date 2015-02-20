@@ -304,8 +304,16 @@ class PlotBase(processor.Processor):
 				numerator_histogram = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_objects"][nick] for nick in numerator_nicks],name=name+"_numerator")
 				denominator_histogram = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_objects"][nick] for nick in denominator_nicks],name=name+"_denominator")
 				
-				ratio_histogram = numerator_histogram.Clone(name + "_ratio")
-				ratio_histogram.Divide(denominator_histogram)
+				if all([isinstance(h, ROOT.TProfile) for h in [numerator_histogram, denominator_histogram]]):
+					# convert TProfiles to TH1 because ROOT can't divide TProfils correctly
+					# https://root.cern.ch/phpBB3/viewtopic.php?f=3&t=2101
+					# TODO is there a better way to do this?
+					denom_th1 = denominator_histogram.ProjectionX()
+					ratio_histogram = numerator_histogram.ProjectionX()
+					ratio_histogram.Divide(denom_th1)
+				else:
+					ratio_histogram = numerator_histogram.Clone(name + "_ratio")
+					ratio_histogram.Divide(denominator_histogram)
 				plotData.plotdict.setdefault("root_ratio_histos", []).append(ratio_histogram)
 	
 	def create_canvas(self, plotData):
