@@ -60,12 +60,17 @@ class InputBase(processor.Processor):
 				merged_object = None
 				for root_object in root_objects:
 					if isinstance(root_object, ROOT.TH1):
-						if merged_object == None:
+						if merged_object is None:
 							merged_object = root_object
 						else:
 							merged_object.Add(root_object)
-					elif scale_factor != 1.0:
-						log.warning("Merging currently only implmented for histograms!")
+					elif isinstance(root_object, ROOT.TGraph):
+						if merged_object is None:
+							merged_object = root_object
+						else:
+							log.warning("Merging not yet implemented for TGraph objects!")
+					else:
+						log.warning("Merging not yet implemented for objects of type %s!" % str(type(root_object)))
 				plotData.plotdict["root_objects"][nick] = merged_object
 		
 		# remove all nick name copies
