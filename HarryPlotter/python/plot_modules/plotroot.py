@@ -197,7 +197,7 @@ class PlotRoot(plotbase.PlotBase):
 			if isinstance(root_object, ROOT.TH1):
 				axes_histogram = self._draw_histogram(self.plot_pad, root_object, draw_option, set_first_plotted_histogram=(index == 0))
 			elif isinstance(root_object, ROOT.TGraph):
-				axes_histogram = self._draw_graph(self.plot_pad, root_object, draw_option, set_first_plotted_histogram=(index == 0))
+				axes_histogram = self._draw_graph(self.plot_pad, root_object, draw_option+(" A" if index == 0 else ""), set_first_plotted_histogram=(index == 0))
 			else:
 				log.error("ROOT plotting is not (yet) implemented for objects of type %s!" % type(root_object))
 			
@@ -257,7 +257,7 @@ class PlotRoot(plotbase.PlotBase):
 	def _draw_graph(self, pad, root_graph, draw_option, set_first_plotted_histogram=False):
 		assert isinstance(root_graph, ROOT.TGraph)
 		pad.cd()
-		root_graph.Draw(draw_option+"AP")
+		root_graph.Draw(draw_option)
 		root_histogram = root_graph.GetHistogram()
 		if set_first_plotted_histogram:
 			self.first_plotted_histogram = root_histogram
