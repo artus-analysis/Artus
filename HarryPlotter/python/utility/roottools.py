@@ -271,9 +271,18 @@ class RootTools(object):
 			name, variable_expression, weight_selection
 		))
 		if root_histogram == None:
-			draw_option = option.replace("TGraphErrors", "").replace("TGraph", "")
+			draw_option = option.replace("TGraphAsymmErrorsX", "").replace("TGraphAsymmErrorsY", "").replace("TGraphErrors", "").replace("TGraph", "")
 			tree.Draw(variable_expression + ">>" + name + binning, str(weight_selection), draw_option + " GOFF")
-			if "TGraphErrors" in option:
+			if "TGraphAsymmErrors" in option:
+				n_points = tree.GetSelectedRows()
+				x_values = tree.GetV2() if "TGraphAsymmErrorsX" in option else tree.GetV4()
+				y_values = tree.GetV1()
+				x_errors_low = tree.GetV3() if "TGraphAsymmErrorsX" in option else array.array("d", [0.0]*n_points)
+				x_errors_high = tree.GetV4() if "TGraphAsymmErrorsX" in option else array.array("d", [0.0]*n_points)
+				y_errors_low = array.array("d", [0.0]*n_points) if "TGraphAsymmErrorsX" in option else tree.GetV2()
+				y_errors_high = array.array("d", [0.0]*n_points) if "TGraphAsymmErrorsX" in option else tree.GetV3()
+				root_histogram = ROOT.TGraphAsymmErrors(n_points, x_values, y_values, x_errors_low, x_errors_high, y_errors_low, y_errors_high)
+			elif "TGraphErrors" in option:
 				root_histogram = ROOT.TGraphErrors(tree.GetSelectedRows(), tree.GetV3(), tree.GetV1(), tree.GetV4(), tree.GetV2())
 			elif "TGraph" in option:
 				root_histogram = ROOT.TGraph(tree.GetSelectedRows(), tree.GetV2(), tree.GetV1())
