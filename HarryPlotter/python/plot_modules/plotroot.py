@@ -73,7 +73,7 @@ class PlotRoot(plotbase.PlotBase):
 				if index == 0:
 					marker = "E" if len(plotData.plotdict["markers"]) > 1 else "HIST"
 				else:
-					marker = "L" if plotData.plotdict["stacks"].count(stack) == 1 else "HIST"
+					marker = "LINE" if plotData.plotdict["stacks"].count(stack) == 1 else "HIST"
 				# TODO: defaults for 2D/3D histograms
 			
 			if fill_style is None:
