@@ -138,7 +138,7 @@ class PlotBase(processor.Processor):
 		                                    help="Show the date in the top left corner. \"iso\" is YYYY-MM-DD, \"today\" is DD Mon YYYY and \"now\" is DD Mon YYYY HH:MM.")
 		self.labelling_options.add_argument("-E", "--event-number-label", action="store_true", default=False,
 		                                    help="Add event number label")
-		self.formatting_options.add_argument("--text", type=str,
+		self.formatting_options.add_argument("--text", type=str, nargs="+", default=[None],
 		                                     help="Place a text at a certain location. Syntax is --text=\"abc\" or --text=\"abc,0.5,0.9\"")
 		
 		# output settings
@@ -366,20 +366,25 @@ class PlotBase(processor.Processor):
 		pass
 	
 	def add_texts(self, plotData):
-		if plotData.plotdict["text"] != None:
-			#reasonable default coordinates
-			self.x_text = 0.5
-			self.y_text = 0.8
-			self.text = plotData.plotdict["text"]
+		if plotData.plotdict["text"] != [None]:
+			self.x_texts, self.y_texts, self.texts = [], [], []
+			for text_arg in plotData.plotdict["text"]:
+				#reasonable default coordinates
+				x_text = 0.5
+				y_text = 0.8
+				text = text_arg
 
-			textsplit = plotData.plotdict["text"].split(",")
-			if len(textsplit) >= 3:
-				if extrafunctions.isfloat(textsplit[len(textsplit) - 1]):
-					self.y_text = textsplit[len(textsplit) - 1]
-					self.text = ",".join(textsplit[:len(textsplit) - 1])
-				if extrafunctions.isfloat(textsplit[len(textsplit) - 2]):
-					self.x_text = textsplit[len(textsplit) - 2]
-					self.text = ",".join(textsplit[:len(textsplit) - 2])
+				textsplit = text_arg.split(",")
+				if len(textsplit) >= 3:
+					if extrafunctions.isfloat(textsplit[len(textsplit) - 1]):
+						y_text = textsplit[len(textsplit) - 1]
+						text = ",".join(textsplit[:len(textsplit) - 1])
+					if extrafunctions.isfloat(textsplit[len(textsplit) - 2]):
+						x_text = textsplit[len(textsplit) - 2]
+						text = ",".join(textsplit[:len(textsplit) - 2])
+				self.x_texts.append(x_text)
+				self.y_texts.append(y_text)
+				self.texts.append(text)
 
 	def save_canvas(self, plotData):
 		pass

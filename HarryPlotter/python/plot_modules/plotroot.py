@@ -366,14 +366,15 @@ class PlotRoot(plotbase.PlotBase):
 	
 	def add_texts(self, plotData):
 		super(PlotRoot, self).add_texts(plotData)
-		if plotData.plotdict["text"] != None:
+		if plotData.plotdict["text"] != [None]:
 			self.plot_pad.cd()
-			self.text = ROOT.TPaveText(float(self.x_text), float(self.y_text), 0.9, 0.9, "NDC")
-			self.text.AddText(self.text)
-			self.text.SetLineColor(0)
-			self.text.SetFillColor(0)
-			self.text.SetShadowColor(0)
-			self.text.Draw()
+			for x, y, text in zip(self.x_texts, self.y_texts, self.texts):
+				root_text = ROOT.TPaveText(float(x), float(y), 0.9, 0.9, "NDC")
+				root_text.AddText(text)
+				root_text.SetLineColor(0)
+				root_text.SetFillColor(0)
+				root_text.SetShadowColor(0)
+				root_text.Draw()
 	
 	def save_canvas(self, plotData):
 		super(PlotRoot, self).save_canvas(plotData)
