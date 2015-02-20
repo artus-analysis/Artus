@@ -20,7 +20,7 @@ class GraphCombination(analysisbase.AnalysisBase):
 
 		self.graph_combination_options = parser.add_argument_group("Graph combination options")
 		self.graph_combination_options.add_argument(
-				"--graph-values-nicks", type=str, nargs="+", required=True,
+				"--graph-values-nicks", type=str, nargs="+",
 				help="Nick names for graphs with the x-/y-values for the x-/y-values of the resulting graph."
 		)
 		self.graph_combination_options.add_argument(
