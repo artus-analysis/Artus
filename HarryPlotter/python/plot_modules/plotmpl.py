@@ -305,6 +305,12 @@ class PlotMpl(plotbase.PlotBase):
 		if plotData.plotdict['ratio'] and list(set(plotData.plotdict['ratio_labels'])) != [None]:
 			self.ax2.legend(loc=plotData.plotdict["legend"])
 
+	def add_texts(self, plotData):
+		super(PlotMpl, self).add_texts(plotData)
+		if plotData.plotdict["text"] != None:
+			for ax in self.axes:
+				ax.text(self.x_text, self.y_text, self.text, transform=ax.transAxes, fontsize=18, ha="left", va="top")
+
 	def save_canvas(self, plotData):
 		for output_filename in plotData.plotdict["output_filenames"]:
 			self.fig.savefig(output_filename)

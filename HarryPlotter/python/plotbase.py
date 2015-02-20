@@ -358,8 +358,21 @@ class PlotBase(processor.Processor):
 		pass
 	
 	def add_texts(self, plotData):
-		pass
-	
+		if plotData.plotdict["text"] != None:
+			#reasonable default coordinates
+			self.x_text = 0.5
+			self.y_text = 0.8
+			self.text = plotData.plotdict["text"]
+
+			textsplit = plotData.plotdict["text"].split(",")
+			if len(textsplit) >= 3:
+				if extrafunctions.isfloat(textsplit[len(textsplit) - 1]):
+					self.y_text = textsplit[len(textsplit) - 1]
+					self.text = ",".join(textsplit[:len(textsplit) - 1])
+				if extrafunctions.isfloat(textsplit[len(textsplit) - 2]):
+					self.x_text = textsplit[len(textsplit) - 2]
+					self.text = ",".join(textsplit[:len(textsplit) - 2])
+
 	def save_canvas(self, plotData):
 		pass
 
