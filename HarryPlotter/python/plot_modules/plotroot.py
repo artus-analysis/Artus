@@ -159,6 +159,7 @@ class PlotRoot(plotbase.PlotBase):
 			root_object.SetMarkerColor(color)
 			root_object.SetMarkerStyle(0 if "E2" in marker.upper() and fill_style > 3000 else 20)
 			
+			root_object.SetFillColor(color)
 			root_object.SetFillStyle(fill_style)
 			
 			# tick labels
