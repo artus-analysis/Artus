@@ -32,7 +32,7 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Place an x-axes grid on the plot.")
 		self.formatting_options.add_argument("--y-grid", action='store_true', default=False,
 		                                     help="Place an y-axes grid on the plot.")
-		self.formatting_options.add_argument("--fill-styles", type=str, nargs="+",
+		self.formatting_options.add_argument("--fill-styles", type=int, nargs="+",
 		                                     help="Fill styles for histograms. Defaults choosen according to draw options.")
 		self.formatting_options.add_argument("--line-styles", nargs="+", default=[1], type=int,
                                              help="Line style of plots line. [Default: %(default)s]")
