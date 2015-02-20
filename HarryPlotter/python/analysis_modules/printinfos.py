@@ -29,5 +29,8 @@ class PrintInfos(analysisbase.AnalysisBase):
 		for nick, root_object in plotData.plotdict["root_objects"].iteritems():
 			if isinstance(root_object, ROOT.TH1):
 				log.info("Histogram (nick %s): Integral=%f" % (nick, root_object.Integral()))
-				
+			else:
+				log.info("Histogram (nick %s):" % nick)
+				if log.isEnabledFor(logging.INFO):
+					root_object.Print()
 
