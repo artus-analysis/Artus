@@ -80,8 +80,8 @@ class PlotRoot(plotbase.PlotBase):
 				fill_style = 0
 				if "HIST" in marker.upper():
 					fill_style = 1001
-				elif "L" in marker.upper() and "COL" not in marker.upper():
-					marker = marker.replace("l", "HIST").replace("L", "HIST")
+				elif "LINE" in marker.upper():
+					marker = marker.upper().replace("LINE", "HIST")
 					fill_style = 0
 				elif "E" in marker.upper():
 					fill_style = 3003
@@ -152,6 +152,7 @@ class PlotRoot(plotbase.PlotBase):
 			root_object = plotData.plotdict["root_objects"][nick]
 			if plotData.plotdict["title"]:
 				root_object.SetTitle(plotData.plotdict["title"])
+			
 			root_object.SetLineColor(color)
 			root_object.SetLineStyle(line_style)
 			
