@@ -60,13 +60,15 @@ public:
 	{
 		NONE  = -1,
 		TIGHT = 0,
-		LOOSE = 1,
-		VETO = 2,
-		FAKEABLE = 3,
+		MEDIUM = 1,
+		LOOSE = 2,
+		VETO = 3,
+		FAKEABLE = 4,
 	};
 	static MuonID ToMuonID(std::string const& muonID)
 	{
 		if (muonID == "tight") return MuonID::TIGHT;
+		else if (muonID == "medium") return MuonID::MEDIUM;
 		else if (muonID == "loose") return MuonID::LOOSE;
 		else if (muonID == "veto") return MuonID::VETO;
 		else if (muonID == "fakeable") return MuonID::FAKEABLE;
@@ -235,6 +237,12 @@ public:
 				else
 					LOG(FATAL) << "Tight muon ID for year " << settings.GetYear() << " not yet implemented!";
 			}
+			else if (muonID == MuonID::MEDIUM) {
+				if (settings.GetYear() == 2015)
+					validMuon = validMuon && IsMediumMuon2015(*muon, event, product);
+				else
+					LOG(FATAL) << "Medium muon ID for year " << settings.GetYear() << " not yet implemented!";
+			}
 			else if (muonID == MuonID::LOOSE) {
 				if (settings.GetYear() == 2012)
 					validMuon = validMuon && IsLooseMuon2012(*muon, event, product);
@@ -352,6 +360,15 @@ private:
 					&& std::abs(muon->dz) < 0.5
 					&& muon->track.nValidPixelHits > 0
 					&& muon->track.nTrackerLayers() > 5;
+		
+		return validMuon;
+	}
+	
+	bool IsMediumMuon2015(KMuon* muon, event_type const& event, product_type& product) const
+	{
+		bool validMuon = true;
+		
+		validMuon = validMuon && muon->idMedium();
 		
 		return validMuon;
 	}
