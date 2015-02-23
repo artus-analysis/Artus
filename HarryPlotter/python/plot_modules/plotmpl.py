@@ -132,7 +132,7 @@ class PlotMpl(plotbase.PlotBase):
 		zip_arguments = self.get_zip_arguments(plotData)
 
 		for nick, color, edgecolor, label, marker, x_error, y_error, line_style, step, zorder, n_ax in zip(*zip_arguments):
-			log.info("Process nick: {0}".format(nick))
+			log.info("Plotting nick '{0}' with label '{1}'".format(nick, label))
 			root_object = plotData.plotdict["root_objects"][nick]
 
 			if isinstance(root_object, ROOT.TGraph):
@@ -330,8 +330,8 @@ class PlotMpl(plotbase.PlotBase):
 					full_name,
 					# TODO cleanly crop figure to legend size
 					# the arguments below are just workarounds :(
-					bbox_inches='tight',
-					pad_inches=-1
+					#bbox_inches='tight',
+					#pad_inches=-1
 				)
 			log.info("Legend saved to " + full_name)
 
