@@ -138,8 +138,12 @@ class PlotBase(processor.Processor):
 		                                    help="Show the date in the top left corner. \"iso\" is YYYY-MM-DD, \"today\" is DD Mon YYYY and \"now\" is DD Mon YYYY HH:MM.")
 		self.labelling_options.add_argument("-E", "--event-number-label", action="store_true", default=False,
 		                                    help="Add event number label")
-		self.formatting_options.add_argument("--text", type=str, nargs="+", default=[None],
-		                                     help="Place a text at a certain location. Syntax is --text=\"abc\" or --text=\"abc,0.5,0.9\"")
+		self.formatting_options.add_argument("--texts", type=str, nargs="+", default=[None],
+		                                     help="Place text(s) on the plot.")
+		self.formatting_options.add_argument("--texts-y", type=float, nargs="+", default=[0.8],
+		                                     help="Y-coordinate(s) of text(s) on plot. Ranges from 0 to 1. [Default: %(default)s]")
+		self.formatting_options.add_argument("--texts-x", type=float, nargs="+", default=[0.5],
+		                                     help="X-coordinate(s) of text(s) on plot. Ranges from 0 to 1. [Default: %(default)s]")
 		
 		# output settings
 		self.output_options = parser.add_argument_group("Output options")
@@ -250,6 +254,10 @@ class PlotBase(processor.Processor):
 		# prepare nicknames for stacked plots
 		stacks = plotData.plotdict["stacks"]
 		plotData.plotdict["stacks"] = [stack if stack != None else ("stack%d" % index) for index, stack in enumerate(plotData.plotdict["stacks"])]
+
+		# prepare arguments for text label(s)
+		if plotData.plotdict["texts"] is not None:
+			self.prepare_list_args(plotData, ["texts", "texts_y", "texts_x"])
 
 	def run(self, plotData):
 		super(PlotBase, self).run(plotData)
@@ -366,25 +374,7 @@ class PlotBase(processor.Processor):
 		pass
 	
 	def add_texts(self, plotData):
-		if plotData.plotdict["text"] != [None]:
-			self.x_texts, self.y_texts, self.texts = [], [], []
-			for text_arg in plotData.plotdict["text"]:
-				#reasonable default coordinates
-				x_text = 0.5
-				y_text = 0.8
-				text = text_arg
-
-				textsplit = text_arg.split(",")
-				if len(textsplit) >= 3:
-					if extrafunctions.isfloat(textsplit[len(textsplit) - 1]):
-						y_text = textsplit[len(textsplit) - 1]
-						text = ",".join(textsplit[:len(textsplit) - 1])
-					if extrafunctions.isfloat(textsplit[len(textsplit) - 2]):
-						x_text = textsplit[len(textsplit) - 2]
-						text = ",".join(textsplit[:len(textsplit) - 2])
-				self.x_texts.append(x_text)
-				self.y_texts.append(y_text)
-				self.texts.append(text)
+		pass
 
 	def save_canvas(self, plotData):
 		pass

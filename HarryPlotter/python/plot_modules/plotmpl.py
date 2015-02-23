@@ -307,9 +307,9 @@ class PlotMpl(plotbase.PlotBase):
 
 	def add_texts(self, plotData):
 		super(PlotMpl, self).add_texts(plotData)
-		if plotData.plotdict["text"] != [None]:
+		if plotData.plotdict["texts"] != [None]:
 			for ax in self.axes:
-				for x, y, text in zip(self.x_texts, self.y_texts, self.texts):
+				for x, y, text in zip(plotData.plotdict['texts_x'], plotData.plotdict['texts_y'], plotData.plotdict['texts']):
 					ax.text(x, y, text, transform=ax.transAxes, fontsize=18, ha="left", va="top")
 
 	def save_canvas(self, plotData):

@@ -366,9 +366,9 @@ class PlotRoot(plotbase.PlotBase):
 	
 	def add_texts(self, plotData):
 		super(PlotRoot, self).add_texts(plotData)
-		if plotData.plotdict["text"] != [None]:
+		if plotData.plotdict["texts"] != [None]:
 			self.plot_pad.cd()
-			for x, y, text in zip(self.x_texts, self.y_texts, self.texts):
+			for x, y, text in zip(plotData.plotdict['texts_x'], plotData.plotdict['texts_y'], plotData.plotdict['texts']):
 				root_text = ROOT.TPaveText(float(x), float(y), 0.9, 0.9, "NDC")
 				root_text.AddText(text)
 				root_text.SetLineColor(0)
