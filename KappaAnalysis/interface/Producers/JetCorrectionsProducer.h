@@ -77,7 +77,13 @@ public:
 		LOG(DEBUG) << "\tLoading JetCorrectionUncertainty from files...";
 		if (! settings.GetJetEnergyCorrectionUncertaintyParameters().empty())
 		{
-			JetCorrectorParameters *jecUncertaintyParameters = new JetCorrectorParameters(settings.GetJetEnergyCorrectionUncertaintyParameters(), settings.GetJetEnergyCorrectionUncertaintySource());
+			JetCorrectorParameters *jecUncertaintyParameters = NULL;
+			if (!settings.GetJetEnergyCorrectionUncertaintySource().empty()) {
+				jecUncertaintyParameters = new JetCorrectorParameters(settings.GetJetEnergyCorrectionUncertaintyParameters(), settings.GetJetEnergyCorrectionUncertaintySource());
+			}
+			else {
+				jecUncertaintyParameters = new JetCorrectorParameters(settings.GetJetEnergyCorrectionUncertaintyParameters());
+			}
 			jetCorrectionUncertainty = new JetCorrectionUncertainty(*jecUncertaintyParameters);
 			LOG(DEBUG) << "\t\t" << settings.GetJetEnergyCorrectionUncertaintyParameters();
 		}
