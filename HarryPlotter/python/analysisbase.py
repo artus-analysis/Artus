@@ -24,9 +24,16 @@ class AnalysisBase(processor.Processor):
 
 	def auto_set_arguments(self, plotData, arguments, result_argument=None, result_name=None):
 		""" This function sets the arguments for a module if the number of 
-			input arguments equals the number of nicks.
+			input arguments equals the number of nicks present in the plotdict.
 			Optionally, an argument for a result nick can be set.
-			See e.g the Divide module to see how this function is called.
+
+			See e.g the Divide module to see how this function is called. Normally
+			this module would need 3 arguments, two of them being 'input' arguments
+			(nick for denominator and numerator). If you have exactly 2 nicks in
+			the plotdict, the auto_set_arguments function will set these two
+			nicks as the two input arguments, and also set the third argument.
+			This means that (in this case of two nicks present) the module can be
+			used without manually specifying any arguments.
 		"""
 
 		if all(plotData.plotdict[i] == [None] for i in arguments):
