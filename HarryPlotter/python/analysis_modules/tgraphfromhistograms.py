@@ -15,17 +15,19 @@ class TGraphFromHistograms(analysisbase.AnalysisBase):
 	def modify_argument_parser(self, parser, args):
 		super(TGraphFromHistograms, self).modify_argument_parser(parser, args)
 
-		self.tgraph_options = parser.add_argument_group("Divide options")
-		self.tgraph_options.add_argument("--tgraph-x-nicks", type=str, nargs="*",
+		self.tgraph_options = parser.add_argument_group("{} options".format(self.__class__.__name__))
+		self.tgraph_options.add_argument("--tgraph-x-nicks", type=str, nargs="+",
 			help="Nick names for histograms with the x-values of the graph points.")
-		self.tgraph_options.add_argument("--tgraph-y-nicks", type=str, nargs="*",
+		self.tgraph_options.add_argument("--tgraph-y-nicks", type=str, nargs="+",
 			help="Nick names for histograms with the y-values of the graph points.")
-		self.tgraph_options.add_argument("--tgraph-result-nicks", type=str, nargs="*",
+		self.tgraph_options.add_argument("--tgraph-result-nicks", type=str, nargs="+",
 			help="Nick names for the resulting TGraphErrors.")
 
 	def prepare_args(self, parser, plotData):
 		super(TGraphFromHistograms, self).prepare_args(parser, plotData)
 		self.prepare_list_args(plotData, ["tgraph_x_nicks", "tgraph_y_nicks", "tgraph_result_nicks"])
+		super(TGraphFromHistograms, self).auto_set_arguments(plotData, ["tgraph_x_nicks", "tgraph_y_nicks"],
+				'tgraph_result_nicks', 'tgraph')
 
 	def run(self, plotData=None):
 		super(TGraphFromHistograms, self).run(plotData)
