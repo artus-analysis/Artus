@@ -401,7 +401,8 @@ class ArtusWrapper(object):
 		else:
 			epilogArguments += r"--log-files " + os.path.join(sepathRaw, "${DATASETNICK}", "${DATASETNICK}_job_${MY_JOBID}_log.txt") + " "
 		epilogArguments += r"--print-envvars ROOTSYS CMSSW_BASE DATASETNICK FILE_NAMES LD_LIBRARY_PATH "
-		epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
+		# epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
+		epilogArguments += r"--artusconfig " + self._args.artusconfig + " "
 		epilogArguments += "--nick $DATASETNICK "
 		epilogArguments += "-i $FILE_NAMES "
 		if not self._args.ld_library_paths is None:

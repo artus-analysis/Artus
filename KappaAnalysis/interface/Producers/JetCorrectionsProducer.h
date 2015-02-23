@@ -25,6 +25,7 @@
    Required config tags:
    - JetEnergyCorrectionParameters (files containing the correction parameters in the right order)
    - JetEnergyCorrectionUncertaintyParameters (default: empty)
+   - JetEnergyCorrectionUncertaintySource (default "")
    - JetEnergyCorrectionUncertaintyShift (default 0.0)
    
    Required packages (unfortunately, nobody knows a tag):
@@ -76,7 +77,8 @@ public:
 		LOG(DEBUG) << "\tLoading JetCorrectionUncertainty from files...";
 		if (! settings.GetJetEnergyCorrectionUncertaintyParameters().empty())
 		{
-			jetCorrectionUncertainty = new JetCorrectionUncertainty(settings.GetJetEnergyCorrectionUncertaintyParameters());
+			JetCorrectorParameters *jecUncertaintyParameters = new JetCorrectorParameters(settings.GetJetEnergyCorrectionUncertaintyParameters(), settings.GetJetEnergyCorrectionUncertaintySource());
+			jetCorrectionUncertainty = new JetCorrectionUncertainty(*jecUncertaintyParameters);
 			LOG(DEBUG) << "\t\t" << settings.GetJetEnergyCorrectionUncertaintyParameters();
 		}
 	}
