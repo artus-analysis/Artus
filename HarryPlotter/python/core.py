@@ -28,6 +28,7 @@ from Artus.HarryPlotter.plotbase import PlotBase
 import Artus.HarryPlotter.processor as processor
 
 from Artus.Utility.jsonTools import JsonDict
+import Artus.Utility.tools as tools
 
 JsonDict.COMMENT_DELIMITER = "@"
 
@@ -237,27 +238,19 @@ class HarryCore(object):
 
 	def _print_available_modules(self):
 		"""Prints all available modules to stdout."""
+		title_strings = ["Input modules:", "\nAnalysis modules:", "\nPlot modules:"]
+		baseclasses = [InputBase, AnalysisBase, PlotBase]
+		for title_string, baseclass in zip(title_strings, baseclasses):
+			log.info(tools.get_colored_string(title_string, "yellow"))
+			self._print_module_list(sorted([module for module in self.available_processors if issubclass(self.available_processors[module], baseclass)]))
 
-		log.info("Input modules:")
-		input_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], InputBase)])
-		for module in input_modules:
-			log.info("\t{}".format(module))
+	def _print_module_list(self, module_list):
+		"""Print a list of modules (name and docstring)"""
+		for module in module_list:
+			log.info(tools.get_colored_string("\t{}".format(module), "green"))
 			if inspect.getdoc(self.available_processors[module]):
-				log.info("\t\t{}".format(inspect.getdoc(self.available_processors[module])))
-		log.info("")
-		log.info("Analysis modules:")
-		analysis_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], AnalysisBase)])
-		for module in analysis_modules:
-			log.info("\t{}".format(module))
-			if inspect.getdoc(self.available_processors[module]):
-				log.info("\t\t{}".format(inspect.getdoc(self.available_processors[module])))
-		log.info("")
-		log.info("Plot modules:")
-		plot_modules = sorted([module for module in self.available_processors if issubclass(self.available_processors[module], PlotBase)])
-		for module in plot_modules:
-			log.info("\t{}".format(module))
-			if inspect.getdoc(self.available_processors[module]):
-				log.info("\t\t{}".format(inspect.getdoc(self.available_processors[module])))
+				log.info(tools.get_indented_text("\t\t", inspect.getdoc(self.available_processors[module])))
+
 
 	def _logo(self):
 		log.info("            _              _   ,                        ")
