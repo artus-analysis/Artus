@@ -13,12 +13,12 @@
 #include "Artus/Utility/interface/Collections.h"
 
 /*
- * This class provides various convinience functions when working with Boost PropertyTrees.
+ * This class provides various convenience functions when working with Boost PropertyTrees.
  */
 class PropertyTreeSupport {
 public:
 	static stringvector GetAsStringList(boost::property_tree::ptree * propTree,
-	                                    std::string path, bool failIfNotFound = false);
+	                                    std::string path);
 
 	static doublevector GetAsDoubleList(boost::property_tree::ptree * propTree,
 	                                    std::string path);
