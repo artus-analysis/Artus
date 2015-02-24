@@ -60,6 +60,11 @@ class HarryPlotter(object):
 			if config_dict is None:
 				harry_args.append(None)
 			else:
+				if "json_defaults" in config_dict:
+					json_defaults_dict = jsonTools.JsonDict(config_dict["json_defaults"]).doIncludes().doComments()
+					config_dict.pop("json_defaults")
+					json_defaults_dict.update(config_dict)
+					config_dict = json_defaults_dict
 				harry_args.append("--json-defaults \"%s\"" % jsonTools.JsonDict(config_dict).toString(indent=None).replace("\"", "'"))
 			
 			if not args_string is None:
