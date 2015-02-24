@@ -9,6 +9,7 @@ import array
 import fcntl
 import re
 import termios
+import os
 
 
 def flattenList(listOfLists):
@@ -65,3 +66,11 @@ def get_tty_size():
 	fcntl.ioctl(0, termios.TIOCGWINSZ, size, True)
 	return (size[0], size[2])
 
+def get_environment_variable(variable_name):
+	"""get variable from os, throw error if not set"""
+	try:
+		value = os.environ[variable_name]
+		return value
+	except KeyError:
+		log.critical("'{}' not in environment variables".format(variable_name))
+		sys.exit(1)
