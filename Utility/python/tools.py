@@ -74,3 +74,14 @@ def get_environment_variable(variable_name):
 	except KeyError:
 		log.critical("'{}' not in environment variables".format(variable_name))
 		sys.exit(1)
+
+def get_colored_string(string, color='green'):
+	d = {
+		'red': '91',
+		'green':'92',
+		'yellow':'93',
+		'blue':'94',
+		'magenta':'94',
+		'cyan':'96',
+	}
+	return "\033[{1}m{0}\033[39m".format(string, d[color])
