@@ -10,6 +10,7 @@ import fcntl
 import re
 import termios
 import os
+import textwrap
 
 
 def flattenList(listOfLists):
@@ -85,3 +86,16 @@ def get_colored_string(string, color='green'):
 		'cyan':'96',
 	}
 	return "\033[{1}m{0}\033[39m".format(string, d[color])
+
+def get_indented_text(prefix, message, width=None):
+	"""returns a text block which is line-wrapped and indented at a certain length."""
+	if width is None:
+		width = get_tty_size()[1]
+	expanded_indent = textwrap.fill(prefix+'$', replace_whitespace=False)[:-1]
+	subsequent_indent = ' ' * len(expanded_indent)
+	wrapper = textwrap.TextWrapper(
+			initial_indent=expanded_indent,
+			width=width,
+			subsequent_indent=subsequent_indent
+	)
+	return wrapper.fill(message)
