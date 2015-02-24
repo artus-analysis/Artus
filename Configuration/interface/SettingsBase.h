@@ -70,7 +70,7 @@ public:
 	IMPL_PROPERTY(TFile *, RootOutFile)
 
 	/// detemine whether this is data or MC
-	IMPL_GLOBAL_SETTING(bool, InputIsData);
+	IMPL_SETTING(bool, InputIsData);
 
 	virtual std::string ToString() const {
 		return "SettingsBase - Pipeline name: " + GetName();
