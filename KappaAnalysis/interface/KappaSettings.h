@@ -92,7 +92,7 @@ public:
 	IMPL_SETTING_DEFAULT(float, CrossSection, -1.);
 	IMPL_SETTING(int, NumberGeneratedEvents);
 	
-	IMPL_SETTING_STRINGLIST(JsonFiles);
+	IMPL_SETTING_STRINGLIST_DEFAULT(JsonFiles, {});
 	IMPL_SETTING_DEFAULT(int, PassRunLow, 0);
 	IMPL_SETTING_DEFAULT(int, PassRunHigh, 0);
 	
@@ -104,21 +104,21 @@ public:
 	// Beam Scraping Filter
 	IMPL_SETTING(double, MinPurityRatio);
 
-	IMPL_SETTING_UINT64LIST(RunWhitelist);
-	IMPL_SETTING_UINT64LIST(RunBlacklist);
-	IMPL_SETTING_UINT64LIST(LumiWhitelist);
-	IMPL_SETTING_UINT64LIST(LumiBlacklist);
-	IMPL_SETTING_UINT64LIST(EventWhitelist);
-	IMPL_SETTING_UINT64LIST(EventBlacklist);
+	IMPL_SETTING_UINT64LIST_DEFAULT(RunWhitelist, {});
+	IMPL_SETTING_UINT64LIST_DEFAULT(RunBlacklist, {});
+	IMPL_SETTING_UINT64LIST_DEFAULT(LumiWhitelist, {});
+	IMPL_SETTING_UINT64LIST_DEFAULT(LumiBlacklist, {});
+	IMPL_SETTING_UINT64LIST_DEFAULT(EventWhitelist, {});
+	IMPL_SETTING_UINT64LIST_DEFAULT(EventBlacklist, {});
 	IMPL_SETTING_DEFAULT(bool, MatchRunLumiEventTuples, false);
 	
-	IMPL_SETTING_STRINGLIST(HltPaths);
+	IMPL_SETTING_STRINGLIST_DEFAULT(HltPaths, {});
 	IMPL_SETTING_DEFAULT(bool, AllowPrescaledTrigger, true);
 	
-	IMPL_SETTING_STRINGLIST(ElectronTriggerFilterNames);
-	IMPL_SETTING_STRINGLIST(MuonTriggerFilterNames);
-	IMPL_SETTING_STRINGLIST(TauTriggerFilterNames);
-	IMPL_SETTING_STRINGLIST(JetTriggerFilterNames);
+	IMPL_SETTING_STRINGLIST_DEFAULT(ElectronTriggerFilterNames, {});
+	IMPL_SETTING_STRINGLIST_DEFAULT(MuonTriggerFilterNames, {});
+	IMPL_SETTING_STRINGLIST_DEFAULT(TauTriggerFilterNames, {});
+	IMPL_SETTING_STRINGLIST_DEFAULT(JetTriggerFilterNames, {});
 	
 	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingElectrons, 0.5);
 	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingMuons, 0.5);
@@ -134,9 +134,9 @@ public:
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoMuonGenParticle, 0.5);
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoTauGenParticle, 0.5);
 	
-	IMPL_SETTING_INTLIST(RecoElectronMatchingGenParticlePdgIds);
-	IMPL_SETTING_INTLIST(RecoMuonMatchingGenParticlePdgIds);
-	IMPL_SETTING_INTLIST(RecoTauMatchingGenParticlePdgIds);
+	IMPL_SETTING_INTLIST_DEFAULT(RecoElectronMatchingGenParticlePdgIds, {});
+	IMPL_SETTING_INTLIST_DEFAULT(RecoMuonMatchingGenParticlePdgIds, {});
+	IMPL_SETTING_INTLIST_DEFAULT(RecoTauMatchingGenParticlePdgIds, {});
 	
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoJetGenParticle, 0.3);
 	IMPL_SETTING_DEFAULT(std::string, JetMatchingAlgorithm, "algorithmic");
@@ -183,9 +183,9 @@ public:
 	IMPL_SETTING(std::string, ElectronReco);
 	
 	IMPL_SETTING_DEFAULT(std::string, ValidTausInput, "auto");
-	IMPL_SETTING_STRINGLIST(TauDiscriminators);
+	IMPL_SETTING_STRINGLIST_DEFAULT(TauDiscriminators, {});
 	
-	IMPL_SETTING_STRINGLIST(JetEnergyCorrectionParameters);
+	IMPL_SETTING_STRINGLIST_DEFAULT(JetEnergyCorrectionParameters, {});
 	IMPL_SETTING_DEFAULT(std::string, JetEnergyCorrectionUncertaintyParameters, "");
 	IMPL_SETTING_DEFAULT(std::string, JetEnergyCorrectionUncertaintySource, "");
 	IMPL_SETTING_DEFAULT(float, JetEnergyCorrectionUncertaintyShift, 0.0);
@@ -194,9 +194,9 @@ public:
 	IMPL_SETTING(std::string, JetID);
 	IMPL_SETTING_DEFAULT(float, JetLeptonLowerDeltaRCut, -1.0);
 	IMPL_SETTING_DEFAULT(std::string, JetIDVersion, "2010");
-	IMPL_SETTING_STRINGLIST(PuJetIDs);
-	IMPL_SETTING_STRINGLIST(JetTaggerLowerCuts);
-	IMPL_SETTING_STRINGLIST(JetTaggerUpperCuts);
+	IMPL_SETTING_STRINGLIST_DEFAULT(PuJetIDs, {});
+	IMPL_SETTING_STRINGLIST_DEFAULT(JetTaggerLowerCuts, {});
+	IMPL_SETTING_STRINGLIST_DEFAULT(JetTaggerUpperCuts, {});
 	
 	IMPL_SETTING(int, NElectrons);
 	IMPL_SETTING(int, NMuons);
@@ -218,15 +218,16 @@ public:
 	IMPL_SETTING_DEFAULT(size_t, MinNMatchedTaus, 0);
 	IMPL_SETTING_DEFAULT(size_t, MinNMatchedJets, 0);
 	
-	IMPL_SETTING_STRINGLIST(ElectronLowerPtCuts);
-	IMPL_SETTING_STRINGLIST(MuonLowerPtCuts);
-	IMPL_SETTING_STRINGLIST(TauLowerPtCuts);
-	IMPL_SETTING_STRINGLIST(JetLowerPtCuts);
+	IMPL_SETTING_STRINGLIST_DEFAULT(ElectronLowerPtCuts, {});
+	IMPL_SETTING_STRINGLIST_DEFAULT(MuonLowerPtCuts, {});
+	IMPL_SETTING_STRINGLIST_DEFAULT(TauLowerPtCuts, {});
+	// std::vector<std::string> test;
+	IMPL_SETTING_STRINGLIST_DEFAULT(JetLowerPtCuts, {});
 	
-	IMPL_SETTING_STRINGLIST(ElectronUpperAbsEtaCuts);
-	IMPL_SETTING_STRINGLIST(MuonUpperAbsEtaCuts);
-	IMPL_SETTING_STRINGLIST(TauUpperAbsEtaCuts);
-	IMPL_SETTING_STRINGLIST(JetUpperAbsEtaCuts);
+	IMPL_SETTING_STRINGLIST_DEFAULT(ElectronUpperAbsEtaCuts, {});
+	IMPL_SETTING_STRINGLIST_DEFAULT(MuonUpperAbsEtaCuts, {});
+	IMPL_SETTING_STRINGLIST_DEFAULT(TauUpperAbsEtaCuts, {});
+	IMPL_SETTING_STRINGLIST_DEFAULT(JetUpperAbsEtaCuts, {});
 	
 	IMPL_SETTING_DEFAULT(float, BTaggedJetAbsEtaCut, 0.0);
 	IMPL_SETTING_DEFAULT(float, BTaggedJetCombinedSecondaryVertexMediumWP, 0.0);
@@ -242,8 +243,8 @@ public:
 	IMPL_SETTING(std::string, GenDiLeptonDecayMode);
 	IMPL_SETTING_DEFAULT(bool, InvertGenDiLeptonDecayMode, false);
 
-	IMPL_SETTING_STRINGLIST(GenParticleTypes);
-	IMPL_SETTING_INTLIST(GenParticlePdgIds);
+	IMPL_SETTING_STRINGLIST_DEFAULT(GenParticleTypes, {});
+	IMPL_SETTING_INTLIST_DEFAULT(GenParticlePdgIds, {});
 	IMPL_SETTING_DEFAULT(int, GenParticleStatus, 0);
 
 	IMPL_SETTING(std::string, PileupWeightFile);
@@ -251,9 +252,9 @@ public:
 	IMPL_SETTING(std::string, EventWeight);
 
 	// TMVA reader settings
-	IMPL_SETTING_STRINGLIST(TmvaInputQuantities);
-	IMPL_SETTING_STRINGLIST(TmvaMethods);
-	IMPL_SETTING_STRINGLIST(TmvaWeights);
+	IMPL_SETTING_STRINGLIST_DEFAULT(TmvaInputQuantities, {});
+	IMPL_SETTING_STRINGLIST_DEFAULT(TmvaMethods, {});
+	IMPL_SETTING_STRINGLIST_DEFAULT(TmvaWeights, {});
 	
 	// KappaCollectionsConsumer settings
 	IMPL_SETTING_DEFAULT(bool, BranchGenMatchedElectrons, false);
