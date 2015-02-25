@@ -84,7 +84,11 @@ public:
 			else {
 				jecUncertaintyParameters = new JetCorrectorParameters(settings.GetJetEnergyCorrectionUncertaintyParameters());
 			}
+			if ((!jecUncertaintyParameters->isValid()) || (jecUncertaintyParameters->size() == 0))
+				LOG(FATAL) << "Invalid definition " << settings.GetJetEnergyCorrectionUncertaintySource() 
+				           << " in file " << settings.GetJetEnergyCorrectionUncertaintyParameters();
 			jetCorrectionUncertainty = new JetCorrectionUncertainty(*jecUncertaintyParameters);
+			LOG(DEBUG) << "\t\t" << settings.GetJetEnergyCorrectionUncertaintySource();
 			LOG(DEBUG) << "\t\t" << settings.GetJetEnergyCorrectionUncertaintyParameters();
 		}
 	}
