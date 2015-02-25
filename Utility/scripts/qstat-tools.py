@@ -16,9 +16,9 @@ import sys
 import time
 
 
-def progress_bar(n_running, n_all, n_norm, size):
-	running_char = "\033[0;42m \033[0m"
-	queued_char = "\033[0;43m \033[0m"
+def progress_bar(n_running, n_all, n_norm, size, this_user=False):
+	running_char = "\033[0;42m"+(">" if this_user else " ")+"\033[0m"
+	queued_char = "\033[0;43m"+("<" if this_user else " ")+"\033[0m"
 	free_char = " "
 	n_running_chars = int(math.ceil(float(n_running) * size / n_norm))
 	n_queued_chars = min(int(math.ceil(float(n_all-n_running) * size / n_norm)), size - n_running_chars)
@@ -104,7 +104,8 @@ def print_qstat_table(args, previous_users=[]):
 		line += progress_bar(len(parsed_qstat_output[user].get("r", [])),
 		                     len(parsed_qstat_output[user].get("all", [])),
 		                     n_total_jobs if args.norm_total_jobs else max_n_jobs,
-		                     tty_width-len(line)-2)
+		                     tty_width-len(line)-2,
+		                     this_user=(user == getpass.getuser()))
 		qstat_table += ("\n" + symbol + " " + (("\033[0;31;47m"+line+"\033[0m") if user == getpass.getuser() else line))
 
 	# output table
