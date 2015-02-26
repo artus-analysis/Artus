@@ -287,34 +287,54 @@ class PlotRoot(plotbase.PlotBase):
 		if plotData.plotdict["x_lims"] == None:
 			self.first_plotted_histogram.GetXaxis().SetRangeUser(self.x_min,
 			                                                     self.x_max)
+			self.first_plotted_histogram.GetXaxis().SetLimits(self.x_min,
+			                                                  self.x_max)
 			if (plotData.plotdict["ratio"] == True):
 				self.first_plotted_ratio_histogram.GetXaxis().SetRangeUser(self.x_min,
-					                                                       self.x_max)
+				                                                           self.x_max)
+				self.first_plotted_ratio_histogram.GetXaxis().SetLimits(self.x_min,
+				                                                        self.x_max)
 		else:
 			self.first_plotted_histogram.GetXaxis().SetRangeUser(plotData.plotdict["x_lims"][0],
 			                                                     plotData.plotdict["x_lims"][1])
+			self.first_plotted_histogram.GetXaxis().SetLimits(plotData.plotdict["x_lims"][0],
+			                                                  plotData.plotdict["x_lims"][1])
 			if (plotData.plotdict["ratio"] == True):
 				self.first_plotted_ratio_histogram.GetXaxis().SetRangeUser(plotData.plotdict["x_lims"][0],
-					                                                       plotData.plotdict["x_lims"][1])
+				                                                           plotData.plotdict["x_lims"][1])
+				self.first_plotted_ratio_histogram.GetXaxis().SetLimits(plotData.plotdict["x_lims"][0],
+				                                                        plotData.plotdict["x_lims"][1])
 		if plotData.plotdict["y_lims"] == None:
 			self.first_plotted_histogram.GetYaxis().SetRangeUser(self.y_min,
 			                                                     self.y_max * 1.1)
+			self.first_plotted_histogram.GetYaxis().SetLimits(self.y_min,
+			                                                  self.y_max * 1.1)
 		else:
 			self.first_plotted_histogram.GetYaxis().SetRangeUser(plotData.plotdict["y_lims"][0],
 			                                                     plotData.plotdict["y_lims"][1])
+			self.first_plotted_histogram.GetYaxis().SetLimits(plotData.plotdict["y_lims"][0],
+			                                                  plotData.plotdict["y_lims"][1])
 		if (plotData.plotdict["ratio"] == True):
 			if plotData.plotdict["y_ratio_lims"] == None:
 				self.first_plotted_ratio_histogram.GetYaxis().SetRangeUser(self.ratio_y_min,
-					                                                       self.ratio_y_max * 1.1)
+				                                                           self.ratio_y_max * 1.1)
+				self.first_plotted_ratio_histogram.GetYaxis().SetLimits(self.ratio_y_min,
+				                                                        self.ratio_y_max * 1.1)
 			else:
 				self.first_plotted_ratio_histogram.GetYaxis().SetRangeUser(plotData.plotdict["y_ratio_lims"][0],
-					                                                       plotData.plotdict["y_ratio_lims"][1])
+				                                                           plotData.plotdict["y_ratio_lims"][1])
+				self.first_plotted_ratio_histogram.GetYaxis().SetLimits(plotData.plotdict["y_ratio_lims"][0],
+				                                                        plotData.plotdict["y_ratio_lims"][1])
 		if plotData.plotdict["z_lims"] == None:
 			self.first_plotted_histogram.GetZaxis().SetRangeUser(self.z_min,
 			                                                     self.z_max)
+			self.first_plotted_histogram.GetZaxis().SetLimits(self.z_min,
+			                                                  self.z_max)
 		else:
 			self.first_plotted_histogram.GetZaxis().SetRangeUser(plotData.plotdict["z_lims"][0],
 			                                                     plotData.plotdict["z_lims"][1])
+			self.first_plotted_histogram.GetZaxis().SetLimits(plotData.plotdict["z_lims"][0],
+			                                                  plotData.plotdict["z_lims"][1])
 		
 		if (plotData.plotdict["ratio"] == True):
 			self.first_plotted_histogram.GetXaxis().SetLabelSize(0)
@@ -333,6 +353,19 @@ class PlotRoot(plotbase.PlotBase):
 			self.first_plotted_ratio_histogram.GetYaxis().SetTitleOffset(self.first_plotted_ratio_histogram.GetYaxis().GetTitleOffset() * self.plot_ratio_slider_y)
 			
 			self.first_plotted_ratio_histogram.GetYaxis().SetNdivisions(5, 0, 0)
+		
+		# redraw axes only and update the canvas
+		self.plot_pad.cd()
+		self.first_plotted_histogram.Draw("AXIS SAME")
+		self.plot_pad.Update()
+		
+		if not self.ratio_pad is None:
+			self.ratio_pad.cd()
+			if not self.first_plotted_ratio_histogram is None:
+				self.first_plotted_ratio_histogram.Draw("AXIS SAME")
+			self.ratio_pad.Update()
+		
+		self.canvas.Update()
 			
 		
 	def add_grid(self, plotData):
