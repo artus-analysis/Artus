@@ -40,7 +40,9 @@ class PlotBase(processor.Processor):
 		                                   help="Whitelist of (regexp) nick names for objects to be plotted.")
 		self.plotting_options.add_argument("--nicks-blacklist", nargs="+", default=["noplot"],
 		                                   help="Blacklist of (regexp) nick names for objects to be excluded from plotting. [Default: %(default)s]")
-		
+		self.plotting_options.add_argument("--subplot-nicks", nargs="+", default=[],
+		                                   help="If you want to plot other histograms in the subplot than (or additionally to) the ratio, you can give the \
+		                                   nicks here. Formatting options are still the --ratio-... arguments [Default: %(default)s]")
 		# axis settings
 		self.axis_options = parser.add_argument_group("Axis options")
 		self.axis_options.add_argument("--x-lims", type=float, nargs=2,
@@ -180,20 +182,25 @@ class PlotBase(processor.Processor):
 		self.select_histograms(plotData)
 		
 		# prepare nick names for ratio subplot
-		if plotData.plotdict["ratio_num"] == None: plotData.plotdict["ratio_num"] = [plotData.plotdict["nicks"][0]]
-		if plotData.plotdict["ratio_denom"] == None: plotData.plotdict["ratio_denom"] = [" ".join(plotData.plotdict["nicks"][1:])]
-		problems_with_ratio_nicks = False
-		for ratio_nicks_key in ["ratio_num", "ratio_denom"]:
-			plotData.plotdict[ratio_nicks_key] = [nicks.split() for nicks in plotData.plotdict[ratio_nicks_key]]
-			for nicks in plotData.plotdict[ratio_nicks_key]:
-				for nick in nicks:
-					if nick not in plotData.plotdict["nicks"]:
-						log.warning("Nick name \"%s\" of argument --%s does not exist in argument --nicks!" % (nick, ratio_nicks_key.replace("_", "-")))
-						problems_with_ratio_nicks = True
-		if problems_with_ratio_nicks:
-			log.warning("Continue without ratio subplot!")
-			plotData.plotdict["ratio"] = False
-		self.prepare_list_args(plotData, ["ratio_num", "ratio_denom", "ratio_colors", "ratio_labels", "ratio_markers", "ratio_x_errors", "ratio_y_errors", "ratio_line_styles"])
+		if plotData.plotdict["ratio"]:
+			if plotData.plotdict["ratio_num"] == None: plotData.plotdict["ratio_num"] = [plotData.plotdict["nicks"][0]]
+			if plotData.plotdict["ratio_denom"] == None: plotData.plotdict["ratio_denom"] = [" ".join(plotData.plotdict["nicks"][1:])]
+			problems_with_ratio_nicks = False
+			for ratio_nicks_key in ["ratio_num", "ratio_denom"]:
+				plotData.plotdict[ratio_nicks_key] = [nicks.split() for nicks in plotData.plotdict[ratio_nicks_key]]
+				for nicks in plotData.plotdict[ratio_nicks_key]:
+					for nick in nicks:
+						if nick not in plotData.plotdict["nicks"]:
+							log.warning("Nick name \"%s\" of argument --%s does not exist in argument --nicks!" % (nick, ratio_nicks_key.replace("_", "-")))
+							problems_with_ratio_nicks = True
+			if problems_with_ratio_nicks:
+				log.warning("Continue without ratio subplot!")
+				plotData.plotdict["ratio"] = False
+			#self.prepare_list_args(plotData, ["ratio_num", "ratio_denom", "ratio_colors", "ratio_labels", "ratio_markers", "ratio_x_errors", "ratio_y_errors", "ratio_line_styles"])
+			self.prepare_list_args(plotData, ["ratio_colors", "ratio_labels", "ratio_markers", "ratio_x_errors", "ratio_y_errors", "ratio_line_styles"], n_items=(len(plotData.plotdict["subplot_nicks"])+len(plotData.plotdict["ratio_denom"])))
+		if plotData.plotdict["subplot_nicks"] != []:
+			self.prepare_list_args(plotData, ["subplot_nicks", "ratio_colors", "ratio_labels", "ratio_markers", "ratio_x_errors", "ratio_y_errors", "ratio_line_styles"])
+
 		
 		# construct labels from x/y/z expressions if not specified by user
 		for labelKey, expressionKey in zip(["x_label", "y_label", "z_label"],
