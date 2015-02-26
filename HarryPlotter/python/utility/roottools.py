@@ -19,6 +19,9 @@ import re
 import ROOT
 ROOT.gEnv.SetValue("TFile.AsyncPrefetching", 1)
 
+import Artus.Utility.geometry as geometry
+import Artus.Utility.tools as tools
+
 
 class RootTools(object):
 	def __init__(self):
@@ -426,6 +429,27 @@ class RootTools(object):
 			else:
 				histogram_sum.Add(histogram)
 		return histogram_sum
+
+
+	@staticmethod
+	def merge_graphs(graphs, allow_reversed=False, allow_shuffle=False):
+		"""
+		Merge graphs
+		"""
+		points = []
+		for graph in graphs:
+			x_values = graph.GetX()
+			y_values = graph.GetY()
+			points.append([[x_values[index], y_values[index]] for index in xrange(graph.GetN())])
+		
+		if allow_shuffle:
+			points = geometry.order_lists_for_smallest_distances(points, allow_reversed=allow_reversed)
+		
+		merged_x_values, merged_y_values = zip(*tools.flattenList(points))
+		merged_x_values = array.array("d", merged_x_values)
+		merged_y_values = array.array("d", merged_y_values)
+		graph = ROOT.TGraph(len(merged_x_values), merged_x_values, merged_y_values)
+		return graph
 	
 	@staticmethod
 	def write_object(root_file, root_object, path):
