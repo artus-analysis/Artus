@@ -211,6 +211,11 @@ class PlotBase(processor.Processor):
 				else:
 					plotData.plotdict[labelKey] = reduce(lambda a, b: "%s, %s" % (str(a), str(b)), set(plotData.plotdict[expressionKey]))
 			if plotData.plotdict[labelKey] == None: plotData.plotdict[labelKey] = ""
+			# if y/z-expressions exist, we dont want the axis to be labelled "Events"
+			if (list(set(plotData.plotdict[expressionKey])) != [None]
+						and len(list(set(plotData.plotdict[expressionKey]))) == 1
+						and plotData.plotdict[labelKey] == "Events"):
+				plotData.plotdict[labelKey] = list(set(plotData.plotdict[expressionKey]))[0]
 
 		# formatting options
 		if plotData.plotdict["labels"] == None or all([i == None for i in plotData.plotdict["labels"]]):
