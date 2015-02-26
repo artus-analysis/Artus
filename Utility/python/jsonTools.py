@@ -337,7 +337,7 @@ def print_comments_from_json_files(json_dir, comment_key):
 
 	files = [os.path.join(json_dir, f) for f in os.listdir(json_dir) if f.endswith(".json")]
 
-	log.info(tools.get_colored_string("json files:", 'cyan'))
+	log.info(tools.get_colored_string("json files: ({})".format(json_dir), 'cyan'))
 	for f in files:
 		d = JsonDict(f).doIncludes().doComments()
 		string = "\t" + tools.get_colored_string(os.path.basename(f), "yellow")
