@@ -281,10 +281,10 @@ class PlotMpl(plotbase.PlotBase):
 				if not (plotData.plotdict["ratio"] or (plotData.plotdict["subplot_nicks"] != [])):
 					cb = self.fig.colorbar(self.image, ax=ax)
 				if plotData.plotdict["z_label"]:
-					cb.set_label(plotData.plotdict["z_label"])
+					cb.set_label(self.nicelabels.get_nice_label(plotData.plotdict["z_label"]))
 			elif self.plot_dimension == 3:
 				if plotData.plotdict["z_label"]:
-					ax.set_zlabel(plotData.plotdict["z_label"])
+					ax.set_zlabel(self.nicelabels.get_nice_label(plotData.plotdict["z_label"]))
 
 
 	def add_labels(self, plotData):
