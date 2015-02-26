@@ -219,10 +219,12 @@ class RootTools(object):
 				binning = binning + ")"
 			if binning == "()":
 				binning == ""
-		
+			
 			if any([bin_edges != None for bin_edges in [self.x_bin_edges[histo_type], self.y_bin_edges[histo_type], self.z_bin_edges[histo_type]]]):
-				if any([bin_edges == None and expression != None for (bin_edges, expression) in zip([self.x_bin_edges[histo_type], self.y_bin_edges[histo_type], self.z_bin_edges[histo_type]],
-		                                                                        [x_expression, y_expression, z_expression])]) and "prof" not in option:
+				if any([bin_edges == None and expression != None for (bin_edges, expression) in zip(
+						[self.x_bin_edges[histo_type], self.y_bin_edges[histo_type], self.z_bin_edges[histo_type]],
+						[x_expression, y_expression, z_expression])]
+				) and "prof" not in option.lower():
 					log.warning("Bin edges need to be specified either for no or for all axes!")
 				else:
 					if z_expression != None:
@@ -230,22 +232,36 @@ class RootTools(object):
 							root_histogram = ROOT.TProfile2D(name, "",
 							                                 len(self.x_bin_edges[histo_type])-1, self.x_bin_edges[histo_type],
 							                                 len(self.y_bin_edges[histo_type])-1, self.y_bin_edges[histo_type])
+							log.debug("TProfile2D(\"" + name + ", \"\", " +
+							          str(len(self.x_bin_edges[histo_type])-1) + ", " + str(self.x_bin_edges[histo_type]) + ", " +
+							          str(len(self.y_bin_edges[histo_type])-1) + ", " + str(self.y_bin_edges[histo_type]) + ")")
 						else:
 							root_histogram = ROOT.TH3F(name, "",
 							                           len(self.x_bin_edges[histo_type])-1, self.x_bin_edges[histo_type],
 							                           len(self.y_bin_edges[histo_type])-1, self.y_bin_edges[histo_type],
 							                           len(self.z_bin_edges[histo_type])-1, self.z_bin_edges[histo_type])
+							log.debug("TH3F(\"" + name + ", \"\", " +
+							          str(len(self.x_bin_edges[histo_type])-1) + ", " + str(self.x_bin_edges[histo_type]) + ", " +
+							          str(len(self.y_bin_edges[histo_type])-1) + ", " + str(self.y_bin_edges[histo_type]) + ", " +
+							          str(len(self.z_bin_edges[histo_type])-1) + ", " + str(self.z_bin_edges[histo_type]) + ")")
 					elif y_expression != None:
 						if "prof" in option.lower():
 							root_histogram = ROOT.TProfile(name, "",
 							                               len(self.x_bin_edges[histo_type])-1, self.x_bin_edges[histo_type])
+							log.debug("TProfile(\"" + name + ", \"\", " +
+							          str(len(self.x_bin_edges[histo_type])-1) + ", " + str(self.x_bin_edges[histo_type]) + ")")
 						else:
 							root_histogram = ROOT.TH2F(name, "",
 							                           len(self.x_bin_edges[histo_type])-1, self.x_bin_edges[histo_type],
 							                           len(self.y_bin_edges[histo_type])-1, self.y_bin_edges[histo_type])
+							log.debug("TH2F(\"" + name + ", \"\", " +
+							          str(len(self.x_bin_edges[histo_type])-1) + ", " + str(self.x_bin_edges[histo_type]) + ", " +
+							          str(len(self.y_bin_edges[histo_type])-1) + ", " + str(self.y_bin_edges[histo_type]) + ")")
 					else:
 						root_histogram = ROOT.TH1F(name, "",
 						                           len(self.x_bin_edges[histo_type])-1, self.x_bin_edges[histo_type])
+						log.debug("TH1F(\"" + name + ", \"\", " +
+						          str(len(self.x_bin_edges[histo_type])-1) + ", " + str(self.x_bin_edges[histo_type]) + ")")
 		
 		# prepare TChain
 		if isinstance(root_file_names, basestring):
@@ -270,11 +286,9 @@ class RootTools(object):
 		tree.AddBranchToCache("*", True)
 		
 		# draw histogram
-		log.debug("Creating histogram %s of quantity %s with weights %s" % (
-			name, variable_expression, weight_selection
-		))
 		if root_histogram == None:
 			draw_option = option.replace("TGraphAsymmErrorsX", "").replace("TGraphAsymmErrorsY", "").replace("TGraphErrors", "").replace("TGraph", "")
+			log.debug("TTree::Draw(\"" + variable_expression + ">>" + name + binning + "\", \"" + str(weight_selection) + "\", \"" + draw_option + " GOFF\")")
 			tree.Draw(variable_expression + ">>" + name + binning, str(weight_selection), draw_option + " GOFF")
 			if "TGraphAsymmErrors" in option:
 				n_points = tree.GetSelectedRows()
@@ -292,6 +306,7 @@ class RootTools(object):
 			else:
 				root_histogram = ROOT.gDirectory.Get(name)
 		else:
+			log.debug("TTree::Project(\"" + name + "\", \"" + variable_expression + "\", \"" + str(weight_selection) + "\", \"" + option + "\" GOFF\")")
 			tree.Project(name, variable_expression, str(weight_selection), option + " GOFF")
 			root_histogram = ROOT.gDirectory.Get(name)
 		if root_histogram == None:
@@ -436,6 +451,9 @@ class RootTools(object):
 		"""
 		Merge graphs
 		"""
+		if len(graphs) == 0:
+			return None
+		
 		points = []
 		for graph in graphs:
 			x_values = graph.GetX()
