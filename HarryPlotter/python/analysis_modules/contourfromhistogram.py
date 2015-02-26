@@ -8,12 +8,13 @@ import ROOT
 
 import array
 import hashlib
+import sys
 
-import Artus.HarryPlotter.analysisbase as analysisbase
+import Artus.HarryPlotter.analysis_modules.histogrammanipulationbase as histogrammanipulationbase
 import Artus.HarryPlotter.utility.roottools as roottools
 
 
-class ContourFromHistogram(analysisbase.AnalysisBase):
+class ContourFromHistogram(histogrammanipulationbase.HistogramManipulationBase):
 	""" Retrieve contour graphs from 2D histograms."""
 
 	def modify_argument_parser(self, parser, args):
@@ -52,6 +53,8 @@ class ContourFromHistogram(analysisbase.AnalysisBase):
 			contour_graph_nicks = (contour_graph_nicks+([contour_graph_nicks[0]]*len(contour_thresholds)))[:len(contour_thresholds)]
 			contour_graph_nicks = ["%s_%d" % (n, i) if exapand_all or (i > 0 and n == contour_graph_nicks[0]) else n for i, n in enumerate(contour_graph_nicks)]
 			plotData.plotdict["contour_graph_nicks"][index] = contour_graph_nicks
+		
+		self.whitelist = plotData.plotdict["2d_histogram_nicks"]
 
 	def run(self, plotData=None):
 		super(ContourFromHistogram, self).run(plotData)
@@ -74,14 +77,18 @@ class ContourFromHistogram(analysisbase.AnalysisBase):
 				contours_list_for_threshold = contours_list.At(index)
 				
 				n_graphs = contours_list_for_threshold.GetSize()
+				if n_graphs == 0:
+					continue
+				
 				if (not merge_contours) or (n_graphs == 1):
 					for graph_index in xrange(n_graphs):
+						tmp_contour_graph_nick = contour_graph_nick
 						if n_graphs > 1:
 							tmp_contour_graph_nick = "%s_%d" % (contour_graph_nick, graph_index)
 						if not tmp_contour_graph_nick in plotData.plotdict["nicks"]:
 							plotData.plotdict["nicks"].insert(plotData.plotdict["nicks"].index(histogram_nick), tmp_contour_graph_nick)
 					
-						graph = contours_list_for_threshold.At(graph_index)
+						graph = contours_list_for_threshold.At(graph_index).Clone("contour_"+hashlib.md5(histogram.GetName()+str(graph_index)).hexdigest())
 						graph.SetTitle("")
 						plotData.plotdict["root_objects"][tmp_contour_graph_nick] = graph
 						log.debug("Retrived contour \"%s\" for threshold %f from histogram \"%s\"." % (tmp_contour_graph_nick, contour_threshold, histogram_nick))
@@ -100,7 +107,13 @@ class ContourFromHistogram(analysisbase.AnalysisBase):
 							allow_reversed=True, allow_shuffle=True
 					)
 					graph.SetTitle("")
+					graph.SetName("contour_"+hashlib.md5(histogram.GetName()).hexdigest())
 					plotData.plotdict["root_objects"][contour_graph_nick] = graph
 					plotData.plotdict["nicks"].insert(plotData.plotdict["nicks"].index(histogram_nick), contour_graph_nick)
 					log.debug("Retrived contour \"%s\" for threshold %f from histogram \"%s\"." % (contour_graph_nick, contour_threshold, histogram_nick))
+
+
+	def _manipulate_bin(self, histogram, global_bin):
+		if histogram.GetBinContent(global_bin) <= 0.0:
+			histogram.SetBinContent(global_bin, sys.float_info.max)
 
