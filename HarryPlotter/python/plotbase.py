@@ -95,19 +95,19 @@ class PlotBase(processor.Processor):
 		self.formatting_options = parser.add_argument_group("Formatting options")
 		self.formatting_options.add_argument("-C", "--colors", type=str, nargs="+",
 		                                     help="Colors for the plots.")
-		self.formatting_options.add_argument("--ratio-colors", type=str, nargs="+",
-		                                     help="Colors for the ratio subplots.")
+		self.formatting_options.add_argument("--ratio-colors", type=str, nargs="+", default=[None],
+		                                     help="Colors for the ratio subplots. [Default: %(default)s]")
 		self.formatting_options.add_argument("-L", "--labels", type=str, nargs="+",
 		                                     help="Labels for the plots.")
-		self.formatting_options.add_argument("--ratio-labels", type=str, nargs="+",
-		                                     help="Labels for the ratio subplots.")
+		self.formatting_options.add_argument("--ratio-labels", type=str, nargs="+", default=[None],
+		                                     help="Labels for the ratio subplots. [Default: %(default)s]")
 		self.formatting_options.add_argument("-m", "--markers", type=str, nargs="+",
 		                                     help="Style for the plots.")
-		self.formatting_options.add_argument("--ratio-markers", type=str, nargs="+",
-		                                     help="Style for the ratio subplots.")
+		self.formatting_options.add_argument("--ratio-markers", type=str, nargs="+", default=[None],
+		                                     help="Style for the ratio subplots. [Default: %(default)s]")
 		self.formatting_options.add_argument("--line-styles", nargs="+",
                                              help="Line style of plots line. [Default: %(default)s]")
-		self.formatting_options.add_argument("--ratio-line-styles", nargs="+",
+		self.formatting_options.add_argument("--ratio-line-styles", nargs="+", default=[None],
                                              help="Line styles for the ratio subplots. [Default: %(default)s]")
 		self.formatting_options.add_argument("--x-errors", type='bool', nargs="+",
 		                                     help="Show x errors for the nicks. [Default: True for first plot, False otherwise]")
