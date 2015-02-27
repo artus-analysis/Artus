@@ -32,7 +32,7 @@ class ContourFromHistogram(histogrammanipulationbase.HistogramManipulationBase):
 		self.contour_options.add_argument(
 				"--contour-modes", type=str, nargs="+", default=["histogram"],
 				choices=["mergegraphs", "singlegraphs", "histogram"],
-				help="Modes. \"mergegraphs\" merges all TGraphs for one contour into a single graph, \"singlegraphs\" preserves the single graphs with individual nicks and \"histogram\" only sets the contours of the histogram." [Default: %(default)s]"
+				help="Modes. \"mergegraphs\" merges all TGraphs for one contour into a single graph, \"singlegraphs\" preserves the single graphs with individual nicks and \"histogram\" only sets the contours of the histogram. [Default: %(default)s]"
 		)
 		self.contour_options.add_argument(
 				"--contour-graph-nicks", type=str, nargs="+", default=[None],
