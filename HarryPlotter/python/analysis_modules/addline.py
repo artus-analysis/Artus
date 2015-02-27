@@ -77,7 +77,7 @@ class AddLine(analysisbase.AnalysisBase):
 				graph = ROOT.TGraph(len(x_values), x_values, y_values)
 			else:
 				z_values = array.array("d", z_lines)
-				graph = ROOT.TGraph(len(x_values), x_values, y_values, z_values)
+				graph = ROOT.TGraph2D(len(x_values), x_values, y_values, z_values)
 			graph.SetName("graph_" + hashlib.md5("_".join([str(item) for item in [x_lines, y_lines, z_lines, line_nick]])).hexdigest())
 			graph.SetTitle("")
 			graph.SetDrawOption("L")
