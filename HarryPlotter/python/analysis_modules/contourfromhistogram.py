@@ -114,6 +114,5 @@ class ContourFromHistogram(histogrammanipulationbase.HistogramManipulationBase):
 
 
 	def _manipulate_bin(self, histogram, global_bin):
-		if histogram.GetBinContent(global_bin) <= 0.0:
-			histogram.SetBinContent(global_bin, sys.float_info.max)
+		pass
 
