@@ -73,7 +73,7 @@ def get_environment_variable(variable_name):
 		value = os.environ[variable_name]
 		return value
 	except KeyError:
-		log.critical("'{}' not in environment variables".format(variable_name))
+		log.critical("'{}' not in environment variables. Maybe you forgot to source an ini file?".format(variable_name))
 		sys.exit(1)
 
 def get_colored_string(string, color='green'):
