@@ -120,7 +120,9 @@ class PlotRoot(plotbase.PlotBase):
 		super(PlotRoot, self).create_canvas(plotData)
 		
 		if self.canvas is None:
+			# TODO: Creating the canvas like this leads to segmentation faults
 			self.canvas = ROOT.TCanvas("canvas", "")
+			self.canvas.Draw()
 
 		#Modify right side margin for 2d-plots
 		if not isinstance(plotData.plotdict["root_objects"][plotData.plotdict["nicks"][0]], ROOT.TGraph):
@@ -220,7 +222,7 @@ class PlotRoot(plotbase.PlotBase):
 			root_object = plotData.plotdict["root_objects"][nick]
 			
 			draw_option = marker
-			if ((not subplot) and (index_plot == 0)) or (subplot and (index_subplot == 0)):
+			if ((not subplot) and (index_plot > 0)) or (subplot and (index_subplot > 0)):
 				draw_option += " SAME"
 			
 			pad.cd()
