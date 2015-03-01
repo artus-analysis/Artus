@@ -94,6 +94,12 @@ the transeverse momentum into a histogram.
  [ ConsumerPlotPt ]		[ ConsumerPlotPt ]
 ````
 
+The Artus data flow:
+![Artus data flow](https://github.com/artus-analysis/Artus/blob/master/Core/doc/artus_dataflow.svg "The Artus data flow")
+
+The Artus pipeline structure:
+![Artus pipeline structure](https://github.com/artus-analysis/Artus/blob/master/Core/doc/artus_pipelines.svg "The Artus pipeline structure")
+
 
 Example
 -------
