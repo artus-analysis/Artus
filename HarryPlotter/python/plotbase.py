@@ -38,9 +38,9 @@ class PlotBase(processor.Processor):
 		self.plotting_options.add_argument("--ratio-denom", nargs="+",
 		                                   help="Nick names for denominators of ratio. Multiple nicks in one argument (ws-separated) are summed. [Default: all but first nick]")
 		self.plotting_options.add_argument("--nicks-whitelist", nargs="+",
-		                                   help="Whitelist of (regexp) nick names for objects to be plotted.")
+		                                   help="Whitelist of (regexp) nick names for objects to be plotted. This also allows for redefining the order of nicks for the plotting. Use \"^nick$\" for requirering exact matches.")
 		self.plotting_options.add_argument("--nicks-blacklist", nargs="+", default=["noplot"],
-		                                   help="Blacklist of (regexp) nick names for objects to be excluded from plotting. [Default: %(default)s]")
+		                                   help="Blacklist of (regexp) nick names for objects to be excluded from plotting. Use \"^nick$\" for requirering exact matches. [Default: %(default)s]")
 		self.plotting_options.add_argument("--subplot-nicks", nargs="+", default=[],
 		                                   help="If you want to plot other histograms in the subplot than (or additionally to) the ratio, you can give the \
 		                                   nicks here. Formatting options are still the --ratio-... arguments [Default: %(default)s]")
@@ -288,31 +288,27 @@ class PlotBase(processor.Processor):
 		self.plot_end(plotData)
 
 	def select_histograms(self, plotData):
-		nicks_to_keep = []
+		sorted_nicks_to_keep = []
 		
-		# handle black lists
+		# handle white list, which has HIGHER priority than the black list
+		for white_nick in plotData.plotdict["nicks_whitelist"]:
+			for nick in plotData.plotdict["nicks"]:
+				if (re.search(white_nick, nick)) != None and (nick not in sorted_nicks_to_keep):
+					sorted_nicks_to_keep.append(nick)
+		
+		# handle black list, which has LOWER priority than the white list
 		for nick in plotData.plotdict["nicks"]:
-			keep = True
-			for black_nick in plotData.plotdict["nicks_blacklist"]:
-				if re.search(black_nick, nick) != None:
-					keep = False
-					break
-			
-			if keep:
-				# handle white lists
-				keep = (len(plotData.plotdict["nicks_whitelist"]) == 0)
-				for white_nick in plotData.plotdict["nicks_whitelist"]:
-					if re.search(white_nick, nick) != None:
-						keep = True
-						break
-			
-			if keep:
-				nicks_to_keep.append(nick)
-			else:
-				log.debug("Exclude object with nick \"%s\" from being plotted." % nick)
+			if nick not in sorted_nicks_to_keep:
+				keep = True
+				for black_nick in plotData.plotdict["nicks_blacklist"]:
+					if re.search(black_nick, nick) != None:
+						keep = False
+						log.debug("Exclude object with nick \"%s\" from being plotted." % nick)
+				if keep:
+					sorted_nicks_to_keep.append(nick)
 		
-		# change only the list of nicks
-		plotData.plotdict["nicks"] = nicks_to_keep
+		plotData.plotdict["nicks"] = sorted_nicks_to_keep
+		log.debug("Final order of object nicks for plotting: %s" % ", ".join(plotData.plotdict["nicks"]))
 
 	def set_style(self, plotData):
 		pass
