@@ -119,8 +119,8 @@ class PlotRoot(plotbase.PlotBase):
 	def create_canvas(self, plotData):
 		super(PlotRoot, self).create_canvas(plotData)
 		
-		if self.canvas == None:
-			self.canvas = ROOT.TCanvas()
+		if self.canvas is None:
+			self.canvas = ROOT.TCanvas("canvas", "")
 
 		#Modify right side margin for 2d-plots
 		if not isinstance(plotData.plotdict["root_objects"][plotData.plotdict["nicks"][0]], ROOT.TGraph):
@@ -130,11 +130,11 @@ class PlotRoot(plotbase.PlotBase):
 		if len(plotData.plotdict["subplot_nicks"]) > 0:
 			self.plot_ratio_slider_y = 0.35
 			self.canvas.cd()
-			if self.plot_pad == None:
+			if self.plot_pad is None:
 				self.plot_pad = ROOT.TPad("plot_pad", "", 0.0, self.plot_ratio_slider_y, 1.0, 1.0)
 				self.plot_pad.SetNumber(1)
 				self.plot_pad.Draw()
-			if self.subplot_pad == None:
+			if self.subplot_pad is None:
 				self.subplot_pad = ROOT.TPad("subplot_pad", "", 0.0, 0.0, 1.0, self.plot_ratio_slider_y)
 				self.subplot_pad.SetNumber(2)
 				self.subplot_pad.Draw()
@@ -402,9 +402,9 @@ class PlotRoot(plotbase.PlotBase):
 		super(PlotRoot, self).save_canvas(plotData)
 		
 		self.canvas.RedrawAxis()
-		if self.plot_pad:
+		if not self.plot_pad is None:
 			self.plot_pad.RedrawAxis()
-		if self.subplot_pad:
+		if not self.subplot_pad is None:
 			self.subplot_pad.RedrawAxis()
 		
 		for output_filename in plotData.plotdict["output_filenames"]:
