@@ -380,11 +380,12 @@ class PlotRoot(plotbase.PlotBase):
 		self.legend = None
 		if plotData.plotdict["legend"] != None:
 			self.legend = ROOT.TLegend(plotData.plotdict["legend"][0], plotData.plotdict["legend"][1], 0.9, 0.9);
-			for plot_index in self.plot_sequence_indices[::-1]:
-				root_object = plotData.plotdict["root_objects"][plotData.plotdict["nicks"][plot_index]]
-				marker = plotData.plotdict["markers"][plot_index]
-				label = plotData.plotdict["labels"][plot_index]
-				if label != None:
+			for nick, marker, label in zip(plotData.plotdict["nicks"], plotData.plotdict["markers"], plotData.plotdict["labels"]):
+				if nick in plotData.plotdict["subplot_nicks"]:
+					# TODO handle possible subplot legends
+					continue
+				root_object = plotData.plotdict["root_objects"][nick]
+				if (not label is None) and (label != ""):
 					self.legend.AddEntry(root_object, label, "LP" if "e" in marker.lower() else "F")
 			self.legend.Draw()
 	
