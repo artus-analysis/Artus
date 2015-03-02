@@ -447,6 +447,50 @@ class RootTools(object):
 
 
 	@staticmethod
+	def to_histogram(root_object):
+		if isinstance(root_object, ROOT.TH1):
+			return root_object
+		elif isinstance(root_object, ROOT.TGraph):
+			if isinstance(root_object, ROOT.TGraph2D):
+				log.warning("Conversion of objects of type %s into histograms is not yet implemented!" % str(type(root_object)))
+				return root_object
+			else:
+				x_values = root_object.GetX()
+				x_values = [x_values[index] for index in xrange(root_object.GetN())]
+				
+				# require x-values to be sorted
+				# TODO: resorting the graph points currently not implemented
+				assert all([x_low < x_high for x_low, x_high in zip(x_values[:-1], x_values[1:])])
+				
+				# determining the bin edges for the histogram
+				# TODO: determining the bin edges currently only work properly for equidistant x-values
+				bin_edges = [(x_low+x_high)/2.0 for x_low, x_high in zip(x_values[:-1], x_values[1:])]
+				bin_edges.insert(0, x_values[0] - ((bin_edges[0]-x_values[0]) / 2.0))
+				bin_edges.append(x_values[-1] + ((x_values[-1]-bin_edges[-1]) / 2.0))
+				
+				y_values = root_object.GetY()
+				y_values = [y_values[index] for index in xrange(root_object.GetN())]
+				
+				y_errors = [0.0] * root_object.GetN()
+				if isinstance(root_object, ROOT.TGraphAsymmErrors):
+					y_errors_high = root_object.GetEYhigh()
+					y_errors_low = root_object.GetEYlow()
+					y_errors = [(y_errors_high[index]+y_errors_low[index])/2.0 for index in xrange(root_object.GetN())]
+				elif isinstance(root_object, ROOT.TGraphErrors):
+					y_errors = root_object.GetEY()
+					y_errors = [y_errors[index] for index in xrange(root_object.GetN())]
+				
+				root_histogram = ROOT.TH1F("histogram_"+root_object.GetName(), root_object.GetTitle(), len(bin_edges)-1, array.array("d", bin_edges))
+				for index, (y_value, y_error) in enumerate(zip(y_values, y_errors)):
+					root_histogram.SetBinContent(index+1, y_value)
+					root_histogram.SetBinError(index+1, y_error)
+				return root_histogram
+		else:
+			log.warning("Conversion of objects of type %s into histograms is not yet implemented!" % str(type(root_object)))
+			return root_object
+
+
+	@staticmethod
 	def merge_graphs(graphs, allow_reversed=False, allow_shuffle=False):
 		"""
 		Merge graphs
