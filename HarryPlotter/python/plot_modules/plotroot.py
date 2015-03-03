@@ -240,16 +240,26 @@ class PlotRoot(plotbase.PlotBase):
 				elif (not subplot) and (index_plot == 0):
 					self.first_plot_histogram = axes_histogram
 				
+				dimension = 2
+				if isinstance(axes_histogram, ROOT.TH1):
+					dimension = axes_histogram.GetDimension()
+				elif isinstance(axes_histogram, ROOT.TGraph2D):
+					dimension = 3
+				elif isinstance(axes_histogram, ROOT.TGraph):
+					dimension = 2
+				else:
+					log.warning("Retrieving the dimension of the plot is not yet implemented for objects of type %s!. Assume 2D plot." % str(type(axes_histogram)))
+				
 				# trace min. and max. values of axes
 				if axes_histogram.GetXaxis().GetXmin() < self.x_min: self.x_min = axes_histogram.GetXaxis().GetXmin()
 				if axes_histogram.GetXaxis().GetXmax() > self.x_max: self.x_max = axes_histogram.GetXaxis().GetXmax()
-				if axes_histogram.GetDimension() > 1:
+				if dimension > 1:
 					if axes_histogram.GetYaxis().GetXmin() < y_min: y_min = axes_histogram.GetYaxis().GetXmin()
 					if axes_histogram.GetYaxis().GetXmax() > y_max: y_max = axes_histogram.GetYaxis().GetXmax()
 				else:
 					if axes_histogram.GetMinimum() < y_min: y_min = axes_histogram.GetMinimum()
 					if axes_histogram.GetMaximum() > y_max: y_max = axes_histogram.GetMaximum()
-				if axes_histogram.GetDimension() > 2:
+				if dimension > 2:
 					if axes_histogram.GetZaxis().GetXmin() < self.z_min: self.z_min = axes_histogram.GetZaxis().GetXmin()
 					if axes_histogram.GetZaxis().GetXmax() > self.z_max: self.z_max = axes_histogram.GetZaxis().GetXmax()
 				else:
