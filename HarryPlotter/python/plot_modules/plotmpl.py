@@ -28,8 +28,20 @@ class PlotMpl(plotbase.PlotBase):
 	def __init__(self):
 		super(PlotMpl, self).__init__()
 		self.mpl_version = int(matplotlib.__version__.replace(".", ""))
+		self.default_bar_colors = [
+			(0.21568627450980393, 0.49411764705882355, 0.7215686274509804),  # blue
+			(0.30196078431372547, 0.6862745098039216, 0.2901960784313726),  # green
+			(0.596078431372549, 0.3058823529411765, 0.6392156862745098), # violet
+			(1.0, 0.4980392156862745, 0.0),  # orange
+			(1.0, 1.0, 0.2),  # yellow
+			(0.6509803921568628, 0.33725490196078434, 0.1568627450980392),  # brown
+			(0.9686274509803922, 0.5058823529411764, 0.7490196078431373),  # pink
+			(0.6, 0.6, 0.6)  # grey
+		]
+		self.default_marker_colors = ['black', 'red', 'blue', 'green']
 		self.set_matplotlib_defaults()
 		self.nicelabels = labels.LabelsDict()
+
 
 	def modify_argument_parser(self, parser, args):
 		super(PlotMpl, self).modify_argument_parser(parser, args)
@@ -51,17 +63,16 @@ class PlotMpl(plotbase.PlotBase):
 		super(PlotMpl, self).prepare_args(parser, plotData)
 
 		self.prepare_list_args(plotData, ["nicks", "step", "zorder", "edgecolors"])
-		
-		# Set default values for colors if not provided
-		default_colorcycle = cycle(matplotlib.rcParams['axes.color_cycle'])
-		for index, color in enumerate(plotData.plotdict["colors"]):
-			if color is None:
-				plotData.plotdict["colors"][index] = next(default_colorcycle)
+
+		# set default colors depending whether there are markers or bars
+		i_marker, i_bar = 0, 0
+		for marker_index, marker in enumerate(plotData.plotdict['markers']):
+			if marker in ['bar', 'fill']:
+				plotData.plotdict['colors'][marker_index] = self.default_bar_colors[i_bar % len(self.default_bar_colors)]
+				i_bar += 1
 			else:
-				plotData.plotdict["colors"][index] = color
-		# for index, edgecolor in enumerate(plotData.plotdict["edgecolors"]):
-		# 	if edgecolor is None:
-		# 		plotData.plotdict["edgecolors"][index] = 'black'
+				plotData.plotdict['colors'][marker_index] = self.default_marker_colors[i_marker % len(self.default_marker_colors)]
+				i_marker += 1
 
 		if plotData.plotdict['ratio'] or (plotData.plotdict['subplot_nicks'] != []):
 			self.set_default_ratio_colors(plotData)
@@ -381,15 +392,7 @@ class PlotMpl(plotbase.PlotBase):
 			matplotlib.rcParams['ytick.minor.width'] = 1.
 		matplotlib.rcParams['lines.markersize'] = 8
 		# default color cycle
-		matplotlib.rcParams['axes.color_cycle'] = [(0.0, 0.0, 0.0),
-		                                           (0.21568627450980393, 0.49411764705882355, 0.7215686274509804),
-		                                           (0.30196078431372547, 0.6862745098039216, 0.2901960784313726),
-		                                           (0.596078431372549, 0.3058823529411765, 0.6392156862745098),
-		                                           (1.0, 0.4980392156862745, 0.0),
-		                                           (1.0, 1.0, 0.2),
-		                                           (0.6509803921568628, 0.33725490196078434, 0.1568627450980392),
-		                                           (0.9686274509803922, 0.5058823529411764, 0.7490196078431373),
-		                                           (0.6, 0.6, 0.6)]
+		matplotlib.rcParams['axes.color_cycle'] = self.default_bar_colors
 		matplotlib.rcParams["axes.formatter.limits"] = [-5, 5]
 		# legend
 		matplotlib.rcParams['legend.numpoints'] = 1

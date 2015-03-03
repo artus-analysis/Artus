@@ -22,9 +22,9 @@ class InputFile(inputbase.InputBase):
 		super(InputFile, self).modify_argument_parser(parser, args)
 		
 		self.input_options.add_argument("-i", "--files", type=str, nargs="+",
-		                                 help="Input (root) file(s).")
+		                                help="Input (root) file(s).")
 		self.input_options.add_argument("-d", "--directories", type=str, nargs="+",
-		                                 help="Input directories, that are put before the values of the -i/--files option.")
+		                                help="Input directories, that are put before the values of the -i/--files option.")
 	
 	def prepare_args(self, parser, plotData):
 		super(InputFile, self).prepare_args(parser, plotData)
@@ -33,12 +33,13 @@ class InputFile(inputbase.InputBase):
 		
 		# prepare files
 		for index, (file_args, directory) in enumerate(zip(plotData.plotdict["files"], plotData.plotdict["directories"])):
+			paths_before_globbing = []
 			files = []
 			for file_arg in file_args.split():
-				tmp_file = os.path.join(directory, file_arg) if directory else file_arg
-				files.extend(glob.glob(tmp_file))
+				paths_before_globbing.append(os.path.join(directory, file_arg) if directory else file_arg)
+				files.extend(glob.glob(paths_before_globbing[-1]))
 			if len(files) == 0:
-				log.error("Input argument %d (%s) does not contain any existing files!" % (index, file_args))
+				log.error("Input argument %d (%s) does not contain any existing files!" % (index, ", ".join(paths_before_globbing)))
 				sys.exit(1)
 			plotData.plotdict["files"][index] = files
 	
