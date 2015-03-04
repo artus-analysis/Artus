@@ -65,8 +65,8 @@ class PlotBase(processor.Processor):
 		                               help="Lower and Upper limit for y-axis of a possible ratio subplot.")
 		self.axis_options.add_argument("--y-label", type=str, default="Events",
 		                               help="Y-axis label name. [Default: %(default)s]")
-		self.axis_options.add_argument("--y-ratio-label", type=str, default="Ratio",
-		                               help="Y-axis label name of a possible ratio subplot. [Default: %(default)s]")
+		self.axis_options.add_argument("--y-subplot-label", type=str, default="Ratio",
+		                               help="Y-axis label name of a possible subplot. [Default: %(default)s]")
 		self.axis_options.add_argument("--y-log", action="store_true", default=False,
 		                               help="Logarithmic y-axis.")
 		self.axis_options.add_argument("--y-ticks", type=float, nargs="+",

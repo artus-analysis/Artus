@@ -295,7 +295,7 @@ class PlotRoot(plotbase.PlotBase):
 		self.first_plot_histogram.GetZaxis().SetTitle(plotData.plotdict["z_label"])
 		if not self.first_subplot_histogram is None:
 			self.first_subplot_histogram.GetXaxis().SetTitle(plotData.plotdict["x_label"])
-			self.first_subplot_histogram.GetYaxis().SetTitle(plotData.plotdict["y_ratio_label"])
+			self.first_subplot_histogram.GetYaxis().SetTitle(plotData.plotdict["y_subplot_label"])
 	
 		# logaritmic axis
 		if plotData.plotdict["x_log"]: self.plot_pad.SetLogx()

@@ -269,7 +269,7 @@ class PlotMpl(plotbase.PlotBase):
 			# do special things for subplots
 			if plotData.plotdict["ratio"] or (plotData.plotdict["subplot_nicks"] != []):
 				self.ax2.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]),position=(1., 0.), va='top', ha='right')
-				self.ax2.set_ylabel(plotData.plotdict["y_ratio_label"])
+				self.ax2.set_ylabel(plotData.plotdict["y_subplot_label"])
 				self.ax2.grid(plotData.plotdict["ratio_grid"])
 				# Don't show ticklabels on main plot
 				ax.xaxis.set_ticklabels([])
