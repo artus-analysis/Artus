@@ -130,14 +130,14 @@ class PlotRoot(plotbase.PlotBase):
 				self.canvas.SetRightMargin(0.15)
 		
 		if len(plotData.plotdict["subplot_nicks"]) > 0:
-			self.plot_ratio_slider_y = 0.35
+			self.plot_subplot_slider_y = 0.35
 			self.canvas.cd()
 			if self.plot_pad is None:
-				self.plot_pad = ROOT.TPad("plot_pad", "", 0.0, self.plot_ratio_slider_y, 1.0, 1.0)
+				self.plot_pad = ROOT.TPad("plot_pad", "", 0.0, self.plot_subplot_slider_y, 1.0, 1.0)
 				self.plot_pad.SetNumber(1)
 				self.plot_pad.Draw()
 			if self.subplot_pad is None:
-				self.subplot_pad = ROOT.TPad("subplot_pad", "", 0.0, 0.0, 1.0, self.plot_ratio_slider_y)
+				self.subplot_pad = ROOT.TPad("subplot_pad", "", 0.0, 0.0, 1.0, self.plot_subplot_slider_y)
 				self.subplot_pad.SetNumber(2)
 				self.subplot_pad.Draw()
 			
@@ -340,18 +340,18 @@ class PlotRoot(plotbase.PlotBase):
 		if not self.first_subplot_histogram is None:
 			self.first_plot_histogram.GetXaxis().SetLabelSize(0)
 			self.first_plot_histogram.GetXaxis().SetTitleSize(0)
-			self.first_plot_histogram.GetYaxis().SetLabelSize(self.first_plot_histogram.GetYaxis().GetLabelSize() / (1.0 - self.plot_ratio_slider_y))
-			self.first_plot_histogram.GetYaxis().SetTitleSize(self.first_plot_histogram.GetYaxis().GetTitleSize() / (1.0 - self.plot_ratio_slider_y))
+			self.first_plot_histogram.GetYaxis().SetLabelSize(self.first_plot_histogram.GetYaxis().GetLabelSize() / (1.0 - self.plot_subplot_slider_y))
+			self.first_plot_histogram.GetYaxis().SetTitleSize(self.first_plot_histogram.GetYaxis().GetTitleSize() / (1.0 - self.plot_subplot_slider_y))
 			
-			self.first_plot_histogram.GetYaxis().SetTitleOffset(self.first_plot_histogram.GetYaxis().GetTitleOffset() * (1.0 - self.plot_ratio_slider_y))
+			self.first_plot_histogram.GetYaxis().SetTitleOffset(self.first_plot_histogram.GetYaxis().GetTitleOffset() * (1.0 - self.plot_subplot_slider_y))
 			
-			self.first_subplot_histogram.GetXaxis().SetLabelSize(self.first_subplot_histogram.GetXaxis().GetLabelSize() / self.plot_ratio_slider_y)
-			self.first_subplot_histogram.GetXaxis().SetTitleSize(self.first_subplot_histogram.GetXaxis().GetTitleSize() / self.plot_ratio_slider_y)
-			self.first_subplot_histogram.GetYaxis().SetLabelSize(self.first_subplot_histogram.GetYaxis().GetLabelSize() / self.plot_ratio_slider_y)
-			self.first_subplot_histogram.GetYaxis().SetTitleSize(self.first_subplot_histogram.GetYaxis().GetTitleSize() / self.plot_ratio_slider_y)
+			self.first_subplot_histogram.GetXaxis().SetLabelSize(self.first_subplot_histogram.GetXaxis().GetLabelSize() / self.plot_subplot_slider_y)
+			self.first_subplot_histogram.GetXaxis().SetTitleSize(self.first_subplot_histogram.GetXaxis().GetTitleSize() / self.plot_subplot_slider_y)
+			self.first_subplot_histogram.GetYaxis().SetLabelSize(self.first_subplot_histogram.GetYaxis().GetLabelSize() / self.plot_subplot_slider_y)
+			self.first_subplot_histogram.GetYaxis().SetTitleSize(self.first_subplot_histogram.GetYaxis().GetTitleSize() / self.plot_subplot_slider_y)
 			
-			self.first_subplot_histogram.GetXaxis().SetTitleOffset(2.0 * self.first_subplot_histogram.GetXaxis().GetTitleOffset() * self.plot_ratio_slider_y)
-			self.first_subplot_histogram.GetYaxis().SetTitleOffset(self.first_subplot_histogram.GetYaxis().GetTitleOffset() * self.plot_ratio_slider_y)
+			self.first_subplot_histogram.GetXaxis().SetTitleOffset(2.0 * self.first_subplot_histogram.GetXaxis().GetTitleOffset() * self.plot_subplot_slider_y)
+			self.first_subplot_histogram.GetYaxis().SetTitleOffset(self.first_subplot_histogram.GetYaxis().GetTitleOffset() * self.plot_subplot_slider_y)
 			
 			self.first_subplot_histogram.GetYaxis().SetNdivisions(5, 0, 0)
 		
