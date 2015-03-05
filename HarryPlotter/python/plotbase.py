@@ -317,6 +317,7 @@ class PlotBase(processor.Processor):
 					subplot_nicks.append(nick)
 					log.debug("Object with nick \"%s\" is selected for the subplot." % nick)
 		plotData.plotdict["subplot_nicks"] = subplot_nicks
+		plotData.plotdict["subplots"] = [nick in plotData.plotdict["subplot_nicks"] for nick in plotData.plotdict["nicks"]]
 
 	def set_style(self, plotData):
 		pass

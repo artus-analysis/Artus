@@ -203,22 +203,20 @@ class PlotRoot(plotbase.PlotBase):
 		
 		index_plot = -1
 		index_subplot = -1
-		for index, (nick, marker) in enumerate(zip(
+		for index, (nick, subplot, marker) in enumerate(zip(
 				plotData.plotdict["nicks"],
+				plotData.plotdict["subplots"],
 				plotData.plotdict["markers"],
 		)):
-			subplot = False
 			pad = None
 			
 			# select pad to plot on
-			if nick in plotData.plotdict["subplot_nicks"]:
-				subplot = True
+			if subplot == True:
 				index_subplot += 1
 				pad = self.subplot_pad
 				y_min = self.y_sub_min
 				y_max = self.y_sub_max
 			else:
-				subplot = False
 				index_plot += 1
 				pad = self.plot_pad
 				y_min = self.y_min
@@ -395,8 +393,13 @@ class PlotRoot(plotbase.PlotBase):
 		self.legend = None
 		if plotData.plotdict["legend"] != None:
 			self.legend = ROOT.TLegend(plotData.plotdict["legend"][0], plotData.plotdict["legend"][1], 0.9, 0.9);
-			for nick, marker, label in zip(plotData.plotdict["nicks"], plotData.plotdict["markers"], plotData.plotdict["labels"]):
-				if nick in plotData.plotdict["subplot_nicks"]:
+			for nick, subplot, marker, label in zip(
+					plotData.plotdict["nicks"],
+					plotData.plotdict["subplots"],
+					plotData.plotdict["markers"],
+					plotData.plotdict["labels"]
+			):
+				if subplot == True
 					# TODO handle possible subplot legends
 					continue
 				root_object = plotData.plotdict["root_objects"][nick]
