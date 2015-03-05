@@ -385,7 +385,7 @@ class PlotRoot(plotbase.PlotBase):
 		
 		if not self.subplot_pad is None:
 			self.subplot_pad.cd()
-			if (plotData.plotdict["ratio_grid"] == True):
+			if (plotData.plotdict["subplot_grid"] == True):
 				self.subplot_pad.SetGrid()
 	
 	def add_labels(self, plotData):
