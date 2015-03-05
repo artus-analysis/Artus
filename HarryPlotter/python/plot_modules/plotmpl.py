@@ -134,8 +134,8 @@ class PlotMpl(plotbase.PlotBase):
 				self.axes += [self.fig.add_subplot( plotData.plotdict['n_axes_y'], plotData.plotdict['n_axes_x'], i,
 					**({'projection':'3d'} if (plotData.plotdict['3d'] is not False) else {}))]
 
-		if (plotData.plotdict["ratio"] or (plotData.plotdict["subplot_nicks"]!= [])) and plotData.plotdict["y_ratio_lims"] != None:
-			self.ax2.set_ylim(plotData.plotdict["y_ratio_lims"][0],plotData.plotdict["y_ratio_lims"][1])
+		if (plotData.plotdict["ratio"] or (plotData.plotdict["subplot_nicks"]!= [])) and plotData.plotdict["y_subplot_lims"] != None:
+			self.ax2.set_ylim(plotData.plotdict["y_subplot_lims"][0],plotData.plotdict["y_subplot_lims"][1])
 
 	def prepare_histograms(self, plotData):
 		super(PlotMpl, self).prepare_histograms(plotData)

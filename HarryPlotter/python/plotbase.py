@@ -61,8 +61,8 @@ class PlotBase(processor.Processor):
 		
 		self.axis_options.add_argument("--y-lims", type=float, nargs=2,
 		                               help="Lower and Upper limit for y-axis.")
-		self.axis_options.add_argument("--y-ratio-lims", type=float, nargs=2,
-		                               help="Lower and Upper limit for y-axis of a possible ratio subplot.")
+		self.axis_options.add_argument("--y-subplot-lims", type=float, nargs=2,
+		                               help="Lower and Upper limit for y-axis of a possible subplot.")
 		self.axis_options.add_argument("--y-label", type=str, default="Events",
 		                               help="Y-axis label name. [Default: %(default)s]")
 		self.axis_options.add_argument("--y-subplot-label", type=str, default="Ratio",

@@ -329,12 +329,12 @@ class PlotRoot(plotbase.PlotBase):
 			self.first_plot_histogram.GetYaxis().SetRangeUser(plotData.plotdict["y_lims"][0], plotData.plotdict["y_lims"][1])
 			self.first_plot_histogram.GetYaxis().SetLimits(plotData.plotdict["y_lims"][0], plotData.plotdict["y_lims"][1])
 		if not self.first_subplot_histogram is None:
-			if plotData.plotdict["y_ratio_lims"] == None:
+			if plotData.plotdict["y_subplot_lims"] == None:
 				self.first_subplot_histogram.GetYaxis().SetRangeUser(self.y_sub_min, self.y_sub_max * 1.1)
 				self.first_subplot_histogram.GetYaxis().SetLimits(self.y_sub_min, self.y_sub_max * 1.1)
 			else:
-				self.first_subplot_histogram.GetYaxis().SetRangeUser(plotData.plotdict["y_ratio_lims"][0], plotData.plotdict["y_ratio_lims"][1])
-				self.first_subplot_histogram.GetYaxis().SetLimits(plotData.plotdict["y_ratio_lims"][0], plotData.plotdict["y_ratio_lims"][1])
+				self.first_subplot_histogram.GetYaxis().SetRangeUser(plotData.plotdict["y_subplot_lims"][0], plotData.plotdict["y_subplot_lims"][1])
+				self.first_subplot_histogram.GetYaxis().SetLimits(plotData.plotdict["y_subplot_lims"][0], plotData.plotdict["y_subplot_lims"][1])
 		if plotData.plotdict["z_lims"] == None:
 			self.first_plot_histogram.GetZaxis().SetRangeUser(self.z_min, self.z_max)
 			self.first_plot_histogram.GetZaxis().SetLimits(self.z_min, self.z_max)
