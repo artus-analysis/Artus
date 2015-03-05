@@ -37,13 +37,12 @@ class PlotBase(processor.Processor):
 		                                   help="Nick names for numerators of ratio. Multiple nicks in one argument (ws-separated) are summed. [Default: first nick]")
 		self.plotting_options.add_argument("--ratio-denom", nargs="+",
 		                                   help="Nick names for denominators of ratio. Multiple nicks in one argument (ws-separated) are summed. [Default: all but first nick]")
-		self.plotting_options.add_argument("--nicks-whitelist", nargs="+",
+		self.plotting_options.add_argument("--nicks-whitelist", nargs="+", default=[],
 		                                   help="Whitelist of (regexp) nick names for objects to be plotted. This also allows for redefining the order of nicks for the plotting. Use \"^nick$\" for requirering exact matches.")
 		self.plotting_options.add_argument("--nicks-blacklist", nargs="+", default=["noplot"],
 		                                   help="Blacklist of (regexp) nick names for objects to be excluded from plotting. Use \"^nick$\" for requirering exact matches. [Default: %(default)s]")
-		self.plotting_options.add_argument("--subplot-nicks", nargs="+", default=[],
-		                                   help="If you want to plot other histograms in the subplot than (or additionally to) the ratio, you can give the \
-		                                   nicks here. Formatting options are still the --ratio-... arguments [Default: %(default)s]")
+		self.plotting_options.add_argument("--subplot-nicks", nargs="+", default=["ratio"],
+		                                   help="List of (regexp) nick names for objects to be plotted in the subplot. Use \"^nick$\" for requirering exact matches. [Default: %(default)s]")
 		# axis settings
 		self.axis_options = parser.add_argument_group("Axis options")
 		self.axis_options.add_argument("--x-lims", type=float, nargs=2,
@@ -179,12 +178,6 @@ class PlotBase(processor.Processor):
 	def prepare_args(self, parser, plotData):
 		super(PlotBase, self).prepare_args(parser, plotData)
 		
-		# prepare nick white/black lists
-		if plotData.plotdict["nicks_whitelist"] == None:
-			plotData.plotdict["nicks_whitelist"] = []
-		if plotData.plotdict["nicks_blacklist"] == None:
-			plotData.plotdict["nicks_blacklist"] = []
-		
 		# delete nicks that do not need to be used for plotting
 		self.select_histograms(plotData)
 		
@@ -315,6 +308,15 @@ class PlotBase(processor.Processor):
 		
 		plotData.plotdict["nicks"] = sorted_nicks_to_keep
 		log.debug("Final order of object nicks for plotting: %s" % ", ".join(plotData.plotdict["nicks"]))
+		
+		# handle subplot regexps
+		subplot_nicks = []
+		for subplot_nick in plotData.plotdict["subplot_nicks"]:
+			for nick in plotData.plotdict["nicks"]:
+				if re.search(subplot_nick, nick) != None:
+					subplot_nicks.append(nick)
+					log.debug("Object with nick \"%s\" is selected for the subplot." % nick)
+		plotData.plotdict["subplot_nicks"] = subplot_nicks
 
 	def set_style(self, plotData):
 		pass
