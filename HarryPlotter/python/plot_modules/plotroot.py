@@ -399,7 +399,7 @@ class PlotRoot(plotbase.PlotBase):
 					plotData.plotdict["markers"],
 					plotData.plotdict["labels"]
 			):
-				if subplot == True
+				if subplot == True:
 					# TODO handle possible subplot legends
 					continue
 				root_object = plotData.plotdict["root_objects"][nick]
