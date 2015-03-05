@@ -329,7 +329,6 @@ class PlotBase(processor.Processor):
 					ratio_histogram = numerator_histogram.ProjectionX()
 					ratio_histogram.Divide(denom_th1)
 				elif all([isinstance(h, ROOT.TGraphAsymmErrors) for h in [numerator_histogram, denominator_histogram]]):
-					print "oiwenorijweoirj2"
 					ratio_histogram = roottools.RootTools.to_histogram(numerator_histogram.Clone(name + "_ratio"))
 					ratio_histogram.Divide(roottools.RootTools.to_histogram(denominator_histogram))
 				else:

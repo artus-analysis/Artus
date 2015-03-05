@@ -169,6 +169,11 @@ class PlotRoot(plotbase.PlotBase):
 			root_object.SetFillColor(color)
 			root_object.SetFillStyle(fill_style)
 			
+			#Setting values for TGraphAsymmErrors since there are no defaults in PlotStyle
+			if isinstance(root_object, ROOT.TGraphAsymmErrors):
+				root_object.SetLineWidth(3)
+				root_object.SetMarkerSize (.6)
+
 			# tick labels
 			if plotData.plotdict["x_tick_labels"] and len(plotData.plotdict["x_tick_labels"]) > 0:
 				for x_bin in range(min(root_object.GetNbinsX(), len(plotData.plotdict["x_tick_labels"]))):
