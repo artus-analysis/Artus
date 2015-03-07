@@ -63,6 +63,7 @@ class ContourFromHistogram(histogrammanipulationbase.HistogramManipulationBase):
 		for index, (histogram_nick, contour_thresholds, contour_mode, contour_graph_nicks) in enumerate(zip(*[plotData.plotdict[k] for k in ["2d_histogram_nicks", "contour_thresholds", "contour_modes", "contour_graph_nicks"]])):
 			
 			histogram = plotData.plotdict["root_objects"][histogram_nick]
+			self._manipulate_boundary_bins(histogram)
 			
 			contours = array.array("d", contour_thresholds)
 			histogram.SetContour(len(contours), contours)
@@ -118,5 +119,40 @@ class ContourFromHistogram(histogrammanipulationbase.HistogramManipulationBase):
 
 
 	def _manipulate_bin(self, histogram, global_bin):
-		pass
+		if (histogram.GetBinContent(global_bin) == 0.0) and (histogram.GetBinError(global_bin) == 0.0):
+			histogram.SetBinContent(global_bin, histogram.GetMaximum())
+			"""
+			x_bin = ROOT.Long()
+			y_bin = ROOT.Long()
+			z_bin = ROOT.Long()
+			histogram.GetBinXYZ(global_bin, x_bin, y_bin, z_bin)
+			
+			neighbor_global_bins = []
+			neighbor_global_bins.extend([histogram.GetBin(x_bin+shift, y_bin, z_bin) for shift in [-1, 1]])
+			neighbor_global_bins.extend([histogram.GetBin(x_bin, y_bin+shift, z_bin) for shift in [-1, 1]])
+			neighbor_global_bins.extend([histogram.GetBin(x_bin, y_bin, z_bin+shift) for shift in [-1, 1]])
+			neighbor_global_bins = list(set(neighbor_global_bins))
+			
+			neighbor_bin_contents = [histogram.GetBinContent(global_bin) for global_bin in neighbor_global_bins]
+			neighbor_bin_errors = [histogram.GetBinError(global_bin) for global_bin in neighbor_global_bins]
+			
+			neighbor_bin_contents = [content for content, error in zip(neighbor_bin_contents, neighbor_bin_errors) if (content != 0.0) and (error != 0)]
+			if len(neighbor_bin_contents) > 0:
+				average_neighbor_bin_content = sum(neighbor_bin_contents) / len(neighbor_bin_contents)
+				histogram.SetBinContent(global_bin, average_neighbor_bin_content)
+			"""
+
+	def _manipulate_boundary_bins(self, histogram):
+		for x_bin in xrange(0, histogram.GetNbinsX()+2):
+			next_x_bin = x_bin + (1 if x_bin == 0 else (-1 if x_bin > histogram.GetNbinsX() else 0))
+			for y_bin in xrange(0, histogram.GetNbinsY()+2):
+				next_y_bin = y_bin + (1 if y_bin == 0 else (-1 if y_bin > histogram.GetNbinsY() else 0))
+				for z_bin in xrange(0, histogram.GetNbinsZ()+2):
+					next_z_bin = z_bin + (1 if z_bin == 0 else (-1 if z_bin > histogram.GetNbinsZ() else 0))
+					
+					global_bin = histogram.GetBin(x_bin, y_bin, z_bin)
+					next_global_bin = histogram.GetBin(next_x_bin, next_y_bin, next_z_bin)
+					if global_bin != next_global_bin:
+						histogram.SetBinContent(global_bin, histogram.GetBinContent(next_global_bin))
+						histogram.SetBinError(global_bin, histogram.GetBinError(next_global_bin))
 
