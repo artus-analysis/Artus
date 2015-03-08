@@ -252,20 +252,18 @@ class PlotMpl(plotbase.PlotBase):
 				else:
 					if ax.dataLim.min[1] >= (-1E-6) and ax.get_ylim()[0] < 0.:
 						ax.set_ylim(ymin=0.0)
+			# set log scale
+			if plotData.plotdict["x_log"]:
+				ax.set_xscale('log', nonposx='clip')
+				# for log plots, we have to set the ticks again and set the formatter:
+				if plotData.plotdict["x_ticks"] is not None:
+					ax.set_xticks(plotData.plotdict["x_ticks"])
+					ax.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+			if plotData.plotdict["y_log"]:
+				ax.set_yscale('log', nonposy='clip')
+				if plotData.plotdict["y_lims"] is None:
+					ax.set_ylim(ymin=0.9, ymax=ax.get_ylim()[1]*2)
 
-			# do special things for 1D Plots
-			if self.plot_dimension == 1:
-				if plotData.plotdict["x_log"]: 
-					ax.set_xscale('log', nonposx='clip')
-					# for log plots, we have to set the ticks again and set the formatter:
-					if plotData.plotdict["x_ticks"] is not None:
-						ax.set_xticks(plotData.plotdict["x_ticks"])
-						ax.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
-
-				if plotData.plotdict["y_log"]: 
-					ax.set_yscale('log', nonposy='clip')
-					if plotData.plotdict["y_lims"] is None:
-						ax.set_ylim(ymin=0.9, ymax=ax.get_ylim()[1]*2)
 			# do special things for subplots
 			if plotData.plotdict["ratio"] or (plotData.plotdict["subplot_nicks"] != []):
 				self.ax2.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]),position=(1., 0.), va='top', ha='right')
