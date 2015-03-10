@@ -166,8 +166,8 @@ class PlotRoot(plotbase.PlotBase):
 				plotData.plotdict["nicks"],
 				plotData.plotdict["colors"],
 				plotData.plotdict["markers"],
-				plotData.plotdict["marker_sizes"],
 				plotData.plotdict["marker_styles"],
+				plotData.plotdict["marker_sizes"],
 				plotData.plotdict["fill_styles"],
 				plotData.plotdict["line_styles"],
 				plotData.plotdict["line_widths"]
