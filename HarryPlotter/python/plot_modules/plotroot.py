@@ -219,7 +219,7 @@ class PlotRoot(plotbase.PlotBase):
 		for index, (nick, subplot, marker) in enumerate(zip(
 				plotData.plotdict["nicks"],
 				plotData.plotdict["subplots"],
-				plotData.plotdict["markers"],
+				plotData.plotdict["markers"]
 		)):
 			pad = None
 			
@@ -246,7 +246,13 @@ class PlotRoot(plotbase.PlotBase):
 			if isinstance(root_object, ROOT.TH1):
 				axes_histogram = self._draw_histogram(pad, root_object, draw_option)
 			elif isinstance(root_object, ROOT.TGraph):
-				axes_histogram = self._draw_graph(pad, root_object, draw_option+(" A" if index == 0 else ""))
+				axes_histogram = self._draw_graph(
+						pad,
+						root_object,
+						draw_option+(" A" if index == 0 else ""),
+						plotData.plotdict["x_lims"],
+						plotData.plotdict["y_subplot_lims" if subplot else "y_lims"],
+						plotData.plotdict["z_lims"])
 			else:
 				log.error("ROOT plotting is not (yet) implemented for objects of type %s!" % type(root_object))
 			
@@ -286,9 +292,10 @@ class PlotRoot(plotbase.PlotBase):
 		root_histogram.Draw(draw_option)
 		return root_histogram
 	
-	def _draw_graph(self, pad, root_graph, draw_option):
+	def _draw_graph(self, pad, root_graph, draw_option, x_lims, y_lims, z_lims):
 		assert isinstance(root_graph, ROOT.TGraph)
 		pad.cd()
+		PlotRoot._set_axis_limits(root_graph, x_lims, y_lims, z_lims)
 		root_graph.Draw(draw_option)
 		root_histogram = root_graph.GetHistogram()
 		return root_histogram
