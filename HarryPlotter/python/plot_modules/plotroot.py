@@ -24,6 +24,7 @@ class PlotRoot(plotbase.PlotBase):
 		self.canvas = None
 		self.plot_pad = None
 		self.subplot_pad = None
+		self.text_boxes = []
 		
 		self.first_plot_histogram = None
 		self.first_subplot_histogram = None
@@ -153,7 +154,7 @@ class PlotRoot(plotbase.PlotBase):
 				self.subplot_pad.Draw()
 			
 			self.plot_pad.SetBottomMargin(0.02)
-			self.subplot_pad.SetBottomMargin(0.35);
+			self.subplot_pad.SetBottomMargin(0.35)
 		
 		else:
 			self.plot_pad = self.canvas
@@ -401,12 +402,13 @@ class PlotRoot(plotbase.PlotBase):
 		if plotData.plotdict["texts"] != [None]:
 			self.plot_pad.cd()
 			for x, y, text in zip(plotData.plotdict['texts_x'], plotData.plotdict['texts_y'], plotData.plotdict['texts']):
-				root_text = ROOT.TPaveText(float(x), float(y), 0.9, 0.9, "NDC")
-				root_text.AddText(text)
-				root_text.SetLineColor(0)
-				root_text.SetFillColor(0)
-				root_text.SetShadowColor(0)
-				root_text.Draw()
+				self.plot_pad.cd()
+				self.text_boxes.append(ROOT.TPaveText(0.0, 0.0, 1.0, 1.0, "NDC"))
+				self.text_boxes[-1].AddText(x, y, text*5)
+				self.text_boxes[-1].SetFillStyle(0)
+				self.text_boxes[-1].SetShadowColor(0)
+				self.text_boxes[-1].SetTextSize(0.05)
+				self.text_boxes[-1].Draw("SAME")
 	
 	def save_canvas(self, plotData):
 		super(PlotRoot, self).save_canvas(plotData)
