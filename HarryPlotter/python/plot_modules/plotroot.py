@@ -39,8 +39,8 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Fill styles for histograms. Defaults choosen according to draw options.")
 		self.formatting_options.add_argument("--line-styles", nargs="+", default=[1], type=int,
 		                                     help="Line style of plots line. [Default: %(default)s]")
-		self.formatting_options.add_argument("--legend", type=float, nargs=4, default=None,
-		                                     help="Legend position. The four arguments define the rectangle (x1 y1 x2 y2) for the legend. [Default: %(default)s]")
+		self.formatting_options.add_argument("--legend", type=float, nargs="*", default=None,
+		                                     help="Legend position. The four arguments define the rectangle (x1 y1 x2 y2) for the legend. Without (or with too few) arguments, the default values from [0.6, 0.6, 0.9, 0.9] are used. [Default: %(default)s]")
 		self.formatting_options.add_argument("--stacks-errband", action='store_true', default=False,
 		                                     help="Draw error band on top of the stacked plots.")
 		self.formatting_options.add_argument("--stacks-errband-names", nargs="+",
@@ -102,6 +102,11 @@ class PlotRoot(plotbase.PlotBase):
 				if nick not in plotData.plotdict["stacks"]:
 					log.critical("Stack name \"%s\" of argument --%s does not exist in argument --stack!" % (nick, "stacks_errband_names".replace("_", "-")))
 					sys.exit(1)
+		
+		# defaults for legend position
+		if not plotData.plotdict["legend"] is None:
+			plotData.plotdict["legend"] += [0.6, 0.6, 0.9, 0.9][len(plotData.plotdict["legend"]):]
+			plotData.plotdict["legend"] = plotData.plotdict["legend"][:4]
 	
 	def run(self, plotData):
 		super(PlotRoot, self).run(plotData)
