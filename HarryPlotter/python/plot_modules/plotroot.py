@@ -256,17 +256,8 @@ class PlotRoot(plotbase.PlotBase):
 				elif (not subplot) and (index_plot == 0):
 					self.first_plot_histogram = axes_histogram
 				
-				dimension = 2
-				if isinstance(axes_histogram, ROOT.TH1):
-					dimension = axes_histogram.GetDimension()
-				elif isinstance(axes_histogram, ROOT.TGraph2D):
-					dimension = 3
-				elif isinstance(axes_histogram, ROOT.TGraph):
-					dimension = 2
-				else:
-					log.warning("Retrieving the dimension of the plot is not yet implemented for objects of type %s!. Assume 2D plot." % str(type(axes_histogram)))
-				
 				# trace min. and max. values of axes
+				dimension = PlotRoot._get_dimension(axes_histogram)
 				if axes_histogram.GetXaxis().GetXmin() < self.x_min: self.x_min = axes_histogram.GetXaxis().GetXmin()
 				if axes_histogram.GetXaxis().GetXmax() > self.x_max: self.x_max = axes_histogram.GetXaxis().GetXmax()
 				if dimension > 1:
@@ -321,37 +312,15 @@ class PlotRoot(plotbase.PlotBase):
 			if plotData.plotdict["x_log"]: self.subplot_pad.SetLogx()
 	
 		# axis limits
-		if plotData.plotdict["x_lims"] == None:
-			self.first_plot_histogram.GetXaxis().SetRangeUser(self.x_min, self.x_max)
-			self.first_plot_histogram.GetXaxis().SetLimits(self.x_min, self.x_max)
-			if not self.first_subplot_histogram is None:
-				self.first_subplot_histogram.GetXaxis().SetRangeUser(self.x_min, self.x_max)
-				self.first_subplot_histogram.GetXaxis().SetLimits(self.x_min, self.x_max)
-		else:
-			self.first_plot_histogram.GetXaxis().SetRangeUser(plotData.plotdict["x_lims"][0], plotData.plotdict["x_lims"][1])
-			self.first_plot_histogram.GetXaxis().SetLimits(plotData.plotdict["x_lims"][0], plotData.plotdict["x_lims"][1])
-			if not self.first_subplot_histogram is None:
-				self.first_subplot_histogram.GetXaxis().SetRangeUser(plotData.plotdict["x_lims"][0], plotData.plotdict["x_lims"][1])
-				self.first_subplot_histogram.GetXaxis().SetLimits(plotData.plotdict["x_lims"][0], plotData.plotdict["x_lims"][1])
-		if plotData.plotdict["y_lims"] == None:
-			self.first_plot_histogram.GetYaxis().SetRangeUser(self.y_min, self.y_max * 1.1)
-			self.first_plot_histogram.GetYaxis().SetLimits(self.y_min, self.y_max * 1.1)
-		else:
-			self.first_plot_histogram.GetYaxis().SetRangeUser(plotData.plotdict["y_lims"][0], plotData.plotdict["y_lims"][1])
-			self.first_plot_histogram.GetYaxis().SetLimits(plotData.plotdict["y_lims"][0], plotData.plotdict["y_lims"][1])
+		x_lims = plotData.plotdict["x_lims"] if not plotData.plotdict["x_lims"] is None else [self.x_min, self.x_max]
+		y_lims = plotData.plotdict["y_lims"] if not plotData.plotdict["y_lims"] is None else [self.y_min, self.y_max]
+		z_lims = plotData.plotdict["z_lims"] if not plotData.plotdict["z_lims"] is None else [self.z_min, self.z_max]
+		PlotRoot._set_axis_limits(self.first_plot_histogram, x_lims, y_lims, z_lims)
+		
 		if not self.first_subplot_histogram is None:
-			if plotData.plotdict["y_subplot_lims"] == None:
-				self.first_subplot_histogram.GetYaxis().SetRangeUser(self.y_sub_min, self.y_sub_max * 1.1)
-				self.first_subplot_histogram.GetYaxis().SetLimits(self.y_sub_min, self.y_sub_max * 1.1)
-			else:
-				self.first_subplot_histogram.GetYaxis().SetRangeUser(plotData.plotdict["y_subplot_lims"][0], plotData.plotdict["y_subplot_lims"][1])
-				self.first_subplot_histogram.GetYaxis().SetLimits(plotData.plotdict["y_subplot_lims"][0], plotData.plotdict["y_subplot_lims"][1])
-		if plotData.plotdict["z_lims"] == None:
-			self.first_plot_histogram.GetZaxis().SetRangeUser(self.z_min, self.z_max)
-			self.first_plot_histogram.GetZaxis().SetLimits(self.z_min, self.z_max)
-		else:
-			self.first_plot_histogram.GetZaxis().SetRangeUser(plotData.plotdict["z_lims"][0], plotData.plotdict["z_lims"][1])
-			self.first_plot_histogram.GetZaxis().SetLimits(plotData.plotdict["z_lims"][0], plotData.plotdict["z_lims"][1])
+			y_subplot_lims = plotData.plotdict["y_subplot_lims"] if not plotData.plotdict["y_subplot_lims"] is None else [self.y_subplot_min, self.y_subplot_max]
+			z_subplot_lims = None # TODO: z-lims for possible 3D subplots
+			PlotRoot._set_axis_limits(self.first_subplot_histogram, x_lims, y_subplot_lims, z_subplot_lims)
 		
 		if not self.first_subplot_histogram is None:
 			self.first_plot_histogram.GetXaxis().SetLabelSize(0)
@@ -444,4 +413,33 @@ class PlotRoot(plotbase.PlotBase):
 		for output_filename in plotData.plotdict["output_filenames"]:
 			self.canvas.SaveAs(output_filename)
 			log.info("Created plot \"%s\"." % output_filename)
+	
+	@staticmethod
+	def _get_dimension(root_object):
+		dimension = 2
+		if isinstance(root_object, ROOT.TH1):
+			dimension = root_object.GetDimension()
+		elif isinstance(root_object, ROOT.TGraph2D):
+			dimension = 3
+		elif isinstance(root_object, ROOT.TGraph):
+			dimension = 2
+		else:
+			log.warning("Retrieving the dimension of the plot is not yet implemented for objects of type %s!. Assume 2D plot." % str(type(axes_histogram)))
+		return dimension
+	
+	@staticmethod
+	def _set_axis_limits(root_object, x_lims=None, y_lims=None, z_lims=None):
+		dimension = PlotRoot._get_dimension(root_object)
+		
+		if not x_lims is None:
+			root_object.GetXaxis().SetRangeUser(*x_lims)
+			root_object.GetXaxis().SetLimits(*x_lims)
+		
+		if (dimension > 1) and (not y_lims is None):
+			root_object.GetYaxis().SetRangeUser(*y_lims)
+			root_object.GetYaxis().SetLimits(*y_lims)
+		
+		if (dimension > 2) and (not z_lims is None):
+			root_object.GetZaxis().SetRangeUser(*y_lims)
+			root_object.GetZaxis().SetLimits(*y_lims)
 
