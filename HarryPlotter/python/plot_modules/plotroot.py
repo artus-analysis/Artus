@@ -39,6 +39,8 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Fill styles for histograms. Defaults choosen according to draw options.")
 		self.formatting_options.add_argument("--line-styles", nargs="+", default=[1], type=int,
 		                                     help="Line style of plots line. [Default: %(default)s]")
+		self.formatting_options.add_argument("--line-widths", nargs="+", default=[1], type=int,
+		                                     help="Line width of plots line. [Default: %(default)s]")
 		self.formatting_options.add_argument("--legend", type=float, nargs="*", default=None,
 		                                     help="Legend position. The four arguments define the rectangle (x1 y1 x2 y2) for the legend. Without (or with too few) arguments, the default values from [0.6, 0.6, 0.9, 0.9] are used. [Default: %(default)s]")
 		self.formatting_options.add_argument("--stacks-errband", action='store_true', default=False,
@@ -51,7 +53,7 @@ class PlotRoot(plotbase.PlotBase):
 		
 		self.prepare_list_args(
 				plotData,
-				["nicks", "colors", "labels", "markers", "line_styles", "x_errors", "y_errors", "stacks", "axes", "fill_styles"],
+				["nicks", "colors", "labels", "markers", "line_styles", "line_widths", "x_errors", "y_errors", "stacks", "axes", "fill_styles"],
 				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]
 		))
 		
@@ -156,17 +158,21 @@ class PlotRoot(plotbase.PlotBase):
 	def prepare_histograms(self, plotData):
 		super(PlotRoot, self).prepare_histograms(plotData)
 		
-		for nick, color, marker, fill_style, line_style in zip(plotData.plotdict["nicks"],
-		                                                       plotData.plotdict["colors"],
-		                                                       plotData.plotdict["markers"],
-		                                                       plotData.plotdict["fill_styles"],
-		                                                       plotData.plotdict["line_styles"]):
+		for nick, color, marker, fill_style, line_style, line_width in zip(
+				plotData.plotdict["nicks"],
+				plotData.plotdict["colors"],
+				plotData.plotdict["markers"],
+				plotData.plotdict["fill_styles"],
+				plotData.plotdict["line_styles"],
+				plotData.plotdict["line_widths"]
+		):
 			root_object = plotData.plotdict["root_objects"][nick]
 			if plotData.plotdict["title"]:
 				root_object.SetTitle(plotData.plotdict["title"])
 			
 			root_object.SetLineColor(color)
 			root_object.SetLineStyle(line_style)
+			root_object.SetLineWidth(line_width)
 			
 			root_object.SetMarkerColor(color)
 			root_object.SetMarkerStyle(0 if "E2" in marker.upper() and fill_style > 3000 else 20)
@@ -176,7 +182,6 @@ class PlotRoot(plotbase.PlotBase):
 			
 			#Setting values for TGraphAsymmErrors since there are no defaults in PlotStyle
 			if isinstance(root_object, ROOT.TGraphAsymmErrors):
-				root_object.SetLineWidth(3)
 				root_object.SetMarkerSize (.6)
 
 			# tick labels
