@@ -37,6 +37,8 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Place an y-axes grid on the plot.")
 		self.formatting_options.add_argument("--marker-styles", nargs="+", default=[20], type=int,
 		                                     help="Marker style of plots marker. [Default: %(default)s]")
+		self.formatting_options.add_argument("--marker-sizes", nargs="+", default=[1.0], type=float,
+		                                     help="Marker sizes of plots marker. [Default: %(default)s]")
 		self.formatting_options.add_argument("--fill-styles", type=int, nargs="+",
 		                                     help="Fill styles for histograms. Defaults choosen according to draw options.")
 		self.formatting_options.add_argument("--line-styles", nargs="+", default=[1], type=int,
@@ -55,7 +57,7 @@ class PlotRoot(plotbase.PlotBase):
 		
 		self.prepare_list_args(
 				plotData,
-				["nicks", "colors", "labels", "markers", "marker_styles", "line_styles", "line_widths", "x_errors", "y_errors", "stacks", "axes", "fill_styles"],
+				["nicks", "colors", "labels", "markers", "marker_styles", "marker_sizes", "line_styles", "line_widths", "x_errors", "y_errors", "stacks", "axes", "fill_styles"],
 				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]
 		))
 		
@@ -160,10 +162,11 @@ class PlotRoot(plotbase.PlotBase):
 	def prepare_histograms(self, plotData):
 		super(PlotRoot, self).prepare_histograms(plotData)
 		
-		for nick, color, marker, marker_style, fill_style, line_style, line_width in zip(
+		for nick, color, marker, marker_style, marker_size, fill_style, line_style, line_width in zip(
 				plotData.plotdict["nicks"],
 				plotData.plotdict["colors"],
 				plotData.plotdict["markers"],
+				plotData.plotdict["marker_sizes"],
 				plotData.plotdict["marker_styles"],
 				plotData.plotdict["fill_styles"],
 				plotData.plotdict["line_styles"],
@@ -179,13 +182,10 @@ class PlotRoot(plotbase.PlotBase):
 			
 			root_object.SetMarkerColor(color)
 			root_object.SetMarkerStyle(marker_style)
+			root_object.SetMarkerSize(marker_size)
 			
 			root_object.SetFillColor(color)
 			root_object.SetFillStyle(fill_style)
-			
-			#Setting values for TGraphAsymmErrors since there are no defaults in PlotStyle
-			if isinstance(root_object, ROOT.TGraphAsymmErrors):
-				root_object.SetMarkerSize (.6)
 
 			# tick labels
 			if plotData.plotdict["x_tick_labels"] and len(plotData.plotdict["x_tick_labels"]) > 0:
