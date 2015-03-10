@@ -39,8 +39,8 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Fill styles for histograms. Defaults choosen according to draw options.")
 		self.formatting_options.add_argument("--line-styles", nargs="+", default=[1], type=int,
 		                                     help="Line style of plots line. [Default: %(default)s]")
-		self.formatting_options.add_argument("--legend", type=float, nargs=2, default=None,
-		                                     help="Location of the legend. Use 'None' to not set any legend. [Default: %(default)s]")
+		self.formatting_options.add_argument("--legend", type=float, nargs=4, default=None,
+		                                     help="Legend position. The four arguments define the rectangle (x1 y1 x2 y2) for the legend. [Default: %(default)s]")
 		self.formatting_options.add_argument("--stacks-errband", action='store_true', default=False,
 		                                     help="Draw error band on top of the stacked plots.")
 		self.formatting_options.add_argument("--stacks-errband-names", nargs="+",
@@ -392,7 +392,7 @@ class PlotRoot(plotbase.PlotBase):
 		self.plot_pad.cd()
 		self.legend = None
 		if plotData.plotdict["legend"] != None:
-			self.legend = ROOT.TLegend(plotData.plotdict["legend"][0], plotData.plotdict["legend"][1], 0.9, 0.9);
+			self.legend = ROOT.TLegend(*plotData.plotdict["legend"]);
 			for nick, subplot, marker, label in zip(
 					plotData.plotdict["nicks"],
 					plotData.plotdict["subplots"],
