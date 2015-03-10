@@ -35,6 +35,8 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Place an x-axes grid on the plot.")
 		self.formatting_options.add_argument("--y-grid", action='store_true', default=False,
 		                                     help="Place an y-axes grid on the plot.")
+		self.formatting_options.add_argument("--marker-styles", nargs="+", default=[20], type=int,
+		                                     help="Marker style of plots marker. [Default: %(default)s]")
 		self.formatting_options.add_argument("--fill-styles", type=int, nargs="+",
 		                                     help="Fill styles for histograms. Defaults choosen according to draw options.")
 		self.formatting_options.add_argument("--line-styles", nargs="+", default=[1], type=int,
@@ -53,7 +55,7 @@ class PlotRoot(plotbase.PlotBase):
 		
 		self.prepare_list_args(
 				plotData,
-				["nicks", "colors", "labels", "markers", "line_styles", "line_widths", "x_errors", "y_errors", "stacks", "axes", "fill_styles"],
+				["nicks", "colors", "labels", "markers", "marker_styles", "line_styles", "line_widths", "x_errors", "y_errors", "stacks", "axes", "fill_styles"],
 				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]
 		))
 		
@@ -158,10 +160,11 @@ class PlotRoot(plotbase.PlotBase):
 	def prepare_histograms(self, plotData):
 		super(PlotRoot, self).prepare_histograms(plotData)
 		
-		for nick, color, marker, fill_style, line_style, line_width in zip(
+		for nick, color, marker, marker_style, fill_style, line_style, line_width in zip(
 				plotData.plotdict["nicks"],
 				plotData.plotdict["colors"],
 				plotData.plotdict["markers"],
+				plotData.plotdict["marker_styles"],
 				plotData.plotdict["fill_styles"],
 				plotData.plotdict["line_styles"],
 				plotData.plotdict["line_widths"]
@@ -175,7 +178,7 @@ class PlotRoot(plotbase.PlotBase):
 			root_object.SetLineWidth(line_width)
 			
 			root_object.SetMarkerColor(color)
-			root_object.SetMarkerStyle(0 if "E2" in marker.upper() and fill_style > 3000 else 20)
+			root_object.SetMarkerStyle(marker_style)
 			
 			root_object.SetFillColor(color)
 			root_object.SetFillStyle(fill_style)
