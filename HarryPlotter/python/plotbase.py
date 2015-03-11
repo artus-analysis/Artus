@@ -446,7 +446,7 @@ class PlotBase(processor.Processor):
 			create_dir_command = ['ssh', tools.get_environment_variable('HARRY_SSHPC'), 'mkdir -p', remote_path]
 			log.debug("\nIssueing mkdir command: " + " ".join(create_dir_command))
 			subprocess.call(create_dir_command)
-			rsync_command =['rsync', '-u'] + [os.path.join(plotData.plotdict["output_dir"], p) for p in plots] + ["%s:%s" % (self.sshpc, remote_path)]
+			rsync_command =['rsync', '-u'] + [os.path.join(plotData.plotdict["output_dir"], p) for p in plots] + ["%s:%s" % (tools.get_environment_variable('HARRY_SSHPC'), remote_path)]
 			log.debug("\nIssueing rsync command: " + " ".join(rsync_command) + "\n")
 			subprocess.call(rsync_command)
 			log.info("Copied %d plot(s) to %s" % (n_plots_copied, url))
