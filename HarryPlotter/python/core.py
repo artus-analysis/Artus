@@ -195,6 +195,9 @@ class HarryCore(object):
 		plotData = tmpPlotData
 		output_filenames = list(set(output_filenames))
 		
+		# save plots
+		plotData.save()
+		
 		# export arguments into JSON file (2)
 		if plotData.plotdict["export_json"] != "default":
 			export_args.save(plotData.plotdict["export_json"], indent=4)

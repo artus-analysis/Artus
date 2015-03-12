@@ -283,7 +283,6 @@ class PlotBase(processor.Processor):
 		self.add_grid(plotData)
 		self.add_labels(plotData)
 		self.add_texts(plotData)
-		self.save_canvas(plotData)
 		self.plot_end(plotData)
 
 	def select_histograms(self, plotData):
@@ -395,9 +394,6 @@ class PlotBase(processor.Processor):
 		pass
 	
 	def add_texts(self, plotData):
-		pass
-
-	def save_canvas(self, plotData):
 		pass
 
 	def plot_end(self, plotData):
