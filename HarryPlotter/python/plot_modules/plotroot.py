@@ -12,18 +12,36 @@ import ROOT
 import sys
 
 import Artus.HarryPlotter.plotbase as plotbase
+import Artus.HarryPlotter.plotdata as plotdata
 import Artus.HarryPlotter.utility.extrafunctions as extrafunctions
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
+
+
+class RootPlotContainer(plotdata.PlotContainer):
+	def __init__(self, canvas=None, plot_pad=None, subplot_pad=None):
+		self.canvas = canvas
+		self.plot_pad = plot_pad
+		self.subplot_pad = subplot_pad
+	
+	def finish(self):
+		self.canvas.RedrawAxis()
+		if not self.plot_pad is None:
+			self.plot_pad.RedrawAxis()
+			self.plot_pad.Update()
+		if not self.subplot_pad is None:
+			self.subplot_pad.RedrawAxis()
+			self.subplot_pad.Update()
+		self.canvas.Update()
+		
+	def save(self, filename):
+		self.canvas.SaveAs(filename)
 
 
 class PlotRoot(plotbase.PlotBase):
 	def __init__(self):
 		super(PlotRoot, self).__init__()
 		
-		self.canvas = None
-		self.plot_pad = None
-		self.subplot_pad = None
 		self.text_boxes = []
 		
 		self.first_plot_histogram = None
@@ -131,34 +149,39 @@ class PlotRoot(plotbase.PlotBase):
 	def create_canvas(self, plotData):
 		super(PlotRoot, self).create_canvas(plotData)
 		
-		if self.canvas is None:
+		canvas = None if plotData.plot is None else plotData.plot.canvas
+		plot_pad = None if plotData.plot is None else plotData.plot.plot_pad
+		subplot_pad = None if plotData.plot is None else plotData.plot.subplot_pad
+		
+		if canvas is None:
 			# TODO: Creating the canvas like this leads to segmentation faults
-			self.canvas = ROOT.TCanvas("canvas", "")
-			self.canvas.Draw()
+			canvas = ROOT.TCanvas("canvas", "")
+			canvas.Draw()
 
 		#Modify right side margin for 2d-plots
 		if not isinstance(plotData.plotdict["root_objects"][plotData.plotdict["nicks"][0]], ROOT.TGraph):
 			if plotData.plotdict["root_objects"][plotData.plotdict["nicks"][0]].GetDimension() == 2:
-				self.canvas.SetRightMargin(0.15)
+				canvas.SetRightMargin(0.15)
 		
 		if len(plotData.plotdict["subplot_nicks"]) > 0:
 			self.plot_subplot_slider_y = 0.35
-			self.canvas.cd()
-			if self.plot_pad is None:
-				self.plot_pad = ROOT.TPad("plot_pad", "", 0.0, self.plot_subplot_slider_y, 1.0, 1.0)
-				self.plot_pad.SetNumber(1)
-				self.plot_pad.Draw()
-			if self.subplot_pad is None:
-				self.subplot_pad = ROOT.TPad("subplot_pad", "", 0.0, 0.0, 1.0, self.plot_subplot_slider_y)
-				self.subplot_pad.SetNumber(2)
-				self.subplot_pad.Draw()
+			canvas.cd()
+			if plot_pad is None:
+				plot_pad = ROOT.TPad("plot_pad", "", 0.0, self.plot_subplot_slider_y, 1.0, 1.0)
+				plot_pad.SetNumber(1)
+				plot_pad.Draw()
+			if subplot_pad is None:
+				subplot_pad = ROOT.TPad("subplot_pad", "", 0.0, 0.0, 1.0, self.plot_subplot_slider_y)
+				subplot_pad.SetNumber(2)
+				subplot_pad.Draw()
 			
-			self.plot_pad.SetBottomMargin(0.02)
-			self.subplot_pad.SetBottomMargin(0.35)
+			plot_pad.SetBottomMargin(0.02)
+			subplot_pad.SetBottomMargin(0.35)
 		
 		else:
-			self.plot_pad = self.canvas
-			
+			plot_pad = canvas
+		
+		plotData.plot = RootPlotContainer(canvas, plot_pad, subplot_pad)
 
 	def prepare_histograms(self, plotData):
 		super(PlotRoot, self).prepare_histograms(plotData)
@@ -227,12 +250,12 @@ class PlotRoot(plotbase.PlotBase):
 			# select pad to plot on
 			if subplot == True:
 				index_subplot += 1
-				pad = self.subplot_pad
+				pad = plotData.plot.subplot_pad
 				y_min = self.y_sub_min
 				y_max = self.y_sub_max
 			else:
 				index_plot += 1
-				pad = self.plot_pad
+				pad = plotData.plot.plot_pad
 				y_min = self.y_min
 				y_max = self.y_max
 			
@@ -313,11 +336,11 @@ class PlotRoot(plotbase.PlotBase):
 			self.first_subplot_histogram.GetYaxis().SetTitle(plotData.plotdict["y_subplot_label"])
 	
 		# logaritmic axis
-		if plotData.plotdict["x_log"]: self.plot_pad.SetLogx()
-		if plotData.plotdict["y_log"]: self.plot_pad.SetLogy()
-		if plotData.plotdict["z_log"]: self.plot_pad.SetLogz()
-		if not self.subplot_pad is None:
-			if plotData.plotdict["x_log"]: self.subplot_pad.SetLogx()
+		if plotData.plotdict["x_log"]: plotData.plot.plot_pad.SetLogx()
+		if plotData.plotdict["y_log"]: plotData.plot.plot_pad.SetLogy()
+		if plotData.plotdict["z_log"]: plotData.plot.plot_pad.SetLogz()
+		if not plotData.plot.subplot_pad is None:
+			if plotData.plotdict["x_log"]: plotData.plot.subplot_pad.SetLogx()
 	
 		# axis limits
 		x_lims = plotData.plotdict["x_lims"] if not plotData.plotdict["x_lims"] is None else [self.x_min, self.x_max]
@@ -349,37 +372,37 @@ class PlotRoot(plotbase.PlotBase):
 			self.first_subplot_histogram.GetYaxis().SetNdivisions(5, 0, 0)
 		
 		# redraw axes only and update the canvas
-		self.plot_pad.cd()
+		plotData.plot.plot_pad.cd()
 		self.first_plot_histogram.Draw("AXIS SAME")
-		self.plot_pad.Update()
+		plotData.plot.plot_pad.Update()
 		
-		if not self.subplot_pad is None:
-			self.subplot_pad.cd()
+		if not plotData.plot.subplot_pad is None:
+			plotData.plot.subplot_pad.cd()
 			if not self.first_subplot_histogram is None:
 				self.first_subplot_histogram.Draw("AXIS SAME")
-			self.subplot_pad.Update()
+			plotData.plot.subplot_pad.Update()
 		
-		self.canvas.Update()
+		plotData.plot.canvas.Update()
 			
 		
 	def add_grid(self, plotData):
 		super(PlotRoot, self).add_grid(plotData)
 		
-		self.plot_pad.cd()
+		plotData.plot.plot_pad.cd()
 		if (plotData.plotdict["grid"] or plotData.plotdict["x_grid"]):
-			self.plot_pad.SetGridx()
+			plotData.plot.plot_pad.SetGridx()
 		if (plotData.plotdict["grid"] or plotData.plotdict["y_grid"]):
-			self.plot_pad.SetGridy()
+			plotData.plot.plot_pad.SetGridy()
 		
-		if not self.subplot_pad is None:
-			self.subplot_pad.cd()
+		if not plotData.plot.subplot_pad is None:
+			plotData.plot.subplot_pad.cd()
 			if (plotData.plotdict["subplot_grid"] == True):
-				self.subplot_pad.SetGrid()
+				plotData.plot.subplot_pad.SetGrid()
 	
 	def add_labels(self, plotData):
 		super(PlotRoot, self).add_labels(plotData)
 		
-		self.plot_pad.cd()
+		plotData.plot.plot_pad.cd()
 		self.legend = None
 		if plotData.plotdict["legend"] != None:
 			self.legend = ROOT.TLegend(*plotData.plotdict["legend"]);
@@ -400,28 +423,14 @@ class PlotRoot(plotbase.PlotBase):
 	def add_texts(self, plotData):
 		super(PlotRoot, self).add_texts(plotData)
 		if plotData.plotdict["texts"] != [None]:
-			self.plot_pad.cd()
+			plotData.plot.plot_pad.cd()
 			for x, y, text in zip(plotData.plotdict['texts_x'], plotData.plotdict['texts_y'], plotData.plotdict['texts']):
-				self.plot_pad.cd()
 				self.text_boxes.append(ROOT.TPaveText(0.0, 0.0, 1.0, 1.0, "NDC"))
 				self.text_boxes[-1].AddText(x, y, text*5)
 				self.text_boxes[-1].SetFillStyle(0)
 				self.text_boxes[-1].SetShadowColor(0)
 				self.text_boxes[-1].SetTextSize(0.05)
 				self.text_boxes[-1].Draw("SAME")
-	
-	def save_canvas(self, plotData):
-		super(PlotRoot, self).save_canvas(plotData)
-		
-		self.canvas.RedrawAxis()
-		if not self.plot_pad is None:
-			self.plot_pad.RedrawAxis()
-		if not self.subplot_pad is None:
-			self.subplot_pad.RedrawAxis()
-		
-		for output_filename in plotData.plotdict["output_filenames"]:
-			self.canvas.SaveAs(output_filename)
-			log.info("Created plot \"%s\"." % output_filename)
 	
 	@staticmethod
 	def _get_dimension(root_object):
