@@ -1,8 +1,7 @@
 #!/bin/bash
 
-
 # get path of Artus installation
-if [[ $0 == *"${CMSSW_BASE}/bin/"* ]]; then
+if [[ ${BASH_SOURCE[0]} == *"${CMSSW_BASE}/bin/"* || ${BASH_SOURCE[0]} == *"${CMSSW_BASE}/src/Artus/"* ]]; then
 	export ARTUSPATH=$CMSSW_BASE/src/Artus
 else
 	# get Artus dir relative to location of this script
