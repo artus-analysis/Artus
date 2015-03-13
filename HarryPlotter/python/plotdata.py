@@ -34,6 +34,7 @@ class PlotData(object):
 			for filename in self.plotdict["output_filenames"]:
 				self.plot.save(filename)
 				log.info("Created plot \"%s\"." % filename)
+			return self.plotdict["output_filenames"]
 
 
 class PlotContainer(object):
