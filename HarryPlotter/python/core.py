@@ -185,14 +185,10 @@ class HarryCore(object):
 		# prepare aguments for all processors before running them
 		output_filenames = []
 		for processor in self.processors:
-			tmpPlotData = copy.deepcopy(plotData) if isinstance(processor, PlotBase) else plotData
-			processor.prepare_args(self.parser, tmpPlotData)
-			processor.run(tmpPlotData)
+			processor.prepare_args(self.parser, plotData)
+			processor.run(plotData)
 			if isinstance(processor, PlotBase):
-				output_filenames.extend(tmpPlotData.plotdict.get("output_filenames", []))
-			else:
-				plotData = tmpPlotData
-		plotData = tmpPlotData
+				output_filenames.extend(plotData.plotdict.get("output_filenames", []))
 		output_filenames = list(set(output_filenames))
 		
 		# save plots
