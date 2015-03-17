@@ -44,6 +44,7 @@
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsUpperAbsEtaCutFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/TriggerMatchingFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/GenMatchingFilters.h"
+#include "Artus/KappaAnalysis/interface/Filters/GenTauMatchingRecoParticleMinDeltaRFilter.h"
 #include "Artus/KappaAnalysis/interface/Filters/GenDiLeptonDecayModeFilter.h"
 #include "Artus/KappaAnalysis/interface/Filters/GoodPrimaryVertexFilter.h"
 #include "Artus/KappaAnalysis/interface/Filters/BeamScrapingFilter.h"
@@ -219,6 +220,14 @@ FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
 		return new TauGenMatchingFilter();
 	else if(id == JetGenMatchingFilter().GetFilterId())
 		return new JetGenMatchingFilter();
+	else if(id == GenTauMatchingRecoElectronMinDeltaRFilter().GetFilterId())
+		return new GenTauMatchingRecoElectronMinDeltaRFilter();
+	else if(id == GenTauMatchingRecoMuonMinDeltaRFilter().GetFilterId())
+		return new GenTauMatchingRecoMuonMinDeltaRFilter();
+	else if(id == GenTauMatchingRecoTauMinDeltaRFilter().GetFilterId())
+		return new GenTauMatchingRecoTauMinDeltaRFilter();
+	//else if(id == GenTauMatchingRecoJetMinDeltaRFilter().GetFilterId())
+	//	return new GenTauMatchingRecoJetMinDeltaRFilter();
 	else if(id == GenDiLeptonDecayModeFilter().GetFilterId())
 		return new GenDiLeptonDecayModeFilter();
 	else if(id == GoodPrimaryVertexFilter().GetFilterId())
