@@ -342,5 +342,5 @@ def print_comments_from_json_files(json_dir, comment_key):
 		d = JsonDict(f).doIncludes().doComments()
 		string = "\t" + tools.get_colored_string(os.path.basename(f), "yellow")
 		if comment_key in d:
-			string += ("\n\t\t" + d[comment_key])
+			string += tools.get_indented_text("\n\t\t",  d[comment_key])
 		log.info(string)
