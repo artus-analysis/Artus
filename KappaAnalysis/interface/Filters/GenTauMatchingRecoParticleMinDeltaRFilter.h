@@ -34,26 +34,23 @@ public:
 		if ((product.*m_genTauMatchedObjects).size() >= 2)
 		{
 			float deltaRMatched = 0;
-			int matchid1 = 0;
-			for (typename std::map<TValidObject*, KGenTau*>::const_iterator validMatchedObject = (product.*m_genTauMatchedObjects).begin();
-			validMatchedObject != (product.*m_genTauMatchedObjects).end(); ++validMatchedObject)
+			for (typename std::map<TValidObject*, KGenTau*>::const_iterator validMatchedObject1 = (product.*m_genTauMatchedObjects).begin();
+			validMatchedObject1 != (product.*m_genTauMatchedObjects).end(); ++validMatchedObject1)
 			{
-				int matchid2 = 0;
 				for (typename std::map<TValidObject*, KGenTau*>::const_iterator validMatchedObject2 = (product.*m_genTauMatchedObjects).begin();
 						validMatchedObject2 != (product.*m_genTauMatchedObjects).end(); ++validMatchedObject2)
 				{
-					if (matchid2 > matchid1)
+					//make sure not to match lepton with itself
+					if (validMatchedObject1 != validMatchedObject2)
 					{
-						deltaRMatched = ROOT::Math::VectorUtil::DeltaR(validMatchedObject->first->p4, validMatchedObject2->first->p4);
+						deltaRMatched = ROOT::Math::VectorUtil::DeltaR(validMatchedObject1->first->p4, validMatchedObject2->first->p4);
 						if (deltaRMatched < (settings.*GetMinDeltaRMatchedRecoObjects)())
 						{
 							//std::cout << "Deleting event with DeltaR between matched particles of " << deltaRMatched << std::endl;
 							return false;
 						}
 					}
-					matchid2 += 1;
 				}
-				matchid1 += 1;
 			}
 		}
 		return true;

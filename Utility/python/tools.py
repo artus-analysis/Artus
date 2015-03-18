@@ -6,6 +6,7 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import array
+import copy
 import fcntl
 import re
 import termios
@@ -29,6 +30,33 @@ def matchingItem(regexItems, string):
 		if re.search(item, string) != None:
 			return item
 	return None
+
+def matching_sublist(input_list, whitelist=[], blacklist=[]):
+	"""returns subset of input_list (non) matching the regexps."""
+	whitelist_matches = []
+	if len(whitelist) == 0:
+		whitelist_matches = copy.deepcopy(input_list)
+	else:
+		for item in input_list:
+			for regex in whitelist:
+				if not re.search(regex, item) is None:
+					whitelist_matches.append(item)
+					continue
+	
+	output_list = []
+	if len(blacklist) == 0:
+		output_list = copy.deepcopy(whitelist_matches)
+	else:
+		for item in whitelist_matches:
+			keep = True
+			for regex in blacklist:
+				if not re.search(regex, item) is None:
+					keep = False
+					continue
+			if keep:
+				output_list.append(item)
+	
+	return output_list
 
 # http://codereview.stackexchange.com/questions/21532/python-3-finding-common-patterns-in-pairs-of-strings
 def longest_common_substring(S1, S2):
@@ -99,3 +127,4 @@ def get_indented_text(prefix, message, width=None):
 			subsequent_indent=subsequent_indent
 	)
 	return wrapper.fill(message)
+

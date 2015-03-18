@@ -2,7 +2,6 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/trim.hpp>
 
-//#include "HiggsAnalysis/KITHiggsToTauTau/interface/HttEnumTypes.h"
 #include "Artus/KappaAnalysis/interface/Filters/GenTauMatchingRecoParticleMinDeltaRFilter.h"
 
 /** Filter events with too close gen matched electrons
@@ -13,7 +12,7 @@ std::string GenTauMatchingRecoElectronMinDeltaRFilter::GetFilterId() const{
 
 GenTauMatchingRecoElectronMinDeltaRFilter::GenTauMatchingRecoElectronMinDeltaRFilter() :
 	GenTauMatchingRecoParticleMinDeltaRFilterBase<KElectron>(&product_type::m_genTauMatchedElectrons,
-															 &setting_type::GetMinDeltaRMatchedRecoElectrons)
+				&setting_type::GetMinDeltaRMatchedRecoElectrons)
 {
 }
 
@@ -26,7 +25,7 @@ std::string GenTauMatchingRecoMuonMinDeltaRFilter::GetFilterId() const{
 
 GenTauMatchingRecoMuonMinDeltaRFilter::GenTauMatchingRecoMuonMinDeltaRFilter() :
 	GenTauMatchingRecoParticleMinDeltaRFilterBase<KMuon>(&product_type::m_genTauMatchedMuons,
-														 &setting_type::GetMinDeltaRMatchedRecoMuons)
+				&setting_type::GetMinDeltaRMatchedRecoMuons)
 {
 }
 
@@ -40,6 +39,6 @@ std::string GenTauMatchingRecoTauMinDeltaRFilter::GetFilterId() const{
 
 GenTauMatchingRecoTauMinDeltaRFilter::GenTauMatchingRecoTauMinDeltaRFilter() :
 	GenTauMatchingRecoParticleMinDeltaRFilterBase<KTau>(&product_type::m_genTauMatchedTaus,
-														&setting_type::GetMinDeltaRMatchedRecoTaus)
+				&setting_type::GetMinDeltaRMatchedRecoTaus)
 {
 }
