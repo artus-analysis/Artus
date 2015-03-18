@@ -289,34 +289,20 @@ class PlotBase(processor.Processor):
 	def select_histograms(self, plotData):
 		sorted_nicks_to_keep = []
 		
-		# handle white list, which has HIGHER priority than the black list
-		for white_nick in plotData.plotdict["nicks_whitelist"]:
-			for nick in plotData.plotdict["nicks"]:
-				if (re.search(white_nick, nick)) != None and (nick not in sorted_nicks_to_keep):
-					sorted_nicks_to_keep.append(nick)
-		
-		# handle black list, which has LOWER priority than the white list
-		for nick in plotData.plotdict["nicks"]:
-			if nick not in sorted_nicks_to_keep:
-				keep = True
-				for black_nick in plotData.plotdict["nicks_blacklist"]:
-					if re.search(black_nick, nick) != None:
-						keep = False
-						log.debug("Exclude object with nick \"%s\" from being plotted." % nick)
-				if keep:
-					sorted_nicks_to_keep.append(nick)
-		
-		plotData.plotdict["nicks"] = sorted_nicks_to_keep
+		# handle regexps in white/black lists for nicks
+		plotData.plotdict["nicks"] = tools.matching_sublist(
+				plotData.plotdict["nicks"],
+				plotData.plotdict["nicks_whitelist"],
+				plotData.plotdict["nicks_blacklist"]
+		)
 		log.debug("Final order of object nicks for plotting: %s" % ", ".join(plotData.plotdict["nicks"]))
 		
 		# handle subplot regexps
-		subplot_nicks = []
-		for subplot_nick in plotData.plotdict["subplot_nicks"]:
-			for nick in plotData.plotdict["nicks"]:
-				if re.search(subplot_nick, nick) != None:
-					subplot_nicks.append(nick)
-					log.debug("Object with nick \"%s\" is selected for the subplot." % nick)
-		plotData.plotdict["subplot_nicks"] = subplot_nicks
+		plotData.plotdict["subplot_nicks"] = tools.matching_sublist(
+				plotData.plotdict["nicks"],
+				plotData.plotdict["subplot_nicks"]
+		)
+		log.debug("Object nicks for the subplot: %s" % ", ".join(plotData.plotdict["subplot_nicks"]))
 		plotData.plotdict["subplots"] = [nick in plotData.plotdict["subplot_nicks"] for nick in plotData.plotdict["nicks"]]
 
 	def set_style(self, plotData):
