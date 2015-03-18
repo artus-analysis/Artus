@@ -220,8 +220,10 @@ class PlotBase(processor.Processor):
 		# formatting options
 		if plotData.plotdict["labels"] == None or all([i == None for i in plotData.plotdict["labels"]]):
 			plotData.plotdict["labels"] = plotData.plotdict["nicks"]
-		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles", "x_errors", "y_errors", "stacks", "axes"],
-				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]))
+		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles", "x_errors", "y_errors", "axes"],
+				n_items = max([len(plotData.plotdict[l]) for l in ["nicks"] if plotData.plotdict[l] is not None]))
+		# stacks are expanded by appending None's
+		plotData.plotdict["stacks"] = plotData.plotdict["stacks"]+[None]*(len(plotData.plotdict["nicks"])-len(plotData.plotdict["stacks"]))
 		
 		for index, error in enumerate(plotData.plotdict["x_errors"]):
 			if error is None:
@@ -264,7 +266,6 @@ class PlotBase(processor.Processor):
 			plotData.plotdict["export_json"] = os.path.join(plotData.plotdict["output_dir"], plotData.plotdict["filename"]+".json")
 
 		# prepare nicknames for stacked plots
-		stacks = plotData.plotdict["stacks"]
 		plotData.plotdict["stacks"] = [stack if stack != None else ("stack%d" % index) for index, stack in enumerate(plotData.plotdict["stacks"])]
 
 		# prepare arguments for text label(s)
