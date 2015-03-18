@@ -29,7 +29,7 @@ class Divide(analysisbase.AnalysisBase):
 	def prepare_args(self, parser, plotData):
 		super(Divide, self).prepare_args(parser, plotData)
 		self.prepare_list_args(plotData, ["divide_numerator_nicks", "divide_denominator_nicks", "divide_result_nicks"])
-		super(Divide, self).auto_set_arguments(plotData, ["divide_numerator_nicks", "divide_denominator_nicks"],
+		self.auto_set_arguments(plotData, ["divide_numerator_nicks", "divide_denominator_nicks"],
 				"divide_result_nicks", "divide")
 
 	def run(self, plotData=None):
