@@ -232,8 +232,8 @@ class PlotRoot(plotbase.PlotBase):
 		
 		self.y_min = sys.float_info.max
 		self.y_max = -sys.float_info.max
-		self.y_sub_min = sys.float_info.max
-		self.y_sub_max = -sys.float_info.max
+		self.y_subplot_min = sys.float_info.max
+		self.y_subplot_max = -sys.float_info.max
 		
 		self.z_min = sys.float_info.max
 		self.z_max = -sys.float_info.max
@@ -251,8 +251,8 @@ class PlotRoot(plotbase.PlotBase):
 			if subplot == True:
 				index_subplot += 1
 				pad = plotData.plot.subplot_pad
-				y_min = self.y_sub_min
-				y_max = self.y_sub_max
+				y_min = self.y_subplot_min
+				y_max = self.y_subplot_max
 			else:
 				index_plot += 1
 				pad = plotData.plot.plot_pad
