@@ -3,16 +3,16 @@
 #include <boost/algorithm/string/trim.hpp>
 
 //#include "HiggsAnalysis/KITHiggsToTauTau/interface/HttEnumTypes.h"
-#include "Artus/KappaAnalysis/interface/Filters/ValidLeptonMinDeltaRFilter.h"
+#include "Artus/KappaAnalysis/interface/Filters/ValidLeptonsMinDeltaRFilter.h"
 
 /** Filter events with too close valid electrons
  */
-std::string ValidElectronMinDeltaRFilter::GetFilterId() const{
-	return "ValidElectronMinDeltaRFilter";
+std::string ValidElectronsMinDeltaRFilter::GetFilterId() const{
+	return "ValidElectronsMinDeltaRFilter";
 }
 
-ValidElectronMinDeltaRFilter::ValidElectronMinDeltaRFilter() :
-	ValidLeptonMinDeltaRFilterBase<KElectron>(&product_type::m_validElectrons,
+ValidElectronsMinDeltaRFilter::ValidElectronsMinDeltaRFilter() :
+	ValidLeptonsMinDeltaRFilterBase<KElectron>(&product_type::m_validElectrons,
 		&setting_type::GetMinDeltaRValidElectrons)
 {
 }
@@ -20,12 +20,12 @@ ValidElectronMinDeltaRFilter::ValidElectronMinDeltaRFilter() :
 
 /** Filter events with too close valid muons
  */
-std::string ValidMuonMinDeltaRFilter::GetFilterId() const{
-	return "ValidMuonMinDeltaRFilter";
+std::string ValidMuonsMinDeltaRFilter::GetFilterId() const{
+	return "ValidMuonsMinDeltaRFilter";
 }
 
-ValidMuonMinDeltaRFilter::ValidMuonMinDeltaRFilter() :
-	ValidLeptonMinDeltaRFilterBase<KMuon>(&product_type::m_validMuons,
+ValidMuonsMinDeltaRFilter::ValidMuonsMinDeltaRFilter() :
+	ValidLeptonsMinDeltaRFilterBase<KMuon>(&product_type::m_validMuons,
 		&setting_type::GetMinDeltaRValidMuons)
 {
 }
@@ -34,12 +34,12 @@ ValidMuonMinDeltaRFilter::ValidMuonMinDeltaRFilter() :
 
 /** Filter events with too close valid taus
  */
-std::string ValidTauMinDeltaRFilter::GetFilterId() const{
-	return "ValidTauMinDeltaRFilter";
+std::string ValidTausMinDeltaRFilter::GetFilterId() const{
+	return "ValidTausMinDeltaRFilter";
 }
 
-ValidTauMinDeltaRFilter::ValidTauMinDeltaRFilter() :
-	ValidLeptonMinDeltaRFilterBase<KTau>(&product_type::m_validTaus,
+ValidTausMinDeltaRFilter::ValidTausMinDeltaRFilter() :
+	ValidLeptonsMinDeltaRFilterBase<KTau>(&product_type::m_validTaus,
 		&setting_type::GetMinDeltaRValidTaus)
 {
 }
@@ -47,12 +47,12 @@ ValidTauMinDeltaRFilter::ValidTauMinDeltaRFilter() :
 
 /** Filter events with too close valid leptons
  */
-std::string ValidLeptonMinDeltaRFilter::GetFilterId() const{
-	return "ValidLeptonMinDeltaRFilter";
+std::string ValidLeptonsMinDeltaRFilter::GetFilterId() const{
+	return "ValidLeptonsMinDeltaRFilter";
 }
 
-ValidLeptonMinDeltaRFilter::ValidLeptonMinDeltaRFilter() :
-	ValidLeptonMinDeltaRFilterBase<KLepton>(&product_type::m_validLeptons,
+ValidLeptonsMinDeltaRFilter::ValidLeptonsMinDeltaRFilter() :
+	ValidLeptonsMinDeltaRFilterBase<KLepton>(&product_type::m_validLeptons,
 		&setting_type::GetMinDeltaRValidLeptons)
 {
 }

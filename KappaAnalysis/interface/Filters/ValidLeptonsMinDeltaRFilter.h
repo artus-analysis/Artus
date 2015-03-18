@@ -14,14 +14,14 @@
  *	Needs to run after the gen tau matching producer
  */
 template<class TValidObject>
-class ValidLeptonMinDeltaRFilterBase: public FilterBase<KappaTypes> {
+class ValidLeptonsMinDeltaRFilterBase: public FilterBase<KappaTypes> {
 public:
 
 	typedef typename KappaTypes::event_type event_type;
 	typedef typename KappaTypes::product_type product_type;
 	typedef typename KappaTypes::setting_type setting_type;
 
-	ValidLeptonMinDeltaRFilterBase(std::vector<TValidObject*> product_type::*validLeptons,
+	ValidLeptonsMinDeltaRFilterBase(std::vector<TValidObject*> product_type::*validLeptons,
 	                      float (setting_type::*GetMinDeltaRValidLeptons)(void) const) :
 		m_validLeptons(validLeptons),
 		GetMinDeltaRValidLeptons(GetMinDeltaRValidLeptons)
@@ -67,47 +67,47 @@ private:
 
 /** Filter events with too close valid electrons
  */
-class ValidElectronMinDeltaRFilter: public ValidLeptonMinDeltaRFilterBase<KElectron>
+class ValidElectronsMinDeltaRFilter: public ValidLeptonsMinDeltaRFilterBase<KElectron>
 {
 
 public:
 
-	ValidElectronMinDeltaRFilter();
+	ValidElectronsMinDeltaRFilter();
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
 };
 
 
 /** Filter events with too close valid muons
  */
-class ValidMuonMinDeltaRFilter: public ValidLeptonMinDeltaRFilterBase<KMuon>
+class ValidMuonsMinDeltaRFilter: public ValidLeptonsMinDeltaRFilterBase<KMuon>
 {
 
 public:
 
-	ValidMuonMinDeltaRFilter();
+	ValidMuonsMinDeltaRFilter();
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
 };
 
 
 /** Filter events with too close valid taus
  */
-class ValidTauMinDeltaRFilter: public ValidLeptonMinDeltaRFilterBase<KTau>
+class ValidTausMinDeltaRFilter: public ValidLeptonsMinDeltaRFilterBase<KTau>
 {
 
 public:
 
-	ValidTauMinDeltaRFilter();
+	ValidTausMinDeltaRFilter();
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
 };
 
 /** Filter events with too close valid leptons
  */
-class ValidLeptonMinDeltaRFilter: public ValidLeptonMinDeltaRFilterBase<KLepton>
+class ValidLeptonsMinDeltaRFilter: public ValidLeptonsMinDeltaRFilterBase<KLepton>
 {
 
 public:
 
-	ValidLeptonMinDeltaRFilter();
+	ValidLeptonsMinDeltaRFilter();
 	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
 };
 
