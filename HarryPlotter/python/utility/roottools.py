@@ -236,7 +236,7 @@ class RootTools(object):
 							          str(len(self.x_bin_edges[histo_type])-1) + ", " + str(self.x_bin_edges[histo_type]) + ", " +
 							          str(len(self.y_bin_edges[histo_type])-1) + ", " + str(self.y_bin_edges[histo_type]) + ")")
 						else:
-							root_histogram = ROOT.TH3F(name, "",
+							root_histogram = ROOT.TH3D(name, "",
 							                           len(self.x_bin_edges[histo_type])-1, self.x_bin_edges[histo_type],
 							                           len(self.y_bin_edges[histo_type])-1, self.y_bin_edges[histo_type],
 							                           len(self.z_bin_edges[histo_type])-1, self.z_bin_edges[histo_type])
@@ -251,14 +251,14 @@ class RootTools(object):
 							log.debug("TProfile(\"" + name + ", \"\", " +
 							          str(len(self.x_bin_edges[histo_type])-1) + ", " + str(self.x_bin_edges[histo_type]) + ")")
 						else:
-							root_histogram = ROOT.TH2F(name, "",
+							root_histogram = ROOT.TH2D(name, "",
 							                           len(self.x_bin_edges[histo_type])-1, self.x_bin_edges[histo_type],
 							                           len(self.y_bin_edges[histo_type])-1, self.y_bin_edges[histo_type])
 							log.debug("TH2F(\"" + name + ", \"\", " +
 							          str(len(self.x_bin_edges[histo_type])-1) + ", " + str(self.x_bin_edges[histo_type]) + ", " +
 							          str(len(self.y_bin_edges[histo_type])-1) + ", " + str(self.y_bin_edges[histo_type]) + ")")
 					else:
-						root_histogram = ROOT.TH1F(name, "",
+						root_histogram = ROOT.TH1D(name, "",
 						                           len(self.x_bin_edges[histo_type])-1, self.x_bin_edges[histo_type])
 						log.debug("TH1F(\"" + name + ", \"\", " +
 						          str(len(self.x_bin_edges[histo_type])-1) + ", " + str(self.x_bin_edges[histo_type]) + ")")
