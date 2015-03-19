@@ -52,7 +52,7 @@ class MplPlotContainer(plotdata.PlotContainer):
 		
 	def save(self, filename):
 		self.fig.savefig(filename)
-		if self.save_legend() != False:
+		if self.save_legend != False:
 			legend_filename = os.path.join(os.path.dirname(filename), self.save_legend+os.path.splitext(filename)[-1])
 			legend_fig.savefig(
 					legend_filename,
@@ -104,8 +104,8 @@ class PlotMpl(plotbase.PlotBase):
 
 		self.prepare_list_args(plotData, ["nicks", "step", "zorder", "edgecolors"])
 
-		if plotData.plotdict['ratio'] or (plotData.plotdict['subplot_nicks'] != []):
-			self.set_default_ratio_colors(plotData)
+		# if plotData.plotdict['subplot_nicks'] != []):
+			# self.set_default_ratio_colors(plotData)
 
 		# defaults for markers
 		for index, marker in enumerate(plotData.plotdict["markers"]):
@@ -132,11 +132,6 @@ class PlotMpl(plotbase.PlotBase):
 				else:
 					plotData.plotdict["zorder"][index] = index
 
-		if plotData.plotdict['ratio'] or (plotData.plotdict['subplot_nicks'] != []):
-			for index, marker in enumerate(plotData.plotdict["ratio_markers"]):
-				if marker is None:
-					plotData.plotdict["ratio_markers"][index] = '.'
-
 		# remove escape slashes
 		for index, line_style in enumerate(plotData.plotdict["line_styles"]):
 			plotData.plotdict["line_styles"][index] = line_style.replace("\\", "") if line_style else line_style
@@ -162,21 +157,21 @@ class PlotMpl(plotbase.PlotBase):
 	
 	def create_canvas(self, plotData):
 		fig = plt.figure(figsize = [
-			plotData.plotdict['n_axes_x'] * matplotlib.rcParams['figure.figsize'][0],
-			plotData.plotdict['n_axes_y'] * matplotlib.rcParams['figure.figsize'][1]
+			plotData.plotdict['axes_layout'][0] * matplotlib.rcParams['figure.figsize'][0],
+			plotData.plotdict['axes_layout'][1] * matplotlib.rcParams['figure.figsize'][1]
 			])
 		axes = None
 		ax2 = None
-		if (plotData.plotdict["ratio"] or (plotData.plotdict["subplot_nicks"] != [])):
+		if (plotData.plotdict["subplot_nicks"] != []):
 			axes = [plt.subplot2grid((4,1), (0, 0), rowspan=3)]
 			ax2 = plt.subplot2grid((4,1), (3, 0))
 		else:
 			axes = []
-			for i in range(plotData.plotdict['n_axes_x'] * plotData.plotdict['n_axes_y']):
-				axes += [fig.add_subplot( plotData.plotdict['n_axes_y'], plotData.plotdict['n_axes_x'], i,
+			for i in range(plotData.plotdict['axes_layout'][0] * plotData.plotdict['axes_layout'][1]):
+				axes += [fig.add_subplot(plotData.plotdict['axes_layout'][0], plotData.plotdict['axes_layout'][1], i,
 					**({'projection':'3d'} if (plotData.plotdict['3d'] is not False) else {}))]
 
-		if (plotData.plotdict["ratio"] or (plotData.plotdict["subplot_nicks"]!= [])) and plotData.plotdict["y_subplot_lims"] != None:
+		if (plotData.plotdict["subplot_nicks"]!= []) and plotData.plotdict["y_subplot_lims"] != None:
 			ax2.set_ylim(plotData.plotdict["y_subplot_lims"][0],plotData.plotdict["y_subplot_lims"][1])
 		
 		plotData.plot = MplPlotContainer(fig, axes, ax2, plotData.plotdict["save_legend"])
@@ -186,16 +181,21 @@ class PlotMpl(plotbase.PlotBase):
 
 
 	def make_plots(self, plotData):
+
 		zip_arguments = self.get_zip_arguments(plotData)
 
 		for nick, color, edgecolor, label, marker, x_error, y_error, line_style, step, zorder, n_ax in zip(*zip_arguments):
+			if nick in plotData.plotdict["subplot_nicks"]:
+				ax = plotData.plot.ax2
+			else:
+				ax = plotData.plot.axes[n_ax]
 			log.info("Plotting nick '{0}' with label '{1}'".format(nick, label))
 			root_object = plotData.plotdict["root_objects"][nick]
 
 			if isinstance(root_object, ROOT.TGraph):
 				self.plot_dimension = 1
 				mplhist = MplGraph(root_object)
-				self.plot_errorbar(mplhist, ax=plotData.plot.axes[n_ax],
+				self.plot_errorbar(mplhist, ax=ax,
 				                   show_xerr=x_error, show_yerr=y_error,
 				                   color=color, fmt=marker, capsize=0,
 				                   linestyle=line_style, label=label, zorder=zorder)
@@ -210,22 +210,21 @@ class PlotMpl(plotbase.PlotBase):
 				vmax = plotData.plotdict["z_lims"][1] if plotData.plotdict["z_lims"] else None
 				cmap = plt.cm.get_cmap(plotData.plotdict["colormap"])
 
-
 				if plotData.plotdict["3d"] is not False:
-					self.image = self.plot_3d(mplhist, ax=plotData.plot.axes[n_ax], cmap=cmap, angle=plotData.plotdict["3d"])
+					self.image = self.plot_3d(mplhist, ax=ax, cmap=cmap, angle=plotData.plotdict["3d"])
 				else:
-					self.image = self.plot_contour1d(mplhist, ax=plotData.plot.axes[n_ax], vmin=vmin, vmax=vmax, z_log=plotData.plotdict["z_log"], cmap=cmap)
+					self.image = self.plot_contour1d(mplhist, ax=ax, vmin=vmin, vmax=vmax, z_log=plotData.plotdict["z_log"], cmap=cmap)
 
 			elif isinstance(root_object, ROOT.TH1):
 				mplhist = MplHisto(root_object)
 				self.plot_dimension = mplhist.dimension
 
 				if marker=="bar":
-					self.plot_hist1d(mplhist, style='bar', ax=plotData.plot.axes[n_ax], show_yerr=y_error, label=label, color=color, edgecolor=edgecolor, alpha=1.0, zorder=zorder)
+					self.plot_hist1d(mplhist, style='bar', ax=ax, show_yerr=y_error, label=label, color=color, edgecolor=edgecolor, alpha=1.0, zorder=zorder)
 				elif marker=='fill':
-					self.plot_hist1d(mplhist, style='fill', ax=plotData.plot.axes[n_ax], show_yerr=y_error, label=label, color=color, edgecolor=edgecolor, alpha=1.0, zorder=zorder)
+					self.plot_hist1d(mplhist, style='fill', ax=ax, show_yerr=y_error, label=label, color=color, edgecolor=edgecolor, alpha=1.0, zorder=zorder)
 				else:
-					self.plot_errorbar(mplhist, ax=plotData.plot.axes[n_ax],
+					self.plot_errorbar(mplhist, ax=ax,
 					                   show_xerr=x_error, show_yerr=y_error,
 					                   step=step, color=color, fmt=marker,
 					                   capsize=2, linestyle=line_style, label=label, zorder=zorder)
@@ -239,28 +238,8 @@ class PlotMpl(plotbase.PlotBase):
 				for x in np.arange(x_range[0], x_range[1], (float(x_range[1])-float(x_range[0]))/sampling_points):
 					x_values.append(x)
 					y_values.append(root_object.Eval(x))
-				plotData.plot.axes[n_ax].plot(x_values, y_values, label=label, color=color, linestyle=line_style, linewidth=2)
+				ax.plot(x_values, y_values, label=label, color=color, linestyle=line_style, linewidth=2)
 
-		if (plotData.plotdict["ratio"] or (plotData.plotdict["subplot_nicks"] != [])):
-			root_objects = []
-			if plotData.plotdict["ratio"]:
-				root_objects += plotData.plotdict["root_ratio_histos"]
-			if plotData.plotdict["subplot_nicks"] != []:
-				root_objects += [plotData.plotdict['root_objects'][nick] for nick in plotData.plotdict["subplot_nicks"]]
-
-			for root_object, ratio_color, ratio_x_error, ratio_y_error, ratio_marker, ratio_label, ratio_line_style in zip(root_objects,
-				                                               plotData.plotdict["ratio_colors"],
-				                                               plotData.plotdict["ratio_x_errors"],
-				                                               plotData.plotdict["ratio_y_errors"],
-				                                               plotData.plotdict["ratio_markers"],
-				                                               plotData.plotdict["ratio_labels"],
-				                                               plotData.plotdict["ratio_line_styles"]):
-				plotData.plot.ax2.axhline(1.0, color='black')
-				mplhist_ratio = MplHisto(root_object)
-				self.plot_errorbar(mplhist_ratio, ax=plotData.plot.ax2, label=ratio_label,
-				                   show_xerr=ratio_x_error, show_yerr=ratio_y_error,
-				                   step=step, color=ratio_color, fmt=ratio_marker,
-				                   capsize=0, linestyle=ratio_line_style, zorder=zorder)
 
 	def modify_axes(self, plotData):
 		# do what is needed for all plots:
@@ -309,7 +288,7 @@ class PlotMpl(plotbase.PlotBase):
 					ax.set_ylim(ymin=0.9, ymax=ax.get_ylim()[1]*2)
 
 			# do special things for subplots
-			if plotData.plotdict["ratio"] or (plotData.plotdict["subplot_nicks"] != []):
+			if plotData.plotdict["subplot_nicks"]:
 				plotData.plot.ax2.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]),position=(1., 0.), va='top', ha='right')
 				plotData.plot.ax2.set_ylabel(plotData.plotdict["y_subplot_label"])
 				plotData.plot.ax2.grid(plotData.plotdict["subplot_grid"])
@@ -331,7 +310,7 @@ class PlotMpl(plotbase.PlotBase):
 
 			# do special things for 2D Plots
 			if self.plot_dimension == 2:
-				if not (plotData.plotdict["ratio"] or (plotData.plotdict["subplot_nicks"] != [])):
+				if not plotData.plotdict["subplot_nicks"]:
 					cb = plotData.plot.fig.colorbar(self.image, ax=ax)
 				if plotData.plotdict["z_label"]:
 					cb.set_label(self.nicelabels.get_nice_label(plotData.plotdict["z_label"]))
