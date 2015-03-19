@@ -93,7 +93,6 @@ class PlotRoot(plotbase.PlotBase):
 				else:
 					root_color = eval(color)
 				plotData.plotdict["colors"][index] = root_color
-		self.set_default_ratio_colors(plotData)
 		
 		# defaults for markers
 		for index, (marker, fill_style, stack) in enumerate(zip(plotData.plotdict["markers"],
