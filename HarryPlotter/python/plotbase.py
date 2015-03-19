@@ -83,10 +83,10 @@ class PlotBase(processor.Processor):
 		                               help="Custom ticks for the Z-axis")
 		self.axis_options.add_argument("--z-tick-labels", type=str, nargs="+",
 		                               help="Custom tick labels for the Z-axis")
-		self.axis_options.add_argument("--axes-layout", type=int, nargs=2, default=[1,1],
-		                                     help="Number of axis/pad element(s) in xy-direction. Default is %(default)s")
-		self.axis_options.add_argument("--axes", type=int, nargs="+", default=0,
-		                                     help="Index/Indices of axis/pad element(s) on which a plot is plotted. Default is %(default)s")
+		# self.axis_options.add_argument("--axes-layout", type=int, nargs=2, default=[1,1],
+		                                     # help="Number of axis/pad element(s) in xy-direction. Default is %(default)s")
+		# self.axis_options.add_argument("--axes", type=int, nargs="+", default=0,
+		                                     # help="Index/Indices of axis/pad element(s) on which a plot is plotted. Default is %(default)s")
 
 		#plot formatting
 		self.formatting_options = parser.add_argument_group("Formatting options")
@@ -195,7 +195,7 @@ class PlotBase(processor.Processor):
 		# formatting options
 		if plotData.plotdict["labels"] == None or all([i == None for i in plotData.plotdict["labels"]]):
 			plotData.plotdict["labels"] = plotData.plotdict["nicks"]
-		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles", "x_errors", "y_errors", "axes"],
+		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles", "x_errors", "y_errors"],
 				n_items = max([len(plotData.plotdict[l]) for l in ["nicks"] if plotData.plotdict[l] is not None]))
 		# stacks are expanded by appending None's
 		plotData.plotdict["stacks"] = plotData.plotdict["stacks"]+[None]*(len(plotData.plotdict["nicks"])-len(plotData.plotdict["stacks"]))

@@ -25,10 +25,9 @@ import numpy as np
 
 
 class MplPlotContainer(plotdata.PlotContainer):
-	def __init__(self, fig=None, axes=None, ax2=None, save_legend=False):
+	def __init__(self, fig=None, axes=None, save_legend=False):
 		self.fig = fig
 		self.axes = axes
-		self.ax2 = ax2
 		self.save_legend = save_legend
 		self.legend_fig = None
 	
@@ -110,7 +109,7 @@ class PlotMpl(plotbase.PlotBase):
 		# defaults for markers
 		for index, marker in enumerate(plotData.plotdict["markers"]):
 			if marker is None:
-				if index == 0 and len(plotData.plotdict["markers"]) > 1 :
+				if (index == 0 and len(plotData.plotdict["markers"]) > 1)  or plotData.plotdict['subplots'][index]:
 					plotData.plotdict["markers"][index] = "."
 				else:
 					plotData.plotdict["markers"][index] = "fill"
@@ -156,25 +155,20 @@ class PlotMpl(plotbase.PlotBase):
 		super(PlotMpl, self).set_style(plotData)
 	
 	def create_canvas(self, plotData):
-		fig = plt.figure(figsize = [
-			plotData.plotdict['axes_layout'][0] * matplotlib.rcParams['figure.figsize'][0],
-			plotData.plotdict['axes_layout'][1] * matplotlib.rcParams['figure.figsize'][1]
-			])
-		axes = None
-		ax2 = None
-		if (plotData.plotdict["subplot_nicks"] != []):
-			axes = [plt.subplot2grid((4,1), (0, 0), rowspan=3)]
-			ax2 = plt.subplot2grid((4,1), (3, 0))
+		# fig = plt.figure(figsize = [
+			# plotData.plotdict['axes_layout'][0] * matplotlib.rcParams['figure.figsize'][0],
+			# plotData.plotdict['axes_layout'][1] * matplotlib.rcParams['figure.figsize'][1]
+			# ])
+		fig = plt.figure()
+		axes = []
+		if plotData.plotdict["subplot_nicks"]:
+			axes = [plt.subplot2grid((4,1), (0, 0), rowspan=3),
+			        plt.subplot2grid((4,1), (3, 0))]
 		else:
-			axes = []
-			for i in range(plotData.plotdict['axes_layout'][0] * plotData.plotdict['axes_layout'][1]):
-				axes += [fig.add_subplot(plotData.plotdict['axes_layout'][0], plotData.plotdict['axes_layout'][1], i,
-					**({'projection':'3d'} if (plotData.plotdict['3d'] is not False) else {}))]
+			kwargs = {'projection':'3d'} if (plotData.plotdict['3d'] is not False) else {}
+			axes = fig.add_subplot(1,1,1, **kwargs)
 
-		if (plotData.plotdict["subplot_nicks"]!= []) and plotData.plotdict["y_subplot_lims"] != None:
-			ax2.set_ylim(plotData.plotdict["y_subplot_lims"][0],plotData.plotdict["y_subplot_lims"][1])
-		
-		plotData.plot = MplPlotContainer(fig, axes, ax2, plotData.plotdict["save_legend"])
+		plotData.plot = MplPlotContainer(fig, axes, plotData.plotdict["save_legend"])
 
 	def prepare_histograms(self, plotData):
 		super(PlotMpl, self).prepare_histograms(plotData)
@@ -184,11 +178,11 @@ class PlotMpl(plotbase.PlotBase):
 
 		zip_arguments = self.get_zip_arguments(plotData)
 
-		for nick, color, edgecolor, label, marker, x_error, y_error, line_style, step, zorder, n_ax in zip(*zip_arguments):
+		for nick, color, edgecolor, label, marker, x_error, y_error, line_style, step, zorder in zip(*zip_arguments):
 			if nick in plotData.plotdict["subplot_nicks"]:
-				ax = plotData.plot.ax2
+				ax = plotData.plot.axes[1]
 			else:
-				ax = plotData.plot.axes[n_ax]
+				ax = plotData.plot.axes[0]
 			log.info("Plotting nick '{0}' with label '{1}'".format(nick, label))
 			root_object = plotData.plotdict["root_objects"][nick]
 
@@ -245,78 +239,85 @@ class PlotMpl(plotbase.PlotBase):
 		# do what is needed for all plots:
 		super(PlotMpl, self).modify_axes(plotData)
 
-		#iterate over all axis objects
-		for ax in plotData.plot.axes:
+		# Main axis
+		ax = plotData.plot.axes[0]
+		ax.grid(plotData.plotdict["grid"])
+		# set axis labels
+		if not (plotData.plotdict["ratio"] or (plotData.plotdict['subplot_nicks'] != [])):
+			ax.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]), position=(1., 0.), va='top', ha='right')
+		ax.set_ylabel(self.nicelabels.get_nice_label(plotData.plotdict["y_label"]), position=(0., 1.), va='top', ha='right')
 
-			ax.grid(plotData.plotdict["grid"])
+		# set axis ticks
+		if plotData.plotdict["x_ticks"] is not None:
+			ax.set_xticks(plotData.plotdict["x_ticks"])
+		if plotData.plotdict["y_ticks"] is not None:
+			ax.set_yticks(plotData.plotdict["y_ticks"])
+		ax.ticklabel_format(style='sci',scilimits=(-3,4),axis='both')
 
-			# set axis labels
-			if not (plotData.plotdict["ratio"] or (plotData.plotdict['subplot_nicks'] != [])):
-				ax.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]), position=(1., 0.), va='top', ha='right')
-			ax.set_ylabel(self.nicelabels.get_nice_label(plotData.plotdict["y_label"]), position=(0., 1.), va='top', ha='right')
-
-			# set axis ticks
+		# set axis limits
+		if self.plot_dimension != 3:
+			if plotData.plotdict["x_lims"] is not None:
+				ax.set_xlim([plotData.plotdict["x_lims"][0],plotData.plotdict["x_lims"][1]])
+			else:
+				ax.set_xlim(plotData.plotdict['root_objects'][plotData.plotdict['nicks'][0]].GetXaxis().GetBinLowEdge(1),
+						plotData.plotdict['root_objects'][plotData.plotdict['nicks'][0]].GetXaxis().GetBinUpEdge(
+							plotData.plotdict['root_objects'][plotData.plotdict['nicks'][0]].GetNbinsX()))
+			if plotData.plotdict["y_lims"] is not None:
+				ax.set_ylim(plotData.plotdict["y_lims"][0],plotData.plotdict["y_lims"][1])
+			else:
+				if ax.dataLim.min[1] >= (-1E-6) and ax.get_ylim()[0] < 0.:
+					ax.set_ylim(ymin=0.0)
+		# set log scale
+		if plotData.plotdict["x_log"]:
+			ax.set_xscale('log', nonposx='clip')
+			# for log plots, we have to set the ticks again and set the formatter:
 			if plotData.plotdict["x_ticks"] is not None:
 				ax.set_xticks(plotData.plotdict["x_ticks"])
-			if plotData.plotdict["y_ticks"] is not None:
-				ax.set_yticks(plotData.plotdict["y_ticks"])
-			ax.ticklabel_format(style='sci',scilimits=(-3,4),axis='both')
+				ax.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+		if plotData.plotdict["y_log"]:
+			ax.set_yscale('log', nonposy='clip')
+			if plotData.plotdict["y_lims"] is None:
+				ax.set_ylim(ymin=0.9, ymax=ax.get_ylim()[1]*2)
 
-			# set axis limits
-			if self.plot_dimension != 3:
-				if plotData.plotdict["x_lims"] is not None:
-					ax.set_xlim([plotData.plotdict["x_lims"][0],plotData.plotdict["x_lims"][1]])
-				else:
-					ax.set_xlim(plotData.plotdict['root_objects'][plotData.plotdict['nicks'][0]].GetXaxis().GetBinLowEdge(1),
-							plotData.plotdict['root_objects'][plotData.plotdict['nicks'][0]].GetXaxis().GetBinUpEdge(
-								plotData.plotdict['root_objects'][plotData.plotdict['nicks'][0]].GetNbinsX()))
-				if plotData.plotdict["y_lims"] is not None:
-					ax.set_ylim(plotData.plotdict["y_lims"][0],plotData.plotdict["y_lims"][1])
-				else:
-					if ax.dataLim.min[1] >= (-1E-6) and ax.get_ylim()[0] < 0.:
-						ax.set_ylim(ymin=0.0)
-			# set log scale
+		# do special things for subplots
+		if plotData.plotdict["subplot_nicks"]:
+			ax2 = plotData.plot.axes[1]
+
+			# Horizontal line at unity
+			# TODO: should be made optional
+			ax2.axhline(1.0, color='black')
+
+			if plotData.plotdict["y_subplot_lims"] != None:
+				ax.set_ylim(*plotData.plotdict["y_subplot_lims"])
+
+			ax2.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]),position=(1., 0.), va='top', ha='right')
+			ax2.set_ylabel(plotData.plotdict["y_subplot_label"])
+			ax2.grid(plotData.plotdict["subplot_grid"])
+			# Don't show ticklabels on main plot
+			ax.xaxis.set_ticklabels([])
+			# Ratio plot shares xlims of main plot
+			ax2.set_xlim(ax.get_xlim())
 			if plotData.plotdict["x_log"]:
-				ax.set_xscale('log', nonposx='clip')
-				# for log plots, we have to set the ticks again and set the formatter:
-				if plotData.plotdict["x_ticks"] is not None:
-					ax.set_xticks(plotData.plotdict["x_ticks"])
-					ax.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
-			if plotData.plotdict["y_log"]:
-				ax.set_yscale('log', nonposy='clip')
-				if plotData.plotdict["y_lims"] is None:
-					ax.set_ylim(ymin=0.9, ymax=ax.get_ylim()[1]*2)
-
-			# do special things for subplots
-			if plotData.plotdict["subplot_nicks"]:
-				plotData.plot.ax2.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]),position=(1., 0.), va='top', ha='right')
-				plotData.plot.ax2.set_ylabel(plotData.plotdict["y_subplot_label"])
-				plotData.plot.ax2.grid(plotData.plotdict["subplot_grid"])
-				# Don't show ticklabels on main plot
-				ax.xaxis.set_ticklabels([])
-				# Ratio plot shares xlims of main plot
-				plotData.plot.ax2.set_xlim(ax.get_xlim())
+				ax2.set_xscale('log', nonposx='clip')
+			if plotData.plotdict["x_ticks"] is not None:
+				ax2.set_xticks(plotData.plotdict["x_ticks"])
 				if plotData.plotdict["x_log"]:
-					plotData.plot.ax2.set_xscale('log', nonposx='clip')
-				if plotData.plotdict["x_ticks"] is not None:
-					plotData.plot.ax2.set_xticks(plotData.plotdict["x_ticks"])
-					if plotData.plotdict["x_log"]:
-						plotData.plot.ax2.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
-				# for 2D plots with subplot, we need this in order to right-align the axes:
-				if self.plot_dimension == 2:
-					plotData.plot.fig.subplots_adjust(right=0.8)
-					cbar_ax = plotData.plot.fig.add_axes([0.82, 0.35, 0.05, 0.5])
-					cb = plotData.plot.fig.colorbar(self.image, cax=cbar_ax)
-
-			# do special things for 2D Plots
+					ax2.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+			# for 2D plots with subplot, we need this in order to right-align the axes:
 			if self.plot_dimension == 2:
-				if not plotData.plotdict["subplot_nicks"]:
-					cb = plotData.plot.fig.colorbar(self.image, ax=ax)
-				if plotData.plotdict["z_label"]:
-					cb.set_label(self.nicelabels.get_nice_label(plotData.plotdict["z_label"]))
-			elif self.plot_dimension == 3:
-				if plotData.plotdict["z_label"]:
-					ax.set_zlabel(self.nicelabels.get_nice_label(plotData.plotdict["z_label"]))
+				plotData.plot.fig.subplots_adjust(right=0.8)
+				cbar_ax = plotData.plot.fig.add_axes([0.82, 0.35, 0.05, 0.5])
+				cb = plotData.plot.fig.colorbar(self.image, cax=cbar_ax)
+
+		# do special things for 2D Plots
+		if self.plot_dimension == 2:
+			if not plotData.plotdict["subplot_nicks"]:
+				cb = plotData.plot.fig.colorbar(self.image, ax=ax)
+			if plotData.plotdict["z_label"]:
+				cb.set_label(self.nicelabels.get_nice_label(plotData.plotdict["z_label"]))
+		elif self.plot_dimension == 3:
+			if plotData.plotdict["z_label"]:
+				ax.set_zlabel(self.nicelabels.get_nice_label(plotData.plotdict["z_label"]))
 
 
 	def add_labels(self, plotData):
@@ -569,8 +570,7 @@ class PlotMpl(plotbase.PlotBase):
 		                                 plotData.plotdict["y_errors"],
 		                                 plotData.plotdict["line_styles"],
 		                                 plotData.plotdict["step"],
-		                                 plotData.plotdict["zorder"],
-		                                 plotData.plotdict["axes"])
+		                                 plotData.plotdict["zorder"])
 		return zip_arguments
 
 
