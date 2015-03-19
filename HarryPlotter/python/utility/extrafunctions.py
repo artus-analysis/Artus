@@ -16,7 +16,8 @@ import ROOT
 
 def show_plot(filename, viewer):
 	log.info("Opening Plot " + filename + " with " + viewer)
-	subprocess.Popen([viewer, filename])
+	FNULL = open(os.devnull, 'w')
+	subprocess.Popen([viewer, filename], stdout=FNULL, stderr=FNULL)
 
 def show_plot_userpc(filename, viewer, user, userpc):
 	"""Open the plot, but on the users desktop machine."""
