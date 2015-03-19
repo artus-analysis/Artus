@@ -358,6 +358,11 @@ class PlotBase(processor.Processor):
 			count = 0
 			for nick2, stack2 in zip(plotData.plotdict["nicks"], plotData.plotdict["stacks"])[:index]:
 				if stack1 == stack2:
+					# TProfiles cannot be added, convert to TH1
+					if isinstance(plotData.plotdict["root_objects"][nick2], ROOT.TProfile):
+						plotData.plotdict["root_objects"][nick2] = plotData.plotdict["root_objects"][nick2].ProjectionX()
+					if isinstance(plotData.plotdict["root_objects"][nick1], ROOT.TProfile):
+						plotData.plotdict["root_objects"][nick1] = plotData.plotdict["root_objects"][nick1].ProjectionX()
 					plotData.plotdict["root_objects"][nick2].Add(plotData.plotdict["root_objects"][nick1])
 					
 					if count == 0:
