@@ -83,46 +83,43 @@ class PlotBase(processor.Processor):
 		                               help="Custom ticks for the Z-axis")
 		self.axis_options.add_argument("--z-tick-labels", type=str, nargs="+",
 		                               help="Custom tick labels for the Z-axis")
-		self.axis_options.add_argument("--n-axes-x", type=int, default=1,
-		                                     help="Number of axis/pad element(s) in x-direction. Default is %(default)s")
-		self.axis_options.add_argument("--n-axes-y", type=int, default=1,
-		                                     help="Number of axis/pad element(s) in y-directiond. Default is %(default)s")
+		self.axis_options.add_argument("--axes-layout", type=int, nargs=2, default=[1,1],
+		                                     help="Number of axis/pad element(s) in xy-direction. Default is %(default)s")
 		self.axis_options.add_argument("--axes", type=int, nargs="+", default=0,
 		                                     help="Index/Indices of axis/pad element(s) on which a plot is plotted. Default is %(default)s")
-
 
 		#plot formatting
 		self.formatting_options = parser.add_argument_group("Formatting options")
 		self.formatting_options.add_argument("-C", "--colors", type=str, nargs="+",
 		                                     help="Colors for the plots.")
-		# TODO: remove --ratio-colors in backends
-		self.formatting_options.add_argument("--ratio-colors", type=str, nargs="+", default=[None],
-		                                     help="Colors for the ratio subplots. [Default: %(default)s]")
-		self.formatting_options.add_argument("-L", "--labels", type=str, nargs="+",
-		                                     help="Labels for the plots.")
-		# TODO: remove --ratio-labels in backends
-		self.formatting_options.add_argument("--ratio-labels", type=str, nargs="+", default=[None],
-		                                     help="Labels for the ratio subplots. [Default: %(default)s]")
-		self.formatting_options.add_argument("-m", "--markers", type=str, nargs="+",
-		                                     help="Style for the plots.")
-		# TODO: remove --ratio-markers in backends
-		self.formatting_options.add_argument("--ratio-markers", type=str, nargs="+", default=[None],
-		                                     help="Style for the ratio subplots. [Default: %(default)s]")
-		self.formatting_options.add_argument("--line-styles", nargs="+",
-                                             help="Line style of plots line. [Default: %(default)s]")
-		# TODO: remove --ratio-line-styles in backends
-		self.formatting_options.add_argument("--ratio-line-styles", nargs="+", default=[None],
-                                             help="Line styles for the ratio subplots. [Default: %(default)s]")
-		self.formatting_options.add_argument("--x-errors", type='bool', nargs="+",
-		                                     help="Show x errors for the nicks. [Default: True for first plot, False otherwise]")
-		self.formatting_options.add_argument("--y-errors", type='bool', nargs="+",
-		                                     help="Show y errors for the plots. [Default: True for first plot, False otherwise]")
-		# TODO: remove --ratio-x-errors in backends
-		self.formatting_options.add_argument("--ratio-x-errors", type='bool', nargs="+", default=[True],
-		                                     help="Show x errors in the ratio subplots. [Default: True]")
-		# TODO: remove --ratio-y-errors in backends
-		self.formatting_options.add_argument("--ratio-y-errors", type='bool', nargs="+", default=[True],
-		                                     help="Show y errors in the ratio subplots. [Default: True]")
+		## TODO: remove --ratio-colors in backends
+		#self.formatting_options.add_argument("--ratio-colors", type=str, nargs="+", default=[None],
+		#                                     help="Colors for the ratio subplots. [Default: %(default)s]")
+		#self.formatting_options.add_argument("-L", "--labels", type=str, nargs="+",
+		#                                     help="Labels for the plots.")
+		## TODO: remove --ratio-labels in backends
+		#self.formatting_options.add_argument("--ratio-labels", type=str, nargs="+", default=[None],
+		#                                     help="Labels for the ratio subplots. [Default: %(default)s]")
+		#self.formatting_options.add_argument("-m", "--markers", type=str, nargs="+",
+		#                                     help="Style for the plots.")
+		## TODO: remove --ratio-markers in backends
+		#self.formatting_options.add_argument("--ratio-markers", type=str, nargs="+", default=[None],
+		#                                     help="Style for the ratio subplots. [Default: %(default)s]")
+		#self.formatting_options.add_argument("--line-styles", nargs="+",
+                #                             help="Line style of plots line. [Default: %(default)s]")
+		## TODO: remove --ratio-line-styles in backends
+		#self.formatting_options.add_argument("--ratio-line-styles", nargs="+", default=[None],
+                #                             help="Line styles for the ratio subplots. [Default: %(default)s]")
+		#self.formatting_options.add_argument("--x-errors", type='bool', nargs="+",
+		#                                     help="Show x errors for the nicks. [Default: True for first plot, False otherwise]")
+		#self.formatting_options.add_argument("--y-errors", type='bool', nargs="+",
+		#                                     help="Show y errors for the plots. [Default: True for first plot, False otherwise]")
+		## TODO: remove --ratio-x-errors in backends
+		#self.formatting_options.add_argument("--ratio-x-errors", type='bool', nargs="+", default=[True],
+		#                                     help="Show x errors in the ratio subplots. [Default: True]")
+		## TODO: remove --ratio-y-errors in backends
+		#self.formatting_options.add_argument("--ratio-y-errors", type='bool', nargs="+", default=[True],
+		#                                     help="Show y errors in the ratio subplots. [Default: True]")
 		self.formatting_options.add_argument("--legend", type=str, nargs="?",
 		                                     help="Location of the legend. Use 'None' to not set any legend")
 		self.formatting_options.add_argument("-G", "--grid", action="store_true", default=False,
@@ -196,10 +193,6 @@ class PlotBase(processor.Processor):
 			if problems_with_ratio_nicks:
 				log.warning("Continue without ratio subplot!")
 				plotData.plotdict["ratio"] = False
-			#self.prepare_list_args(plotData, ["ratio_num", "ratio_denom", "ratio_colors", "ratio_labels", "ratio_markers", "ratio_x_errors", "ratio_y_errors", "ratio_line_styles"])
-			self.prepare_list_args(plotData, ["ratio_colors", "ratio_labels", "ratio_markers", "ratio_x_errors", "ratio_y_errors", "ratio_line_styles"], n_items=(len(plotData.plotdict["subplot_nicks"])+len(plotData.plotdict["ratio_denom"])))
-		if plotData.plotdict["subplot_nicks"] != []:
-			self.prepare_list_args(plotData, ["subplot_nicks", "ratio_colors", "ratio_labels", "ratio_markers", "ratio_x_errors", "ratio_y_errors", "ratio_line_styles"])
 
 		
 		# construct labels from x/y/z expressions if not specified by user
@@ -441,15 +434,6 @@ class PlotBase(processor.Processor):
 
 		if plotData.plotdict["dict"]:
 			pprint.pprint(plotData.plotdict)
-
-	def set_default_ratio_colors(self, plotData):
-		
-		# defaults for colors
-		for index, color_ratio_color in enumerate(zip(plotData.plotdict["colors"],
-		                                              plotData.plotdict["ratio_colors"])):
-			color, ratio_color = color_ratio_color
-			if ratio_color == None:
-				plotData.plotdict["ratio_colors"][index] = plotData.plotdict["colors"][index] # TODO
 
 
 
