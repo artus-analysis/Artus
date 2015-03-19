@@ -56,7 +56,7 @@ class RootTools(object):
 			elif isinstance(root_object, ROOT.TDirectory):
 				if print_quantities:
 					log.info("List of all histogram/graph/function quantities (in the first file):")
-					elements = walk_root_directory(root_object)
+					elements = RootTools.walk_root_directory(root_object)
 					for key, path in elements:
 						if key.GetClassName().startswith("TH") or key.GetClassName().startswith("TF") or "Graph" in key.GetClassName():
 							log.info("\t%s (%s)" % (path, key.GetClassName()))
