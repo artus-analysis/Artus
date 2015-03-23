@@ -62,7 +62,7 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Fill styles for histograms. Defaults choosen according to draw options.")
 		self.formatting_options.add_argument("--line-styles", nargs="+", default=[1], type=int,
 		                                     help="Line style of plots line. [Default: %(default)s]")
-		self.formatting_options.add_argument("--line-widths", nargs="+", default=[1], type=int,
+		self.formatting_options.add_argument("--line-widths", nargs="+", default=[2], type=int,
 		                                     help="Line width of plots line. [Default: %(default)s]")
 		self.formatting_options.add_argument("--legend", type=float, nargs="*", default=None,
 		                                     help="Legend position. The four arguments define the rectangle (x1 y1 x2 y2) for the legend. Without (or with too few) arguments, the default values from [0.6, 0.6, 0.9, 0.9] are used. [Default: %(default)s]")
@@ -412,7 +412,6 @@ class PlotRoot(plotbase.PlotBase):
 					plotData.plotdict["fill_styles"],
 					plotData.plotdict["labels"]
 			):
-				print nick, subplot, marker, fill_style, label
 				if subplot == True:
 					# TODO handle possible subplot legends
 					continue
