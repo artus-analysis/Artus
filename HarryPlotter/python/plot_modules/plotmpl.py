@@ -288,7 +288,7 @@ class PlotMpl(plotbase.PlotBase):
 			ax2.axhline(1.0, color='black')
 
 			if plotData.plotdict["y_subplot_lims"] != None:
-				ax.set_ylim(*plotData.plotdict["y_subplot_lims"])
+				ax2.set_ylim(*plotData.plotdict["y_subplot_lims"])
 
 			ax2.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]),position=(1., 0.), va='top', ha='right')
 			ax2.set_ylabel(plotData.plotdict["y_subplot_label"])
