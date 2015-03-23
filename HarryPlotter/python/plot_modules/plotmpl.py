@@ -166,7 +166,7 @@ class PlotMpl(plotbase.PlotBase):
 			        plt.subplot2grid((4,1), (3, 0))]
 		else:
 			kwargs = {'projection':'3d'} if (plotData.plotdict['3d'] is not False) else {}
-			axes = fig.add_subplot(1,1,1, **kwargs)
+			axes = [fig.add_subplot(1,1,1, **kwargs)]
 
 		plotData.plot = MplPlotContainer(fig, axes, plotData.plotdict["save_legend"])
 
@@ -351,8 +351,8 @@ class PlotMpl(plotbase.PlotBase):
 			# Decrease vertical distance between subplots
 			if self.plot_dimension < 2:
 				plt.subplots_adjust(hspace=0.2)
-		if plotData.plotdict['ratio'] and list(set(plotData.plotdict['ratio_labels'])) != [None]:
-			plotData.plot.ax2.legend(loc=plotData.plotdict["legend"])
+		# if plotData.plotdict['ratio'] and list(set(plotData.plotdict['ratio_labels'])) != [None]:
+			# plotData.plot.ax2.legend(loc=plotData.plotdict["legend"])
 
 	def add_texts(self, plotData):
 		super(PlotMpl, self).add_texts(plotData)
