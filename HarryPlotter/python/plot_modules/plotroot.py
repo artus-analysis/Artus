@@ -112,7 +112,7 @@ class PlotRoot(plotbase.PlotBase):
 				elif "LINE" in marker.upper():
 					marker = marker.upper().replace("LINE", "HIST")
 					fill_style = 0
-				elif "E" in marker.upper():
+				elif "E" in marker.upper() and marker.upper() != "E":
 					fill_style = 3003
 			
 			plotData.plotdict["markers"][index] = marker
@@ -405,18 +405,27 @@ class PlotRoot(plotbase.PlotBase):
 		self.legend = None
 		if plotData.plotdict["legend"] != None:
 			self.legend = ROOT.TLegend(*plotData.plotdict["legend"]);
-			for nick, subplot, marker, label in zip(
+			for nick, subplot, marker, fill_style, label in zip(
 					plotData.plotdict["nicks"],
 					plotData.plotdict["subplots"],
 					plotData.plotdict["markers"],
+					plotData.plotdict["fill_styles"],
 					plotData.plotdict["labels"]
 			):
+				print nick, subplot, marker, fill_style, label
 				if subplot == True:
 					# TODO handle possible subplot legends
 					continue
 				root_object = plotData.plotdict["root_objects"][nick]
 				if (not label is None) and (label != ""):
-					self.legend.AddEntry(root_object, label, "LP" if "e" in marker.lower() else "F")
+					draw_option = "FLP"
+					if isinstance(root_object, ROOT.TH1):
+						draw_option = ("" if fill_style == 0 else "F") + ("EP" if "E" in marker.upper() else "") + "L"
+					elif isinstance(root_object, ROOT.TGraph):
+						draw_option = "ELP"
+					elif isinstance(root_object, ROOT.TF1):
+						draw_option = "L"
+					self.legend.AddEntry(root_object, label, draw_option)
 			self.legend.Draw()
 	
 	def add_texts(self, plotData):
