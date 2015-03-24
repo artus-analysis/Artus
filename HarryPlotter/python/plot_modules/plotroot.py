@@ -401,13 +401,16 @@ class PlotRoot(plotbase.PlotBase):
 		super(PlotRoot, self).add_texts(plotData)
 		if plotData.plotdict["texts"] != [None]:
 			self.plot_pad.cd()
+			self.root_texts = []
 			for x, y, text in zip(plotData.plotdict['texts_x'], plotData.plotdict['texts_y'], plotData.plotdict['texts']):
-				root_text = ROOT.TPaveText(float(x), float(y), 0.9, 0.9, "NDC")
+				root_text = ROOT.TPaveText(float(x), float(y), 0.9, float(y) + 0.1, "NDC")
 				root_text.AddText(text)
 				root_text.SetLineColor(0)
 				root_text.SetFillColor(0)
 				root_text.SetShadowColor(0)
-				root_text.Draw()
+				self.root_texts.append(root_text)
+			for itext in self.root_texts:
+				itext.Draw()	
 	
 	def save_canvas(self, plotData):
 		super(PlotRoot, self).save_canvas(plotData)
