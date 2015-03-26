@@ -7,12 +7,12 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
+import datetime
 import hashlib
 import os
-import subprocess
-import re
 import pprint
-import datetime
+import re
+import subprocess
 
 import ROOT
 
@@ -254,6 +254,7 @@ class PlotBase(processor.Processor):
 		self.calculate_ratios(plotData)
 		self.create_canvas(plotData)
 		self.prepare_histograms(plotData)
+		self.determine_plot_lims(plotData)
 		self.make_plots(plotData)
 		self.modify_axes(plotData)
 		self.add_grid(plotData)
@@ -340,6 +341,34 @@ class PlotBase(processor.Processor):
 					# TODO: iterate over multidim. under-/overflow bins
 					pass
 
+	def determine_plot_lims(self, plotData):
+		self.x_min = None
+		self.x_max = None
+		self.y_min = None
+		self.y_max = None
+		self.z_min = None
+		self.z_max = None
+		self.max_dim = 2
+		
+		self.y_sub_min = None
+		self.y_sub_max = None
+		self.z_sub_min = None
+		self.z_sub_max = None
+		self.max_sub_dim = 2
+		
+		for nick, subplot in zip(plotData.plotdict["nicks"], plotData.plotdict["subplots"]):
+			plot_x_min, plot_x_max, plot_y_min, plot_y_max, plot_z_min, plot_z_max, max_dim = PlotBase.get_plot_lims(plotData.plotdict["root_objects"][nick])
+			
+			self.x_min, self.x_max = PlotBase.update_lims(self.x_min, self.x_max, plot_x_min, plot_x_max)
+			if subplot == True:
+				self.max_sub_dim = max_dim
+				self.y_sub_min, self.y_sub_max = PlotBase.update_lims(self.y_sub_min, self.y_sub_max, plot_y_min, plot_y_max)
+				self.z_sub_min, self.z_sub_max = PlotBase.update_lims(self.z_sub_min, self.z_sub_max, plot_z_min, plot_z_max)
+			else:
+				self.max_dim = max_dim
+				self.y_min, self.y_max = PlotBase.update_lims(self.y_min, self.y_max, plot_y_min, plot_y_max)
+				self.z_min, self.z_max = PlotBase.update_lims(self.z_min, self.z_max, plot_z_min, plot_z_max)
+
 	def make_plots(self, plotData):
 		pass
 	
@@ -408,7 +437,68 @@ class PlotBase(processor.Processor):
 
 		if plotData.plotdict["dict"]:
 			pprint.pprint(plotData.plotdict)
-
+	
+	@staticmethod
+	def get_plot_lims(root_object):
+		x_min = None
+		x_max = None
+		y_min = None
+		y_max = None
+		z_min = None
+		z_max = None
+		max_dim = 2
+		if isinstance(root_object, ROOT.TH1):
+			x_min = root_object.GetXaxis().GetXmin()
+			x_max = root_object.GetXaxis().GetXmax()
+			if root_object.GetDimension() == 1:
+				y_min = root_object.GetMinimum()
+				y_max = root_object.GetMaximum()
+			else:
+				max_dim = 3
+				y_min = root_object.GetYaxis().GetXmin()
+				y_max = root_object.GetYaxis().GetXmax()
+				if root_object.GetDimension() == 2:
+					z_min = root_object.GetMinimum()
+					z_max = root_object.GetMaximum()
+				else:
+					z_min = root_object.GetZaxis().GetXmin()
+					z_max = root_object.GetZaxis().GetXmax()
+		elif isinstance(root_object, ROOT.TGraph):
+			# TODO: treat error bars
+			x_min = root_object.GetXaxis().GetXmin()
+			x_max = root_object.GetXaxis().GetXmax()
+			if not isinstance(root_object, ROOT.TGraph2D):
+				y_min = root_object.GetMinimum()
+				y_max = root_object.GetMaximum()
+			else:
+				max_dim = 3
+				y_min = root_object.GetYaxis().GetXmin()
+				y_max = root_object.GetYaxis().GetXmax()
+				z_min = root_object.GetMinimum()
+				z_max = root_object.GetMaximum()
+		else:
+			log.warning("Retrieving the plot limits is not yet implemented for objects of type %s!." % str(type(root_object)))
+		return x_min, x_max, y_min, y_max, z_min, z_max, max_dim
+	
+	@staticmethod
+	def update_lims(min_1, max_1, min_2, max_2):
+		result_min = None
+		if min_2 is None:
+			result_min = min_1
+		elif min_1 is None:
+			result_min = min_2
+		else:
+			result_min = min(min_1, min_2)
+		
+		result_max = None
+		if max_2 is None:
+			result_max = max_1
+		elif max_1 is None:
+			result_max = max_2
+		else:
+			result_max = max(max_1, max_2)
+		
+		return result_min, result_max
 
 
 # these html templates are needed to create the web galleries

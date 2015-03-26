@@ -44,8 +44,8 @@ class PlotRoot(plotbase.PlotBase):
 		
 		self.text_boxes = []
 		
-		self.first_plot_histogram = None
-		self.first_subplot_histogram = None
+		self.axes_histogram = None
+		self.subplot_axes_histogram = None
 	
 	def modify_argument_parser(self, parser, args):
 		super(PlotRoot, self).modify_argument_parser(parser, args)
@@ -213,113 +213,62 @@ class PlotRoot(plotbase.PlotBase):
 	def make_plots(self, plotData):
 		super(PlotRoot, self).make_plots(plotData)
 		
-		self.x_min = sys.float_info.max
-		self.x_max = -sys.float_info.max
+		# draw empty histograms for the axes
+		x_lims = plotData.plotdict["x_lims"] if not plotData.plotdict["x_lims"] is None else [self.x_min, self.x_max]
+		y_lims = plotData.plotdict["y_lims"] if not plotData.plotdict["y_lims"] is None else [self.y_min, self.y_max]
+		z_lims = plotData.plotdict["z_lims"] if not plotData.plotdict["z_lims"] is None else [self.z_min, self.z_max]
+		y_sub_lims = plotData.plotdict["y_subplot_lims"] if not plotData.plotdict["y_subplot_lims"] is None else [self.y_sub_min, self.y_sub_max]
+		z_sub_lims = [self.z_sub_min, self.z_sub_max] # plotData.plotdict["z_subplot_lims"] if not plotData.plotdict["z_subplot_lims"] is None else [self.z_sub_min, self.z_sub_max]
 		
-		self.y_min = sys.float_info.max
-		self.y_max = -sys.float_info.max
-		self.y_subplot_min = sys.float_info.max
-		self.y_subplot_max = -sys.float_info.max
+		n_bins = 1 # TODO: consider axis ticks
+		n_sub_bins = 1 # TODO: consider axis ticks
 		
-		self.z_min = sys.float_info.max
-		self.z_max = -sys.float_info.max
+		if plotData.plot.plot_pad:
+			plotData.plot.plot_pad.cd()
+			if self.max_dim == 2:
+				self.axes_histogram = ROOT.TH1F("axes_histogram", "", n_bins, x_lims[0], x_lims[1])
+				self.axes_histogram.SetMinimum(y_lims[0])
+				self.axes_histogram.SetMaximum(y_lims[1])
+			else:
+				self.axes_histogram = ROOT.TH2F("axes_histogram", "", n_bins, x_lims[0], x_lims[1], n_bins, y_lims[0], y_lims[1])
+				self.axes_histogram.SetMinimum(z_lims[0])
+				self.axes_histogram.SetMaximum(z_lims[1])
+			self.axes_histogram.Draw("AXIS")
 		
-		index_plot = -1
-		index_subplot = -1
-		for index, (nick, subplot, marker) in enumerate(zip(
+		if plotData.plot.subplot_pad:
+			plotData.plot.subplot_pad.cd()
+			if self.max_sub_dim == 2:
+				self.subplot_axes_histogram = ROOT.TH1F("subplot_axes_histogram", "", n_sub_bins, x_lims[0], x_lims[1])
+				self.subplot_axes_histogram.SetMinimum(y_sub_lims[0])
+				self.subplot_axes_histogram.SetMaximum(y_sub_lims[1])
+			else:
+				self.subplot_axes_histogram = ROOT.TH2F("subplot_axes_histogram", "", n_sub_bins, x_lims[0], x_lims[1], n_sub_bins, y_sub_lims[0], y_sub_lims[1])
+				self.subplot_axes_histogram.SetMinimum(z_sub_lims[0])
+				self.subplot_axes_histogram.SetMaximum(z_sub_lims[1])
+			self.subplot_axes_histogram.Draw("AXIS")
+		
+		for nick, subplot, marker in zip(
 				plotData.plotdict["nicks"],
 				plotData.plotdict["subplots"],
 				plotData.plotdict["markers"]
-		)):
-			pad = None
-			
+		):
 			# select pad to plot on
-			if subplot == True:
-				index_subplot += 1
-				pad = plotData.plot.subplot_pad
-				y_min = self.y_subplot_min
-				y_max = self.y_subplot_max
-			else:
-				index_plot += 1
-				pad = plotData.plot.plot_pad
-				y_min = self.y_min
-				y_max = self.y_max
-			
-			root_object = plotData.plotdict["root_objects"][nick]
-			
-			draw_option = marker
-			if ((not subplot) and (index_plot > 0)) or (subplot and (index_subplot > 0)):
-				draw_option += " SAME"
-			
+			pad = plotData.plot.subplot_pad if subplot == True else plotData.plot.plot_pad
 			pad.cd()
-			axes_histogram = None
-			if isinstance(root_object, ROOT.TH1):
-				axes_histogram = self._draw_histogram(pad, root_object, draw_option)
-			elif isinstance(root_object, ROOT.TGraph):
-				axes_histogram = self._draw_graph(
-						pad,
-						root_object,
-						draw_option+(" A" if index == 0 else ""),
-						plotData.plotdict["x_lims"],
-						plotData.plotdict["y_subplot_lims" if subplot else "y_lims"],
-						plotData.plotdict["z_lims"])
-			else:
-				log.error("ROOT plotting is not (yet) implemented for objects of type %s!" % type(root_object))
 			
-			if axes_histogram:
-				if subplot and (index_subplot == 0):
-					self.first_subplot_histogram = axes_histogram
-				elif (not subplot) and (index_plot == 0):
-					self.first_plot_histogram = axes_histogram
-				
-				# trace min. and max. values of axes
-				dimension = PlotRoot._get_dimension(axes_histogram)
-				if axes_histogram.GetXaxis().GetXmin() < self.x_min: self.x_min = axes_histogram.GetXaxis().GetXmin()
-				if axes_histogram.GetXaxis().GetXmax() > self.x_max: self.x_max = axes_histogram.GetXaxis().GetXmax()
-				if dimension > 1:
-					if axes_histogram.GetYaxis().GetXmin() < y_min: y_min = axes_histogram.GetYaxis().GetXmin()
-					if axes_histogram.GetYaxis().GetXmax() > y_max: y_max = axes_histogram.GetYaxis().GetXmax()
-				else:
-					if axes_histogram.GetMinimum() < y_min: y_min = axes_histogram.GetMinimum()
-					if axes_histogram.GetMaximum() > y_max: y_max = axes_histogram.GetMaximum()
-				if dimension > 2:
-					if axes_histogram.GetZaxis().GetXmin() < self.z_min: self.z_min = axes_histogram.GetZaxis().GetXmin()
-					if axes_histogram.GetZaxis().GetXmax() > self.z_max: self.z_max = axes_histogram.GetZaxis().GetXmax()
-				else:
-					if axes_histogram.GetMinimum() < self.z_min: self.z_min = axes_histogram.GetMinimum()
-					if axes_histogram.GetMaximum() > self.z_max: self.z_max = axes_histogram.GetMaximum()
-			
-			if subplot:
-				self.y_sub_min = y_min
-				self.y_sub_max = y_max
-			else:
-				self.y_min = y_min
-				self.y_max = y_max
-	
-	def _draw_histogram(self, pad, root_histogram, draw_option):
-		assert isinstance(root_histogram, ROOT.TH1)
-		pad.cd()
-		root_histogram.Draw(draw_option)
-		return root_histogram
-	
-	def _draw_graph(self, pad, root_graph, draw_option, x_lims, y_lims, z_lims):
-		assert isinstance(root_graph, ROOT.TGraph)
-		pad.cd()
-		PlotRoot._set_axis_limits(root_graph, x_lims, y_lims, z_lims)
-		root_graph.Draw(draw_option)
-		root_histogram = root_graph.GetHistogram()
-		return root_histogram
+			# draw
+			plotData.plotdict["root_objects"][nick].Draw(marker + " SAME")
 	
 	def modify_axes(self, plotData):
 		super(PlotRoot, self).modify_axes(plotData)
 	
 		# axis labels
-		self.first_plot_histogram.GetXaxis().SetTitle(plotData.plotdict["x_label"])
-		self.first_plot_histogram.GetYaxis().SetTitle(plotData.plotdict["y_label"])
-		self.first_plot_histogram.GetZaxis().SetTitle(plotData.plotdict["z_label"])
-		if not self.first_subplot_histogram is None:
-			self.first_subplot_histogram.GetXaxis().SetTitle(plotData.plotdict["x_label"])
-			self.first_subplot_histogram.GetYaxis().SetTitle(plotData.plotdict["y_subplot_label"])
+		self.axes_histogram.GetXaxis().SetTitle(plotData.plotdict["x_label"])
+		self.axes_histogram.GetYaxis().SetTitle(plotData.plotdict["y_label"])
+		self.axes_histogram.GetZaxis().SetTitle(plotData.plotdict["z_label"])
+		if not self.subplot_axes_histogram is None:
+			self.subplot_axes_histogram.GetXaxis().SetTitle(plotData.plotdict["x_label"])
+			self.subplot_axes_histogram.GetYaxis().SetTitle(plotData.plotdict["y_subplot_label"])
 	
 		# logaritmic axis
 		if plotData.plotdict["x_log"]: plotData.plot.plot_pad.SetLogx()
@@ -332,40 +281,40 @@ class PlotRoot(plotbase.PlotBase):
 		x_lims = plotData.plotdict["x_lims"] if not plotData.plotdict["x_lims"] is None else [self.x_min, self.x_max]
 		y_lims = plotData.plotdict["y_lims"] if not plotData.plotdict["y_lims"] is None else [self.y_min, self.y_max]
 		z_lims = plotData.plotdict["z_lims"] if not plotData.plotdict["z_lims"] is None else [self.z_min, self.z_max]
-		PlotRoot._set_axis_limits(self.first_plot_histogram, x_lims, y_lims, z_lims)
+		#PlotRoot._set_axis_limits(self.axes_histogram, x_lims, y_lims, z_lims)
 		
-		if not self.first_subplot_histogram is None:
+		if not self.subplot_axes_histogram is None:
 			y_subplot_lims = plotData.plotdict["y_subplot_lims"] if not plotData.plotdict["y_subplot_lims"] is None else [self.y_subplot_min, self.y_subplot_max]
 			z_subplot_lims = None # TODO: z-lims for possible 3D subplots
-			PlotRoot._set_axis_limits(self.first_subplot_histogram, x_lims, y_subplot_lims, z_subplot_lims)
+			PlotRoot._set_axis_limits(self.subplot_axes_histogram, x_lims, y_subplot_lims, z_subplot_lims)
 		
-		if not self.first_subplot_histogram is None:
-			self.first_plot_histogram.GetXaxis().SetLabelSize(0)
-			self.first_plot_histogram.GetXaxis().SetTitleSize(0)
-			self.first_plot_histogram.GetYaxis().SetLabelSize(self.first_plot_histogram.GetYaxis().GetLabelSize() / (1.0 - self.plot_subplot_slider_y))
-			self.first_plot_histogram.GetYaxis().SetTitleSize(self.first_plot_histogram.GetYaxis().GetTitleSize() / (1.0 - self.plot_subplot_slider_y))
+		if not self.subplot_axes_histogram is None:
+			self.axes_histogram.GetXaxis().SetLabelSize(0)
+			self.axes_histogram.GetXaxis().SetTitleSize(0)
+			self.axes_histogram.GetYaxis().SetLabelSize(self.axes_histogram.GetYaxis().GetLabelSize() / (1.0 - self.plot_subplot_slider_y))
+			self.axes_histogram.GetYaxis().SetTitleSize(self.axes_histogram.GetYaxis().GetTitleSize() / (1.0 - self.plot_subplot_slider_y))
 			
-			self.first_plot_histogram.GetYaxis().SetTitleOffset(self.first_plot_histogram.GetYaxis().GetTitleOffset() * (1.0 - self.plot_subplot_slider_y))
+			self.axes_histogram.GetYaxis().SetTitleOffset(self.axes_histogram.GetYaxis().GetTitleOffset() * (1.0 - self.plot_subplot_slider_y))
 			
-			self.first_subplot_histogram.GetXaxis().SetLabelSize(self.first_subplot_histogram.GetXaxis().GetLabelSize() / self.plot_subplot_slider_y)
-			self.first_subplot_histogram.GetXaxis().SetTitleSize(self.first_subplot_histogram.GetXaxis().GetTitleSize() / self.plot_subplot_slider_y)
-			self.first_subplot_histogram.GetYaxis().SetLabelSize(self.first_subplot_histogram.GetYaxis().GetLabelSize() / self.plot_subplot_slider_y)
-			self.first_subplot_histogram.GetYaxis().SetTitleSize(self.first_subplot_histogram.GetYaxis().GetTitleSize() / self.plot_subplot_slider_y)
+			self.subplot_axes_histogram.GetXaxis().SetLabelSize(self.subplot_axes_histogram.GetXaxis().GetLabelSize() / self.plot_subplot_slider_y)
+			self.subplot_axes_histogram.GetXaxis().SetTitleSize(self.subplot_axes_histogram.GetXaxis().GetTitleSize() / self.plot_subplot_slider_y)
+			self.subplot_axes_histogram.GetYaxis().SetLabelSize(self.subplot_axes_histogram.GetYaxis().GetLabelSize() / self.plot_subplot_slider_y)
+			self.subplot_axes_histogram.GetYaxis().SetTitleSize(self.subplot_axes_histogram.GetYaxis().GetTitleSize() / self.plot_subplot_slider_y)
 			
-			self.first_subplot_histogram.GetXaxis().SetTitleOffset(2.0 * self.first_subplot_histogram.GetXaxis().GetTitleOffset() * self.plot_subplot_slider_y)
-			self.first_subplot_histogram.GetYaxis().SetTitleOffset(self.first_subplot_histogram.GetYaxis().GetTitleOffset() * self.plot_subplot_slider_y)
+			self.subplot_axes_histogram.GetXaxis().SetTitleOffset(2.0 * self.subplot_axes_histogram.GetXaxis().GetTitleOffset() * self.plot_subplot_slider_y)
+			self.subplot_axes_histogram.GetYaxis().SetTitleOffset(self.subplot_axes_histogram.GetYaxis().GetTitleOffset() * self.plot_subplot_slider_y)
 			
-			self.first_subplot_histogram.GetYaxis().SetNdivisions(5, 0, 0)
+			self.subplot_axes_histogram.GetYaxis().SetNdivisions(5, 0, 0)
 		
 		# redraw axes only and update the canvas
 		plotData.plot.plot_pad.cd()
-		self.first_plot_histogram.Draw("AXIS SAME")
+		self.axes_histogram.Draw("AXIS SAME")
 		plotData.plot.plot_pad.Update()
 		
 		if not plotData.plot.subplot_pad is None:
 			plotData.plot.subplot_pad.cd()
-			if not self.first_subplot_histogram is None:
-				self.first_subplot_histogram.Draw("AXIS SAME")
+			if not self.subplot_axes_histogram is None:
+				self.subplot_axes_histogram.Draw("AXIS SAME")
 			plotData.plot.subplot_pad.Update()
 		
 		plotData.plot.canvas.Update()
