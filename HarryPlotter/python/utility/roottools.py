@@ -37,12 +37,9 @@ class RootTools(object):
 			root_file_names = [root_file_names]
 		if isinstance(path_to_objects, basestring):
 			path_to_objects = [path_to_objects]
-	
-		if path_to_objects[0] == "":
-			return ROOT.TH1
-	
+		
 		root_file = ROOT.TFile(root_file_names[0], "READ")
-		root_object = root_file.Get(path_to_objects[0])
+		root_object = root_file.Get(path_to_objects[0]) if path_to_objects[0] != "" else root_file
 		if root_object:
 			if isinstance(root_object, ROOT.TTree):
 				if print_quantities:
