@@ -76,9 +76,10 @@ class RootTools(object):
 			binning_string = binning
 			parsed_binnig = [float(item) for item in binning.split(",")[:3]]
 			if len(parsed_binnig) == 3:
-				bin_edges = array.array("d", list(numpy.arange(parsed_binnig[1],
-				                                  parsed_binnig[2]+0.5*(parsed_binnig[2]-parsed_binnig[1])/parsed_binnig[0],
-				                                  (parsed_binnig[2]-parsed_binnig[1])/parsed_binnig[0])))
+				bin_edges = array.array(
+						"d",
+						[parsed_binnig[1] + (index*(parsed_binnig[2]-parsed_binnig[1])/parsed_binnig[0]) for index in xrange(int(parsed_binnig[0])+1)]
+				)
 			else:
 				binning_string += ("," * (3 - len(parsed_binnig)))
 		elif isinstance(binning, collections.Iterable):
