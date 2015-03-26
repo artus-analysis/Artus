@@ -156,42 +156,42 @@ class RootTools(object):
 			if root_file:
 				root_file.Close()
 			
-			# rebinning
-			if isinstance(root_histogram, ROOT.TH1) and root_histogram.GetNbinsX()*root_histogram.GetNbinsY()*root_histogram.GetNbinsZ() > 1:
-				rebinning_x = 1
-				if not x_bins is None:
-					x_binning_string, x_bin_edges = RootTools.prepare_binning(x_bins)
+		# rebinning
+		if isinstance(root_histogram, ROOT.TH1) and root_histogram.GetNbinsX()*root_histogram.GetNbinsY()*root_histogram.GetNbinsZ() > 1:
+			rebinning_x = 1
+			if not x_bins is None:
+				x_binning_string, x_bin_edges = RootTools.prepare_binning(x_bins)
+				rebinning_x = x_bin_edges
+				if x_bin_edges is None:
+					rebinning_x = int(root_histogram.GetNbinsX() / int(x_bins[0]))
+				else:
 					rebinning_x = x_bin_edges
-					if x_bin_edges is None:
-						rebinning_x = int(root_histogram.GetNbinsX() / x_bins[0])
-					else:
-						rebinning_x = x_bin_edges
-				
-				rebinning_y = 1
-				if not y_bins is None:
-					y_binning_string, y_bin_edges = RootTools.prepare_binning(y_bins)
+			
+			rebinning_y = 1
+			if not y_bins is None:
+				y_binning_string, y_bin_edges = RootTools.prepare_binning(y_bins)
+				rebinning_y = y_bin_edges
+				if y_bin_edges is None:
+					rebinning_y = int(root_histogram.GetNbinsY() / int(y_bins[0]))
+				else:
 					rebinning_y = y_bin_edges
-					if y_bin_edges is None:
-						rebinning_y = int(root_histogram.GetNbinsY() / y_bins[0])
-					else:
-						rebinning_y = y_bin_edges
-				
-				rebinning_z = 1
-				if not z_bins is None:
-					z_binning_string, z_bin_edges = RootTools.prepare_binning(z_bins)
+			
+			rebinning_z = 1
+			if not z_bins is None:
+				z_binning_string, z_bin_edges = RootTools.prepare_binning(z_bins)
+				rebinning_z = z_bin_edges
+				if z_bin_edges is None:
+					rebinning_z = int(root_histogram.GetNbinsZ() / int(z_bins[0]))
+				else:
 					rebinning_z = z_bin_edges
-					if z_bin_edges is None:
-						rebinning_z = int(root_histogram.GetNbinsZ() / z_bins[0])
-					else:
-						rebinning_z = z_bin_edges
-				
-				root_histogram = RootTools.rebin_root_histogram(
-						root_histogram,
-						rebinningX=rebinning_x,
-						rebinningY=rebinning_y,
-						rebinningZ=rebinning_z,
-						name=name
-				)
+			
+			root_histogram = RootTools.rebin_root_histogram(
+					root_histogram,
+					rebinningX=rebinning_x,
+					rebinningY=rebinning_y,
+					rebinningZ=rebinning_z,
+					name=name
+			)
 			
 		return root_histogram
 
