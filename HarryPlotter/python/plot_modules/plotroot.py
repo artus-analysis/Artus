@@ -66,10 +66,6 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Line width of plots line. [Default: %(default)s]")
 		self.formatting_options.add_argument("--legend", type=float, nargs="*", default=None,
 		                                     help="Legend position. The four arguments define the rectangle (x1 y1 x2 y2) for the legend. Without (or with too few) arguments, the default values from [0.6, 0.6, 0.9, 0.9] are used. [Default: %(default)s]")
-		self.formatting_options.add_argument("--stacks-errband", action='store_true', default=False,
-		                                     help="Draw error band on top of the stacked plots.")
-		self.formatting_options.add_argument("--stacks-errband-names", nargs="+",
-		                                     help="Nick names for stacked plots for which an error band will be shown. [Default: all but first stack nick]")
 		
 	def prepare_args(self, parser, plotData):
 		super(PlotRoot, self).prepare_args(parser, plotData)
@@ -117,15 +113,6 @@ class PlotRoot(plotbase.PlotBase):
 			
 			plotData.plotdict["markers"][index] = marker
 			plotData.plotdict["fill_styles"][index] = fill_style
-		
-		# defaults for stacked plots shaded error band
-		if plotData.plotdict["stacks_errband_names"] == None: plotData.plotdict["stacks_errband_names"] = [" ".join(set(plotData.plotdict["stacks"][1:]))]
-		plotData.plotdict["stacks_errband_names"] = [nicks.split() for nicks in plotData.plotdict["stacks_errband_names"]]
-		for nicks in plotData.plotdict["stacks_errband_names"]:
-			for nick in nicks:
-				if nick not in plotData.plotdict["stacks"]:
-					log.critical("Stack name \"%s\" of argument --%s does not exist in argument --stack!" % (nick, "stacks_errband_names".replace("_", "-")))
-					sys.exit(1)
 		
 		# defaults for legend position
 		if not plotData.plotdict["legend"] is None:

@@ -311,12 +311,8 @@ class PlotBase(processor.Processor):
 	
 	def prepare_histograms(self, plotData):
 		# handle stacks
-		# todo: define how functions should act when stacked
-		plotData.plotdict["root_stack_histos"] = {}
+		# TODO: define how functions should act when stacked
 		for index, (nick1, stack1) in enumerate(zip(plotData.plotdict["nicks"], plotData.plotdict["stacks"])):
-			plotData.plotdict["root_stack_histos"][stack1] = plotData.plotdict["root_objects"][nick1].Clone()
-			
-			count = 0
 			for nick2, stack2 in zip(plotData.plotdict["nicks"], plotData.plotdict["stacks"])[:index]:
 				if stack1 == stack2:
 					# TProfiles cannot be added, convert to TH1
@@ -325,15 +321,11 @@ class PlotBase(processor.Processor):
 					if isinstance(plotData.plotdict["root_objects"][nick1], ROOT.TProfile):
 						plotData.plotdict["root_objects"][nick1] = plotData.plotdict["root_objects"][nick1].ProjectionX()
 					plotData.plotdict["root_objects"][nick2].Add(plotData.plotdict["root_objects"][nick1])
-					
-					if count == 0:
-						plotData.plotdict["root_stack_histos"][stack1] = plotData.plotdict["root_objects"][nick2].Clone()
-					count = count+1
 
 			# some debug infos
 			if log.isEnabledFor(logging.DEBUG):
-				log.debug("\nContents of stack %s, nick %s:" % (stack1, nick1))
-				plotData.plotdict["root_stack_histos"][stack1].Print("range")
+				log.debug("\nContents of nick %s, stack %s:" % (nick1, stack1))
+				plotData.plotdict["root_objects"][nick1].Print("range")
 		
 		# remove underflow/overflow bin contents
 		for nick in plotData.plotdict["nicks"]:
