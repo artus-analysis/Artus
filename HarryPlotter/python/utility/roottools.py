@@ -110,7 +110,7 @@ class RootTools(object):
 
 
 	@staticmethod
-	def histogram_from_file(root_file_names, path_to_histograms, name=None):
+	def histogram_from_file(root_file_names, path_to_histograms, x_bins=None, y_bins=None, z_bins=None, name=None):
 		"""
 		Read histograms from files
 	
@@ -151,10 +151,48 @@ class RootTools(object):
 						root_histogram.SetDirectory(0)
 					else:
 						root_histogram.Add(tmp_root_histogram)
+						root_histogram.SetDirectory(0)
 			
 			if root_file:
 				root_file.Close()
-		
+			
+			# rebinning
+			if isinstance(root_histogram, ROOT.TH1) and root_histogram.GetNbinsX()*root_histogram.GetNbinsY()*root_histogram.GetNbinsZ() > 1:
+				rebinning_x = 1
+				if not x_bins is None:
+					x_binning_string, x_bin_edges = RootTools.prepare_binning(x_bins)
+					rebinning_x = x_bin_edges
+					if x_bin_edges is None:
+						rebinning_x = int(root_histogram.GetNbinsX() / x_bins[0])
+					else:
+						rebinning_x = x_bin_edges
+				
+				rebinning_y = 1
+				if not y_bins is None:
+					y_binning_string, y_bin_edges = RootTools.prepare_binning(y_bins)
+					rebinning_y = y_bin_edges
+					if y_bin_edges is None:
+						rebinning_y = int(root_histogram.GetNbinsY() / y_bins[0])
+					else:
+						rebinning_y = y_bin_edges
+				
+				rebinning_z = 1
+				if not z_bins is None:
+					z_binning_string, z_bin_edges = RootTools.prepare_binning(z_bins)
+					rebinning_z = z_bin_edges
+					if z_bin_edges is None:
+						rebinning_z = int(root_histogram.GetNbinsZ() / z_bins[0])
+					else:
+						rebinning_z = z_bin_edges
+				
+				root_histogram = RootTools.rebin_root_histogram(
+						root_histogram,
+						rebinningX=rebinning_x,
+						rebinningY=rebinning_y,
+						rebinningZ=rebinning_z,
+						name=name
+				)
+			
 		return root_histogram
 
 
@@ -310,8 +348,6 @@ class RootTools(object):
 			log.critical("Cannot find histogram \"%s\" created from trees %s in files %s!" % (name, str(path_to_trees), str(root_file_names)))
 			sys.exit(1)
 		
-		
-		
 		if isinstance(root_histogram, ROOT.TH1):
 			root_histogram.SetDirectory(0)
 			self.x_bin_edges[histo_type] = RootTools.get_binning(root_histogram, axisNumber=0)
@@ -326,7 +362,8 @@ class RootTools(object):
 		return tree, root_histogram
 
 
-	def rebin_root_histogram(self, root_histogram, rebinningX=1, rebinningY=1, rebinningZ=1, name=None):
+	@staticmethod
+	def rebin_root_histogram(root_histogram, rebinningX=1, rebinningY=1, rebinningZ=1, name=None):
 		"""
 		Rebin root histogram with well established root functions
 	
@@ -385,12 +422,18 @@ class RootTools(object):
 		
 			sparse_tmp_root_histogram = ROOT.THnSparse.CreateSparse(name+"sparsetmp", "", tmp_root_histogram)
 			binning = RootTools.get_binning(tmp_root_histogram, 0)
+			if not RootTools.rebinning_possible(binning, complexRebinning[0]):
+				log.error("Rebinning in X leads tries to split bins!")
 			sparse_tmp_root_histogram.GetAxis(0).Set(len(binning)-1, binning)
 			if tmp_root_histogram.GetDimension() > 1:
 				binning = RootTools.get_binning(tmp_root_histogram, 1)
+				if not RootTools.rebinning_possible(binning, complexRebinning[1]):
+					log.error("Rebinning in Y leads tries to split bins!")
 				sparse_tmp_root_histogram.GetAxis(1).Set(len(binning)-1, binning)
 			if tmp_root_histogram.GetDimension() > 2:
 				binning = RootTools.get_binning(tmp_root_histogram, 2)
+				if not RootTools.rebinning_possible(binning, complexRebinning[1]):
+					log.error("Rebinning in Z leads tries to split bins!")
 				sparse_tmp_root_histogram.GetAxis(2).Set(len(binning)-1, binning)
 		
 			# retrieve rebinned histogram
@@ -425,7 +468,15 @@ class RootTools(object):
 		elif axisNumber == 2:
 			axis = root_histogram.GetZaxis()
 		return array.array("d", [axis.GetBinLowEdge(binIndex) for binIndex in xrange(1, axis.GetNbins()+2)])
-
+	
+	@staticmethod
+	def rebinning_possible(src_bin_edges, dst_bin_edges):
+		if len(dst_bin_edges) > len(src_bin_edges):
+			return False
+		
+		str_src_bin_edges = [str(bin_edge) for bin_edge in src_bin_edges]
+		str_dst_bin_edges = [str(bin_edge) for bin_edge in dst_bin_edges]
+		return set(str_dst_bin_edges).issubset(set(str_src_bin_edges))
 
 	@staticmethod
 	def add_root_histograms(*root_histograms, **kwargs):
