@@ -44,7 +44,7 @@ class RootTools(object):
 			if isinstance(root_object, ROOT.TTree):
 				if print_quantities:
 					log.info("List of all tree quantities (in the first file):")
-					for leaf in root_object.GetListOfLeaves():
+					for leaf in sorted(root_object.GetListOfLeaves(), key=lambda leaf: leaf.GetName()):
 						quantity = leaf.GetName()
 						if leaf.GetBranch().GetMother().GetName() != leaf.GetName():
 							quantity = leaf.GetBranch().GetMother().GetName()+"."+quantity
@@ -53,8 +53,7 @@ class RootTools(object):
 			elif isinstance(root_object, ROOT.TDirectory):
 				if print_quantities:
 					log.info("List of all histogram/graph/function quantities (in the first file):")
-					elements = RootTools.walk_root_directory(root_object)
-					for key, path in elements:
+					for key, path in sorted(RootTools.walk_root_directory(root_object), key=lambda element: element[1]):
 						if key.GetClassName().startswith("TH") or key.GetClassName().startswith("TF") or "Graph" in key.GetClassName():
 							log.info("\t%s (%s)" % (path, key.GetClassName()))
 				return ROOT.TH1
