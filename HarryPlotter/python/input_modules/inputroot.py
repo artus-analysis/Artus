@@ -31,8 +31,8 @@ class InputRoot(inputfile.InputFile):
 		                                help="Names of trees to be used as friends. Seperate different plots with space, seperate for same plot with whitespace.", default=None)
 		self.input_options.add_argument("--friend-filenames", type=str, nargs="+",
 		                                help="Filenames to be added as friends. Seperate different plots with space, seperate for same plot with whitespace.", default=None)
-		self.input_options.add_argument("--quantities", action="store_true", default=False,
-		                                help="Print available quantities in given folder")
+		self.input_options.add_argument("--quantities", nargs="?", type="bool", default=False, const=True,
+		                                help="Print available quantities in given folder. [Default: %(default)s]")
 		self.input_options.add_argument("-x", "--x-expressions", type=str, nargs="+",
 		                                help="x-axis variable expression(s)")
 		self.input_options.add_argument("-y", "--y-expressions", type=str, nargs="+",

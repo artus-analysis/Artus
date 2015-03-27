@@ -50,10 +50,10 @@ class PlotRoot(plotbase.PlotBase):
 	def modify_argument_parser(self, parser, args):
 		super(PlotRoot, self).modify_argument_parser(parser, args)
 		
-		self.formatting_options.add_argument("--x-grid", action='store_true', default=False,
-		                                     help="Place an x-axes grid on the plot.")
-		self.formatting_options.add_argument("--y-grid", action='store_true', default=False,
-		                                     help="Place an y-axes grid on the plot.")
+		self.formatting_options.add_argument("--x-grid", nargs="?", type="bool", default=False, const=True,
+		                                     help="Place an x-axes grid on the plot. [Default: %(default)s]")
+		self.formatting_options.add_argument("--y-grid", nargs="?", type="bool", default=False, const=True,
+		                                     help="Place an y-axes grid on the plot. [Default: %(default)s]")
 		self.formatting_options.add_argument("--marker-styles", nargs="+", default=[20], type=int,
 		                                     help="Marker style of plots marker. [Default: %(default)s]")
 		self.formatting_options.add_argument("--marker-sizes", nargs="+", default=[1.0], type=float,

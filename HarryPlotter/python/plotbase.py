@@ -43,8 +43,8 @@ class PlotBase(processor.Processor):
 		                               help="Lower and Upper limit for x-axis.")
 		self.axis_options.add_argument("--x-label", type=str,
 		                               help="X-axis label name.")
-		self.axis_options.add_argument("--x-log", action="store_true", default=False,
-		                               help="Logarithmic x-axis.")
+		self.axis_options.add_argument("--x-log", nargs="?", type="bool", default=False, const=True,
+		                               help="Logarithmic x-axis. [Default: %(default)s]")
 		self.axis_options.add_argument("--x-ticks", type=float, nargs="+",
 		                               help="Custom ticks for the X-axis")
 		self.axis_options.add_argument("--x-tick-labels", type=str, nargs="+",
@@ -58,8 +58,8 @@ class PlotBase(processor.Processor):
 		                               help="Y-axis label name. [Default: %(default)s]")
 		self.axis_options.add_argument("--y-subplot-label", type=str, default="Ratio",
 		                               help="Y-axis label name of a possible subplot. [Default: %(default)s]")
-		self.axis_options.add_argument("--y-log", action="store_true", default=False,
-		                               help="Logarithmic y-axis.")
+		self.axis_options.add_argument("--y-log", nargs="?", type="bool", default=False, const=True,
+		                               help="Logarithmic y-axis. [Default: %(default)s]")
 		self.axis_options.add_argument("--y-ticks", type=float, nargs="+",
 		                               help="Custom ticks for the Y-axis")
 		self.axis_options.add_argument("--y-tick-labels", type=str, nargs="+",
@@ -69,8 +69,8 @@ class PlotBase(processor.Processor):
 		                               help="Lower and Upper limit for z-axis.")
 		self.axis_options.add_argument("--z-label", type=str, default="Events",
 		                               help="Z-axis label name. [Default: %(default)s]")
-		self.axis_options.add_argument("--z-log", action="store_true", default=False,
-		                               help="Logarithmic z-axis.")
+		self.axis_options.add_argument("--z-log", nargs="?", type="bool", default=False, const=True,
+		                               help="Logarithmic z-axis. [Default: %(default)s]")
 		self.axis_options.add_argument("--z-ticks", type=float, nargs="+",
 		                               help="Custom ticks for the Z-axis")
 		self.axis_options.add_argument("--z-tick-labels", type=str, nargs="+",
@@ -92,10 +92,10 @@ class PlotBase(processor.Processor):
 		                                     help="Show y errors for the plots. [Default: True for first plot, False otherwise]")
 		self.formatting_options.add_argument("--legend", type=str, nargs="?",
 		                                     help="Location of the legend. Use 'None' to not set any legend")
-		self.formatting_options.add_argument("-G", "--grid", action="store_true", default=False,
-		                                     help="Place an axes grid on the plot.")
-		self.formatting_options.add_argument("--subplot-grid", action="store_true", default=False,
-		                                     help="Place an axes grid on the subplot.")
+		self.formatting_options.add_argument("-G", "--grid", nargs="?", type="bool", default=False, const=True,
+		                                     help="Place an axes grid on the plot. [Default: %(default)s]")
+		self.formatting_options.add_argument("--subplot-grid", nargs="?", type="bool", default=False, const=True,
+		                                     help="Place an axes grid on the subplot. [Default: %(default)s]")
 		self.formatting_options.add_argument("--stacks", type=str, nargs="+", default=[None],
 		                                     help="Defines nick names for stacking. Inputs with the same nick name will be stacked. By default, every input gets a unique nick name. [Default: %(default)s]")
 
@@ -111,8 +111,8 @@ class PlotBase(processor.Processor):
 		                                    help="author name of the plot")
 		self.labelling_options.add_argument("--date", type=str,
 		                                    help="Show the date in the top left corner. \"iso\" is YYYY-MM-DD, \"today\" is DD Mon YYYY and \"now\" is DD Mon YYYY HH:MM.")
-		self.labelling_options.add_argument("-E", "--event-number-label", action="store_true", default=False,
-		                                    help="Add event number label")
+		self.labelling_options.add_argument("-E", "--event-number-label", nargs="?", type="bool", default=False, const=True,
+		                                    help="Add event number label. [Default: %(default)s]")
 		self.formatting_options.add_argument("--texts", type=str, nargs="+", default=[None],
 		                                     help="Place text(s) on the plot.")
 		self.formatting_options.add_argument("--texts-y", type=float, nargs="+", default=[0.8],
@@ -133,10 +133,10 @@ class PlotBase(processor.Processor):
 		self.other_options = parser.add_argument_group("Other features")
 		self.other_options.add_argument("--live", default=None, nargs='?', const='gthumb',
 		                                 help="Open plot in viewer after its creation. Parameter is the name of your desired viewer.")
-		self.other_options.add_argument("--userpc", default=False, action='store_true',
-		                                 help="If 'live' is enabled, the image will be copied to the user desktop (via ssh) and the image viewer will be started on the user desktop with this option.")
-		self.other_options.add_argument("--dict", action="store_true", default=False,
-		                                 help="Print out plot dictionary when plotting.")
+		self.other_options.add_argument("--userpc", nargs="?", type="bool", default=False, const=True,
+		                                 help="If 'live' is enabled, the image will be copied to the user desktop (via ssh) and the image viewer will be started on the user desktop with this option. [Default: %(default)s]")
+		self.other_options.add_argument("--dict", nargs="?", type="bool", default=False, const=True,
+		                                 help="Print out plot dictionary when plotting. [Default: %(default)s]")
 		self.other_options.add_argument("--www", type=str, default=None, nargs='?', const="",
 		                                 help="""Push output plots directly to your public EKP webspace.
 		                                 Default location is http://www-ekp.physik.uni-karlsruhe.de/~<USER>/plots_archive/<DATE>
