@@ -7,6 +7,7 @@ std::string ValidElectronsFilter::GetFilterId() const {
 }
 
 void ValidElectronsFilter::Init(KappaSettings const& settings) {
+	CutRangeFilterBase::Init(settings);
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 			[](KappaEvent const& event, KappaProduct const& product) {
 				return product.m_validElectrons.size();
@@ -20,6 +21,7 @@ std::string ValidMuonsFilter::GetFilterId() const {
 }
 
 void ValidMuonsFilter::Init(KappaSettings const& settings) {
+	CutRangeFilterBase::Init(settings);
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 			[](KappaEvent const& event, KappaProduct const& product) {
 				return product.m_validMuons.size();
@@ -33,6 +35,7 @@ std::string ValidTausFilter::GetFilterId() const {
 }
 
 void ValidTausFilter::Init(KappaSettings const& settings) {
+	CutRangeFilterBase::Init(settings);
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 			[](KappaEvent const& event, KappaProduct const& product) {
 				return product.m_validTaus.size();
@@ -47,6 +50,7 @@ std::string ValidJetsFilter::GetFilterId() const {
 }
 
 void ValidJetsFilter::Init(KappaSettings const& settings) {
+	CutRangeFilterBase::Init(settings);
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 			[](KappaEvent const& event, KappaProduct const& product) {
 				return product.m_validJets.size();
@@ -61,6 +65,7 @@ std::string ValidBTaggedJetsFilter::GetFilterId() const {
 }
 
 void ValidBTaggedJetsFilter::Init(KappaSettings const& settings) {
+	CutRangeFilterBase::Init(settings);
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 			[](KappaEvent const& event, KappaProduct const& product) {
 				return product.m_bTaggedJets.size();
