@@ -148,23 +148,6 @@ class PlotBase(processor.Processor):
 		# delete nicks that do not need to be used for plotting
 		self.select_histograms(plotData)
 		
-		# prepare nick names for ratio subplot
-		if plotData.plotdict["ratio"]:
-			if plotData.plotdict["ratio_num"] == None: plotData.plotdict["ratio_num"] = [plotData.plotdict["nicks"][0]]
-			if plotData.plotdict["ratio_denom"] == None: plotData.plotdict["ratio_denom"] = [" ".join(plotData.plotdict["nicks"][1:])]
-			problems_with_ratio_nicks = False
-			for ratio_nicks_key in ["ratio_num", "ratio_denom"]:
-				plotData.plotdict[ratio_nicks_key] = [nicks.split() for nicks in plotData.plotdict[ratio_nicks_key]]
-				for nicks in plotData.plotdict[ratio_nicks_key]:
-					for nick in nicks:
-						if nick not in plotData.plotdict["nicks"]:
-							log.warning("Nick name \"%s\" of argument --%s does not exist in argument --nicks!" % (nick, ratio_nicks_key.replace("_", "-")))
-							problems_with_ratio_nicks = True
-			if problems_with_ratio_nicks:
-				log.warning("Continue without ratio subplot!")
-				plotData.plotdict["ratio"] = False
-
-		
 		# construct labels from x/y/z expressions if not specified by user
 		for labelKey, expressionKey in zip(["x_label", "y_label", "z_label"],
 		                                   ["x_expressions", "y_expressions", "z_expressions"]):
@@ -239,7 +222,6 @@ class PlotBase(processor.Processor):
 		super(PlotBase, self).run(plotData)
 		
 		self.set_style(plotData)
-		self.calculate_ratios(plotData)
 		self.create_canvas(plotData)
 		self.prepare_histograms(plotData)
 		self.determine_plot_lims(plotData)
@@ -271,29 +253,6 @@ class PlotBase(processor.Processor):
 
 	def set_style(self, plotData):
 		pass
-		
-	def calculate_ratios(self, plotData): ## todo: define ratio for functions
-		if (plotData.plotdict["ratio"] == True):
-			for numerator_nicks, denominator_nicks in zip(plotData.plotdict["ratio_num"],
-			                                              plotData.plotdict["ratio_denom"]):
-				name = hashlib.md5("_".join(numerator_nicks+denominator_nicks)).hexdigest()
-				numerator_histogram = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_objects"][nick] for nick in numerator_nicks],name=name+"_numerator")
-				denominator_histogram = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_objects"][nick] for nick in denominator_nicks],name=name+"_denominator")
-				
-				if all([isinstance(h, ROOT.TProfile) for h in [numerator_histogram, denominator_histogram]]):
-					# convert TProfiles to TH1 because ROOT can't divide TProfils correctly
-					# https://root.cern.ch/phpBB3/viewtopic.php?f=3&t=2101
-					# TODO is there a better way to do this?
-					denom_th1 = denominator_histogram.ProjectionX()
-					ratio_histogram = numerator_histogram.ProjectionX()
-					ratio_histogram.Divide(denom_th1)
-				elif all([isinstance(h, ROOT.TGraphAsymmErrors) for h in [numerator_histogram, denominator_histogram]]):
-					ratio_histogram = roottools.RootTools.to_histogram(numerator_histogram.Clone(name + "_ratio"))
-					ratio_histogram.Divide(roottools.RootTools.to_histogram(denominator_histogram))
-				else:
-					ratio_histogram = numerator_histogram.Clone(name + "_ratio")
-					ratio_histogram.Divide(denominator_histogram)
-				plotData.plotdict.setdefault("root_ratio_histos", []).append(ratio_histogram)
 	
 	def create_canvas(self, plotData):
 		pass
