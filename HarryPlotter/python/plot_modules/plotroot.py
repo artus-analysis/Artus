@@ -215,9 +215,9 @@ class PlotRoot(plotbase.PlotBase):
 		
 		# draw empty histograms for the axes
 		x_lims = plotData.plotdict["x_lims"] if not plotData.plotdict["x_lims"] is None else [self.x_min, self.x_max]
-		y_lims = plotData.plotdict["y_lims"] if not plotData.plotdict["y_lims"] is None else [self.y_min, self.y_max]
-		z_lims = plotData.plotdict["z_lims"] if not plotData.plotdict["z_lims"] is None else [self.z_min, self.z_max]
-		y_sub_lims = plotData.plotdict["y_subplot_lims"] if not plotData.plotdict["y_subplot_lims"] is None else [self.y_sub_min, self.y_sub_max]
+		y_lims = plotData.plotdict["y_lims"] if not plotData.plotdict["y_lims"] is None else [self.y_min * (0.5 if plotData.plotdict["y_log"] else 0.9), self.y_max * (2.0 if plotData.plotdict["y_log"] else 1.1)]
+		z_lims = plotData.plotdict["z_lims"] if not plotData.plotdict["z_lims"] is None else [(self.z_min * (0.5 if plotData.plotdict["y_log"] else 0.9)) if self.z_min else self.z_min, (self.z_max * (2.0 if plotData.plotdict["z_log"] else 1.1)) if self.z_max else self.z_max]
+		y_sub_lims = plotData.plotdict["y_subplot_lims"] if not plotData.plotdict["y_subplot_lims"] is None else [(self.y_sub_min * (1.1 if self.y_sub_min < 0.0 else 0.9)) if self.y_sub_min else self.y_sub_min, (self.y_sub_max * 1.1) if self.y_sub_max else self.y_sub_max]
 		z_sub_lims = [self.z_sub_min, self.z_sub_max] # plotData.plotdict["z_subplot_lims"] if not plotData.plotdict["z_subplot_lims"] is None else [self.z_sub_min, self.z_sub_max]
 		
 		n_bins = 1 # TODO: consider axis ticks
