@@ -7,6 +7,7 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
+import copy
 import os
 import ROOT
 import sys
@@ -50,6 +51,8 @@ class PlotRoot(plotbase.PlotBase):
 	def modify_argument_parser(self, parser, args):
 		super(PlotRoot, self).modify_argument_parser(parser, args)
 		
+		self.formatting_options.add_argument("-C", "--colors", type=str, nargs="+",
+		                                     help="Colors for the plots. For each plot up to two colors (whitespace separated) can be specified, the first for lines and markers and the second for filled areas.")
 		self.formatting_options.add_argument("--x-grid", nargs="?", type="bool", default=False, const=True,
 		                                     help="Place an x-axes grid on the plot. [Default: %(default)s]")
 		self.formatting_options.add_argument("--y-grid", nargs="?", type="bool", default=False, const=True,
@@ -77,24 +80,33 @@ class PlotRoot(plotbase.PlotBase):
 		))
 		
 		# defaults for colors
-		for index, color in enumerate(plotData.plotdict["colors"]):
-			if color == None:
-				plotData.plotdict["colors"][index] = index + 1
+		# per plot (up to) two colors are possible: first for lines and markers and second for filled areas
+		for index, colors in enumerate(plotData.plotdict["colors"]):
+			if colors == None:
+				plotData.plotdict["colors"][index] = [index + 1, index + 1]
 			else:
-				root_color = None
-				if color.startswith("k"):
-					root_color = getattr(ROOT, color)
-				elif color.startswith("#"):
-					root_color = ROOT.TColor.GetColor(color)
-				else:
-					root_color = eval(color)
-				plotData.plotdict["colors"][index] = root_color
+				colors = colors.split()
+				if len(colors) == 1:
+					colors = [colors[0], copy.deepcopy(colors[0])]
+				
+				for sub_index, color in enumerate(colors):
+					if color.startswith("k"):
+						color = getattr(ROOT, color)
+					elif color.startswith("#"):
+						color = ROOT.TColor.GetColor(color)
+					else:
+						color = eval(color)
+					colors[sub_index] = color
+				plotData.plotdict["colors"][index] = colors
 		
 		# defaults for markers
-		for index, (marker, marker_style, fill_style, stack) in enumerate(zip(plotData.plotdict["markers"],
-		                                                        plotData.plotdict["marker_styles"],
-		                                                        plotData.plotdict["fill_styles"],
-		                                                        plotData.plotdict["stacks"])):
+		for index, (line_width, marker, marker_style, fill_style, stack) in enumerate(zip(
+				plotData.plotdict["line_widths"],
+				plotData.plotdict["markers"],
+				plotData.plotdict["marker_styles"],
+				plotData.plotdict["fill_styles"],
+				plotData.plotdict["stacks"]
+		)):
 			if marker is None:
 				if index == 0:
 					marker = "E" if len(plotData.plotdict["markers"]) > 1 else "HIST"
@@ -105,6 +117,7 @@ class PlotRoot(plotbase.PlotBase):
 			if fill_style is None:
 				fill_style = 0
 				if "HIST" in marker.upper():
+					line_width = 0
 					fill_style = 1001
 				elif "LINE" in marker.upper():
 					marker = marker.upper().replace("LINE", "HIST")
@@ -113,6 +126,7 @@ class PlotRoot(plotbase.PlotBase):
 					marker_style = 0
 					fill_style = 3003
 			
+			plotData.plotdict["line_widths"][index] = line_width
 			plotData.plotdict["markers"][index] = marker
 			plotData.plotdict["marker_styles"][index] = marker_style
 			plotData.plotdict["fill_styles"][index] = fill_style
@@ -175,7 +189,7 @@ class PlotRoot(plotbase.PlotBase):
 	def prepare_histograms(self, plotData):
 		super(PlotRoot, self).prepare_histograms(plotData)
 		
-		for nick, color, marker, marker_style, marker_size, fill_style, line_style, line_width in zip(
+		for nick, colors, marker, marker_style, marker_size, fill_style, line_style, line_width in zip(
 				plotData.plotdict["nicks"],
 				plotData.plotdict["colors"],
 				plotData.plotdict["markers"],
@@ -189,15 +203,15 @@ class PlotRoot(plotbase.PlotBase):
 			if plotData.plotdict["title"]:
 				root_object.SetTitle(plotData.plotdict["title"])
 			
-			root_object.SetLineColor(color)
+			root_object.SetLineColor(colors[0])
 			root_object.SetLineStyle(line_style)
 			root_object.SetLineWidth(line_width)
 			
-			root_object.SetMarkerColor(color)
+			root_object.SetMarkerColor(colors[0])
 			root_object.SetMarkerStyle(marker_style)
 			root_object.SetMarkerSize(marker_size)
 			
-			root_object.SetFillColor(color)
+			root_object.SetFillColor(colors[1])
 			root_object.SetFillStyle(fill_style)
 
 			# tick labels
