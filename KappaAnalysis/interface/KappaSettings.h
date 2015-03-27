@@ -134,6 +134,15 @@ public:
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoMuonGenParticle, 0.5);
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoTauGenParticle, 0.5);
 	
+	IMPL_SETTING_DEFAULT(float, MinDeltaRMatchedRecoElectrons, 0.5);
+	IMPL_SETTING_DEFAULT(float, MinDeltaRMatchedRecoMuons, 0.5);
+	IMPL_SETTING_DEFAULT(float, MinDeltaRMatchedRecoTaus, 0.5);
+	
+	IMPL_SETTING_DEFAULT(float, MinDeltaRValidElectrons, 0.5);
+	IMPL_SETTING_DEFAULT(float, MinDeltaRValidMuons, 0.5);
+	IMPL_SETTING_DEFAULT(float, MinDeltaRValidTaus, 0.5);
+	IMPL_SETTING_DEFAULT(float, MinDeltaRValidLeptons, 0.5);
+
 	IMPL_SETTING_INTLIST_DEFAULT(RecoElectronMatchingGenParticlePdgIds, {});
 	IMPL_SETTING_INTLIST_DEFAULT(RecoMuonMatchingGenParticlePdgIds, {});
 	IMPL_SETTING_INTLIST_DEFAULT(RecoTauMatchingGenParticlePdgIds, {});

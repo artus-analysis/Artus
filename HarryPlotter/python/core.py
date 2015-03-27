@@ -183,17 +183,12 @@ class HarryCore(object):
 			plotData.plotdict["export_json"] = "default" if plotData.plotdict["json_defaults"] is None else plotData.plotdict["json_defaults"][0]
 		
 		# prepare aguments for all processors before running them
-		output_filenames = []
 		for processor in self.processors:
-			tmpPlotData = copy.deepcopy(plotData) if isinstance(processor, PlotBase) else plotData
-			processor.prepare_args(self.parser, tmpPlotData)
-			processor.run(tmpPlotData)
-			if isinstance(processor, PlotBase):
-				output_filenames.extend(tmpPlotData.plotdict.get("output_filenames", []))
-			else:
-				plotData = tmpPlotData
-		plotData = tmpPlotData
-		output_filenames = list(set(output_filenames))
+			processor.prepare_args(self.parser, plotData)
+			processor.run(plotData)
+		
+		# save plots
+		output_filenames = plotData.save()
 		
 		# export arguments into JSON file (2)
 		if plotData.plotdict["export_json"] != "default":

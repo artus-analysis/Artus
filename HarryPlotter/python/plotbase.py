@@ -7,12 +7,12 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
+import datetime
 import hashlib
 import os
-import subprocess
-import re
 import pprint
-import datetime
+import re
+import subprocess
 
 import ROOT
 
@@ -83,51 +83,33 @@ class PlotBase(processor.Processor):
 		                               help="Custom ticks for the Z-axis")
 		self.axis_options.add_argument("--z-tick-labels", type=str, nargs="+",
 		                               help="Custom tick labels for the Z-axis")
-		self.axis_options.add_argument("--axes-layout", type=int, nargs=2, default=[1,1],
-		                                     help="Number of axis/pad element(s) in xy-direction. Default is %(default)s")
-		self.axis_options.add_argument("--axes", type=int, nargs="+", default=0,
-		                                     help="Index/Indices of axis/pad element(s) on which a plot is plotted. Default is %(default)s")
+		# self.axis_options.add_argument("--axes-layout", type=int, nargs=2, default=[1,1],
+		                                     # help="Number of axis/pad element(s) in xy-direction. Default is %(default)s")
+		# self.axis_options.add_argument("--axes", type=int, nargs="+", default=0,
+		                                     # help="Index/Indices of axis/pad element(s) on which a plot is plotted. Default is %(default)s")
 
 		#plot formatting
 		self.formatting_options = parser.add_argument_group("Formatting options")
 		self.formatting_options.add_argument("-C", "--colors", type=str, nargs="+",
 		                                     help="Colors for the plots.")
-		## TODO: remove --ratio-colors in backends
-		#self.formatting_options.add_argument("--ratio-colors", type=str, nargs="+", default=[None],
-		#                                     help="Colors for the ratio subplots. [Default: %(default)s]")
-		#self.formatting_options.add_argument("-L", "--labels", type=str, nargs="+",
-		#                                     help="Labels for the plots.")
-		## TODO: remove --ratio-labels in backends
-		#self.formatting_options.add_argument("--ratio-labels", type=str, nargs="+", default=[None],
-		#                                     help="Labels for the ratio subplots. [Default: %(default)s]")
-		#self.formatting_options.add_argument("-m", "--markers", type=str, nargs="+",
-		#                                     help="Style for the plots.")
-		## TODO: remove --ratio-markers in backends
-		#self.formatting_options.add_argument("--ratio-markers", type=str, nargs="+", default=[None],
-		#                                     help="Style for the ratio subplots. [Default: %(default)s]")
-		#self.formatting_options.add_argument("--line-styles", nargs="+",
-                #                             help="Line style of plots line. [Default: %(default)s]")
-		## TODO: remove --ratio-line-styles in backends
-		#self.formatting_options.add_argument("--ratio-line-styles", nargs="+", default=[None],
-                #                             help="Line styles for the ratio subplots. [Default: %(default)s]")
-		#self.formatting_options.add_argument("--x-errors", type='bool', nargs="+",
-		#                                     help="Show x errors for the nicks. [Default: True for first plot, False otherwise]")
-		#self.formatting_options.add_argument("--y-errors", type='bool', nargs="+",
-		#                                     help="Show y errors for the plots. [Default: True for first plot, False otherwise]")
-		## TODO: remove --ratio-x-errors in backends
-		#self.formatting_options.add_argument("--ratio-x-errors", type='bool', nargs="+", default=[True],
-		#                                     help="Show x errors in the ratio subplots. [Default: True]")
-		## TODO: remove --ratio-y-errors in backends
-		#self.formatting_options.add_argument("--ratio-y-errors", type='bool', nargs="+", default=[True],
-		#                                     help="Show y errors in the ratio subplots. [Default: True]")
+		self.formatting_options.add_argument("-L", "--labels", type=str, nargs="+",
+		                                     help="Labels for the plots.")
+		self.formatting_options.add_argument("-m", "--markers", type=str, nargs="+",
+		                                     help="Style for the plots.")
+		self.formatting_options.add_argument("--line-styles", nargs="+",
+                                             help="Line style of plots line. [Default: %(default)s]")
+		self.formatting_options.add_argument("--x-errors", type='bool', nargs="+",
+		                                     help="Show x errors for the nicks. [Default: True for first plot, False otherwise]")
+		self.formatting_options.add_argument("--y-errors", type='bool', nargs="+",
+		                                     help="Show y errors for the plots. [Default: True for first plot, False otherwise]")
 		self.formatting_options.add_argument("--legend", type=str, nargs="?",
 		                                     help="Location of the legend. Use 'None' to not set any legend")
 		self.formatting_options.add_argument("-G", "--grid", action="store_true", default=False,
 		                                     help="Place an axes grid on the plot.")
 		self.formatting_options.add_argument("--subplot-grid", action="store_true", default=False,
 		                                     help="Place an axes grid on the subplot.")
-		self.formatting_options.add_argument("--stacks", type=str, nargs="+",
-		                                     help="Defines nick names for stacking. Inputs with the same nick name will be stacked. By default, every input gets a unique nick name.")
+		self.formatting_options.add_argument("--stacks", type=str, nargs="+", default=[None],
+		                                     help="Defines nick names for stacking. Inputs with the same nick name will be stacked. By default, every input gets a unique nick name. [Default: %(default)s]")
 
 		# plot labelling
 		self.labelling_options = parser.add_argument_group("Labelling options")
@@ -213,8 +195,10 @@ class PlotBase(processor.Processor):
 		# formatting options
 		if plotData.plotdict["labels"] == None or all([i == None for i in plotData.plotdict["labels"]]):
 			plotData.plotdict["labels"] = plotData.plotdict["nicks"]
-		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles", "x_errors", "y_errors", "stacks", "axes"],
-				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]))
+		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles", "x_errors", "y_errors"],
+				n_items = max([len(plotData.plotdict[l]) for l in ["nicks"] if plotData.plotdict[l] is not None]))
+		# stacks are expanded by appending None's
+		plotData.plotdict["stacks"] = plotData.plotdict["stacks"]+[None]*(len(plotData.plotdict["nicks"])-len(plotData.plotdict["stacks"]))
 		
 		for index, error in enumerate(plotData.plotdict["x_errors"]):
 			if error is None:
@@ -257,7 +241,6 @@ class PlotBase(processor.Processor):
 			plotData.plotdict["export_json"] = os.path.join(plotData.plotdict["output_dir"], plotData.plotdict["filename"]+".json")
 
 		# prepare nicknames for stacked plots
-		stacks = plotData.plotdict["stacks"]
 		plotData.plotdict["stacks"] = [stack if stack != None else ("stack%d" % index) for index, stack in enumerate(plotData.plotdict["stacks"])]
 
 		# prepare arguments for text label(s)
@@ -271,45 +254,31 @@ class PlotBase(processor.Processor):
 		self.calculate_ratios(plotData)
 		self.create_canvas(plotData)
 		self.prepare_histograms(plotData)
+		self.determine_plot_lims(plotData)
 		self.make_plots(plotData)
 		self.modify_axes(plotData)
 		self.add_grid(plotData)
 		self.add_labels(plotData)
 		self.add_texts(plotData)
-		self.save_canvas(plotData)
 		self.plot_end(plotData)
 
 	def select_histograms(self, plotData):
 		sorted_nicks_to_keep = []
 		
-		# handle white list, which has HIGHER priority than the black list
-		for white_nick in plotData.plotdict["nicks_whitelist"]:
-			for nick in plotData.plotdict["nicks"]:
-				if (re.search(white_nick, nick)) != None and (nick not in sorted_nicks_to_keep):
-					sorted_nicks_to_keep.append(nick)
-		
-		# handle black list, which has LOWER priority than the white list
-		for nick in plotData.plotdict["nicks"]:
-			if nick not in sorted_nicks_to_keep:
-				keep = True
-				for black_nick in plotData.plotdict["nicks_blacklist"]:
-					if re.search(black_nick, nick) != None:
-						keep = False
-						log.debug("Exclude object with nick \"%s\" from being plotted." % nick)
-				if keep:
-					sorted_nicks_to_keep.append(nick)
-		
-		plotData.plotdict["nicks"] = sorted_nicks_to_keep
+		# handle regexps in white/black lists for nicks
+		plotData.plotdict["nicks"] = tools.matching_sublist(
+				plotData.plotdict["nicks"],
+				plotData.plotdict["nicks_whitelist"],
+				plotData.plotdict["nicks_blacklist"]
+		)
 		log.debug("Final order of object nicks for plotting: %s" % ", ".join(plotData.plotdict["nicks"]))
 		
 		# handle subplot regexps
-		subplot_nicks = []
-		for subplot_nick in plotData.plotdict["subplot_nicks"]:
-			for nick in plotData.plotdict["nicks"]:
-				if re.search(subplot_nick, nick) != None:
-					subplot_nicks.append(nick)
-					log.debug("Object with nick \"%s\" is selected for the subplot." % nick)
-		plotData.plotdict["subplot_nicks"] = subplot_nicks
+		plotData.plotdict["subplot_nicks"] = tools.matching_sublist(
+				plotData.plotdict["nicks"],
+				plotData.plotdict["subplot_nicks"]
+		)
+		log.debug("Object nicks for the subplot: %s" % ", ".join(plotData.plotdict["subplot_nicks"]))
 		plotData.plotdict["subplots"] = [nick in plotData.plotdict["subplot_nicks"] for nick in plotData.plotdict["nicks"]]
 
 	def set_style(self, plotData):
@@ -343,12 +312,8 @@ class PlotBase(processor.Processor):
 	
 	def prepare_histograms(self, plotData):
 		# handle stacks
-		# todo: define how functions should act when stacked
-		plotData.plotdict["root_stack_histos"] = {}
+		# TODO: define how functions should act when stacked
 		for index, (nick1, stack1) in enumerate(zip(plotData.plotdict["nicks"], plotData.plotdict["stacks"])):
-			plotData.plotdict["root_stack_histos"][stack1] = plotData.plotdict["root_objects"][nick1].Clone()
-			
-			count = 0
 			for nick2, stack2 in zip(plotData.plotdict["nicks"], plotData.plotdict["stacks"])[:index]:
 				if stack1 == stack2:
 					# TProfiles cannot be added, convert to TH1
@@ -357,15 +322,11 @@ class PlotBase(processor.Processor):
 					if isinstance(plotData.plotdict["root_objects"][nick1], ROOT.TProfile):
 						plotData.plotdict["root_objects"][nick1] = plotData.plotdict["root_objects"][nick1].ProjectionX()
 					plotData.plotdict["root_objects"][nick2].Add(plotData.plotdict["root_objects"][nick1])
-					
-					if count == 0:
-						plotData.plotdict["root_stack_histos"][stack1] = plotData.plotdict["root_objects"][nick2].Clone()
-					count = count+1
 
 			# some debug infos
 			if log.isEnabledFor(logging.DEBUG):
-				log.debug("\nContents of stack %s, nick %s:" % (stack1, nick1))
-				plotData.plotdict["root_stack_histos"][stack1].Print("range")
+				log.debug("\nContents of nick %s, stack %s:" % (nick1, stack1))
+				plotData.plotdict["root_objects"][nick1].Print("range")
 		
 		# remove underflow/overflow bin contents
 		for nick in plotData.plotdict["nicks"]:
@@ -380,6 +341,34 @@ class PlotBase(processor.Processor):
 					# TODO: iterate over multidim. under-/overflow bins
 					pass
 
+	def determine_plot_lims(self, plotData):
+		self.x_min = None
+		self.x_max = None
+		self.y_min = None
+		self.y_max = None
+		self.z_min = None
+		self.z_max = None
+		self.max_dim = 2
+		
+		self.y_sub_min = None
+		self.y_sub_max = None
+		self.z_sub_min = None
+		self.z_sub_max = None
+		self.max_sub_dim = 2
+		
+		for nick, subplot in zip(plotData.plotdict["nicks"], plotData.plotdict["subplots"]):
+			plot_x_min, plot_x_max, plot_y_min, plot_y_max, plot_z_min, plot_z_max, max_dim = PlotBase.get_plot_lims(plotData.plotdict["root_objects"][nick])
+			
+			self.x_min, self.x_max = PlotBase.update_lims(self.x_min, self.x_max, plot_x_min, plot_x_max)
+			if subplot == True:
+				self.max_sub_dim = max_dim
+				self.y_sub_min, self.y_sub_max = PlotBase.update_lims(self.y_sub_min, self.y_sub_max, plot_y_min, plot_y_max)
+				self.z_sub_min, self.z_sub_max = PlotBase.update_lims(self.z_sub_min, self.z_sub_max, plot_z_min, plot_z_max)
+			else:
+				self.max_dim = max_dim
+				self.y_min, self.y_max = PlotBase.update_lims(self.y_min, self.y_max, plot_y_min, plot_y_max)
+				self.z_min, self.z_max = PlotBase.update_lims(self.z_min, self.z_max, plot_z_min, plot_z_max)
+
 	def make_plots(self, plotData):
 		pass
 	
@@ -393,9 +382,6 @@ class PlotBase(processor.Processor):
 		pass
 	
 	def add_texts(self, plotData):
-		pass
-
-	def save_canvas(self, plotData):
 		pass
 
 	def plot_end(self, plotData):
@@ -451,7 +437,68 @@ class PlotBase(processor.Processor):
 
 		if plotData.plotdict["dict"]:
 			pprint.pprint(plotData.plotdict)
-
+	
+	@staticmethod
+	def get_plot_lims(root_object):
+		x_min = None
+		x_max = None
+		y_min = None
+		y_max = None
+		z_min = None
+		z_max = None
+		max_dim = 2
+		if isinstance(root_object, ROOT.TH1):
+			x_min = root_object.GetXaxis().GetXmin()
+			x_max = root_object.GetXaxis().GetXmax()
+			if root_object.GetDimension() == 1:
+				y_min = root_object.GetMinimum()
+				y_max = root_object.GetMaximum()
+			else:
+				max_dim = 3
+				y_min = root_object.GetYaxis().GetXmin()
+				y_max = root_object.GetYaxis().GetXmax()
+				if root_object.GetDimension() == 2:
+					z_min = root_object.GetMinimum()
+					z_max = root_object.GetMaximum()
+				else:
+					z_min = root_object.GetZaxis().GetXmin()
+					z_max = root_object.GetZaxis().GetXmax()
+		elif isinstance(root_object, ROOT.TGraph):
+			# TODO: treat error bars
+			x_min = root_object.GetXaxis().GetXmin()
+			x_max = root_object.GetXaxis().GetXmax()
+			if not isinstance(root_object, ROOT.TGraph2D):
+				y_min = root_object.GetMinimum()
+				y_max = root_object.GetMaximum()
+			else:
+				max_dim = 3
+				y_min = root_object.GetYaxis().GetXmin()
+				y_max = root_object.GetYaxis().GetXmax()
+				z_min = root_object.GetMinimum()
+				z_max = root_object.GetMaximum()
+		else:
+			log.warning("Retrieving the plot limits is not yet implemented for objects of type %s!." % str(type(root_object)))
+		return x_min, x_max, y_min, y_max, z_min, z_max, max_dim
+	
+	@staticmethod
+	def update_lims(min_1, max_1, min_2, max_2):
+		result_min = None
+		if min_2 is None:
+			result_min = min_1
+		elif min_1 is None:
+			result_min = min_2
+		else:
+			result_min = min(min_1, min_2)
+		
+		result_max = None
+		if max_2 is None:
+			result_max = max_1
+		elif max_1 is None:
+			result_max = max_2
+		else:
+			result_max = max(max_1, max_2)
+		
+		return result_min, result_max
 
 
 # these html templates are needed to create the web galleries

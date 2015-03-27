@@ -5,9 +5,24 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import Artus.HarryPlotter.plotbase as plotbase
+import Artus.HarryPlotter.plotdata as plotdata
 import Artus.HarryPlotter.utility.roottools as roottools
 
 import ROOT
+
+
+class ExportPlotContainer(plotdata.PlotContainer):
+	def __init__(self, root_files=None):
+		self.root_files = root_files
+	
+	def finish(self):
+		pass
+	
+	def save(self, filename):
+		root_file = self.root_files.get(filename, None)
+		if not root_file is None:
+			root_file.Write()
+			root_file.Close()
 
 
 class ExportRoot(plotbase.PlotBase):
@@ -44,18 +59,20 @@ class ExportRoot(plotbase.PlotBase):
 		pass
 		
 	def create_canvas(self, plotData):
-		self.root_output_files = [ROOT.TFile(output_filename, plotData.plotdict["file_mode"]) for output_filename in plotData.plotdict["output_filenames"]]
+		plotData.plot = ExportPlotContainer(
+				{output_filename : ROOT.TFile(output_filename, plotData.plotdict["file_mode"]) for output_filename in plotData.plotdict["output_filenames"]}
+		)
 		
 	def prepare_histograms(self, plotData):
 		pass
 		
 	def make_plots(self, plotData):
-		for root_output_file in self.root_output_files:
-			root_output_file.cd()
+		for root_filename, root_file in plotData.plot.root_files.iteritems():
+			root_file.cd()
 			
 			for nick, path in zip(plotData.plotdict["nicks"], plotData.plotdict["labels"]):
 				root_object = plotData.plotdict["root_objects"][nick]
-				roottools.RootTools.write_object(root_output_file, root_object, path)
+				roottools.RootTools.write_object(root_file, root_object, path)
 		
 	def modify_axes(self, plotData):
 		pass
@@ -65,12 +82,6 @@ class ExportRoot(plotbase.PlotBase):
 		
 	def add_texts(self, plotData):
 		pass
-		
-	def save_canvas(self, plotData):
-		for root_output_file, output_filename in zip(self.root_output_files, plotData.plotdict["output_filenames"]):
-			root_output_file.Write()
-			root_output_file.Close()
-			log.info("Exported root objects to \"%s\"." % output_filename)
 		
 	def plot_end(self, plotData):
 		pass

@@ -63,6 +63,7 @@ class HarryPlotter(object):
 			if config_dict is None:
 				harry_args.append(None)
 			else:
+				config_dict["comment"] = " ".join(sys.argv)
 				if "json_defaults" in config_dict:
 					json_defaults_dict = jsonTools.JsonDict(config_dict["json_defaults"]).doIncludes().doComments()
 					config_dict.pop("json_defaults")
@@ -75,6 +76,8 @@ class HarryPlotter(object):
 					harry_args[-1] = args_string
 				else:
 					harry_args[-1] += (" "+args_string)
+				if config_dict is None:
+					harry_args[-1] += (" --comment " + (" ".join(sys.argv)))
 		
 		# multi processing of multiple plots
 		output_filenames = []
