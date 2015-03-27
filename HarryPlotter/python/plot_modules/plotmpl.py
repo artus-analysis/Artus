@@ -243,7 +243,7 @@ class PlotMpl(plotbase.PlotBase):
 		ax = plotData.plot.axes[0]
 		ax.grid(plotData.plotdict["grid"])
 		# set axis labels
-		if not (plotData.plotdict["ratio"] or (plotData.plotdict['subplot_nicks'] != [])):
+		if plotData.plotdict['subplot_nicks'] != []):
 			ax.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]), position=(1., 0.), va='top', ha='right')
 		ax.set_ylabel(self.nicelabels.get_nice_label(plotData.plotdict["y_label"]), position=(0., 1.), va='top', ha='right')
 

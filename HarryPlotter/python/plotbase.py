@@ -31,12 +31,6 @@ class PlotBase(processor.Processor):
 		
 		# plotting settings
 		self.plotting_options = parser.add_argument_group("Plotting options")
-		self.plotting_options.add_argument("--ratio", default=False, action="store_true",
-		                                   help="Show ratio subplot.")
-		self.plotting_options.add_argument("--ratio-num", nargs="+",
-		                                   help="Nick names for numerators of ratio. Multiple nicks in one argument (ws-separated) are summed. [Default: first nick]")
-		self.plotting_options.add_argument("--ratio-denom", nargs="+",
-		                                   help="Nick names for denominators of ratio. Multiple nicks in one argument (ws-separated) are summed. [Default: all but first nick]")
 		self.plotting_options.add_argument("--nicks-whitelist", nargs="+", default=[],
 		                                   help="Whitelist of (regexp) nick names for objects to be plotted. This also allows for redefining the order of nicks for the plotting. Use \"^nick$\" for requirering exact matches.")
 		self.plotting_options.add_argument("--nicks-blacklist", nargs="+", default=["noplot"],
@@ -55,8 +49,6 @@ class PlotBase(processor.Processor):
 		                               help="Custom ticks for the X-axis")
 		self.axis_options.add_argument("--x-tick-labels", type=str, nargs="+",
 		                               help="Custom tick labels for the X-axis")
-		#self.axis_options.add_argument("--xview", type=float, nargs=2, default=xview,
-		#                               help="Lower and Upper limit for x-axis viewing in the plot")
 		
 		self.axis_options.add_argument("--y-lims", type=float, nargs=2,
 		                               help="Lower and Upper limit for y-axis.")
@@ -83,10 +75,6 @@ class PlotBase(processor.Processor):
 		                               help="Custom ticks for the Z-axis")
 		self.axis_options.add_argument("--z-tick-labels", type=str, nargs="+",
 		                               help="Custom tick labels for the Z-axis")
-		# self.axis_options.add_argument("--axes-layout", type=int, nargs=2, default=[1,1],
-		                                     # help="Number of axis/pad element(s) in xy-direction. Default is %(default)s")
-		# self.axis_options.add_argument("--axes", type=int, nargs="+", default=0,
-		                                     # help="Index/Indices of axis/pad element(s) on which a plot is plotted. Default is %(default)s")
 
 		#plot formatting
 		self.formatting_options = parser.add_argument_group("Formatting options")
