@@ -91,7 +91,8 @@ class PlotRoot(plotbase.PlotBase):
 				plotData.plotdict["colors"][index] = root_color
 		
 		# defaults for markers
-		for index, (marker, fill_style, stack) in enumerate(zip(plotData.plotdict["markers"],
+		for index, (marker, marker_style, fill_style, stack) in enumerate(zip(plotData.plotdict["markers"],
+		                                                        plotData.plotdict["marker_styles"],
 		                                                        plotData.plotdict["fill_styles"],
 		                                                        plotData.plotdict["stacks"])):
 			if marker is None:
@@ -109,9 +110,11 @@ class PlotRoot(plotbase.PlotBase):
 					marker = marker.upper().replace("LINE", "HIST")
 					fill_style = 0
 				elif "E" in marker.upper() and marker.upper() != "E":
+					marker_style = 0
 					fill_style = 3003
 			
 			plotData.plotdict["markers"][index] = marker
+			plotData.plotdict["marker_styles"][index] = marker_style
 			plotData.plotdict["fill_styles"][index] = fill_style
 		
 		# defaults for legend position
