@@ -33,7 +33,8 @@ class NormalizeToUnity(analysisbase.AnalysisBase):
 		for nick, root_histogram in plotData.plotdict["root_objects"].iteritems():
 			if isinstance(root_histogram, ROOT.TH1):
 				root_histogram.Sumw2()
-				root_histogram.Scale(1.0 / root_histogram.Integral())
+				if root_histogram.Integral() != 0.0:
+					root_histogram.Scale(1.0 / root_histogram.Integral())
 
 class NormalizeColumnsToUnity(analysisbase.AnalysisBase):
 	"""In a TH2 histo, normalize each column such that sum(rows) = 1."""
@@ -87,7 +88,8 @@ class NormalizeToFirstHisto(analysisbase.AnalysisBase):
 		for nick, root_histogram in plotData.plotdict["root_objects"].iteritems():
 			if isinstance(root_histogram, ROOT.TH1):
 				root_histogram.Sumw2()
-				root_histogram.Scale(refhisto_int / root_histogram.Integral())
+				if root_histogram.Integral() != 0.0:
+					root_histogram.Scale(refhisto_int / root_histogram.Integral())
 
 class NormalizeStackToFirstHisto(analysisbase.AnalysisBase):
 	"""Normalize stacked histograms to first histogram."""
@@ -106,4 +108,5 @@ class NormalizeStackToFirstHisto(analysisbase.AnalysisBase):
 		for nick, root_histogram in plotData.plotdict["root_objects"].iteritems():
 			if isinstance(root_histogram, ROOT.TH1) and nick != plotData.plotdict["nicks"][0]:
 				root_histogram.Sumw2()
-				root_histogram.Scale(refhisto_int / stack_int)
+				if stack_int != 0.0:
+					root_histogram.Scale(refhisto_int / stack_int)
