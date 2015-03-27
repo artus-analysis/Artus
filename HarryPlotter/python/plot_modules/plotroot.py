@@ -284,9 +284,9 @@ class PlotRoot(plotbase.PlotBase):
 		#PlotRoot._set_axis_limits(self.axes_histogram, x_lims, y_lims, z_lims)
 		
 		if not self.subplot_axes_histogram is None:
-			y_subplot_lims = plotData.plotdict["y_subplot_lims"] if not plotData.plotdict["y_subplot_lims"] is None else [self.y_subplot_min, self.y_subplot_max]
-			z_subplot_lims = None # TODO: z-lims for possible 3D subplots
-			PlotRoot._set_axis_limits(self.subplot_axes_histogram, x_lims, y_subplot_lims, z_subplot_lims)
+			y_subplot_lims = plotData.plotdict["y_subplot_lims"] if not plotData.plotdict["y_subplot_lims"] is None else [self.y_sub_min, self.y_sub_max]
+			z_subplot_lims = [self.z_sub_min, self.z_sub_max] # TODO: z-lims for possible 3D subplots
+			#PlotRoot._set_axis_limits(self.subplot_axes_histogram, x_lims, y_subplot_lims, z_subplot_lims)
 		
 		if not self.subplot_axes_histogram is None:
 			self.axes_histogram.GetXaxis().SetLabelSize(0)
