@@ -233,16 +233,16 @@ class HarryCore(object):
 
 	def _print_available_modules(self):
 		"""Prints all available modules to stdout."""
-		title_strings = ["Input modules:", "\nAnalysis modules:", "\nPlot modules:"]
+		title_strings = ["Input modules:", "Analysis modules:", "Plot modules:"]
 		baseclasses = [InputBase, AnalysisBase, PlotBase]
-		for title_string, baseclass in zip(title_strings, baseclasses):
-			log.info(tools.get_colored_string(title_string, "yellow"))
+		for index, (title_string, baseclass) in enumerate(zip(title_strings, baseclasses)):
+			log.info(("\n" if index > 0 else "")+tools.get_colored_string(title_string, "yellow"))
 			self._print_module_list(sorted([module for module in self.available_processors if issubclass(self.available_processors[module], baseclass)]))
 
 	def _print_module_list(self, module_list):
 		"""Print a list of modules (name and docstring)"""
 		for module in module_list:
-			log.info(tools.get_colored_string("\t{}".format(module), "green"))
+			log.info("\t"+tools.get_colored_string("{}".format(module), "green"))
 			if inspect.getdoc(self.available_processors[module]):
 				log.info(tools.get_indented_text("\t\t", inspect.getdoc(self.available_processors[module])))
 

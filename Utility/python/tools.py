@@ -106,14 +106,14 @@ def get_environment_variable(variable_name):
 
 def get_colored_string(string, color='green'):
 	d = {
-		'red': '91',
-		'green':'92',
-		'yellow':'93',
-		'blue':'94',
-		'magenta':'94',
-		'cyan':'96',
+		'red': '101',
+		'green':'102',
+		'yellow':'103',
+		'blue':'104',
+		'magenta':'104',
+		'cyan':'106',
 	}
-	return "\033[{1}m{0}\033[39m".format(string, d[color])
+	return "\033[0;{1};30m{0}\033[0m".format(string, d[color])
 
 def get_indented_text(prefix, message, width=None):
 	"""returns a text block which is line-wrapped and indented at a certain length."""
