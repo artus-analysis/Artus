@@ -9,6 +9,7 @@ import collections
 from multiprocessing import Pool
 
 import ROOT
+import sys
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gErrorIgnoreLevel = ROOT.kError
 
