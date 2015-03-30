@@ -13,6 +13,7 @@ import os
 import pprint
 import re
 import subprocess
+import sys
 
 import ROOT
 
@@ -243,6 +244,9 @@ class PlotBase(processor.Processor):
 				plotData.plotdict["nicks_blacklist"]
 		)
 		log.debug("Final order of object nicks for plotting: %s" % ", ".join(plotData.plotdict["nicks"]))
+		if len(plotData.plotdict["nicks"]) == 0:
+			log.critical("No (remaining) objects to be plotted!")
+			sys.exit(1)
 		
 		# handle subplot regexps
 		plotData.plotdict["subplot_nicks"] = tools.matching_sublist(
