@@ -24,8 +24,8 @@ class HarryParser(argparse.ArgumentParser):
 		                  help="Show this help message and exit.")
 		self.add_argument("--no-logo", default=True, action="store_true",
 		                  help="Don't show the HarryPlotter logo at startup.")
-		#self.add_argument("--comment", default="",
-		#                  help="Comment for the output JSON file. This argument is filled with the program call in multiplot scripts. [Default: %(default)s]")
+		self.add_argument("--comment", default="",
+		                  help="Comment for the output JSON file. This argument is filled with the program call in multiplot scripts. [Default: %(default)s]")
 		
 		self.module_options = self.add_argument_group('Modules')
 		self.module_options.add_argument("--modules-search-paths", default=[], nargs="+",
