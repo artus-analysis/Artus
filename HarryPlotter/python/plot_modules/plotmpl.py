@@ -38,28 +38,19 @@ class MplPlotContainer(plotdata.PlotContainer):
 			legend_ax.xaxis.set_visible(False)
 			legend_ax.yaxis.set_visible(False)
 			legend = legend_ax.legend(*self.axes[0].get_legend_handles_labels(), loc='center')
-			for suffix in plotData.plotdict['formats']:
-				full_name = "%s/%s.%s" % (plotData.plotdict['output_dir'], plotData.plotdict['save_legend'], suffix)
-				legend_fig.savefig(
-					full_name,
-					# TODO cleanly crop figure to legend size
-					# the arguments below are just workarounds :(
-					#bbox_inches='tight',
-					#pad_inches=-1
-				)
-			log.info("Legend saved to " + full_name)
-		
+
 	def save(self, filename):
 		self.fig.savefig(filename)
 		if self.save_legend != False:
 			legend_filename = os.path.join(os.path.dirname(filename), self.save_legend+os.path.splitext(filename)[-1])
-			legend_fig.savefig(
+			self.legend_fig.savefig(
 					legend_filename,
 					# TODO cleanly crop figure to legend size
 					# the arguments below are just workarounds :(
 					#bbox_inches='tight',
 					#pad_inches=-1
 			)
+			log.info("Legend saved to " + legend_filename)
 
 class PlotMpl(plotbase.PlotBase):
 	"""Create scientific plots using the Matplotlib backend."""
