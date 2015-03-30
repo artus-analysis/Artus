@@ -84,8 +84,6 @@ class PlotMpl(plotbase.PlotBase):
 
 	def modify_argument_parser(self, parser, args):
 		super(PlotMpl, self).modify_argument_parser(parser, args)
-		self.formatting_options.add_argument("--colormap", default="afmhot", nargs="?",
-		                                     help="Colormap for matplotlib [Default: '%(default)s']")
 		self.formatting_options.add_argument("--edgecolors", nargs="+",
 		                                     help="Edgecolor to be passed to plot objects.")
 		self.formatting_options.add_argument("--step", default=False, type='bool', nargs="+",
@@ -97,6 +95,8 @@ class PlotMpl(plotbase.PlotBase):
 		self.formatting_options.add_argument("--save-legend", type=str, nargs="?", default=False, const="legend",
 		                                     help="If set, the legend is saved as a separate file. Argument is the filename. Default: %(default)s")
 		self.formatting_options.set_defaults(legend="upper right")
+		
+		parser.set_defaults(colormap="afmhot")
 
 	def prepare_args(self, parser, plotData):
 		super(PlotMpl, self).prepare_args(parser, plotData)

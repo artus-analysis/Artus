@@ -7,6 +7,7 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
+import array
 import copy
 import os
 import ROOT
@@ -53,6 +54,8 @@ class PlotRoot(plotbase.PlotBase):
 		
 		self.formatting_options.add_argument("-C", "--colors", type=str, nargs="+",
 		                                     help="Colors for the plots. For each plot up to two colors (whitespace separated) can be specified, the first for lines and markers and the second for filled areas.")
+		self.formatting_options.add_argument("--colormap", nargs="?", type="bool", default=False, const=True,
+		                                     help="Use colormap as defined by multiple colors (whitespace separated) in --colors). [Default: '%(default)s']")
 		self.formatting_options.add_argument("--x-grid", nargs="?", type="bool", default=False, const=True,
 		                                     help="Place an x-axes grid on the plot. [Default: %(default)s]")
 		self.formatting_options.add_argument("--y-grid", nargs="?", type="bool", default=False, const=True,
@@ -264,14 +267,29 @@ class PlotRoot(plotbase.PlotBase):
 				self.subplot_axes_histogram.SetMaximum(z_sub_lims[1])
 			self.subplot_axes_histogram.Draw("AXIS")
 		
-		for nick, subplot, marker in zip(
+		for nick, subplot, marker, colors in zip(
 				plotData.plotdict["nicks"],
 				plotData.plotdict["subplots"],
-				plotData.plotdict["markers"]
+				plotData.plotdict["markers"],
+				plotData.plotdict["colors"]
 		):
 			# select pad to plot on
 			pad = plotData.plot.subplot_pad if subplot == True else plotData.plot.plot_pad
 			pad.cd()
+			
+			# set color map
+			if plotData.plotdict["colormap"]:
+				reds = [ROOT.gROOT.GetColor(color).GetRed() for color in colors]
+				greens = [ROOT.gROOT.GetColor(color).GetGreen() for color in colors]
+				blues = [ROOT.gROOT.GetColor(color).GetBlue() for color in colors]
+				ROOT.TColor.CreateGradientColorTable(
+						len(colors),
+						array.array("d", [float(index) / (len(colors)-1) for index in xrange(len(colors))]),
+						array.array("d", reds),
+						array.array("d", greens),
+						array.array("d", blues),
+						ROOT.gStyle.GetNdivisions("Z")
+				)
 			
 			# draw
 			plotData.plotdict["root_objects"][nick].Draw(marker + " SAME")

@@ -80,6 +80,8 @@ class PlotBase(processor.Processor):
 		self.formatting_options = parser.add_argument_group("Formatting options")
 		self.formatting_options.add_argument("-C", "--colors", type=str, nargs="+",
 		                                     help="Colors for the plots.")
+		self.formatting_options.add_argument("--colormap", nargs="?",
+		                                     help="Colormap. [Default: '%(default)s']")
 		self.formatting_options.add_argument("-L", "--labels", type=str, nargs="+",
 		                                     help="Labels for the plots.")
 		self.formatting_options.add_argument("-m", "--markers", type=str, nargs="+",
