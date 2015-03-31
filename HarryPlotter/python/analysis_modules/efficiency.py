@@ -81,22 +81,34 @@ class CutEfficiency(analysisbase.AnalysisBase):
 		super(CutEfficiency, self).modify_argument_parser(parser, args)
 		
 		self.cut_efficiency_options = parser.add_argument_group("Cut efficiency options")
-		self.cut_efficiency_options.add_argument("--cut-efficiency-sig-nicks", nargs="+", default=[None],
-				help="Nick names for the signal histograms.")
-		self.cut_efficiency_options.add_argument("--cut-efficiency-bkg-nicks", nargs="+", default=[None],
-				help="Nick names for the background histograms.")
-		self.cut_efficiency_options.add_argument("--cut-efficiency-nicks", nargs="+", default=[None],
-				help="Nick names for the resulting ROC graphs.")
-		self.cut_efficiency_options.add_argument("--cut-efficiency-modes", nargs="+", default=["sigEffVsBkgRej"],
+		self.cut_efficiency_options.add_argument(
+				"--cut-efficiency-sig-nicks", nargs="+", default=[None],
+				help="Nick names for the signal histograms."
+		)
+		self.cut_efficiency_options.add_argument(
+				"--cut-efficiency-bkg-nicks", nargs="+", default=[None],
+				help="Nick names for the background histograms."
+		)
+		self.cut_efficiency_options.add_argument(
+				"--cut-efficiency-nicks", nargs="+", default=[None],
+				help="Nick names for the resulting ROC graphs."
+		)
+		self.cut_efficiency_options.add_argument(
+				"--select-lower-values", nargs="+", type="bool", default=[False],
+				help="Select events lower than the cut. [Default: %(default)s]"
+		)
+		self.cut_efficiency_options.add_argument(
+				"--cut-efficiency-modes", nargs="+", default=["sigEffVsBkgRej"],
 				choices=["sigEff", "sigRej", "bkgEff", "bkgRej", "sigEffVsBkgEff", "sigEffVsBkgRej", "sigRejVsBkgEff", "sigRejVsBkgRej"],
-				help="ROC modes. [Default: %(default)s]")
+				help="ROC modes. [Default: %(default)s]"
+		)
 
 	def prepare_args(self, parser, plotData):
 		super(CutEfficiency, self).prepare_args(parser, plotData)
 		
 		plotData.plotdict["cut_efficiency_sig_nicks"] = [nick for nick in plotData.plotdict["cut_efficiency_sig_nicks"] if nick in plotData.plotdict["root_objects"]]
 		plotData.plotdict["cut_efficiency_bkg_nicks"] = [nick for nick in plotData.plotdict["cut_efficiency_bkg_nicks"] if nick in plotData.plotdict["root_objects"]]
-		self.prepare_list_args(plotData, ["cut_efficiency_sig_nicks", "cut_efficiency_bkg_nicks", "cut_efficiency_nicks", "cut_efficiency_modes"])
+		self.prepare_list_args(plotData, ["cut_efficiency_sig_nicks", "cut_efficiency_bkg_nicks", "cut_efficiency_nicks", "select_lower_values", "cut_efficiency_modes"])
 		
 		for index, nick in enumerate(plotData.plotdict["cut_efficiency_nicks"]):
 			if not nick:
@@ -108,10 +120,11 @@ class CutEfficiency(analysisbase.AnalysisBase):
 	def run(self, plotData=None):
 		super(CutEfficiency, self).run(plotData)
 		
-		for index, (cut_efficiency_sig_nick, cut_efficiency_bkg_nick, cut_efficiency_nick, cut_efficiency_mode) in enumerate(zip(
+		for index, (cut_efficiency_sig_nick, cut_efficiency_bkg_nick, cut_efficiency_nick, select_lower_values, cut_efficiency_mode) in enumerate(zip(
 				plotData.plotdict["cut_efficiency_sig_nicks"],
 				plotData.plotdict["cut_efficiency_bkg_nicks"],
 				plotData.plotdict["cut_efficiency_nicks"],
+				plotData.plotdict["select_lower_values"],
 				plotData.plotdict["cut_efficiency_modes"]
 		)):
 			signal_histogram = plotData.plotdict["root_objects"][cut_efficiency_sig_nick]
@@ -121,8 +134,8 @@ class CutEfficiency(analysisbase.AnalysisBase):
 			
 			cut_efficiency_mode = cut_efficiency_mode.lower()
 			
-			signal_cumulative = CutEfficiency.get_cumulative_histogram(signal_histogram)
-			background_cumulative = CutEfficiency.get_cumulative_histogram(background_histogram)
+			signal_cumulative = CutEfficiency.get_cumulative_histogram(signal_histogram, select_lower_values)
+			background_cumulative = CutEfficiency.get_cumulative_histogram(background_histogram, select_lower_values)
 			
 			total_signal = CutEfficiency.get_total_from_cumulative(signal_cumulative)
 			total_background = CutEfficiency.get_total_from_cumulative(background_cumulative)
@@ -131,11 +144,23 @@ class CutEfficiency(analysisbase.AnalysisBase):
 			background_efficiency = ROOT.TGraphAsymmErrors(background_cumulative, total_background)
 			
 			if (cut_efficiency_mode == "sigeff") or (cut_efficiency_mode == "sigrej"):
-				efficiency = signal_efficiency
+				efficiency = CutEfficiency.build_graph(
+						signal_efficiency, signal_efficiency,
+						x_take_x=True,
+						y_modifier=lambda y: (1.0-y) if "rej" in cut_efficiency_mode else y
+				)
 			elif (cut_efficiency_mode == "bkgeff") or (cut_efficiency_mode == "bkgrej"):
-				efficiency = background_efficiency
+				efficiency = CutEfficiency.build_graph(
+						background_efficiency, background_efficiency,
+						x_take_x=True,
+						y_modifier=lambda y: (1.0-y) if "rej" in cut_efficiency_mode else y
+				)
 			else:
-				efficiency = CutEfficiency.build_graph(background_efficiency, signal_efficiency, "bkgrej" in cut_efficiency_mode, "sigrej" in cut_efficiency_mode)
+				efficiency = CutEfficiency.build_graph(
+						background_efficiency, signal_efficiency,
+						x_modifier=lambda x: (1.0-x) if "bkgrej" in cut_efficiency_mode else x,
+						y_modifier=lambda y: (1.0-y) if "sigrej" in cut_efficiency_mode else y
+				)
 			
 			efficiency_name = "histogram_" + hashlib.md5("_".join([signal_histogram.GetName(), background_histogram.GetName()])).hexdigest()
 			efficiency.SetName(efficiency_name)
@@ -152,15 +177,15 @@ class CutEfficiency(analysisbase.AnalysisBase):
 			for y_bin in range(1, cumulative.GetNbinsY()+1)[::(1 if forward else -1)]:
 				for z_bin in range(1, cumulative.GetNbinsY()+1)[::(1 if forward else -1)]:
 					src_global_bin = histogram.GetBin(x_bin, y_bin, z_bin)
-					dst_global_bin = cumulative.GetBin(
-							abs((0 if forward else (cumulative.GetNbinsX()+1)) - x_bin),
-							abs((0 if forward else (cumulative.GetNbinsY()+1)) - y_bin),
-							abs((0 if forward else (cumulative.GetNbinsZ()+1)) - z_bin),
-					)
+					#dst_global_bin = cumulative.GetBin(
+					#		abs((0 if forward else (cumulative.GetNbinsX()+1)) - x_bin),
+					#		abs((0 if forward else (cumulative.GetNbinsY()+1)) - y_bin),
+					#		abs((0 if forward else (cumulative.GetNbinsZ()+1)) - z_bin),
+					#)
 					sum_content += histogram.GetBinContent(src_global_bin)
 					sum_error = math.sqrt((sum_error*sum_error) + (histogram.GetBinError(src_global_bin)*histogram.GetBinError(src_global_bin)))
-					cumulative.SetBinContent(dst_global_bin, sum_content)
-					cumulative.SetBinError(dst_global_bin, sum_error)
+					cumulative.SetBinContent(src_global_bin, sum_content)
+					cumulative.SetBinError(src_global_bin, sum_error)
 		return cumulative
 	
 	@staticmethod
@@ -178,27 +203,27 @@ class CutEfficiency(analysisbase.AnalysisBase):
 		return total
 	
 	@staticmethod
-	def build_graph(x_graph, y_graph, reverse_x=False, reverse_y=False):
+	def build_graph(x_graph, y_graph, x_take_x=False, y_take_x=False, x_modifier=lambda x: x, y_modifier=lambda y: y):
 		assert isinstance(x_graph, ROOT.TGraphAsymmErrors)
 		assert isinstance(y_graph, ROOT.TGraphAsymmErrors)
 		
-		x_values = x_graph.GetY()
-		x_values = array.array("d", [x_values[i] for i in range(x_graph.GetN())[::(-1 if reverse_x else 1)]])
+		x_values = x_graph.GetX() if x_take_x else x_graph.GetY()
+		x_values = array.array("d", [x_modifier(x_values[i]) for i in xrange(x_graph.GetN())])
 		
-		x_errors_low = x_graph.GetEYlow()
-		x_errors_low = array.array("d", [x_errors_low[i] for i in range(x_graph.GetN())[::(-1 if reverse_x else 1)]])
+		x_errors_low = x_graph.GetEXlow() if x_take_x else x_graph.GetEYlow()
+		x_errors_low = array.array("d", [x_errors_low[i] for i in xrange(x_graph.GetN())])
 		
-		x_errors_high = x_graph.GetEYhigh()
-		x_errors_high = array.array("d", [x_errors_high[i] for i in range(x_graph.GetN())[::(-1 if reverse_x else 1)]])
+		x_errors_high = x_graph.GetEXhigh() if x_take_x else x_graph.GetEYhigh()
+		x_errors_high = array.array("d", [x_errors_high[i] for i in xrange(x_graph.GetN())])
 		
-		y_values = x_graph.GetY()
-		y_values = array.array("d", [y_values[i] for i in range(y_graph.GetN())[::(-1 if reverse_y else 1)]])
+		y_values = y_graph.GetX() if y_take_x else y_graph.GetY()
+		y_values = array.array("d", [y_modifier(y_values[i]) for i in xrange(y_graph.GetN())])
 		
-		y_errors_low = y_graph.GetEYlow()
-		y_errors_low = array.array("d", [y_errors_low[i] for i in range(y_graph.GetN())[::(-1 if reverse_y else 1)]])
+		y_errors_low = y_graph.GetEXlow() if y_take_x else y_graph.GetEYlow()
+		y_errors_low = array.array("d", [y_errors_low[i] for i in xrange(y_graph.GetN())])
 		
-		y_errors_high = y_graph.GetEYhigh()
-		y_errors_high = array.array("d", [y_errors_high[i] for i in range(y_graph.GetN())[::(-1 if reverse_y else 1)]])
+		y_errors_high = y_graph.GetEXhigh() if y_take_x else y_graph.GetEYhigh()
+		y_errors_high = array.array("d", [y_errors_high[i] for i in xrange(y_graph.GetN())])
 		
 		graph = ROOT.TGraphAsymmErrors(
 				x_graph.GetN(),
