@@ -99,7 +99,7 @@ class CutEfficiency(analysisbase.AnalysisBase):
 		)
 		self.cut_efficiency_options.add_argument(
 				"--cut-efficiency-modes", nargs="+", default=["sigEffVsBkgRej"],
-				choices=["sigEff", "sigRej", "bkgEff", "bkgRej", "sigEffVsBkgEff", "sigEffVsBkgRej", "sigRejVsBkgEff", "sigRejVsBkgRej"],
+				choices=["sigEff", "sigRej", "bkgEff", "bkgRej", "sigEffVsBkgEff", "sigEffVsBkgRej", "sigRejVsBkgEff", "sigRejVsBkgRej", "sigPur"],
 				help="ROC modes. [Default: %(default)s]"
 		)
 
@@ -127,6 +127,8 @@ class CutEfficiency(analysisbase.AnalysisBase):
 				plotData.plotdict["select_lower_values"],
 				plotData.plotdict["cut_efficiency_modes"]
 		)):
+			name_hash = hashlib.md5("_".join([cut_efficiency_sig_nick, cut_efficiency_bkg_nick, cut_efficiency_nick, str(select_lower_values), cut_efficiency_mode])).hexdigest()
+			
 			signal_histogram = plotData.plotdict["root_objects"][cut_efficiency_sig_nick]
 			background_histogram = plotData.plotdict["root_objects"][cut_efficiency_bkg_nick]
 			assert isinstance(signal_histogram, ROOT.TH1)
@@ -134,43 +136,49 @@ class CutEfficiency(analysisbase.AnalysisBase):
 			
 			cut_efficiency_mode = cut_efficiency_mode.lower()
 			
-			signal_cumulative = CutEfficiency.get_cumulative_histogram(signal_histogram, select_lower_values)
-			background_cumulative = CutEfficiency.get_cumulative_histogram(background_histogram, select_lower_values)
+			signal_cumulative = CutEfficiency.get_cumulative_histogram(signal_histogram, select_lower_values, "sigcum_"+name_hash)
+			background_cumulative = CutEfficiency.get_cumulative_histogram(background_histogram, select_lower_values, "bkgcum_"+name_hash)
 			
-			total_signal = CutEfficiency.get_total_from_cumulative(signal_cumulative)
-			total_background = CutEfficiency.get_total_from_cumulative(background_cumulative)
-			
-			signal_efficiency = ROOT.TGraphAsymmErrors(signal_cumulative, total_signal)
-			background_efficiency = ROOT.TGraphAsymmErrors(background_cumulative, total_background)
-			
-			if (cut_efficiency_mode == "sigeff") or (cut_efficiency_mode == "sigrej"):
-				efficiency = CutEfficiency.build_graph(
-						signal_efficiency, signal_efficiency,
-						x_take_x=True,
-						y_modifier=lambda y: (1.0-y) if "rej" in cut_efficiency_mode else y
-				)
-			elif (cut_efficiency_mode == "bkgeff") or (cut_efficiency_mode == "bkgrej"):
-				efficiency = CutEfficiency.build_graph(
-						background_efficiency, background_efficiency,
-						x_take_x=True,
-						y_modifier=lambda y: (1.0-y) if "rej" in cut_efficiency_mode else y
-				)
+			if cut_efficiency_mode == "sigpur":
+				total_cumulative = background_cumulative.Clone("totcum_"+name_hash)
+				total_cumulative.Add(signal_cumulative)
+				
+				signal_purity = ROOT.TGraphAsymmErrors(signal_cumulative, total_cumulative)
+				graph = signal_purity
 			else:
-				efficiency = CutEfficiency.build_graph(
-						background_efficiency, signal_efficiency,
-						x_modifier=lambda x: (1.0-x) if "bkgrej" in cut_efficiency_mode else x,
-						y_modifier=lambda y: (1.0-y) if "sigrej" in cut_efficiency_mode else y
-				)
+				total_signal = CutEfficiency.get_total_from_cumulative(signal_cumulative, "totsig_"+name_hash)
+				total_background = CutEfficiency.get_total_from_cumulative(background_cumulative, "totbkg_"+name_hash)
+				
+				signal_efficiency = ROOT.TGraphAsymmErrors(signal_cumulative, total_signal)
+				background_efficiency = ROOT.TGraphAsymmErrors(background_cumulative, total_background)
 			
-			efficiency_name = "histogram_" + hashlib.md5("_".join([signal_histogram.GetName(), background_histogram.GetName()])).hexdigest()
-			efficiency.SetName(efficiency_name)
-			efficiency.SetTitle("")
-			plotData.plotdict["root_objects"][cut_efficiency_nick] = efficiency
+				if (cut_efficiency_mode == "sigeff") or (cut_efficiency_mode == "sigrej"):
+					graph = CutEfficiency.build_graph(
+							signal_efficiency, signal_efficiency,
+							x_take_x=True,
+							y_modifier=lambda y: (1.0-y) if "rej" in cut_efficiency_mode else y
+					)
+				elif (cut_efficiency_mode == "bkgeff") or (cut_efficiency_mode == "bkgrej"):
+					graph = CutEfficiency.build_graph(
+							background_efficiency, background_efficiency,
+							x_take_x=True,
+							y_modifier=lambda y: (1.0-y) if "rej" in cut_efficiency_mode else y
+					)
+				else:
+					graph = CutEfficiency.build_graph(
+							background_efficiency, signal_efficiency,
+							x_modifier=lambda x: (1.0-x) if "bkgrej" in cut_efficiency_mode else x,
+							y_modifier=lambda y: (1.0-y) if "sigrej" in cut_efficiency_mode else y
+					)
+			
+			graph.SetName("efficiency_"+name_hash)
+			graph.SetTitle("")
+			plotData.plotdict["root_objects"][cut_efficiency_nick] = graph
 	
 	@staticmethod
-	def get_cumulative_histogram(histogram, forward=True):
+	def get_cumulative_histogram(histogram, forward=True, name="cumulative"):
 		# https://root.cern.ch/root/html/src/TH1.cxx.html#FN_D.D
-		cumulative = histogram.Clone(histogram.GetName()+"_cumulative")
+		cumulative = histogram.Clone(name)
 		sum_content = 0.0
 		sum_error = 0.0
 		for x_bin in range(1, cumulative.GetNbinsX()+1)[::(1 if forward else -1)]:
@@ -189,8 +197,8 @@ class CutEfficiency(analysisbase.AnalysisBase):
 		return cumulative
 	
 	@staticmethod
-	def get_total_from_cumulative(cumulative):
-		total = cumulative.Clone(cumulative.GetName()+"_total")
+	def get_total_from_cumulative(cumulative, name):
+		total = cumulative.Clone(name)
 		total.Reset()
 		max_bin_content = cumulative.GetBinContent(cumulative.GetMaximumBin())
 		max_bin_error = cumulative.GetBinError(cumulative.GetMaximumBin())
@@ -231,7 +239,5 @@ class CutEfficiency(analysisbase.AnalysisBase):
 				x_errors_low, x_errors_high,
 				y_errors_low, y_errors_high
 		)
-		graph.SetName(y_graph.GetName()+"_vs_"+x_graph.GetName())
-		graph.SetTitle("")
 		return graph
 
