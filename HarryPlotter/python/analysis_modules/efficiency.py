@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 import array
 import copy
 import hashlib
-import numpy
+import math
 
 import ROOT
 
@@ -25,9 +25,9 @@ class Efficiency(analysisbase.AnalysisBase):
 		super(Efficiency, self).modify_argument_parser(parser, args)
 		
 		self.efficiency_options = parser.add_argument_group("Efficiency options")
-		self.efficiency_options.add_argument("--efficiency-numerator-nicks", nargs="+", required=True,
+		self.efficiency_options.add_argument("--efficiency-numerator-nicks", nargs="+", default=[None],
 				help="Nick names for the numerators of the efficiencies.")
-		self.efficiency_options.add_argument("--efficiency-denominator-nicks", nargs="+", required=True,
+		self.efficiency_options.add_argument("--efficiency-denominator-nicks", nargs="+", default=[None],
 				help="Nick names for the denominator of the efficiencies.")
 		self.efficiency_options.add_argument("--efficiency-nicks", nargs="+", default=[None],
 				help="Nick names for the resulting efficiency graphs.")
@@ -81,14 +81,14 @@ class CutEfficiency(analysisbase.AnalysisBase):
 		super(CutEfficiency, self).modify_argument_parser(parser, args)
 		
 		self.cut_efficiency_options = parser.add_argument_group("Cut efficiency options")
-		self.cut_efficiency_options.add_argument("--cut-efficiency-sig-nicks", nargs="+", required=True,
+		self.cut_efficiency_options.add_argument("--cut-efficiency-sig-nicks", nargs="+", default=[None],
 				help="Nick names for the signal histograms.")
-		self.cut_efficiency_options.add_argument("--cut-efficiency-bkg-nicks", nargs="+", required=True,
+		self.cut_efficiency_options.add_argument("--cut-efficiency-bkg-nicks", nargs="+", default=[None],
 				help="Nick names for the background histograms.")
 		self.cut_efficiency_options.add_argument("--cut-efficiency-nicks", nargs="+", default=[None],
 				help="Nick names for the resulting ROC graphs.")
 		self.cut_efficiency_options.add_argument("--cut-efficiency-modes", nargs="+", default=["sigEffVsBkgRej"],
-				choices=["sigEffVsBkgEff", "sigEffVsBkgRej", "sigRejVsBkgEff", "sigRejVsBkgRej"],
+				choices=["sigEff", "sigRej", "bkgEff", "bkgRej", "sigEffVsBkgEff", "sigEffVsBkgRej", "sigRejVsBkgEff", "sigRejVsBkgRej"],
 				help="ROC modes. [Default: %(default)s]")
 
 	def prepare_args(self, parser, plotData):
@@ -114,70 +114,99 @@ class CutEfficiency(analysisbase.AnalysisBase):
 				plotData.plotdict["cut_efficiency_nicks"],
 				plotData.plotdict["cut_efficiency_modes"]
 		)):
+			signal_histogram = plotData.plotdict["root_objects"][cut_efficiency_sig_nick]
+			background_histogram = plotData.plotdict["root_objects"][cut_efficiency_bkg_nick]
+			assert isinstance(signal_histogram, ROOT.TH1)
+			assert isinstance(background_histogram, ROOT.TH1)
 			
-			sigCutEfficiency = CutEfficiencyCalculator(plotData.plotdict["root_objects"][cut_efficiency_sig_nick])
-			bkgCutEfficiency = CutEfficiencyCalculator(plotData.plotdict["root_objects"][cut_efficiency_bkg_nick])
+			cut_efficiency_mode = cut_efficiency_mode.lower()
 			
-			cut_efficiency_graph = ROOT.TGraph(
-				plotData.plotdict["root_objects"][cut_efficiency_sig_nick].GetNbinsX()+1,
-				array.array("d", bkgCutEfficiency.get_cut_efficiencies(invertCut=("bkgrej" in cut_efficiency_mode.lower()))),
-				array.array("d", sigCutEfficiency.get_cut_efficiencies(invertCut=("sigrej" in cut_efficiency_mode.lower())))
-			)
+			signal_cumulative = CutEfficiency.get_cumulative_histogram(signal_histogram)
+			background_cumulative = CutEfficiency.get_cumulative_histogram(background_histogram)
 			
-			cut_efficiency_graph_name = "histogram_" + hashlib.md5("_".join([plotData.plotdict["root_objects"][cut_efficiency_sig_nick].GetName(),
-			                                                                 plotData.plotdict["root_objects"][cut_efficiency_bkg_nick].GetName()])).hexdigest()
-			cut_efficiency_graph.SetName(cut_efficiency_graph_name)
-			cut_efficiency_graph.SetTitle("")
-			plotData.plotdict["root_objects"][cut_efficiency_nick] = cut_efficiency_graph
-
-
-class CutEfficiencyCalculator(object):
-	def __init__(self, rootHistogram):
-		""" Constructor taking a 1D ROOT histogram. Caches the efficiencies. """
-		
-		# prepare histogram
-		self._histogram = copy.deepcopy(rootHistogram)
-		if  self._histogram.Integral() > 0.0:
-			self._histogram.Scale(1.0 / self._histogram.Integral())
-		self._histogram.SetBinContent(0, 0.0)
-		self._histogram.SetBinContent(self._histogram.GetNbinsX()+1, 0.0)
-		
-		# calculate efficiencies
-		self._cut_efficiencies = self.get_cut_efficiencies(update=True)
+			total_signal = CutEfficiency.get_total_from_cumulative(signal_cumulative)
+			total_background = CutEfficiency.get_total_from_cumulative(background_cumulative)
+			
+			signal_efficiency = ROOT.TGraphAsymmErrors(signal_cumulative, total_signal)
+			background_efficiency = ROOT.TGraphAsymmErrors(background_cumulative, total_background)
+			
+			if (cut_efficiency_mode == "sigeff") or (cut_efficiency_mode == "sigrej"):
+				efficiency = signal_efficiency
+			elif (cut_efficiency_mode == "bkgeff") or (cut_efficiency_mode == "bkgrej"):
+				efficiency = background_efficiency
+			else:
+				efficiency = CutEfficiency.build_graph(background_efficiency, signal_efficiency, "bkgrej" in cut_efficiency_mode, "sigrej" in cut_efficiency_mode)
+			
+			efficiency_name = "histogram_" + hashlib.md5("_".join([signal_histogram.GetName(), background_histogram.GetName()])).hexdigest()
+			efficiency.SetName(efficiency_name)
+			efficiency.SetTitle("")
+			plotData.plotdict["root_objects"][cut_efficiency_nick] = efficiency
 	
-	def get_cut_efficiencies(self, invertCut=False, scaleFactor=1.0, update=False):
-		"""
-		Calculate efficiencies for sliding cut thresholds (bin edges)
-		
-		invertCut = True: Select events above cut
-		invertCut = False: Select events below cut
-		
-		scaleFactor for scaling the efficiencies
-		
-		update = True: calculate the efficiencies
-		update = False: use cached efficiencies
-		"""
-		
-		cut_efficiencies = None
-		
-		# use cache if requested
-		if not update:
-			cut_efficiencies = self._cut_efficiencies
-		
-		# determine efficiencies
-		bin_contents = numpy.array([self._histogram.GetBinContent(xBin) for xBin in xrange(0, self._histogram.GetNbinsX()+1)])
-		cut_efficiencies = numpy.array([efficiency if efficiency < 1.0 else 1.0 for efficiency in bin_contents.cumsum()])
-		
-		# invert direction of cut if requested
-		if invertCut:
-			cut_efficiencies = (1.0 - cut_efficiencies)
-		
-		if scaleFactor != 1.0:
-			cut_efficiencies = (scaleFactor * cut_efficiencies)
-		
-		return cut_efficiencies
+	@staticmethod
+	def get_cumulative_histogram(histogram, forward=True):
+		# https://root.cern.ch/root/html/src/TH1.cxx.html#FN_D.D
+		cumulative = histogram.Clone(histogram.GetName()+"_cumulative")
+		sum_content = 0.0
+		sum_error = 0.0
+		for x_bin in range(1, cumulative.GetNbinsX()+1)[::(1 if forward else -1)]:
+			for y_bin in range(1, cumulative.GetNbinsY()+1)[::(1 if forward else -1)]:
+				for z_bin in range(1, cumulative.GetNbinsY()+1)[::(1 if forward else -1)]:
+					src_global_bin = histogram.GetBin(x_bin, y_bin, z_bin)
+					dst_global_bin = cumulative.GetBin(
+							abs((0 if forward else (cumulative.GetNbinsX()+1)) - x_bin),
+							abs((0 if forward else (cumulative.GetNbinsY()+1)) - y_bin),
+							abs((0 if forward else (cumulative.GetNbinsZ()+1)) - z_bin),
+					)
+					sum_content += histogram.GetBinContent(src_global_bin)
+					sum_error = math.sqrt((sum_error*sum_error) + (histogram.GetBinError(src_global_bin)*histogram.GetBinError(src_global_bin)))
+					cumulative.SetBinContent(dst_global_bin, sum_content)
+					cumulative.SetBinError(dst_global_bin, sum_error)
+		return cumulative
 	
-	def get_cut_values(self):
-		""" Return cut thresholds (bin edges). """
-		return [self._histogram.GetBinLowEdge(xBin) for xBin in xrange(1, self._histogram.GetNbinsX()+2)]
+	@staticmethod
+	def get_total_from_cumulative(cumulative):
+		total = cumulative.Clone(cumulative.GetName()+"_total")
+		total.Reset()
+		max_bin_content = cumulative.GetBinContent(cumulative.GetMaximumBin())
+		max_bin_error = cumulative.GetBinError(cumulative.GetMaximumBin())
+		for x_bin in xrange(1, total.GetNbinsX()+1):
+			for y_bin in xrange(1, total.GetNbinsY()+1):
+				for z_bin in xrange(1, total.GetNbinsY()+1):
+					global_bin = total.GetBin(x_bin, y_bin, z_bin)
+					total.SetBinContent(global_bin, max_bin_content)
+					total.SetBinError(global_bin, max_bin_error)
+		return total
+	
+	@staticmethod
+	def build_graph(x_graph, y_graph, reverse_x=False, reverse_y=False):
+		assert isinstance(x_graph, ROOT.TGraphAsymmErrors)
+		assert isinstance(y_graph, ROOT.TGraphAsymmErrors)
+		
+		x_values = x_graph.GetY()
+		x_values = array.array("d", [x_values[i] for i in range(x_graph.GetN())[::(-1 if reverse_x else 1)]])
+		
+		x_errors_low = x_graph.GetEYlow()
+		x_errors_low = array.array("d", [x_errors_low[i] for i in range(x_graph.GetN())[::(-1 if reverse_x else 1)]])
+		
+		x_errors_high = x_graph.GetEYhigh()
+		x_errors_high = array.array("d", [x_errors_high[i] for i in range(x_graph.GetN())[::(-1 if reverse_x else 1)]])
+		
+		y_values = x_graph.GetY()
+		y_values = array.array("d", [y_values[i] for i in range(y_graph.GetN())[::(-1 if reverse_y else 1)]])
+		
+		y_errors_low = y_graph.GetEYlow()
+		y_errors_low = array.array("d", [y_errors_low[i] for i in range(y_graph.GetN())[::(-1 if reverse_y else 1)]])
+		
+		y_errors_high = y_graph.GetEYhigh()
+		y_errors_high = array.array("d", [y_errors_high[i] for i in range(y_graph.GetN())[::(-1 if reverse_y else 1)]])
+		
+		graph = ROOT.TGraphAsymmErrors(
+				x_graph.GetN(),
+				x_values, y_values,
+				x_errors_low, x_errors_high,
+				y_errors_low, y_errors_high
+		)
+		graph.SetName(y_graph.GetName()+"_vs_"+x_graph.GetName())
+		graph.SetTitle("")
+		return graph
 
