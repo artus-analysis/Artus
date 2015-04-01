@@ -230,41 +230,95 @@ class PlotRoot(plotbase.PlotBase):
 				for z_bin in range(min(root_object.GetNbinsZ(), len(plotData.plotdict["z_tick_labels"]))):
 					root_object.GetZaxis().SetBinLabel(z_bin+1, plotData.plotdict["z_tick_labels"][z_bin])
 	
+	def determine_plot_lims(self, plotData):
+		super(PlotRoot, self).determine_plot_lims(plotData)
+		
+		# x lims
+		if not plotData.plotdict["x_lims"] is None:
+			self.x_min = plotData.plotdict["x_lims"][0]
+			if len(plotData.plotdict["x_lims"]) > 1:
+				self.x_max = plotData.plotdict["x_lims"][1]
+		
+		# y lims
+		if not plotData.plotdict["y_lims"] is None:
+			self.y_min = plotData.plotdict["y_lims"][0]
+		else:
+			if plotData.plotdict["y_log"]:
+				self.y_min *= (0.5 if self.y_min > 0.0 else 2.0)
+			else:
+				self.y_min *= (0.9 if self.y_min > 0.0 else 1.1)
+		
+		if not plotData.plotdict["y_lims"] is None and len(plotData.plotdict["y_lims"]) > 1:
+			self.y_max = plotData.plotdict["y_lims"][1]
+		else:
+			if plotData.plotdict["y_log"]:
+				self.y_max *= (2.0 if self.y_max > 0.0 else 0.5)
+			else:
+				self.y_max *= (1.1 if self.y_max > 0.0 else 0.9)
+		
+		# z lims
+		if not plotData.plotdict["z_lims"] is None:
+			self.z_min = plotData.plotdict["z_lims"][0]
+		elif not self.z_min is None:
+			if plotData.plotdict["z_log"]:
+				self.z_min *= (0.5 if self.z_min > 0.0 else 2.0)
+			else:
+				self.z_min *= (0.9 if self.z_min > 0.0 else 1.1)
+		
+		if not plotData.plotdict["z_lims"] is None and len(plotData.plotdict["z_lims"]) > 1:
+			self.z_max = plotData.plotdict["z_lims"][1]
+		elif not self.z_max is None:
+			if plotData.plotdict["z_log"]:
+				self.z_max *= (2.0 if self.z_max > 0.0 else 0.5)
+			else:
+				self.z_max *= (1.1 if self.z_max > 0.0 else 0.9)
+		
+		# y subplot lims
+		if not plotData.plotdict["y_subplot_lims"] is None:
+			self.y_sub_min = plotData.plotdict["y_subplot_lims"][0]
+		elif not self.y_sub_min is None:
+			self.y_sub_min *= (0.9 if self.y_sub_min > 0.0 else 1.1)
+		
+		if not plotData.plotdict["y_subplot_lims"] is None and len(plotData.plotdict["y_subplot_lims"]) > 1:
+			self.y_sub_max = plotData.plotdict["y_subplot_lims"][1]
+		elif not self.y_sub_max is None:
+			self.y_sub_max *= (1.1 if self.y_sub_max > 0.0 else 0.9)
+		
+		# z subplot lims
+		if not self.z_sub_min is None:
+			self.z_sub_min *= (0.9 if self.z_sub_min > 0.0 else 1.1)
+		if not self.z_sub_max is None:
+			self.z_sub_max *= (1.1 if self.z_sub_max > 0.0 else 0.9)
+		
 	def make_plots(self, plotData):
 		super(PlotRoot, self).make_plots(plotData)
 		
 		# draw empty histograms for the axes
-		x_lims = plotData.plotdict["x_lims"] if not plotData.plotdict["x_lims"] is None else [self.x_min, self.x_max]
-		y_lims = plotData.plotdict["y_lims"] if not plotData.plotdict["y_lims"] is None else [self.y_min * (0.5 if plotData.plotdict["y_log"] else 0.9), self.y_max * (2.0 if plotData.plotdict["y_log"] else 1.1)]
-		z_lims = plotData.plotdict["z_lims"] if not plotData.plotdict["z_lims"] is None else [(self.z_min * (0.5 if plotData.plotdict["y_log"] else 0.9)) if self.z_min else self.z_min, (self.z_max * (2.0 if plotData.plotdict["z_log"] else 1.1)) if self.z_max else self.z_max]
-		y_sub_lims = plotData.plotdict["y_subplot_lims"] if not plotData.plotdict["y_subplot_lims"] is None else [(self.y_sub_min * (1.1 if self.y_sub_min < 0.0 else 0.9)) if self.y_sub_min else self.y_sub_min, (self.y_sub_max * 1.1) if self.y_sub_max else self.y_sub_max]
-		z_sub_lims = [self.z_sub_min, self.z_sub_max] # plotData.plotdict["z_subplot_lims"] if not plotData.plotdict["z_subplot_lims"] is None else [self.z_sub_min, self.z_sub_max]
-		
 		n_bins = 1 # TODO: consider axis ticks
 		n_sub_bins = 1 # TODO: consider axis ticks
 		
 		if plotData.plot.plot_pad:
 			plotData.plot.plot_pad.cd()
 			if self.max_dim == 2:
-				self.axes_histogram = ROOT.TH1F("axes_histogram", "", n_bins, x_lims[0], x_lims[1])
-				self.axes_histogram.SetMinimum(y_lims[0])
-				self.axes_histogram.SetMaximum(y_lims[1])
+				self.axes_histogram = ROOT.TH1F("axes_histogram", "", n_bins, self.x_min, self.x_max)
+				self.axes_histogram.SetMinimum(self.y_min)
+				self.axes_histogram.SetMaximum(self.y_max)
 			else:
-				self.axes_histogram = ROOT.TH2F("axes_histogram", "", n_bins, x_lims[0], x_lims[1], n_bins, y_lims[0], y_lims[1])
-				self.axes_histogram.SetMinimum(z_lims[0])
-				self.axes_histogram.SetMaximum(z_lims[1])
+				self.axes_histogram = ROOT.TH2F("axes_histogram", "", n_bins, self.x_min, self.x_max, n_bins, self.y_min, self.y_max)
+				self.axes_histogram.SetMinimum(self.z_min)
+				self.axes_histogram.SetMaximum(self.z_max)
 			self.axes_histogram.Draw("AXIS")
 		
 		if plotData.plot.subplot_pad:
 			plotData.plot.subplot_pad.cd()
 			if self.max_sub_dim == 2:
-				self.subplot_axes_histogram = ROOT.TH1F("subplot_axes_histogram", "", n_sub_bins, x_lims[0], x_lims[1])
-				self.subplot_axes_histogram.SetMinimum(y_sub_lims[0])
-				self.subplot_axes_histogram.SetMaximum(y_sub_lims[1])
+				self.subplot_axes_histogram = ROOT.TH1F("subplot_axes_histogram", "", n_sub_bins, self.x_min, self.x_max)
+				self.subplot_axes_histogram.SetMinimum(self.y_sub_min)
+				self.subplot_axes_histogram.SetMaximum(self.y_sub_max)
 			else:
-				self.subplot_axes_histogram = ROOT.TH2F("subplot_axes_histogram", "", n_sub_bins, x_lims[0], x_lims[1], n_sub_bins, y_sub_lims[0], y_sub_lims[1])
-				self.subplot_axes_histogram.SetMinimum(z_sub_lims[0])
-				self.subplot_axes_histogram.SetMaximum(z_sub_lims[1])
+				self.subplot_axes_histogram = ROOT.TH2F("subplot_axes_histogram", "", n_sub_bins, self.x_min, self.x_max, n_sub_bins, self.y_sub_min, self.y_sub_max)
+				self.subplot_axes_histogram.SetMinimum(self.z_sub_min)
+				self.subplot_axes_histogram.SetMaximum(self.z_sub_max)
 			self.subplot_axes_histogram.Draw("AXIS")
 		
 		for nick, subplot, marker, colors in zip(
