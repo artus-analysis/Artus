@@ -94,6 +94,8 @@ class PlotBase(processor.Processor):
 		                                     help="Show y errors for the plots. [Default: True for first plot, False otherwise]")
 		self.formatting_options.add_argument("--legend", type=str, nargs="?",
 		                                     help="Location of the legend. Use 'None' to not set any legend")
+		self.formatting_options.add_argument("--legend-cols", type=int, default=1,
+		                                     help="Number of columns in the legend. [Default: %(default)s]")
 		self.formatting_options.add_argument("-G", "--grid", nargs="?", type="bool", default=False, const=True,
 		                                     help="Place an axes grid on the plot. [Default: %(default)s]")
 		self.formatting_options.add_argument("--subplot-grid", nargs="?", type="bool", default=False, const=True,

@@ -375,7 +375,9 @@ class PlotRoot(plotbase.PlotBase):
 		plotData.plot.plot_pad.cd()
 		self.legend = None
 		if plotData.plotdict["legend"] != None:
-			self.legend = ROOT.TLegend(*plotData.plotdict["legend"]);
+			self.legend = ROOT.TLegend(*plotData.plotdict["legend"])
+			self.legend.SetNColumns(plotData.plotdict["legend_cols"])
+			self.legend.SetColumnSeparation(0.1)
 			for nick, subplot, marker, fill_style, label in zip(
 					plotData.plotdict["nicks"],
 					plotData.plotdict["subplots"],
