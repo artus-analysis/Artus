@@ -353,6 +353,8 @@ class ArtusWrapper(object):
 		                                 help="Do not write logfile in batch mode directly to SE.")
 		runningOptionsGroup.add_argument("--files-per-job", type=int, default=15,
 		                                 help="Files per batch job. [Default: %(default)s]")
+		runningOptionsGroup.add_argument("--area-files", default=None,
+		                                 help="Additional area files. [Default: %(default)s]")
 		runningOptionsGroup.add_argument("--wall-time", default="02:00:00",
 		                                 help="Wall time of batch jobs. [Default: %(default)s]")
 		runningOptionsGroup.add_argument("--memory", type=int, default=3000,
@@ -410,7 +412,7 @@ class ArtusWrapper(object):
 		sepath = "se path = " + (self._args.se_path if self._args.se_path else sepathRaw)
 		workdir = "workdir = " + os.path.join(self.projectPath, "workdir")
 
-		replacingDict = dict(
+		self.replacingDict = dict(
 				include = ("include = " + " ".join(self._args.gc_config_includes) if self._args.gc_config_includes else ""),
 				epilogexecutable = "epilog executable = $CMSSW_BASE/bin/" + os.path.join(os.path.expandvars("$SCRAM_ARCH"), os.path.basename(sys.argv[0])),
 				sepath = sepath,
@@ -418,15 +420,18 @@ class ArtusWrapper(object):
 				jobs = "" if not self._args.fast else "jobs = " + str(self._args.fast),
 				inputfiles = "input files = \n\t" + self._configFilename,
 				filesperjob = "files per job = " + str(self._args.files_per_job),
+				areafiles = self._args.area_files if (self._args.area_files != None) else "",
 				walltime = "wall time = " + self._args.wall_time,
 				memory = "memory = " + str(self._args.memory),
 				cmdargs = "cmdargs = " + self._args.cmdargs,
-				dataset = "dataset = \n\t:list:" + dbsFileBasepath,
+				dataset = "dataset = \n\t:ListProvider:" + dbsFileBasepath,
 				epilogarguments = epilogArguments,
 				seoutputfiles = "se output files = *.txt *.root" if self._args.no_log_to_se else "se output files = *.root"
 		)
 
-		self.replaceLines(gcConfigFileContent, replacingDict)
+		self.modify_replacing_dict()
+
+		self.replaceLines(gcConfigFileContent, self.replacingDict)
 		for index, line in enumerate(gcConfigFileContent):
 			gcConfigFileContent[index] = line.replace("$CMSSW_BASE", os.environ.get("CMSSW_BASE", ""))
 
@@ -449,6 +454,9 @@ class ArtusWrapper(object):
 			log.info(self._configFilename)
 
 		return exitCode
+
+	def modify_replacing_dict(self):
+		pass # to be overwritten by deriving classes
 
 
 	def measurePerformance(self):
