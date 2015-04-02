@@ -13,6 +13,8 @@ import os
 import ROOT
 import sys
 
+import Artus.Utility.tools as tools
+
 import Artus.HarryPlotter.plotbase as plotbase
 import Artus.HarryPlotter.plotdata as plotdata
 import Artus.HarryPlotter.utility.extrafunctions as extrafunctions
@@ -426,10 +428,24 @@ class PlotRoot(plotbase.PlotBase):
 	def add_labels(self, plotData):
 		super(PlotRoot, self).add_labels(plotData)
 		
+		# TODO: transform legend coordinates so that same values for plots with subplots can be specified
+		"""
+		pad_pos_x_pixel = [plotData.plot.plot_pad.UtoPixel(x) for x in [0.0, 1.0]]
+		pad_pos_y_pixel = [plotData.plot.plot_pad.VtoPixel(y) for y in [0.0, 1.0]]
+		canvas_pos_x_pixel = [plotData.plot.canvas.UtoPixel(x) for x in [0.0, 1.0]]
+		canvas_pos_y_pixel = [plotData.plot.canvas.VtoPixel(y) for y in [0.0, 1.0]]
+		legend_pos_x_pixel = [int(pad_pos_x_pixel[0] + (x * (pad_pos_x_pixel[1] - pad_pos_x_pixel[0]))) for x in plotData.plotdict["legend"][::2]]
+		legend_pos_y_pixel = [int(pad_pos_y_pixel[0] + (y * (pad_pos_y_pixel[1] - pad_pos_y_pixel[0]))) for y in plotData.plotdict["legend"][1::2]]
+		legend_pos_x_user = [float(x - canvas_pos_x_pixel[0]) / float(canvas_pos_x_pixel[1] - canvas_pos_x_pixel[0]) for x in legend_pos_x_pixel]
+		legend_pos_y_user = [float(y - canvas_pos_y_pixel[0]) / float(canvas_pos_y_pixel[1] - canvas_pos_y_pixel[0]) for y in legend_pos_y_pixel]
+		transformed_legend_pos = tools.flattenList(zip(legend_pos_x_user, legend_pos_y_user))
+		"""
+		transformed_legend_pos = plotData.plotdict["legend"]
+		
 		plotData.plot.plot_pad.cd()
 		self.legend = None
 		if plotData.plotdict["legend"] != None:
-			self.legend = ROOT.TLegend(*plotData.plotdict["legend"])
+			self.legend = ROOT.TLegend(*transformed_legend_pos)
 			self.legend.SetNColumns(plotData.plotdict["legend_cols"])
 			self.legend.SetColumnSeparation(0.1)
 			for nick, subplot, marker, fill_style, label in zip(
