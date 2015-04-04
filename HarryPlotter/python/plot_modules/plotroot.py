@@ -166,11 +166,6 @@ class PlotRoot(plotbase.PlotBase):
 			canvas = ROOT.TCanvas("canvas", "")
 			canvas.Draw()
 
-		#Modify right side margin for 2d-plots
-		if not isinstance(plotData.plotdict["root_objects"][plotData.plotdict["nicks"][0]], ROOT.TGraph):
-			if plotData.plotdict["root_objects"][plotData.plotdict["nicks"][0]].GetDimension() == 2:
-				canvas.SetRightMargin(0.15)
-		
 		if len(plotData.plotdict["subplot_nicks"]) > 0:
 			self.plot_subplot_slider_y = 0.35
 			canvas.cd()
@@ -188,6 +183,11 @@ class PlotRoot(plotbase.PlotBase):
 		
 		else:
 			plot_pad = canvas
+		
+		self.plot_pad_right_margin = plot_pad.GetRightMargin()
+		plot_pad.SetRightMargin(0.15)
+		if not subplot_pad is None:
+			subplot_pad.SetRightMargin(0.15)
 		
 		plotData.plot = RootPlotContainer(canvas, plot_pad, subplot_pad)
 
@@ -347,6 +347,7 @@ class PlotRoot(plotbase.PlotBase):
 			
 			# draw
 			plotData.plotdict["root_objects"][nick].Draw(marker + " SAME")
+			pad.Update()
 	
 	def modify_axes(self, plotData):
 		super(PlotRoot, self).modify_axes(plotData)
@@ -394,6 +395,11 @@ class PlotRoot(plotbase.PlotBase):
 			self.subplot_axes_histogram.GetYaxis().SetTitleOffset(self.subplot_axes_histogram.GetYaxis().GetTitleOffset() * self.plot_subplot_slider_y)
 			
 			self.subplot_axes_histogram.GetYaxis().SetNdivisions(5, 0, 0)
+		
+		if not any([root_object.GetListOfFunctions().FindObject("palette") != None for root_object in plotData.plotdict["root_objects"].values()]):
+			plotData.plot.plot_pad.SetRightMargin(self.plot_pad_right_margin)
+			if not plotData.plot.subplot_pad is None:
+				plotData.plot.subplot_pad.SetRightMargin(self.plot_pad_right_margin)
 		
 		# redraw axes only and update the canvas
 		plotData.plot.plot_pad.cd()
