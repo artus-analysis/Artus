@@ -474,13 +474,13 @@ class PlotRoot(plotbase.PlotBase):
 		super(PlotRoot, self).add_texts(plotData)
 		if plotData.plotdict["texts"] != [None]:
 			plotData.plot.plot_pad.cd()
+			self.text_box = ROOT.TPaveText(0.0, 0.0, 1.0, 1.0, "NDC")
+			self.text_box.SetFillStyle(0)
+			self.text_box.SetShadowColor(0)
+			self.text_box.SetTextSize(0.05)
 			for x, y, text in zip(plotData.plotdict['texts_x'], plotData.plotdict['texts_y'], plotData.plotdict['texts']):
-				self.text_boxes.append(ROOT.TPaveText(0.0, 0.0, 1.0, 1.0, "NDC"))
-				self.text_boxes[-1].AddText(x, y, text*5)
-				self.text_boxes[-1].SetFillStyle(0)
-				self.text_boxes[-1].SetShadowColor(0)
-				self.text_boxes[-1].SetTextSize(0.05)
-				self.text_boxes[-1].Draw("SAME")
+				self.text_box.AddText(x, y, text)
+			self.text_box.Draw()
 	
 	@staticmethod
 	def _get_dimension(root_object):
