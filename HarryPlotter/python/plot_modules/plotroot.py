@@ -205,8 +205,6 @@ class PlotRoot(plotbase.PlotBase):
 				plotData.plotdict["line_widths"]
 		):
 			root_object = plotData.plotdict["root_objects"][nick]
-			if plotData.plotdict["title"]:
-				root_object.SetTitle(plotData.plotdict["title"])
 			
 			root_object.SetLineColor(colors[0])
 			root_object.SetLineStyle(line_style)
@@ -472,15 +470,22 @@ class PlotRoot(plotbase.PlotBase):
 	
 	def add_texts(self, plotData):
 		super(PlotRoot, self).add_texts(plotData)
-		if plotData.plotdict["texts"] != [None]:
-			plotData.plot.plot_pad.cd()
-			self.text_box = ROOT.TPaveText(0.0, 0.0, 1.0, 1.0, "NDC")
-			self.text_box.SetFillStyle(0)
-			self.text_box.SetShadowColor(0)
-			self.text_box.SetTextSize(0.05)
-			for x, y, text in zip(plotData.plotdict['texts_x'], plotData.plotdict['texts_y'], plotData.plotdict['texts']):
-				self.text_box.AddText(x, y, text)
-			self.text_box.Draw()
+		
+		plotData.plot.plot_pad.cd()
+		self.text_box = ROOT.TPaveText(0.0, 0.0, 1.0, 1.0, "NDC")
+		self.text_box.SetFillStyle(0)
+		self.text_box.SetShadowColor(0)
+		self.text_box.SetTextSize(0.05)
+		self.text_box.SetTextAlign(22)
+		
+		for x, y, text in zip(plotData.plotdict['texts_x'], plotData.plotdict['texts_y'], plotData.plotdict['texts']):
+			self.text_box.AddText(x, y, text)
+	
+		if plotData.plotdict["title"] != "":
+			title = self.text_box.AddText(0.2, 0.94, plotData.plotdict["title"])
+			title.SetTextAlign(11)
+		
+		self.text_box.Draw()
 	
 	@staticmethod
 	def _get_dimension(root_object):

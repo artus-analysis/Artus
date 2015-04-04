@@ -221,6 +221,10 @@ class PlotBase(processor.Processor):
 		# prepare arguments for text label(s)
 		if plotData.plotdict["texts"] is not None:
 			self.prepare_list_args(plotData, ["texts", "texts_y", "texts_x"])
+			if len(plotData.plotdict["texts"]) == 1 and plotData.plotdict["texts"][0] is None:
+				plotData.plotdict["texts"] = []
+				plotData.plotdict["texts_x"] = []
+				plotData.plotdict["texts_y"] = []
 
 	def run(self, plotData):
 		super(PlotBase, self).run(plotData)
