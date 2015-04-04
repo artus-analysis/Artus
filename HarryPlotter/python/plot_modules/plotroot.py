@@ -485,6 +485,16 @@ class PlotRoot(plotbase.PlotBase):
 			title = self.text_box.AddText(0.2, 0.94, plotData.plotdict["title"])
 			title.SetTextAlign(11)
 		
+		dataset_title = ""
+		if not plotData.plotdict["lumis"] is None:
+			dataset_title += (("+".join([str(lumi) for lumi in plotData.plotdict["lumis"]])) + " fb^{-1}")
+		if not plotData.plotdict["energies"] is None:
+			dataset_title += (("" if dataset_title == "" else ", ") + ("+".join([str(int(energy)) for energy in plotData.plotdict["energies"]])) + " TeV")
+		if dataset_title != "":
+			dataset = self.text_box.AddText(0.95, 0.94, dataset_title)
+			dataset.SetTextAlign(31)
+			dataset.SetTextSize(0.03)
+		
 		self.text_box.Draw()
 	
 	@staticmethod

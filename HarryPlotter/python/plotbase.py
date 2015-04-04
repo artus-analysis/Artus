@@ -107,10 +107,10 @@ class PlotBase(processor.Processor):
 		self.labelling_options = parser.add_argument_group("Labelling options")
 		self.labelling_options.add_argument("-t", "--title", type=str,
 		                                    help="Plot title")
-		self.labelling_options.add_argument("-l", "--lumi", type=float,
-		                                    help="Luminosity for the given data in /fb.")
-		self.labelling_options.add_argument("-e", "--energy", type=str, nargs="+",
-		                                    help="Centre-of-mass energy for the given samples in TeV.")
+		self.labelling_options.add_argument("-l", "--lumis", type=float, nargs="+",
+		                                    help="Luminosities for the given data in fb^(-1).")
+		self.labelling_options.add_argument("-e", "--energies", type=float, nargs="+",
+		                                    help="Centre-of-mass energies for the given samples in TeV.")
 		self.labelling_options.add_argument("-A", "--author", type=str,
 		                                    help="author name of the plot")
 		self.labelling_options.add_argument("--date", type=str,
