@@ -471,9 +471,10 @@ class PlotRoot(plotbase.PlotBase):
 	def add_texts(self, plotData):
 		super(PlotRoot, self).add_texts(plotData)
 		
-		plotData.plot.plot_pad.cd()
+		plotData.plot.canvas.cd()
 		self.text_box = ROOT.TPaveText(0.0, 0.0, 1.0, 1.0, "NDC")
 		self.text_box.SetFillStyle(0)
+		self.text_box.SetBorderSize(0)
 		self.text_box.SetShadowColor(0)
 		self.text_box.SetTextSize(0.05)
 		self.text_box.SetTextAlign(22)
