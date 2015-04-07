@@ -61,12 +61,15 @@ public:
 		{
 			m_tree->Branch("genParticle", &m_currentGenParticle);
 			m_tree->Branch("genParticleMatched", &m_currentGenParticleMatched, "genParticleMatched/O");
+			m_tree->Branch("genParticleMatchedDeltaR", &m_currentGenParticleMatchedDeltaR, "genParticleMatchedDeltaR/D");
 			
 			m_tree->Branch("genTau", &m_currentGenTau);
 			m_tree->Branch("genTauMatched", &m_currentGenTauMatched, "genTauMatched/O");
+			m_tree->Branch("genTauMatchedDeltaR", &m_currentGenTauMatchedDeltaR, "genTauMatchedDeltaR/D");
 			
 			m_tree->Branch("genTauJet", &m_currentGenTauJet);
 			m_tree->Branch("genTauJetMatched", &m_currentGenTauJetMatched, "genTauJetMatched/O");
+			m_tree->Branch("genTauJetMatchedDeltaR", &m_currentGenTauJetMatchedDeltaR, "genTauJetMatchedDeltaR/D");
 		}
 	}
 	
@@ -91,6 +94,14 @@ public:
 					KGenParticle* currentGenParticle = SafeMap::GetWithDefault((product.*m_genParticleMatchedObjects), *validObject, (KGenParticle*)(0));
 					m_currentGenParticle = (currentGenParticle != 0 ? *(static_cast<KGenParticle*>(currentGenParticle)) : KGenParticle());
 					m_currentGenParticleMatched = (currentGenParticle != 0);
+					if (currentGenParticle != 0)
+					{
+						m_currentGenParticleMatchedDeltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, currentGenParticle->p4);
+					}
+					else
+					{
+						m_currentGenParticleMatchedDeltaR = DefaultValues::UndefinedDouble;
+					}
 				}
 				
 				if (m_genTauMatchedObjectsAvailable)
@@ -98,6 +109,14 @@ public:
 					KGenTau* currentGenTau = SafeMap::GetWithDefault((product.*m_genTauMatchedObjects), *validObject, (KGenTau*)(0));
 					m_currentGenTau = (currentGenTau != 0 ? *(static_cast<KGenTau*>(currentGenTau)) : KGenTau());
 					m_currentGenTauMatched = (currentGenTau != 0);
+					if (currentGenTau != 0)
+					{
+						m_currentGenTauMatchedDeltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, currentGenTau->visible.p4);
+					}
+					else
+					{
+						m_currentGenTauMatchedDeltaR = DefaultValues::UndefinedDouble;
+					}
 				}
 				
 				if (m_genTauJetMatchedObjectsAvailable)
@@ -105,6 +124,14 @@ public:
 					KGenJet* currentGenTauJet = SafeMap::GetWithDefault((product.*m_genTauJetMatchedObjects), *validObject, (KGenJet*)(0));
 					m_currentGenTauJet = (currentGenTauJet != 0 ? *(static_cast<KGenJet*>(currentGenTauJet)) : KGenJet());
 					m_currentGenTauJetMatched = (currentGenTauJet != 0);
+					if (currentGenTauJet != 0)
+					{
+						m_currentGenTauJetMatchedDeltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, currentGenTauJet->p4);
+					}
+					else
+					{
+						m_currentGenTauJetMatchedDeltaR = DefaultValues::UndefinedDouble;
+					}
 				}
 			}
 			
@@ -140,10 +167,13 @@ private:
 	TObjectMetaInfo m_currentObjectMetaInfo;
 	KGenParticle m_currentGenParticle;
 	char m_currentGenParticleMatched;
+	double m_currentGenParticleMatchedDeltaR;
 	KGenTau m_currentGenTau;
 	char m_currentGenTauMatched;
+	double m_currentGenTauMatchedDeltaR;
 	KGenJet m_currentGenTauJet;
 	char m_currentGenTauJetMatched;
+	double m_currentGenTauJetMatchedDeltaR;
 };
 
 
