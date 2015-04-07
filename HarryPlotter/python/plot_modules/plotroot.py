@@ -487,8 +487,8 @@ class PlotRoot(plotbase.PlotBase):
 		
 		for x, y, text in zip(plotData.plotdict['texts_x'], plotData.plotdict['texts_y'], plotData.plotdict['texts']):
 			self.text_box.AddText(x, y, text)
-	
-		if plotData.plotdict["title"] != "":
+		
+		if (not plotData.plotdict["title"] is None) and (plotData.plotdict["title"] != ""):
 			title = self.text_box.AddText(0.2, 0.94, plotData.plotdict["title"])
 			title.SetTextAlign(11)
 		
