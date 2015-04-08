@@ -185,17 +185,18 @@ class PlotRoot(plotbase.PlotBase):
 			plot_pad = canvas
 		
 		self.plot_pad_right_margin = plot_pad.GetRightMargin()
-		plot_pad.SetRightMargin(0.15)
+		plot_pad.SetRightMargin(0.25)
 		if not subplot_pad is None:
-			subplot_pad.SetRightMargin(0.15)
+			subplot_pad.SetRightMargin(0.25)
 		
 		plotData.plot = RootPlotContainer(canvas, plot_pad, subplot_pad)
 
 	def prepare_histograms(self, plotData):
 		super(PlotRoot, self).prepare_histograms(plotData)
 		
-		for nick, colors, marker, marker_style, marker_size, fill_style, line_style, line_width in zip(
+		for nick, subplot, colors, marker, marker_style, marker_size, fill_style, line_style, line_width in zip(
 				plotData.plotdict["nicks"],
+				plotData.plotdict["subplots"],
 				plotData.plotdict["colors"],
 				plotData.plotdict["markers"],
 				plotData.plotdict["marker_styles"],
@@ -216,7 +217,23 @@ class PlotRoot(plotbase.PlotBase):
 			
 			root_object.SetFillColor(colors[1])
 			root_object.SetFillStyle(fill_style)
-
+			
+			# axis labels
+			if subplot:
+				if (not plotData.plotdict["x_subplot_label"] is None) and (plotData.plotdict["x_subplot_label"] != ""):
+					root_object.GetXaxis().SetTitle(plotData.plotdict["x_subplot_label"])
+				if (not plotData.plotdict["y_subplot_label"] is None) and (plotData.plotdict["y_subplot_label"] != ""):
+					root_object.GetYaxis().SetTitle(plotData.plotdict["y_subplot_label"])
+				#if (not plotData.plotdict["z_subplot_label"] is None) and (plotData.plotdict["z_subplot_label"] != ""):
+				#	root_object.GetZaxis().SetTitle(plotData.plotdict["z_subplot_label"])
+			else:
+				if (not plotData.plotdict["x_label"] is None) and (plotData.plotdict["x_label"] != ""):
+					root_object.GetXaxis().SetTitle(plotData.plotdict["x_label"])
+				if (not plotData.plotdict["y_label"] is None) and (plotData.plotdict["y_label"] != ""):
+					root_object.GetYaxis().SetTitle(plotData.plotdict["y_label"])
+				if (not plotData.plotdict["z_label"] is None) and (plotData.plotdict["z_label"] != ""):
+					root_object.GetZaxis().SetTitle(plotData.plotdict["z_label"])
+			
 			# tick labels
 			if plotData.plotdict["x_tick_labels"] and len(plotData.plotdict["x_tick_labels"]) > 0:
 				for x_bin in range(min(root_object.GetNbinsX(), len(plotData.plotdict["x_tick_labels"]))):
@@ -307,7 +324,16 @@ class PlotRoot(plotbase.PlotBase):
 				self.axes_histogram = ROOT.TH2F("axes_histogram", "", n_bins, self.x_min, self.x_max, n_bins, self.y_min, self.y_max)
 				self.axes_histogram.SetMinimum(self.z_min)
 				self.axes_histogram.SetMaximum(self.z_max)
-			self.axes_histogram.Draw("AXIS")
+			
+			# axis labels
+			if (not plotData.plotdict["x_label"] is None) and (plotData.plotdict["x_label"] != ""):
+				self.axes_histogram.GetXaxis().SetTitle(plotData.plotdict["x_label"])
+			if (not plotData.plotdict["y_label"] is None) and (plotData.plotdict["y_label"] != ""):
+				self.axes_histogram.GetYaxis().SetTitle(plotData.plotdict["y_label"])
+			if (self.max_dim > 2) and (not plotData.plotdict["z_label"] is None) and (plotData.plotdict["z_label"] != ""):
+				self.axes_histogram.GetZaxis().SetTitle(plotData.plotdict["z_label"])
+			
+			self.axes_histogram.Draw()
 		
 		if plotData.plot.subplot_pad:
 			plotData.plot.subplot_pad.cd()
@@ -319,7 +345,16 @@ class PlotRoot(plotbase.PlotBase):
 				self.subplot_axes_histogram = ROOT.TH2F("subplot_axes_histogram", "", n_sub_bins, self.x_min, self.x_max, n_sub_bins, self.y_sub_min, self.y_sub_max)
 				self.subplot_axes_histogram.SetMinimum(self.z_sub_min)
 				self.subplot_axes_histogram.SetMaximum(self.z_sub_max)
-			self.subplot_axes_histogram.Draw("AXIS")
+			
+			# axis labels
+			if (not plotData.plotdict["x_subplot_label"] is None) and (plotData.plotdict["x_subplot_label"] != ""):
+				self.subplot_axes_histogram.GetXaxis().SetTitle(plotData.plotdict["x_subplot_label"])
+			if (not plotData.plotdict["y_subplot_label"] is None) and (plotData.plotdict["y_subplot_label"] != ""):
+				self.subplot_axes_histogram.GetYaxis().SetTitle(plotData.plotdict["y_subplot_label"])
+			#if (self.max_sub_dim > 2) and (not plotData.plotdict["z_subplot_label"] is None) and (plotData.plotdict["z_subplot_label"] != ""):
+			#	self.subplot_axes_histogram.GetZaxis().SetTitle(plotData.plotdict["z_subplot_label"])
+			
+			self.subplot_axes_histogram.Draw()
 		
 		for nick, subplot, marker, colors in zip(
 				plotData.plotdict["nicks"],
@@ -351,15 +386,14 @@ class PlotRoot(plotbase.PlotBase):
 	
 	def modify_axes(self, plotData):
 		super(PlotRoot, self).modify_axes(plotData)
-	
-		# axis labels
-		self.axes_histogram.GetXaxis().SetTitle(plotData.plotdict["x_label"])
-		self.axes_histogram.GetYaxis().SetTitle(plotData.plotdict["y_label"])
-		self.axes_histogram.GetZaxis().SetTitle(plotData.plotdict["z_label"])
-		if not self.subplot_axes_histogram is None:
-			self.subplot_axes_histogram.GetXaxis().SetTitle(plotData.plotdict["x_label"])
-			self.subplot_axes_histogram.GetYaxis().SetTitle(plotData.plotdict["y_subplot_label"])
-	
+		
+		# setting for Z axis
+		for root_object in plotData.plotdict["root_objects"].values():
+			palette = root_object.GetListOfFunctions().FindObject("palette")
+			if palette != None:
+				palette.SetTitleOffset(1.5)
+				palette.SetTitleSize(root_object.GetYaxis().GetTitleSize())
+		
 		# logaritmic axis
 		if plotData.plotdict["x_log"]: plotData.plot.plot_pad.SetLogx()
 		if plotData.plotdict["y_log"]: plotData.plot.plot_pad.SetLogy()
@@ -396,7 +430,7 @@ class PlotRoot(plotbase.PlotBase):
 			
 			self.subplot_axes_histogram.GetYaxis().SetNdivisions(5, 0, 0)
 		
-		if not any([root_object.GetListOfFunctions().FindObject("palette") != None for root_object in plotData.plotdict["root_objects"].values()]):
+		if all([root_object.GetListOfFunctions().FindObject("palette") == None for root_object in plotData.plotdict["root_objects"].values()]):
 			plotData.plot.plot_pad.SetRightMargin(self.plot_pad_right_margin)
 			if not plotData.plot.subplot_pad is None:
 				plotData.plot.subplot_pad.SetRightMargin(self.plot_pad_right_margin)

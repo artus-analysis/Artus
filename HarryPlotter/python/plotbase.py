@@ -358,10 +358,7 @@ class PlotBase(processor.Processor):
 		if isinstance(root_object, ROOT.TH1):
 			x_min = root_object.GetXaxis().GetXmin()
 			x_max = root_object.GetXaxis().GetXmax()
-			if root_object.GetDimension() == 1:
-				y_min = root_object.GetMinimum()
-				y_max = root_object.GetMaximum()
-			else:
+			if isinstance(root_object, ROOT.TH2):
 				max_dim = 3
 				y_min = root_object.GetYaxis().GetXmin()
 				y_max = root_object.GetYaxis().GetXmax()
@@ -371,6 +368,9 @@ class PlotBase(processor.Processor):
 				else:
 					z_min = root_object.GetZaxis().GetXmin()
 					z_max = root_object.GetZaxis().GetXmax()
+			else:
+				y_min = root_object.GetMinimum()
+				y_max = root_object.GetMaximum()
 		elif isinstance(root_object, ROOT.TGraph):
 			# TODO: treat error bars
 			x_min = root_object.GetXaxis().GetXmin()
