@@ -423,17 +423,17 @@ class RootTools(object):
 			sparse_tmp_root_histogram = ROOT.THnSparse.CreateSparse(name+"sparsetmp", "", tmp_root_histogram)
 			binning = RootTools.get_binning(tmp_root_histogram, 0)
 			if not RootTools.rebinning_possible(binning, complexRebinning[0]):
-				log.error("Rebinning in X leads tries to split bins!")
+				log.warning("Rebinning in X leads to splitting/adding bins! Make sure you know what you are doing!")
 			sparse_tmp_root_histogram.GetAxis(0).Set(len(binning)-1, binning)
 			if tmp_root_histogram.GetDimension() > 1:
 				binning = RootTools.get_binning(tmp_root_histogram, 1)
 				if not RootTools.rebinning_possible(binning, complexRebinning[1]):
-					log.error("Rebinning in Y leads tries to split bins!")
+					log.warning("Rebinning in Y leads to splitting/adding bins! Make sure you know what you are doing!")
 				sparse_tmp_root_histogram.GetAxis(1).Set(len(binning)-1, binning)
 			if tmp_root_histogram.GetDimension() > 2:
 				binning = RootTools.get_binning(tmp_root_histogram, 2)
 				if not RootTools.rebinning_possible(binning, complexRebinning[1]):
-					log.error("Rebinning in Z leads tries to split bins!")
+					log.warning("Rebinning in Z leads to splitting/adding bins! Make sure you know what you are doing!")
 				sparse_tmp_root_histogram.GetAxis(2).Set(len(binning)-1, binning)
 		
 			# retrieve rebinned histogram
