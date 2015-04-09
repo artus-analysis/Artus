@@ -34,12 +34,12 @@ class SOverBRebinning(analysisbase.AnalysisBase):
 	def prepare_args(self, parser, plotData):
 		super(SOverBRebinning, self).prepare_args(parser, plotData)
 		self.prepare_list_args(plotData, ["signal_nicks", "background_nicks", "rebinning_nicks"])
-		plotData.plotdict["rebinning_nicks"] = [nicks.split() for nicks in plotData.plotdict["divide_result_nicks"]]
+		plotData.plotdict["rebinning_nicks"] = [nicks.split() for nicks in plotData.plotdict["rebinning_nicks"]]
 
 	def run(self, plotData=None):
 		super(SOverBRebinning, self).run(plotData)
 
-		for signal_nick, background_nick, rebinning_nicks in zip([plotData.plotdict[k] for k in ["signal_nicks", "background_nicks", "rebinning_nicks"]]):
+		for signal_nick, background_nick, rebinning_nicks in zip(*[plotData.plotdict[k] for k in ["signal_nicks", "background_nicks", "rebinning_nicks"]]):
 			name_hash = hashlib.md5("_".join([signal_nick, background_nick, str(rebinning_nicks)])).hexdigest()
 			
 			s_over_b_histogram = plotData.plotdict["root_objects"][signal_nick].Clone("signal_"+name_hash)
@@ -49,7 +49,7 @@ class SOverBRebinning(analysisbase.AnalysisBase):
 			for x_bin in xrange(1, s_over_b_histogram.GetNbinsX()+1):
 				for y_bin in xrange(1, s_over_b_histogram.GetNbinsY()+1):
 					for z_bin in xrange(1, s_over_b_histogram.GetNbinsZ()+1):
-						global_bin = root_histogram.GetBin(x_bin, y_bin, z_bin)
+						global_bin = s_over_b_histogram.GetBin(x_bin, y_bin, z_bin)
 						s_over_b_ratios.append((global_bin, s_over_b_histogram.GetBinContent(global_bin)))
 			s_over_b_ratios.sort(key=lambda item: item[1], reverse=False)
 			
