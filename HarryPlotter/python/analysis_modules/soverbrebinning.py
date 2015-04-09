@@ -20,11 +20,11 @@ class SOverBRebinning(analysisbase.AnalysisBase):
 		self.rebinning_options = parser.add_argument_group("{} options".format(self.name()))
 		self.rebinning_options.add_argument(
 				"--signal-nicks", type=str, nargs="+", default=[],
-				help="Nick names for the signal histograms."
+				help="Nick names (whitespace separated) for the signal histograms."
 		)
 		self.rebinning_options.add_argument(
 				"--background-nicks", type=str, nargs="+", default=[],
-				help="Nick names for the background histograms."
+				help="Nick names (whitespace separated) for the background histograms."
 		)
 		self.rebinning_options.add_argument(
 				"--rebinning-nicks", type=str, nargs="+", default=[],
@@ -34,16 +34,32 @@ class SOverBRebinning(analysisbase.AnalysisBase):
 	def prepare_args(self, parser, plotData):
 		super(SOverBRebinning, self).prepare_args(parser, plotData)
 		self.prepare_list_args(plotData, ["signal_nicks", "background_nicks", "rebinning_nicks"])
+		plotData.plotdict["signal_nicks"] = [nicks.split() for nicks in plotData.plotdict["signal_nicks"]]
+		plotData.plotdict["background_nicks"] = [nicks.split() for nicks in plotData.plotdict["background_nicks"]]
 		plotData.plotdict["rebinning_nicks"] = [nicks.split() for nicks in plotData.plotdict["rebinning_nicks"]]
 
 	def run(self, plotData=None):
 		super(SOverBRebinning, self).run(plotData)
-
-		for signal_nick, background_nick, rebinning_nicks in zip(*[plotData.plotdict[k] for k in ["signal_nicks", "background_nicks", "rebinning_nicks"]]):
-			name_hash = hashlib.md5("_".join([signal_nick, background_nick, str(rebinning_nicks)])).hexdigest()
+		
+		for signal_nicks, background_nicks, rebinning_nicks in zip(*[plotData.plotdict[k] for k in ["signal_nicks", "background_nicks", "rebinning_nicks"]]):
+			name_hash = hashlib.md5("_".join([str(signal_nicks), str(background_nicks), str(rebinning_nicks)])).hexdigest()
 			
-			s_over_b_histogram = plotData.plotdict["root_objects"][signal_nick].Clone("signal_"+name_hash)
-			s_over_b_histogram.Divide(plotData.plotdict["root_objects"][background_nick])
+			signal_histogram = None
+			for signal_nick in signal_nicks:
+				if signal_histogram is None:
+					signal_histogram = plotData.plotdict["root_objects"][signal_nick].Clone("signal_"+name_hash)
+				else:
+					signal_histogram.Add(plotData.plotdict["root_objects"][signal_nick])
+			
+			background_histogram = None
+			for background_nick in background_nicks:
+				if background_histogram is None:
+					background_histogram = plotData.plotdict["root_objects"][background_nick].Clone("background_"+name_hash)
+				else:
+					background_histogram.Add(plotData.plotdict["root_objects"][background_nick])
+			
+			s_over_b_histogram = signal_histogram.Clone("ratio_"+name_hash)
+			s_over_b_histogram.Divide(background_histogram)
 			
 			s_over_b_ratios = []
 			for x_bin in xrange(1, s_over_b_histogram.GetNbinsX()+1):
