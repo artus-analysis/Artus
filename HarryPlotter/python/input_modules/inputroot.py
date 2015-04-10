@@ -42,12 +42,12 @@ class InputRoot(inputfile.InputFile):
 		self.input_options.add_argument("-w", "--weights", type=str, nargs="+", default="1.0",
 		                                help="Weight (cut) expression(s). [Default: %(default)s]")
 		
-		self.input_options.add_argument("--x-bins", type=str, nargs='+', default=None,
-		                                help="Bining for x-axis. In case only one argument is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [Default: [\"25\"] for trees, no rebinning for histograms]")
-		self.input_options.add_argument("--y-bins", type=str, nargs='+', default=None,
-		                                help="Bining for y-axis of 2D/3D histograms. In case only one argument is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [\"25\"] for trees, no rebinning for histograms]")
-		self.input_options.add_argument("--z-bins", type=str, nargs='+', default=None,
-		                                help="Bining for z-axis of 3D histograms. In case only one argument is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [\"25\"] for trees, no rebinning for histograms]")
+		self.input_options.add_argument("--x-bins", type=str, nargs='+', default=[None],
+		                                help="Binings for x-axis. In case only one argument (per input) is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [Default: [\"25\"] for trees, no rebinning for histograms]")
+		self.input_options.add_argument("--y-bins", type=str, nargs='+', default=[None],
+		                                help="Binings for y-axis of 2D/3D histograms. In case only one argument (per input) is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [\"25\"] for trees, no rebinning for histograms]")
+		self.input_options.add_argument("--z-bins", type=str, nargs='+', default=[None],
+		                                help="Binings for z-axis of 3D histograms. In case only one argument (per input) is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [\"25\"] for trees, no rebinning for histograms]")
 		self.input_options.add_argument("--tree-draw-options", nargs='+', type=str, default="",
 		                                help="Optional argument for TTree:Draw() call. Use e.g. 'prof' or 'profs' for projections of 2D-Histograms to 1D. See also http://root.cern.ch/ooot/html/TTree.html#TTree:Draw. Specify \"TGraph\" for plotting y- vs. x-values into a TGraph. \"TGraphErrors\" leads to a graph with errors by specifying inputs with --x-expressions <x values>:<x errors> --y-expressions <y values>:<y errors>. \"TGraphAsymmErrorsX\" leads to a graph with asymmetric x-errors by specifying inputs with --x-expressions <x values>:<x errors (down)>:<x errors (up)> --y-expressions <y values>. \"TGraphAsymmErrorsY\" leads to a graph with asymmetric y-errors by specifying inputs with --x-expressions <x values> --y-expressions <y values>:<y errors (down)>:<y errors (up)>.")
 
@@ -66,17 +66,45 @@ class InputRoot(inputfile.InputFile):
 		else:
 			plotData.plotdict["friend_trees"] = [None]
 
-		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "scale_factors", "files", "directories", "folders", "weights", "friend_trees", "tree_draw_options"])
+		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "scale_factors", "files", "directories", "folders", "weights", "friend_trees", "tree_draw_options", "x_bins", "y_bins", "z_bins"])
 		plotData.plotdict["folders"] = [folders.split() if folders else [""] for folders in plotData.plotdict["folders"]]
+		
+		plotData.plotdict["x_bins"] = [x_bins if x_bins is None else x_bins.split() for x_bins in plotData.plotdict["x_bins"]]
+		plotData.plotdict["y_bins"] = [y_bins if y_bins is None else y_bins.split() for y_bins in plotData.plotdict["y_bins"]]
+		plotData.plotdict["z_bins"] = [z_bins if z_bins is None else z_bins.split() for z_bins in plotData.plotdict["z_bins"]]
 		
 		inputbase.InputBase.prepare_nicks(plotData)
 	
 	def run(self, plotData):
 		
 		root_tools = roottools.RootTools()
-		for index, (root_files, folders, x_expression, y_expression, z_expression, weight, nick, friend_trees, option) in enumerate(pi.ProgressIterator(zip(*
-			[plotData.plotdict[key] for key in ["files", "folders", "x_expressions", "y_expressions", "z_expressions", "weights", "nicks", "friend_trees", "tree_draw_options"]]),
-			description="Reading ROOT inputs")):
+		for index, (
+				root_files,
+				folders,
+				x_expression,
+				y_expression,
+				z_expression,
+				weight,
+				x_bins,
+				y_bins,
+				z_bins,
+				nick,
+				friend_trees,
+				option
+		) in enumerate(pi.ProgressIterator(zip(
+				plotData.plotdict["files"],
+				plotData.plotdict["folders"],
+				plotData.plotdict["x_expressions"],
+				plotData.plotdict["y_expressions"],
+				plotData.plotdict["z_expressions"],
+				plotData.plotdict["weights"],
+				plotData.plotdict["x_bins"],
+				plotData.plotdict["y_bins"],
+				plotData.plotdict["z_bins"],
+				plotData.plotdict["nicks"],
+				plotData.plotdict["friend_trees"],
+				plotData.plotdict["tree_draw_options"]
+		), description="Reading ROOT inputs")):
 			# check whether to read from tree or directly from histograms
 			root_object_type = roottools.RootTools.check_type(root_files, folders,
 			                                                  print_quantities=plotData.plotdict["quantities"])
@@ -91,9 +119,9 @@ class InputRoot(inputfile.InputFile):
 				root_tree_chain, root_histogram = root_tools.histogram_from_tree(
 						root_files, folders,
 						x_expression, y_expression, z_expression,
-						x_bins=["25"] if plotData.plotdict["x_bins"] is None else plotData.plotdict["x_bins"],
-						y_bins=["25"] if plotData.plotdict["y_bins"] is None else plotData.plotdict["y_bins"],
-						z_bins=["25"] if plotData.plotdict["z_bins"] is None else plotData.plotdict["z_bins"],
+						x_bins=["25"] if x_bins is None else x_bins,
+						y_bins=["25"] if y_bins is None else y_bins,
+						z_bins=["25"] if z_bins is None else z_bins,
 						weight_selection=weight, option=option, name=None,
 						friend_trees=friend_trees
 				)
@@ -107,9 +135,9 @@ class InputRoot(inputfile.InputFile):
 				root_histogram = roottools.RootTools.histogram_from_file(
 						root_files,
 						root_objects,
-						x_bins=plotData.plotdict["x_bins"],
-						y_bins=plotData.plotdict["y_bins"],
-						z_bins=plotData.plotdict["z_bins"],
+						x_bins=x_bins,
+						y_bins=y_bins,
+						z_bins=z_bins,
 						name=None)
 			
 			log.debug("Input object %d (nick %s):" % (index, nick))

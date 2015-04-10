@@ -220,7 +220,7 @@ class RootTools(object):
 			                              y_expression + ":" if y_expression else "",
 			                              x_expression)
 		#determine histotype
-		histo_type = "TH%.0f" % (1 + len(re.findall(":", variable_expression)))
+		binning_identifier = "x".join([str(bins) for bins in [x_bins, y_bins, z_bins]])
 	
 		# prepare unique histogram name
 		if name == None:
@@ -234,10 +234,10 @@ class RootTools(object):
 		# prepare binning TTree::Draw/Project
 		x_binning_string, y_binning_string, z_binning_string = ("",)*3
 
-		if not histo_type in self.binning_determined:
-			x_binning_string, self.x_bin_edges[histo_type] = RootTools.prepare_binning(x_bins)
-			y_binning_string, self.y_bin_edges[histo_type] = RootTools.prepare_binning(y_bins)
-			z_binning_string, self.z_bin_edges[histo_type] = RootTools.prepare_binning(z_bins)
+		if not binning_identifier in self.binning_determined:
+			x_binning_string, self.x_bin_edges[binning_identifier] = RootTools.prepare_binning(x_bins)
+			y_binning_string, self.y_bin_edges[binning_identifier] = RootTools.prepare_binning(y_bins)
+			z_binning_string, self.z_bin_edges[binning_identifier] = RootTools.prepare_binning(z_bins)
 
 		binning = ""
 		root_histogram = None
@@ -255,9 +255,9 @@ class RootTools(object):
 			if binning == "()":
 				binning == ""
 			
-			if any([bin_edges != None for bin_edges in [self.x_bin_edges[histo_type], self.y_bin_edges[histo_type], self.z_bin_edges[histo_type]]]):
+			if any([bin_edges != None for bin_edges in [self.x_bin_edges[binning_identifier], self.y_bin_edges[binning_identifier], self.z_bin_edges[binning_identifier]]]):
 				if any([bin_edges == None and expression != None for (bin_edges, expression) in zip(
-						[self.x_bin_edges[histo_type], self.y_bin_edges[histo_type], self.z_bin_edges[histo_type]],
+						[self.x_bin_edges[binning_identifier], self.y_bin_edges[binning_identifier], self.z_bin_edges[binning_identifier]],
 						[x_expression, y_expression, z_expression])]
 				) and "prof" not in option.lower():
 					log.warning("Bin edges need to be specified either for no or for all axes!")
@@ -265,38 +265,38 @@ class RootTools(object):
 					if z_expression != None:
 						if "prof" in option.lower():
 							root_histogram = ROOT.TProfile2D(name, "",
-							                                 len(self.x_bin_edges[histo_type])-1, self.x_bin_edges[histo_type],
-							                                 len(self.y_bin_edges[histo_type])-1, self.y_bin_edges[histo_type])
+							                                 len(self.x_bin_edges[binning_identifier])-1, self.x_bin_edges[binning_identifier],
+							                                 len(self.y_bin_edges[binning_identifier])-1, self.y_bin_edges[binning_identifier])
 							log.debug("TProfile2D(\"" + name + ", \"\", " +
-							          str(len(self.x_bin_edges[histo_type])-1) + ", " + str(self.x_bin_edges[histo_type]) + ", " +
-							          str(len(self.y_bin_edges[histo_type])-1) + ", " + str(self.y_bin_edges[histo_type]) + ")")
+							          str(len(self.x_bin_edges[binning_identifier])-1) + ", " + str(self.x_bin_edges[binning_identifier]) + ", " +
+							          str(len(self.y_bin_edges[binning_identifier])-1) + ", " + str(self.y_bin_edges[binning_identifier]) + ")")
 						else:
 							root_histogram = ROOT.TH3D(name, "",
-							                           len(self.x_bin_edges[histo_type])-1, self.x_bin_edges[histo_type],
-							                           len(self.y_bin_edges[histo_type])-1, self.y_bin_edges[histo_type],
-							                           len(self.z_bin_edges[histo_type])-1, self.z_bin_edges[histo_type])
+							                           len(self.x_bin_edges[binning_identifier])-1, self.x_bin_edges[binning_identifier],
+							                           len(self.y_bin_edges[binning_identifier])-1, self.y_bin_edges[binning_identifier],
+							                           len(self.z_bin_edges[binning_identifier])-1, self.z_bin_edges[binning_identifier])
 							log.debug("TH3F(\"" + name + ", \"\", " +
-							          str(len(self.x_bin_edges[histo_type])-1) + ", " + str(self.x_bin_edges[histo_type]) + ", " +
-							          str(len(self.y_bin_edges[histo_type])-1) + ", " + str(self.y_bin_edges[histo_type]) + ", " +
-							          str(len(self.z_bin_edges[histo_type])-1) + ", " + str(self.z_bin_edges[histo_type]) + ")")
+							          str(len(self.x_bin_edges[binning_identifier])-1) + ", " + str(self.x_bin_edges[binning_identifier]) + ", " +
+							          str(len(self.y_bin_edges[binning_identifier])-1) + ", " + str(self.y_bin_edges[binning_identifier]) + ", " +
+							          str(len(self.z_bin_edges[binning_identifier])-1) + ", " + str(self.z_bin_edges[binning_identifier]) + ")")
 					elif y_expression != None:
 						if "prof" in option.lower():
 							root_histogram = ROOT.TProfile(name, "",
-							                               len(self.x_bin_edges[histo_type])-1, self.x_bin_edges[histo_type])
+							                               len(self.x_bin_edges[binning_identifier])-1, self.x_bin_edges[binning_identifier])
 							log.debug("TProfile(\"" + name + ", \"\", " +
-							          str(len(self.x_bin_edges[histo_type])-1) + ", " + str(self.x_bin_edges[histo_type]) + ")")
+							          str(len(self.x_bin_edges[binning_identifier])-1) + ", " + str(self.x_bin_edges[binning_identifier]) + ")")
 						else:
 							root_histogram = ROOT.TH2D(name, "",
-							                           len(self.x_bin_edges[histo_type])-1, self.x_bin_edges[histo_type],
-							                           len(self.y_bin_edges[histo_type])-1, self.y_bin_edges[histo_type])
+							                           len(self.x_bin_edges[binning_identifier])-1, self.x_bin_edges[binning_identifier],
+							                           len(self.y_bin_edges[binning_identifier])-1, self.y_bin_edges[binning_identifier])
 							log.debug("TH2F(\"" + name + ", \"\", " +
-							          str(len(self.x_bin_edges[histo_type])-1) + ", " + str(self.x_bin_edges[histo_type]) + ", " +
-							          str(len(self.y_bin_edges[histo_type])-1) + ", " + str(self.y_bin_edges[histo_type]) + ")")
+							          str(len(self.x_bin_edges[binning_identifier])-1) + ", " + str(self.x_bin_edges[binning_identifier]) + ", " +
+							          str(len(self.y_bin_edges[binning_identifier])-1) + ", " + str(self.y_bin_edges[binning_identifier]) + ")")
 					else:
 						root_histogram = ROOT.TH1D(name, "",
-						                           len(self.x_bin_edges[histo_type])-1, self.x_bin_edges[histo_type])
+						                           len(self.x_bin_edges[binning_identifier])-1, self.x_bin_edges[binning_identifier])
 						log.debug("TH1F(\"" + name + ", \"\", " +
-						          str(len(self.x_bin_edges[histo_type])-1) + ", " + str(self.x_bin_edges[histo_type]) + ")")
+						          str(len(self.x_bin_edges[binning_identifier])-1) + ", " + str(self.x_bin_edges[binning_identifier]) + ")")
 		
 		# prepare TChain
 		if isinstance(root_file_names, basestring):
@@ -350,15 +350,15 @@ class RootTools(object):
 		
 		if isinstance(root_histogram, ROOT.TH1):
 			root_histogram.SetDirectory(0)
-			self.x_bin_edges[histo_type] = RootTools.get_binning(root_histogram, axisNumber=0)
-			self.y_bin_edges[histo_type] = RootTools.get_binning(root_histogram, axisNumber=1)
-			self.z_bin_edges[histo_type] = RootTools.get_binning(root_histogram, axisNumber=2)
+			self.x_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=0)
+			self.y_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=1)
+			self.z_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=2)
 		elif isinstance(root_histogram, ROOT.TGraph):
 			root_histogram.SetName(name)
 			root_histogram.SetTitle("")
 
-		if "prof" not in option.lower() and histo_type not in self.binning_determined:
-			self.binning_determined.append(histo_type)
+		if "prof" not in option.lower() and binning_identifier not in self.binning_determined:
+			self.binning_determined.append(binning_identifier)
 		return tree, root_histogram
 
 
