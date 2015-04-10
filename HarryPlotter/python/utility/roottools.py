@@ -424,16 +424,22 @@ class RootTools(object):
 			binning = RootTools.get_binning(tmp_root_histogram, 0)
 			if not RootTools.rebinning_possible(binning, complexRebinning[0]):
 				log.warning("Rebinning in X leads to splitting/adding bins! Make sure you know what you are doing!")
+				log.debug("Old binning in X: " + RootTools.binning_formatted(binning))
+				log.debug("New binning in X: " + RootTools.binning_formatted(complexRebinning[0]))
 			sparse_tmp_root_histogram.GetAxis(0).Set(len(binning)-1, binning)
 			if tmp_root_histogram.GetDimension() > 1:
 				binning = RootTools.get_binning(tmp_root_histogram, 1)
 				if not RootTools.rebinning_possible(binning, complexRebinning[1]):
 					log.warning("Rebinning in Y leads to splitting/adding bins! Make sure you know what you are doing!")
+					log.debug("Old binning in Y: " + RootTools.binning_formatted(binning))
+					log.debug("New binning in Y: " + RootTools.binning_formatted(complexRebinning[1]))
 				sparse_tmp_root_histogram.GetAxis(1).Set(len(binning)-1, binning)
 			if tmp_root_histogram.GetDimension() > 2:
 				binning = RootTools.get_binning(tmp_root_histogram, 2)
-				if not RootTools.rebinning_possible(binning, complexRebinning[1]):
+				if not RootTools.rebinning_possible(binning, complexRebinning[2]):
 					log.warning("Rebinning in Z leads to splitting/adding bins! Make sure you know what you are doing!")
+					log.debug("Old binning in Z: " + RootTools.binning_formatted(binning))
+					log.debug("New binning in Z: " + RootTools.binning_formatted(complexRebinning[2]))
 				sparse_tmp_root_histogram.GetAxis(2).Set(len(binning)-1, binning)
 		
 			# retrieve rebinned histogram
@@ -468,6 +474,20 @@ class RootTools(object):
 		elif axisNumber == 2:
 			axis = root_histogram.GetZaxis()
 		return array.array("d", [axis.GetBinLowEdge(binIndex) for binIndex in xrange(1, axis.GetNbins()+2)])
+	
+	@staticmethod
+	def binning_formatted(binning):
+		if len(set([str(upper-lower) for lower, upper in zip(binning[:-1], binning[1:])])) == 1:
+			return "({n_bins}: [{lower}, {upper}])".format(
+					n_bins=len(binning)-1,
+					lower=binning[0],
+					upper=binning[-1]
+			)
+		else:
+			return "({n_bins}: {binning})".format(
+					n_bins=len(binning)-1,
+					binning=str(list(binning))
+			)
 	
 	@staticmethod
 	def rebinning_possible(src_bin_edges, dst_bin_edges):

@@ -15,19 +15,6 @@ ROOT.gErrorIgnoreLevel = ROOT.kError
 
 import Artus.HarryPlotter.utility.roottools as roottools
 
-def easy_binning(binning):
-	if len(set([str(upper-lower) for lower, upper in zip(binning[:-1], binning[1:])])) == 1:
-		return "({n_bins}: [{lower}, {upper}])".format(
-				n_bins=len(binning)-1,
-				lower=binning[0],
-				upper=binning[-1]
-		)
-	else:
-		return "({n_bins}: {binning})".format(
-				n_bins=len(binning)-1,
-				binning=str(list(binning))
-		)
-
 
 if __name__ == "__main__":
 	
@@ -47,18 +34,18 @@ if __name__ == "__main__":
 			if histogram.GetDimension() == 1:
 				log.info("%s: %s" % (
 						path,
-						easy_binning(roottools.RootTools.get_binning(histogram, 0))
+						roottools.RootTool.binning_formatted(roottools.RootTools.get_binning(histogram, 0))
 				))
 			elif histogram.GetDimension() == 2:
 				log.info("%s: %s x %s" % (
 						path,
-						easy_binning(roottools.RootTools.get_binning(histogram, 0)),
-						easy_binning(roottools.RootTools.get_binning(histogram, 1))
+						roottools.RootTool.binning_formatted(roottools.RootTools.get_binning(histogram, 0)),
+						roottools.RootTool.binning_formatted(roottools.RootTools.get_binning(histogram, 1))
 				))
 			else:
 				log.info("%s: %s x %s x %s" % (
 						path,
-						easy_binning(roottools.RootTools.get_binning(histogram, 0)),
-						easy_binning(roottools.RootTools.get_binning(histogram, 1)),
-						easy_binning(roottools.RootTools.get_binning(histogram, 2))
+						roottools.RootTool.binning_formatted(roottools.RootTools.get_binning(histogram, 0)),
+						roottools.RootTool.binning_formatted(roottools.RootTools.get_binning(histogram, 1)),
+						roottools.RootTool.binning_formatted(roottools.RootTools.get_binning(histogram, 2))
 				))
