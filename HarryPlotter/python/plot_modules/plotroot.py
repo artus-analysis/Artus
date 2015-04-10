@@ -220,8 +220,8 @@ class PlotRoot(plotbase.PlotBase):
 			
 			# axis labels
 			if subplot:
-				if (not plotData.plotdict["x_subplot_label"] is None) and (plotData.plotdict["x_subplot_label"] != ""):
-					root_object.GetXaxis().SetTitle(plotData.plotdict["x_subplot_label"])
+				if (not plotData.plotdict["x_label"] is None) and (plotData.plotdict["x_label"] != ""):
+					root_object.GetXaxis().SetTitle(plotData.plotdict["x_label"])
 				if (not plotData.plotdict["y_subplot_label"] is None) and (plotData.plotdict["y_subplot_label"] != ""):
 					root_object.GetYaxis().SetTitle(plotData.plotdict["y_subplot_label"])
 				#if (not plotData.plotdict["z_subplot_label"] is None) and (plotData.plotdict["z_subplot_label"] != ""):
@@ -347,8 +347,8 @@ class PlotRoot(plotbase.PlotBase):
 				self.subplot_axes_histogram.SetMaximum(self.z_sub_max)
 			
 			# axis labels
-			if (not plotData.plotdict["x_subplot_label"] is None) and (plotData.plotdict["x_subplot_label"] != ""):
-				self.subplot_axes_histogram.GetXaxis().SetTitle(plotData.plotdict["x_subplot_label"])
+			if (not plotData.plotdict["x_label"] is None) and (plotData.plotdict["x_label"] != ""):
+				self.subplot_axes_histogram.GetXaxis().SetTitle(plotData.plotdict["x_label"])
 			if (not plotData.plotdict["y_subplot_label"] is None) and (plotData.plotdict["y_subplot_label"] != ""):
 				self.subplot_axes_histogram.GetYaxis().SetTitle(plotData.plotdict["y_subplot_label"])
 			#if (self.max_sub_dim > 2) and (not plotData.plotdict["z_subplot_label"] is None) and (plotData.plotdict["z_subplot_label"] != ""):
