@@ -9,6 +9,7 @@ log = logging.getLogger(__name__)
 
 import datetime
 import hashlib
+import numpy
 import os
 import pprint
 import re
@@ -373,17 +374,14 @@ class PlotBase(processor.Processor):
 				y_max = root_object.GetMaximum()
 		elif isinstance(root_object, ROOT.TGraph):
 			# TODO: treat error bars
-			x_min = root_object.GetXaxis().GetXmin()
-			x_max = root_object.GetXaxis().GetXmax()
-			if not isinstance(root_object, ROOT.TGraph2D):
-				y_min = root_object.GetMinimum()
-				y_max = root_object.GetMaximum()
-			else:
+			x_min = min(numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetX()))
+			x_max = max(numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetX()))
+			y_min = min(numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetY()))
+			y_max = max(numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetY()))
+			if isinstance(root_object, ROOT.TGraph2D):
 				max_dim = 3
-				y_min = root_object.GetYaxis().GetXmin()
-				y_max = root_object.GetYaxis().GetXmax()
-				z_min = root_object.GetMinimum()
-				z_max = root_object.GetMaximum()
+				z_min = min(numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetZ()))
+				z_max = max(numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetZ()))
 		else:
 			log.warning("Retrieving the plot limits is not yet implemented for objects of type %s!." % str(type(root_object)))
 		return x_min, x_max, y_min, y_max, z_min, z_max, max_dim
