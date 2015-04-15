@@ -40,7 +40,9 @@ class MplPlotContainer(plotdata.PlotContainer):
 			legend = legend_ax.legend(*self.axes[0].get_legend_handles_labels(), loc='center')
 
 	def save(self, filename):
-		self.fig.savefig(filename)
+		# use bbox tight and pad to not have labels cropped
+		# TODO should we use fixed bbox values?
+		self.fig.savefig(filename, bbox_inches='tight', pad_inches=0.1)
 		if self.save_legend != False:
 			legend_filename = os.path.join(os.path.dirname(filename), self.save_legend+os.path.splitext(filename)[-1])
 			self.legend_fig.savefig(
