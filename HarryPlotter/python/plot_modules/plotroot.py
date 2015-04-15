@@ -135,8 +135,9 @@ class PlotRoot(plotbase.PlotBase):
 					fill_style = 3003
 			
 			if legend_marker is None:
-				# TODO: better defaults
-				legend_marker = "FLP"
+				# TODO: implement defaults here
+				#legend_marker = "FLP"
+				pass
 			
 			plotData.plotdict["line_widths"][index] = line_width
 			plotData.plotdict["markers"][index] = marker
@@ -503,8 +504,18 @@ class PlotRoot(plotbase.PlotBase):
 				if subplot == True:
 					# TODO handle possible subplot legends
 					continue
+				root_object = plotData.plotdict["root_objects"][nick]
+				if legend_marker is None:
+					# TODO: defaults should be defined in prepare_args function
+					legend_marker = "FLP"
+					if isinstance(root_object, ROOT.TH1):
+						legend_marker = "F"
+					elif isinstance(root_object, ROOT.TGraph):
+						legend_marker = "LP"
+					elif isinstance(root_object, ROOT.TF1):
+						legend_marker = "L"
 				if (not label is None) and (label != ""):
-					self.legend.AddEntry(plotData.plotdict["root_objects"][nick], label, legend_marker)
+					self.legend.AddEntry(root_object, label, legend_marker)
 			self.legend.Draw()
 	
 	def add_texts(self, plotData):
