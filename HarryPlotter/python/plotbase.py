@@ -13,7 +13,6 @@ import numpy
 import os
 import pprint
 import re
-import subprocess
 import sys
 
 import ROOT
@@ -405,24 +404,3 @@ class PlotBase(processor.Processor):
 			result_max = max(max_1, max_2)
 		
 		return result_min, result_max
-
-
-# these html templates are needed to create the web galleries
-htmlTemplate = """<!DOCTYPE html>
-<html>
-<head>
-<style type="text/css">
-div { float:left; }
-pre { display: inline; padding: 3px 7px; font-size: 16px; background-color: #F5F5F5; border: 1px solid rgba(0, 0, 0, 0.15); border-radius: 4px; }
-h3 { color: #888; font-size: 16px; }
-</style>
-</head>
-<body>
-<h1>Plot overview</h1>
-<p>A <a href=".">file list</a> is also available and all plots can be downloaded using</p>
-<p><code>wget -r -l 1 %s</code></p>
-%s
-</body>
-</html>
-"""
-htmlTemplatePlot = """<div><h3>%s</h3><a href="%s" title="%s"><img src="%s" height="400"></a></div>\n"""
