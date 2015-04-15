@@ -236,7 +236,7 @@ class PlotMpl(plotbase.PlotBase):
 		ax = plotData.plot.axes[0]
 		ax.grid(plotData.plotdict["grid"])
 		# set axis labels
-		if plotData.plotdict['subplot_nicks'] != []:
+		if plotData.plotdict['subplot_nicks'] == []:
 			ax.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]), position=(1., 0.), va='top', ha='right')
 		ax.set_ylabel(self.nicelabels.get_nice_label(plotData.plotdict["y_label"]), position=(0., 1.), va='top', ha='right')
 
@@ -317,7 +317,7 @@ class PlotMpl(plotbase.PlotBase):
 		super(PlotMpl, self).add_labels(plotData)
 
 		#iterate over all axis objects
-		for ax in plotData.plot.axes:
+		for ax in [plotData.plot.axes[0]]:
 
 			if plotData.plotdict["title"]:
 				ax.set_title(plotData.plotdict["title"], fontsize=18)
