@@ -36,7 +36,7 @@ class InputFile(inputbase.InputBase):
 			paths_before_globbing = []
 			files = []
 			for file_arg in file_args.split():
-				paths_before_globbing.append(os.path.join(directory, file_arg) if directory else file_arg)
+				paths_before_globbing.append(os.path.expandvars(os.path.join(directory, file_arg) if directory else file_arg))
 				files.extend(glob.glob(paths_before_globbing[-1]))
 			if len(files) == 0:
 				log.error("Input argument %d (%s) does not contain any existing files!" % (index, ", ".join(paths_before_globbing)))
