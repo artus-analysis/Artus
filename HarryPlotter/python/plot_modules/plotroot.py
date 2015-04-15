@@ -74,13 +74,15 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Line width of plots line. [Default: %(default)s]")
 		self.formatting_options.add_argument("--legend", type=float, nargs="*", default=None,
 		                                     help="Legend position. The four arguments define the rectangle (x1 y1 x2 y2) for the legend. Without (or with too few) arguments, the default values from [0.6, 0.6, 0.9, 0.9] are used. [Default: %(default)s]")
+		self.formatting_options.add_argument("--legend-markers", type=str, nargs="+",
+		                                     help="Draw options for legend entries.")
 		
 	def prepare_args(self, parser, plotData):
 		super(PlotRoot, self).prepare_args(parser, plotData)
 		
 		self.prepare_list_args(
 				plotData,
-				["nicks", "colors", "labels", "markers", "marker_styles", "marker_sizes", "line_styles", "line_widths", "x_errors", "y_errors", "stacks", "fill_styles"],
+				["nicks", "colors", "labels", "markers", "marker_styles", "marker_sizes", "line_styles", "line_widths", "x_errors", "y_errors", "legend_markers", "fill_styles"],
 				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]
 		))
 		
@@ -105,12 +107,13 @@ class PlotRoot(plotbase.PlotBase):
 				plotData.plotdict["colors"][index] = colors
 		
 		# defaults for markers
-		for index, (line_width, marker, marker_style, fill_style, stack) in enumerate(zip(
+		for index, (line_width, marker, marker_style, fill_style, stack, legend_marker) in enumerate(zip(
 				plotData.plotdict["line_widths"],
 				plotData.plotdict["markers"],
 				plotData.plotdict["marker_styles"],
 				plotData.plotdict["fill_styles"],
-				plotData.plotdict["stacks"]
+				plotData.plotdict["stacks"],
+				plotData.plotdict["legend_markers"],
 		)):
 			if marker is None:
 				if index == 0:
@@ -131,10 +134,15 @@ class PlotRoot(plotbase.PlotBase):
 					marker_style = 0
 					fill_style = 3003
 			
+			if legend_marker is None:
+				# TODO: better defaults
+				legend_marker = "FLP"
+			
 			plotData.plotdict["line_widths"][index] = line_width
 			plotData.plotdict["markers"][index] = marker
 			plotData.plotdict["marker_styles"][index] = marker_style
 			plotData.plotdict["fill_styles"][index] = fill_style
+			plotData.plotdict["legend_markers"][index] = legend_marker
 		
 		# defaults for legend position
 		if not plotData.plotdict["legend"] is None:
@@ -486,26 +494,17 @@ class PlotRoot(plotbase.PlotBase):
 			self.legend = ROOT.TLegend(*transformed_legend_pos)
 			self.legend.SetNColumns(plotData.plotdict["legend_cols"])
 			self.legend.SetColumnSeparation(0.1)
-			for nick, subplot, marker, fill_style, label in zip(
-					plotData.plotdict["nicks"],
+			for subplot, nick, label, legend_marker in zip(
 					plotData.plotdict["subplots"],
-					plotData.plotdict["markers"],
-					plotData.plotdict["fill_styles"],
-					plotData.plotdict["labels"]
+					plotData.plotdict["nicks"],
+					plotData.plotdict["labels"],
+					plotData.plotdict["legend_markers"],
 			):
 				if subplot == True:
 					# TODO handle possible subplot legends
 					continue
-				root_object = plotData.plotdict["root_objects"][nick]
 				if (not label is None) and (label != ""):
-					draw_option = "FLP"
-					if isinstance(root_object, ROOT.TH1):
-						draw_option = ("" if fill_style == 0 else "F") + ("EP" if "E" in marker.upper() else "") + "L"
-					elif isinstance(root_object, ROOT.TGraph):
-						draw_option = "ELP"
-					elif isinstance(root_object, ROOT.TF1):
-						draw_option = "L"
-					self.legend.AddEntry(root_object, label, draw_option)
+					self.legend.AddEntry(plotData.plotdict["root_objects"][nick], label, legend_marker)
 			self.legend.Draw()
 	
 	def add_texts(self, plotData):
