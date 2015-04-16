@@ -142,15 +142,18 @@ class RootTools(object):
 					log.critical("Cannot find histogram \"%s\" in file \"%s\"!" % (path_to_histogram, root_file_name))
 					sys.exit(1)
 				
-				tmp_root_histogram.SetDirectory(0)
 				if tmp_root_histogram is None:
 					log.error("Could not find histogram \"" + path_to_histogram + "\" in file \"" + root_file_name + "\"!")
 				else:
+					if isinstance(tmp_root_histogram, ROOT.TH1):
+						tmp_root_histogram.SetDirectory(0)
+					
 					if root_histogram == None:
 						root_histogram = tmp_root_histogram.Clone(name)
-						root_histogram.SetDirectory(0)
 					else:
 						root_histogram.Add(tmp_root_histogram)
+					
+					if isinstance(root_histogram, ROOT.TH1):
 						root_histogram.SetDirectory(0)
 			
 			if root_file:
