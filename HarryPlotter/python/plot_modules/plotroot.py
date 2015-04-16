@@ -398,8 +398,7 @@ class PlotRoot(plotbase.PlotBase):
 		
 		# setting for Z axis
 		for root_object in plotData.plotdict["root_objects"].values():
-			palette = root_object.GetListOfFunctions().FindObject("palette")
-			if palette != None:
+			if (not isinstance(root_object, ROOT.TF1)) and (root_object.GetListOfFunctions().FindObject("palette") != None):
 				palette.SetTitleOffset(1.5)
 				palette.SetTitleSize(root_object.GetYaxis().GetTitleSize())
 		
@@ -449,7 +448,7 @@ class PlotRoot(plotbase.PlotBase):
 			
 			self.subplot_axes_histogram.GetYaxis().SetNdivisions(5, 0, 0)
 		
-		if all([root_object.GetListOfFunctions().FindObject("palette") == None for root_object in plotData.plotdict["root_objects"].values()]):
+		if all([isinstance(root_object, ROOT.TF1) or (root_object.GetListOfFunctions().FindObject("palette") == None) for root_object in plotData.plotdict["root_objects"].values()]):
 			plotData.plot.plot_pad.SetRightMargin(self.plot_pad_right_margin)
 			if not plotData.plot.subplot_pad is None:
 				plotData.plot.subplot_pad.SetRightMargin(self.plot_pad_right_margin)
@@ -553,7 +552,10 @@ class PlotRoot(plotbase.PlotBase):
 			dataset_title += (("" if dataset_title == "" else ", ") + ("+".join([str(int(energy)) for energy in plotData.plotdict["energies"]])) + " TeV")
 		if dataset_title != "":
 			x_dataset_title = 0.95
-			if any([plotData.plotdict["root_objects"][nick].GetListOfFunctions().FindObject("palette") != None for nick in plotData.plotdict["nicks"]]):
+			if all([
+					(not isinstance(root_object, ROOT.TF1)) and (root_object.GetListOfFunctions().FindObject("palette") != None)
+					for root_object in plotData.plotdict["root_objects"].values()
+			]):
 				x_dataset_title = 0.75
 			dataset = self.text_box.AddText(x_dataset_title, 0.94, dataset_title)
 			dataset.SetTextAlign(31)
