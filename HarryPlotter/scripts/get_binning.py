@@ -34,18 +34,18 @@ if __name__ == "__main__":
 			if histogram.GetDimension() == 1:
 				log.info("%s: %s" % (
 						path,
-						roottools.RootTool.binning_formatted(roottools.RootTools.get_binning(histogram, 0))
+						roottools.RootTools.binning_formatted(roottools.RootTools.get_binning(histogram, 0))
 				))
 			elif histogram.GetDimension() == 2:
 				log.info("%s: %s x %s" % (
 						path,
-						roottools.RootTool.binning_formatted(roottools.RootTools.get_binning(histogram, 0)),
-						roottools.RootTool.binning_formatted(roottools.RootTools.get_binning(histogram, 1))
+						roottools.RootTools.binning_formatted(roottools.RootTools.get_binning(histogram, 0)),
+						roottools.RootTools.binning_formatted(roottools.RootTools.get_binning(histogram, 1))
 				))
 			else:
 				log.info("%s: %s x %s x %s" % (
 						path,
-						roottools.RootTool.binning_formatted(roottools.RootTools.get_binning(histogram, 0)),
-						roottools.RootTool.binning_formatted(roottools.RootTools.get_binning(histogram, 1)),
-						roottools.RootTool.binning_formatted(roottools.RootTools.get_binning(histogram, 2))
+						roottools.RootTools.binning_formatted(roottools.RootTools.get_binning(histogram, 0)),
+						roottools.RootTools.binning_formatted(roottools.RootTools.get_binning(histogram, 1)),
+						roottools.RootTools.binning_formatted(roottools.RootTools.get_binning(histogram, 2))
 				))
