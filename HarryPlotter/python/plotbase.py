@@ -384,6 +384,18 @@ class PlotBase(processor.Processor):
 				max_dim = 3
 				z_min = min(numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetZ()))
 				z_max = max(numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetZ()))
+		elif isinstance(root_object, ROOT.TF1):
+			x_min = root_object.GetXmin()
+			x_max = root_object.GetXmax()
+			if isinstance(root_object, ROOT.TF2):
+				max_dim = 3
+				y_min = root_object.GetYmin()
+				y_max = root_object.GetYmax()
+				z_min = root_object.GetMinimum()
+				z_max = root_object.GetMaximum()
+			else:
+				y_min = root_object.GetMinimum()
+				y_max = root_object.GetMaximum()
 		else:
 			log.warning("Retrieving the plot limits is not yet implemented for objects of type %s!." % str(type(root_object)))
 		return x_min, x_max, y_min, y_max, z_min, z_max, max_dim
