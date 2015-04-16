@@ -57,21 +57,24 @@ class InputBase(processor.Processor):
 		# merging objects with same nicks
 		for nick, root_objects in plotData.plotdict["root_objects"].iteritems():
 			if isinstance(root_objects, collections.Iterable) and not isinstance(root_objects, ROOT.TObject):
-				merged_object = None
-				for root_object in root_objects:
-					if isinstance(root_object, ROOT.TH1):
-						if merged_object is None:
-							merged_object = root_object
+				if len(root_objects) == 1:
+					plotData.plotdict["root_objects"][nick] = root_objects[0]
+				else:
+					merged_object = None
+					for root_object in root_objects:
+						if isinstance(root_object, ROOT.TH1):
+							if merged_object is None:
+								merged_object = root_object
+							else:
+								merged_object.Add(root_object)
+						elif isinstance(root_object, ROOT.TGraph):
+							if merged_object is None:
+								merged_object = root_object
+							else:
+								log.warning("Merging not yet implemented for TGraph objects!")
 						else:
-							merged_object.Add(root_object)
-					elif isinstance(root_object, ROOT.TGraph):
-						if merged_object is None:
-							merged_object = root_object
-						else:
-							log.warning("Merging not yet implemented for TGraph objects!")
-					else:
-						log.warning("Merging not yet implemented for objects of type %s!" % str(type(root_object)))
-				plotData.plotdict["root_objects"][nick] = merged_object
+							log.warning("Merging not yet implemented for objects of type %s!" % str(type(root_object)))
+					plotData.plotdict["root_objects"][nick] = merged_object
 		
 		# remove all nick name copies
 		tmp_nicks = []
