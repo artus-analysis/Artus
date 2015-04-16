@@ -414,12 +414,22 @@ class PlotRoot(plotbase.PlotBase):
 		x_lims = plotData.plotdict["x_lims"] if not plotData.plotdict["x_lims"] is None else [self.x_min, self.x_max]
 		y_lims = plotData.plotdict["y_lims"] if not plotData.plotdict["y_lims"] is None else [self.y_min, self.y_max]
 		z_lims = plotData.plotdict["z_lims"] if not plotData.plotdict["z_lims"] is None else [self.z_min, self.z_max]
-		#PlotRoot._set_axis_limits(self.axes_histogram, x_lims, y_lims, z_lims)
 		
-		if not self.subplot_axes_histogram is None:
-			y_subplot_lims = plotData.plotdict["y_subplot_lims"] if not plotData.plotdict["y_subplot_lims"] is None else [self.y_sub_min, self.y_sub_max]
-			z_subplot_lims = [self.z_sub_min, self.z_sub_max] # TODO: z-lims for possible 3D subplots
-			#PlotRoot._set_axis_limits(self.subplot_axes_histogram, x_lims, y_subplot_lims, z_subplot_lims)
+		y_subplot_lims = plotData.plotdict["y_subplot_lims"] if not plotData.plotdict["y_subplot_lims"] is None else [self.y_sub_min, self.y_sub_max]
+		z_subplot_lims = [self.z_sub_min, self.z_sub_max] # TODO: z-lims for possible 3D subplots
+		
+		for nick, subplot, marker in zip(
+				plotData.plotdict["nicks"],
+				plotData.plotdict["subplots"],
+				plotData.plotdict["markers"]
+		):
+			root_object == plotData.plotdict["root_objects"][nick]
+			if subplot:
+				PlotRoot._set_axis_limits(root_object, self.max_dim, x_lims, y_subplot_lims, z_subplot_lims)
+			else:
+				PlotRoot._set_axis_limits(root_object, self.max_dim, x_lims, y_lims, z_lims)
+			if isinstance(root_object, ROOT.TH1) and "Z" in marker.upper():
+				root_object.SetContour(50)
 		
 		if not self.subplot_axes_histogram is None:
 			self.axes_histogram.GetXaxis().SetLabelSize(0)
@@ -549,31 +559,22 @@ class PlotRoot(plotbase.PlotBase):
 		self.text_box.Draw()
 	
 	@staticmethod
-	def _get_dimension(root_object):
-		dimension = 2
-		if isinstance(root_object, ROOT.TH1):
-			dimension = root_object.GetDimension()
-		elif isinstance(root_object, ROOT.TGraph2D):
-			dimension = 3
-		elif isinstance(root_object, ROOT.TGraph):
-			dimension = 2
-		else:
-			log.warning("Retrieving the dimension of the plot is not yet implemented for objects of type %s!. Assume 2D plot." % str(type(axes_histogram)))
-		return dimension
-	
-	@staticmethod
-	def _set_axis_limits(root_object, x_lims=None, y_lims=None, z_lims=None):
-		dimension = PlotRoot._get_dimension(root_object)
-		
+	def _set_axis_limits(root_object, max_dim, x_lims=None, y_lims=None, z_lims=None):
+		""" not needed here due to axis histogram
 		if not x_lims is None:
 			root_object.GetXaxis().SetRangeUser(*x_lims)
 			root_object.GetXaxis().SetLimits(*x_lims)
 		
-		if (dimension > 1) and (not y_lims is None):
+		if (max_dim > 1) and (not y_lims is None):
 			root_object.GetYaxis().SetRangeUser(*y_lims)
 			root_object.GetYaxis().SetLimits(*y_lims)
+		"""
 		
-		if (dimension > 2) and (not z_lims is None):
-			root_object.GetZaxis().SetRangeUser(*y_lims)
-			root_object.GetZaxis().SetLimits(*y_lims)
+		if (max_dim > 2) and (not z_lims is None):
+			root_object.GetZaxis().SetRangeUser(*z_lims)
+			root_object.GetZaxis().SetLimits(*z_lims)
+			#palette = root_object.GetListOfFunctions().FindObject("palette")
+			#if palette != None:
+			#	palette.GetAxis().SetRangeUser(*z_lims)
+			#	palette.GetAxis().SetLimits(*z_lims)
 
