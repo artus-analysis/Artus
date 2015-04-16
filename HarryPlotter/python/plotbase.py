@@ -226,6 +226,9 @@ class PlotBase(processor.Processor):
 				plotData.plotdict["texts_x"] = []
 				plotData.plotdict["texts_y"] = []
 
+		if plotData.plotdict["legend"] is "None":
+			plotData.plotdict["legend"] = None
+
 	def run(self, plotData):
 		super(PlotBase, self).run(plotData)
 		
