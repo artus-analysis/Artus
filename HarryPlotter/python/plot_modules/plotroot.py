@@ -552,7 +552,10 @@ class PlotRoot(plotbase.PlotBase):
 		if not plotData.plotdict["energies"] is None:
 			dataset_title += (("" if dataset_title == "" else ", ") + ("+".join([str(int(energy)) for energy in plotData.plotdict["energies"]])) + " TeV")
 		if dataset_title != "":
-			dataset = self.text_box.AddText(0.95, 0.94, dataset_title)
+			x_dataset_title = 0.95
+			if any([plotData.plotdict["root_objects"][nick].GetListOfFunctions().FindObject("palette") != None for nick in plotData.plotdict["nicks"]]):
+				x_dataset_title = 0.75
+			dataset = self.text_box.AddText(x_dataset_title, 0.94, dataset_title)
 			dataset.SetTextAlign(31)
 			dataset.SetTextSize(0.03)
 		
