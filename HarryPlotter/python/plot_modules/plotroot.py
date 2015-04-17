@@ -342,7 +342,7 @@ class PlotRoot(plotbase.PlotBase):
 			if (self.max_dim > 2) and (not plotData.plotdict["z_label"] is None) and (plotData.plotdict["z_label"] != ""):
 				self.axes_histogram.GetZaxis().SetTitle(plotData.plotdict["z_label"])
 			
-			self.axes_histogram.Draw()
+			self.axes_histogram.Draw("AXIS")
 		
 		if plotData.plot.subplot_pad:
 			plotData.plot.subplot_pad.cd()
@@ -363,7 +363,7 @@ class PlotRoot(plotbase.PlotBase):
 			#if (self.max_sub_dim > 2) and (not plotData.plotdict["z_subplot_label"] is None) and (plotData.plotdict["z_subplot_label"] != ""):
 			#	self.subplot_axes_histogram.GetZaxis().SetTitle(plotData.plotdict["z_subplot_label"])
 			
-			self.subplot_axes_histogram.Draw()
+			self.subplot_axes_histogram.Draw("AXIS")
 		
 		for nick, subplot, marker, colors in zip(
 				plotData.plotdict["nicks"],
