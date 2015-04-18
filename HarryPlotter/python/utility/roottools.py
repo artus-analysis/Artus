@@ -401,7 +401,7 @@ class RootTools(object):
 		if simpleRebinning[1] and tmp_root_histogram.GetDimension() > 1:
 			tmp_root_histogram.RebinY(simpleRebinning[1])
 		if simpleRebinning[2] and tmp_root_histogram.GetDimension() > 2:
-			tmp_root_histogram.RebinY(simpleRebinning[2])
+			tmp_root_histogram.RebinZ(simpleRebinning[2])
 	
 		# complex rebinning (non-constant bin widths)
 		rebinned_root_histogram = tmp_root_histogram.Clone(name)
