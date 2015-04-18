@@ -450,16 +450,16 @@ class RootTools(object):
 			if rebinned_root_histogram.GetDimension() > 2:
 				rebinned_root_histogram = sparse_rebinned_root_histogram.Projection(0, 1, 2)
 			elif rebinned_root_histogram.GetDimension() > 1:
-				rebinned_root_histogram = sparse_rebinned_root_histogram.Projection(0, 1)
+				rebinned_root_histogram = sparse_rebinned_root_histogram.Projection(1, 0)
 			else:
 				rebinned_root_histogram = sparse_rebinned_root_histogram.Projection(0)
-		
+			
 			rebinned_root_histogram.GetXaxis().Set(len(complexRebinning[0])-1, complexRebinning[0])
 			rebinned_root_histogram.GetYaxis().Set(len(complexRebinning[1])-1, complexRebinning[1])
 			rebinned_root_histogram.GetZaxis().Set(len(complexRebinning[2])-1, complexRebinning[2])
 		
 			rebinned_root_histogram.SetName(name)
-	
+		
 		return rebinned_root_histogram
 
 
