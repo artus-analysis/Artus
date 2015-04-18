@@ -77,6 +77,10 @@ class PlotMpl(plotbase.PlotBase):
 
 	def modify_argument_parser(self, parser, args):
 		super(PlotMpl, self).modify_argument_parser(parser, args)
+		self.formatting_options.add_argument("--x-errors", type='bool', nargs="+",
+		                                     help="Show x errors for the nicks. [Default: True for first plot, False otherwise]")
+		self.formatting_options.add_argument("--y-errors", type='bool', nargs="+",
+		                                     help="Show y errors for the plots. [Default: True for first plot, False otherwise]")
 		self.formatting_options.add_argument("--edgecolors", nargs="+",
 		                                     help="Edgecolor to be passed to plot objects.")
 		self.formatting_options.add_argument("--step", default=False, type='bool', nargs="+",
@@ -94,7 +98,18 @@ class PlotMpl(plotbase.PlotBase):
 	def prepare_args(self, parser, plotData):
 		super(PlotMpl, self).prepare_args(parser, plotData)
 
-		self.prepare_list_args(plotData, ["nicks", "step", "zorder", "edgecolors"])
+		self.prepare_list_args(
+				plotData,
+				["nicks", "colors", "labels", "markers", "line_styles", "x_errors", "y_errors", "step", "zorder", "edgecolors"],
+				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]
+		))
+
+		for index, error in enumerate(plotData.plotdict["x_errors"]):
+			if error is None:
+				plotData.plotdict["x_errors"][index] = True if index == 0 else False
+		for index, error in enumerate(plotData.plotdict["y_errors"]):
+			if error is None:
+				plotData.plotdict["y_errors"][index] = True if index == 0 else False
 
 		# if plotData.plotdict['subplot_nicks'] != []):
 			# self.set_default_ratio_colors(plotData)

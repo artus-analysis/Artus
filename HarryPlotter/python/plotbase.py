@@ -88,10 +88,6 @@ class PlotBase(processor.Processor):
 		                                     help="Style for the plots.")
 		self.formatting_options.add_argument("--line-styles", nargs="+",
                                              help="Line style of plots line. [Default: %(default)s]")
-		self.formatting_options.add_argument("--x-errors", type='bool', nargs="+",
-		                                     help="Show x errors for the nicks. [Default: True for first plot, False otherwise]")
-		self.formatting_options.add_argument("--y-errors", type='bool', nargs="+",
-		                                     help="Show y errors for the plots. [Default: True for first plot, False otherwise]")
 		self.formatting_options.add_argument("--legend", type=str, nargs="?",
 		                                     help="Location of the legend. Use 'None' to not set any legend")
 		self.formatting_options.add_argument("--legend-cols", type=int, default=1,
@@ -170,17 +166,12 @@ class PlotBase(processor.Processor):
 		# formatting options
 		if plotData.plotdict["labels"] == None or all([i == None for i in plotData.plotdict["labels"]]):
 			plotData.plotdict["labels"] = plotData.plotdict["nicks"]
-		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles", "x_errors", "y_errors"],
-				n_items = max([len(plotData.plotdict[l]) for l in ["nicks"] if plotData.plotdict[l] is not None]))
+		
+		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles"],
+				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]))
 		# stacks are expanded by appending None's
 		plotData.plotdict["stacks"] = plotData.plotdict["stacks"]+[None]*(len(plotData.plotdict["nicks"])-len(plotData.plotdict["stacks"]))
 		
-		for index, error in enumerate(plotData.plotdict["x_errors"]):
-			if error is None:
-				plotData.plotdict["x_errors"][index] = True if index == 0 else False
-		for index, error in enumerate(plotData.plotdict["y_errors"]):
-			if error is None:
-				plotData.plotdict["y_errors"][index] = True if index == 0 else False
 		if plotData.plotdict["www"] != None:
 			plotData.plotdict["output_dir"] = "/".join(['websync', datetime.date.today().strftime('%Y_%m_%d'), (plotData.plotdict["www"] or "")])
 		# create output directory if not exisiting
