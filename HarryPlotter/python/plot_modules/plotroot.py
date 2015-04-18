@@ -398,9 +398,11 @@ class PlotRoot(plotbase.PlotBase):
 		
 		# setting for Z axis
 		for root_object in plotData.plotdict["root_objects"].values():
-			if (not isinstance(root_object, ROOT.TF1)) and (root_object.GetListOfFunctions().FindObject("palette") != None):
-				palette.SetTitleOffset(1.5)
-				palette.SetTitleSize(root_object.GetYaxis().GetTitleSize())
+			if not isinstance(root_object, ROOT.TF1):
+				palette = root_object.GetListOfFunctions().FindObject("palette")
+				if palette != None:
+					palette.SetTitleOffset(1.5)
+					palette.SetTitleSize(root_object.GetYaxis().GetTitleSize())
 		
 		# logaritmic axis
 		if plotData.plotdict["x_log"]: plotData.plot.plot_pad.SetLogx()
