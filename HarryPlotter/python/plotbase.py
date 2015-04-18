@@ -88,6 +88,8 @@ class PlotBase(processor.Processor):
 		                                     help="Style for the plots.")
 		self.formatting_options.add_argument("--line-styles", nargs="+",
                                              help="Line style of plots line. [Default: %(default)s]")
+		self.formatting_options.add_argument("--line-widths", nargs="+", type=int,
+		                                     help="Line width of plots line. [Default: %(default)s]")
 		self.formatting_options.add_argument("--legend", type=str, nargs="?",
 		                                     help="Location of the legend. Use 'None' to not set any legend")
 		self.formatting_options.add_argument("--legend-cols", type=int, default=1,
@@ -167,7 +169,7 @@ class PlotBase(processor.Processor):
 		if plotData.plotdict["labels"] == None or all([i == None for i in plotData.plotdict["labels"]]):
 			plotData.plotdict["labels"] = plotData.plotdict["nicks"]
 		
-		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles"],
+		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles", "line_widths"],
 				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]))
 		# stacks are expanded by appending None's
 		plotData.plotdict["stacks"] = plotData.plotdict["stacks"]+[None]*(len(plotData.plotdict["nicks"])-len(plotData.plotdict["stacks"]))
