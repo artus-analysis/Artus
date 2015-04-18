@@ -458,8 +458,30 @@ class RootTools(object):
 			rebinned_root_histogram.GetYaxis().Set(len(complexRebinning[1])-1, complexRebinning[1])
 			rebinned_root_histogram.GetZaxis().Set(len(complexRebinning[2])-1, complexRebinning[2])
 		
-			rebinned_root_histogram.SetName(name)
+		# projections in case of only one bin for certain axes
+		# TODO: this code might need a config option to be switched off by default
+		if rebinned_root_histogram.GetDimension() == 2:
+			if rebinned_root_histogram.GetNbinsY() == 1:
+				rebinned_root_histogram = rebinned_root_histogram.ProjectionX()
+			elif rebinned_root_histogram.GetNbinsX() == 1:
+				rebinned_root_histogram = rebinned_root_histogram.ProjectionY()
+		elif rebinned_root_histogram.GetDimension() == 3:
+			if rebinned_root_histogram.GetNbinsZ() == 1:
+				if rebinned_root_histogram.GetNbinsY() == 1:
+					rebinned_root_histogram = rebinned_root_histogram.ProjectionX()
+				elif rebinned_root_histogram.GetNbinsX() == 1:
+					rebinned_root_histogram = rebinned_root_histogram.ProjectionY()
+				else:
+					rebinned_root_histogram = rebinned_root_histogram.Project3D("yx")
+			elif rebinned_root_histogram.GetNbinsY() == 1:
+				if rebinned_root_histogram.GetNbinsX() == 1:
+					rebinned_root_histogram = rebinned_root_histogram.ProjectionZ()
+				else:
+					rebinned_root_histogram = rebinned_root_histogram.Project3D("zx")
+			elif rebinned_root_histogram.GetNbinsX() == 1:
+				rebinned_root_histogram = rebinned_root_histogram.Project3D("zy")
 		
+		rebinned_root_histogram.SetName(name)
 		return rebinned_root_histogram
 
 
