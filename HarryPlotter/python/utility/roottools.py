@@ -450,6 +450,7 @@ class RootTools(object):
 			if rebinned_root_histogram.GetDimension() > 2:
 				rebinned_root_histogram = sparse_rebinned_root_histogram.Projection(0, 1, 2)
 			elif rebinned_root_histogram.GetDimension() > 1:
+				# non-intuitive swapping of the arguments: see https://root.cern.ch/root/html/THnSparse.html#THnSparse:Projection@1
 				rebinned_root_histogram = sparse_rebinned_root_histogram.Projection(1, 0)
 			else:
 				rebinned_root_histogram = sparse_rebinned_root_histogram.Projection(0)
