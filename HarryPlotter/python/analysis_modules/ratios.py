@@ -5,9 +5,9 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import hashlib
-import ROOT
 
 import Artus.HarryPlotter.analysisbase as analysisbase
+import Artus.HarryPlotter.utility.roottools as roottools
 
 
 class Ratio(analysisbase.AnalysisBase):
@@ -80,16 +80,8 @@ class Ratio(analysisbase.AnalysisBase):
 					denominator_histogram.SetDirectory(0)
 			
 			# calculate ratio
-			if all([isinstance(h, ROOT.TProfile) for h in [numerator_histogram, denominator_histogram]]):
-				# convert TProfiles to TH1 because ROOT can't divide TProfils correctly
-				# https://root.cern.ch/phpBB3/viewtopic.php?f=3&t=2101
-				# TODO is there a better way to do this?
-				denom_th1 = denominator_histogram.ProjectionX()
-				ratio_histogram = numerator_histogram.ProjectionX()
-				ratio_histogram.Divide(denom_th1)
-			else:
-				ratio_histogram = numerator_histogram
-				ratio_histogram.Divide(denominator_histogram)
+			ratio_histogram = roottools.RootTools.to_histogram(numerator_histogram)
+			ratio_histogram.Divide(roottools.RootTools.to_histogram(denominator_histogram))
 			ratio_histogram.SetDirectory(0)
 			ratio_histogram.SetTitle("")
 			plotData.plotdict["root_objects"][ratio_result_nick] = ratio_histogram
