@@ -87,7 +87,8 @@ class HarryPlotter(object):
 			log.info("Creating {:d} plots in {:d} processes".format(len(harry_args), n_processes))
 			pool = Pool(processes=n_processes)
 			results = pool.map_async(pool_plot, zip([self]*len(harry_args), harry_args))
-			tmp_output_filenames, tmp_failed_plots = zip(*([result for result in results.get() if not result is None and result != (None,)]))
+			# 9999999 is needed for KeyboardInterrupt to work: http://stackoverflow.com/questions/1408356/keyboard-interrupts-with-pythons-multiprocessing-pool
+			tmp_output_filenames, tmp_failed_plots = zip(*([result for result in results.get(9999999) if not result is None and result != (None,)]))
 			output_filenames = [output_filename for output_filename in tmp_output_filenames if not output_filename is None]
 			failed_plots = [failed_plot for failed_plot in tmp_failed_plots if not failed_plot is None]
 		
