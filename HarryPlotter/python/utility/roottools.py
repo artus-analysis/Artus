@@ -545,7 +545,9 @@ class RootTools(object):
 
 	@staticmethod
 	def to_histogram(root_object):
-		if isinstance(root_object, ROOT.TH1):
+		if isinstance(root_object, ROOT.TProfile):
+			return root_object.ProjectionX()
+		elif isinstance(root_object, ROOT.TH1):
 			return root_object
 		elif isinstance(root_object, ROOT.TGraph):
 			if isinstance(root_object, ROOT.TGraph2D):
