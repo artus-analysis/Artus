@@ -115,9 +115,9 @@ class PlotMpl(plotbase.PlotBase):
 			# self.set_default_ratio_colors(plotData)
 
 		# defaults for markers
-		for index, marker in enumerate(plotData.plotdict["markers"]):
+		for index, (marker, nick) in enumerate(zip(plotData.plotdict["markers"], plotData.plotdict["nicks"])):
 			if marker is None:
-				if (index == 0 and len(plotData.plotdict["markers"]) > 1)  or plotData.plotdict['subplots'][index]:
+				if (index == 0 and len(plotData.plotdict["markers"]) > 1) or plotData.plotdict['subplots'][index] or 'ratio' in nick:
 					plotData.plotdict["markers"][index] = "."
 				else:
 					plotData.plotdict["markers"][index] = "fill"
