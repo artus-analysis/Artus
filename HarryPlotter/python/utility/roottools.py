@@ -463,23 +463,26 @@ class RootTools(object):
 		# TODO: this code might need a config option to be switched off by default
 		if rebinned_root_histogram.GetDimension() == 2:
 			if rebinned_root_histogram.GetNbinsY() == 1:
-				rebinned_root_histogram = rebinned_root_histogram.ProjectionX()
+				rebinned_root_histogram = rebinned_root_histogram.ProjectionX("_px", 1, 1)
 			elif rebinned_root_histogram.GetNbinsX() == 1:
-				rebinned_root_histogram = rebinned_root_histogram.ProjectionY()
+				rebinned_root_histogram = rebinned_root_histogram.ProjectionY("_py", 1, 1)
 		elif rebinned_root_histogram.GetDimension() == 3:
 			if rebinned_root_histogram.GetNbinsZ() == 1:
 				if rebinned_root_histogram.GetNbinsY() == 1:
-					rebinned_root_histogram = rebinned_root_histogram.ProjectionX()
+					rebinned_root_histogram = rebinned_root_histogram.ProjectionX("_px", 1, 1, 1, 1)
 				elif rebinned_root_histogram.GetNbinsX() == 1:
-					rebinned_root_histogram = rebinned_root_histogram.ProjectionY()
+					rebinned_root_histogram = rebinned_root_histogram.ProjectionY("_py", 1, 1, 1, 1)
 				else:
+					rebinned_root_histogram.GetZaxis().SetRange(1, 1)
 					rebinned_root_histogram = rebinned_root_histogram.Project3D("yx")
 			elif rebinned_root_histogram.GetNbinsY() == 1:
 				if rebinned_root_histogram.GetNbinsX() == 1:
-					rebinned_root_histogram = rebinned_root_histogram.ProjectionZ()
+					rebinned_root_histogram = rebinned_root_histogram.ProjectionZ("_pz", 1, 1, 1, 1)
 				else:
+					rebinned_root_histogram.GetYaxis().SetRange(1, 1)
 					rebinned_root_histogram = rebinned_root_histogram.Project3D("zx")
 			elif rebinned_root_histogram.GetNbinsX() == 1:
+				rebinned_root_histogram.GetXaxis().SetRange(1, 1)
 				rebinned_root_histogram = rebinned_root_histogram.Project3D("zy")
 		
 		rebinned_root_histogram.SetName(name)
