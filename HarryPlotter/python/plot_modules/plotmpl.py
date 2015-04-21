@@ -368,7 +368,7 @@ class PlotMpl(plotbase.PlotBase):
 	def add_texts(self, plotData):
 		super(PlotMpl, self).add_texts(plotData)
 		if plotData.plotdict["texts"] != [None]:
-			for ax in plotData.plot.axes:
+			for ax in [plotData.plot.axes[0]]:
 				for x, y, text in zip(plotData.plotdict['texts_x'], plotData.plotdict['texts_y'], plotData.plotdict['texts']):
 					ax.text(x, y, text, transform=ax.transAxes, fontsize=18, ha="left", va="top")
 
