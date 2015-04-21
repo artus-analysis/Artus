@@ -637,6 +637,7 @@ class RootTools(object):
 	
 	@staticmethod
 	def get_global_bins(root_histogram):
+		assert isinstance(root_histogram, ROOT.TH1)
 		global_bins = []
 		for x_bin in xrange(1, root_histogram.GetNbinsX()+1):
 			for y_bin in xrange(1, root_histogram.GetNbinsY()+1):
@@ -671,8 +672,8 @@ class RootTools(object):
 			elif (axis == 2) and isinstance(root_object, ROOT.TH3):
 				return root_object.GetZaxis().GetXmin(), root_object.GetZaxis().GetXmax()
 			else:
-				values = [root_histogram.GetBinContent(global_bin) for global_bin in RootTools.get_global_bins(root_histogram)]
-				errors = [root_histogram.GetBinError(global_bin) for global_bin in RootTools.get_global_bins(root_histogram)]
+				values = [root_object.GetBinContent(global_bin) for global_bin in RootTools.get_global_bins(root_object)]
+				errors = [root_object.GetBinError(global_bin) for global_bin in RootTools.get_global_bins(root_object)]
 				return RootTools.get_min(values, errors, lower_threshold), RootTools.get_max(values, errors, upper_threshold)
 		
 		elif isinstance(root_object, ROOT.TGraph):
