@@ -31,7 +31,7 @@ class InputInteractive(inputbase.InputBase):
 	def prepare_args(self, parser, plotData):
 		super(InputInteractive, self).prepare_args(parser, plotData)
 		
-		self.prepare_list_args(plotData, ["nicks", "x_errors", "y_errors", "z_errors"])
+		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "scale_factors", "x_errors", "y_errors", "z_errors"])
 		
 		# parse values/errors to plot
 		values_keys = ["x_expressions", "y_expressions", "z_expressions"]
@@ -43,7 +43,8 @@ class InputInteractive(inputbase.InputBase):
 		# set default errors to 0.0
 		for index in xrange(len(plotData.plotdict["nicks"])):
 			for values_key, errors_key in zip(values_keys, errors_keys):
-				plotData.plotdict[errors_key][index] = len(plotData.plotdict[values_key][index]) * [0.0]
+				if len(plotData.plotdict[errors_key][index]) == 0:
+					plotData.plotdict[errors_key][index] = len(plotData.plotdict[values_key][index]) * [0.0]
 		
 		# check that x/y/z values/errors for one plot have the same size
 		for index in xrange(len(plotData.plotdict["nicks"])):
@@ -52,8 +53,11 @@ class InputInteractive(inputbase.InputBase):
 				if len(plotData.plotdict[key][index]) > 0:
 					n_values_per_plot.append(len(plotData.plotdict[key][index]))
 			assert(len(set(n_values_per_plot)) == 1)
+		
+		inputbase.InputBase.prepare_nicks(plotData)
 	
 	def run(self, plotData):
+		plotData.plotdict["nicks"]
 		
 		for nick, x_values, x_errors, y_values, y_errors, z_values, z_errors in zip(plotData.plotdict["nicks"],
 				plotData.plotdict["x_expressions"], plotData.plotdict["x_errors"], plotData.plotdict["y_expressions"],
