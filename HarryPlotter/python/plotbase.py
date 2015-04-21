@@ -344,53 +344,10 @@ class PlotBase(processor.Processor):
 
 	@staticmethod
 	def get_plot_lims(root_object):
-		x_min = None
-		x_max = None
-		y_min = None
-		y_max = None
-		z_min = None
-		z_max = None
-		max_dim = 2
-		if isinstance(root_object, ROOT.TH1):
-			x_min = root_object.GetXaxis().GetXmin()
-			x_max = root_object.GetXaxis().GetXmax()
-			if isinstance(root_object, ROOT.TH2):
-				max_dim = 3
-				y_min = root_object.GetYaxis().GetXmin()
-				y_max = root_object.GetYaxis().GetXmax()
-				if root_object.GetDimension() == 2:
-					z_min = root_object.GetMinimum()
-					z_max = root_object.GetMaximum()
-				else:
-					z_min = root_object.GetZaxis().GetXmin()
-					z_max = root_object.GetZaxis().GetXmax()
-			else:
-				y_min = root_object.GetMinimum()
-				y_max = root_object.GetMaximum()
-		elif isinstance(root_object, ROOT.TGraph):
-			# TODO: treat error bars
-			x_min = min(numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetX()))
-			x_max = max(numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetX()))
-			y_min = min(numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetY()))
-			y_max = max(numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetY()))
-			if isinstance(root_object, ROOT.TGraph2D):
-				max_dim = 3
-				z_min = min(numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetZ()))
-				z_max = max(numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetZ()))
-		elif isinstance(root_object, ROOT.TF1):
-			x_min = root_object.GetXmin()
-			x_max = root_object.GetXmax()
-			if isinstance(root_object, ROOT.TF2):
-				max_dim = 3
-				y_min = root_object.GetYmin()
-				y_max = root_object.GetYmax()
-				z_min = root_object.GetMinimum()
-				z_max = root_object.GetMaximum()
-			else:
-				y_min = root_object.GetMinimum()
-				y_max = root_object.GetMaximum()
-		else:
-			log.warning("Retrieving the plot limits is not yet implemented for objects of type %s!." % str(type(root_object)))
+		max_dim = roottools.RootTools.get_dimension(root_object)
+		x_min, x_max = roottools.RootTools.get_min_max(root_object, 0)
+		y_min, y_max = roottools.RootTools.get_min_max(root_object, 1)
+		z_min, z_max = roottools.RootTools.get_min_max(root_object, 2) if max_dim > 2 else (None, None)
 		return x_min, x_max, y_min, y_max, z_min, z_max, max_dim
 	
 	@staticmethod

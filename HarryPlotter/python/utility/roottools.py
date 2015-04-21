@@ -634,4 +634,109 @@ class RootTools(object):
 			else:
 				elements.append((key, os.path.join(path, key.GetName())))
 		return elements
+	
+	@staticmethod
+	def get_global_bins(root_histogram):
+		global_bins = []
+		for x_bin in xrange(1, root_histogram.GetNbinsX()+1):
+			for y_bin in xrange(1, root_histogram.GetNbinsY()+1):
+				for z_bin in xrange(1, root_histogram.GetNbinsZ()+1):
+					global_bins.append(root_histogram.GetBin(x_bin, y_bin, z_bin))
+		return global_bins
+
+	@staticmethod
+	def get_dimension(root_object):
+		if isinstance(root_object, ROOT.TH1):
+			return root_object.GetDimension()+1
+		elif isinstance(root_object, ROOT.TGraph):
+			return (3 if isinstance(root_object, ROOT.TGraph2D) else 2)
+		elif isinstance(root_object, ROOT.TF1):
+			if isinstance(root_object, ROOT.TF3):
+				return 4
+			elif isinstance(root_object, ROOT.TF2):
+				return 3
+			else:
+				return 2
+		else:
+			log.warning("Retrieving the plot dimension is not yet implemented for objects of type %s!." % str(type(root_object)))
+			return 2
+
+	@staticmethod
+	def get_min_max(root_object, axis=0, lower_threshold=None, upper_threshold=None):
+		if isinstance(root_object, ROOT.TH1):
+			if axis == 0:
+				return root_object.GetXaxis().GetXmin(), root_object.GetXaxis().GetXmax()
+			elif (axis == 1) and isinstance(root_object, ROOT.TH2):
+				return root_object.GetYaxis().GetXmin(), root_object.GetYaxis().GetXmax()
+			elif (axis == 2) and isinstance(root_object, ROOT.TH3):
+				return root_object.GetZaxis().GetXmin(), root_object.GetZaxis().GetXmax()
+			else:
+				values = [root_histogram.GetBinContent(global_bin) for global_bin in RootTools.get_global_bins(root_histogram)]
+				errors = [root_histogram.GetBinError(global_bin) for global_bin in RootTools.get_global_bins(root_histogram)]
+				return RootTools.get_min(values, errors, lower_threshold), RootTools.get_max(values, errors, upper_threshold)
+		
+		elif isinstance(root_object, ROOT.TGraph):
+			values = None
+			errors_low = None
+			errors_high = None
+			if axis == 0:
+				values = numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetX())
+				if isinstance(root_object, ROOT.TGraphAsymmErrors) or isinstance(root_object, ROOT.TGraphBentErrors):
+					errors_low = numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetEXlow())
+					errors_high = numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetEXhigh())
+				elif isinstance(root_object, ROOT.TGraphErrors):
+					errors_low = numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetEX())
+					errors_high = errors_low
+				else:
+					errors_low = [0.0] * len(values)
+					errors_high = errors_low
+			if axis == 1:
+				values = numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetY())
+				if isinstance(root_object, ROOT.TGraphAsymmErrors) or isinstance(root_object, ROOT.TGraphBentErrors):
+					errors_low = numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetEYlow())
+					errors_high = numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetEYhigh())
+				elif isinstance(root_object, ROOT.TGraphErrors):
+					errors_low = numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetEY())
+					errors_high = errors_low
+				else:
+					errors_low = [0.0] * len(values)
+					errors_high = errors_low
+			if (axis == 2) and isinstance(root_object, ROOT.TGraph2D):
+				values = numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetZ())
+				if isinstance(root_object, ROOT.TGraph2DErrors):
+					errors_low = numpy.ndarray(root_object.GetN(), dtype=numpy.double, buffer=root_object.GetEZ())
+					errors_high = errors_low
+				else:
+					errors_low = [0.0] * len(values)
+					errors_high = errors_low
+			if values is None:
+				return None, None
+			else:
+				return RootTools.get_min(values, errors_low, lower_threshold), RootTools.get_max(values, errors_high, upper_threshold)
+		
+		elif isinstance(root_object, ROOT.TF1):
+			if axis == 0:
+				return root_object.GetXmin(), root_object.GetXmax()
+			elif (axis == 1) and isinstance(root_object, ROOT.TF2):
+				return root_object.GetYmin(), root_object.GetYmax()
+			else:
+				return root_object.GetMinimum(), root_object.GetMaximum()
+		
+		else:
+			log.warning("Retrieving the plot limits is not yet implemented for objects of type %s!." % str(type(root_object)))
+			return None, None
+	
+	@staticmethod
+	def get_min(values, errors, lower_threshold=None):
+		combined_values = [v-e for v, e in zip(values, errors)]
+		if not lower_threshold is None:
+			combined_values = [v for v in combined_values if v > lower_threshold]
+		return min(combined_values)
+	
+	@staticmethod
+	def get_max(values, errors, upper_threshold=None):
+		combined_values = [v+e for v, e in zip(values, errors)]
+		if not upper_threshold is None:
+			combined_values = [v for v in combined_values if v < upper_threshold]
+		return max(combined_values)
 
