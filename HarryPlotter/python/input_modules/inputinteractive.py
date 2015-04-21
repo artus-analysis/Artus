@@ -57,7 +57,6 @@ class InputInteractive(inputbase.InputBase):
 		inputbase.InputBase.prepare_nicks(plotData)
 	
 	def run(self, plotData):
-		plotData.plotdict["nicks"]
 		
 		for nick, x_values, x_errors, y_values, y_errors, z_values, z_errors in zip(plotData.plotdict["nicks"],
 				plotData.plotdict["x_expressions"], plotData.plotdict["x_errors"], plotData.plotdict["y_expressions"],
