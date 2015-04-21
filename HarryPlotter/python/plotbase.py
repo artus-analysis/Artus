@@ -151,19 +151,19 @@ class PlotBase(processor.Processor):
 		self.select_histograms(plotData)
 		
 		# construct labels from x/y/z expressions if not specified by user
-		for labelKey, expressionKey in zip(["x_label", "y_label", "z_label"],
+		for label_key, expression_key in zip(["x_label", "y_label", "z_label"],
 		                                   ["x_expressions", "y_expressions", "z_expressions"]):
-			if plotData.plotdict[labelKey] == None:
+			if plotData.plotdict[label_key] == None:
 				if plotData.plotdict["input_module"] == "InputInteractive":
-					plotData.plotdict[labelKey] = str(labelKey[1])
+					plotData.plotdict[label_key] = str(label_key[1])
 				else:
-					plotData.plotdict[labelKey] = reduce(lambda a, b: "%s, %s" % (str(a), str(b)), set(plotData.plotdict[expressionKey]))
-			if plotData.plotdict[labelKey] == None: plotData.plotdict[labelKey] = ""
+					plotData.plotdict[label_key] = reduce(lambda a, b: "%s, %s" % (str(a), str(b)), set(plotData.plotdict[expression_key]))
+			if plotData.plotdict[label_key] == None: plotData.plotdict[label_key] = ""
 			# if y/z-expressions exist, we dont want the axis to be labelled "Events"
-			if (list(set(plotData.plotdict[expressionKey])) != [None]
-						and len(list(set(plotData.plotdict[expressionKey]))) == 1
-						and plotData.plotdict[labelKey] == "Events"):
-				plotData.plotdict[labelKey] = list(set(plotData.plotdict[expressionKey]))[0]
+			if (list(set(str(plotData.plotdict[expression_key]))) != [None]
+						and len(list(set(str(plotData.plotdict[expression_key])))) == 1
+						and plotData.plotdict[label_key] == "Events"):
+				plotData.plotdict[label_key] = list(set(str(plotData.plotdict[expression_key])))[0]
 
 		# formatting options
 		if plotData.plotdict["labels"] == None or all([i == None for i in plotData.plotdict["labels"]]):
