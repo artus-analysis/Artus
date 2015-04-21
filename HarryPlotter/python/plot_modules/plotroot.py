@@ -50,6 +50,8 @@ class PlotRoot(plotbase.PlotBase):
 		
 		self.axes_histogram = None
 		self.subplot_axes_histogram = None
+		
+		self.subplot_line_graphs = []
 	
 	def modify_argument_parser(self, parser, args):
 		super(PlotRoot, self).modify_argument_parser(parser, args)
@@ -79,6 +81,8 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Legend position. The four arguments define the rectangle (x1 y1 x2 y2) for the legend. Without (or with too few) arguments, the default values from [0.6, 0.6, 0.9, 0.9] are used. [Default: %(default)s]")
 		self.formatting_options.add_argument("--legend-markers", type=str, nargs="+",
 		                                     help="Draw options for legend entries.")
+		self.formatting_options.add_argument("--subplot-lines", nargs="+", type=float,
+		                                     help="Place auxiliary lines on the subplot at given y-values.")
 		
 	def prepare_args(self, parser, plotData):
 		super(PlotRoot, self).prepare_args(parser, plotData)
@@ -152,6 +156,9 @@ class PlotRoot(plotbase.PlotBase):
 		if not plotData.plotdict["legend"] is None:
 			plotData.plotdict["legend"] += [0.6, 0.6, 0.9, 0.9][len(plotData.plotdict["legend"]):]
 			plotData.plotdict["legend"] = plotData.plotdict["legend"][:4]
+		
+		if plotData.plotdict["subplot_lines"] is None:
+			plotData.plotdict["subplot_lines"] = []
 	
 	def run(self, plotData):
 		super(PlotRoot, self).run(plotData)
@@ -192,7 +199,19 @@ class PlotRoot(plotbase.PlotBase):
 			
 			plot_pad.SetBottomMargin(0.02)
 			subplot_pad.SetBottomMargin(0.35)
-		
+			
+			for index, y_line in enumerate(plotData.plotdict["subplot_lines"]):
+				line_graph = ROOT.TGraph(2)
+				line_graph.SetName("line_graph_"+str(index)+"_"+str(y_line))
+				line_graph.SetTitle()
+				
+				line_graph.SetPoint(0, -sys.float_info.max, y_line)
+				line_graph.SetPoint(1, +sys.float_info.max, y_line)
+				
+				line_graph.SetLineColor(ROOT.TColor.GetColor("#808080"))
+				line_graph.SetLineWidth(3)
+				line_graph.SetLineStyle(2)
+				self.subplot_line_graphs.append(line_graph)
 		else:
 			plot_pad = canvas
 		
@@ -383,6 +402,9 @@ class PlotRoot(plotbase.PlotBase):
 			#	self.subplot_axes_histogram.GetZaxis().SetTitle(plotData.plotdict["z_subplot_label"])
 			
 			self.subplot_axes_histogram.Draw("AXIS")
+			
+			for line_graph in self.subplot_line_graphs:
+				line_graph.Draw("L SAME")
 		
 		for nick, subplot, marker, colors in zip(
 				plotData.plotdict["nicks"],
