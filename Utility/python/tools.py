@@ -37,11 +37,15 @@ def matching_sublist(input_list, whitelist=[], blacklist=[]):
 	if len(whitelist) == 0:
 		whitelist_matches = copy.deepcopy(input_list)
 	else:
+		tmp_input_list = copy.deepcopy(input_list)
 		for regex in whitelist:
-			for item in input_list:
+			indices_to_remove = []
+			for index, item in enumerate(tmp_input_list):
 				if not re.search(regex, item) is None:
 					whitelist_matches.append(item)
-					continue
+					indices_to_remove.append(index)
+			for index in indices_to_remove[::-1]:
+				tmp_input_list.pop(index)
 	
 	output_list = []
 	if len(blacklist) == 0:
