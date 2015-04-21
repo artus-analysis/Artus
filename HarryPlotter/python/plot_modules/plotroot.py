@@ -54,6 +54,9 @@ class PlotRoot(plotbase.PlotBase):
 	def modify_argument_parser(self, parser, args):
 		super(PlotRoot, self).modify_argument_parser(parser, args)
 		
+		self.axis_options.add_argument("--sym-y-subplot-lims", nargs="?", type="bool", default=False, const=True,
+		                               help="Symmetric limits of a possible subplot. The parameters of --y-subplot-lims are taken as <center> <range/2>")
+		
 		self.formatting_options.add_argument("-C", "--colors", type=str, nargs="+",
 		                                     help="Colors for the plots. For each plot up to two colors (whitespace separated) can be specified, the first for lines and markers and the second for filled areas.")
 		self.formatting_options.add_argument("--colormap", nargs="?", type="bool", default=False, const=True,
@@ -300,15 +303,31 @@ class PlotRoot(plotbase.PlotBase):
 				self.z_max *= (1.1 if self.z_max > 0.0 else 0.9)
 		
 		# y subplot lims
-		if not plotData.plotdict["y_subplot_lims"] is None:
-			self.y_sub_min = plotData.plotdict["y_subplot_lims"][0]
-		elif not self.y_sub_min is None:
-			self.y_sub_min *= (0.9 if self.y_sub_min > 0.0 else 1.1)
+		if plotData.plotdict["sym_y_subplot_lims"]:
+			if not plotData.plotdict["y_subplot_lims"] is None and len(plotData.plotdict["y_subplot_lims"]) > 1:
+				self.y_sub_min = plotData.plotdict["y_subplot_lims"][0] - plotData.plotdict["y_subplot_lims"][1]
+				self.y_sub_max = plotData.plotdict["y_subplot_lims"][0] + plotData.plotdict["y_subplot_lims"][1]
+			else:
+				tmp_y_sum_min = self.y_sub_min * (0.9 if self.y_sub_min > 0.0 else 1.1)
+				tmp_y_sum_max = self.y_sub_max * (1.1 if self.y_sub_max > 0.0 else 0.9)
+				if not plotData.plotdict["y_subplot_lims"] is None:
+					center = plotData.plotdict["y_subplot_lims"][0]
+					width = max([abs(y - center) for y in [tmp_y_sum_min, tmp_y_sum_max]])
+					self.y_sub_min = center - width
+					self.y_sub_max = center + width
+				else:
+					self.y_sub_min = tmp_y_sum_min
+					self.y_sub_max = tmp_y_sum_max
+		else:
+			if not plotData.plotdict["y_subplot_lims"] is None:
+				self.y_sub_min = plotData.plotdict["y_subplot_lims"][0]
+			elif not self.y_sub_min is None:
+				self.y_sub_min *= (0.9 if self.y_sub_min > 0.0 else 1.1)
 		
-		if not plotData.plotdict["y_subplot_lims"] is None and len(plotData.plotdict["y_subplot_lims"]) > 1:
-			self.y_sub_max = plotData.plotdict["y_subplot_lims"][1]
-		elif not self.y_sub_max is None:
-			self.y_sub_max *= (1.1 if self.y_sub_max > 0.0 else 0.9)
+			if not plotData.plotdict["y_subplot_lims"] is None and len(plotData.plotdict["y_subplot_lims"]) > 1:
+				self.y_sub_max = plotData.plotdict["y_subplot_lims"][1]
+			elif not self.y_sub_max is None:
+				self.y_sub_max *= (1.1 if self.y_sub_max > 0.0 else 0.9)
 		
 		# z subplot lims
 		if not self.z_sub_min is None:
