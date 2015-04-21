@@ -311,7 +311,12 @@ class PlotBase(processor.Processor):
 		self.max_sub_dim = 2
 		
 		for nick, subplot in zip(plotData.plotdict["nicks"], plotData.plotdict["subplots"]):
-			plot_x_min, plot_x_max, plot_y_min, plot_y_max, plot_z_min, plot_z_max, max_dim = PlotBase.get_plot_lims(plotData.plotdict["root_objects"][nick])
+			plot_x_min, plot_x_max, plot_y_min, plot_y_max, plot_z_min, plot_z_max, max_dim = PlotBase.get_plot_lims(
+					plotData.plotdict["root_objects"][nick],
+					x_log=plotData.plotdict["x_log"],
+					y_log=plotData.plotdict["y_log"],
+					z_log=plotData.plotdict["z_log"]
+			)
 			
 			self.x_min, self.x_max = PlotBase.update_lims(self.x_min, self.x_max, plot_x_min, plot_x_max)
 			if subplot == True:
@@ -343,11 +348,23 @@ class PlotBase(processor.Processor):
 			pprint.pprint(plotData.plotdict)
 
 	@staticmethod
-	def get_plot_lims(root_object):
+	def get_plot_lims(root_object, x_log=False, y_log=False, z_log=False):
 		max_dim = roottools.RootTools.get_dimension(root_object)
+		
 		x_min, x_max = roottools.RootTools.get_min_max(root_object, 0)
+		if x_log and (x_min * x_max <= 0.0):
+			x_min, x_max = roottools.RootTools.get_min_max(root_object, 0, lower_threshold=0.0)
+		
 		y_min, y_max = roottools.RootTools.get_min_max(root_object, 1)
-		z_min, z_max = roottools.RootTools.get_min_max(root_object, 2) if max_dim > 2 else (None, None)
+		if y_log and (y_min * y_max <= 0.0):
+			y_min, y_max = roottools.RootTools.get_min_max(root_object, 1, lower_threshold=0.0)
+		
+		z_min, z_max = None, None
+		if max_dim > 2:
+			z_min, z_max = roottools.RootTools.get_min_max(root_object, 2)
+			if z_log and (z_min * z_max <= 0.0):
+				z_min, z_max = roottools.RootTools.get_min_max(root_object, 2, lower_threshold=0.0)
+		
 		return x_min, x_max, y_min, y_max, z_min, z_max, max_dim
 	
 	@staticmethod
