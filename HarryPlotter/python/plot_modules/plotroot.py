@@ -108,7 +108,7 @@ class PlotRoot(plotbase.PlotBase):
 				
 				for sub_index, color in enumerate(colors):
 					if color.startswith("k"):
-						color = getattr(ROOT, color)
+						color = eval("ROOT."+color)
 					elif color.startswith("#"):
 						color = ROOT.TColor.GetColor(color)
 					else:
