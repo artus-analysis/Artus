@@ -1,10 +1,14 @@
-#  -*- coding: utf-8 -*-
+
+# -*- coding: utf-8 -*-
+
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
+
 
 """
 	This module contains a dictionary with nice (LaTeX) labels.
 """
-
-
 class LabelsDict(object):
 	def __init__(self, latex_version="latex", additional_labels=None):
 		self.labels_dict = {}
