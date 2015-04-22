@@ -20,11 +20,14 @@ import ROOT
 import Artus.HarryPlotter.processor as processor
 import Artus.Utility.tools as tools
 import Artus.HarryPlotter.utility.roottools as roottools
+import Artus.HarryPlotter.utility.colors as colors
 
 class PlotBase(processor.Processor):
 	
 	def __init__(self):
 		super(PlotBase, self).__init__()
+		
+		self.predefined_colors = colors.ColorsDict(color_scheme="default")
 	
 	def modify_argument_parser(self, parser, args):
 		super(PlotBase, self).modify_argument_parser(parser, args)
@@ -173,6 +176,8 @@ class PlotBase(processor.Processor):
 				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]))
 		# stacks are expanded by appending None's
 		plotData.plotdict["stacks"] = plotData.plotdict["stacks"]+[None]*(len(plotData.plotdict["nicks"])-len(plotData.plotdict["stacks"]))
+		
+		plotData.plotdict["colors"] = [None if color is None else self.predefined_colors.get_predefined_color(color) for color in plotData.plotdict["colors"]]
 		
 		if plotData.plotdict["www"] != None:
 			plotData.plotdict["output_dir"] = "/".join(['websync', datetime.date.today().strftime('%Y_%m_%d'), (plotData.plotdict["www"] or "")])
