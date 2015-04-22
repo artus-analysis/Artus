@@ -8,6 +8,7 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import array
+import collections
 import copy
 import os
 import ROOT
@@ -17,7 +18,7 @@ import Artus.Utility.tools as tools
 
 import Artus.HarryPlotter.plotbase as plotbase
 import Artus.HarryPlotter.plotdata as plotdata
-import Artus.HarryPlotter.utility.extrafunctions as extrafunctions
+import Artus.HarryPlotter.utility.labels as labels
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
@@ -52,6 +53,8 @@ class PlotRoot(plotbase.PlotBase):
 		self.subplot_axes_histogram = None
 		
 		self.subplot_line_graphs = []
+		
+		self.nice_labels = labels.LabelsDict(latex_version="root")
 	
 	def modify_argument_parser(self, parser, args):
 		super(PlotRoot, self).modify_argument_parser(parser, args)
@@ -159,6 +162,12 @@ class PlotRoot(plotbase.PlotBase):
 		
 		if plotData.plotdict["subplot_lines"] is None:
 			plotData.plotdict["subplot_lines"] = []
+		
+		for key in ["labels", "x_label", "y_label", "z_label"]:
+			if isinstance(plotData.plotdict[key], basestring):
+				plotData.plotdict[key] = self.nice_labels.get_nice_label(plotData.plotdict[key])
+			elif isinstance(plotData.plotdict[key], collections.Iterable):
+				plotData.plotdict[key] = [self.nice_labels.get_nice_label(label) for label in plotData.plotdict[key]]
 	
 	def run(self, plotData):
 		super(PlotRoot, self).run(plotData)
