@@ -160,10 +160,10 @@ class PlotBase(processor.Processor):
 					plotData.plotdict[label_key] = reduce(lambda a, b: "%s, %s" % (str(a), str(b)), set(plotData.plotdict[expression_key]))
 			if plotData.plotdict[label_key] == None: plotData.plotdict[label_key] = ""
 			# if y/z-expressions exist, we dont want the axis to be labelled "Events"
-			if (list(set(str(plotData.plotdict[expression_key]))) != [None]
-						and len(list(set(str(plotData.plotdict[expression_key])))) == 1
+			if (list(set([str(x) for x in plotData.plotdict[expression_key]])) != [None]
+						and len(list(set([str(x) for x in plotData.plotdict[expression_key]]))) == 1
 						and plotData.plotdict[label_key] == "Events"):
-				plotData.plotdict[label_key] = list(set(str(plotData.plotdict[expression_key])))[0]
+				plotData.plotdict[label_key] = list(set([str(x) for x in plotData.plotdict[expression_key]]))[0]
 
 		# formatting options
 		if plotData.plotdict["labels"] == None or all([i == None for i in plotData.plotdict["labels"]]):
