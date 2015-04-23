@@ -100,7 +100,14 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 		if isinstance(branch_names, basestring):
 			branch_names = [branch_names]
 		events = []
-		for entry in pi.ProgressIterator(xrange(tree.GetEntries(selection)), description="Reading event numbers from tree"):
+
+		# get list of entry numbers which pass selection
+		entrylist_name = tree.GetName() + "entrylist"
+		tree.Draw(">>"+entrylist_name, selection)
+		root_entrylist = ROOT.gDirectory.Get(entrylist_name)
+		entrylist = [root_entrylist.GetEntry(i) for i in range(root_entrylist.GetN())]
+
+		for entry in pi.ProgressIterator(entrylist, description="Reading event numbers from tree"):
 			tree.GetEntry(entry)
 			event = []
 			for branch_name in branch_names:
