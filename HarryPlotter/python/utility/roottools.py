@@ -448,12 +448,12 @@ class RootTools(object):
 			# retrieve rebinned histogram
 			sparse_rebinned_root_histogram.RebinnedAdd(sparse_tmp_root_histogram)
 			if rebinned_root_histogram.GetDimension() > 2:
-				rebinned_root_histogram = sparse_rebinned_root_histogram.Projection(0, 1, 2)
+				rebinned_root_histogram = sparse_rebinned_root_histogram.Projection(0, 1, 2, "EO")
 			elif rebinned_root_histogram.GetDimension() > 1:
 				# non-intuitive swapping of the arguments: see https://root.cern.ch/root/html/THnSparse.html#THnSparse:Projection@1
-				rebinned_root_histogram = sparse_rebinned_root_histogram.Projection(1, 0)
+				rebinned_root_histogram = sparse_rebinned_root_histogram.Projection(1, 0, "EO")
 			else:
-				rebinned_root_histogram = sparse_rebinned_root_histogram.Projection(0)
+				rebinned_root_histogram = sparse_rebinned_root_histogram.Projection(0, "EO")
 			
 			rebinned_root_histogram.GetXaxis().Set(len(complexRebinning[0])-1, complexRebinning[0])
 			rebinned_root_histogram.GetYaxis().Set(len(complexRebinning[1])-1, complexRebinning[1])
@@ -463,27 +463,27 @@ class RootTools(object):
 		# TODO: this code might need a config option to be switched off by default
 		if rebinned_root_histogram.GetDimension() == 2:
 			if rebinned_root_histogram.GetNbinsY() == 1:
-				rebinned_root_histogram = rebinned_root_histogram.ProjectionX("_px", 1, 1)
+				rebinned_root_histogram = rebinned_root_histogram.ProjectionX("_px", 1, 1, "EO")
 			elif rebinned_root_histogram.GetNbinsX() == 1:
-				rebinned_root_histogram = rebinned_root_histogram.ProjectionY("_py", 1, 1)
+				rebinned_root_histogram = rebinned_root_histogram.ProjectionY("_py", 1, 1, "EO")
 		elif rebinned_root_histogram.GetDimension() == 3:
 			if rebinned_root_histogram.GetNbinsZ() == 1:
 				if rebinned_root_histogram.GetNbinsY() == 1:
-					rebinned_root_histogram = rebinned_root_histogram.ProjectionX("_px", 1, 1, 1, 1)
+					rebinned_root_histogram = rebinned_root_histogram.ProjectionX("_px", 1, 1, 1, 1, "EO")
 				elif rebinned_root_histogram.GetNbinsX() == 1:
-					rebinned_root_histogram = rebinned_root_histogram.ProjectionY("_py", 1, 1, 1, 1)
+					rebinned_root_histogram = rebinned_root_histogram.ProjectionY("_py", 1, 1, 1, 1, "EO")
 				else:
 					rebinned_root_histogram.GetZaxis().SetRange(1, 1)
-					rebinned_root_histogram = rebinned_root_histogram.Project3D("yx")
+					rebinned_root_histogram = rebinned_root_histogram.Project3D("yx", "EO")
 			elif rebinned_root_histogram.GetNbinsY() == 1:
 				if rebinned_root_histogram.GetNbinsX() == 1:
-					rebinned_root_histogram = rebinned_root_histogram.ProjectionZ("_pz", 1, 1, 1, 1)
+					rebinned_root_histogram = rebinned_root_histogram.ProjectionZ("_pz", 1, 1, 1, 1, "EO")
 				else:
 					rebinned_root_histogram.GetYaxis().SetRange(1, 1)
-					rebinned_root_histogram = rebinned_root_histogram.Project3D("zx")
+					rebinned_root_histogram = rebinned_root_histogram.Project3D("zx", "EO")
 			elif rebinned_root_histogram.GetNbinsX() == 1:
 				rebinned_root_histogram.GetXaxis().SetRange(1, 1)
-				rebinned_root_histogram = rebinned_root_histogram.Project3D("zy")
+				rebinned_root_histogram = rebinned_root_histogram.Project3D("zy", "EO")
 		
 		rebinned_root_histogram.SetName(name)
 		return rebinned_root_histogram
