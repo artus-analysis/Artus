@@ -163,7 +163,7 @@ class JsonDict(dict):
 					jsonStrings.append(str(rootFile.Get(namecycle).GetString()))
 			rootFile.Close()
 			if len(jsonStrings) == 0:
-				log.critical("Could not read \"%s\" from file \"%s\"!" % (JsonDict.PATH_TO_ROOT_CONFIG, rootFileName))
+				log.critical("Could not read \"%s\" from file \"%s\"!" % (JsonDict.PATH_TO_ROOT_CONFIG, fileName))
 				sys.exit(1)
 		else:
 			with open(fileName, "r") as jsonFile:
