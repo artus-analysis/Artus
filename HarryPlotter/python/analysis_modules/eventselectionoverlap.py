@@ -16,6 +16,7 @@ import Artus.Utility.jsonTools as jsonTools
 
 
 class EventSelectionOverlap(analysisbase.AnalysisBase):
+	"""EventSelectionOverlap: plot events only in input 1 / overlap / events only in input 2"""
 	def __init__(self):
 		super(EventSelectionOverlap, self).__init__()
 	
@@ -38,7 +39,8 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 		
 		# TODO
 		if plotData.plotdict.get("x_tick_labels") == parser.get_default("x_tick_labels"):
-			labels = filter(lambda label: label != None, plotData.plotdict.get("labels", plotData.plotdict["nicks"]))
+			labels_or_nicks = (plotData.plotdict["labels"] if plotData.plotdict["labels"] != None else plotData.plotdict["nicks"])
+			labels = filter(lambda label: label != None, labels_or_nicks)
 			plotData.plotdict["x_tick_labels"] = [
 				"Only " + labels[0],
 				"Intersection",
@@ -54,10 +56,9 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 				if index1 != index2 and len(plotData.plotdict["root_objects"]) == 0:
 
 					# Events in first ntuple
-					events1 = EventSelectionOverlap.get_events_set_from_tree(tree1, ["run", "lumi", "evt"])
-					
+					events1 = EventSelectionOverlap.get_events_set_from_tree(tree1, ["run", "lumi", "event"], plotData.plotdict['weights'][0])
 					# Events in second ntuple
-					events2 = EventSelectionOverlap.get_events_set_from_tree(tree2, ["run", "lumi", "evt"])
+					events2 = EventSelectionOverlap.get_events_set_from_tree(tree2, ["run", "lumi", "event"], plotData.plotdict['weights'][1])
 
 					events_only1 = list(events2.difference(events1))
 					events_intersection = list(events1.intersection(events2))
@@ -91,15 +92,19 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 					
 	
 	@staticmethod
-	def get_events_set_from_tree(tree, branch_names):
+	def get_events_set_from_tree(tree, branch_names, selection):
+		return set(EventSelectionOverlap.get_events_list_from_tree(tree, branch_names, selection))
+
+	@staticmethod
+	def get_events_list_from_tree(tree, branch_names, selection):
 		if isinstance(branch_names, basestring):
 			branch_names = [branch_names]
 		events = []
-		for entry in pi.ProgressIterator(xrange(tree.GetEntries()), description="Reading event numbers from tree"):
+		for entry in pi.ProgressIterator(xrange(tree.GetEntries(selection)), description="Reading event numbers from tree"):
 			tree.GetEntry(entry)
 			event = []
 			for branch_name in branch_names:
 				event.append(getattr(tree, branch_name))
 			events.append(tuple(event))
-		return set(events)
+		return events
 					
