@@ -323,6 +323,8 @@ class RootTools(object):
 		tree.SetCacheSize(256*1024*1024) # 256 MB
 		tree.AddBranchToCache("*", True)
 		
+		tree.SetName(str(hashlib.md5("".join(root_file_names))))
+		
 		# draw histogram
 		if root_histogram == None:
 			draw_option = option.replace("TGraphAsymmErrorsX", "").replace("TGraphAsymmErrorsY", "").replace("TGraphErrors", "").replace("TGraph", "")
