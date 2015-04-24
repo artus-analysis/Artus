@@ -61,34 +61,30 @@ class PlotData(object):
 				remote_dir = tools.get_environment_variable('HARRY_REMOTE_DIR')+'/%s/%s/' % (date, (self.plotdict["www"] if type(self.plotdict["www"])==str else ""))
 				remote_path = tools.get_environment_variable('HARRY_REMOTE_PATH') + '/%s' % remote_dir
 				url = tools.get_environment_variable('HARRY_URL') + "/%s/%s" % (remote_dir, overview_filename)
-				plots = sorted(os.listdir(self.plotdict["output_dir"]))
-				content = ""
-				n_plots_copied = 0
+				plots_for_gallery = [p for p in sorted(os.listdir(self.plotdict["output_dir"])) if (('.png' in p) or ('.pdf' in p))]
+				plots_to_copy = [os.path.basename(filename), overview_filename]
+				html_content = ""
 
 				log.info("Copying plots to webspace...")
 				# loop over plots, make gallery
-				for plot in [p for p in plots if (('.png' in p) or ('.pdf' in p))]:
-					log.debug("File %s will be copied" % plot)
+				for plot in [p for p in plots_for_gallery if (('.png' in p) or ('.pdf' in p))]:
 					# try to link to pdf file, if it exists
 					href = plot.replace('.png', '.pdf')
-					if href not in plots:
+					if href not in plots_for_gallery:
 						href = plot
 					title = plot.split('/')[-1][:-4].replace('_', ' ')
-					content += htmlTemplatePlot % (title, href, title, plot)
-					n_plots_copied += 1
+					html_content += htmlTemplatePlot % (title, href, title, plot)
 				with open(self.plotdict["output_dir"] + '/' + overview_filename, 'w') as f:
-					f.write(htmlTemplate % (url, content))
-				if os.path.basename(url) not in plots:
-					plots.append(os.path.basename(url))
+					f.write(htmlTemplate % (url, html_content))
 
 				# create remote dir, copy plots and overview file
 				create_dir_command = ['ssh', tools.get_environment_variable('HARRY_SSHPC'), 'mkdir -p', remote_path]
 				log.debug("\nIssueing mkdir command: " + " ".join(create_dir_command))
 				subprocess.call(create_dir_command)
-				rsync_command =['rsync', '-u'] + [os.path.join(self.plotdict["output_dir"], p) for p in plots] + ["%s:%s" % (tools.get_environment_variable('HARRY_SSHPC'), remote_path)]
+				rsync_command =['rsync', '-u'] + [os.path.join(self.plotdict["output_dir"], p) for p in plots_to_copy] + ["%s:%s" % (tools.get_environment_variable('HARRY_SSHPC'), remote_path)]
 				log.debug("\nIssueing rsync command: " + " ".join(rsync_command) + "\n")
 				subprocess.call(rsync_command)
-				log.info("Copied %d plot(s) to %s" % (n_plots_copied, url))
+				log.info("Copied {0}; see {1}".format(filename.split("/")[-1], url))
 
 			return self.plotdict["output_filenames"]
 
