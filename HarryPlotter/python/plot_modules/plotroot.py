@@ -474,7 +474,7 @@ class PlotRoot(plotbase.PlotBase):
 				plotData.plotdict["subplots"],
 				plotData.plotdict["markers"]
 		):
-			root_object == plotData.plotdict["root_objects"][nick]
+			root_object = plotData.plotdict["root_objects"][nick]
 			if subplot:
 				PlotRoot._set_axis_limits(root_object, self.max_dim, x_lims, y_subplot_lims, z_subplot_lims)
 			else:
