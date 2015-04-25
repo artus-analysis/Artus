@@ -534,7 +534,7 @@ class PlotRoot(plotbase.PlotBase):
 		):
 			root_object = plotData.plotdict["root_objects"][nick]
 			if subplot:
-				PlotRoot._set_axis_limits(root_object, self.max_dim, [self.x_min, self.x_max], [self.y_sum_min, self.y_sum_max], [self.z_sum_min, self.z_sum_max])
+				PlotRoot._set_axis_limits(root_object, self.max_dim, [self.x_min, self.x_max], [self.y_sub_min, self.y_sub_max], [self.z_sub_min, self.z_sub_max])
 			else:
 				PlotRoot._set_axis_limits(root_object, self.max_dim, [self.x_min, self.x_max], [self.y_min, self.y_max], [self.z_min, self.z_max])
 			if isinstance(root_object, ROOT.TH1) and "Z" in marker.upper():
