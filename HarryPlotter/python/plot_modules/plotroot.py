@@ -59,8 +59,22 @@ class PlotRoot(plotbase.PlotBase):
 	def modify_argument_parser(self, parser, args):
 		super(PlotRoot, self).modify_argument_parser(parser, args)
 		
+		self.axis_options.add_argument("--x-lims", type=float, nargs="+",
+		                               help="Lower and Upper limit for x-axis.")
+		self.axis_options.add_argument("--sym-x-lims", nargs="?", type="bool", default=False, const=True,
+		                               help="Symmetric x-axis limits of the plot. The parameters of --x-lims are taken as <center> <range/2>")
+		self.axis_options.add_argument("--y-lims", type=float, nargs="+",
+		                               help="Lower and Upper limit for y-axis.")
+		self.axis_options.add_argument("--sym-y-lims", nargs="?", type="bool", default=False, const=True,
+		                               help="Symmetric y-axis limits of the plot. The parameters of --y-lims are taken as <center> <range/2>")
+		self.axis_options.add_argument("--z-lims", type=float, nargs="+",
+		                               help="Lower and Upper limit for z-axis.")
+		self.axis_options.add_argument("--sym-z-lims", nargs="?", type="bool", default=False, const=True,
+		                               help="Symmetric z-axis limits of the plot. The parameters of --z-lims are taken as <center> <range/2>")
+		self.axis_options.add_argument("--y-subplot-lims", type=float, nargs=2,
+		                               help="Lower and Upper limit for y-axis of a possible subplot.")
 		self.axis_options.add_argument("--sym-y-subplot-lims", nargs="?", type="bool", default=False, const=True,
-		                               help="Symmetric limits of a possible subplot. The parameters of --y-subplot-lims are taken as <center> <range/2>")
+		                               help="Symmetric y-axis limits of a possible subplot. The parameters of --y-subplot-lims are taken as <center> <range/2>")
 		
 		self.formatting_options.add_argument("-C", "--colors", type=str, nargs="+",
 		                                     help="Colors for the plots. For each plot up to two colors (whitespace separated) can be specified, the first for lines and markers and the second for filled areas.")
@@ -291,44 +305,96 @@ class PlotRoot(plotbase.PlotBase):
 		super(PlotRoot, self).determine_plot_lims(plotData)
 		
 		# x lims
-		if not plotData.plotdict["x_lims"] is None:
-			self.x_min = plotData.plotdict["x_lims"][0]
-			if len(plotData.plotdict["x_lims"]) > 1:
-				self.x_max = plotData.plotdict["x_lims"][1]
+		if plotData.plotdict["sym_x_lims"] and (not plotData.plotdict["x_log"]):
+			if not plotData.plotdict["x_lims"] is None and len(plotData.plotdict["x_lims"]) > 1:
+				self.x_min = plotData.plotdict["x_lims"][0] - plotData.plotdict["x_lims"][1]
+				self.x_max = plotData.plotdict["x_lims"][0] + plotData.plotdict["x_lims"][1]
+			else:
+				if not plotData.plotdict["x_lims"] is None:
+					center = plotData.plotdict["x_lims"][0]
+					width = max([abs(x - center) for x in [self.x_min, self.x_max]])
+					self.x_min = center - width
+					self.x_max = center + width
+		else:
+			if plotData.plotdict["sym_x_lims"]:
+				log.warning("Symmetric limits are not yet implemented for logarithmic axes!")
+			
+			if not plotData.plotdict["x_lims"] is None:
+				self.x_min = plotData.plotdict["x_lims"][0]
+				if len(plotData.plotdict["x_lims"]) > 1:
+					self.x_max = plotData.plotdict["x_lims"][1]
 		
 		# y lims
-		if not plotData.plotdict["y_lims"] is None:
-			self.y_min = plotData.plotdict["y_lims"][0]
-		else:
-			if plotData.plotdict["y_log"]:
-				self.y_min *= (0.5 if self.y_min > 0.0 else 2.0)
+		if plotData.plotdict["sym_y_lims"] and (not plotData.plotdict["y_log"]):
+			if not plotData.plotdict["y_lims"] is None and len(plotData.plotdict["y_lims"]) > 1:
+				self.y_min = plotData.plotdict["y_lims"][0] - plotData.plotdict["y_lims"][1]
+				self.y_max = plotData.plotdict["y_lims"][0] + plotData.plotdict["y_lims"][1]
 			else:
-				self.y_min *= (0.9 if self.y_min > 0.0 else 1.1)
+				tmp_y_min = self.y_min * (0.9 if self.y_min > 0.0 else 1.1)
+				tmp_y_max = self.y_max * (1.1 if self.y_max > 0.0 else 0.9)
+				if not plotData.plotdict["y_lims"] is None:
+					center = plotData.plotdict["y_lims"][0]
+					width = max([abs(y - center) for y in [tmp_y_min, tmp_y_max]])
+					self.y_min = center - width
+					self.y_max = center + width
+				else:
+					self.y_min = tmp_y_min
+					self.y_max = tmp_y_max
+		else:
+			if plotData.plotdict["sym_y_lims"]:
+				log.warning("Symmetric limits are not yet implemented for logarithmic axes!")
+			
+			if not plotData.plotdict["y_lims"] is None:
+				self.y_min = plotData.plotdict["y_lims"][0]
+			else:
+				if plotData.plotdict["y_log"]:
+					self.y_min *= (0.5 if self.y_min > 0.0 else 2.0)
+				else:
+					self.y_min *= (0.9 if self.y_min > 0.0 else 1.1)
 		
-		if not plotData.plotdict["y_lims"] is None and len(plotData.plotdict["y_lims"]) > 1:
-			self.y_max = plotData.plotdict["y_lims"][1]
-		else:
-			if plotData.plotdict["y_log"]:
-				self.y_max *= (2.0 if self.y_max > 0.0 else 0.5)
+			if not plotData.plotdict["y_lims"] is None and len(plotData.plotdict["y_lims"]) > 1:
+				self.y_max = plotData.plotdict["y_lims"][1]
 			else:
-				self.y_max *= (1.1 if self.y_max > 0.0 else 0.9)
+				if plotData.plotdict["y_log"]:
+					self.y_max *= (2.0 if self.y_max > 0.0 else 0.5)
+				else:
+					self.y_max *= (1.1 if self.y_max > 0.0 else 0.9)
 		
 		# z lims
-		if not plotData.plotdict["z_lims"] is None:
-			self.z_min = plotData.plotdict["z_lims"][0]
-		elif not self.z_min is None:
-			if plotData.plotdict["z_log"]:
-				self.z_min *= (0.5 if self.z_min > 0.0 else 2.0)
+		if plotData.plotdict["sym_z_lims"] and (not plotData.plotdict["z_log"]):
+			if not plotData.plotdict["z_lims"] is None and len(plotData.plotdict["z_lims"]) > 1:
+				self.z_min = plotData.plotdict["z_lims"][0] - plotData.plotdict["z_lims"][1]
+				self.z_max = plotData.plotdict["z_lims"][0] + plotData.plotdict["z_lims"][1]
 			else:
-				self.z_min *= (0.9 if self.z_min > 0.0 else 1.1)
-		
-		if not plotData.plotdict["z_lims"] is None and len(plotData.plotdict["z_lims"]) > 1:
-			self.z_max = plotData.plotdict["z_lims"][1]
-		elif not self.z_max is None:
-			if plotData.plotdict["z_log"]:
-				self.z_max *= (2.0 if self.z_max > 0.0 else 0.5)
-			else:
-				self.z_max *= (1.1 if self.z_max > 0.0 else 0.9)
+				tmp_z_min = self.z_min * (0.9 if self.z_min > 0.0 else 1.1)
+				tmp_z_max = self.z_max * (1.1 if self.z_max > 0.0 else 0.9)
+				if not plotData.plotdict["z_lims"] is None:
+					center = plotData.plotdict["z_lims"][0]
+					width = max([abs(z - center) for z in [tmp_z_min, tmp_z_max]])
+					self.z_min = center - width
+					self.z_max = center + width
+				else:
+					self.z_min = tmp_z_min
+					self.z_max = tmp_z_max
+		else:
+			if plotData.plotdict["sym_z_lims"]:
+				log.warning("Symmetric limits are not yet implemented for logarithmic axes!")
+			
+			if not plotData.plotdict["z_lims"] is None:
+				self.z_min = plotData.plotdict["z_lims"][0]
+			elif not self.z_min is None:
+				if plotData.plotdict["z_log"]:
+					self.z_min *= (0.5 if self.z_min > 0.0 else 2.0)
+				else:
+					self.z_min *= (0.9 if self.z_min > 0.0 else 1.1)
+			
+			if not plotData.plotdict["z_lims"] is None and len(plotData.plotdict["z_lims"]) > 1:
+				self.z_max = plotData.plotdict["z_lims"][1]
+			elif not self.z_max is None:
+				if plotData.plotdict["z_log"]:
+					self.z_max *= (2.0 if self.z_max > 0.0 else 0.5)
+				else:
+					self.z_max *= (1.1 if self.z_max > 0.0 else 0.9)
 		
 		# y subplot lims
 		if plotData.plotdict["sym_y_subplot_lims"]:
@@ -336,16 +402,16 @@ class PlotRoot(plotbase.PlotBase):
 				self.y_sub_min = plotData.plotdict["y_subplot_lims"][0] - plotData.plotdict["y_subplot_lims"][1]
 				self.y_sub_max = plotData.plotdict["y_subplot_lims"][0] + plotData.plotdict["y_subplot_lims"][1]
 			else:
-				tmp_y_sum_min = self.y_sub_min * (0.9 if self.y_sub_min > 0.0 else 1.1)
-				tmp_y_sum_max = self.y_sub_max * (1.1 if self.y_sub_max > 0.0 else 0.9)
+				tmp_y_sub_min = self.y_sub_min * (0.9 if self.y_sub_min > 0.0 else 1.1)
+				tmp_y_sub_max = self.y_sub_max * (1.1 if self.y_sub_max > 0.0 else 0.9)
 				if not plotData.plotdict["y_subplot_lims"] is None:
 					center = plotData.plotdict["y_subplot_lims"][0]
-					width = max([abs(y - center) for y in [tmp_y_sum_min, tmp_y_sum_max]])
+					width = max([abs(y - center) for y in [tmp_y_sub_min, tmp_y_sub_max]])
 					self.y_sub_min = center - width
 					self.y_sub_max = center + width
 				else:
-					self.y_sub_min = tmp_y_sum_min
-					self.y_sub_max = tmp_y_sum_max
+					self.y_sub_min = tmp_y_sub_min
+					self.y_sub_max = tmp_y_sub_max
 		else:
 			if not plotData.plotdict["y_subplot_lims"] is None:
 				self.y_sub_min = plotData.plotdict["y_subplot_lims"][0]
@@ -460,14 +526,6 @@ class PlotRoot(plotbase.PlotBase):
 		if plotData.plotdict["z_log"]: plotData.plot.plot_pad.SetLogz()
 		if not plotData.plot.subplot_pad is None:
 			if plotData.plotdict["x_log"]: plotData.plot.subplot_pad.SetLogx()
-	
-		# axis limits
-		x_lims = plotData.plotdict["x_lims"] if not plotData.plotdict["x_lims"] is None else [self.x_min, self.x_max]
-		y_lims = plotData.plotdict["y_lims"] if not plotData.plotdict["y_lims"] is None else [self.y_min, self.y_max]
-		z_lims = plotData.plotdict["z_lims"] if not plotData.plotdict["z_lims"] is None else [self.z_min, self.z_max]
-		
-		y_subplot_lims = plotData.plotdict["y_subplot_lims"] if not plotData.plotdict["y_subplot_lims"] is None else [self.y_sub_min, self.y_sub_max]
-		z_subplot_lims = [self.z_sub_min, self.z_sub_max] # TODO: z-lims for possible 3D subplots
 		
 		for nick, subplot, marker in zip(
 				plotData.plotdict["nicks"],
@@ -476,9 +534,9 @@ class PlotRoot(plotbase.PlotBase):
 		):
 			root_object = plotData.plotdict["root_objects"][nick]
 			if subplot:
-				PlotRoot._set_axis_limits(root_object, self.max_dim, x_lims, y_subplot_lims, z_subplot_lims)
+				PlotRoot._set_axis_limits(root_object, self.max_dim, [self.x_min, self.x_max], [self.y_sum_min, self.y_sum_max], [self.z_sum_min, self.z_sum_max])
 			else:
-				PlotRoot._set_axis_limits(root_object, self.max_dim, x_lims, y_lims, z_lims)
+				PlotRoot._set_axis_limits(root_object, self.max_dim, [self.x_min, self.x_max], [self.y_min, self.y_max], [self.z_min, self.z_max])
 			if isinstance(root_object, ROOT.TH1) and "Z" in marker.upper():
 				root_object.SetContour(50)
 		
