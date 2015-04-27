@@ -492,7 +492,7 @@ class PlotRoot(plotbase.PlotBase):
 			pad.cd()
 			
 			# set color map
-			if plotData.plotdict["colormap"]:
+			if plotData.plotdict["colormap"] and len(set(colors)) > 1:
 				reds = [ROOT.gROOT.GetColor(color).GetRed() for color in colors]
 				greens = [ROOT.gROOT.GetColor(color).GetGreen() for color in colors]
 				blues = [ROOT.gROOT.GetColor(color).GetBlue() for color in colors]
