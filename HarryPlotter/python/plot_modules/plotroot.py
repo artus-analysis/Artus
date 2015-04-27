@@ -366,8 +366,8 @@ class PlotRoot(plotbase.PlotBase):
 				self.z_min = plotData.plotdict["z_lims"][0] - plotData.plotdict["z_lims"][1]
 				self.z_max = plotData.plotdict["z_lims"][0] + plotData.plotdict["z_lims"][1]
 			else:
-				tmp_z_min = self.z_min * (0.9 if self.z_min > 0.0 else 1.1)
-				tmp_z_max = self.z_max * (1.1 if self.z_max > 0.0 else 0.9)
+				tmp_z_min = self.z_min * (0.99 if self.z_min > 0.0 else 1.01)
+				tmp_z_max = self.z_max * (1.01 if self.z_max > 0.0 else 0.99)
 				if not plotData.plotdict["z_lims"] is None:
 					center = plotData.plotdict["z_lims"][0]
 					width = max([abs(z - center) for z in [tmp_z_min, tmp_z_max]])
@@ -384,17 +384,17 @@ class PlotRoot(plotbase.PlotBase):
 				self.z_min = plotData.plotdict["z_lims"][0]
 			elif not self.z_min is None:
 				if plotData.plotdict["z_log"]:
-					self.z_min *= (0.5 if self.z_min > 0.0 else 2.0)
-				else:
 					self.z_min *= (0.9 if self.z_min > 0.0 else 1.1)
+				else:
+					self.z_min *= (0.99 if self.z_min > 0.0 else 1.01)
 			
 			if not plotData.plotdict["z_lims"] is None and len(plotData.plotdict["z_lims"]) > 1:
 				self.z_max = plotData.plotdict["z_lims"][1]
 			elif not self.z_max is None:
 				if plotData.plotdict["z_log"]:
-					self.z_max *= (2.0 if self.z_max > 0.0 else 0.5)
-				else:
 					self.z_max *= (1.1 if self.z_max > 0.0 else 0.9)
+				else:
+					self.z_max *= (1.01 if self.z_max > 0.0 else 0.99)
 		
 		# y subplot lims
 		if plotData.plotdict["sym_y_subplot_lims"]:
