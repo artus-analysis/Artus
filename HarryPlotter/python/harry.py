@@ -27,7 +27,7 @@ def pool_plot(args):
 		return (None, args[1:])
 
 class HarryPlotter(object):
-	def __init__(self, list_of_config_dicts=None, list_of_args_strings=None, n_processes=1):
+	def __init__(self, list_of_config_dicts=None, list_of_args_strings=None, n_processes=1, n_plots=None):
 		# load Kappa library
 		try:
 			ROOT.gSystem.Load("libKappa")
@@ -37,7 +37,8 @@ class HarryPlotter(object):
 		self.output_filenames = self.multi_plots(
 				list_of_config_dicts=list_of_config_dicts,
 				list_of_args_strings=list_of_args_strings,
-				n_processes=n_processes
+				n_processes=n_processes,
+				n_fast_plots=n_plots
 		)
 	
 	def plot(self, harry_args):
@@ -46,7 +47,7 @@ class HarryPlotter(object):
 			log.debug("harry.py " + harry_args)
 		return harry_core.run()
 	
-	def multi_plots(self, list_of_config_dicts, list_of_args_strings, n_processes=1):
+	def multi_plots(self, list_of_config_dicts, list_of_args_strings, n_processes=1, n_fast_plots=None):
 		config_dicts = list_of_config_dicts if isinstance(list_of_config_dicts, collections.Iterable) and not isinstance(list_of_config_dicts, basestring) else [list_of_config_dicts]
 		args_strings = list_of_args_strings if isinstance(list_of_args_strings, collections.Iterable) and not isinstance(list_of_args_strings, basestring) else [list_of_args_strings]
 		
@@ -79,6 +80,8 @@ class HarryPlotter(object):
 					harry_args[-1] += (" "+args_string)
 				if config_dict is None:
 					harry_args[-1] += (" --comment " + (" ".join(sys.argv)))
+		if not n_fast_plots is None:
+			harry_args = harry_args[:n_fast_plots]
 		
 		# multi processing of multiple plots
 		output_filenames = []
