@@ -1,0 +1,41 @@
+{
+	"#EventBlacklist": [],
+	"#EventWhitelist": [],
+	"#LumiBlacklist": [],
+	"LumiWhitelist": [
+		2418
+	],
+	"#RunBlacklist": [],
+	"#RunWhitelist": [],
+	"EventMetadata": "eventInfo",
+	"EventWeight": "",
+	"FilterMetadata": "",
+	"InputFiles": [
+		"dcap://dcache-cms-dcap.desy.de//pnfs/desy.de/cms/tier2/store/user/tmuller/higgs-kit/skimming/2014-12-24_full_skim/DYJetsToLL_M_50_madgraph_8TeV/kappa_DYJetsToLL_M_50_madgraph_8TeV_5147.root"
+	],
+	"InputIsData": "false",
+	"LumiMetadata": "lumiInfo",
+	"OutputPath": "output.root",
+	"Pipelines": {
+		"hlt_info": {
+			"Consumers": [
+				"PrintHltConsumer",
+				"KappaLambdaNtupleConsumer",
+				"cutflow_histogram"
+			],
+			"Quantities": [
+				"run",
+				"lumi",
+				"event"
+			],
+			"Processors": [
+				"filter:RunLumiEventFilter"
+			]
+		}
+	},
+	"Processors": [
+	],
+	"SkipEvents": 0,
+	"TriggerInfos": "triggerObjectMetadata",
+	"TriggerObjects": "triggerObjects"
+}

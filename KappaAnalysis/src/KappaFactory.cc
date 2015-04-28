@@ -56,6 +56,8 @@
 #include "Artus/KappaAnalysis/interface/Consumers/KappaCutFlowTreeConsumer.h"
 #include "Artus/KappaAnalysis/interface/Consumers/KappaLambdaNtupleConsumer.h"
 #include "Artus/KappaAnalysis/interface/Consumers/KappaCollectionsConsumers.h"
+#include "Artus/KappaAnalysis/interface/Consumers/PrintHltConsumer.h"
+
 
 
 ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
@@ -265,6 +267,8 @@ ConsumerBaseUntemplated * KappaFactory::createConsumer ( std::string const& id )
 		return new KappaJetsConsumer();
 	else if(id == KappaTaggedJetsConsumer().GetConsumerId())
 		return new KappaTaggedJetsConsumer();
+	else if(id == PrintHltConsumer().GetConsumerId())
+		return new PrintHltConsumer();
 	else
 		return FactoryBase::createConsumer( id );
 }

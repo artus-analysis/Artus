@@ -92,7 +92,7 @@ public:
 	std::vector<KJet*> m_bTaggedJets;
 	std::vector<KJet*> m_nonBTaggedJets;
 	
-	HLTTools m_hltInfo = HLTTools();
+	mutable HLTTools m_hltInfo = HLTTools();
 	std::string m_selectedHltName;
 	int m_selectedHltPosition;
 
