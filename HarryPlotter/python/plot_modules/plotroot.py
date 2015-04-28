@@ -47,6 +47,8 @@ class PlotRoot(plotbase.PlotBase):
 	def __init__(self):
 		super(PlotRoot, self).__init__()
 		
+		self.plot_subplot_slider_y = 0.35
+		
 		self.text_boxes = []
 		
 		self.axes_histogram = None
@@ -209,7 +211,6 @@ class PlotRoot(plotbase.PlotBase):
 			canvas.Draw()
 
 		if len(plotData.plotdict["subplot_nicks"]) > 0:
-			self.plot_subplot_slider_y = 0.35
 			canvas.cd()
 			if plot_pad is None:
 				plot_pad = ROOT.TPad("plot_pad", "", 0.0, self.plot_subplot_slider_y, 1.0, 1.0)
