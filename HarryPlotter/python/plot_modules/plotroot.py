@@ -118,7 +118,7 @@ class PlotRoot(plotbase.PlotBase):
 			if colors == None:
 				plotData.plotdict["colors"][index] = [index + 1, index + 1]
 			else:
-				colors = colors.split()
+				colors = [self.predefined_colors.get_predefined_color(color) for color in colors.split()]
 				if len(colors) == 1:
 					colors = [colors[0], copy.deepcopy(colors[0])]
 				
@@ -126,7 +126,7 @@ class PlotRoot(plotbase.PlotBase):
 					if color.startswith("k"):
 						color = eval("ROOT."+color)
 					elif color.startswith("#"):
-						color = ROOT.TColor.GetColor(color)
+						color = ROOT.TColor.GetColor(color.upper())
 					else:
 						color = eval(color)
 					colors[sub_index] = color
