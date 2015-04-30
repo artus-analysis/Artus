@@ -27,7 +27,7 @@ class PlotBase(processor.Processor):
 	def __init__(self):
 		super(PlotBase, self).__init__()
 		
-		self.predefined_colors = colors.ColorsDict(color_scheme="default")
+		self.predefined_colors = None
 	
 	def modify_argument_parser(self, parser, args):
 		super(PlotBase, self).modify_argument_parser(parser, args)
@@ -81,6 +81,8 @@ class PlotBase(processor.Processor):
 
 		#plot formatting
 		self.formatting_options = parser.add_argument_group("Formatting options")
+		self.formatting_options.add_argument("--color-scheme", default="default",
+		                                     help="Color scheme for predefined colors. [Default: '%(default)s']")
 		self.formatting_options.add_argument("-C", "--colors", type=str, nargs="+",
 		                                     help="Colors for the plots.")
 		self.formatting_options.add_argument("--colormap", nargs="?",
@@ -149,6 +151,9 @@ class PlotBase(processor.Processor):
 	
 	def prepare_args(self, parser, plotData):
 		super(PlotBase, self).prepare_args(parser, plotData)
+		
+		if self.predefined_colors is None:
+			self.predefined_colors = colors.ColorsDict(color_scheme=plotData.plotdict["color_scheme"])
 		
 		# delete nicks that do not need to be used for plotting
 		self.select_histograms(plotData)
