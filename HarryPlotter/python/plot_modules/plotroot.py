@@ -193,10 +193,8 @@ class PlotRoot(plotbase.PlotBase):
 		
 		# load TDR Style
 		cwd = os.getcwd()
-		os.chdir(os.path.expandvars("$CMSSW_BASE/src"))
-		ROOT.gROOT.LoadMacro(os.path.expandvars("$CMSSW_BASE/src/Artus/HarryPlotter/python/utility/tdrstyle.C")) # +"+") # compilation currently does not work
+		ROOT.gROOT.LoadMacro(os.path.expandvars("$ARTUSPATH/HarryPlotter/python/utility/tdrstyle.C")) # +"+") # compilation currently does not work
 		ROOT.setTDRStyle()
-		os.chdir(cwd)
 
 	def create_canvas(self, plotData):
 		super(PlotRoot, self).create_canvas(plotData)
