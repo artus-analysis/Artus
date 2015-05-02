@@ -12,6 +12,7 @@ import ROOT
 import sys
 
 import Artus.HarryPlotter.inputbase as inputbase
+import Artus.Utility.progressiterator as pi
 
 
 class InputInteractive(inputbase.InputBase):
@@ -58,21 +59,41 @@ class InputInteractive(inputbase.InputBase):
 	
 	def run(self, plotData):
 		
-		for nick, x_values, x_errors, y_values, y_errors, z_values, z_errors in zip(plotData.plotdict["nicks"],
-				plotData.plotdict["x_expressions"], plotData.plotdict["x_errors"], plotData.plotdict["y_expressions"],
-				plotData.plotdict["y_errors"], plotData.plotdict["z_expressions"], plotData.plotdict["z_errors"]):
-		
-			if len(z_values) > 0:
-				plotData.plotdict.setdefault("root_objects", {})[nick] = ROOT.TGraph2DErrors(len(x_values),
-						array.array("d", x_values), array.array("d", y_values), array.array("d", z_values),
-						array.array("d", x_errors), array.array("d", y_errors), array.array("d", z_errors))
-			elif len(y_values) > 0:
-				plotData.plotdict.setdefault("root_objects", {})[nick] = ROOT.TGraphErrors(len(x_values),
-						array.array("d", x_values), array.array("d", y_values),
-						array.array("d", x_errors), array.array("d", y_errors))
+		for index, (
+				nick,
+				x_bins, x_values, x_errors,
+				y_bins, y_values, y_errors,
+				z_bins, z_values, z_errors,
+		) in enumerate(pi.ProgressIterator(zip(*[plotData.plotdict[key] for key in [
+				"nicks",
+				"x_bins", "x_expressions", "x_errors",
+				"y_bins", "y_expressions", "y_errors",
+				"z_bins", "z_expressions", "z_errors",
+		]]), description="Reading inputs")):
+			print nick, x_bins, x_values, x_errors, y_bins, y_values, y_errors, z_bins, z_values, z_errors
+			
+			if x_bins is None:
+				if len(y_values) == 0:
+					pass # TODO: create function
+				else:
+					if len(z_values) == 0:
+						plotData.plotdict.setdefault("root_objects", {})[nick] = ROOT.TGraphErrors(
+								len(x_values),
+								array.array("d", x_values), array.array("d", y_values),
+								array.array("d", x_errors), array.array("d", y_errors)
+						)
+					else:
+						plotData.plotdict.setdefault("root_objects", {})[nick] = ROOT.TGraph2DErrors(
+								len(x_values),
+								array.array("d", x_values), array.array("d", y_values), array.array("d", z_values),
+								array.array("d", x_errors), array.array("d", y_errors), array.array("d", z_errors)
+						)
+			elif y_bins is None:
+				pass # TODO: create TH1
+			elif z_bins is None:
+				pass # TODO: create TH2
 			else:
-				log.fatal("Need both x and y values to draw a graph!")
-				sys.exit(1)
+				pass # TODO: create TH3
 		
 		# run upper class function at last
 		super(InputInteractive, self).run(plotData)
