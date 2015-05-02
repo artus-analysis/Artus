@@ -8,6 +8,7 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import array
+import hashlib
 import ROOT
 import sys
 
@@ -34,12 +35,18 @@ class InputInteractive(inputbase.InputBase):
 		
 		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "x_errors", "y_errors", "z_errors"])
 		
+		def secure_float_conversion(input_string):
+			try:
+				return float(input_string)
+			except:
+				return input_string
+		
 		# parse values/errors to plot
 		values_keys = ["x_expressions", "y_expressions", "z_expressions"]
 		errors_keys = ["x_errors", "y_errors", "z_errors"]
 		for key in values_keys + errors_keys:
 			if plotData.plotdict[key] != None:
-				plotData.plotdict[key] = [[float(value) for value in (values.split() if values != None else [])] for values in plotData.plotdict[key]]
+				plotData.plotdict[key] = [[secure_float_conversion(value) for value in (values.split() if values != None else [])] for values in plotData.plotdict[key]]
 		
 		# set default errors to 0.0
 		for index in xrange(len(plotData.plotdict["nicks"])):
@@ -72,9 +79,25 @@ class InputInteractive(inputbase.InputBase):
 		]]), description="Reading inputs")):
 			print nick, x_bins, x_values, x_errors, y_bins, y_values, y_errors, z_bins, z_values, z_errors
 			
+			# prepare unique name
+			name_hash = hashlib.md5("_".join([str(item) for item in [nick, x_bins, x_values, x_errors, y_bins, y_values, y_errors, z_bins, z_values, z_errors]])).hexdigest()
+			
 			if x_bins is None:
+				
+				# Functions
 				if len(y_values) == 0:
-					pass # TODO: create function
+					expression = " ".join(x_values)
+					formula = ROOT.TFormula("formula_"+name_hash, expression)
+					function_class = None
+					if formula.GetNdim() == 1:
+						function_class = ROOT.TF1
+					elif formula.GetNdim() == 2:
+						function_class = ROOT.TF2
+					else:
+						function_class = ROOT.TF3
+					plotData.plotdict.setdefault("root_objects", {})[nick] = function_class("function_"+name_hash, expression)
+				
+				# Graphs
 				else:
 					if len(z_values) == 0:
 						plotData.plotdict.setdefault("root_objects", {})[nick] = ROOT.TGraphErrors(
@@ -88,6 +111,10 @@ class InputInteractive(inputbase.InputBase):
 								array.array("d", x_values), array.array("d", y_values), array.array("d", z_values),
 								array.array("d", x_errors), array.array("d", y_errors), array.array("d", z_errors)
 						)
+					plotData.plotdict["root_objects"][nick].SetName("graph_"+name_hash)
+					plotData.plotdict["root_objects"][nick].SetTitle("")
+			
+			# Histograms
 			elif y_bins is None:
 				pass # TODO: create TH1
 			elif z_bins is None:
