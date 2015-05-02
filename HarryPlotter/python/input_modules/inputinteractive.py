@@ -13,6 +13,7 @@ import ROOT
 import sys
 
 import Artus.HarryPlotter.inputbase as inputbase
+import Artus.HarryPlotter.utility.roottools as roottools
 import Artus.Utility.progressiterator as pi
 
 
@@ -115,12 +116,42 @@ class InputInteractive(inputbase.InputBase):
 					plotData.plotdict["root_objects"][nick].SetTitle("")
 			
 			# Histograms
-			elif y_bins is None:
-				pass # TODO: create TH1
-			elif z_bins is None:
-				pass # TODO: create TH2
 			else:
-				pass # TODO: create TH3
+				root_histogram = roottools.RootTools.create_root_histogram(
+						x_bins=x_bins,
+						y_bins=y_bins,
+						z_bins=z_bins,
+						profile_histogram=False,
+						name="histogram_"+name_hash
+				)
+				
+				weights = array.array("d", [1.0]*len(x_values))
+				if root_histogram.GetDimension() == 1:
+					if len(y_values) == 0:
+						root_histogram.FillN(len(x_values), array.array("d", x_values), weights)
+					else:
+						set_bin_errors = any([bin_error != 0.0 for bin_error in y_errors])
+						for x_value, y_value, bin_error in zip(x_values, y_values, y_errors):
+							global_bin = root_histogram.FindBin(x_value)
+							root_histogram.SetBinContent(global_bin, y_value)
+							if set_bin_errors:
+								root_histogram.SetBinError(global_bin, bin_error)
+				
+				elif root_histogram.GetDimension() == 2:
+					if len(z_values) == 0:
+						root_histogram.FillN(len(x_values), array.array("d", x_values), array.array("d", y_values), weights)
+					else:
+						set_bin_errors = any([bin_error != 0.0 for bin_error in z_errors])
+						for x_value, y_value, z_value, bin_error in zip(x_values, y_values, y_errors):
+							global_bin = root_histogram.FindBin(x_value, y_value)
+							root_histogram.SetBinContent(global_bin, z_value)
+							if set_bin_errors:
+								root_histogram.SetBinError(global_bin, bin_error)
+				
+				elif root_histogram.GetDimension() == 3:
+					root_histogram.FillN(len(x_values), array.array("d", x_values), array.array("d", y_values), array.array("d", z_values), weights)
+				
+				plotData.plotdict.setdefault("root_objects", {})[nick] = root_histogram
 		
 		# run upper class function at last
 		super(InputInteractive, self).run(plotData)
