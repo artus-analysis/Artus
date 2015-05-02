@@ -48,6 +48,7 @@ class InputRoot(inputfile.InputFile):
 		                                help="Binings for y-axis of 2D/3D histograms. In case only one argument (per input) is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [\"25\"] for trees, no rebinning for histograms]")
 		self.input_options.add_argument("--z-bins", type=str, nargs='+', default=[None],
 		                                help="Binings for z-axis of 3D histograms. In case only one argument (per input) is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [\"25\"] for trees, no rebinning for histograms]")
+		
 		self.input_options.add_argument("--tree-draw-options", nargs='+', type=str, default="",
 		                                help="Optional argument for TTree:Draw() call. Use e.g. 'prof' or 'profs' for projections of 2D-Histograms to 1D. See also http://root.cern.ch/ooot/html/TTree.html#TTree:Draw. Specify \"TGraph\" for plotting y- vs. x-values into a TGraph. \"TGraphErrors\" leads to a graph with errors by specifying inputs with --x-expressions <x values>:<x errors> --y-expressions <y values>:<y errors>. \"TGraphAsymmErrorsX\" leads to a graph with asymmetric x-errors by specifying inputs with --x-expressions <x values>:<x errors (down)>:<x errors (up)> --y-expressions <y values>. \"TGraphAsymmErrorsY\" leads to a graph with asymmetric y-errors by specifying inputs with --x-expressions <x values> --y-expressions <y values>:<y errors (down)>:<y errors (up)>.")
 
@@ -66,12 +67,8 @@ class InputRoot(inputfile.InputFile):
 		else:
 			plotData.plotdict["friend_trees"] = [None]
 
-		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "scale_factors", "files", "directories", "folders", "weights", "friend_trees", "tree_draw_options", "x_bins", "y_bins", "z_bins"])
+		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "files", "directories", "folders", "weights", "friend_trees", "tree_draw_options"])
 		plotData.plotdict["folders"] = [folders.split() if folders else [""] for folders in plotData.plotdict["folders"]]
-		
-		plotData.plotdict["x_bins"] = [x_bins if x_bins is None else x_bins.split() for x_bins in plotData.plotdict["x_bins"]]
-		plotData.plotdict["y_bins"] = [y_bins if y_bins is None else y_bins.split() for y_bins in plotData.plotdict["y_bins"]]
-		plotData.plotdict["z_bins"] = [z_bins if z_bins is None else z_bins.split() for z_bins in plotData.plotdict["z_bins"]]
 		
 		inputbase.InputBase.prepare_nicks(plotData)
 	

@@ -31,7 +31,7 @@ class InputInteractive(inputbase.InputBase):
 	def prepare_args(self, parser, plotData):
 		super(InputInteractive, self).prepare_args(parser, plotData)
 		
-		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "scale_factors", "x_errors", "y_errors", "z_errors"])
+		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "x_errors", "y_errors", "z_errors"])
 		
 		# parse values/errors to plot
 		values_keys = ["x_expressions", "y_expressions", "z_expressions"]

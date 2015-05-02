@@ -27,13 +27,25 @@ class InputBase(processor.Processor):
 		                                help="y-value(s)")
 		self.input_options.add_argument("-z", "--z-expressions", type=str, nargs="+",
 		                                help="z-value(s)")
+		
+		self.input_options.add_argument("--x-bins", type=str, nargs='+', default=[None],
+		                                help="Binings for x-axis. [Default: %(default)s]")
+		self.input_options.add_argument("--y-bins", type=str, nargs='+', default=[None],
+		                                help="Binings for y-axis of 2D/3D histograms. [Default: %(default)s]")
+		self.input_options.add_argument("--z-bins", type=str, nargs='+', default=[None],
+		                                help="Binings for z-axis of 3D histograms. [Default: %(default)s]")
+		
 		self.input_options.add_argument("-s", "--scale-factors", nargs="+",
 		                                help="Scale factors.")
 	
 	def prepare_args(self, parser, plotData):
 		super(InputBase, self).prepare_args(parser, plotData)
 		
-		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "scale_factors"])
+		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors"])
+		
+		plotData.plotdict["x_bins"] = [x_bins if x_bins is None else x_bins.split() for x_bins in plotData.plotdict["x_bins"]]
+		plotData.plotdict["y_bins"] = [y_bins if y_bins is None else y_bins.split() for y_bins in plotData.plotdict["y_bins"]]
+		plotData.plotdict["z_bins"] = [z_bins if z_bins is None else z_bins.split() for z_bins in plotData.plotdict["z_bins"]]
 		
 		# prepare scale factors
 		plotData.plotdict["scale_factors"] = [float(scale) if scale != None else 1.0 for scale in plotData.plotdict["scale_factors"]]
