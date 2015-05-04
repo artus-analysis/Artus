@@ -32,10 +32,10 @@ class RootPlotContainer(plotdata.PlotContainer):
 	def finish(self):
 		self.canvas.RedrawAxis("g")
 		if not self.plot_pad is None:
-			self.plot_pad.RedrawAxis()
+			self.plot_pad.RedrawAxis("g")
 			self.plot_pad.Update()
 		if not self.subplot_pad is None:
-			self.subplot_pad.RedrawAxis()
+			self.subplot_pad.RedrawAxis("g")
 			self.subplot_pad.Update()
 		self.canvas.Update()
 		
