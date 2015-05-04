@@ -14,7 +14,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gErrorIgnoreLevel = ROOT.kError
 
 import Artus.HarryPlotter.utility.roottools as roottools
-
+from Artus.HarryPlotter.utility.tfilecontextmanager import TFileContextManager
 
 if __name__ == "__main__":
 	
@@ -25,27 +25,27 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 	logger.initLogger(args)
 	
-	root_file = ROOT.TFile(args.root_file, "READ")
-	elements = roottools.RootTools.walk_root_directory(root_file)
+	with TFileContextManager(args.root_file, "READ") as root_file:
+		elements = roottools.RootTools.walk_root_directory(root_file)
 	
-	for key, path in elements:
-		if key.GetClassName().startswith("TH"):
-			histogram = root_file.Get(path)
-			if histogram.GetDimension() == 1:
-				log.info("%s: %s" % (
-						path,
-						roottools.RootTools.binning_formatted(roottools.RootTools.get_binning(histogram, 0))
-				))
-			elif histogram.GetDimension() == 2:
-				log.info("%s: %s x %s" % (
-						path,
-						roottools.RootTools.binning_formatted(roottools.RootTools.get_binning(histogram, 0)),
-						roottools.RootTools.binning_formatted(roottools.RootTools.get_binning(histogram, 1))
-				))
-			else:
-				log.info("%s: %s x %s x %s" % (
-						path,
-						roottools.RootTools.binning_formatted(roottools.RootTools.get_binning(histogram, 0)),
-						roottools.RootTools.binning_formatted(roottools.RootTools.get_binning(histogram, 1)),
-						roottools.RootTools.binning_formatted(roottools.RootTools.get_binning(histogram, 2))
-				))
+		for key, path in elements:
+			if key.GetClassName().startswith("TH"):
+				histogram = root_file.Get(path)
+				if histogram.GetDimension() == 1:
+					log.info("%s: %s" % (
+							path,
+							roottools.RootTools.binning_formatted(roottools.RootTools.get_binning(histogram, 0))
+					))
+				elif histogram.GetDimension() == 2:
+					log.info("%s: %s x %s" % (
+							path,
+							roottools.RootTools.binning_formatted(roottools.RootTools.get_binning(histogram, 0)),
+							roottools.RootTools.binning_formatted(roottools.RootTools.get_binning(histogram, 1))
+					))
+				else:
+					log.info("%s: %s x %s x %s" % (
+							path,
+							roottools.RootTools.binning_formatted(roottools.RootTools.get_binning(histogram, 0)),
+							roottools.RootTools.binning_formatted(roottools.RootTools.get_binning(histogram, 1)),
+							roottools.RootTools.binning_formatted(roottools.RootTools.get_binning(histogram, 2))
+					))

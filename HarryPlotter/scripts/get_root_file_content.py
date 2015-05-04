@@ -14,6 +14,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gErrorIgnoreLevel = ROOT.kError
 
 import Artus.HarryPlotter.utility.roottools as roottools
+from Artus.HarryPlotter.utility.tfilecontextmanager import TFileContextManager
 
 
 if __name__ == "__main__":
@@ -25,8 +26,7 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 	logger.initLogger(args)
 	
-	root_file = ROOT.TFile(args.root_file, "READ")
-	elements = roottools.RootTools.walk_root_directory(root_file)
-	for key, path in elements:
-		log.info("%s (%s)" % (path, key.GetClassName()))
-
+	with TFileContextManager(args.root_file, "READ") as root_file:
+		elements = roottools.RootTools.walk_root_directory(root_file)
+		for key, path in elements:
+			log.info("%s (%s)" % (path, key.GetClassName()))

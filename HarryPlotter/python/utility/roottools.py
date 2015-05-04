@@ -21,6 +21,7 @@ ROOT.gEnv.SetValue("TFile.AsyncPrefetching", 1)
 
 import Artus.Utility.geometry as geometry
 import Artus.Utility.tools as tools
+from Artus.HarryPlotter.utility.tfilecontextmanager import TFileContextManager
 
 
 class RootTools(object):
@@ -38,31 +39,31 @@ class RootTools(object):
 		if isinstance(path_to_objects, basestring):
 			path_to_objects = [path_to_objects]
 		
-		root_file = ROOT.TFile(root_file_names[0], "READ")
-		root_object = root_file.Get(path_to_objects[0]) if path_to_objects[0] != "" else root_file
-		if root_object:
-			if isinstance(root_object, ROOT.TTree):
-				if print_quantities:
-					log.info("List of all tree quantities (in the first file):")
-					for leaf in sorted(root_object.GetListOfLeaves(), key=lambda leaf: leaf.GetName()):
-						quantity = leaf.GetName()
-						if leaf.GetBranch().GetMother().GetName() != leaf.GetName():
-							quantity = leaf.GetBranch().GetMother().GetName()+"."+quantity
-						log.info("\t%s (%s)" % (quantity, leaf.GetTypeName()))
-				return ROOT.TTree
-			elif isinstance(root_object, ROOT.TDirectory):
-				if print_quantities:
-					log.info("List of all histogram/graph/function quantities (in the first file):")
-					for key, path in sorted(RootTools.walk_root_directory(root_object), key=lambda element: element[1]):
-						if key.GetClassName().startswith("TH") or key.GetClassName().startswith("TF") or "Graph" in key.GetClassName():
-							log.info("\t%s (%s)" % (path, key.GetClassName()))
-				return ROOT.TH1
+		with TFileContextManager(root_file_names[0], "READ") as root_file: 
+			root_object = root_file.Get(path_to_objects[0]) if path_to_objects[0] != "" else root_file
+			if root_object:
+				if isinstance(root_object, ROOT.TTree):
+					if print_quantities:
+						log.info("List of all tree quantities (in the first file):")
+						for leaf in sorted(root_object.GetListOfLeaves(), key=lambda leaf: leaf.GetName()):
+							quantity = leaf.GetName()
+							if leaf.GetBranch().GetMother().GetName() != leaf.GetName():
+								quantity = leaf.GetBranch().GetMother().GetName()+"."+quantity
+							log.info("\t%s (%s)" % (quantity, leaf.GetTypeName()))
+					return ROOT.TTree
+				elif isinstance(root_object, ROOT.TDirectory):
+					if print_quantities:
+						log.info("List of all histogram/graph/function quantities (in the first file):")
+						for key, path in sorted(RootTools.walk_root_directory(root_object), key=lambda element: element[1]):
+							if key.GetClassName().startswith("TH") or key.GetClassName().startswith("TF") or "Graph" in key.GetClassName():
+								log.info("\t%s (%s)" % (path, key.GetClassName()))
+					return ROOT.TH1
+				else:
+					log.error("Usage of ROOT objects of Type \"" + root_objects[0].ClassName() + "\" is not yet implemented!")
+					return None
 			else:
-				log.error("Usage of ROOT objects of Type \"" + root_objects[0].ClassName() + "\" is not yet implemented!")
+				log.error("Could not find ROOT object \"" + path_to_objects[0] + "\" in file \"" + root_file_names[0] + "\"!")
 				return None
-		else:
-			log.error("Could not find ROOT object \"" + path_to_objects[0] + "\" in file \"" + root_file_names[0] + "\"!")
-			return None
 
 
 	@staticmethod
@@ -134,31 +135,27 @@ class RootTools(object):
 		# loop over files and try to read histograms
 		root_histogram = None
 		for root_file_name in root_file_names:
-			root_file = ROOT.TFile(root_file_name, "READ")
-		
-			for path_to_histogram in path_to_histograms:
-				tmp_root_histogram = root_file.Get(path_to_histogram)
-				if tmp_root_histogram == None:
-					log.critical("Cannot find histogram \"%s\" in file \"%s\"!" % (path_to_histogram, root_file_name))
-					sys.exit(1)
+			with TFileContextManager(root_file_name, "READ") as root_file:
+				for path_to_histogram in path_to_histograms:
+					tmp_root_histogram = root_file.Get(path_to_histogram)
+					if tmp_root_histogram == None:
+						log.critical("Cannot find histogram \"%s\" in file \"%s\"!" % (path_to_histogram, root_file_name))
+						sys.exit(1)
 				
-				if tmp_root_histogram is None:
-					log.error("Could not find histogram \"" + path_to_histogram + "\" in file \"" + root_file_name + "\"!")
-				else:
-					if isinstance(tmp_root_histogram, ROOT.TH1):
-						tmp_root_histogram.SetDirectory(0)
-					
-					if root_histogram == None:
-						root_histogram = tmp_root_histogram.Clone(name)
+					if tmp_root_histogram is None:
+						log.error("Could not find histogram \"" + path_to_histogram + "\" in file \"" + root_file_name + "\"!")
 					else:
-						root_histogram.Add(tmp_root_histogram)
+						if isinstance(tmp_root_histogram, ROOT.TH1):
+							tmp_root_histogram.SetDirectory(0)
 					
-					if isinstance(root_histogram, ROOT.TH1):
-						root_histogram.SetDirectory(0)
-			
-			if root_file:
-				root_file.Close()
-			
+						if root_histogram == None:
+							root_histogram = tmp_root_histogram.Clone(name)
+						else:
+							root_histogram.Add(tmp_root_histogram)
+					
+						if isinstance(root_histogram, ROOT.TH1):
+							root_histogram.SetDirectory(0)
+
 		# rebinning
 		if isinstance(root_histogram, ROOT.TH1) and root_histogram.GetNbinsX()*root_histogram.GetNbinsY()*root_histogram.GetNbinsZ() > 1:
 			rebinning_x = 1
