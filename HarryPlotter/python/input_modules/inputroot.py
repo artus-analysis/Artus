@@ -16,6 +16,8 @@ import Artus.HarryPlotter.inputbase as inputbase
 import Artus.HarryPlotter.input_modules.inputfile as inputfile
 import Artus.HarryPlotter.utility.roottools as roottools
 import Artus.Utility.progressiterator as pi
+import Artus.Utility.jsonTools as jsonTools
+from Artus.HarryPlotter.utility.tfilecontextmanager import TFileContextManager
 
 
 class InputRoot(inputfile.InputFile):
@@ -151,6 +153,20 @@ class InputRoot(inputfile.InputFile):
 			# save histogram in plotData
 			# merging histograms with same nick names is done in upper class
 			plotData.plotdict.setdefault("root_objects", {}).setdefault(nick, []).append(root_histogram)
+
+			# if Artus config dict is present in root file ->  append to plotdict
+			# TODO: make TChain instead of using only first file?
+			with TFileContextManager(root_files[0], "READ") as tfile:
+				keys, names = zip(*root_tools.walk_root_directory(tfile))
+			if jsonTools.JsonDict.PATH_TO_ROOT_CONFIG in names:
+				input_json_dict = jsonTools.JsonDict(root_files)
+			else:
+				input_json_dict = {}
+			plotData.plotdict.setdefault("input_json_dicts", []).append(input_json_dict)
+
+		# Raise warning if config dict could be read out for some, but not for all files
+		if ({} in plotData.plotdict['input_json_dicts'] and not all([i == {} for i in plotData.plotdict['input_json_dicts']])):
+			log.warning("'config' dict could not be read for all input files!")
 
 		# run upper class function at last
 		super(InputRoot, self).run(plotData)
