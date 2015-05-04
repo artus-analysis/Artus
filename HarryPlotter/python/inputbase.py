@@ -52,20 +52,9 @@ class InputBase(processor.Processor):
 	
 	def run(self, plotData):
 		super(InputBase, self).run(plotData)
-		
-		# scaling histograms
-		nick_occurences = {}
-		for index, (nick, scale_factor) in enumerate(zip(*[plotData.plotdict[key] for key in ["nicks", "scale_factors"]])):
-			root_object = plotData.plotdict["root_objects"][nick]
-			if isinstance(root_object, collections.Iterable) and not isinstance(root_object, ROOT.TObject):
-				root_object = root_object[nick_occurences.get(nick, 0)]
-				nick_occurences[nick] = nick_occurences.get(nick, 0) + 1
-			
-			if isinstance(root_object, ROOT.TH1):
-				root_object.Scale(scale_factor)
-			elif scale_factor != 1.0:
-				log.warning("Scaling currently only implmented for histograms!")
-		
+
+		self.scale_histograms(plotData)
+
 		# merging objects with same nicks
 		for nick, root_objects in plotData.plotdict["root_objects"].iteritems():
 			if isinstance(root_objects, collections.Iterable) and not isinstance(root_objects, ROOT.TObject):
@@ -94,7 +83,20 @@ class InputBase(processor.Processor):
 			if nick not in tmp_nicks:
 				tmp_nicks.append(nick)
 		plotData.plotdict["nicks"] = tmp_nicks
-	
+
+	def scale_histograms(self, plotData):
+		nick_occurences = {}
+		for index, (nick, scale_factor) in enumerate(zip(*[plotData.plotdict[key] for key in ["nicks", "scale_factors"]])):
+			root_object = plotData.plotdict["root_objects"][nick]
+			if isinstance(root_object, collections.Iterable) and not isinstance(root_object, ROOT.TObject):
+				root_object = root_object[nick_occurences.get(nick, 0)]
+				nick_occurences[nick] = nick_occurences.get(nick, 0) + 1
+
+			if isinstance(root_object, ROOT.TH1):
+				root_object.Scale(scale_factor)
+			elif scale_factor != 1.0:
+				log.warning("Scaling currently only implemented for histograms!")
+
 	# this method must only to be called once, so this need to be done in the most specialised input module # TODO better solution?
 	@staticmethod
 	def prepare_nicks(plotData):
