@@ -78,7 +78,6 @@ class InputInteractive(inputbase.InputBase):
 				"y_bins", "y_expressions", "y_errors",
 				"z_bins", "z_expressions", "z_errors",
 		]]), description="Reading inputs")):
-			print nick, x_bins, x_values, x_errors, y_bins, y_values, y_errors, z_bins, z_values, z_errors
 			
 			# prepare unique name
 			name_hash = hashlib.md5("_".join([str(item) for item in [nick, x_bins, x_values, x_errors, y_bins, y_values, y_errors, z_bins, z_values, z_errors]])).hexdigest()
