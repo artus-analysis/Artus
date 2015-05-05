@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
+
 """
 	copied from https://github.com/ksamdev/exo_plots/blob/master/root/tfile.py
 
@@ -8,6 +12,7 @@
 """	
 
 import ROOT
+import sys
 
 
 class TFileContextManager(object):
@@ -36,9 +41,9 @@ class TFileContextManager(object):
 			self._file = ROOT.TFile.Open(self._filename, self._mode)
 			if (not self._file) or self._file.IsZombie():
 				self._file = None
-
-				raise RuntimeError("failed to open file "
-								   "{0!r}".format(self._filename))
+				log.critical("Failed to open ROOT file {0!r}!".format(self._filename))
+				sys.exit(1)
+				#raise RuntimeError("failed to open file {0!r}".format(self._filename))
 
 		return self._file
 
