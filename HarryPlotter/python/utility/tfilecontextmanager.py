@@ -32,9 +32,9 @@ class TFileContextManager(object):
 	def __enter__(self):
 		"""Context management entry point"""
 
-		if not self._file:
+		if self._file is None:
 			self._file = ROOT.TFile.Open(self._filename, self._mode)
-			if self._file.IsZombie():
+			if (not self._file) or self._file.IsZombie():
 				self._file = None
 
 				raise RuntimeError("failed to open file "
