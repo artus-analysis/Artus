@@ -654,19 +654,18 @@ class PlotRoot(plotbase.PlotBase):
 			title = self.text_box.AddText(0.2, 0.94, plotData.plotdict["title"])
 			title.SetTextAlign(11)
 		
-		dataset_title = ""
-		if not plotData.plotdict["lumis"] is None:
-			dataset_title += (("+".join([str(lumi) for lumi in plotData.plotdict["lumis"]])) + " fb^{-1}")
-		if not plotData.plotdict["energies"] is None:
-			dataset_title += (("" if dataset_title == "" else ", ") + ("+".join([str(int(energy)) for energy in plotData.plotdict["energies"]])) + " TeV")
-		if dataset_title != "":
+		if self.dataset_title != "":
 			x_dataset_title = 0.95
 			if all([
 					(not isinstance(root_object, ROOT.TF1)) and (root_object.GetListOfFunctions().FindObject("palette") != None)
 					for root_object in plotData.plotdict["root_objects"].values()
 			]):
 				x_dataset_title = 0.75
-			dataset = self.text_box.AddText(x_dataset_title, 0.94, dataset_title)
+			dataset = self.text_box.AddText(
+					x_dataset_title,
+					0.94,
+					self.dataset_title.replace("\mathrm{fb}", "fb").replace("$", "").replace("\,", "")
+			)
 			dataset.SetTextAlign(31)
 			dataset.SetTextSize(0.03)
 		

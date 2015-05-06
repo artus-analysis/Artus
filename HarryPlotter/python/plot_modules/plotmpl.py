@@ -340,15 +340,6 @@ class PlotMpl(plotbase.PlotBase):
 			if plotData.plotdict["title"]:
 				ax.set_title(plotData.plotdict["title"], fontsize=18)
 
-			if not self.plot_dimension == 3:
-				if not (plotData.plotdict["lumi"]==None):
-					plt.text(-0.0, 1.030, "$\mathcal{L}=%.1f\mathrm{fb^{-1}}$" % plotData.plotdict["lumi"],
-						transform=ax.transAxes, fontsize=18)
-				if not (plotData.plotdict["energy"] == None):
-					energy = "+".join(plotData.plotdict["energy"])
-					plt.text(1.0, 1.030, "$\sqrt{s}=" + energy + "\\ \mathrm{TeV}$", 
-						transform=ax.transAxes, fontsize=18, horizontalalignment="right")
-
 			# Only plot legend if there active legend handles
 			if len(ax.get_legend_handles_labels()[0]) > 1 and plotData.plotdict["legend"] is not None:
 				# handles, labels = ax.get_legend_handles_labels()
@@ -367,6 +358,14 @@ class PlotMpl(plotbase.PlotBase):
 
 	def add_texts(self, plotData):
 		super(PlotMpl, self).add_texts(plotData)
+		
+		for ax in [plotData.plot.axes[0]]:
+			if (not self.plot_dimension == 3) and (self.dataset_title != ""):
+				plt.text(
+						1.0, 1.030, self.dataset_title,
+						transform=ax.transAxes, fontsize=18, horizontalalignment="right"
+				)
+		
 		if plotData.plotdict["texts"] != [None]:
 			for ax in [plotData.plot.axes[0]]:
 				for x, y, text in zip(plotData.plotdict['texts_x'], plotData.plotdict['texts_y'], plotData.plotdict['texts']):

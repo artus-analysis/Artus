@@ -351,8 +351,13 @@ class PlotBase(processor.Processor):
 		pass
 	
 	def add_texts(self, plotData):
-		pass
-
+		self.dataset_title = ""
+		if (not plotData.plotdict["lumis"] is None) and (not plotData.plotdict["energies"] is None):
+			run_periods = []
+			for lumi, energy in zip(plotData.plotdict["lumis"], plotData.plotdict["energies"]):
+				run_periods.append("%s \,\mathrm{fb}^{-1} (%s \,TeV)" % (str(lumi), str(int(energy))))
+			self.dataset_title = "$" + (" + ".join(run_periods)) + "$"
+	
 	def plot_end(self, plotData):
 		if plotData.plotdict["dict"]:
 			pprint.pprint(plotData.plotdict)
