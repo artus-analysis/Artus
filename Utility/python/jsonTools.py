@@ -305,7 +305,12 @@ class JsonDict(dict):
 					elif isinstance(value, collections.Iterable) and not isinstance(value, basestring):
 						for index, element in enumerate(value):
 							if isinstance(element, basestring) and element.strip().startswith(JsonDict.COMMENT_DELIMITER):
-								del value[index]
+								try:
+									del value[index]
+								except KeyError, e:
+									log.fatal("Error removeing Key %s from Arguments" % element)
+									sys.exit()
+
 					if isinstance(value, dict):
 						JsonDict.deepuncomment(value)
 		return jsonDict
