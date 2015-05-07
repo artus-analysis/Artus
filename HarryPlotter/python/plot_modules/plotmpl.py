@@ -125,12 +125,13 @@ class PlotMpl(plotbase.PlotBase):
 		# set default colors depending whether there are markers or bars
 		i_marker, i_bar = 0, 0
 		for marker_index, marker in enumerate(plotData.plotdict['markers']):
-			if marker in ['bar', 'fill']:
-				plotData.plotdict['colors'][marker_index] = self.default_bar_colors[i_bar % len(self.default_bar_colors)]
-				i_bar += 1
-			else:
-				plotData.plotdict['colors'][marker_index] = self.default_marker_colors[i_marker % len(self.default_marker_colors)]
-				i_marker += 1
+			if plotData.plotdict['colors'][marker_index] == None:
+				if marker in ['bar', 'fill']:
+					plotData.plotdict['colors'][marker_index] = self.default_bar_colors[i_bar % len(self.default_bar_colors)]
+					i_bar += 1
+				else:
+					plotData.plotdict['colors'][marker_index] = self.default_marker_colors[i_marker % len(self.default_marker_colors)]
+					i_marker += 1
 
 		for index, marker in enumerate(plotData.plotdict["zorder"]):
 			if marker is None:
