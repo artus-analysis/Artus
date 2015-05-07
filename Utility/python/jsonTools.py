@@ -303,7 +303,7 @@ class JsonDict(dict):
 					if isinstance(value, basestring) and value.strip().startswith(JsonDict.COMMENT_DELIMITER):
 						del jsonDict[key]
 					elif isinstance(value, collections.Iterable) and not isinstance(value, basestring):
-						for index, element in enumerate(value):
+						for index, element in list(enumerate(value))[::-1]:
 							if isinstance(element, basestring) and element.strip().startswith(JsonDict.COMMENT_DELIMITER):
 								try:
 									del value[index]
