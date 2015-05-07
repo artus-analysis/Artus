@@ -12,7 +12,7 @@ import sys
 
 opt_all = False
 
-list_of_different_leaves = []
+relative_differences_per_leaf = {}
 
 def main():
 	global opt_all
@@ -41,8 +41,9 @@ def main():
 		exit(0)
 	else:
 		log.warning("The files \"" + args.files[0] + "\" and \"" + args.files[1] + "\" are NOT identical.")
-		if len(list_of_different_leaves) > 0:
-			log.warning("Differences were found for the following leaf name(s): " + ", ".join(list(set(list_of_different_leaves))))
+		if relative_differences_per_leaf != {}:
+			for key in relative_differences_per_leaf.keys():
+				log.warning("Average difference for {0}: {1:.2f}%".format(key, sum(relative_differences_per_leaf[key]) / len(relative_differences_per_leaf[key]) * 100.))
 		exit(1)
 
 
@@ -281,7 +282,11 @@ def compareNtuple(directory1, directory2, ntupleID):
 		for i in range(nleaves1):
 			if leaves1.UncheckedAt(i).GetValue() != leaves2.UncheckedAt(i).GetValue():
 				log.critical("different leaf value: " + str(leaves1.UncheckedAt(i).GetValue()) + ", " + str(leaves2.UncheckedAt(i).GetValue()) + " for name " + leaves1.UncheckedAt(i).GetName())
-				list_of_different_leaves.append(leaves1.UncheckedAt(i).GetName())
+				if leaves1.UncheckedAt(i).GetValue() != 0:
+					# save relative difference between the two leaves
+					if leaves1.UncheckedAt(i).GetName() not in relative_differences_per_leaf:
+						relative_differences_per_leaf[leaves1.UncheckedAt(i).GetName()] = []
+					relative_differences_per_leaf[leaves1.UncheckedAt(i).GetName()].append(abs(leaves1.UncheckedAt(i).GetValue() - leaves2.UncheckedAt(i).GetValue()) / leaves1.UncheckedAt(i).GetValue())
 				if not opt_all:
 					return False
 				result = False
