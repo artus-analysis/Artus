@@ -12,6 +12,7 @@ import sys
 
 opt_all = False
 
+list_of_different_leaves = []
 
 def main():
 	global opt_all
@@ -40,6 +41,8 @@ def main():
 		exit(0)
 	else:
 		log.warning("The files \"" + args.files[0] + "\" and \"" + args.files[1] + "\" are NOT identical.")
+		if len(list_of_different_leaves) > 0:
+			log.warning("Differences were found for the following leaf name(s): " + ", ".join(list(set(list_of_different_leaves))))
 		exit(1)
 
 
@@ -278,6 +281,7 @@ def compareNtuple(directory1, directory2, ntupleID):
 		for i in range(nleaves1):
 			if leaves1.UncheckedAt(i).GetValue() != leaves2.UncheckedAt(i).GetValue():
 				log.critical("different leaf value: " + str(leaves1.UncheckedAt(i).GetValue()) + ", " + str(leaves2.UncheckedAt(i).GetValue()) + " for name " + leaves1.UncheckedAt(i).GetName())
+				list_of_different_leaves.append(leaves1.UncheckedAt(i).GetName())
 				if not opt_all:
 					return False
 				result = False
