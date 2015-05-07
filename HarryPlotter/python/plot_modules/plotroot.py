@@ -81,7 +81,7 @@ class PlotRoot(plotbase.PlotBase):
 		self.formatting_options.add_argument("-C", "--colors", type=str, nargs="+",
 		                                     help="Colors for the plots. For each plot up to two colors (whitespace separated) can be specified, the first for lines and markers and the second for filled areas.")
 		self.formatting_options.add_argument("--colormap", nargs="?", type="bool", default=False, const=True,
-		                                     help="Use colormap as defined by multiple colors (whitespace separated) in --colors). [Default: '%(default)s']")
+		                                     help="Use colormap as defined by multiple colors (whitespace separated) in --colors). [Default: %(default)s]")
 		self.formatting_options.add_argument("--x-grid", nargs="?", type="bool", default=False, const=True,
 		                                     help="Place an x-axes grid on the plot. [Default: %(default)s]")
 		self.formatting_options.add_argument("--y-grid", nargs="?", type="bool", default=False, const=True,
