@@ -126,6 +126,8 @@ class PlotBase(processor.Processor):
 		                                     help="Y-coordinate(s) of text(s) on plot. Ranges from 0 to 1. [Default: %(default)s]")
 		self.formatting_options.add_argument("--texts-x", type=float, nargs="+", default=[0.5],
 		                                     help="X-coordinate(s) of text(s) on plot. Ranges from 0 to 1. [Default: %(default)s]")
+		self.formatting_options.add_argument("--texts-size", type=float, nargs="+", default=[None],
+		                                     help="Font size for the text labels. [Default: %(default)s]")
 		
 		# output settings
 		self.output_options = parser.add_argument_group("Output options")
@@ -223,11 +225,12 @@ class PlotBase(processor.Processor):
 
 		# prepare arguments for text label(s)
 		if plotData.plotdict["texts"] is not None:
-			self.prepare_list_args(plotData, ["texts", "texts_y", "texts_x"])
+			self.prepare_list_args(plotData, ["texts", "texts_y", "texts_x", "texts_size"])
 			if len(plotData.plotdict["texts"]) == 1 and plotData.plotdict["texts"][0] is None:
 				plotData.plotdict["texts"] = []
 				plotData.plotdict["texts_x"] = []
 				plotData.plotdict["texts_y"] = []
+				plotData.plotdict["texts_size"] = []
 
 		if plotData.plotdict["legend"] == "None":
 			plotData.plotdict["legend"] = None

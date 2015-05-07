@@ -644,11 +644,13 @@ class PlotRoot(plotbase.PlotBase):
 		self.text_box.SetFillStyle(0)
 		self.text_box.SetBorderSize(0)
 		self.text_box.SetShadowColor(0)
-		self.text_box.SetTextSize(0.05)
+		self.text_box.SetTextSize(self.axes_histogram.GetXaxis().GetLabelSize())
 		self.text_box.SetTextAlign(22)
 		
-		for x, y, text in zip(plotData.plotdict['texts_x'], plotData.plotdict['texts_y'], plotData.plotdict['texts']):
-			self.text_box.AddText(x, y, text)
+		for x, y, text, size in zip(plotData.plotdict["texts_x"], plotData.plotdict["texts_y"], plotData.plotdict["texts"], plotData.plotdict["texts_size"]):
+			text_object = self.text_box.AddText(x, y, text)
+			if not size is None:
+				text_object.SetTextSize(size)
 		
 		if (not plotData.plotdict["title"] is None) and (plotData.plotdict["title"] != ""):
 			title = self.text_box.AddText(0.2, 0.94, plotData.plotdict["title"])
@@ -667,7 +669,6 @@ class PlotRoot(plotbase.PlotBase):
 					self.dataset_title.replace("\mathrm{fb}", "fb").replace("$", "").replace("\,", "")
 			)
 			dataset.SetTextAlign(31)
-			dataset.SetTextSize(0.03)
 		
 		self.text_box.Draw()
 	
