@@ -7,6 +7,8 @@ std::string GenParticleProducer::GetProducerId() const{
 
 void GenParticleProducer::Init(KappaSettings const& settings)
 {
+	KappaProducerBase::Init(settings);
+	
 	genParticleTypes.clear();
 	for (std::vector<std::string>::const_iterator genParticleType = settings.GetGenParticleTypes().begin();
 	     genParticleType != settings.GetGenParticleTypes().end(); ++genParticleType)

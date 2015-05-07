@@ -11,14 +11,17 @@
    \brief GlobalProducer, to write any available generator particle to the product.
 
 
-   usage: add to your "genParticles" to your settings
-   if you want to use "genParticles", specify also which pdgId you want to have. These particles are then available in the map product.m_genParticlesMap
-   with the config parameter genParticleStatus you can specify which status particles have to have to be written to the product. Example for a valid configuration that writes out genTaus as well was Higgs and W with status 3:
+   usage: wire "genParticles" with { "GenParticles" : "genParticles" } if you want to use "genParticles", specify also which pdgId you want to have.
+   These particles are then available in the map product.m_genParticlesMap
+   with the config parameter genParticleStatus you can specify which status particles have to have to be written to the product.
+   Example for a valid configuration that writes out genTaus as well was Higgs and W with status 3:
    {
-   "GetGenParticleTypes" : ["genParticle"],
-   "genParticlePdgIds" : [24, 25],
-   "genParticleStatus" : 3
+   "GenParticleTypes" : ["genParticle"],
+   "GenParticlePdgIds" : [24, 25],
+   "GenParticleStatus" : 3
    }
+
+   pdgIds can be found here http://pdg.lbl.gov/2002/montecarlorpp.pdf
 */
 
 class GenParticleProducer: public KappaProducerBase
