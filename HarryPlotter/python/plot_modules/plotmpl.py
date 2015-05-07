@@ -346,7 +346,7 @@ class PlotMpl(plotbase.PlotBase):
 				# handles, labels = ax.get_legend_handles_labels()
 				# sort both labels and handles by labels
 				# labels, handles = zip(*sorted(zip(labels, handles), key=lambda t: t[0]))
-				legend = ax.legend(loc=plotData.plotdict["legend"])
+				legend = ax.legend(loc=plotData.plotdict["legend"], ncol=plotData.plotdict["legend_cols"], columnspacing=0.5, handletextpad=0.3)
 				legend.set_zorder(100)
 
 			if self.mpl_version >= 121:
