@@ -211,7 +211,7 @@ class PlotRoot(plotbase.PlotBase):
 		if len(plotData.plotdict["subplot_nicks"]) > 0:
 			canvas.cd()
 			if plot_pad is None:
-				plot_pad = ROOT.TPad("plot_pad", "", 0.0, self.plot_subplot_slider_y, 1.0, 1.0)
+				plot_pad = ROOT.TPad("plot_pad", "", 0.0, self.plot_subplot_slider_y, 1.0, 0.95)
 				plot_pad.SetNumber(1)
 				plot_pad.Draw()
 			if subplot_pad is None:
@@ -219,6 +219,7 @@ class PlotRoot(plotbase.PlotBase):
 				subplot_pad.SetNumber(2)
 				subplot_pad.Draw()
 			
+			plot_pad.SetTopMargin(0.02)
 			plot_pad.SetBottomMargin(0.02)
 			subplot_pad.SetBottomMargin(0.35)
 			
@@ -644,28 +645,35 @@ class PlotRoot(plotbase.PlotBase):
 		self.text_box.SetFillStyle(0)
 		self.text_box.SetBorderSize(0)
 		self.text_box.SetShadowColor(0)
-		self.text_box.SetTextSize(self.axes_histogram.GetXaxis().GetLabelSize())
 		self.text_box.SetTextAlign(22)
+		
+		text_size = self.axes_histogram.GetXaxis().GetLabelSize()
+		if not self.subplot_axes_histogram is None:
+			text_size = self.subplot_axes_histogram.GetXaxis().GetLabelSize() * self.plot_subplot_slider_y
+		self.text_box.SetTextSize(text_size)
 		
 		for x, y, text, size in zip(plotData.plotdict["texts_x"], plotData.plotdict["texts_y"], plotData.plotdict["texts"], plotData.plotdict["texts_size"]):
 			text_object = self.text_box.AddText(x, y, text)
 			if not size is None:
 				text_object.SetTextSize(size)
 		
+		y_title = 0.94 if self.subplot_axes_histogram is None else 0.96
 		if (not plotData.plotdict["title"] is None) and (plotData.plotdict["title"] != ""):
-			title = self.text_box.AddText(0.2, 0.94, plotData.plotdict["title"])
+			x_title = 0.2
+			title = self.text_box.AddText(x_title, y_title, plotData.plotdict["title"])
 			title.SetTextAlign(11)
 		
 		if self.dataset_title != "":
-			x_dataset_title = 0.95
+			x_dataset_title = 0.94 if self.subplot_axes_histogram is None else 0.92
 			if all([
 					(not isinstance(root_object, ROOT.TF1)) and (root_object.GetListOfFunctions().FindObject("palette") != None)
 					for root_object in plotData.plotdict["root_objects"].values()
 			]):
-				x_dataset_title = 0.75
+				x_dataset_title = 0.8 if self.subplot_axes_histogram is None else 0.8
+			
 			dataset = self.text_box.AddText(
 					x_dataset_title,
-					0.94,
+					y_title,
 					self.dataset_title.replace("\mathrm{fb}", "fb").replace("$", "").replace("\,", "")
 			)
 			dataset.SetTextAlign(31)
