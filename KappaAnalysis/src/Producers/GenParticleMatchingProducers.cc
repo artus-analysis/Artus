@@ -143,7 +143,7 @@ void RecoJetGenParticleMatchingProducer::Produce(event_type const& event, produc
 			// flavour is only well defined if exactly ONE matching parton!
 			if (nMatchingPhysPartons == 1)
 			{
-				if (jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
+				if (jetMatchingAlgorithm == JetMatchingAlgorithm::PHYSIC)
 				{
 					product.m_genParticleMatchedJets[*validJet] = &(*hardestPhysParton);
 					jetMatched = true;
