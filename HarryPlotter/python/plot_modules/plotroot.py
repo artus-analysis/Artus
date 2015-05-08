@@ -520,7 +520,7 @@ class PlotRoot(plotbase.PlotBase):
 				root_object.__class__ = ROOT.CustomHistogram
 				root_object.GetPainter()
 			
-			plotData.plotdict["root_objects"][nick].Draw(marker + " SAME")
+			root_object.Draw(marker + " SAME")
 			pad.Update()
 	
 	def modify_axes(self, plotData):
