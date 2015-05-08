@@ -28,6 +28,7 @@ class PlotData(object):
 		super(PlotData, self).__init__()
 		self.plotdict = args
 		self.plot = None
+		self.input_json_dicts = []
 	
 	def __del__(self):
 		for root_object in self.plotdict.get("root_objects", []):

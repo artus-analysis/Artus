@@ -161,10 +161,10 @@ class InputRoot(inputfile.InputFile):
 				input_json_dict = jsonTools.JsonDict(root_files)
 			else:
 				input_json_dict = {}
-			plotData.plotdict.setdefault("input_json_dicts", []).append(input_json_dict)
+			plotData.input_json_dicts.append(input_json_dict)
 
 		# Raise warning if config dict could be read out for some, but not for all files
-		if ({} in plotData.plotdict['input_json_dicts'] and not all([i == {} for i in plotData.plotdict['input_json_dicts']])):
+		if ({} in plotData.input_json_dicts and not all([i == {} for i in plotData.input_json_dicts])):
 			log.warning("'config' dict could not be read for all input files!")
 
 		# run upper class function at last
