@@ -77,6 +77,12 @@ class PlotRoot(plotbase.PlotBase):
 		                               help="Lower and Upper limit for y-axis of a possible subplot.")
 		self.axis_options.add_argument("--sym-y-subplot-lims", nargs="?", type="bool", default=False, const=True,
 		                               help="Symmetric y-axis limits of a possible subplot. The parameters of --y-subplot-lims are taken as <center> <range/2>")
+		self.axis_options.add_argument("--reverse-x-axis", nargs="?", type="bool", default=False, const=True,
+		                               help="Reverse X axis labelling. [Default: %(default)s]")
+		self.axis_options.add_argument("--reverse-y-axis", nargs="?", type="bool", default=False, const=True,
+		                               help="Reverse Y axis labelling. [Default: %(default)s]")
+		self.axis_options.add_argument("--reverse-z-axis", nargs="?", type="bool", default=False, const=True,
+		                               help="Reverse Z axis labelling. [Default: %(default)s]")
 		
 		self.formatting_options.add_argument("-C", "--colors", type=str, nargs="+",
 		                                     help="Colors for the plots. For each plot up to two colors (whitespace separated) can be specified, the first for lines and markers and the second for filled areas.")
@@ -535,6 +541,11 @@ class PlotRoot(plotbase.PlotBase):
 		if not plotData.plot.subplot_pad is None:
 			if plotData.plotdict["x_log"]: plotData.plot.subplot_pad.SetLogx()
 		
+		if not self.axes_histogram is None:
+			self.reversed_axes = PlotRoot._set_axis_limits(plotData.plot.plot_pad, self.axes_histogram, self.max_dim, [self.x_min, self.x_max], [self.y_min, self.y_max], [self.z_min, self.z_max], reverse_x_axis=plotData.plotdict["reverse_x_axis"], reverse_y_axis=plotData.plotdict["reverse_y_axis"], reverse_z_axis=plotData.plotdict["reverse_z_axis"])
+		if not self.subplot_axes_histogram is None:
+			self.reversed_subplot_axes = PlotRoot._set_axis_limits(plotData.plot.subplot_pad, self.subplot_axes_histogram, self.max_dim, [self.x_min, self.x_max], [self.y_sub_min, self.y_sub_max], [self.z_sub_min, self.z_sub_max], reverse_x_axis=plotData.plotdict["reverse_x_axis"], reverse_y_axis=False, reverse_z_axis=False)
+		
 		for nick, subplot, marker in zip(
 				plotData.plotdict["nicks"],
 				plotData.plotdict["subplots"],
@@ -542,9 +553,9 @@ class PlotRoot(plotbase.PlotBase):
 		):
 			root_object = plotData.plotdict["root_objects"][nick]
 			if subplot:
-				PlotRoot._set_axis_limits(root_object, self.max_dim, [self.x_min, self.x_max], [self.y_sub_min, self.y_sub_max], [self.z_sub_min, self.z_sub_max])
+				PlotRoot._set_axis_limits(plotData.plot.subplot_pad, root_object, self.max_dim, [self.x_min, self.x_max], [self.y_sub_min, self.y_sub_max], [self.z_sub_min, self.z_sub_max], reverse_x_axis=plotData.plotdict["reverse_x_axis"], reverse_y_axis=False, reverse_z_axis=False)
 			else:
-				PlotRoot._set_axis_limits(root_object, self.max_dim, [self.x_min, self.x_max], [self.y_min, self.y_max], [self.z_min, self.z_max])
+				PlotRoot._set_axis_limits(plotData.plot.plot_pad, root_object, self.max_dim, [self.x_min, self.x_max], [self.y_min, self.y_max], [self.z_min, self.z_max], reverse_x_axis=plotData.plotdict["reverse_x_axis"], reverse_y_axis=plotData.plotdict["reverse_y_axis"], reverse_z_axis=plotData.plotdict["reverse_z_axis"])
 			if isinstance(root_object, ROOT.TH1) and "Z" in marker.upper():
 				root_object.SetContour(50)
 		
@@ -689,7 +700,7 @@ class PlotRoot(plotbase.PlotBase):
 		self.text_box.Draw()
 	
 	@staticmethod
-	def _set_axis_limits(root_object, max_dim, x_lims=None, y_lims=None, z_lims=None):
+	def _set_axis_limits(pad, root_object, max_dim, x_lims=None, y_lims=None, z_lims=None, reverse_x_axis=False, reverse_y_axis=False, reverse_z_axis=False):
 		""" not needed here due to axis histogram
 		if not x_lims is None:
 			root_object.GetXaxis().SetRangeUser(*x_lims)
@@ -707,4 +718,30 @@ class PlotRoot(plotbase.PlotBase):
 			#if palette != None:
 			#	palette.GetAxis().SetRangeUser(*z_lims)
 			#	palette.GetAxis().SetLimits(*z_lims)
+		
+		if reverse_x_axis:
+			pad.Update()
+			reversed_x_axis = ROOT.TGaxis(
+					pad.GetUxmax(),
+					pad.GetUymin(),
+					pad.GetUxmin(),
+					pad.GetUymin(),
+					-root_object.GetXaxis().GetXmax(),
+					-root_object.GetXaxis().GetXmin(),
+					root_object.GetXaxis().GetNdivisions(),
+					"-"
+			)
+			
+			reversed_x_axis.ImportAxisAttributes(root_object.GetXaxis())
+			reversed_x_axis.SetLabelOffset((-7.5)*root_object.GetXaxis().GetLabelOffset())
+			
+			root_object.GetXaxis().SetLabelSize(0.0)
+			reversed_x_axis.SetTitleSize(0.0)
+			
+			reversed_x_axis.Draw()
+			return reversed_x_axis
+		
+		if reverse_y_axis or reverse_z_axis:
+			#TODO: https://root.cern.ch/root/html/tutorials/hist/reverseaxis.C.html#38
+			log.warning("Reversing the Y/Z-axis is not yet implemented")
 
