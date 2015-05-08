@@ -195,6 +195,9 @@ class PlotRoot(plotbase.PlotBase):
 		cwd = os.getcwd()
 		ROOT.gROOT.LoadMacro(os.path.expandvars("$ARTUSPATH/HarryPlotter/python/utility/tdrstyle.C")) # +"+") # compilation currently does not work
 		ROOT.setTDRStyle()
+		
+		# load custom painter (fixes for horizontal histograms)
+		ROOT.gROOT.LoadMacro(os.path.expandvars("$ARTUSPATH/HarryPlotter/python/utility/customhistogrampainter.C+"))
 
 	def create_canvas(self, plotData):
 		super(PlotRoot, self).create_canvas(plotData)
@@ -506,6 +509,11 @@ class PlotRoot(plotbase.PlotBase):
 				)
 			
 			# draw
+			root_object = plotData.plotdict["root_objects"][nick]
+			if "RTOL" in marker.upper() and isinstance(root_object, ROOT.TH1):
+				root_object.__class__ = ROOT.CustomHistogram
+				root_object.GetPainter()
+			
 			plotData.plotdict["root_objects"][nick].Draw(marker + " SAME")
 			pad.Update()
 	

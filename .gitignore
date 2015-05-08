@@ -4,6 +4,7 @@
 /Makefile
 *.a
 *.so
+*.d
 
 __init__.py
 !Plotting/**/__init__.py
@@ -17,3 +18,5 @@ __init__.py
 /artusExample
 /artus_core_test
 /.python_links
+
+plots
