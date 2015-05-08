@@ -49,8 +49,8 @@ class MplPlotContainer(plotdata.PlotContainer):
 					legend_filename,
 					# TODO cleanly crop figure to legend size
 					# the arguments below are just workarounds :(
-					#bbox_inches='tight',
-					#pad_inches=-1
+					bbox_inches='tight',
+					pad_inches=0.1
 			)
 			log.info("Legend saved to " + legend_filename)
 

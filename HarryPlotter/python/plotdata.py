@@ -28,6 +28,7 @@ class PlotData(object):
 		super(PlotData, self).__init__()
 		self.plotdict = args
 		self.plot = None
+		self.input_json_dicts = []
 	
 	def __del__(self):
 		for root_object in self.plotdict.get("root_objects", []):
@@ -63,6 +64,10 @@ class PlotData(object):
 				url = tools.get_environment_variable('HARRY_URL') + "/%s/%s" % (remote_dir, overview_filename)
 				plots_for_gallery = [p for p in sorted(os.listdir(self.plotdict["output_dir"])) if (('.png' in p) or ('.pdf' in p))]
 				plots_to_copy = [os.path.basename(filename), overview_filename]
+				if self.plotdict.get('save_legend', False):
+					for f in self.plotdict['formats']:
+						plots_to_copy.append(".".join([self.plotdict['save_legend'], f]))
+
 				html_content = ""
 
 				log.info("Copying plots to webspace...")
