@@ -197,37 +197,37 @@ class PlotMpl(plotbase.PlotBase):
 
 			if isinstance(root_object, ROOT.TGraph):
 				self.plot_dimension = 1
-				mplhist = MplGraph(root_object)
-				self.plot_errorbar(mplhist, ax=ax,
+				self.mplhist = MplGraph(root_object)
+				self.plot_errorbar(self.mplhist, ax=ax,
 				                   show_xerr=x_error, show_yerr=y_error,
 				                   color=color, fmt=marker, capsize=0,
 				                   linestyle=line_style, label=label, zorder=zorder)
 
 			elif isinstance(root_object, ROOT.TH2):
-				mplhist = MplHisto(root_object)
+				self.mplhist = MplHisto(root_object)
 				if plotData.plotdict['3d'] is not False:
 					self.plot_dimension = 3
 				else:
-					self.plot_dimension = mplhist.dimension
+					self.plot_dimension = self.mplhist.dimension
 				vmin = plotData.plotdict["z_lims"][0] if plotData.plotdict["z_lims"] else None
 				vmax = plotData.plotdict["z_lims"][1] if plotData.plotdict["z_lims"] else None
 				cmap = plt.cm.get_cmap(plotData.plotdict["colormap"])
 
 				if plotData.plotdict["3d"] is not False:
-					self.image = self.plot_3d(mplhist, ax=ax, cmap=cmap, angle=plotData.plotdict["3d"])
+					self.image = self.plot_3d(self.mplhist, ax=ax, cmap=cmap, angle=plotData.plotdict["3d"])
 				else:
-					self.image = self.plot_contour1d(mplhist, ax=ax, vmin=vmin, vmax=vmax, z_log=plotData.plotdict["z_log"], cmap=cmap)
+					self.image = self.plot_contour1d(self.mplhist, ax=ax, vmin=vmin, vmax=vmax, z_log=plotData.plotdict["z_log"], cmap=cmap)
 
 			elif isinstance(root_object, ROOT.TH1):
-				mplhist = MplHisto(root_object)
-				self.plot_dimension = mplhist.dimension
+				self.mplhist = MplHisto(root_object)
+				self.plot_dimension = self.mplhist.dimension
 
 				if marker=="bar":
-					self.plot_hist1d(mplhist, style='bar', ax=ax, show_yerr=y_error, label=label, color=color, edgecolor=edgecolor, alpha=1.0, zorder=zorder)
+					self.plot_hist1d(self.mplhist, style='bar', ax=ax, show_yerr=y_error, label=label, color=color, edgecolor=edgecolor, alpha=1.0, zorder=zorder)
 				elif marker=='fill':
-					self.plot_hist1d(mplhist, style='fill', ax=ax, show_yerr=y_error, label=label, color=color, edgecolor=edgecolor, alpha=1.0, zorder=zorder)
+					self.plot_hist1d(self.mplhist, style='fill', ax=ax, show_yerr=y_error, label=label, color=color, edgecolor=edgecolor, alpha=1.0, zorder=zorder)
 				else:
-					self.plot_errorbar(mplhist, ax=ax,
+					self.plot_errorbar(self.mplhist, ax=ax,
 					                   show_xerr=x_error, show_yerr=y_error,
 					                   step=step, color=color, fmt=marker,
 					                   capsize=2, linestyle=line_style, label=label, zorder=zorder)
@@ -257,11 +257,14 @@ class PlotMpl(plotbase.PlotBase):
 		ax.set_ylabel(self.nicelabels.get_nice_label(plotData.plotdict["y_label"]), position=(0., 1.), va='top', ha='right')
 
 		# set axis ticks
-		if plotData.plotdict["x_ticks"] is not None:
+		if plotData.plotdict["x_ticks"] is not None and self.mplhist.xlabels is None:
 			ax.set_xticks(plotData.plotdict["x_ticks"])
+		elif self.mplhist.xlabels is not None:
+			plt.xticks(np.arange(len(self.mplhist.x)), self.mplhist.xlabels, rotation='75')
 		if plotData.plotdict["y_ticks"] is not None:
 			ax.set_yticks(plotData.plotdict["y_ticks"])
-		ax.ticklabel_format(style='sci',scilimits=(-3,4),axis='both')
+		axis = 'both' if (self.mplhist.xlabels == None) else 'y'
+		ax.ticklabel_format(style='sci',scilimits=(-3,4),axis=axis)
 
 		# set axis limits
 		if self.plot_dimension != 3:

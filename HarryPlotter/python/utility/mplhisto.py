@@ -69,6 +69,11 @@ class MplHisto(object):
 		self.xlabel = roothisto.GetXaxis().GetTitle()
 		self.ylabel = roothisto.GetYaxis().GetTitle()
 
+		#labeled bins
+		self.xlabels = np.array([roothisto.GetXaxis().GetBinLabel(i) for i in xrange(1, roothisto.GetNbinsX() +1)])
+		#if GetBinLabel is empty, the returned strings have length 0. Sum of Zeroes is 0, so set self.xlabels to None
+		self.xlabels = self.xlabels if(sum(np.array([len(i) for i in self.xlabels]))) else None
+
 		# bin center
 		self.x = np.array([roothisto.GetXaxis().GetBinCenter(i) for i in xrange(1, roothisto.GetNbinsX() +1)])
 		# lower bin edge
