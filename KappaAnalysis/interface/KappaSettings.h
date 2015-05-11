@@ -222,6 +222,9 @@ public:
 	IMPL_SETTING(int, MaxNTaus);
 	IMPL_SETTING(int, MaxNJets);
 	
+	IMPL_SETTING(int, MinNPU);
+	IMPL_SETTING(int, MaxNPU);
+	
 	IMPL_SETTING_DEFAULT(size_t, MinNMatchedElectrons, 0);
 	IMPL_SETTING_DEFAULT(size_t, MinNMatchedMuons, 0);
 	IMPL_SETTING_DEFAULT(size_t, MinNMatchedTaus, 0);
