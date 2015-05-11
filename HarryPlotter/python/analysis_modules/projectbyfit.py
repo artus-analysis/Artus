@@ -25,8 +25,8 @@ class ProjectByFit(analysisbase.AnalysisBase):
 								help="Function to project along Y-Axis")
 		self.projectbyfit_options.add_argument("--projection-parameters", type=str, nargs="+", default=None,
 								help="Starting parameters for the fit, comma seperated.")
-		self.projectbyfit_options.add_argument("--projection-to-plot", type=int, nargs="+", default=0,
-								help="Parameter number that should be plotted.")
+		self.projectbyfit_options.add_argument("--projection-to-plot", type=str, nargs="+", default="0",
+								help="Parameter number that should be plotted or TFormula to combine parameters of fit.")
 		self.projectbyfit_options.add_argument("--projection-fit-range", type=str, nargs="+", default=None,
 								help="Y-Range to perform the fit in the format \"low,high\". Default is the whole range of the input 2D Histogram.")
 		self.projectbyfit_options.add_argument("--projection-to-nick", type=str, nargs="+", default="nick0",
@@ -70,7 +70,13 @@ class ProjectByFit(analysisbase.AnalysisBase):
 				root_function = functionplot.FunctionPlot.create_tf1(function, fit_min, fit_max, start_parameters, nick=nick)
 
 				histogram_2D.FitSlicesY(root_function)
-				fitted_histogram = copy.deepcopy(ROOT.gDirectory.Get(histogram_2D.GetName() + "_" + str(output_selection) ))
+				if(output_selection.isdigit()):
+					fitted_histogram = copy.deepcopy(ROOT.gDirectory.Get(histogram_2D.GetName() + "_" + str(output_selection) ))
+				else:
+					fitted_histograms = []
+					for i in range(len(start_parameters)):
+						fitted_histograms.append(copy.deepcopy(ROOT.gDirectory.Get(histogram_2D.GetName() + "_" + str(i) )))
+					fitted_histogram = self.postprocess_fits(fitted_histograms, output_selection)
 			elif fit_backend == "RooFit":
 				fitted_histogram = self.fitSlicesRooFit(histogram_2D, function, start_parameters, output_selection)
 			#remove original histogram and replace by projection
@@ -101,3 +107,18 @@ class ProjectByFit(analysisbase.AnalysisBase):
 			result_histo.SetBinError(ibin+1, error)
 		return result_histo
 
+	@staticmethod
+	def postprocess_fits(fitted_histograms, equation):
+		result_histo = ROOT.TH1F(fitted_histograms[0].GetName() + "_projection", "", 
+		                         fitted_histograms[0].GetNbinsX(),
+		                         fitted_histograms[0].GetXaxis().GetXmin(),
+		                         fitted_histograms[0].GetXaxis().GetXmax())
+		root_formula = ROOT.TFormula("postprocess_fits", equation)
+
+		for ibin in xrange(1, fitted_histograms[0].GetNbinsX()+1):
+
+			parameters = []
+			for i, fitted_histogram in enumerate(fitted_histograms):
+				root_formula.SetParameter(i, fitted_histogram.GetBinContent(ibin))
+			result_histo.SetBinContent(ibin, root_formula.Eval(0))
+		return result_histo
