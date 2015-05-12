@@ -32,12 +32,12 @@ public:
 	{
 		NONE = 0,
 		ALGORITHMIC = 1,
-		PHYSIC = 2,
+		PHYSICS = 2,
 	};
 	static JetMatchingAlgorithm ToJetMatchingAlgorithm(std::string const& jetMatchingAlgorithm)
 	{
 		if (jetMatchingAlgorithm == "algorithmic") return JetMatchingAlgorithm::ALGORITHMIC;
-		else if (jetMatchingAlgorithm == "physic") return JetMatchingAlgorithm::PHYSIC;
+		else if (jetMatchingAlgorithm == "physics") return JetMatchingAlgorithm::PHYSICS;
 		else return JetMatchingAlgorithm::NONE;
 	}
 	

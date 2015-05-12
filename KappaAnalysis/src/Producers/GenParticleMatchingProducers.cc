@@ -171,7 +171,7 @@ KGenParticle* RecoJetGenParticleMatchingProducer::Match(event_type const& event,
 	// flavour is only well defined if exactly ONE matching parton!
 	if (nMatchingPhysPartons == 1)
 	{
-		if (jetMatchingAlgorithm == JetMatchingAlgorithm::PHYSIC)
+		if (jetMatchingAlgorithm == JetMatchingAlgorithm::PHYSICS)
 		{
 			return &(*hardestPhysParton);
 		}
