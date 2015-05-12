@@ -24,135 +24,15 @@ void RecoJetGenParticleMatchingProducer::Produce(event_type const& event, produc
 		for (std::vector<KBasicJet*>::iterator validJet = product.m_validJets.begin();
 			 validJet != product.m_validJets.end();)
 		{
-			bool jetMatched = false;
-			float deltaR = 0.0;
-			size_t nMatchingAlgoPartons = 0;
-			size_t nMatchingPhysPartons = 0;
-			KGenParticle* hardestPhysParton = NULL;
-			KGenParticle* hardestParton = NULL;
-			KGenParticle* hardestBQuark = NULL;
-			KGenParticle* hardestCQuark = NULL;
-			
-			// loop over all genParticles 
-			for (std::vector<KGenParticle>::iterator genParticle = event.m_genParticles->begin();
-			     genParticle != event.m_genParticles->end(); ++genParticle)
+			KGenParticle* matchedParticle = Match(event, product, settings, static_cast<KLV*>(*validJet));
+			if (matchedParticle != NULL)
 			{
-				// only use genParticles with id 21, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5
-				if ((abs(genParticle->pdgId()) == 1) ||
-				    (abs(genParticle->pdgId()) == 2) ||
-				    (abs(genParticle->pdgId()) == 3) ||
-				    (abs(genParticle->pdgId()) == 4) ||
-				    (abs(genParticle->pdgId()) == 5) ||
-				    (abs(genParticle->pdgId()) == 21))
-				{
-					deltaR = ROOT::Math::VectorUtil::DeltaR((*validJet)->p4, genParticle->p4);
-					if (deltaR < settings.GetDeltaRMatchingRecoJetGenParticle())
-					{
-						// Algorithmic:
-						if (genParticle->status() != 3)
-						{
-							++nMatchingAlgoPartons;
-							if (std::abs(genParticle->pdgId()) == 5)
-							{ 
-								if (hardestBQuark == NULL)
-								{
-									hardestBQuark = &(*genParticle);
-								}
-								else if (genParticle->p4.Pt() > hardestBQuark->p4.Pt())
-								{
-									hardestBQuark = &(*genParticle);
-								}
-							}
-							else if (std::abs(genParticle->pdgId()) == 4)
-							{ 
-								if (hardestCQuark == NULL)
-								{
-									hardestCQuark = &(*genParticle);
-								}
-								else if (genParticle->p4.Pt() > hardestCQuark->p4.Pt())
-								{
-									hardestCQuark = &(*genParticle);
-								}
-							}
-							else if (hardestParton == NULL)
-							{
-								hardestParton = &(*genParticle);
-							}
-							else if (genParticle->p4.Pt() > hardestParton->p4.Pt())
-							{
-								hardestParton = &(*genParticle);
-							}
-						}
-						
-						// Physics:
-						else
-						{
-							++nMatchingPhysPartons;
-							hardestPhysParton = &(*genParticle);
-						}
-					} 
-				}
-			}
-			
-			// ALGORITHMIC DEFINITION
-			if (nMatchingAlgoPartons)	  // exactly one match
-			{
-				if (jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
-				{
-					if(hardestBQuark)
-					{
-						product.m_genParticleMatchedJets[*validJet] = &(*hardestBQuark);
-					}
-					else if(hardestCQuark)
-					{
-						product.m_genParticleMatchedJets[*validJet] = &(*hardestCQuark);
-					}
-					else
-					{
-						product.m_genParticleMatchedJets[*validJet] = &(*hardestParton);
-					}
-					jetMatched = true;
-				}
-			}
-			else if (hardestBQuark && hardestBQuark->p4.Pt() > 0.0)
-			{
-				if (jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
-				{
-					product.m_genParticleMatchedJets[*validJet] = &(*hardestBQuark);
-					jetMatched = true;
-				}
-			}
-			else if (hardestCQuark && hardestCQuark->p4.Pt() > 0.0)
-			{
-				if (jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
-				{
-					product.m_genParticleMatchedJets[*validJet] = &(*hardestCQuark);
-					jetMatched = true;
-				}
-			}
-			else if (nMatchingAlgoPartons)
-			{
-				if (jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
-				{
-					product.m_genParticleMatchedJets[*validJet] = &(*hardestParton);
-					jetMatched = true;
-				}
-			}
-			
-			// PHYSICS DEFINITION
-			// flavour is only well defined if exactly ONE matching parton!
-			if (nMatchingPhysPartons == 1)
-			{
-				if (jetMatchingAlgorithm == JetMatchingAlgorithm::PHYSIC)
-				{
-					product.m_genParticleMatchedJets[*validJet] = &(*hardestPhysParton);
-					jetMatched = true;
-				}
+				product.m_genParticleMatchedJets[*validJet] = matchedParticle;
 			}
 
 			// invalidate (non) matching jets if requested
-			if (((! jetMatched) && settings.GetInvalidateNonGenParticleMatchingRecoJets()) ||
-			    (jetMatched && settings.GetInvalidateGenParticleMatchingRecoJets()))
+			if (((matchedParticle == NULL) && settings.GetInvalidateNonGenParticleMatchingRecoJets()) ||
+			    ((matchedParticle != NULL) && settings.GetInvalidateGenParticleMatchingRecoJets()))
 			{
 				product.m_invalidJets.push_back(*validJet);
 				validJet = product.m_validJets.erase(validJet);
@@ -171,6 +51,132 @@ void RecoJetGenParticleMatchingProducer::Produce(event_type const& event, produc
 					  { return jet1->p4.Pt() > jet2->p4.Pt(); });
 		}
 	}
+}
+
+// This is the actual reco jet gen particle matcher
+KGenParticle* RecoJetGenParticleMatchingProducer::Match(event_type const& event, product_type const& product,
+                                                        setting_type const& settings, KLV* const recoJet) const
+{
+	float deltaR = 0.0;
+	size_t nMatchingAlgoPartons = 0;
+	size_t nMatchingPhysPartons = 0;
+	KGenParticle* hardestPhysParton = NULL;
+	KGenParticle* hardestParton = NULL;
+	KGenParticle* hardestBQuark = NULL;
+	KGenParticle* hardestCQuark = NULL;
+
+	// loop over all genParticles 
+	for (std::vector<KGenParticle>::iterator genParticle = event.m_genParticles->begin();
+	     genParticle != event.m_genParticles->end(); ++genParticle)
+	{
+		// only use genParticles with id 21, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5
+		if ((abs(genParticle->pdgId()) == 1) ||
+		    (abs(genParticle->pdgId()) == 2) ||
+		    (abs(genParticle->pdgId()) == 3) ||
+		    (abs(genParticle->pdgId()) == 4) ||
+		    (abs(genParticle->pdgId()) == 5) ||
+		    (genParticle->pdgId()) == 21)
+		{
+			deltaR = ROOT::Math::VectorUtil::DeltaR((recoJet)->p4, genParticle->p4);
+			if (deltaR < settings.GetDeltaRMatchingRecoJetGenParticle())
+			{
+				// Algorithmic:
+				if (genParticle->status() != 3)
+				{
+					++nMatchingAlgoPartons;
+					if (std::abs(genParticle->pdgId()) == 5)
+					{ 
+						if (hardestBQuark == NULL)
+						{
+							hardestBQuark = &(*genParticle);
+						}
+						else if (genParticle->p4.Pt() > hardestBQuark->p4.Pt())
+						{
+							hardestBQuark = &(*genParticle);
+						}
+					}
+					else if (std::abs(genParticle->pdgId()) == 4)
+					{ 
+						if (hardestCQuark == NULL)
+						{
+							hardestCQuark = &(*genParticle);
+						}
+						else if (genParticle->p4.Pt() > hardestCQuark->p4.Pt())
+						{
+							hardestCQuark = &(*genParticle);
+						}
+					}
+					else if (hardestParton == NULL)
+					{
+						hardestParton = &(*genParticle);
+					}
+					else if (genParticle->p4.Pt() > hardestParton->p4.Pt())
+					{
+						hardestParton = &(*genParticle);
+					}
+				}
+
+				// Physics:
+				else
+				{
+					++nMatchingPhysPartons;
+					hardestPhysParton = &(*genParticle);
+				}
+			} 
+		}
+	}
+
+	// ALGORITHMIC DEFINITION
+	if (nMatchingAlgoPartons)	  // exactly one match
+	{
+		if (jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
+		{
+			if(hardestBQuark)
+			{
+				return &(*hardestBQuark);
+			}
+			else if(hardestCQuark)
+			{
+				return &(*hardestCQuark);
+			}
+			else
+			{
+				return &(*hardestParton);
+			}
+		}
+	}
+	else if (hardestBQuark && hardestBQuark->p4.Pt() > 0.0)
+	{
+		if (jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
+		{
+			return &(*hardestBQuark);
+		}
+	}
+	else if (hardestCQuark && hardestCQuark->p4.Pt() > 0.0)
+	{
+		if (jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
+		{
+			return &(*hardestCQuark);
+		}
+	}
+	else if (nMatchingAlgoPartons)
+	{
+		if (jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
+		{
+			return &(*hardestParton);
+		}
+	}
+
+	// PHYSICS DEFINITION
+	// flavour is only well defined if exactly ONE matching parton!
+	if (nMatchingPhysPartons == 1)
+	{
+		if (jetMatchingAlgorithm == JetMatchingAlgorithm::PHYSIC)
+		{
+			return &(*hardestPhysParton);
+		}
+	}
+	return NULL;
 }
 
 

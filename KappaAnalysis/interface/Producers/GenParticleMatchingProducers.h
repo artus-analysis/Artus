@@ -48,6 +48,8 @@ public:
 	virtual void Produce(event_type const& event, product_type& product,
 						 setting_type const& settings) const ARTUS_CPP11_OVERRIDE;
 
+	KGenParticle* Match(event_type const& event, product_type const& product,
+                        setting_type const& settings, KLV* const recoJet) const;
 
 private:
 	JetMatchingAlgorithm jetMatchingAlgorithm;
