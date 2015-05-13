@@ -347,8 +347,8 @@ class ArtusWrapper(object):
 		                                 help="Measure performance with profiler.")
 		runningOptionsGroup.add_argument("-r", "--root", default=False, action="store_true",
 		                                 help="Open output file in ROOT TBrowser after completion.")
-		runningOptionsGroup.add_argument("-b", "--batch", default=False, action="store_true",
-		                                 help="Run with grid-control.")
+		runningOptionsGroup.add_argument("-b", "--batch", default=False, const="local", nargs="?",
+		                                 help="Run with grid-control. Optionally select backend. [Default: %(default)s]")
 		runningOptionsGroup.add_argument("--no-log-to-se", default=False, action="store_true",
 		                                 help="Do not write logfile in batch mode directly to SE.")
 		runningOptionsGroup.add_argument("--files-per-job", type=int, default=15,
@@ -411,7 +411,7 @@ class ArtusWrapper(object):
 		
 		sepath = "se path = " + (self._args.se_path if self._args.se_path else sepathRaw)
 		workdir = "workdir = " + os.path.join(self.projectPath, "workdir")
-
+		backend = open(os.path.expandvars("$CMSSW_BASE/src/Artus/Configuration/data/grid-control_backend_" + self._args.batch + ".conf"), 'r').read()
 		self.replacingDict = dict(
 				include = ("include = " + " ".join(self._args.gc_config_includes) if self._args.gc_config_includes else ""),
 				epilogexecutable = "epilog executable = $CMSSW_BASE/bin/" + os.path.join(os.path.expandvars("$SCRAM_ARCH"), os.path.basename(sys.argv[0])),
@@ -426,7 +426,8 @@ class ArtusWrapper(object):
 				cmdargs = "cmdargs = " + self._args.cmdargs,
 				dataset = "dataset = \n\t:ListProvider:" + dbsFileBasepath,
 				epilogarguments = epilogArguments,
-				seoutputfiles = "se output files = *.txt *.root" if self._args.no_log_to_se else "se output files = *.root"
+				seoutputfiles = "se output files = *.txt *.root" if self._args.no_log_to_se else "se output files = *.root",
+				backend = backend
 		)
 
 		self.modify_replacing_dict()
