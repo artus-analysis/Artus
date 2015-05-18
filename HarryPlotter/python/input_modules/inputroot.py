@@ -73,7 +73,8 @@ class InputRoot(inputfile.InputFile):
 		plotData.plotdict["folders"] = [folders.split() if folders else [""] for folders in plotData.plotdict["folders"]]
 		
 		inputbase.InputBase.prepare_nicks(plotData)
-	
+		self.read_input_json_dicts(plotData)
+
 	def run(self, plotData):
 		
 		root_tools = roottools.RootTools()
@@ -153,10 +154,16 @@ class InputRoot(inputfile.InputFile):
 			# merging histograms with same nick names is done in upper class
 			plotData.plotdict.setdefault("root_objects", {}).setdefault(nick, []).append(root_histogram)
 
-			# if Artus config dict is present in root file ->  append to plotdict
+		# run upper class function at last
+		super(InputRoot, self).run(plotData)
+
+
+	def read_input_json_dicts(self, plotData):
+		"""If Artus config dict is present in root file -> append to plotdict"""
+		for root_files in plotData.plotdict["files"]:
 			# TODO: make TChain instead of using only first file?
 			with TFileContextManager(root_files[0], "READ") as tfile:
-				keys, names = zip(*root_tools.walk_root_directory(tfile))
+				keys, names = zip(*roottools.RootTools.walk_root_directory(tfile))
 			if jsonTools.JsonDict.PATH_TO_ROOT_CONFIG in names:
 				input_json_dict = jsonTools.JsonDict(root_files)
 			else:
@@ -166,6 +173,3 @@ class InputRoot(inputfile.InputFile):
 		# Raise warning if config dict could be read out for some, but not for all files
 		if ({} in plotData.input_json_dicts and not all([i == {} for i in plotData.input_json_dicts])):
 			log.warning("'config' dict could not be read for all input files!")
-
-		# run upper class function at last
-		super(InputRoot, self).run(plotData)
