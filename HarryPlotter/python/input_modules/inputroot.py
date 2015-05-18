@@ -138,6 +138,9 @@ class InputRoot(inputfile.InputFile):
 						y_bins=y_bins,
 						z_bins=z_bins,
 						name=None)
+			elif root_object_type == None:
+				log.critical("Error getting ROOT object from file. Exiting.")
+				sys.exit(1)
 			
 			log.debug("Input object %d (nick %s):" % (index, nick))
 			if log.isEnabledFor(logging.DEBUG):
