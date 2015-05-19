@@ -142,10 +142,13 @@ public:
 	IMPL_SETTING_DEFAULT(float, MinDeltaRValidMuons, 0.5);
 	IMPL_SETTING_DEFAULT(float, MinDeltaRValidTaus, 0.5);
 	IMPL_SETTING_DEFAULT(float, MinDeltaRValidLeptons, 0.5);
-
-	IMPL_SETTING_INTLIST_DEFAULT(RecoElectronMatchingGenParticlePdgIds, {});
-	IMPL_SETTING_INTLIST_DEFAULT(RecoMuonMatchingGenParticlePdgIds, {});
-	IMPL_SETTING_INTLIST_DEFAULT(RecoTauMatchingGenParticlePdgIds, {});
+	
+	std::vector<int> RecoElectronMatchingGenParticlePdgIds = {-11, 11};
+	std::vector<int> RecoMuonMatchingGenParticlePdgIds = {-13, 13};
+	std::vector<int> RecoTauMatchingGenParticlePdgIds = {-15, 15};
+	IMPL_SETTING_INTLIST_DEFAULT(RecoElectronMatchingGenParticlePdgIds, RecoElectronMatchingGenParticlePdgIds);
+	IMPL_SETTING_INTLIST_DEFAULT(RecoMuonMatchingGenParticlePdgIds, RecoMuonMatchingGenParticlePdgIds);
+	IMPL_SETTING_INTLIST_DEFAULT(RecoTauMatchingGenParticlePdgIds, RecoTauMatchingGenParticlePdgIds);
 
 	IMPL_SETTING_DEFAULT(int, RecoElectronMatchingGenParticleStatus, -1);
 	IMPL_SETTING_DEFAULT(int, RecoMuonMatchingGenParticleStatus, -1);
