@@ -265,6 +265,9 @@ class PlotMpl(plotbase.PlotBase):
 			ax.set_yticks(plotData.plotdict["y_ticks"])
 		axis = 'both' if (self.mplhist.xlabels == None) else 'y'
 		ax.ticklabel_format(style='sci',scilimits=(-3,4),axis=axis)
+		for axis, axisname in zip([ax.xaxis, ax.yaxis], ['x', 'y']):
+			if plotData.plotdict[axisname+"_tick_labels"] is not None:
+				axis.set_ticklabels(plotData.plotdict[axisname+"_tick_labels"])
 
 		# set axis limits
 		if self.plot_dimension != 3:
