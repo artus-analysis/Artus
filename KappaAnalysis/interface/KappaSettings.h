@@ -262,6 +262,9 @@ public:
 	IMPL_SETTING_STRINGLIST_DEFAULT(GenParticleTypes, {});
 	IMPL_SETTING_INTLIST_DEFAULT(GenParticlePdgIds, {});
 	IMPL_SETTING_DEFAULT(int, GenParticleStatus, 0);
+	IMPL_SETTING_DEFAULT(int, GenElectronStatus, 0);
+	IMPL_SETTING_DEFAULT(int, GenMuonStatus, 0);
+	IMPL_SETTING_DEFAULT(int, GenTauStatus, 0);
 
 	IMPL_SETTING(std::string, PileupWeightFile);
 	

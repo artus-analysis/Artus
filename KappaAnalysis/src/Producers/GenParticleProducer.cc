@@ -21,7 +21,8 @@ void GenParticleProducer::Produce(KappaEvent const& event, KappaProduct& product
                      KappaSettings const& settings) const
 {
 	assert(event.m_genParticles);
-	
+
+	// gen particles (can be used for quarks, W, Z, .., but also for leptons if needed)
 	if (std::find(genParticleTypes.begin(), genParticleTypes.end(), GenParticleType::GENPARTICLE)
 	    != genParticleTypes.end())
 	{
@@ -34,6 +35,57 @@ void GenParticleProducer::Produce(KappaEvent const& event, KappaProduct& product
 				if ((settings.GetGenParticleStatus() == 0) || ( settings.GetGenParticleStatus() == part->status()))
 				{
 					product.m_genParticlesMap[part->pdgId()].push_back(&(*part));
+				}
+			}
+		}
+	}
+
+	// gen electrons
+	if (std::find(genParticleTypes.begin(), genParticleTypes.end(), GenParticleType::GENELECTRON)
+	    != genParticleTypes.end())
+	{
+		for (KGenParticles::iterator part = event.m_genParticles->begin();
+		     part != event.m_genParticles->end(); ++part)
+		{
+			if (abs(part->pdgId()) == 11)
+			{
+				if ((settings.GetGenElectronStatus() == 0) || ( settings.GetGenElectronStatus() == part->status()))
+				{
+					product.m_genElectrons.push_back(&(*part));
+				}
+			}
+		}
+	}
+
+	// gen muons
+	if (std::find(genParticleTypes.begin(), genParticleTypes.end(), GenParticleType::GENMUON)
+	    != genParticleTypes.end())
+	{
+		for (KGenParticles::iterator part = event.m_genParticles->begin();
+		     part != event.m_genParticles->end(); ++part)
+		{
+			if (abs(part->pdgId()) == 13)
+			{
+				if ((settings.GetGenMuonStatus() == 0) || ( settings.GetGenMuonStatus() == part->status()))
+				{
+					product.m_genMuons.push_back(&(*part));
+				}
+			}
+		}
+	}
+
+	// gen taus
+	if (std::find(genParticleTypes.begin(), genParticleTypes.end(), GenParticleType::GENTAU)
+	    != genParticleTypes.end())
+	{
+		for (KGenParticles::iterator part = event.m_genParticles->begin();
+		     part != event.m_genParticles->end(); ++part)
+		{
+			if (abs(part->pdgId()) == 15)
+			{
+				if ((settings.GetGenTauStatus() == 0) || ( settings.GetGenTauStatus() == part->status()))
+				{
+					product.m_genTaus.push_back(&(*part));
 				}
 			}
 		}
