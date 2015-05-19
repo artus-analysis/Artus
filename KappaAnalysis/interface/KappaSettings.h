@@ -146,6 +146,10 @@ public:
 	IMPL_SETTING_INTLIST_DEFAULT(RecoElectronMatchingGenParticlePdgIds, {});
 	IMPL_SETTING_INTLIST_DEFAULT(RecoMuonMatchingGenParticlePdgIds, {});
 	IMPL_SETTING_INTLIST_DEFAULT(RecoTauMatchingGenParticlePdgIds, {});
+
+	IMPL_SETTING_DEFAULT(int, RecoElectronMatchingGenParticleStatus, -1);
+	IMPL_SETTING_DEFAULT(int, RecoMuonMatchingGenParticleStatus, -1);
+	IMPL_SETTING_DEFAULT(int, RecoTauMatchingGenParticleStatus, -1);
 	
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoJetGenParticle, 0.3);
 	IMPL_SETTING_DEFAULT(std::string, JetMatchingAlgorithm, "algorithmic");

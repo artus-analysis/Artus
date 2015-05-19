@@ -190,6 +190,7 @@ RecoElectronGenParticleMatchingProducer::RecoElectronGenParticleMatchingProducer
 	                                                     &product_type::m_validElectrons,
 	                                                     &product_type::m_invalidElectrons,
 	                                                     &setting_type::GetRecoElectronMatchingGenParticlePdgIds,
+	                                                     &setting_type::GetRecoElectronMatchingGenParticleStatus,
 	                                                     &setting_type::GetDeltaRMatchingRecoElectronsGenParticle,
 	                                                     &setting_type::GetInvalidateNonGenParticleMatchingRecoElectrons,
 	                                                     &setting_type::GetInvalidateGenParticleMatchingRecoElectrons)
@@ -206,6 +207,7 @@ RecoMuonGenParticleMatchingProducer::RecoMuonGenParticleMatchingProducer() :
 	                                                 &product_type::m_validMuons,
 	                                                 &product_type::m_invalidMuons,
 	                                                 &setting_type::GetRecoMuonMatchingGenParticlePdgIds,
+	                                                 &setting_type::GetRecoMuonMatchingGenParticleStatus,
 	                                                 &setting_type::GetDeltaRMatchingRecoMuonGenParticle,
 	                                                 &setting_type::GetInvalidateNonGenParticleMatchingRecoMuons,
 	                                                 &setting_type::GetInvalidateGenParticleMatchingRecoMuons)
@@ -222,6 +224,7 @@ RecoTauGenParticleMatchingProducer::RecoTauGenParticleMatchingProducer() :
 	                                                &product_type::m_validTaus,
 	                                                &product_type::m_invalidTaus,
 	                                                &setting_type::GetRecoTauMatchingGenParticlePdgIds,
+	                                                &setting_type::GetRecoTauMatchingGenParticleStatus,
 	                                                &setting_type::GetDeltaRMatchingRecoTauGenParticle,
 	                                                &setting_type::GetInvalidateNonGenParticleMatchingRecoTaus,
 	                                                &setting_type::GetInvalidateGenParticleMatchingRecoTaus)
