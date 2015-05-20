@@ -355,11 +355,16 @@ class PlotBase(processor.Processor):
 	
 	def add_texts(self, plotData):
 		self.dataset_title = ""
+		run_periods = []
+		# if lumi and energy are available:
 		if (not plotData.plotdict["lumis"] is None) and (not plotData.plotdict["energies"] is None):
-			run_periods = []
 			for lumi, energy in zip(plotData.plotdict["lumis"], plotData.plotdict["energies"]):
 				run_periods.append("%s \,\mathrm{fb}^{-1} (%s \,TeV)" % (str(lumi), str(int(energy))))
-			self.dataset_title = "$" + (" + ".join(run_periods)) + "$"
+		# if only energy is available (MC-plots):
+		elif (not plotData.plotdict["energies"] is None):
+			for energy in plotData.plotdict["energies"]:
+				run_periods.append("\sqrt{s} = %s \,TeV" % str(int(energy)))
+		self.dataset_title = "$" + (" + ".join(run_periods)) + "$"
 	
 	def plot_end(self, plotData):
 		if plotData.plotdict["dict"]:
