@@ -364,7 +364,8 @@ class PlotBase(processor.Processor):
 		elif (not plotData.plotdict["energies"] is None):
 			for energy in plotData.plotdict["energies"]:
 				run_periods.append("\sqrt{s} = %s \,TeV" % str(int(energy)))
-		self.dataset_title = "$" + (" + ".join(run_periods)) + "$"
+		if len(run_periods) > 0:
+			self.dataset_title = "$" + (" + ".join(run_periods)) + "$"
 	
 	def plot_end(self, plotData):
 		if plotData.plotdict["dict"]:
