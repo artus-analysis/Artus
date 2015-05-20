@@ -209,8 +209,15 @@ class PlotMpl(plotbase.PlotBase):
 					self.plot_dimension = 3
 				else:
 					self.plot_dimension = self.mplhist.dimension
-				vmin = plotData.plotdict["z_lims"][0] if plotData.plotdict["z_lims"] else None
-				vmax = plotData.plotdict["z_lims"][1] if plotData.plotdict["z_lims"] else None
+				if plotData.plotdict["z_lims"]:
+					vmin = plotData.plotdict["z_lims"][0]
+					vmax = plotData.plotdict["z_lims"][1]
+				elif plotData.plotdict["z_log"]:
+					vmin = 1
+					vmax = None
+				else:
+					vmin = None
+					vmax = None
 				cmap = plt.cm.get_cmap(plotData.plotdict["colormap"])
 
 				if plotData.plotdict["3d"] is not False:
