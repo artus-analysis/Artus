@@ -32,10 +32,9 @@ void PUWeightProducer::Produce(KappaEvent const& event, KappaProduct& product,
 {
 	assert(event.m_genEventInfo != NULL);
 	
-	double npu = event.m_genEventInfo->nPUMean;
-	unsigned int puBin = (npu * m_bins);
+	unsigned int puBin = (event.m_genEventInfo->nPUMean * m_bins);
 	if (puBin < m_pileupWeights.size())
-		product.m_weights["puWeight"] = m_pileupWeights.at(int(npu * m_bins));
+		product.m_weights["puWeight"] = m_pileupWeights.at(puBin);
 	else
 		product.m_weights["puWeight"] = 0.0;
 }
