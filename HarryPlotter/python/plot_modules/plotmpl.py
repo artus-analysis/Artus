@@ -73,6 +73,7 @@ class PlotMpl(plotbase.PlotBase):
 		self.default_marker_colors = ['black', 'red', 'blue', 'green', 'purple', 'orange', 'cyan']
 		self.set_matplotlib_defaults()
 		self.nicelabels = labels.LabelsDict()
+		self.default_linestyles = ['--', '-.', ':', '-']
 
 
 	def modify_argument_parser(self, parser, args):
@@ -304,13 +305,16 @@ class PlotMpl(plotbase.PlotBase):
 			if plotData.plotdict["y_lims"] is None:
 				ax.set_ylim(ymin=0.9, ymax=ax.get_ylim()[1]*2)
 
+		for y, linestyle in zip(plotData.plotdict["lines"], self.default_linestyles*len(plotData.plotdict["lines"])):
+			ax.axhline(y, color='black', linestyle=linestyle)
+
 		# do special things for subplots
 		if plotData.plotdict["subplot_nicks"]:
 			ax2 = plotData.plot.axes[1]
 
 			# Horizontal line at unity
-			# TODO: should be made optional
-			ax2.axhline(1.0, color='black')
+			for y, linestyle in zip(plotData.plotdict["subplot_lines"], self.default_linestyles*len(plotData.plotdict["subplot_lines"])):
+				ax2.axhline(y, color='black', linestyle=linestyle)
 
 			if plotData.plotdict["y_subplot_lims"] != None:
 				ax2.set_ylim(*plotData.plotdict["y_subplot_lims"])

@@ -106,8 +106,6 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Legend position. The four arguments define the rectangle (x1 y1 x2 y2) for the legend. Without (or with too few) arguments, the default values from [0.6, 0.6, 0.9, 0.9] are used. [Default: %(default)s]")
 		self.formatting_options.add_argument("--legend-markers", type=str, nargs="+",
 		                                     help="Draw options for legend entries.")
-		self.formatting_options.add_argument("--subplot-lines", nargs="+", type=float,
-		                                     help="Place auxiliary lines on the subplot at given y-values.")
 		
 	def prepare_args(self, parser, plotData):
 		super(PlotRoot, self).prepare_args(parser, plotData)
@@ -181,9 +179,6 @@ class PlotRoot(plotbase.PlotBase):
 		if not plotData.plotdict["legend"] is None:
 			plotData.plotdict["legend"] += [0.6, 0.6, 0.9, 0.9][len(plotData.plotdict["legend"]):]
 			plotData.plotdict["legend"] = plotData.plotdict["legend"][:4]
-		
-		if plotData.plotdict["subplot_lines"] is None:
-			plotData.plotdict["subplot_lines"] = []
 		
 		for key in ["labels", "x_label", "y_label", "z_label"]:
 			if isinstance(plotData.plotdict[key], basestring):
