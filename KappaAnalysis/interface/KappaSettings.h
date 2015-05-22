@@ -218,16 +218,19 @@ public:
 	IMPL_SETTING(int, NMuons);
 	IMPL_SETTING(int, NTaus);
 	IMPL_SETTING(int, NJets);
+	IMPL_SETTING(int, NBTaggedJets);
 	
 	IMPL_SETTING(int, MinNElectrons);
 	IMPL_SETTING(int, MinNMuons);
 	IMPL_SETTING(int, MinNTaus);
 	IMPL_SETTING(int, MinNJets);
+	IMPL_SETTING(int, MinNBTaggedJets);
 	
 	IMPL_SETTING(int, MaxNElectrons);
 	IMPL_SETTING(int, MaxNMuons);
 	IMPL_SETTING(int, MaxNTaus);
 	IMPL_SETTING(int, MaxNJets);
+	IMPL_SETTING(int, MaxNBTaggedJets);
 	
 	IMPL_SETTING_DEFAULT(size_t, MinNMatchedElectrons, 0);
 	IMPL_SETTING_DEFAULT(size_t, MinNMatchedMuons, 0);
