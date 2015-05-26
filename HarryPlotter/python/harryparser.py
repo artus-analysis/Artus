@@ -49,6 +49,14 @@ class HarryParser(argparse.ArgumentParser):
 		# Register new keyword 'bool' for parser
 		self.register('type','bool',self._str2bool) 
 
+	def set_defaults(self, **kwargs):
+		# check if argument exists. If not, its most likely an incorrect user input (e.g. misspelling)
+		existing_arguments = [action.dest for action in self._actions]  # is there an easier way to get this list?
+		for argument in kwargs.keys():
+			if argument not in existing_arguments:
+				log.warning("Trying to set unknown argument '{0}'".format(argument))
+		super(HarryParser, self).set_defaults(**kwargs)
+
 	@staticmethod
 	def _str2bool(v):
 		""" Parse string content to bool."""
