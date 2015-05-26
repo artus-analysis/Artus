@@ -265,9 +265,9 @@ class PlotMpl(plotbase.PlotBase):
 		ax.set_ylabel(self.nicelabels.get_nice_label(plotData.plotdict["y_label"]), position=(0., 1.), va='top', ha='right')
 
 		# set axis ticks
-		if plotData.plotdict["x_ticks"] is not None and self.mplhist.xlabels is None:
+		if plotData.plotdict["x_ticks"] is not None and not (hasattr(self.mplhist, "xlabels") and self.mplhist.xlabels is not None):
 			ax.set_xticks(plotData.plotdict["x_ticks"])
-		elif self.mplhist.xlabels is not None:
+		elif hasattr(self.mplhist, "xlabels") and self.mplhist.xlabels is not None:
 			plt.xticks(np.arange(len(self.mplhist.x)), self.mplhist.xlabels, rotation='75')
 		if plotData.plotdict["y_ticks"] is not None:
 			ax.set_yticks(plotData.plotdict["y_ticks"])
