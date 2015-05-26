@@ -70,7 +70,7 @@ class PlotBase(processor.Processor):
 		
 		self.axis_options.add_argument("--z-lims", type=float, nargs=2,
 		                               help="Lower and Upper limit for z-axis.")
-		self.axis_options.add_argument("--z-label", type=str, default="",
+		self.axis_options.add_argument("--z-label", type=str, default="Events",
 		                               help="Z-axis label name. [Default: %(default)s]")
 		self.axis_options.add_argument("--z-log", nargs="?", type="bool", default=False, const=True,
 		                               help="Logarithmic z-axis. [Default: %(default)s]")
