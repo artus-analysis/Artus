@@ -271,7 +271,7 @@ class PlotMpl(plotbase.PlotBase):
 			plt.xticks(np.arange(len(self.mplhist.x)), self.mplhist.xlabels, rotation='75')
 		if plotData.plotdict["y_ticks"] is not None:
 			ax.set_yticks(plotData.plotdict["y_ticks"])
-		axis = 'both' if (self.mplhist.xlabels == None) else 'y'
+		axis = 'both' if (not hasattr(self.mplhist, "xlabels") or self.mplhist.xlabels == None) else 'y'
 		ax.ticklabel_format(style='sci',scilimits=(-3,4),axis=axis)
 		for axis, axisname in zip([ax.xaxis, ax.yaxis], ['x', 'y']):
 			if plotData.plotdict[axisname+"_tick_labels"] is not None:
