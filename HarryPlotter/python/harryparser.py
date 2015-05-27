@@ -30,15 +30,14 @@ class HarryParser(argparse.ArgumentParser):
 		self.module_options = self.add_argument_group('Modules')
 		self.module_options.add_argument("--modules-search-paths", default=[], nargs="+",
 		                                 help="Additional paths to be searched for modules.")
-		self.module_options.add_argument("--input-module", default="InputRoot",
-		                                 help="Input Module. [Default: %(default)s]")
+		self.module_options.add_argument("--input-modules", default="InputRoot", nargs="+",
+		                                 help="Input Modules. [Default: %(default)s]")
 		self.module_options.add_argument("--analysis-modules", default=[], nargs="+",
 		                                 help="Analysis Modules. [Default: %(default)s]")
 		self.module_options.add_argument("--plot-modules", default="PlotMpl", nargs="+",
 		                                 help="Plot Modules. [Default: %(default)s]")
 		self.module_options.add_argument("--list-available-modules", default=False, action="store_true",
 		                                 help="List all available modules.")
-
 		
 		self.json_options = self.add_argument_group('JSON Configs')
 		self.json_options.add_argument("-j", "--json-defaults", nargs="+",

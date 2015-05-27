@@ -168,7 +168,7 @@ class PlotBase(processor.Processor):
 		for label_key, expression_key in zip(["x_label", "y_label", "z_label"],
 		                                   ["x_expressions", "y_expressions", "z_expressions"]):
 			if plotData.plotdict[label_key] == None:
-				if plotData.plotdict["input_module"] == "InputInteractive":
+				if plotData.plotdict["input_modules"] == ["InputInteractive"]:
 					plotData.plotdict[label_key] = str(label_key[1])
 				elif expression_key in plotData.plotdict:
 					plotData.plotdict[label_key] = reduce(lambda a, b: "%s, %s" % (str(a), str(b)), set(plotData.plotdict.get(expression_key, [""])))
@@ -202,7 +202,7 @@ class PlotBase(processor.Processor):
 		# construct file name from x/y/z expressions if not specified by user
 		if plotData.plotdict["filename"] == None:
 			filename = ""
-			if plotData.plotdict["input_module"] == "InputInteractive":
+			if plotData.plotdict["input_modules"] == ["InputInteractive"]:
 				filename = "plot"
 			else:
 				for expressions in [plotData.plotdict["z_expressions"],

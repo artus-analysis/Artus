@@ -116,11 +116,14 @@ class HarryCore(object):
 			return
 		
 		# handle input modules (first)
-		if self._isvalid_processor(self.args["input_module"], processor_type=InputBase):
-			self.processors.append(self.available_processors[self.args["input_module"]]())
-		else:
-			log.info("Provide a valid input module or none at all. Default is \"{0}\"!".format(self.parser.get_default("input_modules")))
-			log.critical("Input module \"{0}\" not found!".format(self.args["input_module"]))
+		if isinstance(self.args["input_modules"], basestring):
+			self.args["input_modules"] = [self.args["input_modules"]]
+		for module in self.args["input_modules"]:
+			if self._isvalid_processor(module, processor_type=InputBase):
+				self.processors.append(self.available_processors[module]())
+			else:
+				log.info("Provide a valid input module or none at all. Default is \"{0}\"!".format(self.parser.get_default("input_modules")))
+				log.critical("Input module \"{0}\" not found!".format(module))
 
 		# handle analysis modules (second)
 		if self.args["analysis_modules"] is None:
