@@ -51,13 +51,20 @@ public:
 		});
 
 		bool bInpData = settings.GetInputIsData();
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("npuMean", [bInpData](event_type const& event, product_type const& product)
+		{
+			return (bInpData ?
+			        DefaultValues::UndefinedDouble :
+			        static_cast<KGenEventInfo*>(event.m_eventInfo)->nPUMean);
+		});
+
 		LambdaNtupleConsumer<TTypes>::AddIntQuantity("npu", [bInpData](event_type const& event, product_type const& product)
 		{
 			return (bInpData ?
 			        DefaultValues::UndefinedInt :
-			        static_cast<KGenEventInfo*>(event.m_eventInfo)->nPUMean);
+			        static_cast<KGenEventInfo*>(event.m_eventInfo)->nPU);
 		});
-		
+
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("rho", [](event_type const& event, product_type const& product) {
 			return event.m_pileupDensity->rho;
 		});
