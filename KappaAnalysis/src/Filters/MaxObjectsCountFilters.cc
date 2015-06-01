@@ -9,6 +9,9 @@
 	}
 
 	void MaxElectronsCountFilter::Init(KappaSettings const& settings) {
+
+		FilterBase<KappaTypes>::Init(settings);
+
 		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 				[](KappaEvent const& event, KappaProduct const& product) {
 					return product.m_validElectrons.size();
@@ -26,6 +29,9 @@
 	}
 
 	void MaxMuonsCountFilter::Init(KappaSettings const& settings) {
+
+		FilterBase<KappaTypes>::Init(settings);
+
 		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 				[](KappaEvent const& event, KappaProduct const& product) {
 					return product.m_validMuons.size();
@@ -43,6 +49,9 @@
 	}
 
 	void MaxTausCountFilter::Init(KappaSettings const& settings) {
+
+		FilterBase<KappaTypes>::Init(settings);
+
 		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 				[](KappaEvent const& event, KappaProduct const& product) {
 					return product.m_validTaus.size();
@@ -60,6 +69,9 @@
 	}
 
 	void MaxJetsCountFilter::Init(KappaSettings const& settings) {
+
+		FilterBase<KappaTypes>::Init(settings);
+
 		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 				[](KappaEvent const& event, KappaProduct const& product) {
 					return product.m_validJets.size();
