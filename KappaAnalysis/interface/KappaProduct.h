@@ -137,6 +137,7 @@ public:
 	int m_tau2DecayMode;
 	int m_tau1ProngSize;
 	int m_tau2ProngSize;
+	int m_genTauDecayMode;
 
 	// GenPartonCounterProducer
 	int m_genNPartons = -1;

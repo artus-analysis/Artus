@@ -33,6 +33,17 @@ public:
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
 	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE;
 
+	enum class GenTauDecayMode : int
+	{
+		NONE = -1,
+		TT   = 1,
+		MT   = 2,
+		ET   = 3,
+		MM   = 4,
+		EM   = 5,
+		EE   = 6
+	};
+
 private:
 	int NeutralParticles(std::vector<MotherDaughterBundle*> finalStateProngs) const;
 };

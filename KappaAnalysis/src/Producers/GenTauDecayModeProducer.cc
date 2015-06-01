@@ -93,4 +93,37 @@ void GenTauDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& pro
 			product.m_genMatchedProngSize[&(*genTau)] = tau2ProngSize;
 		}
 	}
+
+
+	std::map<int, int> finalStateLeptons;
+
+	finalStateLeptons[product.m_tau1DecayMode]++;
+	finalStateLeptons[product.m_tau2DecayMode]++;
+
+	std::map<int, int>::iterator tau1 = finalStateLeptons.begin();
+	if (tau1->second == 2)
+	{
+		if(tau1->first == (int) MotherDaughterBundle::DecayMode::E)
+			product.m_genTauDecayMode = (int) GenTauDecayMode::EE;
+		else if(tau1->first == (int) MotherDaughterBundle::DecayMode::M)
+			product.m_genTauDecayMode = (int) GenTauDecayMode::MM;
+		else
+			product.m_genTauDecayMode = (int) GenTauDecayMode::TT;
+	}
+	else
+	{
+		std::map<int, int>::iterator tau2 = finalStateLeptons.begin();
+		++tau2;
+		if(tau1->first == (int) MotherDaughterBundle::DecayMode::E)
+		{
+			if(tau2->first == (int) MotherDaughterBundle::DecayMode::M)
+				product.m_genTauDecayMode = (int) GenTauDecayMode::EM;
+			else
+				product.m_genTauDecayMode = (int) GenTauDecayMode::ET;
+		}
+		else if(tau1->first == (int) MotherDaughterBundle::DecayMode::M)
+				product.m_genTauDecayMode = (int) GenTauDecayMode::MT;
+		else
+			product.m_genTauDecayMode = (int) GenTauDecayMode::TT;
+	}
 }
