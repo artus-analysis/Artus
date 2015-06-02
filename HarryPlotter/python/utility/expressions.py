@@ -25,5 +25,8 @@ class ExpressionsDict(object):
 	def replace_expressions(self, expression):
 		"""Replace any occurence of a dictionary key in the given string."""
 		for key, value in self.expressions_dict.iteritems():
-			expression = expression.replace(key, value)
+			try:
+				expression = expression.replace(key, value)
+			except AttributeError:
+				return expression
 		return expression

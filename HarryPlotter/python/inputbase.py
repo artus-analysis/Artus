@@ -44,13 +44,13 @@ class InputBase(processor.Processor):
 	def prepare_args(self, parser, plotData):
 		super(InputBase, self).prepare_args(parser, plotData)
 		
+		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors"])
+		
 		# replace expressions and binnings with values from dictionaries
 		for axis in ['x', 'y', 'z']:
 			plotData.plotdict[axis+"_bins"] = [bins if bins is None else self.binnings.get_binning(bins).split() for bins in plotData.plotdict[axis+"_bins"]]
-			if plotData.plotdict[axis+"_expressions"] is not None:
+			if not all([item == None for item in plotData.plotdict[axis+"_expressions"]]):
 				plotData.plotdict[axis+"_expressions"] = [self.expressions.replace_expressions(expression) for expression in plotData.plotdict[axis+"_expressions"]]
-		
-		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors"])
 		
 		# prepare scale factors
 		plotData.plotdict["scale_factors"] = [float(scale) if scale != None else 1.0 for scale in plotData.plotdict["scale_factors"]]
