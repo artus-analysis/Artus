@@ -12,6 +12,7 @@ import os
 import sys
 import ROOT
 
+
 import Artus.HarryPlotter.inputbase as inputbase
 import Artus.HarryPlotter.input_modules.inputfile as inputfile
 import Artus.HarryPlotter.utility.roottools as roottools
@@ -45,11 +46,14 @@ class InputRoot(inputfile.InputFile):
 		                                help="Weight (cut) expression(s). [Default: %(default)s]")
 		
 		self.input_options.add_argument("--x-bins", type=str, nargs='+', default=[None],
-		                                help="Binings for x-axis. In case only one argument (per input) is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [Default: [\"25\"] for trees, no rebinning for histograms]")
+		                                help="Binnings for x-axis. Possible inputs:\
+		                                      --x-bins \"25\" for nBins; --x-bins \"20,0,1000\" for nBins, lower and upper limit;\
+		                                      --x-bins \"0 10 20 30 50 100 100\" for custom bin widths.\
+		                                      [Default: [\"25\"] for trees, no rebinning for histograms]")
 		self.input_options.add_argument("--y-bins", type=str, nargs='+', default=[None],
-		                                help="Binings for y-axis of 2D/3D histograms. In case only one argument (per input) is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [\"25\"] for trees, no rebinning for histograms]")
+		                                help="Binnings for y-axis of 2D/3D histograms. See help for --x-bins for more information. [Default: [\"25\"] for trees, no rebinning for histograms]")
 		self.input_options.add_argument("--z-bins", type=str, nargs='+', default=[None],
-		                                help="Binings for z-axis of 3D histograms. In case only one argument (per input) is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [\"25\"] for trees, no rebinning for histograms]")
+		                                help="Binnings for z-axis of 3D histograms. See help for --x-bins for more information. [Default: [\"25\"] for trees, no rebinning for histograms]")
 		
 		self.input_options.add_argument("--tree-draw-options", nargs='+', type=str, default="",
 		                                help="Optional argument for TTree:Draw() call. Use e.g. 'prof' or 'profs' for projections of 2D-Histograms to 1D. See also http://root.cern.ch/ooot/html/TTree.html#TTree:Draw. Specify \"TGraph\" for plotting y- vs. x-values into a TGraph. \"TGraphErrors\" leads to a graph with errors by specifying inputs with --x-expressions <x values>:<x errors> --y-expressions <y values>:<y errors>. \"TGraphAsymmErrorsX\" leads to a graph with asymmetric x-errors by specifying inputs with --x-expressions <x values>:<x errors (down)>:<x errors (up)> --y-expressions <y values>. \"TGraphAsymmErrorsY\" leads to a graph with asymmetric y-errors by specifying inputs with --x-expressions <x values> --y-expressions <y values>:<y errors (down)>:<y errors (up)>.")
