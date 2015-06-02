@@ -79,7 +79,9 @@ public:
 		else if (electronID == "vbft95_tight") return ElectronID::VBTF95_TIGHT;
 		else if (electronID == "fakeable") return ElectronID::FAKEABLE;
 		else if (electronID == "user") return ElectronID::USER;
-		else return ElectronID::NONE;
+		else if (electronID == "none") return ElectronID::NONE;
+		else
+			LOG(FATAL) << "Could not find ElectronID " << electronID << "! If you want the ValidElectronsProducer to use no special ID, use \"none\" as argument.";
 	}
 
 	enum class ElectronIsoType : int
