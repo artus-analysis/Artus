@@ -59,6 +59,7 @@ public:
 
 	enum class ElectronID : int
 	{
+		INVALID = -2,
 		NONE  = -1,
 		MVANONTRIG = 0,
 		MVATRIG = 1,
@@ -81,7 +82,8 @@ public:
 		else if (electronID == "user") return ElectronID::USER;
 		else if (electronID == "none") return ElectronID::NONE;
 		else
-			LOG(FATAL) << "Could not find ElectronID " << electronID << "! If you want the ValidElectronsProducer to use no special ID, use \"none\" as argument.";
+			LOG(FATAL) << "Could not find ElectronID " << electronID << "! If you want the ValidElectronsProducer to use no special ID, use \"none\" as argument."<< std::endl;
+		return ElectronID::INVALID;
 	}
 
 	enum class ElectronIsoType : int
