@@ -59,7 +59,7 @@ class RootTools(object):
 								log.info("\t%s (%s)" % (path, key.GetClassName()))
 					return ROOT.TH1
 				else:
-					log.error("Usage of ROOT objects of Type \"" + root_objects[0].ClassName() + "\" is not yet implemented!")
+					log.error("Usage of ROOT objects of Type \"" + root_object.ClassName() + "\" is not yet implemented!")
 					return None
 			else:
 				log.error("Could not find ROOT object \"" + path_to_objects[0] + "\" in file \"" + root_file_names[0] + "\"!")
