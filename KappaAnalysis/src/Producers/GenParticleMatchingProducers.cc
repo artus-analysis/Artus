@@ -10,7 +10,10 @@ void RecoJetGenParticleMatchingProducer::Init(setting_type const& settings)
 {
 	KappaProducerBase::Init(settings);
 	
-	jetMatchingAlgorithm = ToJetMatchingAlgorithm(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetJetMatchingAlgorithm())));
+	m_jetMatchingAlgorithm = ToJetMatchingAlgorithm(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetJetMatchingAlgorithm())));
+	m_DeltaRMatchingRecoJetGenParticle = settings.GetDeltaRMatchingRecoJetGenParticle();
+	m_InvalidateNonGenParticleMatchingRecoJets = settings.GetInvalidateNonGenParticleMatchingRecoJets();
+	m_InvalidateGenParticleMatchingRecoJets = settings.GetInvalidateGenParticleMatchingRecoJets();
 }
 
 void RecoJetGenParticleMatchingProducer::Produce(event_type const& event, product_type& product,
@@ -18,7 +21,7 @@ void RecoJetGenParticleMatchingProducer::Produce(event_type const& event, produc
 {
 	assert(event.m_genParticles);
 	
-	if (settings.GetDeltaRMatchingRecoJetGenParticle() > 0.0)
+	if (m_DeltaRMatchingRecoJetGenParticle > 0.0)
 	{
 		// loop over all valid objects (jets) to check
 		for (std::vector<KBasicJet*>::iterator validJet = product.m_validJets.begin();
@@ -31,8 +34,8 @@ void RecoJetGenParticleMatchingProducer::Produce(event_type const& event, produc
 			}
 
 			// invalidate (non) matching jets if requested
-			if (((matchedParticle == NULL) && settings.GetInvalidateNonGenParticleMatchingRecoJets()) ||
-			    ((matchedParticle != NULL) && settings.GetInvalidateGenParticleMatchingRecoJets()))
+			if (((matchedParticle == NULL) && m_InvalidateNonGenParticleMatchingRecoJets) ||
+			    ((matchedParticle != NULL) && m_InvalidateGenParticleMatchingRecoJets))
 			{
 				product.m_invalidJets.push_back(*validJet);
 				validJet = product.m_validJets.erase(validJet);
@@ -44,7 +47,7 @@ void RecoJetGenParticleMatchingProducer::Produce(event_type const& event, produc
 		}
 		
 		// preserve sorting of invalid jets
-		if (settings.GetInvalidateNonGenParticleMatchingRecoJets() || settings.GetInvalidateGenParticleMatchingRecoJets())
+		if (m_InvalidateNonGenParticleMatchingRecoJets || m_InvalidateGenParticleMatchingRecoJets)
 		{
 			std::sort(product.m_invalidJets.begin(), product.m_invalidJets.end(),
 					  [](KBasicJet const* jet1, KBasicJet const* jet2) -> bool
@@ -78,7 +81,7 @@ KGenParticle* RecoJetGenParticleMatchingProducer::Match(event_type const& event,
 		    (genParticle->pdgId()) == 21)
 		{
 			deltaR = ROOT::Math::VectorUtil::DeltaR((recoJet)->p4, genParticle->p4);
-			if (deltaR < settings.GetDeltaRMatchingRecoJetGenParticle())
+			if (deltaR < m_DeltaRMatchingRecoJetGenParticle)
 			{
 				// Algorithmic:
 				if (genParticle->status() != 3)
@@ -129,7 +132,7 @@ KGenParticle* RecoJetGenParticleMatchingProducer::Match(event_type const& event,
 	// ALGORITHMIC DEFINITION
 	if (nMatchingAlgoPartons)	  // exactly one match
 	{
-		if (jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
+		if (m_jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
 		{
 			if(hardestBQuark)
 			{
@@ -147,21 +150,21 @@ KGenParticle* RecoJetGenParticleMatchingProducer::Match(event_type const& event,
 	}
 	else if (hardestBQuark && hardestBQuark->p4.Pt() > 0.0)
 	{
-		if (jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
+		if (m_jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
 		{
 			return &(*hardestBQuark);
 		}
 	}
 	else if (hardestCQuark && hardestCQuark->p4.Pt() > 0.0)
 	{
-		if (jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
+		if (m_jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
 		{
 			return &(*hardestCQuark);
 		}
 	}
 	else if (nMatchingAlgoPartons)
 	{
-		if (jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
+		if (m_jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
 		{
 			return &(*hardestParton);
 		}
@@ -171,7 +174,7 @@ KGenParticle* RecoJetGenParticleMatchingProducer::Match(event_type const& event,
 	// flavour is only well defined if exactly ONE matching parton!
 	if (nMatchingPhysPartons == 1)
 	{
-		if (jetMatchingAlgorithm == JetMatchingAlgorithm::PHYSICS)
+		if (m_jetMatchingAlgorithm == JetMatchingAlgorithm::PHYSICS)
 		{
 			return &(*hardestPhysParton);
 		}

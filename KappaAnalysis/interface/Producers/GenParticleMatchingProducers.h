@@ -52,8 +52,10 @@ public:
                         setting_type const& settings, KLV* const recoJet) const;
 
 private:
-	JetMatchingAlgorithm jetMatchingAlgorithm;
-
+	JetMatchingAlgorithm m_jetMatchingAlgorithm;
+	float m_DeltaRMatchingRecoJetGenParticle;
+	bool m_InvalidateNonGenParticleMatchingRecoJets;
+	bool m_InvalidateGenParticleMatchingRecoJets;
 };
 
 
