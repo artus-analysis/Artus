@@ -89,6 +89,7 @@ class NormalizeToFirstHisto(analysisbase.AnalysisBase):
 			if isinstance(root_histogram, ROOT.TH1):
 				root_histogram.Sumw2()
 				if root_histogram.Integral() != 0.0:
+					log.debug("{0}: Scaling histogram {1} by {2}".format(self.name(), nick, (refhisto_int / root_histogram.Integral())))
 					root_histogram.Scale(refhisto_int / root_histogram.Integral())
 
 class NormalizeStackToFirstHisto(analysisbase.AnalysisBase):
