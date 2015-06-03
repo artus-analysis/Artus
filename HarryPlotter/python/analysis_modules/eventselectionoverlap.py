@@ -46,6 +46,8 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 				"Intersection",
 				"Only " + labels[1],
 			]
+		if plotData.plotdict.get("x_ticks") == parser.get_default("x_ticks"):
+			plotData.plotdict["x_ticks"] = [-1, 0, 1]
 	
 	def run(self, plotData=None):
 		super(EventSelectionOverlap, self).run(plotData)
@@ -77,7 +79,7 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 						print_dict["MatchRunLumiEventTuples"] = True
 						log.info(str(print_dict))
 
-					histogram = ROOT.TH1F("histogram_{0}".format(hashlib.md5("_".join([str(events_only1), str(events_intersection), str(events_only2)]))), "Event Selection Overlap", 3, -1.0, 1.0)
+					histogram = ROOT.TH1F("histogram_{0}".format(hashlib.md5("_".join([str(events_only1), str(events_intersection), str(events_only2)]))), "Event Selection Overlap", 3, -1.5, 1.5)
 
 					histogram.SetBinContent(1, len(events_only1))
 					histogram.SetBinContent(2, len(events_intersection))
