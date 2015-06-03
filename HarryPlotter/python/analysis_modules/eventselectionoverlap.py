@@ -30,6 +30,8 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 				help="Print events that are only in the first input.")
 		self.cutflow_options.add_argument("--events-only-in-2", action="store_true", default=False,
 				help="Print events that are only in the second input.")
+		self.cutflow_options.add_argument("--branch-names", type=str, nargs="+", default=["run", "lumi", "event"],
+				help="Branch names that serve as uniqe identifiers for each event. [Default: %(default)s]")
 	
 	def prepare_args(self, parser, plotData):
 		super(EventSelectionOverlap, self).prepare_args(parser, plotData)
@@ -57,9 +59,9 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 			for index2, (nick2, tree2) in enumerate(plotData.plotdict.get("root_trees", {}).items()):
 				if index1 != index2 and len(plotData.plotdict["root_objects"]) == 0:
 					# Events in first ntuple
-					events1 = EventSelectionOverlap.get_events_set_from_tree(tree1, ["run", "lumi", "event"], plotData.plotdict['weights'][0])
+					events1 = EventSelectionOverlap.get_events_set_from_tree(tree1, plotData.plotdict["branch_names"], plotData.plotdict['weights'][0])
 					# Events in second ntuple
-					events2 = EventSelectionOverlap.get_events_set_from_tree(tree2, ["run", "lumi", "event"], plotData.plotdict['weights'][1])
+					events2 = EventSelectionOverlap.get_events_set_from_tree(tree2, plotData.plotdict["branch_names"], plotData.plotdict['weights'][1])
 
 					events_only1 = list(events1.difference(events2))
 					events_intersection = list(events1.intersection(events2))
