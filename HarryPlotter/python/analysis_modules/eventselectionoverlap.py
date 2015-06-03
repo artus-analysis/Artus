@@ -56,15 +56,14 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 		for index1, (nick1, tree1) in enumerate(plotData.plotdict.get("root_trees", {}).items()):
 			for index2, (nick2, tree2) in enumerate(plotData.plotdict.get("root_trees", {}).items()):
 				if index1 != index2 and len(plotData.plotdict["root_objects"]) == 0:
-
 					# Events in first ntuple
 					events1 = EventSelectionOverlap.get_events_set_from_tree(tree1, ["run", "lumi", "event"], plotData.plotdict['weights'][0])
 					# Events in second ntuple
 					events2 = EventSelectionOverlap.get_events_set_from_tree(tree2, ["run", "lumi", "event"], plotData.plotdict['weights'][1])
 
-					events_only1 = list(events2.difference(events1))
+					events_only1 = list(events1.difference(events2))
 					events_intersection = list(events1.intersection(events2))
-					events_only2 = list(events1.difference(events2))
+					events_only2 = list(events2.difference(events1))
 					
 					print_dict = jsonTools.JsonDict()
 					if plotData.plotdict["events_only_in_1"]:
