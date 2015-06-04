@@ -179,4 +179,4 @@ class InputRoot(inputfile.InputFile):
 
 		# Raise warning if config dict could be read out for some, but not for all files
 		if ({} in plotData.input_json_dicts and not all([i == {} for i in plotData.input_json_dicts])):
-			log.warning("'config' dict could not be read for all input files!")
+			log.warning("'config' dict could not be read for all input files! (ignore this warning if you're not using Artus output files)")

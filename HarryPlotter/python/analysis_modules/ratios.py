@@ -81,7 +81,9 @@ class Ratio(analysisbase.AnalysisBase):
 			
 			# calculate ratio
 			ratio_histogram = roottools.RootTools.to_histogram(numerator_histogram)
-			ratio_histogram.Divide(roottools.RootTools.to_histogram(denominator_histogram))
+			successful_division = ratio_histogram.Divide(roottools.RootTools.to_histogram(denominator_histogram))
+			if not successful_division:
+				log.warning("Could not successfully divide histogram(s) '{0}' by '{1}'!".format(",".join(ratio_numerator_nicks), ",".join(ratio_denominator_nicks)))
 			ratio_histogram.SetDirectory(0)
 			ratio_histogram.SetTitle("")
 			plotData.plotdict["root_objects"][ratio_result_nick] = ratio_histogram
