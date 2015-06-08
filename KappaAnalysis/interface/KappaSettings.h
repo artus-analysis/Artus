@@ -90,6 +90,7 @@ public:
 
 
 	IMPL_SETTING_DEFAULT(float, CrossSection, -1.);
+	IMPL_SETTING_DEFAULT(float, IntLuminosity, -1.);
 	IMPL_SETTING(int, NumberGeneratedEvents);
 	
 	IMPL_SETTING_STRINGLIST_DEFAULT(JsonFiles, {});

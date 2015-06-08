@@ -22,6 +22,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/PUWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/EventWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GeneratorWeightProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/LuminosityWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/CrossSectionWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/NumberGeneratedEventsWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/TmvaClassificationReaderBase.h"
@@ -118,6 +119,8 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new EventWeightProducer();
 	else if(id == GeneratorWeightProducer().GetProducerId())
 		return new GeneratorWeightProducer();
+	else if(id == LuminosityWeightProducer().GetProducerId())
+		return new LuminosityWeightProducer();
 	else if(id == CrossSectionWeightProducer().GetProducerId())
 		return new CrossSectionWeightProducer();
 	else if(id == NumberGeneratedEventsWeightProducer().GetProducerId())
