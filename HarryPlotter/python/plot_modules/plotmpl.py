@@ -213,9 +213,9 @@ class PlotMpl(plotbase.PlotBase):
 				if plotData.plotdict["z_lims"]:
 					vmin = plotData.plotdict["z_lims"][0]
 					vmax = plotData.plotdict["z_lims"][1]
-				elif plotData.plotdict["z_log"]:
-					vmin = 1
-					vmax = None
+				# elif plotData.plotdict["z_log"]:
+				# 	vmin = 1
+				# 	vmax = None
 				else:
 					vmin = None
 					vmax = None
@@ -557,7 +557,10 @@ class PlotMpl(plotbase.PlotBase):
 		if ax is None:
 			ax = plt.gca()
 		if (vmin, vmax) == (None,)*2:
-			vmin, vmax = np.amin(hist.bincontents), np.amax(hist.bincontents)
+			if z_log:
+				vmin, vmax = np.min(hist.bincontents[np.nonzero(hist.bincontents)]), np.amax(hist.bincontents)
+			else:
+				vmin, vmax = np.amin(hist.bincontents), np.amax(hist.bincontents)
 		norm = (LogNorm if z_log else Normalize)(vmin=vmin, vmax=vmax)
 
 		# special settings for masked arrays (TProfile2Ds):
@@ -571,6 +574,8 @@ class PlotMpl(plotbase.PlotBase):
 				if any([all([i<0.05 for i in color]) for color in [min_color, max_color]]):  # check if black is min or max color
 					mask_color = 'red'
 			cmap.set_bad(mask_color, alpha=None)
+		if z_log:
+			cmap.set_bad('gray', alpha=None)
 
 		artist = ax.pcolormesh(hist.xbinedges, hist.ybinedges, hist.bincontents, cmap=cmap, norm=norm)
 		return artist
