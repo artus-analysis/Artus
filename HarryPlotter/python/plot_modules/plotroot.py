@@ -289,7 +289,7 @@ class PlotRoot(plotbase.PlotBase):
 					root_object.GetXaxis().SetTitle(plotData.plotdict["x_label"])
 				if (not plotData.plotdict["y_label"] is None) and (plotData.plotdict["y_label"] != ""):
 					root_object.GetYaxis().SetTitle(plotData.plotdict["y_label"])
-				if (not plotData.plotdict["z_label"] is None) and (plotData.plotdict["z_label"] != ""):
+				if (not plotData.plotdict["z_label"] is None) and (plotData.plotdict["z_label"] != "" and hasattr(root_object, "GetZaxis")):
 					root_object.GetZaxis().SetTitle(plotData.plotdict["z_label"])
 			
 			# tick labels
