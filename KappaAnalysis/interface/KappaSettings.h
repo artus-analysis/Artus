@@ -202,6 +202,7 @@ public:
 	
 	IMPL_SETTING_DEFAULT(std::string, ValidTausInput, "auto");
 	IMPL_SETTING_STRINGLIST_DEFAULT(TauDiscriminators, {});
+	IMPL_SETTING_DEFAULT(std::string, TauID, "none");
 	
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetEnergyCorrectionParameters, {});
 	IMPL_SETTING_DEFAULT(std::string, JetEnergyCorrectionUncertaintyParameters, "");

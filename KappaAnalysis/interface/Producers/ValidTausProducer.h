@@ -36,6 +36,19 @@ public:
 		UNCORRECTED = 1,
 		CORRECTED = 2,
 	};
+
+	enum class TauID : int
+	{
+		NONE = 0,
+		RECOMMENDATION13TEV = 1,
+	};
+
+	static TauID ToTauID(std::string const& tauIDMethod)
+	{
+		if(tauIDMethod == "TauIDRecommendation13TeV") return TauID::RECOMMENDATION13TEV;
+		else return TauID::NONE;
+	}
+
 	static ValidTausInput ToValidTausInput(std::string const& validTausInput)
 	{
 		if (validTausInput == "uncorrected") return ValidTausInput::UNCORRECTED;
@@ -51,7 +64,8 @@ public:
 		KappaProducerBase(),
 		ValidPhysicsObjectTools<KappaTypes, KTau>(&KappaSettings::GetTauLowerPtCuts,
 		                                    &KappaSettings::GetTauUpperAbsEtaCuts,
-		                                    &KappaProduct::m_validTaus)
+		                                    &KappaProduct::m_validTaus),
+		tauID(TauID::NONE)
 	{
 	}
 	
@@ -65,7 +79,8 @@ public:
 		// parse additional config tags
 		discriminatorsByIndex = Utility::ParseMapTypes<size_t, std::string>(Utility::ParseVectorToMap(settings.GetTauDiscriminators()),
 		                                                                    discriminatorsByHltName);
-		
+		tauID = ToTauID(settings.GetTauID());
+
 		// add possible quantities for the lambda ntuples consumers
 		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nTaus", [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validTaus.size();
@@ -138,6 +153,8 @@ public:
 				}
 			}
 			
+			if(tauID == TauID::RECOMMENDATION13TEV)
+					validTau = validTau && IsTauIDRecommendation13TeV(*tau, event);
 			// kinematic cuts
 			validTau = validTau && this->PassKinematicCuts(*tau, event, product);
 			
@@ -186,6 +203,23 @@ private:
 		
 		return validTau;
 	}
+
+	TauID tauID;
+
+	bool IsTauIDRecommendation13TeV(KTau* tau, KappaEvent const& event) const
+	{
+		const KVertex* vertex = new KVertex(event.m_vertexSummary->pv); 
+		return (( tau->getDiscriminator("decayModeFinding", event.m_tauMetadata) > 0.5
+				|| tau->getDiscriminator("decayModeFindingNewDMs", event.m_tauMetadata) > 0.5)
+				&& (tau->getDiscriminator("againstElectronVLooseMVA5", event.m_tauMetadata) > 0.5)
+				&& (tau->getDiscriminator("againstMuonLoose3", event.m_tauMetadata) > 0.5)
+				&& (std::abs(tau->track.ref.z() - vertex->position.z()) < 0.2)
+		// do not use this atm since getDz only delivers -nan
+		//		&& (tau->track.getDz(vertex) > 0.5
+		//		|| tau->track.getDz(vertex) < -1.5 )
+				&& (tau->getDiscriminator("byCombinedIsolationDeltaBetaCorrRaw3Hits", event.m_tauMetadata) < 1.0));
+	}
+	
 
 };
 
