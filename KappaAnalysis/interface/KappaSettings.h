@@ -21,7 +21,7 @@ public:
 
 	/// name of electron collection in kappa tuple	
 	IMPL_SETTING_DEFAULT(std::string, Electrons, "");
-    IMPL_SETTING_DEFAULT(std::string, ElectronMetadata, "");
+	IMPL_SETTING_DEFAULT(std::string, ElectronMetadata, "");
 
 	/// name of muon collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, Muons, "");
@@ -89,8 +89,9 @@ public:
 	IMPL_SETTING_DEFAULT(std::string, JetMetadata, "");
 
 
-	IMPL_SETTING_DEFAULT(float, CrossSection, -1.);
-	IMPL_SETTING_DEFAULT(float, IntLuminosity, -1.);
+	IMPL_SETTING(float, CrossSection);
+	// Events will be weighted with the inverse of int. luminosity
+	IMPL_SETTING(float, IntLuminosity);
 	IMPL_SETTING(int, NumberGeneratedEvents);
 	
 	IMPL_SETTING_STRINGLIST_DEFAULT(JsonFiles, {});
