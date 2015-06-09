@@ -282,9 +282,21 @@ class PlotMpl(plotbase.PlotBase):
 			if plotData.plotdict["x_lims"] is not None:
 				ax.set_xlim([plotData.plotdict["x_lims"][0],plotData.plotdict["x_lims"][1]])
 			else:
-				ax.set_xlim(plotData.plotdict['root_objects'][plotData.plotdict['nicks'][0]].GetXaxis().GetBinLowEdge(1),
-						plotData.plotdict['root_objects'][plotData.plotdict['nicks'][0]].GetXaxis().GetBinUpEdge(
-							plotData.plotdict['root_objects'][plotData.plotdict['nicks'][0]].GetNbinsX()))
+				# iterate over root objects and get min and max x values
+				min_x_values, max_x_values = [], []
+				for nick in plotData.plotdict['nicks']:
+					if hasattr(plotData.plotdict['root_objects'][nick], "GetNbinsX"):  # for Histograms
+						min_x_values.append(plotData.plotdict['root_objects'][nick].GetXaxis().GetBinLowEdge(1))
+						max_x_values.append(plotData.plotdict['root_objects'][nick].GetXaxis().GetBinUpEdge(plotData.plotdict['root_objects'][nick].GetNbinsX()))
+					elif hasattr(plotData.plotdict['root_objects'][nick], "GetN") and hasattr(plotData.plotdict['root_objects'][nick], "GetX"):  # for TGraphs
+						min_x_values.append(ROOT.TMath.MinElement(plotData.plotdict['root_objects'][nick].GetN(), plotData.plotdict['root_objects'][nick].GetX()))
+						max_x_values.append(ROOT.TMath.MaxElement(plotData.plotdict['root_objects'][nick].GetN(), plotData.plotdict['root_objects'][nick].GetX()))
+					else:
+						log.warning("PlotMpl: modify_axes(): Could not determine x-limits for nick '{0}'".format(nick))
+				if min_x_values != [] and max_x_values != []:
+					ax.set_xlim(min(min_x_values), max(max_x_values))
+				else:
+					log.warning("PlotMpl: modify_axes(): Could not automatically set x-limits!")
 			if plotData.plotdict["y_lims"] is not None:
 				ax.set_ylim(plotData.plotdict["y_lims"][0],plotData.plotdict["y_lims"][1])
 			else:
