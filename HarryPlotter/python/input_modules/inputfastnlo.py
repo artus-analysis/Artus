@@ -31,6 +31,8 @@ class InputFastNLO(inputbase.InputBase):
 
 
 	def prepare_args(self, parser, plotData):
+		if isinstance(plotData.plotdict['fastnlo_files'], basestring):
+			plotData.plotdict['fastnlo_files'] = [plotData.plotdict['fastnlo_files']]
 		self.prepare_list_args(plotData, ["fastnlo_files", "pdf_sets", "members"])
 
 
@@ -40,7 +42,7 @@ class InputFastNLO(inputbase.InputBase):
 				plotData.plotdict['pdf_sets'],
 				plotData.plotdict['members']
 		):
-			fnlo = fastNLOLHAPDF(filename[0])
+			fnlo = fastNLOLHAPDF(str(filename))
 			fnlo.SetLHAPDFFilename(str(pdfset))
 			fnlo.SetLHAPDFMember(member)
 			fnlo.CalcCrossSection()
