@@ -15,6 +15,7 @@ import numpy
 import os
 import sys
 import re
+import tempfile
 
 import ROOT
 ROOT.gEnv.SetValue("TFile.AsyncPrefetching", 1)
@@ -294,11 +295,33 @@ class RootTools(object):
 		
 		tree.SetName(str(hashlib.md5("".join(root_file_names))))
 		
+		# treat functions/macros that need to be compiled before drawing
+		tmp_macro_files = []
+		while "{" in variable_expression:
+			match = re.search("{[^}]*}", variable_expression)
+			content = match.group(0).replace("{", "").replace("}", "")
+			
+			tmp_macro_filename = tempfile.mkstemp(prefix="harry_formula_", suffix=".C", dir=".")[-1]
+			tmp_macro_files.append(tmp_macro_filename)
+			with open(tmp_macro_filename, "w") as tmp_macro_file:
+				function_string = "double {function}() {a} return {content}; {b}".format(
+						function=os.path.basename(tmp_macro_filename).replace(".C", ""),
+						a="{",
+						content=content,
+						b="}"
+				)
+				tmp_macro_file.write(function_string)
+			#ROOT.gROOT.LoadMacro(tmp_macro_filename)# + "+")
+			
+			variable_expression = variable_expression[:match.start(0)]+os.path.basename(tmp_macro_filename)+"+"+variable_expression[match.end(0):]
+		
 		# draw histogram
 		if root_histogram == None:
 			draw_option = option.replace("TGraphAsymmErrorsX", "").replace("TGraphAsymmErrorsY", "").replace("TGraphErrors", "").replace("TGraph", "")
+			
 			log.debug("TTree::Draw(\"" + variable_expression + ">>" + name + binning + "\", \"" + str(weight_selection) + "\", \"" + draw_option + " GOFF\")")
 			tree.Draw(variable_expression + ">>" + name + binning, str(weight_selection), draw_option + " GOFF")
+			
 			if "TGraphAsymmErrors" in option:
 				n_points = tree.GetSelectedRows()
 				x_values = tree.GetV2() if "TGraphAsymmErrorsX" in option else tree.GetV4()
@@ -321,6 +344,9 @@ class RootTools(object):
 		if root_histogram == None:
 			log.critical("Cannot find histogram \"%s\" created from trees %s in files %s!" % (name, str(path_to_trees), str(root_file_names)))
 			sys.exit(1)
+		
+		for tmp_macro_file in tmp_macro_files:
+			os.remove(tmp_macro_file)
 		
 		if isinstance(root_histogram, ROOT.TH1):
 			root_histogram.SetDirectory(0)
