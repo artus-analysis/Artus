@@ -11,13 +11,11 @@ import collections
 import ROOT
 
 import Artus.HarryPlotter.processor as processor
-from Artus.HarryPlotter.utility.expressions import ExpressionsDict
 from Artus.HarryPlotter.utility.binnings import BinningsDict
 
 class InputBase(processor.Processor):
 	def __init__(self):
 		super(InputBase, self).__init__()
-		self.expressions = ExpressionsDict()
 		self.binnings = BinningsDict()
 	
 	def modify_argument_parser(self, parser, args):
@@ -46,11 +44,9 @@ class InputBase(processor.Processor):
 		
 		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors"])
 		
-		# replace expressions and binnings with values from dictionaries
+		# replace binnings with values from dictionaries
 		for axis in ['x', 'y', 'z']:
 			plotData.plotdict[axis+"_bins"] = [bins if bins is None else self.binnings.get_binning(bins).split() for bins in plotData.plotdict[axis+"_bins"]]
-			if not all([item == None for item in plotData.plotdict[axis+"_expressions"]]):
-				plotData.plotdict[axis+"_expressions"] = [self.expressions.replace_expressions(expression) for expression in plotData.plotdict[axis+"_expressions"]]
 		
 		# prepare scale factors
 		plotData.plotdict["scale_factors"] = [float(scale) if scale != None else 1.0 for scale in plotData.plotdict["scale_factors"]]
