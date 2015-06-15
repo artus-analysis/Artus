@@ -462,7 +462,7 @@ class ArtusWrapper(object):
 
 	def measurePerformance(self):
 		"""run Artus with profiler"""
-
+		exitCode = 0
 		# check output directory
 		outputDir = os.path.dirname(self._args.output_file)
 		if outputDir and not os.path.exists(outputDir):
@@ -482,8 +482,8 @@ class ArtusWrapper(object):
 		
 		for command in commands:
 			log.info("Execute \"%s\"." % command)
-			logger.subprocessCall(command.split(), shell=True)
-		
+			logger.subprocessCall(command.split())	
+
 		log.info("Profiling output is written to \"%s\"." % "\", \"".join(profile_outputs))
 
 		return 0
