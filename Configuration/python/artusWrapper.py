@@ -469,20 +469,20 @@ class ArtusWrapper(object):
 			os.makedirs(outputDir)
 
 		# call C++ executable with profiler
-		profile_outputs = [os.path.join(outputDir, filename) for filename in ["igprof.pp.gz", "igprof.analyse.txt", "igprof.analyse.sql3"]]
-		
+		profile_outputs = [os.path.join(outputDir, filename) for filename in ["igprof.pp.gz", "igprof.analyse.txt", "igprof.analyse.db"]]
+
 		commands = [
 			# "valgrind --tool=callgrind --callgrind-out-file=" + profile_output + " " + self._executable + " " + self._configFilename,
 			# "callgrind_annotate --auto=yes " + profile_output,
 			"igprof -d -pp -z -o " + profile_outputs[0] + " " + self._executable + " " + self._configFilename,
-			"execute-command.sh \"igprof-analyse -d -v -g " + profile_outputs[0] + " > " + profile_outputs[1] + "\"",
-			"execute-command.sh \"igprof-analyse --sqlite -d -v -g " + profile_outputs[0] + " | sqlite3 " + profile_outputs[2] + "\"",
+			"execute-command.sh igprof-analyse -d -v -g " + profile_outputs[0] + " > " + profile_outputs[1],
+			"execute-command.sh igprof-analyse --sqlite -d -v -g " + profile_outputs[0] + " | sqlite3 " + profile_outputs[2],
 			"igprof-navigator " + profile_outputs[2],
 		]
 		
 		for command in commands:
 			log.info("Execute \"%s\"." % command)
-			logger.subprocessCall(command.split())	
+			logger.subprocessCall(command.split())
 
 		log.info("Profiling output is written to \"%s\"." % "\", \"".join(profile_outputs))
 
