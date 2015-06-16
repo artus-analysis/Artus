@@ -122,8 +122,9 @@ class HarryCore(object):
 			if self._isvalid_processor(module, processor_type=InputBase):
 				self.processors.append(self.available_processors[module]())
 			else:
-				log.info("Provide a valid input module or none at all. Default is \"{0}\"!".format(self.parser.get_default("input_modules")))
-				log.critical("Input module \"{0}\" not found!".format(module))
+				log.info("Provide a valid input module or use the default. Default is \"{0}\"!".format(self.parser.get_default("input_modules")))
+				log.critical("Input module \"{0}\" cannot be not found or imported!".format(module))
+				sys.exit(1)
 
 		# handle analysis modules (second)
 		if self.args["analysis_modules"] is None:
@@ -133,7 +134,8 @@ class HarryCore(object):
 			if self._isvalid_processor(module, processor_type=AnalysisBase):
 				self.processors.append(self.available_processors[module]())
 			else:
-				log.critical("Analysis module \"{0}\" not found!".format(module))
+				log.critical("Analysis module \"{0}\" cannot be not found or imported!".format(module))
+				sys.exit(1)
 
 		# handle plot modules (third)
 		if isinstance(self.args["plot_modules"], basestring):
@@ -145,7 +147,8 @@ class HarryCore(object):
 			if self._isvalid_processor(module, processor_type=PlotBase):
 				self.processors.append(self.available_processors[module]())
 			else:
-				log.critical("Plot module \"{0}\" not found!".format(module))
+				log.critical("Plot module \"{0}\" cannot be not found or imported!".format(module))
+				sys.exit(1)
 
 		# let processors modify the parser and then parse the arguments again
 		for processor in self.processors:
