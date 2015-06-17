@@ -16,11 +16,23 @@ class FilterResult {
 public:
 
 	enum class Decision { Undefined, Passed, NotPassed };
+	enum class TaggingMode { Tagging, Filtering };
 
-	typedef std::vector < std::string> FilterNames;
+	typedef std::vector <std::string> FilterNames;
 	//typedef std::map<std::string, Decision> FilterDecisions;
+	struct DecisionEntry
+	{
+		std::string filterName;
+		Decision filterDecision;
+		TaggingMode taggingMode;
+		DecisionEntry() : filterName(""),
+		                  filterDecision(Decision::Passed),
+		                  taggingMode(TaggingMode::Filtering) {}
+		DecisionEntry(std::string filterName, Decision filterDecision, TaggingMode taggingMode) :
+		              filterName(filterName), filterDecision(filterDecision), taggingMode(taggingMode) {}
+	};
 
-	typedef std::pair <std::string, Decision> DecisionEntry;
+	// typedef std::pair <std::string, std::pair<Decision, TaggingMode> > DecisionEntry;
 	typedef std::list<DecisionEntry> FilterDecisions;
 
 	FilterResult();
