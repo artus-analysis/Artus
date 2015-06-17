@@ -29,6 +29,10 @@ class InputFile(inputbase.InputBase):
 	def prepare_args(self, parser, plotData):
 		super(InputFile, self).prepare_args(parser, plotData)
 		
+		if plotData.plotdict["files"] is None:
+			log.critical(self.name() + ": No input files given!")
+			sys.exit(1)
+
 		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "files", "directories"])
 		
 		# prepare files
