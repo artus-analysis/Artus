@@ -72,7 +72,8 @@ public:
 		    filterDecision != filterDecisions.end(); filterDecision++)
 		{
 			++bin;
-			if (filterDecision->filterDecision == FilterResult::Decision::Passed) {
+			if (filterDecision->filterDecision == FilterResult::Decision::Passed &&
+			    filterDecision->taggingMode == FilterResult::TaggingMode::Filtering) {
 				m_cutFlowUnweightedHist->Fill(float(bin));
 			
 				if(m_addWeightedCutFlow) {

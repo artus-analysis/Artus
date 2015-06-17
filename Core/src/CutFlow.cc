@@ -17,7 +17,8 @@ void CutFlow::AddFilterResult(FilterResult const& fres)
 	{
 		// only store, if passed
 		long addVal = 0;
-		if (it->filterDecision == FilterResult::Decision::Passed) {
+		if (it->filterDecision == FilterResult::Decision::Passed && 
+		    it->taggingMode == FilterResult::TaggingMode::Filtering) {
 			addVal = 1;
 		}
 
