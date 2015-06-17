@@ -17,6 +17,12 @@ FilterResult::FilterResult(FilterNames const& initialFilterNames ) :
 	AddFilterNames ( initialFilterNames );
 }
 
+FilterResult::FilterResult(FilterNames const& initialFilterNames, FilterNames const& taggingFilters ) :
+		// has passed by default
+		m_taggingFilters(taggingFilters), m_cacheHasPassed(true), m_IsCachedHasPassed(false) {
+	AddFilterNames ( initialFilterNames );
+}
+
 FilterResult::DecisionEntry * FilterResult::GetDecisionEntry( std::string const& filterName ) {
 	for ( FilterResult::FilterDecisions::iterator it = m_filterDecisions.begin();
 			it != m_filterDecisions.end(); it ++ ) {
@@ -37,6 +43,14 @@ FilterResult::DecisionEntry const* FilterResult::GetDecisionEntry( std::string c
 	return ARTUS_CPP11_NULLPTR;
 }
 
+FilterResult::TaggingMode FilterResult::IsTaggingFilter(std::string const& filterName ) const {
+	if (std::find(m_taggingFilters.begin(), m_taggingFilters.end(), filterName) != m_taggingFilters.end())
+	{
+		return TaggingMode::Tagging;
+	}
+	return TaggingMode::Filtering;
+}
+
 // add a list of filter names
 // will only add and set the decision to undefined, if the
 // name is not in the list before
@@ -45,7 +59,7 @@ void FilterResult::AddFilterNames( FilterNames const& fn ){
 			it != fn.end(); it ++ ) {
 		FilterResult::DecisionEntry * entr = GetDecisionEntry( * it );
 		if ( entr == ARTUS_CPP11_NULLPTR ) {
-			m_filterDecisions.push_back( DecisionEntry(*it, Decision::Undefined, TaggingMode::Filtering));
+			m_filterDecisions.push_back( DecisionEntry(*it, Decision::Undefined, IsTaggingFilter(*it)));
 		}
 	}
 }
@@ -66,7 +80,8 @@ bool FilterResult::HasPassed() const {
 	m_cacheHasPassed = true;
 	for (FilterResult::FilterDecisions::const_iterator it = GetFilterDecisions().begin();
 			it != GetFilterDecisions().end(); it++) {
-		if (it->filterDecision == FilterResult::Decision::NotPassed)
+		if (it->filterDecision == FilterResult::Decision::NotPassed &&
+		    it->taggingMode == FilterResult::TaggingMode::Filtering)
 			m_cacheHasPassed = false;
 	}
 
@@ -77,11 +92,13 @@ bool FilterResult::HasPassed() const {
 bool FilterResult::HasPassedIfExcludingFilter(std::string const& excludedFilter) const {
 	for (FilterResult::FilterDecisions::const_iterator it = GetFilterDecisions().begin();
 			it != GetFilterDecisions().end(); it++) {
-		if (it->filterDecision == FilterResult::Decision::NotPassed)
+		if (it->filterDecision == FilterResult::Decision::NotPassed &&
+		    it->taggingMode == FilterResult::TaggingMode::Filtering)
+		{
 			if (it->filterName != excludedFilter)
 				return false;
+		}
 	}
-
 	return true;
 }
 
@@ -103,7 +120,7 @@ void FilterResult::SetFilterDecision(std::string filterName, bool passed) {
 	FilterResult::DecisionEntry * entr = GetDecisionEntry(filterName);
 
 	if ( entr == ARTUS_CPP11_NULLPTR ) {
-		m_filterDecisions.push_back( DecisionEntry(filterName, desc, TaggingMode::Filtering));
+		m_filterDecisions.push_back( DecisionEntry(filterName, desc, IsTaggingFilter(filterName)));
 	} else {
 		entr->filterDecision = desc;
 	}

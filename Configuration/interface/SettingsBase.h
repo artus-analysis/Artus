@@ -88,6 +88,8 @@ public:
 		return SettingsUtil::ExtractFilters(GetProcessors());
 	}
 
+	IMPL_SETTING_STRINGLIST(TaggingFilters);
+
 	typedef std::pair < std::string, size_t > PipelineInfo;
 	typedef std::vector<PipelineInfo> PipelineInfos;
 

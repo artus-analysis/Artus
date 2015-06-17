@@ -72,7 +72,7 @@ public:
 		    filterDecision != filterDecisions.end(); filterDecision++)
 		{
 			++bin;
-			if (filterDecision->second == FilterResult::Decision::Passed) {
+			if (filterDecision->filterDecision == FilterResult::Decision::Passed) {
 				m_cutFlowUnweightedHist->Fill(float(bin));
 			
 				if(m_addWeightedCutFlow) {
