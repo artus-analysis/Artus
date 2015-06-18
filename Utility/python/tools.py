@@ -125,10 +125,18 @@ def get_indented_text(prefix, message, width=None):
 		width = get_tty_size()[1]
 	expanded_indent = textwrap.fill(prefix+'$', replace_whitespace=False)[:-1]
 	subsequent_indent = ' ' * len(expanded_indent)
-	wrapper = textwrap.TextWrapper(
-			initial_indent=expanded_indent,
-			width=width,
-			subsequent_indent=subsequent_indent
-	)
-	return wrapper.fill(message)
+
+	# code below is needed to preserve line wrap:
+	# http://stackoverflow.com/questions/1166317/python-textwrap-library-how-to-preserve-line-breaks
+	tmp_wrapped_texts = []
+	for line in message.splitlines():
+		if line.strip() != '':
+			tmp_wrapped_texts += textwrap.wrap(line,
+				initial_indent=expanded_indent,
+				width=width,
+				subsequent_indent=subsequent_indent,
+				break_long_words=False,
+				replace_whitespace=False
+			)
+	return '\n'.join(['\n'.join(tmp_wrapped_texts)])
 
