@@ -6,13 +6,13 @@
 import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
-
 import argparse
 import sys
 
 
 class HarryParser(argparse.ArgumentParser):
 	def __init__(self, **kwargs):
+		logger.initLogger()  # get a basic logger without arguments
 		kwargs["add_help"] = False
 		kwargs["conflict_handler"] = "resolve"
 		kwargs["fromfile_prefix_chars"] = "@"

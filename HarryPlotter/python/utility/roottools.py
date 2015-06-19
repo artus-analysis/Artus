@@ -10,6 +10,7 @@ log = logging.getLogger(__name__)
 
 import array
 import collections
+import glob
 import hashlib
 import numpy
 import os
@@ -296,57 +297,100 @@ class RootTools(object):
 		tree.SetName(str(hashlib.md5("".join(root_file_names))))
 		
 		# treat functions/macros that need to be compiled before drawing
-		tmp_macro_files = []
-		while "{" in variable_expression:
-			match = re.search("{[^}]*}", variable_expression)
-			content = match.group(0).replace("{", "").replace("}", "")
+		tmp_proxy_files = []
+		proxy_call = None
+		if "proxy" in option:
+			proxy_name = re.sub("[^a-zA-Z0-9]", "_", variable_expression+"__"+str(weight_selection))
 			
-			tmp_macro_filename = tempfile.mkstemp(prefix="harry_formula_", suffix=".C", dir=".")[-1]
-			tmp_macro_files.append(tmp_macro_filename)
-			with open(tmp_macro_filename, "w") as tmp_macro_file:
-				function_string = "double {function}() {a} return {content}; {b}".format(
-						function=os.path.basename(tmp_macro_filename).replace(".C", ""),
+			proxy_class_name = "proxy_class_"+proxy_name
+			proxy_macro_name = "proxy_macro_"+proxy_name
+			proxy_cutmacro_name = "proxy_cutmacro_"+proxy_name
+			
+			proxy_class_filename = proxy_class_name+".h"
+			proxy_macro_filename = proxy_macro_name+".C"
+			proxy_cutmacro_filename = proxy_cutmacro_name+".C"
+			
+			tmp_proxy_files.append(proxy_class_filename)
+			tmp_proxy_files.append(proxy_macro_filename)
+			tmp_proxy_files.append(proxy_cutmacro_filename)
+			
+			# write macros with variable and cut expression containing the plotting information
+			with open(proxy_macro_filename, "w") as proxy_macro_file:
+				proxy_macro_file.write("double {function}() {a} return {content}; {b}".format(
+						function=proxy_macro_name,
 						a="{",
-						content=content,
+						content=variable_expression,
 						b="}"
-				)
-				tmp_macro_file.write(function_string)
-			#ROOT.gROOT.LoadMacro(tmp_macro_filename)# + "+")
+				))
+			with open(proxy_cutmacro_filename, "w") as proxy_cutmacro_file:
+				proxy_cutmacro_file.write("bool {function}() {a} return {content}; {b}".format(
+						function=proxy_cutmacro_name,
+						a="{",
+						content=str(weight_selection),
+						b="}"
+				))
 			
-			variable_expression = variable_expression[:match.start(0)]+os.path.basename(tmp_macro_filename)+"+"+variable_expression[match.end(0):]
+			# create tree proxy
+			tree.MakeProxy(proxy_class_name, proxy_macro_filename, proxy_cutmacro_filename)
+			proxy_call = proxy_class_filename+"+"
+			
+			# fix histogram name used in the proxy class
+			# TODO: only do this when TTree::Project is called afterwards, not for TTree::Draw, when the histogram cannot be renamed before the plotting?
+			proxy_class_content = None
+			with open(proxy_class_filename) as proxy_class_file:
+				proxy_class_content = proxy_class_file.read().rstrip("\n")
+			proxy_class_content = proxy_class_content.replace(
+					"if (htemp == 0)", "if (true)"
+			).replace(
+					"htemp = fDirector.CreateHistogram(GetOption());", "htemp = (TH1*)gDirectory->Get(\"{name}\");".format(name=name)
+			).replace(
+					"htemp->SetTitle", "//htemp->SetTitle"
+			)
+			with open(proxy_class_filename, "w") as proxy_class_file:
+				proxy_class_file.write(proxy_class_content)
 		
 		# draw histogram
 		if root_histogram == None:
-			draw_option = option.replace("TGraphAsymmErrorsX", "").replace("TGraphAsymmErrorsY", "").replace("TGraphErrors", "").replace("TGraph", "")
-			
-			log.debug("TTree::Draw(\"" + variable_expression + ">>" + name + binning + "\", \"" + str(weight_selection) + "\", \"" + draw_option + " GOFF\")")
-			tree.Draw(variable_expression + ">>" + name + binning, str(weight_selection), draw_option + " GOFF")
-			
-			if "TGraphAsymmErrors" in option:
-				n_points = tree.GetSelectedRows()
-				x_values = tree.GetV2() if "TGraphAsymmErrorsX" in option else tree.GetV4()
-				y_values = tree.GetV1()
-				x_errors_low = tree.GetV3() if "TGraphAsymmErrorsX" in option else array.array("d", [0.0]*n_points)
-				x_errors_high = tree.GetV4() if "TGraphAsymmErrorsX" in option else array.array("d", [0.0]*n_points)
-				y_errors_low = array.array("d", [0.0]*n_points) if "TGraphAsymmErrorsX" in option else tree.GetV2()
-				y_errors_high = array.array("d", [0.0]*n_points) if "TGraphAsymmErrorsX" in option else tree.GetV3()
-				root_histogram = ROOT.TGraphAsymmErrors(n_points, x_values, y_values, x_errors_low, x_errors_high, y_errors_low, y_errors_high)
-			elif "TGraphErrors" in option:
-				root_histogram = ROOT.TGraphErrors(tree.GetSelectedRows(), tree.GetV3(), tree.GetV1(), tree.GetV4(), tree.GetV2())
-			elif "TGraph" in option:
-				root_histogram = ROOT.TGraph(tree.GetSelectedRows(), tree.GetV2(), tree.GetV1())
+			if ("proxy" in option) and (not proxy_call is None):
+				log.critical("Plotting of compliled proxy formulas not yet implemented for the case where no binning is specified!")
+				sys.exit(1)
 			else:
-				root_histogram = ROOT.gDirectory.Get(name)
+				draw_option = option.replace("TGraphAsymmErrorsX", "").replace("TGraphAsymmErrorsY", "").replace("TGraphErrors", "").replace("TGraph", "")
+			
+				log.debug("TTree::Draw(\"" + variable_expression + ">>" + name + binning + "\", \"" + str(weight_selection) + "\", \"" + draw_option + " GOFF\")")
+				tree.Draw(variable_expression + ">>" + name + binning, str(weight_selection), draw_option + " GOFF")
+			
+				if "TGraphAsymmErrors" in option:
+					n_points = tree.GetSelectedRows()
+					x_values = tree.GetV2() if "TGraphAsymmErrorsX" in option else tree.GetV4()
+					y_values = tree.GetV1()
+					x_errors_low = tree.GetV3() if "TGraphAsymmErrorsX" in option else array.array("d", [0.0]*n_points)
+					x_errors_high = tree.GetV4() if "TGraphAsymmErrorsX" in option else array.array("d", [0.0]*n_points)
+					y_errors_low = array.array("d", [0.0]*n_points) if "TGraphAsymmErrorsX" in option else tree.GetV2()
+					y_errors_high = array.array("d", [0.0]*n_points) if "TGraphAsymmErrorsX" in option else tree.GetV3()
+					root_histogram = ROOT.TGraphAsymmErrors(n_points, x_values, y_values, x_errors_low, x_errors_high, y_errors_low, y_errors_high)
+				elif "TGraphErrors" in option:
+					root_histogram = ROOT.TGraphErrors(tree.GetSelectedRows(), tree.GetV3(), tree.GetV1(), tree.GetV4(), tree.GetV2())
+				elif "TGraph" in option:
+					root_histogram = ROOT.TGraph(tree.GetSelectedRows(), tree.GetV2(), tree.GetV1())
+				else:
+					root_histogram = ROOT.gDirectory.Get(name)
 		else:
-			log.debug("TTree::Project(\"" + name + "\", \"" + variable_expression + "\", \"" + str(weight_selection) + "\", \"" + option + "\" GOFF\")")
-			tree.Project(name, variable_expression, str(weight_selection), option + " GOFF")
+			if ("proxy" in option) and (not proxy_call is None):
+				log.debug("TTree::Process(\"" + proxy_call + "\")")
+				tree.Process(proxy_call)
+			else:
+				log.debug("TTree::Project(\"" + name + "\", \"" + variable_expression + "\", \"" + str(weight_selection) + "\", \"" + option + "\" GOFF\")")
+				tree.Project(name, variable_expression, str(weight_selection), option + " GOFF")
 			root_histogram = ROOT.gDirectory.Get(name)
 		if root_histogram == None:
 			log.critical("Cannot find histogram \"%s\" created from trees %s in files %s!" % (name, str(path_to_trees), str(root_file_names)))
 			sys.exit(1)
 		
-		for tmp_macro_file in tmp_macro_files:
-			os.remove(tmp_macro_file)
+		# delete possible files from tree proxy
+		for tmp_proxy_file in tmp_proxy_files:
+			for tmp_file in glob.glob(os.path.splitext(tmp_proxy_file)[0]+"*"):
+				os.remove(tmp_file)
 		
 		if isinstance(root_histogram, ROOT.TH1):
 			root_histogram.SetDirectory(0)

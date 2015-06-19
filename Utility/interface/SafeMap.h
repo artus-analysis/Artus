@@ -49,7 +49,7 @@ public:
 	{
 		typename Container<Key, Value, Args...>::const_iterator it = m.find(key);
 		if (it == m.end())
-		    return *defaultValue;
+		    return defaultValue;
 		return *it->second;
 	}
 
