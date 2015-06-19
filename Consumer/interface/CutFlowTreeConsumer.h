@@ -67,7 +67,8 @@ public:
 		for(FilterResult::FilterDecisions::const_iterator filterDecision = filterDecisions.begin();
 		    filterDecision != filterDecisions.end(); filterDecision++)
 		{
-			if (filterDecision->filterDecision != FilterResult::Decision::Passed) {
+			if ((filterDecision->filterDecision != FilterResult::Decision::Passed) &&
+			    (filterDecision->taggingMode == FilterResult::TaggingMode::Filtering)) {
 				m_cutFlowTrees[filterIndex]->Fill();
 				break;
 			}
