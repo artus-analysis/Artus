@@ -92,9 +92,9 @@ class PlotMpl(plotbase.PlotBase):
 		                                     help="If set, a 2D histogram is plotted in 3D. Optional Argument is the viewing angle. Default: %(default)s")
 		self.formatting_options.add_argument("--save-legend", type=str, nargs="?", default=False, const="legend",
 		                                     help="If set, the legend is saved as a separate file. Argument is the filename. Default: %(default)s")
+
 		self.formatting_options.set_defaults(legend="upper right")
-		
-		parser.set_defaults(colormap="afmhot")
+		self.formatting_options.set_defaults(colormap="afmhot")
 
 	def prepare_args(self, parser, plotData):
 		super(PlotMpl, self).prepare_args(parser, plotData)
@@ -301,9 +301,9 @@ class PlotMpl(plotbase.PlotBase):
 				ax.set_ylim(plotData.plotdict["y_lims"][0],plotData.plotdict["y_lims"][1])
 			else:
 				if ax.dataLim.min[1] >= (-1E-6) and ax.get_ylim()[0] < 0.:
-					ax.set_ylim(ymin=0.0)
-				if all("TH" in obj.__class__.__name__ for obj in plotData.plotdict["root_objects"].values()):
-					ax.set_ylim(ymax=ax.dataLim.max[1] * (2 if plotData.plotdict["y_log"] else 1.2))
+					ax.set_ylim(ymin=self.y_min)
+				if all("TH1" in obj.__class__.__name__ for obj in plotData.plotdict["root_objects"].values()):
+					ax.set_ylim(ymax=self.y_max * (2 if plotData.plotdict["y_log"] else 1.2))
 
 		# set log scale
 		if plotData.plotdict["x_log"]:
@@ -314,8 +314,6 @@ class PlotMpl(plotbase.PlotBase):
 				ax.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
 		if plotData.plotdict["y_log"]:
 			ax.set_yscale('log', nonposy='clip')
-			if plotData.plotdict["y_lims"] is None:
-				ax.set_ylim(ymin=0.9, ymax=ax.get_ylim()[1]*2)
 
 		for y, linestyle in zip(plotData.plotdict["lines"], self.default_linestyles*len(plotData.plotdict["lines"])):
 			ax.axhline(y, color='black', linestyle=linestyle)
