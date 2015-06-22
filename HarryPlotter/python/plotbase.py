@@ -8,6 +8,7 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import datetime
+import errno
 import hashlib
 import numpy
 import os
@@ -195,9 +196,14 @@ class PlotBase(processor.Processor):
 		if plotData.plotdict["www"] != None:
 			plotData.plotdict["output_dir"] = "/".join(['websync', datetime.date.today().strftime('%Y_%m_%d'), (plotData.plotdict["www"] or "")])
 		# create output directory if not exisiting
-		if not os.path.exists(plotData.plotdict["output_dir"]):
+		try:
 			os.makedirs(plotData.plotdict["output_dir"])
 			log.info("Created output directory \"%s\"." % plotData.plotdict["output_dir"])
+		except OSError as exc:
+			# if target directory already exists, ignore exception:
+			if exc.errno == errno.EEXIST and os.path.isdir(plotData.plotdict["output_dir"]):
+				pass
+			else: raise
 		
 		# construct file name from x/y/z expressions if not specified by user
 		if plotData.plotdict["filename"] == None:
