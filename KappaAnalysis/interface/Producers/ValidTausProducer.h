@@ -208,16 +208,16 @@ private:
 
 	bool IsTauIDRecommendation13TeV(KTau* tau, KappaEvent const& event) const
 	{
-		const KVertex* vertex = new KVertex(event.m_vertexSummary->pv);
-		return (( tau->getId("hpsPFTauDiscriminationByDecayModeFinding", event.m_tauMetadata) > 0.5
-				|| tau->getId("hpsPFTauDiscriminationByDecayModeFindingNewDMs", event.m_tauMetadata) > 0.5)
-				&& (tau->getId("hpsPFTauDiscriminationByMVA5VLooseElectronRejection", event.m_tauMetadata) > 0.5)
-				&& (tau->getId("hpsPFTauDiscriminationByLooseMuonRejection3", event.m_tauMetadata) > 0.5)
+		const KVertex* vertex = new KVertex(event.m_vertexSummary->pv); 
+		return (( tau->getDiscriminator("decayModeFinding", event.m_tauMetadata) > 0.5
+				|| tau->getDiscriminator("decayModeFindingNewDMs", event.m_tauMetadata) > 0.5)
+				&& (tau->getDiscriminator("againstElectronVLooseMVA5", event.m_tauMetadata) > 0.5)
+				&& (tau->getDiscriminator("againstMuonLoose3", event.m_tauMetadata) > 0.5)
 				&& (std::abs(tau->track.ref.z() - vertex->position.z()) < 0.2)
 		// do not use this atm since getDz only delivers -nan
 		//		&& (tau->track.getDz(vertex) > 0.5
 		//		|| tau->track.getDz(vertex) < -1.5 )
-				&& (tau->getDiscriminator("hpsPFTauDiscriminationByRawCombinedIsolationDBSumPtCorr3Hits", event.m_tauMetadata) < 1.0));
+				&& (tau->getDiscriminator("byCombinedIsolationDeltaBetaCorrRaw3Hits", event.m_tauMetadata) < 1.0));
 	}
 	
 
