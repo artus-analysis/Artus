@@ -246,6 +246,9 @@ class PlotBase(processor.Processor):
 
 		if plotData.plotdict["legend"] == "None":
 			plotData.plotdict["legend"] = None
+		for key in ['lumis', 'energies']:
+			if plotData.plotdict[key] is not None and all([item in [0, "None"] for item in plotData.plotdict[key]]):
+				plotData.plotdict[key] = None
 
 	def run(self, plotData):
 		super(PlotBase, self).run(plotData)
