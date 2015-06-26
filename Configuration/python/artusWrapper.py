@@ -83,7 +83,7 @@ class ArtusWrapper(object):
 
 		#Run Artus if desired
 		if self._args.profile:
-			exitCode = self.measurePerformance()
+			exitCode = self.measurePerformance(self._args.profile)
 		elif self._args.batch:
 			exitCode = self.sendToBatchSystem()
 		elif not self._args.no_run:
@@ -343,8 +343,8 @@ class ArtusWrapper(object):
 		                                 help="Exit before running Artus to only check the configs.")
 		runningOptionsGroup.add_argument("--ld-library-paths", nargs="+",
 		                                 help="Add paths to environment variable LD_LIBRARY_PATH.")
-		runningOptionsGroup.add_argument("--profile", default=False, action="store_true",
-		                                 help="Measure performance with profiler.")
+		runningOptionsGroup.add_argument("--profile", default="",
+		                                 help="Measure performance with profiler. Choose igprof or valgrind.")
 		runningOptionsGroup.add_argument("-r", "--root", default=False, action="store_true",
 		                                 help="Open output file in ROOT TBrowser after completion.")
 		runningOptionsGroup.add_argument("-b", "--batch", default=False, const="local", nargs="?",
@@ -460,31 +460,44 @@ class ArtusWrapper(object):
 		pass # to be overwritten by deriving classes
 
 
-	def measurePerformance(self):
+	def measurePerformance(self, profTool):
 		"""run Artus with profiler"""
 		exitCode = 0
+
 		# check output directory
 		outputDir = os.path.dirname(self._args.output_file)
 		if outputDir and not os.path.exists(outputDir):
 			os.makedirs(outputDir)
 
-		# call C++ executable with profiler
-		profile_outputs = [os.path.join(outputDir, filename) for filename in ["igprof.pp.gz", "igprof.analyse.txt", "igprof.analyse.db"]]
+		commands=""
+		profile_outputs=""
+		if profTool == "igprof":
+			# call C++ executable with profiler igprof
+			profile_outputs = [os.path.join(outputDir, filename) for filename in ["igprof.pp.gz", "igprof.analyse.txt", "igprof.analyse.sql3"]]
 
-		commands = [
-			# "valgrind --tool=callgrind --callgrind-out-file=" + profile_output + " " + self._executable + " " + self._configFilename,
-			# "callgrind_annotate --auto=yes " + profile_output,
+			commands = [
 			"igprof -d -pp -z -o " + profile_outputs[0] + " " + self._executable + " " + self._configFilename,
 			"execute-command.sh igprof-analyse -d -v -g " + profile_outputs[0] + " > " + profile_outputs[1],
 			"execute-command.sh igprof-analyse --sqlite -d -v -g " + profile_outputs[0] + " | sqlite3 " + profile_outputs[2],
 			"igprof-navigator " + profile_outputs[2],
-		]
-		
+			]
+		elif profTool == "valgrind":
+			# call C++ executable with profiler valgrind
+			profile_outputs = [os.path.join(outputDir, filename) for filename in ["callgrind.out.8080"]]
+
+			commands = [
+			"valgrind --tool=callgrind --callgrind-out-file=" + profile_outputs[0] + " " + self._executable + " " + self._configFilename,
+			"callgrind_annotate --auto=yes " + profile_outputs[0],
+			]
+		else:
+			log.info(profTool + "is not a valid profiler")
+
 		for command in commands:
 			log.info("Execute \"%s\"." % command)
 			logger.subprocessCall(command.split())
 
-		log.info("Profiling output is written to \"%s\"." % "\", \"".join(profile_outputs))
+		if profile_outputs:
+			log.info("Profiling output is written to \"%s\"." % "\", \"".join(profile_outputs))
 
 		return 0
 
