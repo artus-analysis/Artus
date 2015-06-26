@@ -22,7 +22,7 @@ class InputYoda(inputbase.InputBase):
 
 	def prepare_args(self, parser, plotData):
 		# set default for output filename
-		if plotData.plotdict["nicks"] is None:
+		if plotData.plotdict.get("nicks", None) is None:
 			plotData.plotdict["nicks"] = []
 		if all([item == [None] for item in [plotData.plotdict.get(item2+"_expressions", None) for item2 in ['x', 'y', 'z']]]) and plotData.plotdict["filename"] == None:
 			plotData.plotdict["filename"] = "yoda"
