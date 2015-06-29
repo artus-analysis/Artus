@@ -264,6 +264,10 @@ class PlotMpl(plotbase.PlotBase):
 			ax.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]), position=(1., 0.), va='top', ha='right')
 		ax.set_ylabel(self.nicelabels.get_nice_label(plotData.plotdict["y_label"]), position=(0., 1.), va='top', ha='right')
 
+		#display 10^N instead of 1eN
+		for axis in ["xaxis", "yaxis"]:
+			getattr(ax, axis).major.formatter._useMathText = True
+
 		# set axis ticks
 		if plotData.plotdict["x_ticks"] is not None and not (hasattr(self.mplhist, "xlabels") and self.mplhist.xlabels is not None):
 			ax.set_xticks(plotData.plotdict["x_ticks"])
