@@ -32,7 +32,7 @@ void GenParticleProducer::Produce(KappaEvent const& event, KappaProduct& product
 			if (std::find(settings.GetGenParticlePdgIds().begin(), settings.GetGenParticlePdgIds().end(), part->pdgId())
 			    != settings.GetGenParticlePdgIds().end())
 			{
-				if ((settings.GetGenParticleStatus() == 0) || ( settings.GetGenParticleStatus() == part->status()))
+				if ((settings.GetGenParticleStatus() == -1) || ( settings.GetGenParticleStatus() == part->status()))
 				{
 					product.m_genParticlesMap[part->pdgId()].push_back(&(*part));
 				}
@@ -49,7 +49,7 @@ void GenParticleProducer::Produce(KappaEvent const& event, KappaProduct& product
 		{
 			if (abs(part->pdgId()) == 11)
 			{
-				if ((settings.GetGenElectronStatus() == 0) || ( settings.GetGenElectronStatus() == part->status()))
+				if ((settings.GetGenElectronStatus() == -1) || ( settings.GetGenElectronStatus() == part->status()))
 				{
 					product.m_genElectrons.push_back(&(*part));
 				}
@@ -66,7 +66,7 @@ void GenParticleProducer::Produce(KappaEvent const& event, KappaProduct& product
 		{
 			if (abs(part->pdgId()) == 13)
 			{
-				if ((settings.GetGenMuonStatus() == 0) || ( settings.GetGenMuonStatus() == part->status()))
+				if ((settings.GetGenMuonStatus() == -1) || ( settings.GetGenMuonStatus() == part->status()))
 				{
 					product.m_genMuons.push_back(&(*part));
 				}
@@ -83,7 +83,7 @@ void GenParticleProducer::Produce(KappaEvent const& event, KappaProduct& product
 		{
 			if (abs(part->pdgId()) == 15)
 			{
-				if ((settings.GetGenTauStatus() == 0) || ( settings.GetGenTauStatus() == part->status()))
+				if ((settings.GetGenTauStatus() == -1) || ( settings.GetGenTauStatus() == part->status()))
 				{
 					product.m_genTaus.push_back(&(*part));
 				}
