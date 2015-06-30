@@ -13,6 +13,7 @@ import Artus.HarryPlotter.plotdata as plotdata
 from Artus.HarryPlotter.utility.mplhisto import MplHisto, MplGraph
 import Artus.HarryPlotter.utility.labels as labels
 
+import array
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
@@ -277,6 +278,20 @@ class PlotMpl(plotbase.PlotBase):
 					x_values.append(x)
 					y_values.append(root_object.Eval(x))
 				ax.plot(x_values, y_values, label=label, color=color, linestyle=line_style, linewidth=line_width)
+
+				if y_error and nick in plotData.fit_results:
+					x = array.array('d', x_values)
+					y = array.array('d', [0.]*len(x_values))
+					plotData.fit_results[nick].GetConfidenceIntervals(len(x_values), 1, 1, x, y, 0.683)
+					conf_intervals = [i for i in y]
+
+					ax.fill_between(x_values,
+									[(y_val-c) for y_val, c in zip(y_values, conf_intervals)],
+									[(y_val+c) for y_val, c in zip(y_values, conf_intervals)],
+									facecolor=color,
+									edgecolor=color,
+									interpolate=True,
+									alpha=0.2)
 
 	def modify_axes(self, plotData):
 		# do what is needed for all plots:
