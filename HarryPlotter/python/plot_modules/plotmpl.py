@@ -92,6 +92,8 @@ class PlotMpl(plotbase.PlotBase):
 		                                     help="If set, a 2D histogram is plotted in 3D. Optional Argument is the viewing angle. Default: %(default)s")
 		self.formatting_options.add_argument("--save-legend", type=str, nargs="?", default=False, const="legend",
 		                                     help="If set, the legend is saved as a separate file. Argument is the filename. Default: %(default)s")
+		self.formatting_options.add_argument("--marker-fill-styles", type=str, nargs="+",
+		                                     help="Fill style of the markers in the plot")
 		self.formatting_options.add_argument("--subplot-fraction", type=int, nargs="?", default=25,
 											 help="Hight fraction of the subplot in percent")
 		self.formatting_options.add_argument("--subplot-legend", type=str, nargs="?", default=None,
@@ -105,7 +107,7 @@ class PlotMpl(plotbase.PlotBase):
 
 		self.prepare_list_args(
 				plotData,
-				["nicks", "colors", "labels", "markers", "line_styles", "line_widths", "x_errors", "y_errors", "step", "zorder", "edgecolors"],
+				["nicks", "colors", "labels", "markers", "marker_fill_styles", "line_styles", "line_widths", "x_errors", "y_errors", "step", "zorder", "edgecolors"],
 				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]
 		))
 
@@ -154,6 +156,20 @@ class PlotMpl(plotbase.PlotBase):
 			if line_style is None:
 				plotData.plotdict["line_styles"][index] = ""
 
+		# default for line widths
+		for index, line_width in enumerate(plotData.plotdict["line_widths"]):
+			if line_width is None:
+				plotData.plotdict["line_widths"][index] = 2
+
+		# remove escape slashes
+		for index, marker_fill_style in enumerate(plotData.plotdict["marker_fill_styles"]):
+			plotData.plotdict["marker_fill_styles"][index] = marker_fill_style.replace("\\", "") if marker_fill_style else marker_fill_style
+
+		# default for marker fill styles
+		for index, marker_fill_style in enumerate(plotData.plotdict["marker_fill_styles"]):
+			if marker_fill_style is None:
+				plotData.plotdict["marker_fill_styles"][index] = "full"
+
 		# validate length of parameters first
 		zip_arguments = self.get_zip_arguments(plotData)
 		for argument in zip_arguments:
@@ -199,7 +215,7 @@ class PlotMpl(plotbase.PlotBase):
 
 		zip_arguments = self.get_zip_arguments(plotData)
 
-		for nick, color, edgecolor, label, marker, x_error, y_error, line_style, step, zorder in zip(*zip_arguments):
+		for nick, color, edgecolor, label, marker, marker_fill_style, x_error, y_error, line_style, line_width, step, zorder in zip(*zip_arguments):
 			if nick in plotData.plotdict["subplot_nicks"]:
 				ax = plotData.plot.axes[1]
 			else:
@@ -212,8 +228,8 @@ class PlotMpl(plotbase.PlotBase):
 				self.mplhist = MplGraph(root_object)
 				self.plot_errorbar(self.mplhist, ax=ax,
 				                   show_xerr=x_error, show_yerr=y_error,
-				                   color=color, fmt=marker, capsize=0,
-				                   linestyle=line_style, label=label, zorder=zorder)
+				                   color=color, fmt=marker, marker_fill_style=marker_fill_style, capsize=0,
+				                   linestyle=line_style, linewidth=line_width, label=label, zorder=zorder)
 
 			elif isinstance(root_object, ROOT.TH2):
 				self.mplhist = MplHisto(root_object)
@@ -248,8 +264,8 @@ class PlotMpl(plotbase.PlotBase):
 				else:
 					self.plot_errorbar(self.mplhist, ax=ax,
 					                   show_xerr=x_error, show_yerr=y_error,
-					                   step=step, color=color, fmt=marker,
-					                   capsize=2, linestyle=line_style, label=label, zorder=zorder)
+					                   step=step, color=color, fmt=marker, marker_fill_style=marker_fill_style,
+					                   capsize=2, linestyle=line_style, linewidth=line_width, label=label, zorder=zorder)
 
 			# draw functions from dictionary
 			elif isinstance(root_object, ROOT.TF1):
@@ -260,8 +276,7 @@ class PlotMpl(plotbase.PlotBase):
 				for x in np.arange(x_range[0], x_range[1], (float(x_range[1])-float(x_range[0]))/sampling_points):
 					x_values.append(x)
 					y_values.append(root_object.Eval(x))
-				ax.plot(x_values, y_values, label=label, color=color, linestyle=line_style, linewidth=2)
-
+				ax.plot(x_values, y_values, label=label, color=color, linestyle=line_style, linewidth=line_width)
 
 	def modify_axes(self, plotData):
 		# do what is needed for all plots:
@@ -509,6 +524,7 @@ class PlotMpl(plotbase.PlotBase):
 			yerr = None
 
 		line_style = kwargs.pop('linestyle', '')
+		fillstyle = kwargs.pop('marker_fill_style', 'full')
 		capsize = kwargs.pop('capsize', 0)
 		fmt = kwargs.pop('fmt', '')
 		if fmt in ['bar', 'fill']:
@@ -520,10 +536,10 @@ class PlotMpl(plotbase.PlotBase):
 		# http://stackoverflow.com/a/18499120/3243729
 		if line_style:
 			if step:
-				ax.step(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(y), linestyle=line_style, **kwargs)
+				ax.step(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(y), fillstyle=fillstyle, linestyle=line_style, **kwargs)
 			else:
-				ax.plot(x, y, linestyle=line_style, **kwargs)
-		artist = ax.errorbar(x, y, xerr=xerr, yerr=yerr, label=label, capsize=capsize, fmt=fmt, linestyle='None', **kwargs)
+				ax.plot(x, y, linestyle=line_style, fillstyle=fillstyle, **kwargs)
+		artist = ax.errorbar(x, y, fillstyle=fillstyle, xerr=xerr, yerr=yerr, label=label, capsize=capsize, fmt=fmt, linestyle='None', **kwargs)
 		return artist
 
 	def plot_hist1d(self, hist, style='fill', ax=None, show_xerr=False, show_yerr=False, **kwargs):
@@ -628,9 +644,11 @@ class PlotMpl(plotbase.PlotBase):
 		                                 plotData.plotdict["edgecolors"],
 		                                 plotData.plotdict["labels"],
 		                                 plotData.plotdict["markers"],
+		                                 plotData.plotdict["marker_fill_styles"],
 		                                 plotData.plotdict["x_errors"],
 		                                 plotData.plotdict["y_errors"],
 		                                 plotData.plotdict["line_styles"],
+		                                 plotData.plotdict["line_widths"],
 		                                 plotData.plotdict["step"],
 		                                 plotData.plotdict["zorder"])
 		return zip_arguments
