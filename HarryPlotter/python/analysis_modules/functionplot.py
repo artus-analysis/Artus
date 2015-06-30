@@ -74,12 +74,14 @@ class FunctionPlot(analysisbase.AnalysisBase):
 			                                                 plotData.plotdict["fit_backend"])):
 				if fit_nickname != None and fit_nickname in plotData.plotdict["root_objects"].keys(): 
 					root_histogram = plotData.plotdict["root_objects"][fit_nickname]
-					plotData.plotdict["root_objects"][function_nick] = self.create_function(function, x_range[0], x_range[1], 
+					root_function, fit_result = self.create_function(function, x_range[0], x_range[1],
 					                                           function_parameters, 
 					                                           nick=fit_nickname, 
 					                                           root_histogram=root_histogram,
 					                                           fit_backend=fit_backend)
-				else: 
+					plotData.plotdict["root_objects"][function_nick] = root_function
+					plotData.fit_results[function_nick] = fit_result
+				else:
 					plotData.plotdict["root_objects"][function_nick] = self.create_tf1(function, x_range[0], x_range[1], function_parameters)
 
 
@@ -89,15 +91,16 @@ class FunctionPlot(analysisbase.AnalysisBase):
 
 		does the fit and adds the fitted function to the dictionary
 		"""
+		fit_result = None
 		# todo: ensure to have as many start parameters as parameters in formula
 		if fit_backend == "RooFit":
 			root_function, mean, sigma, width = self.do_roofit(function, x_min, x_max, start_parameters, root_histogram)
 		elif fit_backend == "ROOT":
-			root_function = self.do_rootfit(function, x_min, x_max, start_parameters, nick, root_histogram)
+			root_function, fit_result = self.do_rootfit(function, x_min, x_max, start_parameters, nick, root_histogram)
 		else:
 			print "No valid fit backend selected"
 			exit()
-		return root_function
+		return root_function, fit_result
 
 	@staticmethod
 	def create_tf1(function, x_min, x_max, start_parameters, nick="", root_histogram=None):
@@ -112,8 +115,8 @@ class FunctionPlot(analysisbase.AnalysisBase):
 		# set parameters for fit or just for drawing the function
 		for parameter_index in range(root_function.GetNpar()):
 			root_function.SetParameter(parameter_index, start_parameters[parameter_index])
-		root_histogram.Fit(root_function.GetName(), "", "", x_min, x_max)
-		return root_function
+		fit_result = root_histogram.Fit(root_function.GetName(), "S", "", x_min, x_max)
+		return root_function, fit_result
 
 	@staticmethod
 	def do_roofit(function, x_min, x_max, start_parameters, root_histogram):
