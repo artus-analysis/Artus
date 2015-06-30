@@ -480,7 +480,7 @@ class PlotMpl(plotbase.PlotBase):
 		matplotlib.rcParams["axes.formatter.limits"] = [-5, 5]
 		# legend
 		matplotlib.rcParams['legend.numpoints'] = 1
-		matplotlib.rcParams['legend.fontsize'] = 19
+		matplotlib.rcParams['legend.fontsize'] = 16
 		matplotlib.rcParams['legend.labelspacing'] = 0.3
 		#matplotlib.rcParams['legend.frameon'] = False
 		# Saving
