@@ -145,7 +145,7 @@ class PlotBase(processor.Processor):
 
 		# settings to increase usability
 		self.other_options = parser.add_argument_group("Other features")
-		self.other_options.add_argument("--live", default=None, nargs='?', const='gthumb',
+		self.other_options.add_argument("--live", default=None, nargs='?', const='gnome-open',
 		                                 help="Open plot in viewer after its creation. Parameter is the name of your desired viewer.")
 		self.other_options.add_argument("--userpc", nargs="?", type="bool", default=False, const=True,
 		                                 help="If 'live' is enabled, the image will be copied to the user desktop (via ssh) and the image viewer will be started on the user desktop with this option. [Default: %(default)s]")
