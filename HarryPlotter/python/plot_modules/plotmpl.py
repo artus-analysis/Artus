@@ -92,6 +92,10 @@ class PlotMpl(plotbase.PlotBase):
 		                                     help="If set, a 2D histogram is plotted in 3D. Optional Argument is the viewing angle. Default: %(default)s")
 		self.formatting_options.add_argument("--save-legend", type=str, nargs="?", default=False, const="legend",
 		                                     help="If set, the legend is saved as a separate file. Argument is the filename. Default: %(default)s")
+		self.formatting_options.add_argument("--subplot-fraction", type=int, nargs="?", default=25,
+											 help="Hight fraction of the subplot in percent")
+		self.formatting_options.add_argument("--subplot-legend", type=str, nargs="?", default=None,
+		                                     help="Location of the subplot legend. Use 'None' to not set any legend")
 
 		self.formatting_options.set_defaults(legend="upper right")
 		self.formatting_options.set_defaults(colormap="afmhot")
@@ -158,6 +162,13 @@ class PlotMpl(plotbase.PlotBase):
 				log.warning("This the invalid input: %s" % argument)
 				break
 
+
+		# check subplot-fraction range
+		if plotData.plotdict["subplot_fraction"] > 100:
+			plotData.plotdict["subplot_fraction"] = 100
+		elif plotData.plotdict["subplot_fraction"] < 0:
+			plotData.plotdict["subplot_fraction"] = 0
+
 	def run(self, plotData):
 		super(PlotMpl, self).run(plotData)
 
@@ -172,8 +183,8 @@ class PlotMpl(plotbase.PlotBase):
 		fig = plt.figure()
 		axes = []
 		if plotData.plotdict["subplot_nicks"]:
-			axes = [plt.subplot2grid((4,1), (0, 0), rowspan=3),
-			        plt.subplot2grid((4,1), (3, 0))]
+			axes = [plt.subplot2grid((100,1), (0, 0), rowspan=(100-plotData.plotdict["subplot_fraction"])),
+			        plt.subplot2grid((100,1), ((100-plotData.plotdict["subplot_fraction"]+1), 0), rowspan=plotData.plotdict["subplot_fraction"])]
 		else:
 			kwargs = {'projection':'3d'} if (plotData.plotdict['3d'] is not False) else {}
 			axes = [fig.add_subplot(1,1,1, **kwargs)]
@@ -385,6 +396,10 @@ class PlotMpl(plotbase.PlotBase):
 			# Decrease vertical distance between subplots
 			if self.plot_dimension < 2:
 				plt.subplots_adjust(hspace=0.2)
+
+		for ax in [plotData.plot.axes[1]]:
+			if len(ax.get_legend_handles_labels()[0]) > 1 and plotData.plotdict["subplot_legend"] is not None:
+				ax.legend(loc=plotData.plotdict["subplot_legend"], ncol=1, columnspacing=0.5, handletextpad=0.3)
 		# if plotData.plotdict['ratio'] and list(set(plotData.plotdict['ratio_labels'])) != [None]:
 			# plotData.plot.ax2.legend(loc=plotData.plotdict["legend"])
 
