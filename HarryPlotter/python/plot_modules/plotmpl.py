@@ -427,9 +427,10 @@ class PlotMpl(plotbase.PlotBase):
 			if self.plot_dimension < 2:
 				plt.subplots_adjust(hspace=0.2)
 
-		for ax in [plotData.plot.axes[1]]:
-			if len(ax.get_legend_handles_labels()[0]) > 1 and plotData.plotdict["subplot_legend"] is not None:
-				ax.legend(loc=plotData.plotdict["subplot_legend"], ncol=1, columnspacing=0.5, handletextpad=0.3)
+		if len(plotData.plot.axes) > 1:
+			for ax in [plotData.plot.axes[1]]:
+				if len(ax.get_legend_handles_labels()[0]) > 1 and plotData.plotdict["subplot_legend"] is not None:
+					ax.legend(loc=plotData.plotdict["subplot_legend"], ncol=1, columnspacing=0.5, handletextpad=0.3)
 		# if plotData.plotdict['ratio'] and list(set(plotData.plotdict['ratio_labels'])) != [None]:
 			# plotData.plot.ax2.legend(loc=plotData.plotdict["legend"])
 
