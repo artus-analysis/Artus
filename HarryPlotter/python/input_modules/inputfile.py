@@ -39,12 +39,8 @@ class InputFile(inputbase.InputBase):
 		for index, (file_args, directory) in enumerate(zip(plotData.plotdict["files"], plotData.plotdict["directories"])):
 			paths_before_globbing = []
 			files = []
-			print "fileargs"
-			print file_args
 			if file_args.startswith("root:/"):
 				files.append(file_args)
-				print "files"
-				print files
 			else:
 				for file_arg in file_args.split():
 					paths_before_globbing.append(os.path.expandvars(os.path.join(directory, file_arg) if directory else file_arg))
