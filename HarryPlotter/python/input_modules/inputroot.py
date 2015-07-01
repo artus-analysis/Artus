@@ -103,7 +103,7 @@ class InputRoot(inputfile.InputFile):
 				[self.expressions.replace_expressions(expression) for expression in plotData.plotdict["x_expressions"]],
 				[self.expressions.replace_expressions(expression) for expression in plotData.plotdict["y_expressions"]],
 				[self.expressions.replace_expressions(expression) for expression in plotData.plotdict["z_expressions"]],
-				plotData.plotdict["weights"],
+				[self.expressions.replace_expressions(expression) for expression in plotData.plotdict["weights"]],
 				plotData.plotdict["x_bins"],
 				plotData.plotdict["y_bins"],
 				plotData.plotdict["z_bins"],

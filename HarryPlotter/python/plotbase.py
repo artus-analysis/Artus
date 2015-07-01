@@ -8,6 +8,7 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import datetime
+import errno
 import hashlib
 import numpy
 import os
@@ -144,7 +145,7 @@ class PlotBase(processor.Processor):
 
 		# settings to increase usability
 		self.other_options = parser.add_argument_group("Other features")
-		self.other_options.add_argument("--live", default=None, nargs='?', const='gthumb',
+		self.other_options.add_argument("--live", default=None, nargs='?', const='gnome-open',
 		                                 help="Open plot in viewer after its creation. Parameter is the name of your desired viewer.")
 		self.other_options.add_argument("--userpc", nargs="?", type="bool", default=False, const=True,
 		                                 help="If 'live' is enabled, the image will be copied to the user desktop (via ssh) and the image viewer will be started on the user desktop with this option. [Default: %(default)s]")
@@ -195,9 +196,14 @@ class PlotBase(processor.Processor):
 		if plotData.plotdict["www"] != None:
 			plotData.plotdict["output_dir"] = "/".join(['websync', datetime.date.today().strftime('%Y_%m_%d'), (plotData.plotdict["www"] or "")])
 		# create output directory if not exisiting
-		if not os.path.exists(plotData.plotdict["output_dir"]):
+		try:
 			os.makedirs(plotData.plotdict["output_dir"])
 			log.info("Created output directory \"%s\"." % plotData.plotdict["output_dir"])
+		except OSError as exc:
+			# if target directory already exists, ignore exception:
+			if exc.errno == errno.EEXIST and os.path.isdir(plotData.plotdict["output_dir"]):
+				pass
+			else: raise
 		
 		# construct file name from x/y/z expressions if not specified by user
 		if plotData.plotdict["filename"] == None:
@@ -240,6 +246,9 @@ class PlotBase(processor.Processor):
 
 		if plotData.plotdict["legend"] == "None":
 			plotData.plotdict["legend"] = None
+		for key in ['lumis', 'energies']:
+			if plotData.plotdict[key] is not None and all([item in [0, "None"] for item in plotData.plotdict[key]]):
+				plotData.plotdict[key] = None
 
 	def run(self, plotData):
 		super(PlotBase, self).run(plotData)

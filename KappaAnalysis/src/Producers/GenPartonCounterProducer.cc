@@ -22,7 +22,7 @@ void GenPartonCounterProducer::Produce(KappaEvent const& event, KappaProduct& pr
 	for (KGenParticles::const_iterator genParticle = event.m_genParticles->begin();
 		 genParticle != event.m_genParticles->end(); ++genParticle)
 	{
-		if (genParticle->status() != 3) 
+		if (genParticle->status() != settings.GetPartonStatus()) 
 			continue;
 
 		if (countPartons) {

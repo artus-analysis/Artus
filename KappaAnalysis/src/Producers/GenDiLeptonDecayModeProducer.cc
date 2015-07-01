@@ -23,7 +23,7 @@ void GenDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaProduct
 	for (KGenParticles::const_iterator genParticle = event.m_genParticles->begin();
 		 genParticle != event.m_genParticles->end(); ++genParticle)
 	{
-		if ((abs(genParticle->pdgId()) == settings.GetBosonPdgId()) && (genParticle->status() == 3))
+		if ((abs(genParticle->pdgId()) == settings.GetBosonPdgId()) && (genParticle->status() == settings.GetBosonStatus()))
 		{
 			std::map<int, int> nDecayProductsPerType;
 			

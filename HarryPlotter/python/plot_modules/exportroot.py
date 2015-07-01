@@ -64,7 +64,24 @@ class ExportRoot(plotbase.PlotBase):
 		)
 		
 	def prepare_histograms(self, plotData):
-		pass
+		# some debug info
+		if log.isEnabledFor(logging.DEBUG):
+			for index, (nick1, stack1) in enumerate(zip(plotData.plotdict["nicks"], plotData.plotdict["stacks"])):
+				log.debug("\nContents of nick %s, stack %s:" % (nick1, stack1))
+				plotData.plotdict["root_objects"][nick1].Print("range")
+				# print non empty over-/underflow bins separately
+				log.debug("\nOver-/underflow bins of nick %s, stack %s:" % (nick1, stack1))
+				if plotData.plotdict["root_objects"][nick1].GetDimension() == 1:
+					for xbin in range(0, plotData.plotdict["root_objects"][nick1].GetNbinsX() + 2):
+						if (xbin == 0 or xbin == plotData.plotdict["root_objects"][nick1].GetNbinsX() + 1):
+							if plotData.plotdict["root_objects"][nick1].GetBinContent(xbin) != 0.0:
+								print "[%i] = %s" % (xbin, plotData.plotdict["root_objects"][nick1].GetBinContent(xbin))
+				elif plotData.plotdict["root_objects"][nick1].GetDimension() == 2:
+					for xbin in range(0, plotData.plotdict["root_objects"][nick1].GetNbinsX() + 2):
+						for ybin in range(0, plotData.plotdict["root_objects"][nick1].GetNbinsY() + 2):
+							if (xbin == 0 or xbin == plotData.plotdict["root_objects"][nick1].GetNbinsX() + 1 or ybin == 0 or ybin == plotData.plotdict["root_objects"][nick1].GetNbinsY() + 1):
+								if plotData.plotdict["root_objects"][nick1].GetBinContent(xbin, ybin) != 0.0:
+									print "[%i][%i] = %s" % (xbin, ybin, plotData.plotdict["root_objects"][nick1].GetBinContent(xbin, ybin))
 		
 	def make_plots(self, plotData):
 		for root_filename, root_file in plotData.plot.root_files.iteritems():

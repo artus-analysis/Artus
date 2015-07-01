@@ -158,6 +158,7 @@ public:
 	
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoJetGenParticle, 0.3);
 	IMPL_SETTING_DEFAULT(std::string, JetMatchingAlgorithm, "algorithmic");
+	IMPL_SETTING_DEFAULT(int, RecoJetMatchingGenParticleStatus, 3);  //keep pythia6 status as default for back-compatibility
 	
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenParticleMatchingRecoElectrons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenParticleMatchingRecoMuons, false);
@@ -258,8 +259,12 @@ public:
 	IMPL_SETTING_DEFAULT(float, BTagShift, 0.0);
 	IMPL_SETTING_DEFAULT(float, BMistagShift, 0.0);
 	
-	//Reading Boson PdgId for GenTauDecayProducer studies.
+	//Reading Boson PdgId and Status code for GenTauDecayProducer studies.
 	IMPL_SETTING(int, BosonPdgId);
+	IMPL_SETTING_DEFAULT(int, BosonStatus, 3);  //keep pythia6 status as default for back-compatibility
+
+	/// Needed by the GenPartonCounterProducer
+	IMPL_SETTING_DEFAULT(int, PartonStatus, 3);  //keep pythia6 status as default for back-compatibility
 	
 	/// Needed by the GenDiLeptonDecayModeFilter
 	IMPL_SETTING(std::string, GenDiLeptonDecayMode);
@@ -267,10 +272,10 @@ public:
 
 	IMPL_SETTING_STRINGLIST_DEFAULT(GenParticleTypes, {});
 	IMPL_SETTING_INTLIST_DEFAULT(GenParticlePdgIds, {});
-	IMPL_SETTING_DEFAULT(int, GenParticleStatus, 0);
-	IMPL_SETTING_DEFAULT(int, GenElectronStatus, 0);
-	IMPL_SETTING_DEFAULT(int, GenMuonStatus, 0);
-	IMPL_SETTING_DEFAULT(int, GenTauStatus, 0);
+	IMPL_SETTING_DEFAULT(int, GenParticleStatus, -1);
+	IMPL_SETTING_DEFAULT(int, GenElectronStatus, -1);
+	IMPL_SETTING_DEFAULT(int, GenMuonStatus, -1);
+	IMPL_SETTING_DEFAULT(int, GenTauStatus, -1);
 
 	IMPL_SETTING(std::string, PileupWeightFile);
 	

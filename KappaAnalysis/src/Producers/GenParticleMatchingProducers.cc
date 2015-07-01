@@ -84,7 +84,7 @@ KGenParticle* RecoJetGenParticleMatchingProducer::Match(event_type const& event,
 			if (deltaR < m_DeltaRMatchingRecoJetGenParticle)
 			{
 				// Algorithmic:
-				if (genParticle->status() != 3)
+				if (genParticle->status() != settings.GetRecoJetMatchingGenParticleStatus())
 				{
 					++nMatchingAlgoPartons;
 					if (std::abs(genParticle->pdgId()) == 5)

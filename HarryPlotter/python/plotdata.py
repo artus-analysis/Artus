@@ -29,6 +29,7 @@ class PlotData(object):
 		self.plotdict = args
 		self.plot = None
 		self.input_json_dicts = []
+		self.fit_results = {}
 	
 	def __del__(self):
 		for root_object in self.plotdict.get("root_objects", []):

@@ -473,14 +473,15 @@ void GenTauDecayProducer::Produce(KappaEvent const& event, KappaProduct& product
 {
 	assert(event.m_genParticles);
 	
-	// Reading Boson PdgId from TauSpinnerSettings.json
+	// Reading Boson PdgId and Status code
 	int bosonPdgId = settings.GetBosonPdgId();
+	int bosonStatus = settings.GetBosonStatus();
 
 	for (KGenParticles::iterator part = event.m_genParticles->begin();
 		 part != event.m_genParticles->end(); ++part)
 	{
-		// Filling Higgs, its daughter & granddaughter particles
-		if ((abs(part->pdgId()) == bosonPdgId)&&(part->status()==3))// only Boson with status 3 are considered as root of the tree.
+		// Filling Higgs, its daughter & granddaughter particles 
+		if ((abs(part->pdgId()) == bosonPdgId) && (part->status() == bosonStatus))
 		{
 			
 			product.m_genBoson.push_back( MotherDaughterBundle(&(*part)) );
