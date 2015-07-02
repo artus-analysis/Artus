@@ -380,8 +380,8 @@ class RootTools(object):
 				log.debug("TTree::Process(\"" + proxy_call + "\")")
 				tree.Process(proxy_call)
 			else:
-				log.debug("TTree::Project(\"" + name+binning + "\", \"" + variable_expression + "\", \"" + str(weight_selection) + "\", \"" + option + "\" GOFF\")")
-				tree.Project(name+binning, variable_expression, str(weight_selection), option + " GOFF")
+				log.debug("TTree::Project(\"" + name + "\", \"" + variable_expression + "\", \"" + str(weight_selection) + "\", \"" + option + "\" GOFF\")")
+				tree.Project(name, variable_expression, str(weight_selection), option + " GOFF")
 			root_histogram = ROOT.gDirectory.Get(name)
 		if root_histogram == None:
 			log.critical("Cannot find histogram \"%s\" created from trees %s in files %s!" % (name, str(path_to_trees), str(root_file_names)))
