@@ -253,6 +253,8 @@ public:
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetUpperAbsEtaCuts, {});
 	
 	IMPL_SETTING_DEFAULT(float, BTaggedJetAbsEtaCut, 0.0);
+	IMPL_SETTING_DEFAULT(std::string, BTaggedJetTrackCountingHighEffName, "TrackCountingHighEffBJetTags");
+	IMPL_SETTING_DEFAULT(std::string, BTaggedJetCombinedSecondaryVertexName, "CombinedSecondaryVertexBJetTags");
 	IMPL_SETTING_DEFAULT(float, BTaggedJetCombinedSecondaryVertexMediumWP, 0.0);
 	IMPL_SETTING_DEFAULT(bool, ApplyBTagSF, false);
 	IMPL_SETTING(std::string, BTagSFMethod);
