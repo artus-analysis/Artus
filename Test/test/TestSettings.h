@@ -34,6 +34,13 @@ public:
 	{
 		return stringvector();
 	}
+	virtual stringvector & GetTaggingFilters () const
+		ARTUS_CPP11_OVERRIDE
+	{
+		return m_taggingFilters;
+	}
+
+	mutable stringvector m_taggingFilters;
 
 	IMPL_PROPERTY(unsigned int, Offset)
 };
