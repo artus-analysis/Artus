@@ -91,7 +91,7 @@ public: \
 
 #define IMPL_SETTING_STRINGLIST( SNAME ) \
 VarCache<stringvector> m_##SNAME; \
-stringvector& Get##SNAME () const { \
+virtual stringvector& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsStringList(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
 	} \
@@ -108,7 +108,7 @@ stringvector& Get##SNAME () const { \
 
 #define IMPL_SETTING_STRINGLIST_DEFAULT( SNAME, DEFAULT_VAL ) \
 VarCache<stringvector> m_##SNAME; \
-stringvector& Get##SNAME () const { \
+virtual stringvector& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsStringList(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
 	} \
@@ -124,7 +124,7 @@ stringvector& Get##SNAME () const { \
 
 #define IMPL_SETTING_SORTED_STRINGLIST( SNAME ) \
 VarCache<stringvector> m_##SNAME; \
-stringvector& Get##SNAME () const { \
+virtual stringvector& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, Utility::Sorted(PropertyTreeSupport::GetAsStringList(GetPropTree(), GetPipelinePrefix() + #SNAME ))) \
 	} \
@@ -141,7 +141,7 @@ stringvector& Get##SNAME () const { \
 
 #define IMPL_SETTING_SORTED_STRINGLIST_DEFAULT( SNAME, DEFAULT_VAL ) \
 VarCache<stringvector> m_##SNAME; \
-stringvector& Get##SNAME () const { \
+virtual stringvector& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, Utility::Sorted(PropertyTreeSupport::GetAsStringList(GetPropTree(), GetPipelinePrefix() + #SNAME ))) \
 	} \
@@ -157,7 +157,7 @@ stringvector& Get##SNAME () const { \
 
 #define IMPL_SETTING_DOUBLELIST( SNAME ) \
 VarCache<doublevector> m_##SNAME; \
-doublevector& Get##SNAME () const { \
+virtual doublevector& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsDoubleList(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
 	} \
@@ -174,7 +174,7 @@ doublevector& Get##SNAME () const { \
 
 #define IMPL_SETTING_DOUBLELIST_DEFAULT( SNAME, DEFAULT_VAL ) \
 VarCache<doublevector> m_##SNAME; \
-doublevector& Get##SNAME () const { \
+virtual doublevector& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsDoubleList(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
 	} \
@@ -190,7 +190,7 @@ doublevector& Get##SNAME () const { \
 
 #define IMPL_SETTING_SORTED_DOUBLELIST( SNAME ) \
 VarCache<doublevector> m_##SNAME; \
-doublevector& Get##SNAME () const { \
+virtual doublevector& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, Utility::Sorted(PropertyTreeSupport::GetAsDoubleList(GetPropTree(), GetPipelinePrefix() + #SNAME ))) \
 	} \
@@ -207,7 +207,7 @@ doublevector& Get##SNAME () const { \
 
 #define IMPL_SETTING_SORTED_DOUBLELIST_DEFAULT( SNAME, DEFAULT_VAL ) \
 VarCache<doublevector> m_##SNAME; \
-doublevector& Get##SNAME () const { \
+virtual doublevector& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, Utility::Sorted(PropertyTreeSupport::GetAsDoubleList(GetPropTree(), GetPipelinePrefix() + #SNAME ))) \
 	} \
@@ -223,7 +223,7 @@ doublevector& Get##SNAME () const { \
 
 #define IMPL_SETTING_FLOATLIST( SNAME ) \
 VarCache<floatvector> m_##SNAME; \
-floatvector& Get##SNAME () const { \
+virtual floatvector& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsFloatList(GetPropTree(), #SNAME )) \
 	} \
@@ -240,7 +240,7 @@ floatvector& Get##SNAME () const { \
 
 #define IMPL_SETTING_FLOATLIST_DEFAULT( SNAME, DEFAULT_VAL) \
 VarCache<floatvector> m_##SNAME; \
-floatvector& Get##SNAME () const { \
+virtual floatvector& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsFloatList(GetPropTree(), #SNAME )) \
 	} \
@@ -256,7 +256,7 @@ floatvector& Get##SNAME () const { \
 
 #define IMPL_SETTING_SORTED_FLOATLIST( SNAME ) \
 VarCache<floatvector> m_##SNAME; \
-floatvector& Get##SNAME () const { \
+virtual floatvector& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, Utility::Sorted(PropertyTreeSupport::GetAsFloatList(GetPropTree(), GetPipelinePrefix() + #SNAME ))) \
 	} \
@@ -273,7 +273,7 @@ floatvector& Get##SNAME () const { \
 
 #define IMPL_SETTING_SORTED_FLOATLIST_DEFAULT( SNAME, DEFAULT_VAL ) \
 VarCache<floatvector> m_##SNAME; \
-floatvector& Get##SNAME () const { \
+virtual floatvector& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, Utility::Sorted(PropertyTreeSupport::GetAsFloatList(GetPropTree(), GetPipelinePrefix() + #SNAME ))) \
 	} \
@@ -289,7 +289,7 @@ floatvector& Get##SNAME () const { \
 
 #define IMPL_SETTING_INTLIST( SNAME ) \
 VarCache<intvector> m_##SNAME; \
-intvector& Get##SNAME () const { \
+virtual intvector& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsIntList(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
 	} \
@@ -306,7 +306,7 @@ intvector& Get##SNAME () const { \
 
 #define IMPL_SETTING_INTLIST_DEFAULT( SNAME, DEFAULT_VAL ) \
 VarCache<intvector> m_##SNAME; \
-intvector& Get##SNAME () const { \
+virtual intvector& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsIntList(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
 	} \
@@ -322,7 +322,7 @@ intvector& Get##SNAME () const { \
 
 #define IMPL_SETTING_SORTED_INTLIST( SNAME ) \
 VarCache<intvector> m_##SNAME; \
-intvector& Get##SNAME () const { \
+virtual intvector& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, Utility::Sorted(PropertyTreeSupport::GetAsIntList(GetPropTree(), GetPipelinePrefix() + #SNAME ))) \
 	} \
@@ -339,7 +339,7 @@ intvector& Get##SNAME () const { \
 
 #define IMPL_SETTING_SORTED_INTLIST_DEFAULT( SNAME, DEFAULT_VAL ) \
 VarCache<intvector> m_##SNAME; \
-intvector& Get##SNAME () const { \
+virtual intvector& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, Utility::Sorted(PropertyTreeSupport::GetAsIntList(GetPropTree(), GetPipelinePrefix() + #SNAME ))) \
 	} \
@@ -356,7 +356,7 @@ intvector& Get##SNAME () const { \
 
 #define IMPL_SETTING_UINT64LIST( SNAME ) \
 VarCache<uint64vector> m_##SNAME; \
-uint64vector& Get##SNAME () const { \
+virtual uint64vector& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsUInt64List(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
 	} \
@@ -373,7 +373,7 @@ uint64vector& Get##SNAME () const { \
 
 #define IMPL_SETTING_UINT64LIST_DEFAULT( SNAME, DEFAULT_VAL ) \
 VarCache<uint64vector> m_##SNAME; \
-uint64vector& Get##SNAME () const { \
+virtual uint64vector& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsUInt64List(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
 	} \
@@ -390,7 +390,7 @@ uint64vector& Get##SNAME () const { \
 
 #define IMPL_SETTING_SORTED_UINT64LIST( SNAME ) \
 VarCache<uint64vector> m_##SNAME; \
-uint64vector& Get##SNAME () const { \
+virtual uint64vector& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, Utility::Sorted(PropertyTreeSupport::GetAsUInt64List(GetPropTree(), GetPipelinePrefix() + #SNAME ))) \
 	} \
@@ -407,7 +407,7 @@ uint64vector& Get##SNAME () const { \
 
 #define IMPL_SETTING_SORTED_UINT64LIST_DEFAULT( SNAME, DEFAULT_VAL ) \
 VarCache<uint64vector> m_##SNAME; \
-uint64vector& Get##SNAME () const { \
+virtual uint64vector& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, Utility::Sorted(PropertyTreeSupport::GetAsUInt64List(GetPropTree(), GetPipelinePrefix() + #SNAME ))) \
 	} \
