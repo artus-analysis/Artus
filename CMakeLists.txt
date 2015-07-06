@@ -31,7 +31,7 @@ set(INCLUDE_DIRECTORIES
 	${CORRECTION_DIR}
 )
 
-include_directories( ${INCLUDE_DIRECTORIES})
+include_directories(SYSTEM ${INCLUDE_DIRECTORIES})
 include_directories( ${closure_SOURCE_DIR}../ )
 
 add_library(artus_core SHARED
