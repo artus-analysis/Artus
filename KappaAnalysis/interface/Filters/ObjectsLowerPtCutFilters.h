@@ -39,7 +39,7 @@ protected:
 			std::vector<std::string> hltNames;
 			if (leptonLowerPtCut->first == "default") {
 				indices = defaultIndices;
-				LOG(WARNING) << "No lepton index for the Filter \"" << this->GetFilterId() << "\" specified. Check the possible 3 hardest leptons.";
+				LOG(WARNING) << "No lepton index for the Filter \"" << this->GetFilterId() << "\" specified. Check the possible " << defaultIndices.size() << " hardest leptons.";
 			}
 			else {
 				try {

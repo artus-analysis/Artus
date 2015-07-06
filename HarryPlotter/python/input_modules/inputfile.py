@@ -39,12 +39,15 @@ class InputFile(inputbase.InputBase):
 		for index, (file_args, directory) in enumerate(zip(plotData.plotdict["files"], plotData.plotdict["directories"])):
 			paths_before_globbing = []
 			files = []
-			for file_arg in file_args.split():
-				paths_before_globbing.append(os.path.expandvars(os.path.join(directory, file_arg) if directory else file_arg))
-				files.extend(glob.glob(paths_before_globbing[-1]))
-			if len(files) == 0:
-				log.error("Input argument %d (%s) does not contain any existing files!" % (index, ", ".join(paths_before_globbing)))
-				sys.exit(1)
+			if file_args.startswith("root:/"):
+				files.append(file_args)
+			else:
+				for file_arg in file_args.split():
+					paths_before_globbing.append(os.path.expandvars(os.path.join(directory, file_arg) if directory else file_arg))
+					files.extend(glob.glob(paths_before_globbing[-1]))
+				if len(files) == 0:
+					log.error("Input argument %d (%s) does not contain any existing files!" % (index, ", ".join(paths_before_globbing)))
+					sys.exit(1)
 			plotData.plotdict["files"][index] = files
 	
 	def run(self, plotData):
