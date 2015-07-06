@@ -79,11 +79,10 @@ public:
 			for (typename std::vector<TValidObject*>::iterator validObject = (product.*m_validObjects).begin();
 			     validObject != (product.*m_validObjects).end();)
 			{
-				bool objectMatched = false;
+				bool objectMatched = true;
 				
 				// loop over all filters
 				for (size_t filterIndex = event.m_triggerObjectMetadata->getMinFilterIndex(product.m_selectedHltPosition);
-					(! objectMatched) &&
 					(filterIndex < event.m_triggerObjectMetadata->getMaxFilterIndex(product.m_selectedHltPosition));
 				     ++filterIndex)
 				{
@@ -124,8 +123,8 @@ public:
 						continue;
 
 					// loop over all trigger objects for this filter
+					bool hasMatch = false;
 					for (std::vector<int>::const_iterator triggerObjectIndex = event.m_triggerObjects->toIdxFilter[filterIndex].begin();
-					     (! objectMatched) &&
 					     (triggerObjectIndex != event.m_triggerObjects->toIdxFilter[filterIndex].end());
 					     ++triggerObjectIndex)
 					{
@@ -134,9 +133,10 @@ public:
 						                                   (*validObject)->p4) < (settings.*GetDeltaRTriggerMatchingObjects)())
 						{
 							(product.*m_triggerMatchedObjects)[*validObject] = &(event.m_triggerObjects->trgObjects[*triggerObjectIndex]);
-							objectMatched = true;
+							hasMatch = true;
 						}
 					}
+					objectMatched = objectMatched && hasMatch;
 				}
 				
 				// invalidate the object if the trigger has not matched
