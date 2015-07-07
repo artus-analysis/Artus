@@ -161,7 +161,11 @@ class PlotBase(processor.Processor):
 		
 		if self.predefined_colors is None:
 			self.predefined_colors = colors.ColorsDict(color_scheme=plotData.plotdict["color_scheme"])
-		
+
+		if len(plotData.plotdict["nicks"]) == 0 or all(item is None for item in plotData.plotdict["nicks"]):
+			log.critical("No nicks to plot!")
+			sys.exit()
+
 		# delete nicks that do not need to be used for plotting
 		self.select_histograms(plotData)
 		
