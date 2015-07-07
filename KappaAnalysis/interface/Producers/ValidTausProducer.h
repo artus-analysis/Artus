@@ -215,7 +215,7 @@ private:
 				//&& (tau->getDiscriminator("againstMuonLoose3", event.m_tauMetadata) > 0.5)
 				//&& (std::abs(tau->track.ref.z() - vertex->position.z()) < 0.2)
 				// tau dZ requirement for sync
-				&& (tau->track.ref.z() == vertex->position.z())
+				&& (Utility::ApproxEqual(tau->track.ref.z(), vertex->position.z()))
 		// do not use this atm since getDz only delivers -nan
 		//		&& (tau->track.getDz(vertex) > 0.5
 		//		|| tau->track.getDz(vertex) < -1.5 )
