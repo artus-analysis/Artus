@@ -65,6 +65,7 @@ if __name__ == "__main__":
 	#plot_config_combined["y_bins"] = ["500,0,500"]
 	plot_config_combined["tree_draw_options"] = ["profs"]
 	plot_config_combined["x_label"] = "Processor Index"
+	#plot_config_combined["x_tick_labels"] = processors
 	plot_config_combined["y_label"] = "Runtime / us"
 	plot_config_combined["filename"] = "all"
 	plot_configs.append(plot_config_combined)
