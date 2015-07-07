@@ -79,7 +79,26 @@ public:
 	/// get list of all local producers
 	IMPL_SETTING_STRINGLIST( Processors )
 	IMPL_SETTING_STRINGLIST( Consumers )
-	
+
+	///
+	//IMPL_GLOBAL_SETTING_STRINGLIST( GlobalProcessors )
+	VarCache<stringvector> m_globalProcessors;
+	stringvector& GetGlobalProcessors () const {
+		RETURN_CACHED(m_globalProcessors, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Processors" ))
+	}
+
+	std::vector<std::string> GetAllProcessors () const {
+		std::vector<std::string> allProcessors;
+		std::vector<std::string> globalProcessors = GetGlobalProcessors();
+		std::vector<std::string> localProcessors = GetProcessors();
+
+		if ( GetName() != "") {
+			allProcessors.insert(allProcessors.end(), globalProcessors.begin(), globalProcessors.end());
+		}
+		allProcessors.insert(allProcessors.end(), localProcessors.begin(), localProcessors.end());
+		return allProcessors;
+	}
+
 	// list of quantities needed for ntuple consumers
 	IMPL_SETTING_STRINGLIST(Quantities);
 	//IMPL_SETTING_SORTED_STRINGLIST(Quantities);

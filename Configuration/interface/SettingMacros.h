@@ -106,6 +106,18 @@ stringvector& Get##SNAME () const { \
 	} \
 }
 
+#define IMPL_GLOBAL_SETTING_STRINGLIST( SNAME ) \
+VarCache<stringvector> m_##SNAME; \
+stringvector& Get##SNAME () const { \
+	try { \
+		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsStringList(GetPropTree(), #SNAME )) \
+	} \
+	catch(...) { \
+		LOG(FATAL) << "Could not read value for config tag \"" << (#SNAME) << "\" in pipeline or global settings! It is either not specified or the specified type is incompatible!"; \
+		throw; \
+	} \
+}
+
 #define IMPL_SETTING_STRINGLIST_DEFAULT( SNAME, DEFAULT_VAL ) \
 VarCache<stringvector> m_##SNAME; \
 stringvector& Get##SNAME () const { \

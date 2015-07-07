@@ -10,6 +10,8 @@
 #include <vector>
 #include <algorithm>
 #include <unistd.h>
+#include <map>
+#include <sys/time.h>
 
 #include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_list.hpp>
@@ -163,6 +165,9 @@ public:
 			for( ProcessNodesIterator it = m_globalNodes.begin();
 					it != m_globalNodes.end(); it ++ )
 			{
+				// variables for runtime measurement
+				timeval tStart, tEnd;
+				int runTime;
 
 				// stop processing as soon as one filter fails
 				// but the consumers will still be processed
@@ -173,16 +178,24 @@ public:
 				{
 					producer_base_type& prod = static_cast<producer_base_type&>(*it);
 					//LOG(DEBUG) << prod.GetProducerId() << "::Produce";
+					gettimeofday(&tStart, 0);
 					ProducerBaseAccess(prod).Produce(evtProvider.GetCurrentEvent(),
 							productGlobal, settings);
+					gettimeofday(&tEnd, 0);
+					runTime = ( tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec );
+					productGlobal.processorRunTime[prod.GetProducerId()] = runTime;
 				}
 				else if ( it->GetProcessNodeType () == ProcessNodeType::Filter )
 				{
 					filter_base_type& flt = static_cast<filter_base_type&>(*it);
 					//LOG(DEBUG) << flt.GetFilterId() << "::DoesEventPass";
+					gettimeofday(&tStart, 0);
 					const bool filterResult = FilterBaseAccess(flt).DoesEventPass(evtProvider.GetCurrentEvent(),
 							productGlobal, settings);
 					globalFilterResult.SetFilterDecision(flt.GetFilterId(), filterResult);
+					gettimeofday(&tEnd, 0);
+					runTime = ( tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec );
+					productGlobal.processorRunTime[flt.GetFilterId()] = runTime;
 				}
 				else
 				{
