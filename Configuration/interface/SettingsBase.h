@@ -43,7 +43,7 @@ public:
 	/// path in the config file to reach the settings for this pipeline
 	IMPL_PROPERTY(std::string, PropTreePath)
 	/// pointer to the global, loaded property tree
-	IMPL_PROPERTY(boost::property_tree::ptree*, PropTree)
+	IMPL_PROPERTY_INITIALIZE(boost::property_tree::ptree*, PropTree, nullptr)
 
 	/// pipeline level, the default if no entry is in the json file will be 1
 	IMPL_SETTING_DEFAULT(size_t, Level, 1 )
@@ -106,6 +106,8 @@ public:
 	virtual stringvector GetFilters () const {
 		return SettingsUtil::ExtractFilters(GetProcessors());
 	}
+
+	IMPL_SETTING_STRINGLIST_DEFAULT(TaggingFilters, std::vector<std::string>());
 
 	typedef std::pair < std::string, size_t > PipelineInfo;
 	typedef std::vector<PipelineInfo> PipelineInfos;
