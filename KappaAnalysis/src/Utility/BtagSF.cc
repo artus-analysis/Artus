@@ -40,7 +40,7 @@ Bool_t BtagSF::isbtagged(Float_t pt, Float_t eta, Float_t csv, Int_t jetflavor, 
     promoteProb_btag = fabs(SFb - 1.0)/((SFb/eff_b) - 1.0);
   }
 
-  if(fabs(jetflavor) == 5) {                // real b-jet
+  if(std::abs(jetflavor) == 5) {                // real b-jet
     if(csv > 0.679) {                       // if tagged
       btagged = kTRUE;
       if(demoteProb_btag > 0 && randm->Uniform() > demoteProb_btag) btagged = kTRUE;  // leave it tagged
@@ -58,7 +58,7 @@ Bool_t BtagSF::isbtagged(Float_t pt, Float_t eta, Float_t csv, Int_t jetflavor, 
   Double_t SFl = 0, eff_l = 0;
 
   // c or light
-  if(fabs(jetflavor) == 4) {
+  if(std::abs(jetflavor) == 4) {
     // SFc = SFb with twice the quoted uncertainty
     SFl = getSFc(pt, btagsys, is2012);
     eff_l = 0.192*SFl; // eff_c in MC for CSVM = (-1.5734604211*x*x*x*x +  1.52798999269*x*x*x +  0.866697059943*x*x +  -1.66657942274*x +  0.780639301724), x = 0.679
