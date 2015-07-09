@@ -17,10 +17,16 @@ FilterResult::FilterResult(FilterNames const& initialFilterNames ) :
 	AddFilterNames ( initialFilterNames );
 }
 
+FilterResult::FilterResult(FilterNames const& initialFilterNames, FilterNames const& taggingFilters ) :
+		// has passed by default
+		m_taggingFilters(taggingFilters), m_cacheHasPassed(true), m_IsCachedHasPassed(false) {
+	AddFilterNames ( initialFilterNames );
+}
+
 FilterResult::DecisionEntry * FilterResult::GetDecisionEntry( std::string const& filterName ) {
 	for ( FilterResult::FilterDecisions::iterator it = m_filterDecisions.begin();
 			it != m_filterDecisions.end(); it ++ ) {
-		if ( filterName == it->first )
+		if ( filterName == it->filterName )
 			return & ( *it );
 	}
 
@@ -30,11 +36,19 @@ FilterResult::DecisionEntry * FilterResult::GetDecisionEntry( std::string const&
 FilterResult::DecisionEntry const* FilterResult::GetDecisionEntry( std::string const& filterName ) const {
 	for ( FilterResult::FilterDecisions::const_iterator it = m_filterDecisions.begin();
 			it != m_filterDecisions.end(); it ++ ) {
-		if ( filterName == it->first )
+		if ( filterName == it->filterName )
 			return & ( *it );
 	}
 
 	return ARTUS_CPP11_NULLPTR;
+}
+
+FilterResult::TaggingMode FilterResult::IsTaggingFilter(std::string const& filterName ) const {
+	if (std::find(m_taggingFilters.begin(), m_taggingFilters.end(), filterName) != m_taggingFilters.end())
+	{
+		return TaggingMode::Tagging;
+	}
+	return TaggingMode::Filtering;
 }
 
 // add a list of filter names
@@ -45,7 +59,7 @@ void FilterResult::AddFilterNames( FilterNames const& fn ){
 			it != fn.end(); it ++ ) {
 		FilterResult::DecisionEntry * entr = GetDecisionEntry( * it );
 		if ( entr == ARTUS_CPP11_NULLPTR ) {
-			m_filterDecisions.push_back( std::make_pair( *it, Decision::Undefined ));
+			m_filterDecisions.push_back( DecisionEntry(*it, Decision::Undefined, IsTaggingFilter(*it)));
 		}
 	}
 }
@@ -55,7 +69,7 @@ FilterResult::FilterNames FilterResult::GetFilterNames() const {
 	FilterNames filterNames;
 	filterNames.resize(m_filterDecisions.size());
 	transform(m_filterDecisions.begin(), m_filterDecisions.end(), filterNames.begin(),
-	          [](FilterResult::DecisionEntry decisionEntry) { return decisionEntry.first; });
+	          [](FilterResult::DecisionEntry decisionEntry) { return decisionEntry.filterName; });
 	return filterNames;
 }
 
@@ -66,7 +80,8 @@ bool FilterResult::HasPassed() const {
 	m_cacheHasPassed = true;
 	for (FilterResult::FilterDecisions::const_iterator it = GetFilterDecisions().begin();
 			it != GetFilterDecisions().end(); it++) {
-		if (it->second == FilterResult::Decision::NotPassed)
+		if (it->filterDecision == FilterResult::Decision::NotPassed &&
+		    it->taggingMode == FilterResult::TaggingMode::Filtering)
 			m_cacheHasPassed = false;
 	}
 
@@ -77,11 +92,13 @@ bool FilterResult::HasPassed() const {
 bool FilterResult::HasPassedIfExcludingFilter(std::string const& excludedFilter) const {
 	for (FilterResult::FilterDecisions::const_iterator it = GetFilterDecisions().begin();
 			it != GetFilterDecisions().end(); it++) {
-		if (it->second == FilterResult::Decision::NotPassed)
-			if (it->first != excludedFilter)
+		if (it->filterDecision == FilterResult::Decision::NotPassed &&
+		    it->taggingMode == FilterResult::TaggingMode::Filtering)
+		{
+			if (it->filterName != excludedFilter)
 				return false;
+		}
 	}
-
 	return true;
 }
 
@@ -91,7 +108,7 @@ FilterResult::Decision FilterResult::GetFilterDecision(std::string filterName) c
 	if ( entr == ARTUS_CPP11_NULLPTR ){
 		LOG(FATAL) << "Decision entry with name " << filterName << " not found!";
 	}
-	return entr->second;
+	return entr->filterDecision;
 }
 
 FilterResult::FilterDecisions const& FilterResult::GetFilterDecisions() const {
@@ -103,9 +120,9 @@ void FilterResult::SetFilterDecision(std::string filterName, bool passed) {
 	FilterResult::DecisionEntry * entr = GetDecisionEntry(filterName);
 
 	if ( entr == ARTUS_CPP11_NULLPTR ) {
-		m_filterDecisions.push_back( std::make_pair( filterName, desc ));
+		m_filterDecisions.push_back( DecisionEntry(filterName, desc, IsTaggingFilter(filterName)));
 	} else {
-		entr->second = desc;
+		entr->filterDecision = desc;
 	}
 	
 	// recompute the cached filter result, if the new filter
@@ -120,7 +137,7 @@ std::string FilterResult::ToString() const {
 
 	for (FilterResult::FilterDecisions::const_iterator it = m_filterDecisions.begin();
 			it != m_filterDecisions.end(); it++) {
-		s << it->first << " : " << FilterResult::DecisionToString( it->second ) << std::endl;
+		s << it->filterName << " : " << FilterResult::DecisionToString( it->filterDecision ) << std::endl;
 	}
 
 	return s.str();

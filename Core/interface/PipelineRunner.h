@@ -118,8 +118,9 @@ public:
 		long long firstEvent = 0;
 		long long nEvents = evtProvider.GetEntries();
 		const stringvector globlalFilterIds = settings.GetFilters();
+		const stringvector taggingFilters = settings.GetTaggingFilters();
 
-		// initilize pline filter decision
+		// initialize pline filter decision
 		FilterResult::FilterNames pipelineResultNames(m_pipelines.size());
 		std::transform(m_pipelines.begin(), m_pipelines.end(),
 				pipelineResultNames.begin(),
@@ -160,7 +161,7 @@ public:
 
 			product_type productGlobal;
 			// use the lit of filters to bootstrap the filter list names
-			FilterResult globalFilterResult ( globlalFilterIds );
+			FilterResult globalFilterResult ( globlalFilterIds, taggingFilters );
 
 			for( ProcessNodesIterator it = m_globalNodes.begin();
 					it != m_globalNodes.end(); it ++ )
@@ -204,7 +205,7 @@ public:
 			}
 
 			// run the pipelines
-			FilterResult pipelineFilterRes(pipelineResultNames);
+			FilterResult pipelineFilterRes(pipelineResultNames, taggingFilters);
 
 			for (PipelinesIterator it = m_pipelines.begin();
 					it != m_pipelines.end(); it++)

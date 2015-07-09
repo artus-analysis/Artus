@@ -46,13 +46,29 @@ if __name__ == "__main__":
 		plot_config["x_expressions"] = [processor]
 		plot_config["weights"] = ["{p} >= 0.0".format(p=processor)]
 		plot_config["colors"] = ["#FF0000"]
-		plot_config["x_label"] = "runtime / ms"
+		plot_config["x_label"] = "runtime / us"
 		plot_config["filename"] = processor
 		
 		if not args.output_dir is None:
 			plot_config["output_dir"] = os.path.expandvars(args.output_dir)
 		
 		plot_configs.append(plot_config)
+	
+	plot_config_combined = {}
+	plot_config_combined["files"] = [args.input]
+	plot_config_combined["folders"] = [folder]
+	plot_config_combined["nicks"] = ["nick"]
+	plot_config_combined["x_expressions"] = ["{i}".format(i=index) for index in range(len(processors))]
+	plot_config_combined["y_expressions"] = ["{p}".format(p=processor) for processor in processors]
+	plot_config_combined["weights"] = ["{p} >= 0.0".format(p=processor) for processor in processors]
+	plot_config_combined["x_bins"] = ["{l},0,{l}".format(l=len(processors))]
+	#plot_config_combined["y_bins"] = ["500,0,500"]
+	plot_config_combined["tree_draw_options"] = ["profs"]
+	plot_config_combined["x_label"] = "Processor Index"
+	#plot_config_combined["x_tick_labels"] = processors
+	plot_config_combined["y_label"] = "Runtime / us"
+	plot_config_combined["filename"] = "all"
+	plot_configs.append(plot_config_combined)
 	
 	harry_plotter = harry.HarryPlotter(list_of_config_dicts=plot_configs, list_of_args_strings=[args.args], n_processes=args.n_processes, n_plots=args.n_plots)
 

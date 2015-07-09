@@ -16,15 +16,27 @@ class FilterResult {
 public:
 
 	enum class Decision { Undefined, Passed, NotPassed };
+	enum class TaggingMode { Tagging, Filtering };
 
-	typedef std::vector < std::string> FilterNames;
+	typedef std::vector <std::string> FilterNames;
 	//typedef std::map<std::string, Decision> FilterDecisions;
+	struct DecisionEntry
+	{
+		std::string filterName;
+		Decision filterDecision;
+		TaggingMode taggingMode;
+		DecisionEntry() : filterName(""),
+		                  filterDecision(Decision::Undefined),
+		                  taggingMode(TaggingMode::Filtering) {}
+		DecisionEntry(std::string filterName, Decision filterDecision, TaggingMode taggingMode) :
+		              filterName(filterName), filterDecision(filterDecision), taggingMode(taggingMode) {}
+	};
 
-	typedef std::pair <std::string, Decision> DecisionEntry;
 	typedef std::list<DecisionEntry> FilterDecisions;
 
 	FilterResult();
 	FilterResult(FilterNames const& initialFilterNames );
+	FilterResult(FilterNames const& initialFilterNames, FilterNames const& taggingFilters );
 
 	DecisionEntry * GetDecisionEntry( std::string const& filterName );
 	DecisionEntry const* GetDecisionEntry( std::string const& filterName ) const;
@@ -39,6 +51,7 @@ public:
 	
 	bool HasPassed() const;
 	bool HasPassedIfExcludingFilter(std::string const& excludedFilter) const;
+	TaggingMode IsTaggingFilter(std::string const& filterName) const;
 	Decision GetFilterDecision(std::string filterName) const;
 	FilterDecisions const& GetFilterDecisions() const;
 	void SetFilterDecision(std::string filterName, bool passed);
@@ -48,6 +61,7 @@ public:
 private:
 
 	// optimize this, without strings
+	FilterNames m_taggingFilters;
 	FilterDecisions m_filterDecisions;
 
 	mutable bool m_cacheHasPassed;

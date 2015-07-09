@@ -72,7 +72,9 @@ public:
 		    filterDecision != filterDecisions.end(); filterDecision++)
 		{
 			++bin;
-			if (filterDecision->second == FilterResult::Decision::Passed) {
+			if (filterDecision->filterDecision == FilterResult::Decision::Passed ||
+			    filterDecision->taggingMode == FilterResult::TaggingMode::Tagging) 
+			{
 				m_cutFlowUnweightedHist->Fill(float(bin));
 			
 				if(m_addWeightedCutFlow) {
@@ -141,10 +143,14 @@ private:
 		    filterName != filterNames.end(); ++filterName)
 		{
 			++bin;
-			m_cutFlowUnweightedHist->GetXaxis()->SetBinLabel(bin, filterName->c_str());
+			std::string filterNameLabel = *filterName;
+			if (filterResult.IsTaggingFilter(filterNameLabel) == FilterResult::TaggingMode::Tagging) {
+				filterNameLabel += " (T)";
+			}
+			m_cutFlowUnweightedHist->GetXaxis()->SetBinLabel(bin, filterNameLabel.c_str());
 		
 			if(m_addWeightedCutFlow) {
-				m_cutFlowWeightedHist->GetXaxis()->SetBinLabel(bin, filterName->c_str());
+				m_cutFlowWeightedHist->GetXaxis()->SetBinLabel(bin, filterNameLabel.c_str());
 			}
 		}
 	
