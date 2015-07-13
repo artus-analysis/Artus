@@ -29,4 +29,16 @@ if __name__ == "__main__":
 	with TFileContextManager(args.root_file, "READ") as root_file:
 		elements = roottools.RootTools.walk_root_directory(root_file)
 		for key, path in elements:
-			log.info("%s (%s)" % (path, key.GetClassName()))
+			class_name = key.GetClassName()
+			if log.isEnabledFor(logging.DEBUG):
+				root_object = root_file.Get(path)
+				if (class_name == "TTree") or (class_name == "TNtuple"):
+					log.debug("%s (%s, entries=%d)" % (path, class_name, root_object.GetEntries()))
+				elif class_name.startswith("TH") or class_name.startswith("TProfile"):
+					log.debug("%s (%s, integral=%f)" % (path, class_name, root_object.Integral()))
+				elif class_name.startswith("TGraph"):
+					log.debug("%s (%s, points=%d)" % (path, class_name, root_object.GetN()))
+				else:
+					log.debug("%s (%s)" % (path, class_name))
+			else:
+				log.info("%s (%s)" % (path, class_name))
