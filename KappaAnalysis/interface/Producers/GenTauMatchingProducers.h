@@ -62,7 +62,7 @@ public:
 	virtual void Produce(event_type const& event, product_type& product,
 						 setting_type const& settings) const ARTUS_CPP11_OVERRIDE
 	{
-		float ratioGenTauMatched = 0;
+		double ratioGenTauMatched = 0;
 		
 		assert(event.m_genTaus);
 		
