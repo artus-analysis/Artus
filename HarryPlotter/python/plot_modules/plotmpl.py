@@ -347,9 +347,10 @@ class PlotMpl(plotbase.PlotBase):
 			else:
 				if ax.dataLim.min[1] >= (-1E-6) and ax.get_ylim()[0] < 0.:
 					if plotData.plotdict["y_log"]:
-						ax.set_ylim(ymin=self.y_min)
-					else:
-						ax.set_ylim(ymin=0)
+						if self.y_max > 1:
+							ax.set_ylim(ymin=1)
+						else:
+							ax.set_ylim(ymin=self.y_min)
 				if all("TH1" in obj.__class__.__name__ for obj in plotData.plotdict["root_objects"].values()):
 					ax.set_ylim(ymax=self.y_max * (2 if plotData.plotdict["y_log"] else 1.2))
 

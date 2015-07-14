@@ -54,7 +54,7 @@ def matching_sublist(input_list, whitelist=[], blacklist=[]):
 		for item in whitelist_matches:
 			keep = True
 			for regex in blacklist:
-				if not re.search(regex, item) is None:
+				if not item is None and not re.search(regex, item) is None:
 					keep = False
 					continue
 			if keep:

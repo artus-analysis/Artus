@@ -230,7 +230,9 @@ public:
 
 			// Muon ID according to Muon POG definitions
 			if (muonID == MuonID::TIGHT) {
-				if (settings.GetYear() == 2012)
+				if (settings.GetYear() == 2015)
+					validMuon = validMuon && IsTightMuon2015(*muon, event, product);
+				else if (settings.GetYear() == 2012)
 					validMuon = validMuon && IsTightMuon2012(*muon, event, product);
 				else if (settings.GetYear() == 2011)
 					validMuon = validMuon && IsTightMuon2011(*muon, event, product);
@@ -244,7 +246,9 @@ public:
 					LOG(FATAL) << "Medium muon ID for year " << settings.GetYear() << " not yet implemented!";
 			}
 			else if (muonID == MuonID::LOOSE) {
-				if (settings.GetYear() == 2012)
+				if (settings.GetYear() == 2015)
+					validMuon = validMuon && IsLooseMuon2015(*muon, event, product);
+				else if (settings.GetYear() == 2012)
 					validMuon = validMuon && IsLooseMuon2012(*muon, event, product);
 				else
 					LOG(FATAL) << "Loose muon ID for year " << settings.GetYear() << " not yet implemented!";
@@ -330,85 +334,69 @@ private:
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon_selection
 	bool IsTightMuon2011(KMuon* muon, event_type const& event, product_type& product) const
 	{
-		bool validMuon = true;
-		
-		validMuon = validMuon
-					&& muon->isGlobalMuon()
-					&& muon->isPFMuon()
-					&& muon->globalTrack.chi2 / muon->globalTrack.nDOF < 10.0
-					&& muon->globalTrack.nValidMuonHits > 0
-					&& muon->nMatches > 1
-					&& std::abs(muon->dxy) < 0.2
-					&& muon->track.nValidPixelHits > 0
-					&& muon->track.nTrackerLayers() > 8;
-		
-		return validMuon;
+		return muon->isGlobalMuon()
+		       && muon->isPFMuon()
+		       && muon->globalTrack.chi2 / muon->globalTrack.nDOF < 10.0
+		       && muon->globalTrack.nValidMuonHits > 0
+		       && muon->nMatches > 1
+		       && std::abs(muon->dxy) < 0.2
+		       && muon->track.nValidPixelHits > 0
+		       && muon->track.nTrackerLayers() > 8;
 	}
 	
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon
 	bool IsTightMuon2012(KMuon* muon, event_type const& event, product_type& product) const
 	{
-		bool validMuon = true;
-		
-		validMuon = validMuon
-					&& muon->isGlobalMuon()
-					&& muon->isPFMuon()
-					&& muon->globalTrack.chi2 / muon->globalTrack.nDOF < 10.0
-					&& muon->globalTrack.nValidMuonHits > 0
-					&& muon->nMatches > 1
-					&& std::abs(muon->dxy) < 0.2
-					&& std::abs(muon->dz) < 0.5
-					&& muon->track.nValidPixelHits > 0
-					&& muon->track.nTrackerLayers() > 5;
-		
-		return validMuon;
-	}
-	
-	bool IsMediumMuon2015(KMuon* muon, event_type const& event, product_type& product) const
-	{
-		bool validMuon = true;
-		
-		validMuon = validMuon && muon->idMedium();
-		
-		return validMuon;
+		return muon->isGlobalMuon()
+		       && muon->isPFMuon()
+		       && muon->globalTrack.chi2 / muon->globalTrack.nDOF < 10.0
+		       && muon->globalTrack.nValidMuonHits > 0
+		       && muon->nMatches > 1
+		       && std::abs(muon->dxy) < 0.2
+		       && std::abs(muon->dz) < 0.5
+		       && muon->track.nValidPixelHits > 0
+		       && muon->track.nTrackerLayers() > 5;
 	}
 	
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Loose_Muon
 	bool IsLooseMuon2012(KMuon* muon, event_type const& event, product_type& product) const
 	{
-		bool validMuon = true;
-		
-		validMuon = validMuon
-					&& muon->isPFMuon()
-					&& (muon->isGlobalMuon() || muon->isTrackerMuon());
-		
-		return validMuon;
+		return muon->isPFMuon()
+		       && (muon->isGlobalMuon() || muon->isTrackerMuon());
 	}
-	
+
+	// https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2#Loose_Muon
+	bool IsLooseMuon2015(KMuon* muon, event_type const& event, product_type& product) const
+	{
+		return muon->idLoose();
+	}
+
+	// https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2#Medium_Muon
+	bool IsMediumMuon2015(KMuon* muon, event_type const& event, product_type& product) const
+	{
+		return muon->idMedium();
+	}
+
+	// https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2#Tight_Muon
+	bool IsTightMuon2015(KMuon* muon, event_type const& event, product_type& product) const
+	{
+		return muon->idTight();
+	}
+
 	// https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsToTauTauWorkingSummer2013#Muon_Tau_Final_state
 	// should be move to Higgs code
 	bool IsVetoMuon(KMuon* muon, event_type const& event, product_type& product) const
 	{
-		bool validMuon = true;
-		
-		validMuon = validMuon
-					&& muon->isPFMuon()
-					&& muon->isGlobalMuon()
-					&& muon->isTrackerMuon()
-					&& (std::abs(muon->dz) < 0.2);
-		
-		return validMuon;
+		return muon->isPFMuon()
+		       && muon->isGlobalMuon()
+		       && muon->isTrackerMuon()
+		       && (std::abs(muon->dz) < 0.2);
 	}
 	
 	bool IsFakeableMuon(KMuon* muon, event_type const& event, product_type& product) const
 	{
-		bool validMuon = true;
-		
-		validMuon = validMuon
-					&& muon->isGlobalMuon()
-					&& std::abs(muon->dxy) < 0.2;
-		
-		return validMuon;
+		return muon->isGlobalMuon()
+		       && std::abs(muon->dxy) < 0.2;
 	}
 	
 	bool IsFakeableMuonIso(KMuon* muon, event_type const& event, product_type& product, setting_type const& settings) const
