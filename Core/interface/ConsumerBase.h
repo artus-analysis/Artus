@@ -53,6 +53,8 @@ protected:
 			FilterResult & fres) = 0;
 	virtual void baseProcessFilteredEvent( EventBase const& evt, ProductBase const& prod,
 			SettingsBase const& setting) = 0;
+	virtual void baseProcessFilteredEvent( EventBase const& evt, ProductBase const& prod,
+			SettingsBase const& setting, FilterResult & fres) = 0;
 	virtual void baseInit ( SettingsBase const& settings ) = 0;
 	virtual void baseFinish ( SettingsBase const& settings ) = 0;
 };
@@ -73,6 +75,10 @@ public:
 
 	void ProcessFilteredEvent( EventBase const& evt, ProductBase const& prod, SettingsBase const& settings ){
 		m_cb.baseProcessFilteredEvent( evt, prod, settings );
+	}
+
+	void ProcessFilteredEvent( EventBase const& evt, ProductBase const& prod, SettingsBase const& settings, FilterResult fres ){
+		m_cb.baseProcessFilteredEvent( evt, prod, settings, fres);
 	}
 
 	void Init ( SettingsBase const& settings ){
@@ -111,6 +117,13 @@ public:
 			setting_type const& settings) {
 	}
 
+	virtual void ProcessFilteredEvent(event_type const& event,
+			product_type const& product,
+			setting_type const& settings,
+			FilterResult &fres) {
+	}
+
+
 	/*
 	 *  this method is called for all events
 	 *  Depending on the outcome of the pipeline ( a filter might have stopped the producers
@@ -121,7 +134,7 @@ public:
 	virtual void ProcessEvent(event_type const& event,
 			product_type const& product,
 			setting_type const& settings,
-            FilterResult & result) {
+			FilterResult & result) {
 	}
 
 	/*
@@ -161,7 +174,7 @@ protected:
 	}
 
 	virtual void baseProcessEvent(  EventBase const& evt, ProductBase const& prod,
-									SettingsBase const& setting, FilterResult & fres )
+			SettingsBase const& setting, FilterResult & fres )
 		ARTUS_CPP11_OVERRIDE {
 
 		auto const& specEvent = static_cast < event_type const&> ( evt );
@@ -181,6 +194,19 @@ protected:
 
 		ProcessFilteredEvent( specEvent, specProd, specSetting );
 	}
+
+	virtual void baseProcessFilteredEvent(EventBase const& evt,
+			ProductBase const& prod,
+			SettingsBase const& setting,
+			FilterResult & fres) {
+
+		auto const& specEvent = static_cast < event_type const&> ( evt );
+		auto const& specProd = static_cast < product_type const&> ( prod );
+		auto const& specSetting = static_cast < setting_type const&> ( setting );
+
+		ProcessFilteredEvent( specEvent, specProd, specSetting, fres);
+	}
+
 
 	void baseInit ( SettingsBase const& settings ) ARTUS_CPP11_OVERRIDE {
 		auto const& specSettings = static_cast < setting_type const&> ( settings );

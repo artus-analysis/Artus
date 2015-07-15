@@ -222,6 +222,7 @@ public:
 			//LOG(DEBUG) << itcons->GetConsumerId() << "::ProcessFilteredEvent/ProcessEvent (pipeline: " << m_pipelineSettings.GetName() << ")";
 			if (localFilterResult.HasPassed()) {
 				ConsumerBaseAccess(*itcons).ProcessFilteredEvent(evt, localProduct, GetSettings());
+				ConsumerBaseAccess(*itcons).ProcessFilteredEvent(evt, localProduct, GetSettings(), localFilterResult);
 			}
 
 			ConsumerBaseAccess(*itcons).ProcessEvent(evt, localProduct, GetSettings(), localFilterResult);
