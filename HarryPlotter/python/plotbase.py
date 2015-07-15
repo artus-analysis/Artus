@@ -378,7 +378,13 @@ class PlotBase(processor.Processor):
 		# if lumi and energy are available:
 		if (not plotData.plotdict["lumis"] is None) and (not plotData.plotdict["energies"] is None):
 			for lumi, energy in zip(plotData.plotdict["lumis"], plotData.plotdict["energies"]):
-				run_periods.append("%s \,\mathrm{fb}^{-1} (%s \,TeV)" % (str(lumi), str(int(energy))))
+				if lumi < 0.01: # TODO make this configurable?
+					unit = "pb"
+					factor = 1000
+				else:
+					unit = "fb"
+					factor = 1
+				run_periods.append("%s \,\mathrm{%s}^{-1} (%s \,TeV)" % (str(lumi*factor), unit, str(int(energy))))
 		# if only energy is available (MC-plots):
 		elif (not plotData.plotdict["energies"] is None):
 			for energy in plotData.plotdict["energies"]:
