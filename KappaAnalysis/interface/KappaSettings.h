@@ -214,6 +214,7 @@ public:
 	IMPL_SETTING(std::string, JetID);
 	IMPL_SETTING_DEFAULT(float, JetLeptonLowerDeltaRCut, -1.0);
 	IMPL_SETTING_DEFAULT(std::string, JetIDVersion, "2010");
+	IMPL_SETTING_DEFAULT(std::string, PuJetIDFullDiscrName, "puJetIDFullDiscriminant");
 	IMPL_SETTING_STRINGLIST_DEFAULT(PuJetIDs, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetTaggerLowerCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetTaggerUpperCuts, {});
