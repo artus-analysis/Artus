@@ -44,7 +44,8 @@ public:
 	// add a list of filter names
 	// will only add and set the decision to undefined, if the
 	// name is not in the list before
-	void AddFilterNames( FilterNames const& fn );
+	void AddFilterNames( FilterNames const& fn);
+	void AddFilterNames( FilterNames const& fn, FilterNames const& taggingFilters);
 	
 	// list of all filter names as a vector of strings
 	FilterNames GetFilterNames() const;

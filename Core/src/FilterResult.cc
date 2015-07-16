@@ -54,6 +54,12 @@ FilterResult::TaggingMode FilterResult::IsTaggingFilter(std::string const& filte
 // add a list of filter names
 // will only add and set the decision to undefined, if the
 // name is not in the list before
+//
+void FilterResult::AddFilterNames( FilterNames const& fn, FilterNames const& taggingFilters){
+	m_taggingFilters.insert(m_taggingFilters.end(), taggingFilters.begin(), taggingFilters.end());
+	AddFilterNames(fn);
+}
+
 void FilterResult::AddFilterNames( FilterNames const& fn ){
 	for ( FilterResult::FilterNames::const_iterator it = fn.begin();
 			it != fn.end(); it ++ ) {
