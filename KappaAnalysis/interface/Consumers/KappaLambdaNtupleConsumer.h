@@ -91,6 +91,19 @@ public:
 					return SafeMap::GetWithDefault(product.m_weights, quantity, SafeMap::GetWithDefault(product.m_optionalWeights, quantity, 1.0));
 				} );
 			}
+			if (boost::algorithm::icontains(quantity, "filter") &&
+			   (LambdaNtupleConsumer<TTypes>::GetFloatQuantities().count(quantity) == 0))
+			{
+				LOG(DEBUG) << "\tQuantity \"" << quantity << "\" is tried to be taken from prduct.fres (FilterResult).";
+				LambdaNtupleConsumer<TTypes>::AddIntQuantity( quantity, [quantity](event_type const & event, product_type const & product)
+				{
+					if (product.fres.GetDecisionEntry(quantity) != ARTUS_CPP11_NULLPTR)
+					{
+						return (product.fres.GetDecisionEntry(quantity)->filterDecision == FilterResult::Decision::Passed) ? 1 : 0;
+					}
+					return -1;
+				} );
+			}
 		}
 
 		// need to be called at last
