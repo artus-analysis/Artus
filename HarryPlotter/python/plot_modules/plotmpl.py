@@ -43,7 +43,7 @@ class MplPlotContainer(plotdata.PlotContainer):
 	def save(self, filename):
 		# use bbox tight and pad to not have labels cropped
 		# TODO should we use fixed bbox values?
-		self.fig.savefig(filename, bbox_inches='tight', pad_inches=0.1)
+		self.fig.savefig(filename, pad_inches=0.1, **({'bbox_inches': 'tight'} if '.pgf' not in filename else {}))
 		if self.save_legend != False:
 			legend_filename = os.path.join(os.path.dirname(filename), self.save_legend+os.path.splitext(filename)[-1])
 			self.legend_fig.savefig(
@@ -493,6 +493,7 @@ class PlotMpl(plotbase.PlotBase):
 		matplotlib.rcParams['savefig.dpi'] = 150
 		#matplotlib.rcParams['savefig.format'] = 'png'
 		matplotlib.rcParams['agg.path.chunksize'] = 20000
+		matplotlib.rcParams['pgf.texsystem'] = 'pdflatex'
 
 	@staticmethod
 	def steppify_bin(arr, isx=False):
