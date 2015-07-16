@@ -59,6 +59,9 @@ class InputRoot(inputfile.InputFile):
 		
 		self.input_options.add_argument("--tree-draw-options", nargs='+', type=str, default="",
 		                                help="Optional argument for TTree:Draw() call. Use e.g. \"prof\" or \"profs\" for projections of 2D-Histograms to 1D. See also http://root.cern.ch/ooot/html/TTree.html#TTree:Draw. Specify \"TGraph\" for plotting y- vs. x-values into a TGraph. \"TGraphErrors\" leads to a graph with errors by specifying inputs with --x-expressions <x values>:<x errors> --y-expressions <y values>:<y errors>. \"TGraphAsymmErrorsX\" leads to a graph with asymmetric x-errors by specifying inputs with --x-expressions <x values>:<x errors (down)>:<x errors (up)> --y-expressions <y values>. \"TGraphAsymmErrorsY\" leads to a graph with asymmetric y-errors by specifying inputs with --x-expressions <x values> --y-expressions <y values>:<y errors (down)>:<y errors (up)>. TTree::MakeProxy and TTree::Process is usued to fill the histograms from a tree instead of TTree::Draw or TTree::Project in case you specify the option \"proxy\" This is needed e.g. for formulas containing two branches/leafs with different non-fundamental types.")
+		
+		self.input_options.add_argument("--read-config", nargs="?", type="bool", default=False, const=True,
+		                                help="Read in the config stored in Artus ROOT outputs. [Default: %(default)s]")
 
 	def prepare_args(self, parser, plotData):
 		super(InputRoot, self).prepare_args(parser, plotData)
@@ -79,7 +82,9 @@ class InputRoot(inputfile.InputFile):
 		plotData.plotdict["folders"] = [folders.split() if folders else [""] for folders in plotData.plotdict["folders"]]
 		
 		inputbase.InputBase.prepare_nicks(plotData)
-		self.read_input_json_dicts(plotData)
+		
+		if plotData.plotdict["read_config"]:
+			self.read_input_json_dicts(plotData)
 
 	def run(self, plotData):
 		
