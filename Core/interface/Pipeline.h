@@ -217,6 +217,7 @@ public:
 				LOG(FATAL) << "ProcessNodeType not supported by the pipeline!";
 			}
 		}
+		localProduct.fres = localFilterResult;
 
 		// run Consumers
 		for (ConsumerVectorIterator itcons = m_consumer.begin(); itcons != m_consumer.end(); itcons++) {
