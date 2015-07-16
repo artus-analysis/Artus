@@ -26,7 +26,7 @@ def main():
 	logger.initLogger(args)
 	
 	output_dirs = glob.glob(os.path.join(args.project_dir, "output/*"))
-	nick_names = [output_dir[output_dir.rfind("/")+1:] for output_dir in output_dirs]
+	nick_names = [nick for nick in [output_dir[output_dir.rfind("/")+1:] for output_dir in output_dirs] if not ".tar.gz" in nick]
 	outputs_per_nick = {nick : glob.glob(os.path.join(args.project_dir, "output", nick, "*.root")) for nick in nick_names}
 	outputs_per_nick = {nick : files for nick, files in outputs_per_nick.iteritems() if len(files) > 0}
 	
