@@ -85,9 +85,7 @@ public:
 	virtual void Produce(event_type const& event, product_type& product,
 	                     setting_type const& globalSettings) const = 0;
 
-	virtual ProcessNodeType GetProcessNodeType () const
-		ARTUS_CPP11_FINAL
-		ARTUS_CPP11_OVERRIDE
+	virtual ProcessNodeType GetProcessNodeType () const override ARTUS_CPP11_FINAL
 	{
 		return ProcessNodeType::Producer;
 	}
@@ -96,7 +94,8 @@ protected:
 
 	virtual void baseProduce(EventBase const& evt,
 			ProductBase & prod,
-			SettingsBase const& setting ) const ARTUS_CPP11_OVERRIDE {
+			SettingsBase const& setting ) const override
+	{
 		auto const& specEvent = static_cast < event_type const&> ( evt );
 		auto & specProd = static_cast < product_type &> ( prod );
 		auto const& specSetting = static_cast < setting_type const&> ( setting );
@@ -104,7 +103,7 @@ protected:
 		Produce( specEvent, specProd, specSetting );
 	}
 
-	virtual void baseInit ( SettingsBase const& settings ) ARTUS_CPP11_OVERRIDE {
+	virtual void baseInit ( SettingsBase const& settings ) override {
 		auto const& specSettings = static_cast < setting_type const&> ( settings );
 
 		this->Init ( specSettings );

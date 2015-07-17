@@ -16,10 +16,10 @@ public:
 	
 	PrintHltConsumer();
 	
-	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetConsumerId() const override;
 	
 	virtual void ProcessFilteredEvent(event_type const& event, product_type const& product,
-	                                  setting_type const& settings) ARTUS_CPP11_OVERRIDE;
+	                                  setting_type const& settings) override;
 	
 	virtual void Finish(setting_type const& settings);
 

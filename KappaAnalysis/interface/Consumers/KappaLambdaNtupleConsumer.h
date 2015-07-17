@@ -20,12 +20,12 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 
-	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE
+	virtual std::string GetConsumerId() const override
 	{
 		return "KappaLambdaNtupleConsumer";
 	}
 	
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
+	virtual void Init(setting_type const& settings) override
 	{
 		// add possible quantities for the lambda ntuples consumers
 		LambdaNtupleConsumer<TTypes>::AddIntQuantity("input", [](event_type const& event, product_type const& product) -> int

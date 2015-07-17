@@ -33,12 +33,11 @@ public:
 			m_plotName(plotName), m_xsource(xsource), m_ysource(ysource) {
 	}
 
-	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE {
+	virtual std::string GetConsumerId() const override {
 		return "profile";
 	}
 
-	virtual void Init( typename TTypes::setting_type const& settings)
-		ARTUS_CPP11_OVERRIDE
+	virtual void Init( typename TTypes::setting_type const& settings) override
 	{
 		ConsumerBase<TTypes>::Init(settings);
 
@@ -59,7 +58,7 @@ public:
 	virtual void ProcessEvent(typename TTypes::event_type const& event,
 			typename TTypes::product_type const& product,
 			typename TTypes::setting_type const& setting,
-			FilterResult& result) ARTUS_CPP11_OVERRIDE {
+			FilterResult& result) override {
 		ConsumerBase<TTypes>::ProcessEvent(event, product, setting,
 				result);
 
@@ -68,8 +67,8 @@ public:
 
 	virtual void ProcessFilteredEvent(typename TTypes::event_type const& event,
 			typename TTypes::product_type const& product,
-			typename TTypes::setting_type const& setting)
-					ARTUS_CPP11_OVERRIDE {
+			typename TTypes::setting_type const& setting) override
+	{
 		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product, setting);
 
 		auto resX = m_xsource.first(event, product);
@@ -99,7 +98,7 @@ public:
 		}
 	}
 
-	virtual void Finish(setting_type const& setting) ARTUS_CPP11_OVERRIDE {
+	virtual void Finish(setting_type const& setting) override {
 		m_profile->Store(setting.GetRootOutFile());
 	}
 

@@ -129,7 +129,7 @@ public:
 		else return ElectronReco::NONE;
 	}
 
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
+	virtual std::string GetProducerId() const override {
 		return "ValidElectronsProducer";
 	}
 
@@ -152,7 +152,7 @@ public:
 	{
 	}
 
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(setting_type const& settings) override {
 		ProducerBase<TTypes>::Init(settings);
 		ValidPhysicsObjectTools<TTypes, KElectron>::Init(settings);
 		
@@ -176,7 +176,7 @@ public:
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
-	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	                     setting_type const& settings) const override
 	{
 		assert(event.m_electrons);
 		assert(event.m_vertexSummary);

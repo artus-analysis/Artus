@@ -24,9 +24,9 @@ public:
 	
 	virtual ~ConsoleProgressReport() {  };
 
-	virtual void update(long long currentIndex, long long maxItems) ARTUS_CPP11_OVERRIDE;
+	virtual void update(long long currentIndex, long long maxItems) override;
 
-	virtual void finish() ARTUS_CPP11_OVERRIDE;
+	virtual void finish() override;
 
 	// in percent
 	float m_reportIntervall;

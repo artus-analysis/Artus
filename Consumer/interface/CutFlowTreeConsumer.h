@@ -22,8 +22,7 @@ public:
 	
 	typedef typename std::function<uint64_t(event_type const&, product_type const&, setting_type const&)> uint64_extractor_lambda;
 
-	virtual std::string GetConsumerId() const
-		ARTUS_CPP11_OVERRIDE
+	virtual std::string GetConsumerId() const override
 	{
 		return "CutFlowTreeConsumer";
 	}
@@ -34,7 +33,7 @@ public:
 	{
 	}
 
-	virtual void Init( typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE
+	virtual void Init( typename TTypes::setting_type const& settings) override
 	{
 		CutFlowConsumerBase<TTypes>::Init(settings);
 		
@@ -77,7 +76,7 @@ public:
 		}
 	}
 
-	virtual void Finish(setting_type const& setting) ARTUS_CPP11_OVERRIDE {
+	virtual void Finish(setting_type const& setting) override {
 		CutFlowConsumerBase<TTypes>::Finish(setting);
 		
 		// save histograms

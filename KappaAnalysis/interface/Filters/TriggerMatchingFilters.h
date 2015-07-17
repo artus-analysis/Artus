@@ -28,7 +28,7 @@ public:
 	}
 
 	virtual bool DoesEventPass(KappaEvent const& event, KappaProduct const& product,
-	                           KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
+	                           KappaSettings const& settings) const override
 	{
 		if (((product.*m_triggerMatchedObjects).size() < (product.*m_validObjects).size()) ||
 		    ((product.*m_triggerMatchedObjects).size() < (settings.*GetMinNMatchedObjects)()))
@@ -60,7 +60,7 @@ class ElectronTriggerMatchingFilter: public TriggerMatchingFilterBase<KElectron>
 public:
 
 	ElectronTriggerMatchingFilter();
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
 };
 
 
@@ -74,7 +74,7 @@ class MuonTriggerMatchingFilter: public TriggerMatchingFilterBase<KMuon>
 public:
 
 	MuonTriggerMatchingFilter();
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
 
 };
 
@@ -89,7 +89,7 @@ class TauTriggerMatchingFilter: public TriggerMatchingFilterBase<KTau>
 public:
 
 	TauTriggerMatchingFilter();
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
 
 };
 
@@ -104,7 +104,7 @@ class JetTriggerMatchingFilter: public TriggerMatchingFilterBase<KBasicJet>
 public:
 
 	JetTriggerMatchingFilter();
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
 
 };
 

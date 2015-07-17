@@ -35,14 +35,14 @@ public:
 	{
 	}
 
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(KappaSettings const& settings) override {
 		KappaProducerBase::Init(settings);
 		
 		m_objectTriggerFiltersByIndexFromSettings = Utility::ParseMapTypes<size_t, std::string>(Utility::ParseVectorToMap((settings.*GetObjectTriggerFilterNames)()), m_objectTriggerFiltersByHltNameFromSettings);
 	}
 
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
+	                     KappaSettings const& settings) const override
 	{
 		assert(event.m_triggerObjects);
 		assert(event.m_triggerObjectMetadata);
@@ -189,7 +189,7 @@ class ElectronTriggerMatchingProducer: public TriggerMatchingProducerBase<KElect
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 	
 	ElectronTriggerMatchingProducer();
 
@@ -207,7 +207,7 @@ class MuonTriggerMatchingProducer: public TriggerMatchingProducerBase<KMuon>
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 	
 	MuonTriggerMatchingProducer();
 
@@ -225,7 +225,7 @@ class TauTriggerMatchingProducer: public TriggerMatchingProducerBase<KTau>
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 	
 	TauTriggerMatchingProducer();
 
@@ -243,7 +243,7 @@ class JetTriggerMatchingProducer: public TriggerMatchingProducerBase<KBasicJet>
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 	
 	JetTriggerMatchingProducer();
 

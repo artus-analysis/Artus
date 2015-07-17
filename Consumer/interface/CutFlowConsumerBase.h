@@ -18,13 +18,12 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 
-	virtual std::string GetConsumerId() const
-		ARTUS_CPP11_OVERRIDE
+	virtual std::string GetConsumerId() const override
 	{
 		return "cutflow";
 	}
 
-	virtual void Init(setting_type const& pset) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(setting_type const& pset) override {
 		ConsumerBase<TTypes>::Init(pset);
 
 		m_pipelineName = pset.GetName ();
@@ -33,12 +32,12 @@ public:
 	virtual void ProcessEvent(event_type const& event,
 			product_type const& product,
 			setting_type const& setting,
-            FilterResult & result) ARTUS_CPP11_OVERRIDE {
+            FilterResult & result) override {
 		ConsumerBase<TTypes>::ProcessEvent(event, product, setting, result);
 		m_flow.AddFilterResult ( result );
 	}
 
-	virtual void Finish(setting_type const& setting) ARTUS_CPP11_OVERRIDE {
+	virtual void Finish(setting_type const& setting) override {
 		// at this point, m_flow contains all the filter results of all events
 		// overwrite this to analyze
 	}

@@ -19,7 +19,7 @@ public:
 
 	virtual bool RunEvent( TestEvent const& event,
                            TestProduct const& globalProduct,
-                           FilterResult const& globalFilterResult) ARTUS_CPP11_OVERRIDE {
+                           FilterResult const& globalFilterResult) override {
 		iRunEvent++;
 		//if (bCheckProducer) {
 		//BOOST_CHECK(globalProduct.iGlobalProduct == 1);
@@ -29,11 +29,11 @@ public:
 		return bFullyRun;
 	}
 
-	virtual void Run() ARTUS_CPP11_OVERRIDE {
+	virtual void Run() override {
 		iRun ++;
 	}
 
-	virtual void FinishPipeline() ARTUS_CPP11_OVERRIDE {
+	virtual void FinishPipeline() override {
 		iFinish++;
 	}
 

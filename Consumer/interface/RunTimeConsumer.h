@@ -1,4 +1,3 @@
-
 #pragma once
 
 //#include <boost/scoped_ptr.hpp>
@@ -25,8 +24,7 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 
-	virtual std::string GetConsumerId() const
-		ARTUS_CPP11_OVERRIDE
+	virtual std::string GetConsumerId() const override
 	{
 		return "RunTimeConsumer";
 	}
@@ -36,7 +34,7 @@ public:
 	{
 	}
 
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
+	virtual void Init(setting_type const& settings) override
 	{
 		ConsumerBase<TTypes>::Init(settings);
 		std::vector<std::string> processors = settings.GetAllProcessors();
@@ -59,7 +57,7 @@ public:
 		}
 	}
 
-	virtual void Finish(setting_type const& setting) ARTUS_CPP11_OVERRIDE
+	virtual void Finish(setting_type const& setting) override
 	{
 		// save file
 		RootFileHelper::SafeCd(setting.GetRootOutFile(),

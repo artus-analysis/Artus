@@ -13,8 +13,8 @@ public:
 	
 	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
 	
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
+	virtual void Init(KappaSettings const& settings) override;
 };
 
 
@@ -26,8 +26,8 @@ public:
 	
 	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
 	
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
+	virtual void Init(KappaSettings const& settings) override;
 };
 
 
@@ -39,8 +39,8 @@ public:
 	
 	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
 	
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
+	virtual void Init(KappaSettings const& settings) override;
 };
 
 
@@ -52,8 +52,8 @@ public:
 
 	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
 
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
+	virtual void Init(KappaSettings const& settings) override;
 };
 
 
@@ -65,7 +65,7 @@ public:
 
 	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
 
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
+	virtual void Init(KappaSettings const& settings) override;
 };
 

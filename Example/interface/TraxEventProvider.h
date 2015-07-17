@@ -20,13 +20,12 @@
 class TraxEventProvider: public RootEventProvider<TraxTypes> {
 public:
 	TraxEventProvider(stringvector const & fileNames) :
-			RootEventProvider<TraxTypes>(fileNames,
-			// hardcode the root treename already here
-					"ec") {
+	                  RootEventProvider<TraxTypes>(fileNames,
+	                  // hardcode the root treename already here
+	                  "ec") {
 	}
 
-	virtual void WireEvent( TraxSettings const& )
-		ARTUS_CPP11_OVERRIDE
+	virtual void WireEvent(TraxSettings const&) override
 	{
 		// set up the ROOT pointers to our local memory regions
 		m_rootChain->SetBranchAddress("theSim", &m_event.m_floatTheSim);

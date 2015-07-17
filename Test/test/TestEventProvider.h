@@ -14,13 +14,13 @@ class TestEventProvider: public EventProviderBase<TestTypes> {
 public:
 	~TestEventProvider() {}
 
-	virtual TestTypes::event_type const& GetCurrentEvent() const ARTUS_CPP11_OVERRIDE {
+	virtual TestTypes::event_type const& GetCurrentEvent() const override {
 		return m_event;
 	}
-	virtual bool GetEntry(long long lEventNumber) ARTUS_CPP11_OVERRIDE {
+	virtual bool GetEntry(long long lEventNumber) override {
 		return lEventNumber < GetEntries();
 	}
-	virtual long long GetEntries() const ARTUS_CPP11_OVERRIDE {
+	virtual long long GetEntries() const override {
 		return 10;
 	}
 

@@ -23,8 +23,7 @@ public:
 		KappaEventProviderBase<TraxTypes>(fi, inpType) {
 	}
 
-	virtual void WireEvent( TraxTypes::global_setting_type const& )
-		ARTUS_CPP11_OVERRIDE
+	virtual void WireEvent(TraxTypes::global_setting_type const&) override
 	{
 		// set up the Kappa pointers to our local memory regions
 	}

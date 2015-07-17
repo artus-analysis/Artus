@@ -29,7 +29,7 @@ class TraxPipelineInitializer: public PipelineInitilizerBase<TraxTypes > {
 public:
 
 	virtual void InitPipeline(TraxPipeline * pLine,
-			TraxSettings const& pset) const ARTUS_CPP11_OVERRIDE
+			TraxSettings const& pset) const override
 			{
 
 		// define how to extract Pt and the range

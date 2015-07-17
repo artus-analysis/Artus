@@ -15,7 +15,7 @@ public:
 	virtual std::string GetProducerId() const;
 	
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE;
+	                     KappaSettings const& settings) const override;
 
 };
 

@@ -56,7 +56,7 @@ public:
 		else return ValidTausInput::AUTO;
 	}
 
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
+	virtual std::string GetProducerId() const override {
 		return "ValidTausProducer";
 	}
 	
@@ -69,7 +69,7 @@ public:
 	{
 	}
 	
-	virtual void Init(KappaSettings const& settings)  ARTUS_CPP11_OVERRIDE
+	virtual void Init(KappaSettings const& settings)  override
 	{
 		KappaProducerBase::Init(settings);
 		ValidPhysicsObjectTools<KappaTypes, KTau>::Init(settings);
@@ -100,7 +100,7 @@ public:
 	}
 
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
+	                     KappaSettings const& settings) const override
 	{
 		assert(event.m_taus);
 		assert(event.m_tauMetadata);

@@ -93,9 +93,7 @@ public:
 		return GetFilterId();
 	}
 
-	virtual ProcessNodeType GetProcessNodeType () const
-		ARTUS_CPP11_OVERRIDE
-		ARTUS_CPP11_FINAL
+	virtual ProcessNodeType GetProcessNodeType () const override ARTUS_CPP11_FINAL
 	{
 		return ProcessNodeType::Filter;
 	}
@@ -104,7 +102,7 @@ protected:
 
 	virtual bool baseDoesEventPass(EventBase const& evt,
 			ProductBase const& prod,
-			SettingsBase const& settings ) const ARTUS_CPP11_OVERRIDE {
+			SettingsBase const& settings ) const override {
 		auto const& specEvent = static_cast < event_type const&> ( evt );
 		auto const& specProd = static_cast < product_type const&> ( prod );
 		auto const& specSetting = static_cast < setting_type const&> ( settings );
@@ -112,7 +110,7 @@ protected:
 		return DoesEventPass( specEvent, specProd, specSetting );
 	}
 
-	virtual void baseInit ( SettingsBase const& settings ) ARTUS_CPP11_OVERRIDE {
+	virtual void baseInit (SettingsBase const& settings) override {
 		auto const& specSettings = static_cast < setting_type const&> ( settings );
 
 		this->Init ( specSettings );

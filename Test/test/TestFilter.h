@@ -12,13 +12,12 @@
 class TestFilter: public FilterBase<TestTypes> {
 public:
 
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
+	virtual std::string GetFilterId() const override {
 		return "testfilter";
 	}
 
-	virtual bool DoesEventPass(const TestEvent & event,
-			TestProduct const& product, TestSettings const& settings)  const
-	ARTUS_CPP11_OVERRIDE
+	virtual bool DoesEventPass(const TestEvent & event, TestProduct const& product,
+	                           TestSettings const& settings) const override
 	{
 		return (event.iVal < 2);
 	}
@@ -27,13 +26,12 @@ public:
 class TestFilter2: public FilterBase<TestTypes> {
 public:
 
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
+	virtual std::string GetFilterId() const override {
 		return "testfilter2";
 	}
 
 	virtual bool DoesEventPass(const TestEvent & event,
-			TestProduct const& product, TestSettings const& settings) const
-	ARTUS_CPP11_OVERRIDE
+			TestProduct const& product, TestSettings const& settings) const	override
 	{
 		return false;
 	}
@@ -42,13 +40,12 @@ public:
 class TestFilter3: public FilterBase<TestTypes> {
 public:
 
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
+	virtual std::string GetFilterId() const override {
 		return "testfilter3";
 	}
 
 	virtual bool DoesEventPass(const TestEvent & event,
-			TestProduct const& product, TestSettings const& settings) const
-	ARTUS_CPP11_OVERRIDE
+			TestProduct const& product, TestSettings const& settings) const override
 	{
 		// this is only 1, if the local producer ran before
 		return ( product.iLocalProduct == 1 );
@@ -58,13 +55,12 @@ public:
 class TestGlobalFilter: public FilterBase<TestTypes> {
 public:
 
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
+	virtual std::string GetFilterId() const override {
 		return "testglobalfilter";
 	}
 
 	virtual bool DoesEventPass(const TestEvent & event,
-			TestProduct const& product, TestSettings const& settings) const
-	ARTUS_CPP11_OVERRIDE
+			TestProduct const& product, TestSettings const& settings) const	override
 	{
 		return (event.iVal == 0);
 	}
@@ -73,13 +69,12 @@ public:
 class TestGlobalFilter2: public FilterBase<TestTypes> {
 public:
 
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
+	virtual std::string GetFilterId() const override {
 		return "testglobalfilter2";
 	}
 
 	virtual bool DoesEventPass(const TestEvent & event,
-			TestProduct const& product, TestSettings const& settings) const
-	ARTUS_CPP11_OVERRIDE
+			TestProduct const& product, TestSettings const& settings) const	override
 	{
 		return ( product.iGlobalProduct2 == 1 );
 	}

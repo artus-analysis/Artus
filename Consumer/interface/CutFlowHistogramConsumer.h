@@ -22,8 +22,7 @@ public:
 	
 	typedef typename std::function<float(event_type const&, product_type const&, setting_type const&)> weight_extractor_lambda;
 
-	virtual std::string GetConsumerId() const
-		ARTUS_CPP11_OVERRIDE
+	virtual std::string GetConsumerId() const override
 	{
 		return "cutflow_histogram";
 	}
@@ -35,7 +34,7 @@ public:
 	{
 	}
 
-	virtual void Init( typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE
+	virtual void Init( typename TTypes::setting_type const& settings) override
 	{
 		CutFlowConsumerBase<TTypes>::Init(settings);
 		// default weight = 1.0
@@ -73,10 +72,10 @@ public:
 		{
 			++bin;
 			if (filterDecision->filterDecision == FilterResult::Decision::Passed ||
-			    filterDecision->taggingMode == FilterResult::TaggingMode::Tagging) 
+			    filterDecision->taggingMode == FilterResult::TaggingMode::Tagging)
 			{
 				m_cutFlowUnweightedHist->Fill(float(bin));
-			
+
 				if(m_addWeightedCutFlow) {
 					m_cutFlowWeightedHist->Fill(float(bin), weight);
 				}
@@ -84,7 +83,7 @@ public:
 		}
 	}
 
-	virtual void Finish(setting_type const& setting) ARTUS_CPP11_OVERRIDE {
+	virtual void Finish(setting_type const& setting) override {
 		CutFlowConsumerBase<TTypes>::Finish(setting);
 		
 		// save histograms

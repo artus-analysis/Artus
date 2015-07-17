@@ -19,13 +19,13 @@ public:
 	
 	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
 	
-	virtual void Init(setting_type const& settings)  ARTUS_CPP11_OVERRIDE
+	virtual void Init(setting_type const& settings)  override
 	{
 		FilterBase<TTypes>::Init(settings);
 	}
 
 	virtual bool DoesEventPass(event_type const& event,
-			product_type const& product, setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+			product_type const& product, setting_type const& settings) const override
 	{
 		return DoesEventPass(event, product);
 	}

@@ -41,12 +41,12 @@ public:
 		else return JetMatchingAlgorithm::NONE;
 	}
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE;
+	virtual void Init(setting_type const& settings) override;
 
 	virtual void Produce(event_type const& event, product_type& product,
-						 setting_type const& settings) const ARTUS_CPP11_OVERRIDE;
+						 setting_type const& settings) const override;
 
 	KGenParticle* Match(event_type const& event, product_type const& product,
                         setting_type const& settings, KLV* const recoJet) const;
@@ -93,7 +93,7 @@ public:
 	{
 	}
 
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE 
+	virtual void Init(setting_type const& settings) override 
 	{
 		KappaProducerBase::Init(settings);
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("ratioGenParticleMatched", [](event_type const & event, product_type const & product)
@@ -107,7 +107,7 @@ public:
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
-						 setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+						 setting_type const& settings) const override
 	{
 		assert(event.m_genParticles);
 		
@@ -207,7 +207,7 @@ class RecoElectronGenParticleMatchingProducer: public RecoLeptonGenParticleMatch
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 
 	RecoElectronGenParticleMatchingProducer();
 
@@ -227,7 +227,7 @@ class RecoMuonGenParticleMatchingProducer: public RecoLeptonGenParticleMatchingP
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 	
 	RecoMuonGenParticleMatchingProducer();
 
@@ -247,7 +247,7 @@ class RecoTauGenParticleMatchingProducer: public RecoLeptonGenParticleMatchingPr
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 	
 	RecoTauGenParticleMatchingProducer();
 

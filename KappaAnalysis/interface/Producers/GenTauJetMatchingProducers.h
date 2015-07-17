@@ -46,13 +46,13 @@ public:
 	{
 	}
 
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE 
+	virtual void Init(setting_type const& settings) override 
 	{
 		ProducerBase<KappaTypes>::Init(settings);
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
-						 setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+						 setting_type const& settings) const override
 	{
 		assert(event.m_genTauJets);
 		
@@ -125,7 +125,7 @@ class RecoElectronGenTauJetMatchingProducer: public GenTauJetMatchingProducerBas
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 
 	RecoElectronGenTauJetMatchingProducer();
 
@@ -142,7 +142,7 @@ class RecoMuonGenTauJetMatchingProducer: public GenTauJetMatchingProducerBase<KM
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 	
 	RecoMuonGenTauJetMatchingProducer();
 
@@ -159,7 +159,7 @@ class RecoTauGenTauJetMatchingProducer: public GenTauJetMatchingProducerBase<KTa
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 	
 	RecoTauGenTauJetMatchingProducer();
 

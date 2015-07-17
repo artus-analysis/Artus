@@ -143,26 +143,23 @@ public:
 		return this->m_pipeline->GetSettings();
 	}*/
 
-	virtual ProcessNodeType GetProcessNodeType () const
-		ARTUS_CPP11_FINAL
-		ARTUS_CPP11_OVERRIDE
+	virtual ProcessNodeType GetProcessNodeType () const ARTUS_CPP11_FINAL override
 	{
 		return ProcessNodeType::Consumer;
 	}
 
 protected:
 
-	virtual void baseProcess(  SettingsBase const& setting )
-		ARTUS_CPP11_OVERRIDE {
+	virtual void baseProcess(SettingsBase const& setting) override {
 
 		auto const& specSetting = static_cast < setting_type const&> ( setting );
 
 		Process( specSetting );
 	}
 
-	virtual void baseProcessEvent(  EventBase const& evt, ProductBase const& prod,
-									SettingsBase const& setting, FilterResult & fres )
-		ARTUS_CPP11_OVERRIDE {
+	virtual void baseProcessEvent(EventBase const& evt, ProductBase const& prod,
+	                              SettingsBase const& setting, FilterResult & fres)	override
+	{
 
 		auto const& specEvent = static_cast < event_type const&> ( evt );
 		auto const& specProd = static_cast < product_type const&> ( prod );
@@ -179,16 +176,16 @@ protected:
 		auto const& specProd = static_cast < product_type const&> ( prod );
 		auto const& specSetting = static_cast < setting_type const&> ( setting );
 
-		ProcessFilteredEvent( specEvent, specProd, specSetting );
+		ProcessFilteredEvent(specEvent, specProd, specSetting);
 	}
 
-	void baseInit ( SettingsBase const& settings ) ARTUS_CPP11_OVERRIDE {
+	void baseInit(SettingsBase const& settings) override {
 		auto const& specSettings = static_cast < setting_type const&> ( settings );
 
 		this->Init ( specSettings );
 	}
 
-	void baseFinish ( SettingsBase const& settings ) ARTUS_CPP11_OVERRIDE {
+	void baseFinish (SettingsBase const& settings) override {
 		auto const& specSettings = static_cast < setting_type const&> ( settings );
 
 		this->Finish ( specSettings );

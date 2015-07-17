@@ -40,7 +40,7 @@ public:
 	{
 	}
 
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
+	virtual void Init(setting_type const& settings) override
 	{
 		ConsumerBase<KappaTypes>::Init(settings);
 
@@ -71,7 +71,7 @@ public:
 	}
 
 	virtual void ProcessFilteredEvent(event_type const& event, product_type const& product,
-	                                  setting_type const& settings) ARTUS_CPP11_OVERRIDE
+	                                  setting_type const& settings) override
 	{
 		for (typename std::vector<TObject*>::const_iterator validObject = (product.*m_validObjects).begin();
 		     validObject != (product.*m_validObjects).end(); ++validObject)
@@ -136,7 +136,7 @@ public:
 		}
 	}
 	
-	virtual void Finish(setting_type const& settings) ARTUS_CPP11_OVERRIDE
+	virtual void Finish(setting_type const& settings) override
 	{
 		RootFileHelper::SafeCd(settings.GetRootOutFile(),
 		                       settings.GetRootFileFolder());
@@ -180,7 +180,7 @@ class KappaElectronsConsumer: public KappaCollectionsConsumerBase<KElectron, int
 
 public:
 	KappaElectronsConsumer();
-	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetConsumerId() const override;
 };
 
 
@@ -190,7 +190,7 @@ class KappaMuonsConsumer: public KappaCollectionsConsumerBase<KMuon, int>
 
 public:
 	KappaMuonsConsumer();
-	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetConsumerId() const override;
 };
 
 
@@ -200,7 +200,7 @@ class KappaTausConsumer: public KappaCollectionsConsumerBase<KTau, KTauMetadata>
 
 public:
 	KappaTausConsumer();
-	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetConsumerId() const override;
 };
 
 
@@ -210,7 +210,7 @@ class KappaJetsConsumer: public KappaCollectionsConsumerBase<KBasicJet, int>
 
 public:
 	KappaJetsConsumer();
-	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetConsumerId() const override;
 };
 
 
@@ -220,6 +220,6 @@ class KappaTaggedJetsConsumer: public KappaCollectionsConsumerBase<KBasicJet, KJ
 
 public:
 	KappaTaggedJetsConsumer();
-	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetConsumerId() const override;
 };
 
