@@ -15,6 +15,9 @@ export KAPPATOOLSPATH=$(readlink -f $ARTUSPATH/../KappaTools)
 #export BOOSTPATH=$(ls /afs/cern.ch/cms/${SCRAM_ARCH}/external/boost/* -d | tail -n 1)/
 export LD_LIBRARY_PATH="$KAPPATOOLSPATH/lib/:$KAPPAPATH/lib/:$LD_LIBRARY_PATH"
 
+# voms proxy path
+export X509_USER_PROXY=$HOME/.globus/x509up
+
 # useful to redirect messages
 export USERPC=`who am i | sed 's/.*(\([^]]*\)).*/\1/g'`
 
