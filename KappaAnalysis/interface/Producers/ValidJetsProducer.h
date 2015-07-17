@@ -180,7 +180,7 @@ public:
 					   && ((*jet)->nConstituents > 1);
 			if (jetIDVersion == JetIDVersion::ID2010 || jetIDVersion == JetIDVersion::ID2014)
 				validJet = validJet && ((*jet)->neutralHadronFraction + (*jet)->hfHadronFraction < maxFraction);
-			if (jetIDVersion == JetIDVersion::ID2014)
+			if (jetIDVersion != JetIDVersion::ID2010)  // definition since 2014
 				validJet = validJet && ((*jet)->muonFraction < 0.8f);
 			// jets, |eta| < 2.4 (tracker)
 			if (std::abs((*jet)->p4.eta()) <= 2.4f)
@@ -188,7 +188,7 @@ public:
 				validJet = validJet
 						   && ((*jet)->chargedHadronFraction > 0.0f)
 						   && ((*jet)->nCharged > 0)
-						   && ((*jet)->electronFraction < 0.99f);  // == CEM
+						   && ((*jet)->electronFraction < maxFraction);  // == CEM
 			}
 			// ability to apply no jet ID
 			validJet = validJet || noID;
