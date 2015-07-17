@@ -85,7 +85,7 @@ public:
 	virtual void Produce(event_type const& event, product_type& product,
 	                     setting_type const& globalSettings) const = 0;
 
-	virtual ProcessNodeType GetProcessNodeType () const override ARTUS_CPP11_FINAL
+	virtual ProcessNodeType GetProcessNodeType () const override final
 	{
 		return ProcessNodeType::Producer;
 	}

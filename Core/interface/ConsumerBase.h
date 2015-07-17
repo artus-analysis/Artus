@@ -143,7 +143,7 @@ public:
 		return this->m_pipeline->GetSettings();
 	}*/
 
-	virtual ProcessNodeType GetProcessNodeType () const ARTUS_CPP11_FINAL override
+	virtual ProcessNodeType GetProcessNodeType () const final override
 	{
 		return ProcessNodeType::Consumer;
 	}

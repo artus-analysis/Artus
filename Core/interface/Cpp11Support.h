@@ -13,10 +13,6 @@
 
 #ifdef USE_CPP11
 
-#define ARTUS_CPP11_FINAL		final
-
 #else
-
-#define ARTUS_CPP11_FINAL
 
 #endif

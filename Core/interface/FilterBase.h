@@ -93,7 +93,7 @@ public:
 		return GetFilterId();
 	}
 
-	virtual ProcessNodeType GetProcessNodeType () const override ARTUS_CPP11_FINAL
+	virtual ProcessNodeType GetProcessNodeType () const override final
 	{
 		return ProcessNodeType::Filter;
 	}
