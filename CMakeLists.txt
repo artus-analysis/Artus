@@ -107,53 +107,7 @@ endif()
 if(EXISTS "../Kappa")
 	message(STATUS "Looking for Kappa: found ../Kappa")
 	FILE(GLOB KappaAnalysisFiles KappaAnalysis/src/KappaFactory.cc KappaAnalysis/src/*/*.cc)
-	add_library(artus_kappaanalysis SHARED
-		${KappaAnalysisFiles}
-	#Consumer/src/LambdaNtupleConsumer.cc
-	#KappaAnalysis/src/KappaFactory.cc
-	#KappaAnalysis/src/Consumers/KappaCollectionsConsumers.cc
-	#KappaAnalysis/src/Consumers/KappaCutFlowHistogramConsumer.cc
-	#KappaAnalysis/src/Consumers/KappaCutFlowTreeConsumer.cc
-	#KappaAnalysis/src/Filters/BeamScrapingFilter.cc
-	#KappaAnalysis/src/Filters/GenDiLeptonDecayModeFilter.cc
-	#KappaAnalysis/src/Filters/GoodPrimaryVertexFilter.cc
-	#KappaAnalysis/src/Filters/HCALNoiseFilter.cc
-	#KappaAnalysis/src/Filters/HltFilter.cc
-	#KappaAnalysis/src/Filters/JsonFilter.cc
-	#KappaAnalysis/src/Filters/MaxObjectsCountFilters.cc
-	#KappaAnalysis/src/Filters/MinObjectsCountFilters.cc
-	#KappaAnalysis/src/Filters/ObjectsCountFilters.cc
-	#KappaAnalysis/src/Filters/ObjectsLowerPtCutFilters.cc
-	#KappaAnalysis/src/Filters/ObjectsUpperAbsEtaCutFilters.cc
-	#KappaAnalysis/src/Filters/RunLumiEventFilter.cc
-	#KappaAnalysis/src/Filters/TriggerMatchingFilters.cc
-	#KappaAnalysis/src/Filters/ValidObjectsFilters.cc
-	#KappaAnalysis/src/Producers/CrossSectionWeightProducer.cc
-	#KappaAnalysis/src/Producers/ElectronCorrectionsProducer.cc
-	#KappaAnalysis/src/Producers/EmbeddingWeightProducer.cc
-	#KappaAnalysis/src/Producers/EventWeightProducer.cc
-	#KappaAnalysis/src/Producers/GenDiLeptonDecayModeProducer.cc
-	#KappaAnalysis/src/Producers/GenParticleMatchingProducers.cc
-	#KappaAnalysis/src/Producers/GenParticleProducer.cc
-	#KappaAnalysis/src/Producers/GenPartonCounterProducer.cc
-	#KappaAnalysis/src/Producers/GenTauDecayModeProducer.cc
-	#KappaAnalysis/src/Producers/GenTauDecayProducer.cc
-	#KappaAnalysis/src/Producers/GeneratorWeightProducer.cc
-	#KappaAnalysis/src/Producers/HltProducer.cc
-	#KappaAnalysis/src/Producers/JetCorrectionsProducer.cc
-	#KappaAnalysis/src/Producers/MatchedLeptonsProducer.cc
-	#KappaAnalysis/src/Producers/MuonCorrectionsProducer.cc
-	#KappaAnalysis/src/Producers/NicknameProducer.cc
-	#KappaAnalysis/src/Producers/NumberGeneratedEventsWeightProducer.cc
-	#KappaAnalysis/src/Producers/PUWeightProducer.cc
-	#KappaAnalysis/src/Producers/TauCorrectionsProducer.cc
-	#KappaAnalysis/src/Producers/TmvaClassificationReaderBase.cc
-	#KappaAnalysis/src/Producers/TriggerMatchingProducers.cc
-	#KappaAnalysis/src/Producers/ValidBTaggedJetsProducer.cc
-	#KappaAnalysis/src/Producers/ValidJetsProducer.cc
-	#KappaAnalysis/src/Producers/ValidLeptonsProducer.cc
-	#KappaAnalysis/src/Utility/BtagSF.cc
-	)
+	add_library(artus_kappaanalysis SHARED ${KappaAnalysisFiles})
 else()
 	message(STATUS "Looking for Kappa: not found and not compiled")
 endif()
