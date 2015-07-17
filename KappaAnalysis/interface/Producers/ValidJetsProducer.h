@@ -54,15 +54,17 @@ public:
 
 	enum class JetID : int
 	{
-		NONE  = -1,
+		NONE = -1,   // no jet ID
 		TIGHT = 0,
-		MEDIUM = 1,
-		LOOSE  = 2,
+		MEDIUM = 1,  // not officially supported
+		LOOSE = 2,
 	};
 	enum class JetIDVersion : int
 	{
-		ID2010 = 0,
-		ID2014 = 1,
+		ID2010 = 0,  // old run1 version (most run 1 analyses)
+		ID2014 = 1,  // new run1 version (run 1 legacy: old version + muon fraction cut)
+		             // first run 2 version identical to run 1 legacy version
+		ID73X = 3,   // new run 2 version identical to ID2014 but change in cmssw 7.3.x fraction definitions
 	};
 
 	static JetID ToJetID(std::string const& jetID)
@@ -77,7 +79,8 @@ public:
 	{
 		if (jetIDVersion == "2010") return JetIDVersion::ID2010;
 		else if (jetIDVersion == "2014") return JetIDVersion::ID2014;
-		else return JetIDVersion::ID2010;
+		else if (jetIDVersion == "73X") return JetIDVersion::ID73X;
+		else return JetIDVersion::ID73X;
 	}
 	ValidJetsProducerBase(std::vector<TJet>* KappaEvent::*jets,
 	                      std::vector<std::shared_ptr<TJet> > KappaProduct::*correctJets,
@@ -95,11 +98,24 @@ public:
 	{
 		KappaProducerBase::Init(settings);
 		ValidPhysicsObjectTools<KappaTypes, TValidJet>::Init(settings);
-		
+
 		validJetsInput = ToValidJetsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidJetsInput())));
 		jetID = ToJetID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetJetID())));
 		jetIDVersion = ToJetIDVersion(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetJetIDVersion())));
-		
+
+		if (jetID == JetID::MEDIUM && jetIDVersion != ID2010)
+			LOG(WARNING) << "Since 2012, the medium jet ID is not supported officially any longer.";
+
+		maxFraction = 1.0;
+		if (jetID == JetID::TIGHT)
+			maxFraction = 0.90;
+		else if (jetID == JetID::MEDIUM)
+			maxFraction = 0.95;
+		else if (jetID == JetID::LOOSE)
+			maxFraction = 0.99;
+		else if (jetID != JetID::NONE)
+			LOG(FATAL) << "Jet ID of type " << Utility::ToUnderlyingValue(jetID) << " not yet implemented!";
+
 		// add possible quantities for the lambda ntuples consumers
 		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nJets",[](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validJets.size();
@@ -168,95 +184,61 @@ public:
 			// JetID
 			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
 			// jets, all eta
-			float maxNeutralFraction = this->GetMaxNeutralFraction();
-			
 			validJet = validJet
-					   && ((*jet)->neutralHadronFraction + (*jet)->hfHadronFraction < maxNeutralFraction)
-					   && ((*jet)->photonFraction + (*jet)->hfEMFraction < maxNeutralFraction)
+					   && ((*jet)->neutralHadronFraction < maxFraction)
+					   && ((*jet)->photonFraction + (*jet)->hfEMFraction < maxFraction)
 					   && ((*jet)->nConstituents > 1);
+			if (jetIDVersion == JetIDVersion::ID2010 || jetIDVersion == JetIDVersion::ID2014)
+				validJet = validJet && ((*jet)->neutralHadronFraction + (*jet)->hfHadronFraction < maxFraction);
+			if (jetIDVersion == JetIDVersion::ID2014)
+				validJet = validJet && ((*jet)->muonFraction < 0.8f);
 			// jets, |eta| < 2.4 (tracker)
-			if (std::abs((*jet)->p4.eta()) < 2.4)
+			if (std::abs((*jet)->p4.eta()) <= 2.4f)
 			{
 				validJet = validJet
-						   && ((*jet)->chargedHadronFraction > 0.0)
+						   && ((*jet)->chargedHadronFraction > 0.0f)
 						   && ((*jet)->nCharged > 0)
-						   && ((*jet)->electronFraction < 0.99);
+						   && ((*jet)->electronFraction < 0.99f);  // == CEM
 			}
-			if (jetIDVersion == JetIDVersion::ID2014) 
-			{
-				validJet = validJet
-						   && ((*jet)->muonFraction < 0.8)
-						   && ((*jet)->electronFraction < 0.9);
-			}
-			
+
 			// remove leptons from list of jets via simple DeltaR isolation
 			for (std::vector<KLepton*>::const_iterator lepton = product.m_validLeptons.begin();
 			     validJet && lepton != product.m_validLeptons.end(); ++lepton)
 			{
 				validJet = validJet && ROOT::Math::VectorUtil::DeltaR((*jet)->p4, (*lepton)->p4) > settings.GetJetLeptonLowerDeltaRCut();
 			}
-			
+
 			// kinematic cuts
 			validJet = validJet && this->PassKinematicCuts(*jet, event, product);
-			
+
 			// check possible analysis-specific criteria
 			validJet = validJet && AdditionalCriteria(*jet, event, product, settings);
 
 			if (validJet)
-			{
 				product.m_validJets.push_back(*jet);
-			}
 			else
-			{
 				product.m_invalidJets.push_back(*jet);
-			}
 		}
 	}
 
 
 protected:
-	
 	// Can be overwritten for analysis-specific use cases
 	virtual bool AdditionalCriteria(TJet* jet, KappaEvent const& event,
 	                                KappaProduct& product, KappaSettings const& settings) const
 	{
-		bool validJet = true;
-		
-		return validJet;
+		return true;
 	}
 
 
 private:
 	std::vector<TJet>* KappaEvent::*m_basicJetsMember;
 	std::vector<std::shared_ptr<TJet> > KappaProduct::*m_correctedJetsMember;
-	
+
 	ValidJetsInput validJetsInput;
 	JetID jetID;
 	JetIDVersion jetIDVersion;
-
-	float GetMaxNeutralFraction() const
-	{
-		float maxNeutralFraction = 0.0;
-		
-		if (jetID == JetID::TIGHT)
-		{
-			maxNeutralFraction = 0.90;
-		}
-		else if (jetID == JetID::MEDIUM)
-		{
-			maxNeutralFraction = 0.95;
-		}
-		else if (jetID == JetID::LOOSE)
-		{
-			maxNeutralFraction = 0.99;
-		}
-		else if (jetID != JetID::NONE)
-		{
-			LOG(FATAL) << "Jet ID of type " << Utility::ToUnderlyingValue(jetID) << " not yet implemented!";
-		}
-		
-		return maxNeutralFraction;
-	}
+	float maxFraction;
 
 };
 
