@@ -83,6 +83,15 @@ add_library(artus_utility SHARED
 
 if(EXISTS "../CondFormats")
 	message(STATUS "Looking for offline jet corrections: found ../CondFormats")
+set_source_files_properties(
+	../CondFormats/JetMETObjects/src/FactorizedJetCorrector.cc
+	../CondFormats/JetMETObjects/src/JetCorrectionUncertainty.cc
+	../CondFormats/JetMETObjects/src/JetCorrectorParameters.cc
+	../CondFormats/JetMETObjects/src/JetResolution.cc
+	../CondFormats/JetMETObjects/src/SimpleJetCorrectionUncertainty.cc
+	../CondFormats/JetMETObjects/src/SimpleJetCorrector.cc
+	PROPERTIES COMPILE_FLAGS "-Wno-conversion -Wno-float-equal -Wno-zero-as-null-pointer-constant -Wno-unsafe-loop-optimizations -Wno-double-promotion -Wno-useless-cast -Wno-shadow"
+)
 add_library(artus_externalcorr SHARED
 	../CondFormats/JetMETObjects/src/FactorizedJetCorrector.cc
 	../CondFormats/JetMETObjects/src/JetCorrectionUncertainty.cc
