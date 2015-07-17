@@ -119,23 +119,23 @@ public:
 		} );
 
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingJetPt",[](KappaEvent const& event, KappaProduct const& product) {
-			return product.m_validJets.size() >= 1 ? product.m_validJets.at(0)->p4.Pt() : DefaultValues::UndefinedDouble;
+			return product.m_validJets.size() >= 1 ? product.m_validJets.at(0)->p4.Pt() : DefaultValues::UndefinedFloat;
 		} );
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingJetEta",[](KappaEvent const& event, KappaProduct const& product) {
-			return product.m_validJets.size() >= 1 ? product.m_validJets.at(0)->p4.Eta() : DefaultValues::UndefinedDouble;
+			return product.m_validJets.size() >= 1 ? product.m_validJets.at(0)->p4.Eta() : DefaultValues::UndefinedFloat;
 		} );
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingJetPhi",[](KappaEvent const& event, KappaProduct const& product) {
-			return product.m_validJets.size() >= 1 ? product.m_validJets.at(0)->p4.Phi() : DefaultValues::UndefinedDouble;
+			return product.m_validJets.size() >= 1 ? product.m_validJets.at(0)->p4.Phi() : DefaultValues::UndefinedFloat;
 		} );
 
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingJetPt",[](KappaEvent const& event, KappaProduct const& product) {
-			return product.m_validJets.size() >= 2 ? product.m_validJets.at(1)->p4.Pt() : DefaultValues::UndefinedDouble;
+			return product.m_validJets.size() >= 2 ? product.m_validJets.at(1)->p4.Pt() : DefaultValues::UndefinedFloat;
 		} );
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingJetEta",[](KappaEvent const& event, KappaProduct const& product) {
-			return product.m_validJets.size() >= 2 ? product.m_validJets.at(1)->p4.Eta() : DefaultValues::UndefinedDouble;
+			return product.m_validJets.size() >= 2 ? product.m_validJets.at(1)->p4.Eta() : DefaultValues::UndefinedFloat;
 		} );
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingJetPhi",[](KappaEvent const& event, KappaProduct const& product) {
-			return product.m_validJets.size() >= 2 ? product.m_validJets.at(1)->p4.Phi() : DefaultValues::UndefinedDouble;
+			return product.m_validJets.size() >= 2 ? product.m_validJets.at(1)->p4.Phi() : DefaultValues::UndefinedFloat;
 		} );
 	}
 

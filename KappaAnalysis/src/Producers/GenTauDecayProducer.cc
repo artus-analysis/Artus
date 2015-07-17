@@ -14,457 +14,457 @@ void GenTauDecayProducer::Init(KappaSettings const& settings)
 	//Boson
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "genBosonSize",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return product.m_genBoson.size() > 0 ? product.m_genBoson.size() : DefaultValues::UndefinedDouble;
+		return product.m_genBoson.size() > 0 ? product.m_genBoson.size() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBosonPt",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return product.m_genBoson.size() > 0 ? product.m_genBoson[0].node->p4.Pt() : DefaultValues::UndefinedDouble;
+		return product.m_genBoson.size() > 0 ? product.m_genBoson[0].node->p4.Pt() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBosonPz",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return product.m_genBoson.size() > 0 ? product.m_genBoson[0].node->p4.Pz() : DefaultValues::UndefinedDouble;
+		return product.m_genBoson.size() > 0 ? product.m_genBoson[0].node->p4.Pz() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBosonEta",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return product.m_genBoson.size() > 0 ? product.m_genBoson[0].node->p4.Eta() : DefaultValues::UndefinedDouble;
+		return product.m_genBoson.size() > 0 ? product.m_genBoson[0].node->p4.Eta() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBosonPhi",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return product.m_genBoson.size() > 0 ? product.m_genBoson[0].node->p4.Phi() : DefaultValues::UndefinedDouble;
+		return product.m_genBoson.size() > 0 ? product.m_genBoson[0].node->p4.Phi() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBosonMass",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return product.m_genBoson.size() > 0 ? product.m_genBoson[0].node->p4.mass() : DefaultValues::UndefinedDouble;
+		return product.m_genBoson.size() > 0 ? product.m_genBoson[0].node->p4.mass() : DefaultValues::UndefinedFloat;
 	} );
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBosonEnergy",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return product.m_genBoson.size() > 0 ? product.m_genBoson[0].node->p4.E() : DefaultValues::UndefinedDouble;
+		return product.m_genBoson.size() > 0 ? product.m_genBoson[0].node->p4.E() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBosonPdgId",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return product.m_genBoson.size() > 0 ? product.m_genBoson[0].node->pdgId() : DefaultValues::UndefinedDouble;
+		return product.m_genBoson.size() > 0 ? product.m_genBoson[0].node->pdgId() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBosonStatus",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return product.m_genBoson.size() > 0 ? product.m_genBoson[0].node->status() : DefaultValues::UndefinedDouble;
+		return product.m_genBoson.size() > 0 ? product.m_genBoson[0].node->status() : DefaultValues::UndefinedFloat;
 	} );
 	
 	// Boson daughters
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBosonDaughterSize",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters.size() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters.size() : DefaultValues::UndefinedFloat;
 	} );
 
 	// first daughter
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1DaughterPt",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].node->p4.Pt() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].node->p4.Pt() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1DaughterPz",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].node->p4.Pz() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].node->p4.Pz() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1DaughterEta",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].node->p4.Eta() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].node->p4.Eta() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1DaughterPhi",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].node->p4.Phi() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].node->p4.Phi() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1DaughterMass",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].node->p4.mass() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].node->p4.mass() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1DaughterCharge",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].getCharge() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].getCharge() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1DaughterEnergy",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].node->p4.E() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].node->p4.E() : DefaultValues::UndefinedFloat;
 	} );	
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1DaughterPdgId",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].node->pdgId() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].node->pdgId() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1DaughterStatus",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].node->status() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].node->status() : DefaultValues::UndefinedFloat;
 	} );
 
 	// second daughter
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2DaughterPt",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].node->p4.Pt() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].node->p4.Pt() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2DaughterPz",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].node->p4.Pz() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].node->p4.Pz() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2DaughterEta",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].node->p4.Eta() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].node->p4.Eta() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2DaughterPhi",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].node->p4.Phi() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].node->p4.Phi() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2DaughterMass",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].node->p4.mass() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].node->p4.mass() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2DaughterEnergy",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].node->p4.E() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].node->p4.E() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2DaughterPdgId",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].node->pdgId() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].node->pdgId() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2DaughterStatus",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].node->status() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].node->status() : DefaultValues::UndefinedFloat;
 	} );
 
 	// Boson granddaughters
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1DaughterGranddaughterSize",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].Daughters.size() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].Daughters.size() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2DaughterGranddaughterSize",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[1].Daughters.size() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[1].Daughters.size() : DefaultValues::UndefinedFloat;
 	} );
 
 	// first daughter daughters
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter1GranddaughterPt",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].Daughters[0].node->p4.Pt() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].Daughters[0].node->p4.Pt() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter1GranddaughterPz",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].Daughters[0].node->p4.Pz() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].Daughters[0].node->p4.Pz() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter1GranddaughterEta",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].Daughters[0].node->p4.Eta() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].Daughters[0].node->p4.Eta() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter1GranddaughterPhi",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].Daughters[0].node->p4.Phi() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].Daughters[0].node->p4.Phi() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter1GranddaughterMass",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].Daughters[0].node->p4.mass() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].Daughters[0].node->p4.mass() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter1GranddaughterEnergy",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].Daughters[0].node->p4.E() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].Daughters[0].node->p4.E() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter1GranddaughterPdgId",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].Daughters[0].node->pdgId() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].Daughters[0].node->pdgId() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter1GranddaughterStatus",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].Daughters[0].node->status() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[0].Daughters[0].node->status() : DefaultValues::UndefinedFloat;
 	} );
 
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter2GranddaughterPt",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[0].Daughters[1].node->p4.Pt() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[0].Daughters[1].node->p4.Pt() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter2GranddaughterPz",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[0].Daughters[1].node->p4.Pz() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[0].Daughters[1].node->p4.Pz() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter2GranddaughterEta",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[0].Daughters[1].node->p4.Eta() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[0].Daughters[1].node->p4.Eta() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter2GranddaughterPhi",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[0].Daughters[1].node->p4.Phi() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[0].Daughters[1].node->p4.Phi() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter2GranddaughterMass",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[0].Daughters[1].node->p4.mass() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[0].Daughters[1].node->p4.mass() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter2GranddaughterEnergy",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[0].Daughters[1].node->p4.E() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[0].Daughters[1].node->p4.E() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter2GranddaughterPdgId",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[0].Daughters[1].node->pdgId() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[0].Daughters[1].node->pdgId() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter2GranddaughterStatus",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[0].Daughters[1].node->status() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[0].Daughters[1].node->status() : DefaultValues::UndefinedFloat;
 	} );
 
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter3GranddaughterPt",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[0].Daughters[2].node->p4.Pt() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[0].Daughters[2].node->p4.Pt() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter3GranddaughterPz",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[0].Daughters[2].node->p4.Pz() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[0].Daughters[2].node->p4.Pz() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter3GranddaughterEta",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[0].Daughters[2].node->p4.Eta() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[0].Daughters[2].node->p4.Eta() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter3GranddaughterPhi",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[0].Daughters[2].node->p4.Phi() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[0].Daughters[2].node->p4.Phi() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter3GranddaughterMass",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[0].Daughters[2].node->p4.mass() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[0].Daughters[2].node->p4.mass() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter3GranddaughterEnergy",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[0].Daughters[2].node->p4.E() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[0].Daughters[2].node->p4.E() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter3GranddaughterPdgId",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[0].Daughters[2].node->pdgId() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[0].Daughters[2].node->pdgId() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter3GranddaughterStatus",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[0].Daughters[2].node->status() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[0].Daughters[2].node->status() : DefaultValues::UndefinedFloat;
 	} );
 
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter4GranddaughterPt",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[0].Daughters[3].node->p4.Pt() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[0].Daughters[3].node->p4.Pt() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter4GranddaughterPz",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[0].Daughters[3].node->p4.Pz() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[0].Daughters[3].node->p4.Pz() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter4GranddaughterEta",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[0].Daughters[3].node->p4.Eta() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[0].Daughters[3].node->p4.Eta() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter4GranddaughterPhi",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[0].Daughters[3].node->p4.Phi() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[0].Daughters[3].node->p4.Phi() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter4GranddaughterMass",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[0].Daughters[3].node->p4.mass() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[0].Daughters[3].node->p4.mass() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter4GranddaughterEnergy",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[0].Daughters[3].node->p4.E() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[0].Daughters[3].node->p4.E() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter4GranddaughterPdgId",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[0].Daughters[3].node->pdgId() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[0].Daughters[3].node->pdgId() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter4GranddaughterStatus",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[0].Daughters[3].node->status() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[0].Daughters[3].node->status() : DefaultValues::UndefinedFloat;
 	} );
 
 	// second daughter daughters
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter1GranddaughterPt",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[1].Daughters[0].node->p4.Pt() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[1].Daughters[0].node->p4.Pt() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter1GranddaughterPz",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[1].Daughters[0].node->p4.Pz() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[1].Daughters[0].node->p4.Pz() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter1GranddaughterEta",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[1].Daughters[0].node->p4.Eta() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[1].Daughters[0].node->p4.Eta() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter1GranddaughterPhi",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[1].Daughters[0].node->p4.Phi() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[1].Daughters[0].node->p4.Phi() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter1GranddaughterMass",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[1].Daughters[0].node->p4.mass() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[1].Daughters[0].node->p4.mass() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter1GranddaughterEnergy",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[1].Daughters[0].node->p4.E() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[1].Daughters[0].node->p4.E() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter1GranddaughterPdgId",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[1].Daughters[0].node->pdgId() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[1].Daughters[0].node->pdgId() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter1GranddaughterStatus",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[1].Daughters[0].node->status() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 0) ? product.m_genBoson[0].Daughters[1].Daughters[0].node->status() : DefaultValues::UndefinedFloat;
 	} );
 
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter2GranddaughterPt",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].Daughters[1].node->p4.Pt() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].Daughters[1].node->p4.Pt() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter2GranddaughterPz",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].Daughters[1].node->p4.Pz() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].Daughters[1].node->p4.Pz() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter2GranddaughterEta",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].Daughters[1].node->p4.Eta() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].Daughters[1].node->p4.Eta() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter2GranddaughterPhi",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].Daughters[1].node->p4.Phi() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].Daughters[1].node->p4.Phi() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter2GranddaughterMass",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].Daughters[1].node->p4.mass() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].Daughters[1].node->p4.mass() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter2GranddaughterEnergy",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].Daughters[1].node->p4.E() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].Daughters[1].node->p4.E() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter2GranddaughterPdgId",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].Daughters[1].node->pdgId() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].Daughters[1].node->pdgId() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter2GranddaughterStatus",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].Daughters[1].node->status() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 1) ? product.m_genBoson[0].Daughters[1].Daughters[1].node->status() : DefaultValues::UndefinedFloat;
 	} );
 
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter3GranddaughterPt",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[1].Daughters[2].node->p4.Pt() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[1].Daughters[2].node->p4.Pt() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter3GranddaughterPz",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[1].Daughters[2].node->p4.Pz() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[1].Daughters[2].node->p4.Pz() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter3GranddaughterEta",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[1].Daughters[2].node->p4.Eta() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[1].Daughters[2].node->p4.Eta() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter3GranddaughterPhi",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[1].Daughters[2].node->p4.Phi() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[1].Daughters[2].node->p4.Phi() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter3GranddaughterMass",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[1].Daughters[2].node->p4.mass() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[1].Daughters[2].node->p4.mass() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter3GranddaughterEnergy",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[1].Daughters[2].node->p4.E() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[1].Daughters[2].node->p4.E() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter3GranddaughterPdgId",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[1].Daughters[2].node->pdgId() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[1].Daughters[2].node->pdgId() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter3GranddaughterStatus",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[1].Daughters[2].node->status() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 2) ? product.m_genBoson[0].Daughters[1].Daughters[2].node->status() : DefaultValues::UndefinedFloat;
 	} );
 
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter4GranddaughterPt",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[1].Daughters[3].node->p4.Pt() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[1].Daughters[3].node->p4.Pt() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter4GranddaughterPz",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[1].Daughters[3].node->p4.Pz() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[1].Daughters[3].node->p4.Pz() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter4GranddaughterEta",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[1].Daughters[3].node->p4.Eta() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[1].Daughters[3].node->p4.Eta() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter4GranddaughterPhi",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[1].Daughters[3].node->p4.Phi() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[1].Daughters[3].node->p4.Phi() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter4GranddaughterMass",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[1].Daughters[3].node->p4.mass() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[1].Daughters[3].node->p4.mass() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter4GranddaughterEnergy",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[1].Daughters[3].node->p4.E() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[1].Daughters[3].node->p4.E() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter4GranddaughterPdgId",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[1].Daughters[3].node->pdgId() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[1].Daughters[3].node->pdgId() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter4GranddaughterStatus",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[1].Daughters[3].node->status() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 3) ? product.m_genBoson[0].Daughters[1].Daughters[3].node->status() : DefaultValues::UndefinedFloat;
 	} );
 
 	// Boson GrandGranddaughters: the only GrandGranddaughters we need are from 2nd Granddaughters
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter2GranddaughterGrandGranddaughterSize",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >0)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >0)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson2Daughter2GranddaughterGrandGranddaughterSize",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters[1].Daughters.size() >0)? product.m_genBoson[0].Daughters[1].Daughters[1].Daughters.size() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[1].Daughters[1].Daughters.size() >0)? product.m_genBoson[0].Daughters[1].Daughters[1].Daughters.size() : DefaultValues::UndefinedFloat;
 	} );
 
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter2Granddaughter1GrandGranddaughterPdgId",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >0)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[0].node->pdgId() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >0)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[0].node->pdgId() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter2Granddaughter1GrandGranddaughterStatus",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >0)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[0].node->status() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >0)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[0].node->status() : DefaultValues::UndefinedFloat;
 	} );
 
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter2Granddaughter2GrandGranddaughterPdgId",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >1)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[1].node->pdgId() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >1)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[1].node->pdgId() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter2Granddaughter2GrandGranddaughterStatus",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >1)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[1].node->status() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >1)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[1].node->status() : DefaultValues::UndefinedFloat;
 	} );
 
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter2Granddaughter3GrandGranddaughterPdgId",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >2)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[2].node->pdgId() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >2)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[2].node->pdgId() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter2Granddaughter3GrandGranddaughterStatus",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >2)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[2].node->status() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >2)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[2].node->status() : DefaultValues::UndefinedFloat;
 	} );
 	
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter2Granddaughter4GrandGranddaughterPdgId",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >3)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[3].node->pdgId() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >3)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[3].node->pdgId() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter2Granddaughter4GrandGranddaughterStatus",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >3)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[3].node->status() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >3)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[3].node->status() : DefaultValues::UndefinedFloat;
 	} );
 	
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter2Granddaughter5GrandGranddaughterPdgId",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >4)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[4].node->pdgId() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >4)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[4].node->pdgId() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter2Granddaughter5GrandGranddaughterStatus",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >4)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[4].node->status() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >4)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[4].node->status() : DefaultValues::UndefinedFloat;
 	} );
 	
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter2Granddaughter6GrandGranddaughterPdgId",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >5)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[5].node->pdgId() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >5)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[5].node->pdgId() : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBoson1Daughter2Granddaughter6GrandGranddaughterStatus",[](KappaEvent const & event, KappaProduct const & product)
 	{
-		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >5)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[5].node->status() : DefaultValues::UndefinedDouble;
+		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >5)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[5].node->status() : DefaultValues::UndefinedFloat;
 	} );
 }
 
