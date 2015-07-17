@@ -101,7 +101,7 @@ public:
 	// Good Primary Vertex Filter
 	IMPL_SETTING(float, MaxPrimaryVertexZ);
 	IMPL_SETTING(float, MaxPrimaryVertexRho);
-	IMPL_SETTING(int, MinPrimaryVertexFitnDOF);
+	IMPL_SETTING(float, MinPrimaryVertexFitnDOF);
 
 	// Beam Scraping Filter
 	IMPL_SETTING(double, MinPurityRatio);

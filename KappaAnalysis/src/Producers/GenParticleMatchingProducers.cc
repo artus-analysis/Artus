@@ -21,7 +21,7 @@ void RecoJetGenParticleMatchingProducer::Produce(event_type const& event, produc
 {
 	assert(event.m_genParticles);
 	
-	if (static_cast<double>(m_DeltaRMatchingRecoJetGenParticle) > 0.0)
+	if (m_DeltaRMatchingRecoJetGenParticle > 0.0f)
 	{
 		// loop over all valid objects (jets) to check
 		for (std::vector<KBasicJet*>::iterator validJet = product.m_validJets.begin();
@@ -148,14 +148,14 @@ KGenParticle* RecoJetGenParticleMatchingProducer::Match(event_type const& event,
 			}
 		}
 	}
-	else if (static_cast<double>(hardestBQuark && hardestBQuark->p4.Pt()) > 0.0)
+	else if (hardestBQuark && hardestBQuark->p4.Pt() > 0.0f)
 	{
 		if (m_jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
 		{
 			return &(*hardestBQuark);
 		}
 	}
-	else if (static_cast<double>(hardestCQuark && hardestCQuark->p4.Pt()) > 0.0)
+	else if (hardestCQuark && hardestCQuark->p4.Pt() > 0.0f)
 	{
 		if (m_jetMatchingAlgorithm == JetMatchingAlgorithm::ALGORITHMIC)
 		{

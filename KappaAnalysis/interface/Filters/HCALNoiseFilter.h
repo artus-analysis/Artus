@@ -15,17 +15,17 @@ public:
 	                           KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE;
 
 private:
-	double minRatio;
-	double maxRatio;
+	bool useTS4TS5;
+	float minRatio;
+	float maxRatio;
 	int minHPDHits;
 	int minRBXHits;
 	int minHPDNoOtherHits;
 	int minZeros;
-	double minHighEHitTime;
-	double maxHighEHitTime;
-	double maxRBXEMF;
+	float minHighEHitTime;
+	float maxHighEHitTime;
+	float maxRBXEMF;
 	int minNumIsolatedNoiseChannels;
-	double minIsolatedNoiseSumE;
-	double minIsolatedNoiseSumEt;
-	bool useTS4TS5;
+	float minIsolatedNoiseSumE;
+	float minIsolatedNoiseSumEt;
 };

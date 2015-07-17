@@ -33,19 +33,19 @@ bool HCALNoiseFilter::DoesEventPass(KappaEvent const& event, KappaProduct const&
 {
 	assert(event.m_hcalNoiseSummary);
 	bool pass;
-	pass = (static_cast<double>(event.m_hcalNoiseSummary->minE2Over10TS) >= minRatio) &&
-	       (static_cast<double>(event.m_hcalNoiseSummary->maxE2Over10TS) <= maxRatio) &&
+	pass = (event.m_hcalNoiseSummary->minE2Over10TS >= minRatio) &&
+	       (event.m_hcalNoiseSummary->maxE2Over10TS <= maxRatio) &&
 	       (event.m_hcalNoiseSummary->maxHPDHits < minHPDHits) &&
 	       (event.m_hcalNoiseSummary->maxRBXHits < minRBXHits) &&
 	       (event.m_hcalNoiseSummary->maxHPDNoOtherHits < minHPDNoOtherHits) &&
 	       (event.m_hcalNoiseSummary->maxZeros < minZeros) &&
-	       (static_cast<double>(event.m_hcalNoiseSummary->min25GeVHitTime) >= minHighEHitTime) &&
-	       (static_cast<double>(event.m_hcalNoiseSummary->max25GeVHitTime) <= maxHighEHitTime) &&
-	       (static_cast<double>(event.m_hcalNoiseSummary->minRBXEMF) >= maxRBXEMF) &&
+	       (event.m_hcalNoiseSummary->min25GeVHitTime >= minHighEHitTime) &&
+	       (event.m_hcalNoiseSummary->max25GeVHitTime <= maxHighEHitTime) &&
+	       (event.m_hcalNoiseSummary->minRBXEMF >= maxRBXEMF) &&
 	       (event.m_hcalNoiseSummary->numIsolatedNoiseChannels < minNumIsolatedNoiseChannels) &&
-	       (static_cast<double>(event.m_hcalNoiseSummary->isolatedNoiseSumE) < minIsolatedNoiseSumE) &&
-	       (static_cast<double>(event.m_hcalNoiseSummary->isolatedNoiseSumEt) < minIsolatedNoiseSumEt) &&
-	       ((event.m_hcalNoiseSummary->hasBadRBXTS4TS5 == false) || (useTS4TS5 == false));
+	       (event.m_hcalNoiseSummary->isolatedNoiseSumE < minIsolatedNoiseSumE) &&
+	       (event.m_hcalNoiseSummary->isolatedNoiseSumEt < minIsolatedNoiseSumEt) &&
+	       (!event.m_hcalNoiseSummary->hasBadRBXTS4TS5 || !useTS4TS5);
 	return pass;
 }
 

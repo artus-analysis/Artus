@@ -24,7 +24,7 @@ public:
 
 private:
 
-	double m_maxPrimaryVertexZ;
-	double m_maxPrimaryVertexRho;
-	double m_minPrimaryVertexFitnDOF;
+	float m_maxPrimaryVertexZ;
+	float m_maxPrimaryVertexRho;
+	float m_minPrimaryVertexFitnDOF;
 };
