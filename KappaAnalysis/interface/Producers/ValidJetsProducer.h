@@ -51,6 +51,7 @@ public:
 		ID2014 = 1,  // new run1 version (run 1 legacy: old version + muon fraction cut)
 		             // first run 2 version identical to run 1 legacy version
 		ID73X = 3,   // new run 2 version identical to ID2014 but change in cmssw 7.3.x fraction definitions
+		ID73Xtemp = 4, // temporary recommendation for first run 2 events due to ID problems in the forward region
 	};
 
 	static ValidJetsInput ToValidJetsInput(std::string const& validJetsInput)
@@ -64,6 +65,7 @@ public:
 		if (jetIDVersion == "2010") return JetIDVersion::ID2010;
 		else if (jetIDVersion == "2014") return JetIDVersion::ID2014;
 		else if (jetIDVersion == "73x") return JetIDVersion::ID73X;
+		else if (jetIDVersion == "73xtemp") return JetIDVersion::ID73X;
 		else LOG(FATAL) << "Jet ID version '" << jetIDVersion << "' is not available";
 		return JetIDVersion::ID73X;
 	}
@@ -178,10 +180,13 @@ public:
 					   && ((*jet)->neutralHadronFraction < maxFraction)
 					   && ((*jet)->photonFraction + (*jet)->hfEMFraction < maxFraction)
 					   && ((*jet)->nConstituents > 1);
-			if (jetIDVersion == JetIDVersion::ID2010 || jetIDVersion == JetIDVersion::ID2014)
+			if (jetIDVersion == JetIDVersion::ID2010 || jetIDVersion == JetIDVersion::ID2014)  // CMSSW <7.3.X
 				validJet = validJet && ((*jet)->neutralHadronFraction + (*jet)->hfHadronFraction < maxFraction);
 			if (jetIDVersion != JetIDVersion::ID2010)  // definition since 2014
 				validJet = validJet && ((*jet)->muonFraction < 0.8f);
+			// for run 2 startup: temporarily no jet ID in forward region
+			if (jetIDVersion == JetIDVersion::ID73Xtemp && std::abs((*jet)->p4.eta()) > 3.0f)
+				validJet = true;
 			// jets, |eta| < 2.4 (tracker)
 			if (std::abs((*jet)->p4.eta()) <= 2.4f)
 			{
