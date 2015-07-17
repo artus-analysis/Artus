@@ -10,9 +10,9 @@ std::string GenTauDecayModeProducer::GetProducerId() const {
 void GenTauDecayModeProducer::Init(KappaSettings const& settings)
 {
 	KappaProducerBase::Init(settings);
-	
+
 	// add possible quantities for the lambda ntuples consumers
-	
+
 	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity( "genTau1DecayMode",[](KappaEvent const & event, KappaProduct const & product)
 	{
 		return product.m_tau1DecayMode;
@@ -36,8 +36,8 @@ void GenTauDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& pro
 {
 	assert(event.m_genTaus);
 
-	MotherDaughterBundle* selectedTau1 = 0;
-	MotherDaughterBundle* selectedTau2 = 0;
+	MotherDaughterBundle* selectedTau1 = ARTUS_CPP11_NULLPTR;
+	MotherDaughterBundle* selectedTau2 = ARTUS_CPP11_NULLPTR;
 
 	int tau1ProngSize = -1;
 	int tau2ProngSize = -1;
@@ -52,7 +52,7 @@ void GenTauDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& pro
 		{
 			selectedTau1 = &(product.m_genBoson[0].Daughters[0]);
 			selectedTau2 = &(product.m_genBoson[0].Daughters[1]);
-			
+
 			selectedTau1->determineDecayMode(selectedTau1);
 			selectedTau2->determineDecayMode(selectedTau2);
 
@@ -62,10 +62,10 @@ void GenTauDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& pro
 			selectedTau1->createFinalStateProngs(selectedTau1);
 			selectedTau2->createFinalStateProngs(selectedTau2);
 
-			if ((selectedTau1->finalStateOneProngs.size())>0) tau1ProngSize = 1;			
+			if ((selectedTau1->finalStateOneProngs.size())>0) tau1ProngSize = 1;
 			else if ((selectedTau1->finalStateThreeProngs.size())>0) tau1ProngSize = 3;
 			else if ((selectedTau1->finalStateFiveProngs.size())>0) tau1ProngSize = 5;
-			
+
 			if (selectedTau2->finalStateOneProngs.size()>0) tau2ProngSize = 1;
 			else if (selectedTau2->finalStateThreeProngs.size()>0) tau2ProngSize = 3;
 			else if (selectedTau2->finalStateFiveProngs.size()>0) tau2ProngSize = 5;
@@ -73,14 +73,13 @@ void GenTauDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& pro
 	}
 
 	product.m_tau1DecayMode = tau1DecayMode;
-	product.m_tau2DecayMode = tau2DecayMode;	
-
+	product.m_tau2DecayMode = tau2DecayMode;
 	product.m_tau1ProngSize = tau1ProngSize;
 	product.m_tau2ProngSize = tau2ProngSize;
 
 	//ugly temporary solution
 	for(typename std::vector<KGenTau>::const_iterator genTau = event.m_genTaus->begin();
-	                                                      genTau != event.m_genTaus->end();++genTau)
+	    genTau != event.m_genTaus->end();++genTau)
 	{
 		if (selectedTau1->node->p4 == genTau->p4)
 		{

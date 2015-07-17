@@ -10,7 +10,7 @@ std::string PUWeightProducer::GetProducerId() const {
 
 void PUWeightProducer::Init(KappaSettings const& settings) {
 	KappaProducerBase::Init(settings);
-	
+
 	const std::string histogramName = "pileup";
 	LOG(DEBUG) << "\tLoading pile-up weights from files...";
 	LOG(DEBUG) << "\t\t" << settings.GetPileupWeightFile() << "/" << histogramName;

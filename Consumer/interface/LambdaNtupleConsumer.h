@@ -57,12 +57,12 @@ public:
 	typedef std::function<std::vector<float>(EventBase const&, ProductBase const&)> vFloat_extractor_lambda_base;
 	typedef std::function<std::string(EventBase const&, ProductBase const&)> string_extractor_lambda_base;
 
-	
+
 	static void AddBoolQuantity(std::string const& name,
 	                            std::function<bool(event_type const&, product_type const&)> valueExtractor)
 	{
 		LambdaNtupleQuantities::CommonBoolQuantities[name] = [valueExtractor](EventBase const& ev, ProductBase const& pd) -> bool
-		{ 
+		{
 			auto const& specEv = static_cast<event_type const&>(ev);
 			auto const& specPd = static_cast<product_type const&>(pd);
 			return valueExtractor(specEv, specPd);
@@ -72,7 +72,7 @@ public:
 	                           std::function<int(event_type const&, product_type const&)> valueExtractor)
 	{
 		LambdaNtupleQuantities::CommonIntQuantities[name] = [valueExtractor](EventBase const& ev, ProductBase const& pd) -> int
-		{ 
+		{
 			auto const& specEv = static_cast<event_type const&>(ev);
 			auto const& specPd = static_cast<product_type const&>(pd);
 			return valueExtractor(specEv, specPd);
@@ -82,7 +82,7 @@ public:
 	                              std::function<uint64_t(event_type const&, product_type const&)> valueExtractor)
 	{
 		LambdaNtupleQuantities::CommonUInt64Quantities[name] = [valueExtractor](EventBase const& ev, ProductBase const& pd) -> uint64_t
-		{ 
+		{
 			auto const& specEv = static_cast<event_type const&>(ev);
 			auto const& specPd = static_cast<product_type const&>(pd);
 			return valueExtractor(specEv, specPd);
@@ -92,7 +92,7 @@ public:
 	                             std::function<float(event_type const&, product_type const&)> valueExtractor)
 	{
 		LambdaNtupleQuantities::CommonFloatQuantities[name] = [valueExtractor](EventBase const& ev, ProductBase const& pd) -> float
-		{ 
+		{
 			auto const& specEv = static_cast<event_type const&>(ev);
 			auto const& specPd = static_cast<product_type const&>(pd);
 			return valueExtractor(specEv, specPd);
@@ -102,7 +102,7 @@ public:
 	                              std::function<double(event_type const&, product_type const&)> valueExtractor)
 	{
 		LambdaNtupleQuantities::CommonDoubleQuantities[name] = [valueExtractor](EventBase const& ev, ProductBase const& pd) -> double
-		{ 
+		{
 			auto const& specEv = static_cast<event_type const&>(ev);
 			auto const& specPd = static_cast<product_type const&>(pd);
 			return valueExtractor(specEv, specPd);
@@ -112,7 +112,7 @@ public:
 	                              std::function<std::vector<double>(event_type const&, product_type const&)> valueExtractor)
 	{
 		LambdaNtupleQuantities::CommonVDoubleQuantities[name] = [valueExtractor](EventBase const& ev, ProductBase const& pd) -> std::vector<double>
-		{ 
+		{
 			auto const& specEv = static_cast<event_type const&>(ev);
 			auto const& specPd = static_cast<product_type const&>(pd);
 			return valueExtractor(specEv, specPd);
@@ -122,7 +122,7 @@ public:
 	                              std::function<std::vector<float>(event_type const&, product_type const&)> valueExtractor)
 	{
 		LambdaNtupleQuantities::CommonVFloatQuantities[name] = [valueExtractor](EventBase const& ev, ProductBase const& pd) -> std::vector<float>
-		{ 
+		{
 			auto const& specEv = static_cast<event_type const&>(ev);
 			auto const& specPd = static_cast<product_type const&>(pd);
 			return valueExtractor(specEv, specPd);
@@ -133,7 +133,7 @@ public:
 	                              std::function<std::string(event_type const&, product_type const&)> valueExtractor)
 	{
 		LambdaNtupleQuantities::CommonStringQuantities[name] = [valueExtractor](EventBase const& ev, ProductBase const& pd) -> std::string
-		{ 
+		{
 			auto const& specEv = static_cast<event_type const&>(ev);
 			auto const& specPd = static_cast<product_type const&>(pd);
 			return valueExtractor(specEv, specPd);
@@ -168,7 +168,7 @@ public:
 
 	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
 		ConsumerBase<TTypes>::Init(settings);
-		
+
 		// construct value extractors
 		m_floatValueExtractors.clear();
 		m_intValueExtractors.clear();
@@ -179,7 +179,7 @@ public:
 		m_vFloatValueExtractors.clear();
 		m_stringValueExtractors.clear();
 		m_boolValueExtractors.clear();
-		
+
 		size_t quantityIndex = 0;
 		for (std::vector<std::string>::iterator quantity = settings.GetQuantities().begin();
 		     quantity != settings.GetQuantities().end(); ++quantity)
@@ -228,13 +228,13 @@ public:
 			{
 				LOG(FATAL) << "No lambda expression available for quantity \"" << *quantity << "\"!";
 			}
-			
+
 			quantityIndex++;
 		}
-		
+
 		// create tree
 		m_tree = new TTree("ntuple", ("Tree for Pipeline \"" + settings.GetName() + "\"").c_str());
-		
+
 		// create branches
 		m_boolValues.resize(m_boolValueExtractors.size());
 		m_intValues.resize(m_intValueExtractors.size());
@@ -244,7 +244,7 @@ public:
 		m_vDoubleValues.resize(m_vDoubleValueExtractors.size());
 		m_vFloatValues.resize(m_vFloatValueExtractors.size());
 		m_stringValues.resize(m_stringValueExtractors.size());
-		
+
 		size_t boolQuantityIndex = 0;
 		size_t intQuantityIndex = 0;
 		size_t uint64QuantityIndex = 0;
@@ -302,7 +302,7 @@ public:
 	virtual void ProcessFilteredEvent(event_type const& event, product_type const& product, setting_type const& settings ) ARTUS_CPP11_OVERRIDE
 	{
 		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product, settings);
-		
+
 		// calculate values
 		size_t boolValueIndex = 0;
 		for(typename std::vector<bool_extractor_lambda_base>::iterator valueExtractor = m_boolValueExtractors.begin();
@@ -312,7 +312,7 @@ public:
 			m_boolValues[boolValueIndex] = (*valueExtractor)(event, product);
 			boolValueIndex++;
 		}
-		
+
 		size_t intValueIndex = 0;
 		for(typename std::vector<int_extractor_lambda_base>::iterator valueExtractor = m_intValueExtractors.begin();
 		    valueExtractor != m_intValueExtractors.end(); ++valueExtractor)
@@ -321,7 +321,7 @@ public:
 			m_intValues[intValueIndex] = (*valueExtractor)(event, product);
 			intValueIndex++;
 		}
-		
+
 		size_t uint64ValueIndex = 0;
 		for(typename std::vector<uint64_extractor_lambda_base>::iterator valueExtractor = m_uint64ValueExtractors.begin();
 		    valueExtractor != m_uint64ValueExtractors.end(); ++valueExtractor)
@@ -330,7 +330,7 @@ public:
 			m_uint64Values[uint64ValueIndex] = (*valueExtractor)(event, product);
 			uint64ValueIndex++;
 		}
-		
+
 		size_t floatValueIndex = 0;
 		for(typename std::vector<float_extractor_lambda_base>::iterator valueExtractor = m_floatValueExtractors.begin();
 		    valueExtractor != m_floatValueExtractors.end(); ++valueExtractor)
@@ -339,7 +339,7 @@ public:
 			m_floatValues[floatValueIndex] = (*valueExtractor)(event, product);
 			floatValueIndex++;
 		}
-		
+
 		size_t doubleValueIndex = 0;
 		for(typename std::vector<double_extractor_lambda_base>::iterator valueExtractor = m_doubleValueExtractors.begin();
 		    valueExtractor != m_doubleValueExtractors.end(); ++valueExtractor)
@@ -386,7 +386,7 @@ public:
 
 private:
 	TTree* m_tree = 0;
-	
+
 	std::vector<bool_extractor_lambda_base> m_boolValueExtractors;
 	std::vector<int_extractor_lambda_base> m_intValueExtractors;
 	std::vector<uint64_extractor_lambda_base> m_uint64ValueExtractors;
@@ -395,7 +395,7 @@ private:
 	std::vector<vDouble_extractor_lambda_base> m_vDoubleValueExtractors;
 	std::vector<vFloat_extractor_lambda_base> m_vFloatValueExtractors;
 	std::vector<string_extractor_lambda_base> m_stringValueExtractors;
-	
+
 	std::vector<char> m_boolValues; // needs to be char vector because of bitset treatment of bool vector
 	std::vector<int> m_intValues;
 	std::vector<uint64_t> m_uint64Values;
