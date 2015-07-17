@@ -16,8 +16,6 @@
 #include "FilterResult.h"
 #include "EventBase.h"
 #include "Artus/Configuration/interface/SettingsBase.h"
-
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/ProcessNodeBase.h"
 
 

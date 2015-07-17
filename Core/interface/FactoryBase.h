@@ -9,8 +9,6 @@
 #include <list>
 #include <boost/noncopyable.hpp>
 
-#include "Cpp11Support.h"
-
 #include "ProducerBase.h"
 #include "ConsumerBase.h"
 #include "FilterBase.h"

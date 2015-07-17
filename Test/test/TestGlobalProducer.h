@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/ProducerBase.h"
 
 #include "TestTypes.h"

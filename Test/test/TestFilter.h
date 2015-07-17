@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "TestTypes.h"
 
 class TestFilter: public FilterBase<TestTypes> {

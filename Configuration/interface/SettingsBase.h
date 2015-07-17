@@ -8,7 +8,6 @@
 
 #include "TFile.h"
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Configuration/interface/PropertyTreeSupport.h"
 #include "Artus/Configuration/interface/SettingMacros.h"
 #include "Artus/Configuration/interface/PropertyMacros.h"

@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "Cpp11Support.h"
-
 class ProgressReportBase {
 public:
 	virtual ~ProgressReportBase() {  };

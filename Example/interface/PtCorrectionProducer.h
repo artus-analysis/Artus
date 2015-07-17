@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
-
 #include "TraxTypes.h"
 
 class PtCorrectionProducer: public TraxProducerBase

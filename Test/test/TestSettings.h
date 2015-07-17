@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Configuration/interface/SettingsBase.h"
 
 class TestSettings : public SettingsBase {

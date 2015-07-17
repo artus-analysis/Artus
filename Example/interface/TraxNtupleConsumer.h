@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
-
 #include "Artus/Consumer/interface/NtupleConsumerBase.h"
 #include "Artus/Utility/interface/DefaultValues.h"
 

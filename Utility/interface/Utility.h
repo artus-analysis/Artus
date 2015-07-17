@@ -17,8 +17,6 @@
 #include <Math/SMatrix.h>
 #include <Math/VectorUtil.h>
 
-#include "Artus/Core/interface/Cpp11Support.h"
-
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > RMFLV;
 typedef ROOT::Math::DisplacementVector3D<ROOT::Math::Cartesian3D<float>,ROOT::Math::DefaultCoordinateSystemTag> RMDataV;

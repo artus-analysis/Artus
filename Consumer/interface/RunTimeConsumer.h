@@ -1,11 +1,8 @@
 #pragma once
 
-//#include <boost/scoped_ptr.hpp>
-
 #include <TH1.h>
 #include "TROOT.h"
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Utility/interface/RootFileHelper.h"
 
 #include <TTree.h>

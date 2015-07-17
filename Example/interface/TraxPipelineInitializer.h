@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Consumer/interface/ValueModifier.h"
 
 #include "Artus/Consumer/interface/DrawHist1dConsumer.h"

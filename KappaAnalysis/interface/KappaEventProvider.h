@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/KappaAnalysis/interface/KappaEventProviderBase.h"
 
 /**

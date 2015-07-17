@@ -6,9 +6,7 @@
 
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/CutFlow.h"
-
 #include "Artus/Consumer/interface/CutFlowConsumerBase.h"
 
 #include "TraxTypes.h"

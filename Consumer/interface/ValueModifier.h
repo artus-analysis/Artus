@@ -9,7 +9,6 @@
 #include <cstddef>
 #include <cassert>
 #include <vector>
-#include "Artus/Core/interface/Cpp11Support.h"
 
 class Hist1D;
 class Hist2D;

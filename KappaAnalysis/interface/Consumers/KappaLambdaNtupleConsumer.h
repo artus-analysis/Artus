@@ -1,9 +1,7 @@
-
 #pragma once
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Utility/interface/DefaultValues.h"
 #include "Artus/Utility/interface/Utility.h"
 

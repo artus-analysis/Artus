@@ -8,8 +8,6 @@
 
 #include <boost/scoped_ptr.hpp>
 
-#include "Artus/Core/interface/Cpp11Support.h"
-
 #include "DrawConsumerBase.h"
 #include "Profile2D.h"
 

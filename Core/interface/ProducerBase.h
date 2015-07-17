@@ -7,7 +7,6 @@
 
 #include "Artus/Utility/interface/ArtusLogging.h"
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/ProductBase.h"
 #include "Artus/Core/interface/EventBase.h"
 #include "Artus/Configuration/interface/SettingsBase.h"

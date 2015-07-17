@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
-
 #include "DrawConsumerBase.h"
 #include "Hist1D.h"
 /*

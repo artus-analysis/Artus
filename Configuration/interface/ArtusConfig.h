@@ -16,7 +16,6 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/ProcessNodeBase.h"
 #include "Artus/Core/interface/ProducerBase.h"
 #include "Artus/Core/interface/FilterBase.h"
