@@ -54,14 +54,13 @@ public:
 		iProcess++;
 	}
 
-	void CheckCalls(int ProcessFilteredEvent, int ProcessEvent,
-			int Process = 0) {
+	void CheckCalls(int ProcessFilteredEvt, int ProcessEvt,	int Process_ = 0) {
 		BOOST_CHECK_EQUAL(iInit, 1);
 		BOOST_CHECK_EQUAL(iFinish, 1);
 
-		BOOST_CHECK_EQUAL(iProcessFilteredEvent, ProcessFilteredEvent);
-		BOOST_CHECK_EQUAL(iProcessEvent, ProcessEvent);
-		BOOST_CHECK_EQUAL(iProcess, Process);
+		BOOST_CHECK_EQUAL(iProcessFilteredEvent, ProcessFilteredEvt);
+		BOOST_CHECK_EQUAL(iProcessEvent, ProcessEvt);
+		BOOST_CHECK_EQUAL(iProcess, Process_);
 	}
 
 	bool bCheckInProcessEvent;

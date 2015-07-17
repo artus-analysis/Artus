@@ -37,10 +37,10 @@ public:
 		iFinish++;
 	}
 
-	void CheckCalls(int RunEvent, int Run = 0) {
+	void CheckCalls(int RunEvt, int Run_ = 0) {
 		BOOST_CHECK_EQUAL(iFinish, 1);
-		BOOST_CHECK_EQUAL(iRunEvent, RunEvent);
-		BOOST_CHECK_EQUAL(iRun, Run);
+		BOOST_CHECK_EQUAL(iRunEvent, RunEvt);
+		BOOST_CHECK_EQUAL(iRun, Run_);
 	}
 
 	int iRunEvent;
