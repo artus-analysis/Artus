@@ -109,7 +109,7 @@ ValueModifiers DefaultModifiers::getPtModifier(float minPt, float maxPt) {
 ValueModifiers DefaultModifiers::getThetaModifier() {
 	ValueModifiers modList;
 
-	modList.push_back(new ValueModifierRange(0.0, 3.2));
+	modList.push_back(new ValueModifierRange(0.0, 3.2f));
 	modList.push_back(new ValueModifierBinCount(200));
 
 	return modList;
