@@ -65,6 +65,7 @@ public:
 		else if (jetIDVersion == "2014") return JetIDVersion::ID2014;
 		else if (jetIDVersion == "73x") return JetIDVersion::ID73X;
 		else LOG(FATAL) << "Jet ID version '" << jetIDVersion << "' is not available";
+		return JetIDVersion::ID73X;
 	}
 
 	ValidJetsProducerBase(std::vector<TJet>* KappaEvent::*jets,
