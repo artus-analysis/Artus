@@ -23,7 +23,7 @@ void CutFlow::AddFilterResult(FilterResult const& fres)
 		}
 
 		CutFlow::CutStat * stat = CutFlow::GetCutEntry(it->filterName);
-		if (stat == ARTUS_CPP11_NULLPTR)
+		if (stat == nullptr)
 		{
 			m_cutCount.push_back(std::make_pair(it->filterName, addVal));
 		}
@@ -43,7 +43,7 @@ CutFlow::CutStat * CutFlow::GetCutEntry(std::string const& filterName)
 			return &(*it);
 	}
 
-	return ARTUS_CPP11_NULLPTR;
+	return nullptr;
 }
 
 std::string CutFlow::ToString() const

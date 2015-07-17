@@ -36,8 +36,8 @@ void GenTauDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& pro
 {
 	assert(event.m_genTaus);
 
-	MotherDaughterBundle* selectedTau1 = ARTUS_CPP11_NULLPTR;
-	MotherDaughterBundle* selectedTau2 = ARTUS_CPP11_NULLPTR;
+	MotherDaughterBundle* selectedTau1 = nullptr;
+	MotherDaughterBundle* selectedTau2 = nullptr;
 
 	int tau1ProngSize = -1;
 	int tau2ProngSize = -1;

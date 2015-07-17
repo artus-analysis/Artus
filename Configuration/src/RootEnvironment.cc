@@ -18,6 +18,6 @@ void RootEnvironment::Close() {
 		m_rootFile->Close();
 		LOG(INFO) << "Output file \"" << m_rootFileName << "\" closed.";
 		delete m_rootFile;
-		m_rootFile = ARTUS_CPP11_NULLPTR;
+		m_rootFile = nullptr;
 	}
 }

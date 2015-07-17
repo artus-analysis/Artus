@@ -36,7 +36,7 @@ public:
 			LOG(FATAL) << "Producer with id " << id << " not found!";
 		}
 
-		return ARTUS_CPP11_NULLPTR;
+		return nullptr;
 	}
 
 	virtual ConsumerBaseUntemplated * createConsumer(std::string const& id)
@@ -50,7 +50,7 @@ public:
 			LOG(FATAL) << "Consumer with id " << id << " not found!";
 		}
 
-		return ARTUS_CPP11_NULLPTR;
+		return nullptr;
 	}
 
 	virtual FilterBaseUntemplated * createFilter(std::string const& id)
@@ -70,7 +70,7 @@ public:
 			LOG(FATAL) << "Filter with id " << id << " not found!";
 		}
 
-		return ARTUS_CPP11_NULLPTR;
+		return nullptr;
 	}
 
 };

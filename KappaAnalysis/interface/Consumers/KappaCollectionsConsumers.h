@@ -21,22 +21,22 @@ public:
 	KappaCollectionsConsumerBase(std::string treeName,
 	                             std::vector<TObject*> product_type::*validObjects,
 	                             bool (setting_type::*GetBranchGenMatchedObjects)(void) const,
-	                             TObjectMetaInfo* event_type::*objectMetaInfo = ARTUS_CPP11_NULLPTR,
-	                             std::map<TObject*, KGenParticle*> product_type::*genParticleMatchedObjects = ARTUS_CPP11_NULLPTR,
-	                             std::map<TObject*, KGenTau*> product_type::*genTauMatchedObjects = ARTUS_CPP11_NULLPTR,
-	                             std::map<TObject*, KGenJet*> product_type::*genTauJetMatchedObjects = ARTUS_CPP11_NULLPTR) :
+	                             TObjectMetaInfo* event_type::*objectMetaInfo = nullptr,
+	                             std::map<TObject*, KGenParticle*> product_type::*genParticleMatchedObjects = nullptr,
+	                             std::map<TObject*, KGenTau*> product_type::*genTauMatchedObjects = nullptr,
+	                             std::map<TObject*, KGenJet*> product_type::*genTauJetMatchedObjects = nullptr) :
 		ConsumerBase<KappaTypes>(),
 		m_treeName(treeName),
 		m_validObjects(validObjects),
 		GetBranchGenMatchedObjects(GetBranchGenMatchedObjects),
 		m_objectMetaInfo(objectMetaInfo),
-		m_objectMetaInfoAvailable(objectMetaInfo != ARTUS_CPP11_NULLPTR),
+		m_objectMetaInfoAvailable(objectMetaInfo != nullptr),
 		m_genParticleMatchedObjects(genParticleMatchedObjects),
-		m_genParticleMatchedObjectsAvailable(genParticleMatchedObjects != ARTUS_CPP11_NULLPTR),
+		m_genParticleMatchedObjectsAvailable(genParticleMatchedObjects != nullptr),
 		m_genTauMatchedObjects(genTauMatchedObjects),
-		m_genTauMatchedObjectsAvailable(genTauMatchedObjects != ARTUS_CPP11_NULLPTR),
+		m_genTauMatchedObjectsAvailable(genTauMatchedObjects != nullptr),
 		m_genTauJetMatchedObjects(genTauJetMatchedObjects),
-		m_genTauJetMatchedObjectsAvailable(genTauJetMatchedObjects != ARTUS_CPP11_NULLPTR)
+		m_genTauJetMatchedObjectsAvailable(genTauJetMatchedObjects != nullptr)
 	{
 	}
 
@@ -88,10 +88,10 @@ public:
 			{
 				if (m_genParticleMatchedObjectsAvailable)
 				{
-					KGenParticle* currentGenParticle = SafeMap::GetWithDefault((product.*m_genParticleMatchedObjects), *validObject, (KGenParticle*)(ARTUS_CPP11_NULLPTR));
-					m_currentGenParticle = (currentGenParticle != ARTUS_CPP11_NULLPTR ? *(static_cast<KGenParticle*>(currentGenParticle)) : KGenParticle());
-					m_currentGenParticleMatched = (currentGenParticle != ARTUS_CPP11_NULLPTR);
-					if (currentGenParticle != ARTUS_CPP11_NULLPTR)
+					KGenParticle* currentGenParticle = SafeMap::GetWithDefault((product.*m_genParticleMatchedObjects), *validObject, (KGenParticle*)(nullptr));
+					m_currentGenParticle = (currentGenParticle != nullptr ? *(static_cast<KGenParticle*>(currentGenParticle)) : KGenParticle());
+					m_currentGenParticleMatched = (currentGenParticle != nullptr);
+					if (currentGenParticle != nullptr)
 					{
 						m_currentGenParticleMatchedDeltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, currentGenParticle->p4);
 					}
@@ -103,10 +103,10 @@ public:
 				
 				if (m_genTauMatchedObjectsAvailable)
 				{
-					KGenTau* currentGenTau = SafeMap::GetWithDefault((product.*m_genTauMatchedObjects), *validObject, (KGenTau*)(ARTUS_CPP11_NULLPTR));
-					m_currentGenTau = (currentGenTau != ARTUS_CPP11_NULLPTR ? *(static_cast<KGenTau*>(currentGenTau)) : KGenTau());
-					m_currentGenTauMatched = (currentGenTau != ARTUS_CPP11_NULLPTR);
-					if (currentGenTau != ARTUS_CPP11_NULLPTR)
+					KGenTau* currentGenTau = SafeMap::GetWithDefault((product.*m_genTauMatchedObjects), *validObject, (KGenTau*)(nullptr));
+					m_currentGenTau = (currentGenTau != nullptr ? *(static_cast<KGenTau*>(currentGenTau)) : KGenTau());
+					m_currentGenTauMatched = (currentGenTau != nullptr);
+					if (currentGenTau != nullptr)
 					{
 						m_currentGenTauMatchedDeltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, currentGenTau->visible.p4);
 					}
@@ -118,10 +118,10 @@ public:
 				
 				if (m_genTauJetMatchedObjectsAvailable)
 				{
-					KGenJet* currentGenTauJet = SafeMap::GetWithDefault((product.*m_genTauJetMatchedObjects), *validObject, (KGenJet*)(ARTUS_CPP11_NULLPTR));
-					m_currentGenTauJet = (currentGenTauJet != ARTUS_CPP11_NULLPTR ? *(static_cast<KGenJet*>(currentGenTauJet)) : KGenJet());
-					m_currentGenTauJetMatched = (currentGenTauJet != ARTUS_CPP11_NULLPTR);
-					if (currentGenTauJet != ARTUS_CPP11_NULLPTR)
+					KGenJet* currentGenTauJet = SafeMap::GetWithDefault((product.*m_genTauJetMatchedObjects), *validObject, (KGenJet*)(nullptr));
+					m_currentGenTauJet = (currentGenTauJet != nullptr ? *(static_cast<KGenJet*>(currentGenTauJet)) : KGenJet());
+					m_currentGenTauJetMatched = (currentGenTauJet != nullptr);
+					if (currentGenTauJet != nullptr)
 					{
 						m_currentGenTauJetMatchedDeltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, currentGenTauJet->p4);
 					}
@@ -158,7 +158,7 @@ private:
 	std::map<TObject*, KGenJet*> product_type::*m_genTauJetMatchedObjects;
 	bool m_genTauJetMatchedObjectsAvailable = false;
 	
-	TTree* m_tree = ARTUS_CPP11_NULLPTR;
+	TTree* m_tree = nullptr;
 	
 	TObject m_currentObject;
 	TObjectMetaInfo m_currentObjectMetaInfo;

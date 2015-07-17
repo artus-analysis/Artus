@@ -97,7 +97,7 @@ public:
 				LOG(DEBUG) << "\tQuantity \"" << quantity << "\" is tried to be taken from prduct.fres (FilterResult).";
 				LambdaNtupleConsumer<TTypes>::AddIntQuantity( quantity, [quantity](event_type const & event, product_type const & product)
 				{
-					if (product.fres.GetDecisionEntry(quantity) != ARTUS_CPP11_NULLPTR)
+					if (product.fres.GetDecisionEntry(quantity) != nullptr)
 					{
 						return (product.fres.GetDecisionEntry(quantity)->filterDecision == FilterResult::Decision::Passed) ? 1 : 0;
 					}

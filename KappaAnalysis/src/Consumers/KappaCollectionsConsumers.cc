@@ -5,7 +5,7 @@ KappaElectronsConsumer::KappaElectronsConsumer() :
 	KappaCollectionsConsumerBase("electrons",
 	                             &product_type::m_validElectrons,
 	                             &setting_type::GetBranchGenMatchedElectrons,
-	                             ARTUS_CPP11_NULLPTR,
+	                             nullptr,
 	                             &product_type::m_genParticleMatchedElectrons,
 	                             &product_type::m_genTauMatchedElectrons,
 	                             &product_type::m_genTauJetMatchedElectrons)
@@ -23,7 +23,7 @@ KappaMuonsConsumer::KappaMuonsConsumer() :
 	KappaCollectionsConsumerBase("muons",
 	                             &product_type::m_validMuons,
 	                             &setting_type::GetBranchGenMatchedMuons,
-	                             ARTUS_CPP11_NULLPTR,
+	                             nullptr,
 	                             &product_type::m_genParticleMatchedMuons,
 	                             &product_type::m_genTauMatchedMuons,
 	                             &product_type::m_genTauJetMatchedMuons)
@@ -59,10 +59,10 @@ KappaJetsConsumer::KappaJetsConsumer() :
 	KappaCollectionsConsumerBase("jets",
 	                             &product_type::m_validJets,
 	                             &setting_type::GetBranchGenMatchedJets,
-	                             ARTUS_CPP11_NULLPTR,
+	                             nullptr,
 	                             &product_type::m_genParticleMatchedJets,
-	                             ARTUS_CPP11_NULLPTR,
-	                             ARTUS_CPP11_NULLPTR)
+	                             nullptr,
+	                             nullptr)
 {
 }
 
@@ -79,8 +79,8 @@ KappaTaggedJetsConsumer::KappaTaggedJetsConsumer() :
 	                             &setting_type::GetBranchGenMatchedJets,
 	                             &event_type::m_jetMetadata,
 	                             &product_type::m_genParticleMatchedJets,
-	                             ARTUS_CPP11_NULLPTR,
-	                             ARTUS_CPP11_NULLPTR)
+	                             nullptr,
+	                             nullptr)
 {
 }
 

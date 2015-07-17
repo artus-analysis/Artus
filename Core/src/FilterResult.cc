@@ -30,7 +30,7 @@ FilterResult::DecisionEntry * FilterResult::GetDecisionEntry( std::string const&
 			return & ( *it );
 	}
 
-	return ARTUS_CPP11_NULLPTR;
+	return nullptr;
 }
 
 FilterResult::DecisionEntry const* FilterResult::GetDecisionEntry( std::string const& filterName ) const {
@@ -40,7 +40,7 @@ FilterResult::DecisionEntry const* FilterResult::GetDecisionEntry( std::string c
 			return & ( *it );
 	}
 
-	return ARTUS_CPP11_NULLPTR;
+	return nullptr;
 }
 
 FilterResult::TaggingMode FilterResult::IsTaggingFilter(std::string const& filterName ) const {
@@ -64,7 +64,7 @@ void FilterResult::AddFilterNames( FilterNames const& fn ){
 	for ( FilterResult::FilterNames::const_iterator it = fn.begin();
 			it != fn.end(); it ++ ) {
 		FilterResult::DecisionEntry * entr = GetDecisionEntry( * it );
-		if ( entr == ARTUS_CPP11_NULLPTR ) {
+		if ( entr == nullptr ) {
 			m_filterDecisions.push_back( DecisionEntry(*it, Decision::Undefined, IsTaggingFilter(*it)));
 		}
 	}
@@ -111,7 +111,7 @@ bool FilterResult::HasPassedIfExcludingFilter(std::string const& excludedFilter)
 FilterResult::Decision FilterResult::GetFilterDecision(std::string filterName) const {
 	FilterResult::DecisionEntry const* entr = GetDecisionEntry(filterName);
 
-	if ( entr == ARTUS_CPP11_NULLPTR ){
+	if ( entr == nullptr ){
 		LOG(FATAL) << "Decision entry with name " << filterName << " not found!";
 	}
 	return entr->filterDecision;
@@ -125,7 +125,7 @@ void FilterResult::SetFilterDecision(std::string filterName, bool passed) {
 	FilterResult::Decision desc = passed ? FilterResult::Decision::Passed : FilterResult::Decision::NotPassed;
 	FilterResult::DecisionEntry * entr = GetDecisionEntry(filterName);
 
-	if ( entr == ARTUS_CPP11_NULLPTR ) {
+	if ( entr == nullptr ) {
 		m_filterDecisions.push_back( DecisionEntry(filterName, desc, IsTaggingFilter(filterName)));
 	} else {
 		entr->filterDecision = desc;

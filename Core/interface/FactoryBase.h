@@ -32,18 +32,18 @@ public:
 
 	// these virtual methods offer no default objects, so far
 	virtual ProducerBaseUntemplated * createProducer ( std::string const& id ) {
-		return ARTUS_CPP11_NULLPTR;
+		return nullptr;
 	}
 
 	virtual FilterBaseUntemplated * createFilter ( std::string const& id ) {
-		return ARTUS_CPP11_NULLPTR;
+		return nullptr;
 	}
 
 	virtual ConsumerBaseUntemplated * createConsumer ( std::string const& id ) {
 		/*if(id == CutFlowHistogramConsumer<TTypes>().GetConsumerId())
 			return new CutFlowHistogramConsumer<TTypes>();
 		else*/
-			return ARTUS_CPP11_NULLPTR;
+			return nullptr;
 	}
 
 };

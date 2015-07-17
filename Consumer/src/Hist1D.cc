@@ -13,7 +13,7 @@
 
 Hist1D::Hist1D(std::string sName, std::string sFolder, ValueModifiers l) :
 		HistBase<Hist1D>(sName, sFolder), m_iBinCount(100), m_dBinLower(0.0f), m_dBinUpper(
-				200.0f), m_bUseCustomBin(false), m_modifiers(l), m_hist(ARTUS_CPP11_NULLPTR) {
+				200.0f), m_bUseCustomBin(false), m_modifiers(l), m_hist(nullptr) {
 
 	// apply modifiers
 	for (auto const& m : m_modifiers) {

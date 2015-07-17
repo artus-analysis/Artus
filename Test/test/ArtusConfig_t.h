@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE( test_parse_config )
 	TestPipelineRunner runner(false);
 
 	// load the pipeline with their configuration from the config file
-	cfg.LoadConfiguration( pInit, runner, factory, ARTUS_CPP11_NULLPTR);
+	cfg.LoadConfiguration( pInit, runner, factory, nullptr);
 
 	auto & pList = runner.GetNodes();
 
