@@ -8,9 +8,10 @@ log = logging.getLogger(__name__)
 import array
 import copy
 import fcntl
-import re
-import termios
 import os
+import re
+import sys
+import termios
 import textwrap
 
 
