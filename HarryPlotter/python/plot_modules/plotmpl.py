@@ -420,7 +420,7 @@ class PlotMpl(plotbase.PlotBase):
 		for ax in [plotData.plot.axes[0]]:
 
 			if plotData.plotdict["title"]:
-				ax.set_title(plotData.plotdict["title"], fontsize=18, horizontalalignment='right')
+				ax.set_title(plotData.plotdict["title"], fontsize=18, horizontalalignment=('center' if (plotData.plotdict["energies"] is None) else 'right'))
 
 			# Only plot legend if there active legend handles
 			if len(ax.get_legend_handles_labels()[0]) > 1 and plotData.plotdict["legend"] is not None:
