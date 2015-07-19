@@ -45,7 +45,7 @@ class InputRoot(inputfile.InputFile):
 		self.input_options.add_argument("-z", "--z-expressions", type=str, nargs="+",
 		                                help="z-axis variable expression(s)")
 		self.input_options.add_argument("-w", "--weights", type=str, nargs="+", default="1.0",
-		                                help="Weight (cut) expression(s). [Default: %(default)s]")
+		                                help="Weight (cut) expression(s); subject to parameter replication. [Default: %(default)s]")
 		
 		self.input_options.add_argument("--x-bins", type=str, nargs='+', default=[None],
 		                                help="Binnings for x-axis. Possible inputs:\
