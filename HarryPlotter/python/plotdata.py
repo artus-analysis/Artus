@@ -84,10 +84,10 @@ class PlotData(object):
 					f.write(htmlTemplate % (url, html_content))
 
 				# create remote dir, copy plots and overview file
-				create_dir_command = ['ssh', tools.get_environment_variable('HARRY_SSHPC'), 'mkdir -p', remote_path]
+				create_dir_command = ['ssh', user+'@'+tools.get_environment_variable('HARRY_SSHPC'), 'mkdir -p', remote_path]
 				log.debug("\nIssueing mkdir command: " + " ".join(create_dir_command))
 				subprocess.call(create_dir_command)
-				rsync_command =['rsync', '-u'] + [os.path.join(self.plotdict["output_dir"], p) for p in plots_to_copy] + ["%s:%s" % (tools.get_environment_variable('HARRY_SSHPC'), remote_path)]
+				rsync_command =['rsync', '-u'] + [os.path.join(self.plotdict["output_dir"], p) for p in plots_to_copy] + ["%s@%s:%s" % (user, tools.get_environment_variable('HARRY_SSHPC'), remote_path)]
 				log.debug("\nIssueing rsync command: " + " ".join(rsync_command) + "\n")
 				subprocess.call(rsync_command)
 				log.info("Copied {0}; see {1}".format(filename.split("/")[-1], url))
