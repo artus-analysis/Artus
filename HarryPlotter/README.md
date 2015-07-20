@@ -35,7 +35,9 @@ histograms from the existing ones
 
 All modules are located in the respective subdirectories in the python/ folder.
 Type `harry.py --list-available-modules` to get a list of the available modules
-with docstrings.
+with docstrings. Additional modules can be used by supplying the name of the
+containing directory via the `--modules-search-paths` argument or by adding to
+the `$MODULES_SEARCH_PATH` environment variable.
 
 Modules take/add (meta-)information as well as the actual root histograms
 from/to the plotData.plotdict dictionary. An actual plot is created by running

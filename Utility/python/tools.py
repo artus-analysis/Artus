@@ -100,14 +100,16 @@ def get_tty_size():
 	fcntl.ioctl(0, termios.TIOCGWINSZ, size, True)
 	return (size[0], size[2])
 
-def get_environment_variable(variable_name):
+def get_environment_variable(variable_name, fail_if_not_existing=True):
 	"""get variable from os, throw error if not set"""
 	try:
 		value = os.environ[variable_name]
 		return value
 	except KeyError:
-		log.critical("'{}' not in environment variables. Maybe you forgot to source an ini file?".format(variable_name))
-		sys.exit(1)
+		if fail_if_not_existing:
+			log.critical("'{}' not in environment variables. Maybe you forgot to source an ini file?".format(variable_name))
+			sys.exit(1)
+		return None
 
 def get_colored_string(string, color='green'):
 	d = {

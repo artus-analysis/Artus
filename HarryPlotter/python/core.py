@@ -59,6 +59,9 @@ class HarryCore(object):
 		# Modules search dir from command line arguments
 		if self.args['modules_search_paths']:
 			default_modules_dirs += self.args['modules_search_paths']
+		# Modules search dir from MODULES_SEARCH_PATH shell variable
+		if tools.get_environment_variable('MODULES_SEARCH_PATH', fail_if_not_existing=False) is not None:
+			default_modules_dirs += tools.get_environment_variable('MODULES_SEARCH_PATH').split(':')
 		# Passed additonal modules dirs
 		if additional_modules_dirs:
 			default_modules_dirs += additional_modules_dirs
