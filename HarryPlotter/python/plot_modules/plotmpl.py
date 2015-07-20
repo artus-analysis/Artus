@@ -227,10 +227,14 @@ class PlotMpl(plotbase.PlotBase):
 			if isinstance(root_object, ROOT.TGraph):
 				self.plot_dimension = 1
 				self.mplhist = MplGraph(root_object)
-				self.plot_errorbar(self.mplhist, ax=ax,
-				                   show_xerr=x_error, show_yerr=y_error,
-				                   color=color, fmt=marker, marker_fill_style=marker_fill_style, capsize=0,
-				                   linestyle=line_style, linewidth=line_width, label=label, zorder=zorder)
+
+				if (isinstance(root_object, ROOT.TGraphErrors) and  marker=='fill'):
+					self.plot_tgrapherrors_envelope(self.mplhist, ax, label, color, line_style, line_width)
+				else:
+					self.plot_errorbar(self.mplhist, ax=ax,
+					               show_xerr=x_error, show_yerr=y_error,
+					               color=color, fmt=marker, marker_fill_style=marker_fill_style, capsize=0,
+					               linestyle=line_style, linewidth=line_width, label=label, zorder=zorder)
 
 			elif isinstance(root_object, ROOT.TH2):
 				self.mplhist = MplHisto(root_object)
@@ -663,6 +667,19 @@ class PlotMpl(plotbase.PlotBase):
 		artist = ax.plot_surface(X, Y, hist.bincontents, rstride=1, cstride=1,
 			cmap=cmap, linewidth=0, antialiased=True, shade=False)
 		return artist
+
+	def plot_tgrapherrors_envelope(self, mplhist, ax, label, color, line_style, line_width):
+		""" Plot the envelope given by y-errors around a TGraphErrors"""
+		ax.plot(self.mplhist.x, self.mplhist.y, label=label, color=color, linestyle=line_style, linewidth=line_width)
+		ax.fill_between(self.mplhist.x,
+			[(y_val-error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)],
+			[(y_val+error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)],
+			facecolor=color,
+			edgecolor=color,
+			interpolate=True,
+			alpha=0.2
+		)
+
 
 	def get_zip_arguments(self, plotData):
 		zip_arguments = (list(plotData.plotdict["nicks"]),
