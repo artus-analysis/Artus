@@ -13,6 +13,7 @@ import copy
 import os
 import ROOT
 import sys
+import re
 
 import Artus.Utility.tools as tools
 
@@ -685,10 +686,11 @@ class PlotRoot(plotbase.PlotBase):
 			]):
 				x_dataset_title = 0.8 if self.subplot_axes_histogram is None else 0.8
 			
+			self.dataset_title = re.sub(r"\\mathrm{(fb|pb)}", re.search(r"\\mathrm{(fb|pb)}", self.dataset_title).group(1), self.dataset_title)
 			dataset = self.text_box.AddText(
 					x_dataset_title,
 					y_title,
-					self.dataset_title.replace("\mathrm{fb}", "fb").replace("$", "").replace("\,", "")
+					self.dataset_title.replace("$", "").replace("\,", "")
 			)
 			dataset.SetTextAlign(31)
 		
