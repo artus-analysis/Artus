@@ -65,6 +65,14 @@ class Processor(object):
 		# expand/cut lists that are too short/long
 		for key, plot_list in [(key, plotData.plotdict[key]) for key in keys_of_list_args]:
 			plotData.plotdict[key] = (plot_list * max_n_inputs)[:max_n_inputs]
+		
+		if log.isEnabledFor(logging.DEBUG):
+			log.debug("Argument list expansion")
+			for index in xrange(len(plotData.plotdict[keys_of_list_args[0]])):
+				log.debug("\tItem %d:" % index)
+				for key, value in [(key, plotData.plotdict[key][index]) for key in keys_of_list_args]:
+					log.debug("\t\t" + key + " -> " + str(value))
+			log.debug("")
 	
 	@classmethod
 	def name(cls):

@@ -163,7 +163,7 @@ class JsonDict(dict):
 					jsonStrings.append(str(rootFile.Get(namecycle).GetString()))
 			rootFile.Close()
 			if len(jsonStrings) == 0:
-				log.critical("Could not read \"%s\" from file \"%s\"!" % (JsonDict.PATH_TO_ROOT_CONFIG, rootFileName))
+				log.critical("Could not read \"%s\" from file \"%s\"!" % (JsonDict.PATH_TO_ROOT_CONFIG, fileName))
 				sys.exit(1)
 		else:
 			with open(fileName, "r") as jsonFile:
@@ -303,9 +303,14 @@ class JsonDict(dict):
 					if isinstance(value, basestring) and value.strip().startswith(JsonDict.COMMENT_DELIMITER):
 						del jsonDict[key]
 					elif isinstance(value, collections.Iterable) and not isinstance(value, basestring):
-						for index, element in enumerate(value):
+						for index, element in list(enumerate(value))[::-1]:
 							if isinstance(element, basestring) and element.strip().startswith(JsonDict.COMMENT_DELIMITER):
-								del value[index]
+								try:
+									del value[index]
+								except KeyError, e:
+									log.fatal("Error removeing Key %s from Arguments" % element)
+									sys.exit()
+
 					if isinstance(value, dict):
 						JsonDict.deepuncomment(value)
 		return jsonDict
@@ -337,10 +342,10 @@ def print_comments_from_json_files(json_dir, comment_key):
 
 	files = [os.path.join(json_dir, f) for f in os.listdir(json_dir) if f.endswith(".json")]
 
-	log.info(tools.get_colored_string("json files:", 'cyan'))
+	log.info(tools.get_colored_string("json files: ({})".format(json_dir), 'cyan'))
 	for f in files:
 		d = JsonDict(f).doIncludes().doComments()
 		string = "\t" + tools.get_colored_string(os.path.basename(f), "yellow")
 		if comment_key in d:
-			string += ("\n\t\t" + d[comment_key])
+			string += tools.get_indented_text("\n\t\t",  d[comment_key])
 		log.info(string)

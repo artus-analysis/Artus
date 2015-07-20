@@ -14,22 +14,22 @@ public:
 		iProcessFilteredEvent(0), iProcessEvent(0), iProcess(0) {
 	}
 
-	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE {
+	virtual std::string GetConsumerId() const override {
 		return "test_consumer";
 	}
 
-	virtual void Init(TestSettings const& setting) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(TestSettings const& setting) override {
 		//m_pipeline = pset;
 		iInit++;
 	}
 
-	virtual void Finish(TestSettings const& setting) ARTUS_CPP11_OVERRIDE {
+	virtual void Finish(TestSettings const& setting) override {
 		iFinish++;
 	}
 
 	virtual void ProcessFilteredEvent(TestEvent const& event,
 			TestProduct const& product,
-			TestSettings const& setting) ARTUS_CPP11_OVERRIDE
+			TestSettings const& setting) override
 	{
 		iProcessFilteredEvent++;
 	}
@@ -38,7 +38,7 @@ public:
 	virtual void ProcessEvent(TestEvent const& event,
 			TestProduct const& product,
 			TestSettings const& setting,
-			FilterResult& result) ARTUS_CPP11_OVERRIDE
+			FilterResult& result) override
 	{
 		if ( bCheckInProcessEvent ) {
 			// did product work ?
@@ -50,18 +50,17 @@ public:
 		fres = result;
 	}
 
-	virtual void Process(TestSettings const& setting) ARTUS_CPP11_OVERRIDE {
+	virtual void Process(TestSettings const& setting) override {
 		iProcess++;
 	}
 
-	void CheckCalls(int ProcessFilteredEvent, int ProcessEvent,
-			int Process = 0) {
+	void CheckCalls(int ProcessFilteredEvt, int ProcessEvt,	int Process_ = 0) {
 		BOOST_CHECK_EQUAL(iInit, 1);
 		BOOST_CHECK_EQUAL(iFinish, 1);
 
-		BOOST_CHECK_EQUAL(iProcessFilteredEvent, ProcessFilteredEvent);
-		BOOST_CHECK_EQUAL(iProcessEvent, ProcessEvent);
-		BOOST_CHECK_EQUAL(iProcess, Process);
+		BOOST_CHECK_EQUAL(iProcessFilteredEvent, ProcessFilteredEvt);
+		BOOST_CHECK_EQUAL(iProcessEvent, ProcessEvt);
+		BOOST_CHECK_EQUAL(iProcess, Process_);
 	}
 
 	bool bCheckInProcessEvent;
@@ -79,13 +78,13 @@ public:
 	TestConsumerLocalProduct() : m_iLocalValue (0) {
 	}
 
-	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE {
+	virtual std::string GetConsumerId() const override {
 		return "test_consumer_local";
 	}
 
 	virtual void ProcessFilteredEvent(TestEvent const& event,
 			TestProduct const& product,
-			TestSettings const& setting) ARTUS_CPP11_OVERRIDE
+			TestSettings const& setting) override
 	{
 		m_iLocalValue = product.iLocalProduct;
 	}

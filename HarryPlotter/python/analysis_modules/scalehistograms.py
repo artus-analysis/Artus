@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 
 import Artus.HarryPlotter.analysisbase as analysisbase
 
-class ScaleBinContents(analysisbase.AnalysisBase):
+class ScaleHistograms(analysisbase.AnalysisBase):
 	"""Scale selected root histogram(s) by a certain value."""
 	"""
 	In contrast to the scaling function of the InputRoot module, this module
@@ -14,17 +14,18 @@ class ScaleBinContents(analysisbase.AnalysisBase):
 	"""
 
 	def modify_argument_parser(self, parser, args):
-		super(ScaleBinContents, self).modify_argument_parser(parser, args)
+		super(ScaleHistograms, self).modify_argument_parser(parser, args)
 
-		self.ScaleBinContents_options = parser.add_argument_group("ScaleBinContents options")
-		self.ScaleBinContents_options.add_argument("--scale-bin-contents", type=str, nargs='*', default=[],
+		self.ScaleHistograms_options = parser.add_argument_group(self.name() +" options")
+		self.ScaleHistograms_options.add_argument("--scale-nicks", type=str, nargs='*', default=[],
 				help="List the nicks you want to scale (-> module whitelist ).")
-		self.ScaleBinContents_options.add_argument("--scale", type=float, default=0.,
-				help="Value by which you want the histogram to be scaleed.")
+		self.ScaleHistograms_options.add_argument("--scale", type=float, default=1.,
+				help="Value by which you want the histogram to be scaled.")
 
 	def run(self, plotData=None):
-		super(ScaleBinContents, self).run(plotData)
+		super(ScaleHistograms, self).run(plotData)
 
 		for nick, root_histogram in plotData.plotdict["root_objects"].iteritems():
-			if nick in plotData.plotdict['scale_bin_contents']:
+			if nick in plotData.plotdict['scale_nicks']:
+				log.debug("Scale nick '{0}' by {1}".format(nick, plotData.plotdict['scale']))
 				root_histogram.Scale(plotData.plotdict['scale'])

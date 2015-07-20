@@ -6,26 +6,24 @@
 
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
-
 #include "TraxTypes.h"
 
 class PtCorrectionProducer: public TraxProducerBase
 {
 public:
 
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE
+	virtual std::string GetProducerId() const override
 	{
 		return "pt_correction";
 	}
 
-	virtual void Init(TraxSettings const& globalSettings) ARTUS_CPP11_OVERRIDE
+	virtual void Init(TraxSettings const& globalSettings) override
 	{
 		ProducerBase<TraxTypes>::Init(globalSettings);
 	}
 
 	virtual void Produce(TraxEvent const& event, TraxProduct & product,
-			TraxSettings const& globalSettings) const ARTUS_CPP11_OVERRIDE
+			TraxSettings const& globalSettings) const override
 	{
 
 		product.m_floatPtSim_corrected = event.m_floatPtSim

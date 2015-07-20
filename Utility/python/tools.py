@@ -6,10 +6,12 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import array
+import copy
 import fcntl
-import re
-import termios
 import os
+import re
+import sys
+import termios
 import textwrap
 
 
@@ -29,6 +31,37 @@ def matchingItem(regexItems, string):
 		if re.search(item, string) != None:
 			return item
 	return None
+
+def matching_sublist(input_list, whitelist=[], blacklist=[]):
+	"""returns subset of input_list (non) matching the regexps."""
+	whitelist_matches = []
+	if len(whitelist) == 0:
+		whitelist_matches = copy.deepcopy(input_list)
+	else:
+		tmp_input_list = copy.deepcopy(input_list)
+		for regex in whitelist:
+			indices_to_remove = []
+			for index, item in enumerate(tmp_input_list):
+				if not re.search(regex, item) is None:
+					whitelist_matches.append(item)
+					indices_to_remove.append(index)
+			for index in indices_to_remove[::-1]:
+				tmp_input_list.pop(index)
+	
+	output_list = []
+	if len(blacklist) == 0:
+		output_list = copy.deepcopy(whitelist_matches)
+	else:
+		for item in whitelist_matches:
+			keep = True
+			for regex in blacklist:
+				if not item is None and not re.search(regex, item) is None:
+					keep = False
+					continue
+			if keep:
+				output_list.append(item)
+	
+	return output_list
 
 # http://codereview.stackexchange.com/questions/21532/python-3-finding-common-patterns-in-pairs-of-strings
 def longest_common_substring(S1, S2):
@@ -67,25 +100,27 @@ def get_tty_size():
 	fcntl.ioctl(0, termios.TIOCGWINSZ, size, True)
 	return (size[0], size[2])
 
-def get_environment_variable(variable_name):
+def get_environment_variable(variable_name, fail_if_not_existing=True):
 	"""get variable from os, throw error if not set"""
 	try:
 		value = os.environ[variable_name]
 		return value
 	except KeyError:
-		log.critical("'{}' not in environment variables".format(variable_name))
-		sys.exit(1)
+		if fail_if_not_existing:
+			log.critical("'{}' not in environment variables. Maybe you forgot to source an ini file?".format(variable_name))
+			sys.exit(1)
+		return None
 
 def get_colored_string(string, color='green'):
 	d = {
-		'red': '91',
-		'green':'92',
-		'yellow':'93',
-		'blue':'94',
-		'magenta':'94',
-		'cyan':'96',
+		'red': '101',
+		'green':'102',
+		'yellow':'103',
+		'blue':'104',
+		'magenta':'104',
+		'cyan':'106',
 	}
-	return "\033[{1}m{0}\033[39m".format(string, d[color])
+	return "\033[0;{1};30m{0}\033[0m".format(string, d[color])
 
 def get_indented_text(prefix, message, width=None):
 	"""returns a text block which is line-wrapped and indented at a certain length."""
@@ -93,9 +128,18 @@ def get_indented_text(prefix, message, width=None):
 		width = get_tty_size()[1]
 	expanded_indent = textwrap.fill(prefix+'$', replace_whitespace=False)[:-1]
 	subsequent_indent = ' ' * len(expanded_indent)
-	wrapper = textwrap.TextWrapper(
-			initial_indent=expanded_indent,
-			width=width,
-			subsequent_indent=subsequent_indent
-	)
-	return wrapper.fill(message)
+
+	# code below is needed to preserve line wrap:
+	# http://stackoverflow.com/questions/1166317/python-textwrap-library-how-to-preserve-line-breaks
+	tmp_wrapped_texts = []
+	for line in message.splitlines():
+		if line.strip() != '':
+			tmp_wrapped_texts += textwrap.wrap(line,
+				initial_indent=expanded_indent,
+				width=width,
+				subsequent_indent=subsequent_indent,
+				break_long_words=False,
+				replace_whitespace=False
+			)
+	return '\n'.join(['\n'.join(tmp_wrapped_texts)])
+

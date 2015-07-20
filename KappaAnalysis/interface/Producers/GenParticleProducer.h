@@ -10,27 +10,30 @@
 /**
    \brief GlobalProducer, to write any available generator particle to the product.
 
-
-   usage: add to your "genParticles" to your settings
-   if you want to use "genParticles", specify also which pdgId you want to have. These particles are then available in the map product.m_genParticlesMap
-   with the config parameter genParticleStatus you can specify which status particles have to have to be written to the product. Example for a valid configuration that writes out genTaus as well was Higgs and W with status 3:
+   Gen particles need to be wired with { "GenParticles" : "genParticles" } first.
+   "GenParticleTypes" is a list which can contain genParticle for gen particles in general and/or genElectron, genMuon, genTau for the gen leptons.
+   If "genParticle" is selected, the pdgIds from the list "GenParticlePdgIds" will be taken as input.
+   Example for a valid configuration that writes out genTaus as well as Higgs and W with status 3:
    {
-   "GetGenParticleTypes" : ["genParticle"],
-   "genParticlePdgIds" : [24, 25],
-   "genParticleStatus" : 3
+   "GenParticleTypes" : ["genParticle", "genTau"],
+   "GenParticlePdgIds" : [24, 25],
+   "GenParticleStatus" : 3,
+   "GenTauStatus" : 1
    }
+
+   pdgIds can be found here http://pdg.lbl.gov/2002/montecarlorpp.pdf
 */
 
 class GenParticleProducer: public KappaProducerBase
 {
 public:
 
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
+	virtual void Init(KappaSettings const& settings) override;
  
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE;
+	                     KappaSettings const& settings) const override;
 
 
 private:

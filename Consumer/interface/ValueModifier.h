@@ -9,7 +9,6 @@
 #include <cstddef>
 #include <cassert>
 #include <vector>
-#include "Artus/Core/interface/Cpp11Support.h"
 
 class Hist1D;
 class Hist2D;
@@ -48,14 +47,11 @@ public:
 	virtual ~ValueModifierRange() {
 	}
 
-	virtual void applyHistBeforeCreation(Hist1D * h1, size_t index)
-			ARTUS_CPP11_OVERRIDE;
+	virtual void applyHistBeforeCreation(Hist1D * h1, size_t index)	override;
 
-	virtual void applyProfileBeforeCreation(Profile2d * h1, size_t index)
-			ARTUS_CPP11_OVERRIDE;
+	virtual void applyProfileBeforeCreation(Profile2d * h1, size_t index) override;
 
-	virtual void applyHist2DBeforeCreation(Hist2D * h1, size_t index)
-			ARTUS_CPP11_OVERRIDE;
+	virtual void applyHist2DBeforeCreation(Hist2D * h1, size_t index) override;
 
 private:
 	const float m_binLower;
@@ -71,14 +67,11 @@ public:
 	virtual ~ValueModifierBinCount() {
 	}
 
-	virtual void applyHistBeforeCreation(Hist1D * h1, size_t index)
-			ARTUS_CPP11_OVERRIDE;
+	virtual void applyHistBeforeCreation(Hist1D * h1, size_t index) override;
 
-	virtual void applyProfileBeforeCreation(Profile2d * h1, size_t index)
-			ARTUS_CPP11_OVERRIDE;
+	virtual void applyProfileBeforeCreation(Profile2d * h1, size_t index) override;
 
-	virtual void applyHist2DBeforeCreation(Hist2D * h1, size_t index)
-			ARTUS_CPP11_OVERRIDE;
+	virtual void applyHist2DBeforeCreation(Hist2D * h1, size_t index) override;
 
 private:
 	const size_t m_binCount;

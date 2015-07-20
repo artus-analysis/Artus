@@ -6,9 +6,7 @@
 #include <TTree.h>
 #include <TROOT.h>
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Utility/interface/RootFileHelper.h"
-
 #include "Artus/Consumer/interface/CutFlowConsumerBase.h"
 
 
@@ -22,8 +20,7 @@ public:
 	
 	typedef typename std::function<uint64_t(event_type const&, product_type const&, setting_type const&)> uint64_extractor_lambda;
 
-	virtual std::string GetConsumerId() const
-		ARTUS_CPP11_OVERRIDE
+	virtual std::string GetConsumerId() const override
 	{
 		return "CutFlowTreeConsumer";
 	}
@@ -34,7 +31,7 @@ public:
 	{
 	}
 
-	virtual void Init( typename TTypes::setting_type const& settings) ARTUS_CPP11_OVERRIDE
+	virtual void Init( typename TTypes::setting_type const& settings) override
 	{
 		CutFlowConsumerBase<TTypes>::Init(settings);
 		
@@ -67,7 +64,8 @@ public:
 		for(FilterResult::FilterDecisions::const_iterator filterDecision = filterDecisions.begin();
 		    filterDecision != filterDecisions.end(); filterDecision++)
 		{
-			if (filterDecision->second != FilterResult::Decision::Passed) {
+			if ((filterDecision->filterDecision != FilterResult::Decision::Passed) &&
+			    (filterDecision->taggingMode == FilterResult::TaggingMode::Filtering)) {
 				m_cutFlowTrees[filterIndex]->Fill();
 				break;
 			}
@@ -76,7 +74,7 @@ public:
 		}
 	}
 
-	virtual void Finish(setting_type const& setting) ARTUS_CPP11_OVERRIDE {
+	virtual void Finish(setting_type const& setting) override {
 		CutFlowConsumerBase<TTypes>::Finish(setting);
 		
 		// save histograms

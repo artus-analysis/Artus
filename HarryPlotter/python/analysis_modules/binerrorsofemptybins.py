@@ -20,9 +20,9 @@ class BinErrorsOfEmptyBins(histogrammanipulationbase.HistogramManipulationBase):
 				help="Scale factor for bin errors of empty bins = sf * sum of weights / entries of histogram. [Default: %(default)s]")
 
 	def _selector(self, nick, root_histogram, plotData):
-		super(BinErrorsOfEmptyBins, self)._selector(nick, root_histogram, plotData)
 		if isinstance(root_histogram, ROOT.TH1):
 			self.bin_error_for_empty_bins = plotData.plotdict["empty_bin_error_scale"] * root_histogram.GetSumOfWeights() / root_histogram.GetEntries()
+		return super(BinErrorsOfEmptyBins, self)._selector(nick, root_histogram, plotData)
 
 	def _manipulate_bin(self, histogram, global_bin):
 		if root_histogram.GetBinContent(global_bin) == 0.0:

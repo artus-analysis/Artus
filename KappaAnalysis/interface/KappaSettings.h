@@ -21,7 +21,7 @@ public:
 
 	/// name of electron collection in kappa tuple	
 	IMPL_SETTING_DEFAULT(std::string, Electrons, "");
-    IMPL_SETTING_DEFAULT(std::string, ElectronMetadata, "");
+	IMPL_SETTING_DEFAULT(std::string, ElectronMetadata, "");
 
 	/// name of muon collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, Muons, "");
@@ -89,7 +89,9 @@ public:
 	IMPL_SETTING_DEFAULT(std::string, JetMetadata, "");
 
 
-	IMPL_SETTING_DEFAULT(float, CrossSection, -1.);
+	IMPL_SETTING(float, CrossSection);
+	// Events will be weighted with the inverse of int. luminosity
+	IMPL_SETTING(float, IntLuminosity);
 	IMPL_SETTING(int, NumberGeneratedEvents);
 	
 	IMPL_SETTING_STRINGLIST_DEFAULT(JsonFiles, {});
@@ -99,7 +101,7 @@ public:
 	// Good Primary Vertex Filter
 	IMPL_SETTING(float, MaxPrimaryVertexZ);
 	IMPL_SETTING(float, MaxPrimaryVertexRho);
-	IMPL_SETTING(int, MinPrimaryVertexFitnDOF);
+	IMPL_SETTING(float, MinPrimaryVertexFitnDOF);
 
 	// Beam Scraping Filter
 	IMPL_SETTING(double, MinPurityRatio);
@@ -134,12 +136,29 @@ public:
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoMuonGenParticle, 0.5);
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoTauGenParticle, 0.5);
 	
-	IMPL_SETTING_INTLIST_DEFAULT(RecoElectronMatchingGenParticlePdgIds, {});
-	IMPL_SETTING_INTLIST_DEFAULT(RecoMuonMatchingGenParticlePdgIds, {});
-	IMPL_SETTING_INTLIST_DEFAULT(RecoTauMatchingGenParticlePdgIds, {});
+	IMPL_SETTING_DEFAULT(float, MinDeltaRMatchedRecoElectrons, 0.5);
+	IMPL_SETTING_DEFAULT(float, MinDeltaRMatchedRecoMuons, 0.5);
+	IMPL_SETTING_DEFAULT(float, MinDeltaRMatchedRecoTaus, 0.5);
+	
+	IMPL_SETTING_DEFAULT(float, MinDeltaRValidElectrons, 0.5);
+	IMPL_SETTING_DEFAULT(float, MinDeltaRValidMuons, 0.5);
+	IMPL_SETTING_DEFAULT(float, MinDeltaRValidTaus, 0.5);
+	IMPL_SETTING_DEFAULT(float, MinDeltaRValidLeptons, 0.5);
+	
+	std::vector<int> RecoElectronMatchingGenParticlePdgIds = {-11, 11};
+	std::vector<int> RecoMuonMatchingGenParticlePdgIds = {-13, 13};
+	std::vector<int> RecoTauMatchingGenParticlePdgIds = {-15, 15};
+	IMPL_SETTING_INTLIST_DEFAULT(RecoElectronMatchingGenParticlePdgIds, RecoElectronMatchingGenParticlePdgIds);
+	IMPL_SETTING_INTLIST_DEFAULT(RecoMuonMatchingGenParticlePdgIds, RecoMuonMatchingGenParticlePdgIds);
+	IMPL_SETTING_INTLIST_DEFAULT(RecoTauMatchingGenParticlePdgIds, RecoTauMatchingGenParticlePdgIds);
+
+	IMPL_SETTING_DEFAULT(int, RecoElectronMatchingGenParticleStatus, -1);
+	IMPL_SETTING_DEFAULT(int, RecoMuonMatchingGenParticleStatus, -1);
+	IMPL_SETTING_DEFAULT(int, RecoTauMatchingGenParticleStatus, -1);
 	
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoJetGenParticle, 0.3);
 	IMPL_SETTING_DEFAULT(std::string, JetMatchingAlgorithm, "algorithmic");
+	IMPL_SETTING_DEFAULT(int, RecoJetMatchingGenParticleStatus, 3);  //keep pythia6 status as default for back-compatibility
 	
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenParticleMatchingRecoElectrons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenParticleMatchingRecoMuons, false);
@@ -184,6 +203,7 @@ public:
 	
 	IMPL_SETTING_DEFAULT(std::string, ValidTausInput, "auto");
 	IMPL_SETTING_STRINGLIST_DEFAULT(TauDiscriminators, {});
+	IMPL_SETTING_DEFAULT(std::string, TauID, "none");
 	
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetEnergyCorrectionParameters, {});
 	IMPL_SETTING_DEFAULT(std::string, JetEnergyCorrectionUncertaintyParameters, "");
@@ -194,6 +214,7 @@ public:
 	IMPL_SETTING(std::string, JetID);
 	IMPL_SETTING_DEFAULT(float, JetLeptonLowerDeltaRCut, -1.0);
 	IMPL_SETTING_DEFAULT(std::string, JetIDVersion, "2010");
+	IMPL_SETTING_DEFAULT(std::string, PuJetIDFullDiscrName, "puJetIDFullDiscriminant");
 	IMPL_SETTING_STRINGLIST_DEFAULT(PuJetIDs, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetTaggerLowerCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetTaggerUpperCuts, {});
@@ -202,16 +223,19 @@ public:
 	IMPL_SETTING(int, NMuons);
 	IMPL_SETTING(int, NTaus);
 	IMPL_SETTING(int, NJets);
+	IMPL_SETTING(int, NBTaggedJets);
 	
 	IMPL_SETTING(int, MinNElectrons);
 	IMPL_SETTING(int, MinNMuons);
 	IMPL_SETTING(int, MinNTaus);
 	IMPL_SETTING(int, MinNJets);
+	IMPL_SETTING(int, MinNBTaggedJets);
 	
 	IMPL_SETTING(int, MaxNElectrons);
 	IMPL_SETTING(int, MaxNMuons);
 	IMPL_SETTING(int, MaxNTaus);
 	IMPL_SETTING(int, MaxNJets);
+	IMPL_SETTING(int, MaxNBTaggedJets);
 	
 	IMPL_SETTING_DEFAULT(size_t, MinNMatchedElectrons, 0);
 	IMPL_SETTING_DEFAULT(size_t, MinNMatchedMuons, 0);
@@ -230,14 +254,20 @@ public:
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetUpperAbsEtaCuts, {});
 	
 	IMPL_SETTING_DEFAULT(float, BTaggedJetAbsEtaCut, 0.0);
+	IMPL_SETTING_DEFAULT(std::string, BTaggedJetTrackCountingHighEffName, "TrackCountingHighEffBJetTags");
+	IMPL_SETTING_DEFAULT(std::string, BTaggedJetCombinedSecondaryVertexName, "CombinedSecondaryVertexBJetTags");
 	IMPL_SETTING_DEFAULT(float, BTaggedJetCombinedSecondaryVertexMediumWP, 0.0);
 	IMPL_SETTING_DEFAULT(bool, ApplyBTagSF, false);
 	IMPL_SETTING(std::string, BTagSFMethod);
 	IMPL_SETTING_DEFAULT(float, BTagShift, 0.0);
 	IMPL_SETTING_DEFAULT(float, BMistagShift, 0.0);
 	
-	//Reading Boson PdgId for GenTauDecayProducer studies.
+	//Reading Boson PdgId and Status code for GenTauDecayProducer studies.
 	IMPL_SETTING(int, BosonPdgId);
+	IMPL_SETTING_DEFAULT(int, BosonStatus, 3);  //keep pythia6 status as default for back-compatibility
+
+	/// Needed by the GenPartonCounterProducer
+	IMPL_SETTING_DEFAULT(int, PartonStatus, 3);  //keep pythia6 status as default for back-compatibility
 	
 	/// Needed by the GenDiLeptonDecayModeFilter
 	IMPL_SETTING(std::string, GenDiLeptonDecayMode);
@@ -245,7 +275,10 @@ public:
 
 	IMPL_SETTING_STRINGLIST_DEFAULT(GenParticleTypes, {});
 	IMPL_SETTING_INTLIST_DEFAULT(GenParticlePdgIds, {});
-	IMPL_SETTING_DEFAULT(int, GenParticleStatus, 0);
+	IMPL_SETTING_DEFAULT(int, GenParticleStatus, -1);
+	IMPL_SETTING_DEFAULT(int, GenElectronStatus, -1);
+	IMPL_SETTING_DEFAULT(int, GenMuonStatus, -1);
+	IMPL_SETTING_DEFAULT(int, GenTauStatus, -1);
 
 	IMPL_SETTING(std::string, PileupWeightFile);
 	

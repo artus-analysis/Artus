@@ -3,6 +3,8 @@
 /cmake_install.cmake
 /Makefile
 *.a
+*.so
+*.d
 
 __init__.py
 !Plotting/**/__init__.py
@@ -12,3 +14,9 @@ __init__.py
 *.png
 *.pdf
 *~
+
+/artusExample
+/artus_core_test
+/.python_links
+
+plots

@@ -20,14 +20,14 @@ class HistogramManipulationBase(analysisbase.AnalysisBase):
 			if self._selector(nick, root_histogram, plotData):
 				for x_bin in xrange(1, root_histogram.GetNbinsX()+1):
 					for y_bin in xrange(1, root_histogram.GetNbinsY()+1):
-						for z_bin in xrange(1, root_histogram.GetNbinsY()+1):
+						for z_bin in xrange(1, root_histogram.GetNbinsZ()+1):
 							global_bin = root_histogram.GetBin(x_bin, y_bin, z_bin)
 							self._manipulate_bin(root_histogram, global_bin)
 
 	def _selector(self, nick, root_histogram, plotData):
 		"""This function evaluates conditions that nicks / histograms have to pass."""
 		if not hasattr(self, 'whitelist') or nick in self.whitelist:
-			log.debug(type(self).__name__ + ": Now editing nick %s" % nick)
+			log.debug(self.name() + ": Now editing nick %s" % nick)
 			return True
 		else:
 			return False

@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 
 import numpy as np
 import ROOT
+import sys
 
 class MplGraph:
 
@@ -59,8 +60,14 @@ class MplHisto(object):
 	"""Simple representation of 1D or 2D Root histogram to be used for matplotlib plotting."""
 
 	def __init__(self, roothisto):
-		if not roothisto.ClassName() in ['TH1D', 'TH1F', 'TProfile', 'TH2D', 'TH2F', 'TProfile2D']:
-			raise TypeError('No valid TH1D TH1F TProfile TH2D TH2F or TProfile2D passed.')
+
+		# lists of ROOT classes which can be converted
+		histos_1d = ['TH1D', 'TH1F', 'TProfile']
+		histos_2d = ['TH2D', 'TH2F', 'TProfile2D']
+
+		if not roothisto.ClassName() in histos_1d + histos_2d:
+			log.critical("MplHisto: Cannot convert {0}! (Can only convert {1})".format(roothisto.ClassName(), ", ".join(histos_1d + histos_2d)))
+			sys.exit(1)
 
 		self.name = roothisto.GetName()
 		self.roothisto = roothisto
@@ -69,6 +76,11 @@ class MplHisto(object):
 		self.xlabel = roothisto.GetXaxis().GetTitle()
 		self.ylabel = roothisto.GetYaxis().GetTitle()
 
+		#labeled bins
+		self.xlabels = np.array([roothisto.GetXaxis().GetBinLabel(i) for i in xrange(1, roothisto.GetNbinsX() +1)])
+		#if GetBinLabel is empty, the returned strings have length 0. Sum of Zeroes is 0, so set self.xlabels to None
+		self.xlabels = self.xlabels if(sum(np.array([len(i) for i in self.xlabels]))) else None
+
 		# bin center
 		self.x = np.array([roothisto.GetXaxis().GetBinCenter(i) for i in xrange(1, roothisto.GetNbinsX() +1)])
 		# lower bin edge
@@ -76,7 +88,7 @@ class MplHisto(object):
 		# upper bin edge
 		self.xu = np.array([roothisto.GetXaxis().GetBinUpEdge(i) for i in xrange(1, roothisto.GetNbinsX() +1)])
 
-		if roothisto.ClassName() in ['TH1D', 'TH1F', 'TProfile']:
+		if roothisto.ClassName() in histos_1d:
 			self.dimension = 1
 			# bin content
 			self.bincontents = np.array([roothisto.GetBinContent(i) for i in xrange(1, roothisto.GetNbinsX() +1)])
@@ -86,7 +98,7 @@ class MplHisto(object):
 			self.binerrl = np.array([roothisto.GetBinErrorLow(i) for i in xrange(1, roothisto.GetNbinsX() +1)])
 			# upper bin error
 			self.binerru = np.array([roothisto.GetBinErrorUp(i) for i in xrange(1, roothisto.GetNbinsX() +1)])
-		elif roothisto.ClassName() in ['TH2D', 'TH2F', 'TProfile2D']:
+		elif roothisto.ClassName() in histos_2d:
 			self.dimension = 2
 			self.y = np.array([roothisto.GetYaxis().GetBinCenter(i) for i in xrange(1, roothisto.GetNbinsY() +1)])
 			# lower bin edge

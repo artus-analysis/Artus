@@ -6,9 +6,7 @@
 
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/CutFlow.h"
-
 #include "Artus/Consumer/interface/CutFlowConsumerBase.h"
 
 #include "TraxTypes.h"
@@ -18,7 +16,7 @@ class CutFlowConsumer: public CutFlowConsumerBase< TraxTypes > {
 
 public:
 
-	virtual void Finish(setting_type const& setting) ARTUS_CPP11_OVERRIDE {
+	virtual void Finish(setting_type const& setting) override {
 		LOG(INFO) << "Cut Flow for pipeline" << m_pipelineName << ":";
 		LOG(INFO) << m_flow.ToString();
 	}

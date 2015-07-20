@@ -16,7 +16,7 @@
 
 /*
 	Wrapper for Root's TH1D histograms.
-	Enables flexible binning and range setup and takes 
+	Enables flexible binning and range setup and takes
 	care of storing the TH1D into the proper ROOT folder.
 */
 

@@ -23,9 +23,9 @@ def main():
 	config1 = jsonTools.JsonDict(args.files[0])
 	config2 = jsonTools.JsonDict(args.files[1])
 	
-	cwd = os.getcwd()
-	repo_key1 = sorted([tools.longest_common_substring(key, cwd) for key in config1.keys()], key=lambda item: len(item))[-1]
-	repo_key2 = sorted([tools.longest_common_substring(key, cwd) for key in config2.keys()], key=lambda item: len(item))[-1]
+	dirname = os.path.basename(os.getcwd())
+	repo_key1 = sorted([key for key in config1.keys() if key.startswith("/") and key.endswith(dirname)], key=lambda item: len(item))[-1]
+	repo_key2 = sorted([key for key in config2.keys() if key.startswith("/") and key.endswith(dirname)], key=lambda item: len(item))[-1]
 	
 	repo_version1 = config1[repo_key1]
 	repo_version2 = config2[repo_key2]

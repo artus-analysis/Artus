@@ -84,6 +84,9 @@ public:
 
 	/// added by GenParticleProducer
 	std::map<int, std::vector<KGenParticle*>> m_genParticlesMap;
+	std::vector<KGenParticle*> m_genElectrons;
+	std::vector<KGenParticle*> m_genMuons;
+	std::vector<KGenParticle*> m_genTaus;
 	
 	/// added by GenDiLeptonDecayModeProducer
 	KappaEnumTypes::DiLeptonDecayMode m_genDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::NONE;
@@ -92,7 +95,7 @@ public:
 	std::vector<KJet*> m_bTaggedJets;
 	std::vector<KJet*> m_nonBTaggedJets;
 	
-	HLTTools m_hltInfo = HLTTools();
+	mutable HLTTools m_hltInfo = HLTTools();
 	std::string m_selectedHltName;
 	int m_selectedHltPosition;
 
@@ -134,6 +137,7 @@ public:
 	int m_tau2DecayMode;
 	int m_tau1ProngSize;
 	int m_tau2ProngSize;
+	int m_genTauDecayMode;
 
 	// GenPartonCounterProducer
 	int m_genNPartons = -1;

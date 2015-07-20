@@ -8,7 +8,6 @@
 
 #include "TFile.h"
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Configuration/interface/PropertyTreeSupport.h"
 #include "Artus/Configuration/interface/SettingMacros.h"
 #include "Artus/Configuration/interface/PropertyMacros.h"
@@ -30,11 +29,11 @@ class SettingsBase {
 public:
 
 	SettingsBase() :
-			m_RootOutFile(ARTUS_CPP11_NULLPTR) {
+			m_RootOutFile(nullptr) {
 	}
 
 	SettingsBase( std::string const& name ) : m_Name ( name ),
-			m_RootOutFile(ARTUS_CPP11_NULLPTR){
+			m_RootOutFile(nullptr){
 	}
 
 	virtual ~SettingsBase() {
@@ -43,7 +42,7 @@ public:
 	/// path in the config file to reach the settings for this pipeline
 	IMPL_PROPERTY(std::string, PropTreePath)
 	/// pointer to the global, loaded property tree
-	IMPL_PROPERTY(boost::property_tree::ptree*, PropTree)
+	IMPL_PROPERTY_INITIALIZE(boost::property_tree::ptree*, PropTree, nullptr)
 
 	/// pipeline level, the default if no entry is in the json file will be 1
 	IMPL_SETTING_DEFAULT(size_t, Level, 1 )
@@ -79,7 +78,26 @@ public:
 	/// get list of all local producers
 	IMPL_SETTING_STRINGLIST( Processors )
 	IMPL_SETTING_STRINGLIST( Consumers )
-	
+
+	///
+	//IMPL_GLOBAL_SETTING_STRINGLIST( GlobalProcessors )
+	VarCache<stringvector> m_globalProcessors;
+	stringvector& GetGlobalProcessors () const {
+		RETURN_CACHED(m_globalProcessors, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Processors" ))
+	}
+
+	std::vector<std::string> GetAllProcessors () const {
+		std::vector<std::string> allProcessors;
+		std::vector<std::string> globalProcessors = GetGlobalProcessors();
+		std::vector<std::string> localProcessors = GetProcessors();
+
+		if ( GetName() != "") {
+			allProcessors.insert(allProcessors.end(), globalProcessors.begin(), globalProcessors.end());
+		}
+		allProcessors.insert(allProcessors.end(), localProcessors.begin(), localProcessors.end());
+		return allProcessors;
+	}
+
 	// list of quantities needed for ntuple consumers
 	IMPL_SETTING_STRINGLIST(Quantities);
 	//IMPL_SETTING_SORTED_STRINGLIST(Quantities);
@@ -87,6 +105,8 @@ public:
 	virtual stringvector GetFilters () const {
 		return SettingsUtil::ExtractFilters(GetProcessors());
 	}
+
+	IMPL_SETTING_STRINGLIST_DEFAULT(TaggingFilters, std::vector<std::string>());
 
 	typedef std::pair < std::string, size_t > PipelineInfo;
 	typedef std::vector<PipelineInfo> PipelineInfos;

@@ -41,7 +41,7 @@ def main():
 	
 	args.output_dir = os.path.expandvars(args.output_dir)
 	
-	skimming_dirs = glob.glob(os.path.join(args.skimming_dir, "*_*TeV"))
+	skimming_dirs = glob.glob(os.path.join(args.skimming_dir, "*_*TeV*"))
 	
 	for skimming_dir in skimming_dirs:
 		nick = os.path.basename(skimming_dir)

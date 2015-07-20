@@ -12,6 +12,7 @@ import sys
 
 opt_all = False
 
+relative_differences_per_leaf = {}
 
 def main():
 	global opt_all
@@ -40,6 +41,9 @@ def main():
 		exit(0)
 	else:
 		log.warning("The files \"" + args.files[0] + "\" and \"" + args.files[1] + "\" are NOT identical.")
+		if relative_differences_per_leaf != {}:
+			for key in relative_differences_per_leaf.keys():
+				log.warning("Average difference for {0}: {1:.2f}%".format(key, sum(relative_differences_per_leaf[key]) / len(relative_differences_per_leaf[key]) * 100.))
 		exit(1)
 
 
@@ -210,27 +214,27 @@ def compareTree(directory1, directory2):
 				if not opt_all:
 					return False
 				result = False
-		if obj.IsA().GetName().startswith("TH1") or obj.IsA().GetName().startswith("TProfile"):
-			identified = True
-			if not compareTH1(directory1, directory2, i.GetName()):
-				log.info("problem with %s in %s" % (i.GetName(), directory1.GetPath().split(":")[1]))
-				if not opt_all:
-					return False
-				result = False
-		if obj.IsA().GetName().startswith("TH2"):
+		elif isinstance(obj, ROOT.TH2):
 			identified = True
 			if not compareTH2(directory1, directory2, i.GetName()):
 				log.info("problem with %s in %s" % (i.GetName(), directory1.GetPath().split(":")[1]))
 				if not opt_all:
 					return False
 				result = False
-		if obj.IsA().GetName() == "TGraphErrors":
+		elif isinstance(obj, ROOT.TH1):
+			identified = True
+			if not compareTH1(directory1, directory2, i.GetName()):
+				log.info("problem with %s in %s" % (i.GetName(), directory1.GetPath().split(":")[1]))
+				if not opt_all:
+					return False
+				result = False
+		elif isinstance(obj, ROOT.TGraphErrors):
 			identified = True
 			if not compareGraph(directory1, directory2, i.GetName()):
 				if not opt_all:
 					return False
 				result = False
-		if obj.IsA().GetName() == "TNtuple":
+		elif isinstance(obj, ROOT.TTree):
 			identified = True
 			if not compareNtuple(directory1, directory2, i.GetName()):
 				if not opt_all:
@@ -254,18 +258,18 @@ def compareNtuple(directory1, directory2, ntupleID):
 	nevts1 = ntuple1.GetEntries()
 	nevts2 = ntuple1.GetEntries()
 	if nleaves1 != nleaves2:
-		log.info("different number of leaves")
+		log.critical("different number of leaves")
 		if not opt_all:
 			return False
 		result = False
 	for i in range(nleaves1):
 		if leaves1.UncheckedAt(i).GetName() != leaves2.UncheckedAt(i).GetName():
-			log.info("different leaf name: " + leaves1.UncheckedAt(i).GetName() + ", " + leaves2.UncheckedAt(i).GetName())
+			log.critical("different leaf name: " + leaves1.UncheckedAt(i).GetName() + ", " + leaves2.UncheckedAt(i).GetName())
 			if not opt_all:
 				return False
 			result = False
 	if nevts1 != nevts2:
-		log.info("different number of events")
+		log.critical("different number of events")
 		if not opt_all:
 			return False
 		result = False
@@ -277,7 +281,12 @@ def compareNtuple(directory1, directory2, ntupleID):
 		ntuple2.GetEntry(n)
 		for i in range(nleaves1):
 			if leaves1.UncheckedAt(i).GetValue() != leaves2.UncheckedAt(i).GetValue():
-				log.info("different leaf value: " + leaves1.UncheckedAt(i).GetValue() + ", " + leaves2.UncheckedAt(i).GetValue() + " for name " + leaves1.UncheckedAt(i).GetName())
+				log.critical("different leaf value: " + str(leaves1.UncheckedAt(i).GetValue()) + ", " + str(leaves2.UncheckedAt(i).GetValue()) + " for name " + leaves1.UncheckedAt(i).GetName())
+				if leaves1.UncheckedAt(i).GetValue() != 0:
+					# save relative difference between the two leaves
+					if leaves1.UncheckedAt(i).GetName() not in relative_differences_per_leaf:
+						relative_differences_per_leaf[leaves1.UncheckedAt(i).GetName()] = []
+					relative_differences_per_leaf[leaves1.UncheckedAt(i).GetName()].append(abs(leaves1.UncheckedAt(i).GetValue() - leaves2.UncheckedAt(i).GetValue()) / leaves1.UncheckedAt(i).GetValue())
 				if not opt_all:
 					return False
 				result = False

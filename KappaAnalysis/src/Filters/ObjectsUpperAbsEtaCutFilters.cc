@@ -7,6 +7,9 @@ std::string ElectronUpperAbsEtaCutsFilter::GetFilterId() const {
 }
 
 void ElectronUpperAbsEtaCutsFilter::Init(KappaSettings const& settings) {
+
+	FilterBase<KappaTypes>::Init(settings);
+
 	this->Initialise(settings.GetElectronUpperAbsEtaCuts());
 }
 
@@ -16,6 +19,9 @@ std::string MuonUpperAbsEtaCutsFilter::GetFilterId() const {
 }
 
 void MuonUpperAbsEtaCutsFilter::Init(KappaSettings const& settings) {
+
+	FilterBase<KappaTypes>::Init(settings);
+
 	this->Initialise(settings.GetMuonUpperAbsEtaCuts());
 }
 
@@ -25,6 +31,9 @@ std::string TauUpperAbsEtaCutsFilter::GetFilterId() const {
 }
 
 void TauUpperAbsEtaCutsFilter::Init(KappaSettings const& settings) {
+
+	FilterBase<KappaTypes>::Init(settings);
+
 	this->Initialise(settings.GetTauUpperAbsEtaCuts());
 }
 
@@ -34,6 +43,9 @@ std::string JetUpperAbsEtaCutsFilter::GetFilterId() const {
 }
 
 void JetUpperAbsEtaCutsFilter::Init(KappaSettings const& settings) {
+
+	FilterBase<KappaTypes>::Init(settings);
+
 	this->Initialise(settings.GetJetUpperAbsEtaCuts());
 }
 

@@ -7,65 +7,63 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
-import hashlib
-import os
-import subprocess
-import re
-import pprint
 import datetime
+import errno
+import hashlib
+import numpy
+import os
+import pprint
+import re
+import sys
 
 import ROOT
 
 import Artus.HarryPlotter.processor as processor
+import Artus.Utility.tools as tools
 import Artus.HarryPlotter.utility.roottools as roottools
-import Artus.HarryPlotter.utility.extrafunctions as extrafunctions
+import Artus.HarryPlotter.utility.colors as colors
 
 class PlotBase(processor.Processor):
 	
 	def __init__(self):
 		super(PlotBase, self).__init__()
+		
+		self.predefined_colors = None
 	
 	def modify_argument_parser(self, parser, args):
 		super(PlotBase, self).modify_argument_parser(parser, args)
 		
 		# plotting settings
 		self.plotting_options = parser.add_argument_group("Plotting options")
-		self.plotting_options.add_argument("--ratio", default=False, action="store_true",
-		                                   help="Show ratio subplot.")
-		self.plotting_options.add_argument("--ratio-num", nargs="+",
-		                                   help="Nick names for numerators of ratio. Multiple nicks in one argument (ws-separated) are summed. [Default: first nick]")
-		self.plotting_options.add_argument("--ratio-denom", nargs="+",
-		                                   help="Nick names for denominators of ratio. Multiple nicks in one argument (ws-separated) are summed. [Default: all but first nick]")
-		self.plotting_options.add_argument("--nicks-whitelist", nargs="+",
-		                                   help="Whitelist of (regexp) nick names for objects to be plotted.")
+		self.plotting_options.add_argument("--nicks-whitelist", nargs="+", default=[],
+		                                   help="Whitelist of (regexp) nick names for objects to be plotted. This also allows for redefining the order of nicks for the plotting. Use \"^nick$\" for requirering exact matches.")
 		self.plotting_options.add_argument("--nicks-blacklist", nargs="+", default=["noplot"],
-		                                   help="Blacklist of (regexp) nick names for objects to be excluded from plotting. [Default: %(default)s]")
-		
+		                                   help="Blacklist of (regexp) nick names for objects to be excluded from plotting. Use \"^nick$\" for requirering exact matches. [Default: %(default)s]")
+		self.plotting_options.add_argument("--subplot-nicks", nargs="+", default=["ratio"],
+		                                   help="List of (regexp) nick names for objects to be plotted in the subplot. Use \"^nick$\" for requirering exact matches. [Default: %(default)s]")
 		# axis settings
 		self.axis_options = parser.add_argument_group("Axis options")
 		self.axis_options.add_argument("--x-lims", type=float, nargs=2,
 		                               help="Lower and Upper limit for x-axis.")
 		self.axis_options.add_argument("--x-label", type=str,
 		                               help="X-axis label name.")
-		self.axis_options.add_argument("--x-log", action="store_true", default=False,
-		                               help="Logarithmic x-axis.")
+		self.axis_options.add_argument("--x-log", nargs="?", type="bool", default=False, const=True,
+		                               help="Logarithmic x-axis. [Default: %(default)s]")
 		self.axis_options.add_argument("--x-ticks", type=float, nargs="+",
 		                               help="Custom ticks for the X-axis")
 		self.axis_options.add_argument("--x-tick-labels", type=str, nargs="+",
 		                               help="Custom tick labels for the X-axis")
-		#self.axis_options.add_argument("--xview", type=float, nargs=2, default=xview,
-		#                               help="Lower and Upper limit for x-axis viewing in the plot")
 		
 		self.axis_options.add_argument("--y-lims", type=float, nargs=2,
 		                               help="Lower and Upper limit for y-axis.")
-		self.axis_options.add_argument("--y-ratio-lims", type=float, nargs=2,
-		                               help="Lower and Upper limit for y-axis of a possible ratio subplot.")
+		self.axis_options.add_argument("--y-subplot-lims", type=float, nargs=2,
+		                               help="Lower and Upper limit for y-axis of a possible subplot.")
 		self.axis_options.add_argument("--y-label", type=str, default="Events",
 		                               help="Y-axis label name. [Default: %(default)s]")
-		self.axis_options.add_argument("--y-ratio-label", type=str, default="Ratio",
-		                               help="Y-axis label name of a possible ratio subplot. [Default: %(default)s]")
-		self.axis_options.add_argument("--y-log", action="store_true", default=False,
-		                               help="Logarithmic y-axis.")
+		self.axis_options.add_argument("--y-subplot-label", type=str, default="Ratio",
+		                               help="Y-axis label name of a possible subplot. [Default: %(default)s]")
+		self.axis_options.add_argument("--y-log", nargs="?", type="bool", default=False, const=True,
+		                               help="Logarithmic y-axis. [Default: %(default)s]")
 		self.axis_options.add_argument("--y-ticks", type=float, nargs="+",
 		                               help="Custom ticks for the Y-axis")
 		self.axis_options.add_argument("--y-tick-labels", type=str, nargs="+",
@@ -75,75 +73,66 @@ class PlotBase(processor.Processor):
 		                               help="Lower and Upper limit for z-axis.")
 		self.axis_options.add_argument("--z-label", type=str, default="Events",
 		                               help="Z-axis label name. [Default: %(default)s]")
-		self.axis_options.add_argument("--z-log", action="store_true", default=False,
-		                               help="Logarithmic z-axis.")
+		self.axis_options.add_argument("--z-log", nargs="?", type="bool", default=False, const=True,
+		                               help="Logarithmic z-axis. [Default: %(default)s]")
 		self.axis_options.add_argument("--z-ticks", type=float, nargs="+",
 		                               help="Custom ticks for the Z-axis")
 		self.axis_options.add_argument("--z-tick-labels", type=str, nargs="+",
 		                               help="Custom tick labels for the Z-axis")
-		self.axis_options.add_argument("--n-axes-x", type=int, default=1,
-		                                     help="Number of axis/pad element(s) in x-direction. Default is %(default)s")
-		self.axis_options.add_argument("--n-axes-y", type=int, default=1,
-		                                     help="Number of axis/pad element(s) in y-directiond. Default is %(default)s")
-		self.axis_options.add_argument("--axes", type=int, nargs="+", default=0,
-		                                     help="Index/Indices of axis/pad element(s) on which a plot is plotted. Default is %(default)s")
-
 
 		#plot formatting
 		self.formatting_options = parser.add_argument_group("Formatting options")
+		self.formatting_options.add_argument("--color-scheme", default="default",
+		                                     help="Color scheme for predefined colors. [Default: '%(default)s']")
 		self.formatting_options.add_argument("-C", "--colors", type=str, nargs="+",
 		                                     help="Colors for the plots.")
-		self.formatting_options.add_argument("--ratio-colors", type=str, nargs="+",
-		                                     help="Colors for the ratio subplots.")
+		self.formatting_options.add_argument("--colormap", nargs="?",
+		                                     help="Colormap. [Default: '%(default)s']")
 		self.formatting_options.add_argument("-L", "--labels", type=str, nargs="+",
 		                                     help="Labels for the plots.")
-		self.formatting_options.add_argument("--ratio-labels", type=str, nargs="+",
-		                                     help="Labels for the ratio subplots.")
 		self.formatting_options.add_argument("-m", "--markers", type=str, nargs="+",
 		                                     help="Style for the plots.")
-		self.formatting_options.add_argument("--ratio-markers", type=str, nargs="+",
-		                                     help="Style for the ratio subplots.")
 		self.formatting_options.add_argument("--line-styles", nargs="+",
                                              help="Line style of plots line. [Default: %(default)s]")
-		self.formatting_options.add_argument("--ratio-line-styles", nargs="+",
-                                             help="Line styles for the ratio subplots. [Default: %(default)s]")
-		self.formatting_options.add_argument("--x-errors", type='bool', nargs="+",
-		                                     help="Show x errors for the nicks. [Default: True for first plot, False otherwise]")
-		self.formatting_options.add_argument("--y-errors", type='bool', nargs="+",
-		                                     help="Show y errors for the plots. [Default: True for first plot, False otherwise]")
-		self.formatting_options.add_argument("--ratio-x-errors", type='bool', nargs="+", default=[True],
-		                                     help="Show x errors in the ratio subplots. [Default: True]")
-		self.formatting_options.add_argument("--ratio-y-errors", type='bool', nargs="+", default=[True],
-		                                     help="Show y errors in the ratio subplots. [Default: True]")
+		self.formatting_options.add_argument("--line-widths", nargs="+", type=int,
+		                                     help="Line width of plots line. [Default: %(default)s]")
 		self.formatting_options.add_argument("--legend", type=str, nargs="?",
 		                                     help="Location of the legend. Use 'None' to not set any legend")
-		self.formatting_options.add_argument("-G", "--grid", action="store_true", default=False,
-		                                     help="Place an axes grid on the plot.")
-		self.formatting_options.add_argument("--ratio-grid", action="store_true", default=False,
-		                                     help="Place an axes grid on the ratio subplot.")
-		self.formatting_options.add_argument("--stacks", type=str, nargs="+",
-		                                     help="Defines nick names for stacking. Inputs with the same nick name will be stacked. By default, every input gets a unique nick name.")
+		self.formatting_options.add_argument("--legend-cols", type=int, default=1,
+		                                     help="Number of columns in the legend. [Default: %(default)s]")
+		self.formatting_options.add_argument("-G", "--grid", nargs="?", type="bool", default=False, const=True,
+		                                     help="Place an axes grid on the plot. [Default: %(default)s]")
+		self.formatting_options.add_argument("--subplot-grid", nargs="?", type="bool", default=False, const=True,
+		                                     help="Place an axes grid on the subplot. [Default: %(default)s]")
+		self.formatting_options.add_argument("--stacks", type=str, nargs="+", default=[None],
+		                                     help="Defines nick names for stacking. Inputs with the same nick name will be stacked. By default, every input gets a unique nick name. [Default: %(default)s]")
+		self.formatting_options.add_argument("--lines", type=float, nargs="+", default=[],
+		                                     help="Place auxiliary lines at given y-values.")
+		self.formatting_options.add_argument("--subplot-lines", nargs="+", type=float, default=[1.],
+		                                     help="Place auxiliary lines on the subplot at given y-values.")
 
 		# plot labelling
 		self.labelling_options = parser.add_argument_group("Labelling options")
 		self.labelling_options.add_argument("-t", "--title", type=str,
 		                                    help="Plot title")
-		self.labelling_options.add_argument("-l", "--lumi", type=float,
-		                                    help="Luminosity for the given data in /fb.")
-		self.labelling_options.add_argument("-e", "--energy", type=str, nargs="+",
-		                                    help="Centre-of-mass energy for the given samples in TeV.")
+		self.labelling_options.add_argument("-l", "--lumis", type=float, nargs="+",
+		                                    help="Luminosities for the given data in fb^(-1).")
+		self.labelling_options.add_argument("-e", "--energies", type=float, nargs="+",
+		                                    help="Centre-of-mass energies for the given samples in TeV.")
 		self.labelling_options.add_argument("-A", "--author", type=str,
 		                                    help="author name of the plot")
 		self.labelling_options.add_argument("--date", type=str,
 		                                    help="Show the date in the top left corner. \"iso\" is YYYY-MM-DD, \"today\" is DD Mon YYYY and \"now\" is DD Mon YYYY HH:MM.")
-		self.labelling_options.add_argument("-E", "--event-number-label", action="store_true", default=False,
-		                                    help="Add event number label")
+		self.labelling_options.add_argument("-E", "--event-number-label", nargs="?", type="bool", default=False, const=True,
+		                                    help="Add event number label. [Default: %(default)s]")
 		self.formatting_options.add_argument("--texts", type=str, nargs="+", default=[None],
 		                                     help="Place text(s) on the plot.")
 		self.formatting_options.add_argument("--texts-y", type=float, nargs="+", default=[0.8],
 		                                     help="Y-coordinate(s) of text(s) on plot. Ranges from 0 to 1. [Default: %(default)s]")
 		self.formatting_options.add_argument("--texts-x", type=float, nargs="+", default=[0.5],
 		                                     help="X-coordinate(s) of text(s) on plot. Ranges from 0 to 1. [Default: %(default)s]")
+		self.formatting_options.add_argument("--texts-size", type=float, nargs="+", default=[None],
+		                                     help="Font size for the text labels. [Default: %(default)s]")
 		
 		# output settings
 		self.output_options = parser.add_argument_group("Output options")
@@ -156,12 +145,12 @@ class PlotBase(processor.Processor):
 
 		# settings to increase usability
 		self.other_options = parser.add_argument_group("Other features")
-		self.other_options.add_argument("--live", default=None, nargs='?', const='gthumb',
+		self.other_options.add_argument("--live", default=None, nargs='?', const='gnome-open',
 		                                 help="Open plot in viewer after its creation. Parameter is the name of your desired viewer.")
-		self.other_options.add_argument("--userpc", default=False, action='store_true',
-		                                 help="If 'live' is enabled, the image will be copied to the user desktop (via ssh) and the image viewer will be started on the user desktop with this option.")
-		self.other_options.add_argument("--dict", action="store_true", default=False,
-		                                 help="Print out plot dictionary when plotting.")
+		self.other_options.add_argument("--userpc", nargs="?", type="bool", default=False, const=True,
+		                                 help="If 'live' is enabled, the image will be copied to the user desktop (via ssh) and the image viewer will be started on the user desktop with this option. [Default: %(default)s]")
+		self.other_options.add_argument("--dict", nargs="?", type="bool", default=False, const=True,
+		                                 help="Print out plot dictionary when plotting. [Default: %(default)s]")
 		self.other_options.add_argument("--www", type=str, default=None, nargs='?', const="",
 		                                 help="""Push output plots directly to your public EKP webspace.
 		                                 Default location is http://www-ekp.physik.uni-karlsruhe.de/~<USER>/plots_archive/<DATE>
@@ -170,64 +159,60 @@ class PlotBase(processor.Processor):
 	def prepare_args(self, parser, plotData):
 		super(PlotBase, self).prepare_args(parser, plotData)
 		
-		# prepare nick white/black lists
-		if plotData.plotdict["nicks_whitelist"] == None:
-			plotData.plotdict["nicks_whitelist"] = []
-		if plotData.plotdict["nicks_blacklist"] == None:
-			plotData.plotdict["nicks_blacklist"] = []
-		
+		if self.predefined_colors is None:
+			self.predefined_colors = colors.ColorsDict(color_scheme=plotData.plotdict["color_scheme"])
+
+		if len(plotData.plotdict["nicks"]) == 0 or all(item is None for item in plotData.plotdict["nicks"]):
+			log.critical("No nicks to plot!")
+			sys.exit()
+
 		# delete nicks that do not need to be used for plotting
 		self.select_histograms(plotData)
 		
-		# prepare nick names for ratio subplot
-		if plotData.plotdict["ratio_num"] == None: plotData.plotdict["ratio_num"] = [plotData.plotdict["nicks"][0]]
-		if plotData.plotdict["ratio_denom"] == None: plotData.plotdict["ratio_denom"] = [" ".join(plotData.plotdict["nicks"][1:])]
-		problems_with_ratio_nicks = False
-		for ratio_nicks_key in ["ratio_num", "ratio_denom"]:
-			plotData.plotdict[ratio_nicks_key] = [nicks.split() for nicks in plotData.plotdict[ratio_nicks_key]]
-			for nicks in plotData.plotdict[ratio_nicks_key]:
-				for nick in nicks:
-					if nick not in plotData.plotdict["nicks"]:
-						log.warning("Nick name \"%s\" of argument --%s does not exist in argument --nicks!" % (nick, ratio_nicks_key.replace("_", "-")))
-						problems_with_ratio_nicks = True
-		if problems_with_ratio_nicks:
-			log.warning("Continue without ratio subplot!")
-			plotData.plotdict["ratio"] = False
-		self.prepare_list_args(plotData, ["ratio_num", "ratio_denom", "ratio_colors", "ratio_labels", "ratio_markers", "ratio_x_errors", "ratio_y_errors", "ratio_line_styles"])
-		
 		# construct labels from x/y/z expressions if not specified by user
-		for labelKey, expressionKey in zip(["x_label", "y_label", "z_label"],
+		for label_key, expression_key in zip(["x_label", "y_label", "z_label"],
 		                                   ["x_expressions", "y_expressions", "z_expressions"]):
-			if plotData.plotdict[labelKey] == None:
-				if plotData.plotdict["input_module"] == "InputInteractive":
-					plotData.plotdict[labelKey] = str(labelKey[1])
-				else:
-					plotData.plotdict[labelKey] = reduce(lambda a, b: "%s, %s" % (str(a), str(b)), set(plotData.plotdict[expressionKey]))
-			if plotData.plotdict[labelKey] == None: plotData.plotdict[labelKey] = ""
+			if plotData.plotdict[label_key] == None:
+				if plotData.plotdict["input_modules"] == ["InputInteractive"]:
+					plotData.plotdict[label_key] = str(label_key[1])
+				elif expression_key in plotData.plotdict:
+					plotData.plotdict[label_key] = reduce(lambda a, b: "%s, %s" % (str(a), str(b)), set(plotData.plotdict.get(expression_key, [""])))
+			if plotData.plotdict[label_key] == None:
+				plotData.plotdict[label_key] = ""
+			# if y/z-expressions exist, we dont want the axis to be labelled "Events"
+			if (expression_key in plotData.plotdict
+						and list(set([x if x is None else str(x) for x in plotData.plotdict[expression_key]])) != [None]
+						and len(list(set([x if x is None else str(x) for x in plotData.plotdict[expression_key]]))) == 1
+						and plotData.plotdict[label_key] == "Events"):
+				plotData.plotdict[label_key] = list(set([x if x is None else str(x) for x in plotData.plotdict[expression_key]]))[0]
 
 		# formatting options
 		if plotData.plotdict["labels"] == None or all([i == None for i in plotData.plotdict["labels"]]):
 			plotData.plotdict["labels"] = plotData.plotdict["nicks"]
-		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles", "x_errors", "y_errors", "stacks", "axes"],
-				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]))
 		
-		for index, error in enumerate(plotData.plotdict["x_errors"]):
-			if error is None:
-				plotData.plotdict["x_errors"][index] = True if index == 0 else False
-		for index, error in enumerate(plotData.plotdict["y_errors"]):
-			if error is None:
-				plotData.plotdict["y_errors"][index] = True if index == 0 else False
+		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles", "line_widths"],
+				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]))
+		# stacks are expanded by appending None's
+		plotData.plotdict["stacks"] = plotData.plotdict["stacks"]+[None]*(len(plotData.plotdict["nicks"])-len(plotData.plotdict["stacks"]))
+		
+		plotData.plotdict["colors"] = [None if color is None else self.predefined_colors.get_predefined_color(color) for color in plotData.plotdict["colors"]]
+		
 		if plotData.plotdict["www"] != None:
 			plotData.plotdict["output_dir"] = "/".join(['websync', datetime.date.today().strftime('%Y_%m_%d'), (plotData.plotdict["www"] or "")])
 		# create output directory if not exisiting
-		if not os.path.exists(plotData.plotdict["output_dir"]):
+		try:
 			os.makedirs(plotData.plotdict["output_dir"])
 			log.info("Created output directory \"%s\"." % plotData.plotdict["output_dir"])
+		except OSError as exc:
+			# if target directory already exists, ignore exception:
+			if exc.errno == errno.EEXIST and os.path.isdir(plotData.plotdict["output_dir"]):
+				pass
+			else: raise
 		
 		# construct file name from x/y/z expressions if not specified by user
 		if plotData.plotdict["filename"] == None:
 			filename = ""
-			if plotData.plotdict["input_module"] == "InputInteractive":
+			if plotData.plotdict["input_modules"] == ["InputInteractive"]:
 				filename = "plot"
 			else:
 				for expressions in [plotData.plotdict["z_expressions"],
@@ -252,101 +237,82 @@ class PlotBase(processor.Processor):
 			plotData.plotdict["export_json"] = os.path.join(plotData.plotdict["output_dir"], plotData.plotdict["filename"]+".json")
 
 		# prepare nicknames for stacked plots
-		stacks = plotData.plotdict["stacks"]
 		plotData.plotdict["stacks"] = [stack if stack != None else ("stack%d" % index) for index, stack in enumerate(plotData.plotdict["stacks"])]
 
 		# prepare arguments for text label(s)
 		if plotData.plotdict["texts"] is not None:
-			self.prepare_list_args(plotData, ["texts", "texts_y", "texts_x"])
+			self.prepare_list_args(plotData, ["texts", "texts_y", "texts_x", "texts_size"])
+			if len(plotData.plotdict["texts"]) == 1 and plotData.plotdict["texts"][0] is None:
+				plotData.plotdict["texts"] = []
+				plotData.plotdict["texts_x"] = []
+				plotData.plotdict["texts_y"] = []
+				plotData.plotdict["texts_size"] = []
+
+		if plotData.plotdict["legend"] == "None":
+			plotData.plotdict["legend"] = None
+		for key in ['lumis', 'energies']:
+			if plotData.plotdict[key] is not None and all([item in [0, "None"] for item in plotData.plotdict[key]]):
+				plotData.plotdict[key] = None
 
 	def run(self, plotData):
 		super(PlotBase, self).run(plotData)
 		
 		self.set_style(plotData)
-		self.calculate_ratios(plotData)
 		self.create_canvas(plotData)
 		self.prepare_histograms(plotData)
+		self.determine_plot_lims(plotData)
 		self.make_plots(plotData)
 		self.modify_axes(plotData)
 		self.add_grid(plotData)
 		self.add_labels(plotData)
 		self.add_texts(plotData)
-		self.save_canvas(plotData)
 		self.plot_end(plotData)
 
 	def select_histograms(self, plotData):
-		nicks_to_keep = []
+		sorted_nicks_to_keep = []
 		
-		# handle black lists
-		for nick in plotData.plotdict["nicks"]:
-			keep = True
-			for black_nick in plotData.plotdict["nicks_blacklist"]:
-				if re.search(black_nick, nick) != None:
-					keep = False
-					break
-			
-			if keep:
-				# handle white lists
-				keep = (len(plotData.plotdict["nicks_whitelist"]) == 0)
-				for white_nick in plotData.plotdict["nicks_whitelist"]:
-					if re.search(white_nick, nick) != None:
-						keep = True
-						break
-			
-			if keep:
-				nicks_to_keep.append(nick)
-			else:
-				log.debug("Exclude object with nick \"%s\" from being plotted." % nick)
+		# handle regexps in white/black lists for nicks
+		plotData.plotdict["nicks"] = tools.matching_sublist(
+				plotData.plotdict["nicks"],
+				plotData.plotdict["nicks_whitelist"],
+				plotData.plotdict["nicks_blacklist"]
+		)
+		log.debug("Final order of object nicks for plotting: %s" % ", ".join(plotData.plotdict["nicks"]))
+		if len(plotData.plotdict["nicks"]) == 0:
+			log.critical("No (remaining) objects to be plotted!")
+			sys.exit(1)
 		
-		# change only the list of nicks
-		plotData.plotdict["nicks"] = nicks_to_keep
+		# handle subplot regexps
+		plotData.plotdict["subplot_nicks"] = tools.matching_sublist(
+				plotData.plotdict["nicks"],
+				plotData.plotdict["subplot_nicks"]
+		)
+		log.debug("Object nicks for the subplot: %s" % ", ".join(plotData.plotdict["subplot_nicks"]))
+		plotData.plotdict["subplots"] = [nick in plotData.plotdict["subplot_nicks"] for nick in plotData.plotdict["nicks"]]
 
 	def set_style(self, plotData):
 		pass
-		
-	def calculate_ratios(self, plotData): ## todo: define ratio for functions
-		if (plotData.plotdict["ratio"] == True):
-			for numerator_nicks, denominator_nicks in zip(plotData.plotdict["ratio_num"],
-			                                              plotData.plotdict["ratio_denom"]):
-				name = hashlib.md5("_".join(numerator_nicks+denominator_nicks)).hexdigest()
-				numerator_histogram = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_objects"][nick] for nick in numerator_nicks],name=name+"_numerator")
-				denominator_histogram = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_objects"][nick] for nick in denominator_nicks],name=name+"_denominator")
-				
-				if all([isinstance(h, ROOT.TProfile) for h in [numerator_histogram, denominator_histogram]]):
-					# convert TProfiles to TH1 because ROOT can't divide TProfils correctly
-					# https://root.cern.ch/phpBB3/viewtopic.php?f=3&t=2101
-					# TODO is there a better way to do this?
-					denom_th1 = denominator_histogram.ProjectionX()
-					ratio_histogram = numerator_histogram.ProjectionX()
-					ratio_histogram.Divide(denom_th1)
-				else:
-					ratio_histogram = numerator_histogram.Clone(name + "_ratio")
-					ratio_histogram.Divide(denominator_histogram)
-				plotData.plotdict.setdefault("root_ratio_histos", []).append(ratio_histogram)
 	
 	def create_canvas(self, plotData):
 		pass
 	
 	def prepare_histograms(self, plotData):
 		# handle stacks
-		# todo: define how functions should act when stacked
-		plotData.plotdict["root_stack_histos"] = {}
+		# TODO: define how functions should act when stacked
 		for index, (nick1, stack1) in enumerate(zip(plotData.plotdict["nicks"], plotData.plotdict["stacks"])):
-			plotData.plotdict["root_stack_histos"][stack1] = plotData.plotdict["root_objects"][nick1].Clone()
-			
-			count = 0
 			for nick2, stack2 in zip(plotData.plotdict["nicks"], plotData.plotdict["stacks"])[:index]:
 				if stack1 == stack2:
+					# TProfiles cannot be added, convert to TH1
+					if isinstance(plotData.plotdict["root_objects"][nick2], ROOT.TProfile):
+						plotData.plotdict["root_objects"][nick2] = plotData.plotdict["root_objects"][nick2].ProjectionX()
+					if isinstance(plotData.plotdict["root_objects"][nick1], ROOT.TProfile):
+						plotData.plotdict["root_objects"][nick1] = plotData.plotdict["root_objects"][nick1].ProjectionX()
 					plotData.plotdict["root_objects"][nick2].Add(plotData.plotdict["root_objects"][nick1])
-					
-					if count == 0:
-						plotData.plotdict["root_stack_histos"][stack1] = plotData.plotdict["root_objects"][nick2].Clone()
-					count = count+1
 
 			# some debug infos
 			if log.isEnabledFor(logging.DEBUG):
-				log.debug("\nContents of stack %s, nick %s:" % (stack1, nick1))
-				plotData.plotdict["root_stack_histos"][stack1].Print("range")
+				log.debug("\nContents of nick %s, stack %s:" % (nick1, stack1))
+				plotData.plotdict["root_objects"][nick1].Print("range")
 		
 		# remove underflow/overflow bin contents
 		for nick in plotData.plotdict["nicks"]:
@@ -361,6 +327,39 @@ class PlotBase(processor.Processor):
 					# TODO: iterate over multidim. under-/overflow bins
 					pass
 
+	def determine_plot_lims(self, plotData):
+		self.x_min = None
+		self.x_max = None
+		self.y_min = None
+		self.y_max = None
+		self.z_min = None
+		self.z_max = None
+		self.max_dim = 2
+		
+		self.y_sub_min = None
+		self.y_sub_max = None
+		self.z_sub_min = None
+		self.z_sub_max = None
+		self.max_sub_dim = 2
+		
+		for nick, subplot in zip(plotData.plotdict["nicks"], plotData.plotdict["subplots"]):
+			plot_x_min, plot_x_max, plot_y_min, plot_y_max, plot_z_min, plot_z_max, max_dim = PlotBase.get_plot_lims(
+					plotData.plotdict["root_objects"][nick],
+					x_log=plotData.plotdict["x_log"],
+					y_log=plotData.plotdict["y_log"],
+					z_log=plotData.plotdict["z_log"]
+			)
+			
+			self.x_min, self.x_max = PlotBase.update_lims(self.x_min, self.x_max, plot_x_min, plot_x_max)
+			if subplot == True:
+				self.max_sub_dim = max_dim
+				self.y_sub_min, self.y_sub_max = PlotBase.update_lims(self.y_sub_min, self.y_sub_max, plot_y_min, plot_y_max)
+				self.z_sub_min, self.z_sub_max = PlotBase.update_lims(self.z_sub_min, self.z_sub_max, plot_z_min, plot_z_max)
+			else:
+				self.max_dim = max_dim
+				self.y_min, self.y_max = PlotBase.update_lims(self.y_min, self.y_max, plot_y_min, plot_y_max)
+				self.z_min, self.z_max = PlotBase.update_lims(self.z_min, self.z_max, plot_z_min, plot_z_max)
+
 	def make_plots(self, plotData):
 		pass
 	
@@ -374,92 +373,65 @@ class PlotBase(processor.Processor):
 		pass
 	
 	def add_texts(self, plotData):
-		pass
-
-	def save_canvas(self, plotData):
-		pass
-
-	def plot_end(self, plotData):
-		if not (plotData.plotdict["live"]==None):
-			# if 'userpc', get the username and name of desktop machine
-			if plotData.plotdict["userpc"]:
-				userpc = ("%s@%s" % (os.environ["USER"], os.environ["HARRY_USERPC"])).replace("\n", "")
-
-			for output_filename in plotData.plotdict["output_filenames"]:
-				if plotData.plotdict["userpc"]:
-					extrafunctions.show_plot_userpc(output_filename, plotData.plotdict["live"], os.environ['USER'], userpc)
+		self.dataset_title = ""
+		run_periods = []
+		# if lumi and energy are available:
+		if (not plotData.plotdict["lumis"] is None) and (not plotData.plotdict["energies"] is None):
+			for lumi, energy in zip(plotData.plotdict["lumis"], plotData.plotdict["energies"]):
+				if lumi < 0.01: # TODO make this configurable?
+					unit = "pb"
+					factor = 1000
 				else:
-					extrafunctions.show_plot(output_filename, plotData.plotdict["live"])
-
-		# web plotting
-		# TODO: make this more configurable if users want to user other webspaces etc.
-		if plotData.plotdict["www"] != None:
-			# set some needed variables
-			user = os.environ["HARRY_REMOTE_USER"]
-			overview_filename = 'overview.html'
-			date = datetime.date.today().strftime('%Y_%m_%d')
-			remote_dir = os.environ['HARRY_REMOTE_DIR']+'/%s/%s/' % (date, (plotData.plotdict["www"] if type(plotData.plotdict["www"])==str else ""))
-			remote_path = os.environ['HARRY_REMOTE_PATH'] + '/%s' % remote_dir
-			url = os.environ['HARRY_URL'] + "/%s/%s" % (remote_dir, overview_filename)
-			plots = sorted(os.listdir(plotData.plotdict["output_dir"]))
-			content = ""
-			n_plots_copied = 0
-
-			log.info("Copying plots to webspace...")
-			# loop over plots, make gallery
-			for plot in [p for p in plots if (('.png' in p) or ('.pdf' in p))]:
-				log.debug("File %s will be copied" % plot)
-				# try to link to pdf file, if it exists
-				href = plot.replace('.png', '.pdf')
-				if href not in plots:
-					href = plot
-				title = plot.split('/')[-1][:-4].replace('_', ' ')
-				content += htmlTemplatePlot % (title, href, title, plot)
-				n_plots_copied += 1
-			with open(plotData.plotdict["output_dir"] + '/' + overview_filename, 'w') as f:
-				f.write(htmlTemplate % (url, content))
-			if os.path.basename(url) not in plots:
-				plots.append(os.path.basename(url))
-
-			# create remote dir, copy plots and overview file
-			create_dir_command = ['ssh', os.environ['HARRY_SSHPC'], 'mkdir -p', remote_path]
-			log.debug("\nIssueing mkdir command: " + " ".join(create_dir_command))
-			subprocess.call(create_dir_command)
-			rsync_command =['rsync', '-u'] + [os.path.join(plotData.plotdict["output_dir"], p) for p in plots] + ["%s:%s" % (self.sshpc, remote_path)]
-			log.debug("\nIssueing rsync command: " + " ".join(rsync_command) + "\n")
-			subprocess.call(rsync_command)
-			log.info("Copied %d plot(s) to %s" % (n_plots_copied, url))
-
+					unit = "fb"
+					factor = 1
+				run_periods.append("%s \,\mathrm{%s}^{-1} (%s \,TeV)" % (str(lumi*factor), unit, str(int(energy))))
+		# if only energy is available (MC-plots):
+		elif (not plotData.plotdict["energies"] is None):
+			for energy in plotData.plotdict["energies"]:
+				run_periods.append("\sqrt{s} = %s \,TeV" % str(int(energy)))
+		if len(run_periods) > 0:
+			self.dataset_title = "$" + (" + ".join(run_periods)) + "$"
+	
+	def plot_end(self, plotData):
 		if plotData.plotdict["dict"]:
 			pprint.pprint(plotData.plotdict)
 
-	def set_default_ratio_colors(self, plotData):
+	@staticmethod
+	def get_plot_lims(root_object, x_log=False, y_log=False, z_log=False):
+		max_dim = roottools.RootTools.get_dimension(root_object)
 		
-		# defaults for colors
-		for index, color_ratio_color in enumerate(zip(plotData.plotdict["colors"],
-		                                              plotData.plotdict["ratio_colors"])):
-			color, ratio_color = color_ratio_color
-			if ratio_color == None:
-				plotData.plotdict["ratio_colors"][index] = plotData.plotdict["colors"][index] # TODO
-
-
-
-# these html templates are needed to create the web galleries
-htmlTemplate = """<!DOCTYPE html>
-<html>
-<head>
-<style type="text/css">
-div { float:left; }
-pre { display: inline; padding: 3px 7px; font-size: 16px; background-color: #F5F5F5; border: 1px solid rgba(0, 0, 0, 0.15); border-radius: 4px; }
-h3 { color: #888; font-size: 16px; }
-</style>
-</head>
-<body>
-<h1>Plot overview</h1>
-<p>A <a href=".">file list</a> is also available and all plots can be downloaded using</p>
-<p><code>wget -r -l 1 %s</code></p>
-%s
-</body>
-</html>
-"""
-htmlTemplatePlot = """<div><h3>%s</h3><a href="%s" title="%s"><img src="%s" height="400"></a></div>\n"""
+		x_min, x_max = roottools.RootTools.get_min_max(root_object, 0)
+		if x_log and (x_min * x_max <= 0.0):
+			x_min, x_max = roottools.RootTools.get_min_max(root_object, 0, lower_threshold=0.0)
+		
+		y_min, y_max = roottools.RootTools.get_min_max(root_object, 1)
+		if y_log and (y_min * y_max <= 0.0):
+			y_min, y_max = roottools.RootTools.get_min_max(root_object, 1, lower_threshold=0.0)
+		
+		z_min, z_max = None, None
+		if max_dim > 2:
+			z_min, z_max = roottools.RootTools.get_min_max(root_object, 2)
+			if z_log and (z_min * z_max <= 0.0):
+				z_min, z_max = roottools.RootTools.get_min_max(root_object, 2, lower_threshold=0.0)
+		
+		return x_min, x_max, y_min, y_max, z_min, z_max, max_dim
+	
+	@staticmethod
+	def update_lims(min_1, max_1, min_2, max_2):
+		result_min = None
+		if min_2 is None:
+			result_min = min_1
+		elif min_1 is None:
+			result_min = min_2
+		else:
+			result_min = min(min_1, min_2)
+		
+		result_max = None
+		if max_2 is None:
+			result_max = max_1
+		elif max_1 is None:
+			result_max = max_2
+		else:
+			result_max = max(max_1, max_2)
+		
+		return result_min, result_max

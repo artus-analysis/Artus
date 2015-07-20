@@ -22,6 +22,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/PUWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/EventWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GeneratorWeightProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/LuminosityWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/CrossSectionWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/NumberGeneratedEventsWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/TmvaClassificationReaderBase.h"
@@ -44,6 +45,8 @@
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsUpperAbsEtaCutFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/TriggerMatchingFilters.h"
 #include "Artus/KappaAnalysis/interface/Filters/GenMatchingFilters.h"
+#include "Artus/KappaAnalysis/interface/Filters/GenTauMatchingRecoParticleMinDeltaRFilter.h"
+#include "Artus/KappaAnalysis/interface/Filters/ValidLeptonsMinDeltaRFilter.h"
 #include "Artus/KappaAnalysis/interface/Filters/GenDiLeptonDecayModeFilter.h"
 #include "Artus/KappaAnalysis/interface/Filters/GoodPrimaryVertexFilter.h"
 #include "Artus/KappaAnalysis/interface/Filters/BeamScrapingFilter.h"
@@ -54,6 +57,9 @@
 #include "Artus/KappaAnalysis/interface/Consumers/KappaCutFlowTreeConsumer.h"
 #include "Artus/KappaAnalysis/interface/Consumers/KappaLambdaNtupleConsumer.h"
 #include "Artus/KappaAnalysis/interface/Consumers/KappaCollectionsConsumers.h"
+#include "Artus/KappaAnalysis/interface/Consumers/PrintHltConsumer.h"
+#include "Artus/Consumer/interface/RunTimeConsumer.h"
+
 
 
 ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
@@ -114,6 +120,8 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new EventWeightProducer();
 	else if(id == GeneratorWeightProducer().GetProducerId())
 		return new GeneratorWeightProducer();
+	else if(id == LuminosityWeightProducer().GetProducerId())
+		return new LuminosityWeightProducer();
 	else if(id == CrossSectionWeightProducer().GetProducerId())
 		return new CrossSectionWeightProducer();
 	else if(id == NumberGeneratedEventsWeightProducer().GetProducerId())
@@ -171,6 +179,8 @@ FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
 		return new TausCountFilter();
 	else if(id == JetsCountFilter().GetFilterId())
 		return new JetsCountFilter();
+	else if(id == BTaggedJetsCountFilter().GetFilterId())
+		return new BTaggedJetsCountFilter();
 	else if(id == MinElectronsCountFilter().GetFilterId())
 		return new MinElectronsCountFilter();
 	else if(id == MinMuonsCountFilter().GetFilterId())
@@ -179,6 +189,8 @@ FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
 		return new MinTausCountFilter();
 	else if(id == MinJetsCountFilter().GetFilterId())
 		return new MinJetsCountFilter();
+	else if(id == MinBTaggedJetsCountFilter().GetFilterId())
+		return new MinBTaggedJetsCountFilter();
 	else if(id == MaxElectronsCountFilter().GetFilterId())
 		return new MaxElectronsCountFilter();
 	else if(id == MaxMuonsCountFilter().GetFilterId())
@@ -187,6 +199,8 @@ FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
 		return new MaxTausCountFilter();
 	else if(id == MaxJetsCountFilter().GetFilterId())
 		return new MaxJetsCountFilter();
+	else if(id == MaxBTaggedJetsCountFilter().GetFilterId())
+		return new MaxBTaggedJetsCountFilter();
 	else if(id == ElectronLowerPtCutsFilter().GetFilterId())
 		return new ElectronLowerPtCutsFilter();
 	else if(id == MuonLowerPtCutsFilter().GetFilterId())
@@ -219,6 +233,20 @@ FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
 		return new TauGenMatchingFilter();
 	else if(id == JetGenMatchingFilter().GetFilterId())
 		return new JetGenMatchingFilter();
+	else if(id == GenTauMatchingRecoElectronMinDeltaRFilter().GetFilterId())
+		return new GenTauMatchingRecoElectronMinDeltaRFilter();
+	else if(id == GenTauMatchingRecoMuonMinDeltaRFilter().GetFilterId())
+		return new GenTauMatchingRecoMuonMinDeltaRFilter();
+	else if(id == GenTauMatchingRecoTauMinDeltaRFilter().GetFilterId())
+		return new GenTauMatchingRecoTauMinDeltaRFilter();
+	else if(id == ValidElectronsMinDeltaRFilter().GetFilterId())
+		return new ValidElectronsMinDeltaRFilter();
+	else if(id == ValidMuonsMinDeltaRFilter().GetFilterId())
+		return new ValidMuonsMinDeltaRFilter();
+	else if(id == ValidTausMinDeltaRFilter().GetFilterId())
+		return new ValidTausMinDeltaRFilter();
+	else if(id == ValidLeptonsMinDeltaRFilter().GetFilterId())
+		return new ValidLeptonsMinDeltaRFilter();
 	else if(id == GenDiLeptonDecayModeFilter().GetFilterId())
 		return new GenDiLeptonDecayModeFilter();
 	else if(id == GoodPrimaryVertexFilter().GetFilterId())
@@ -249,6 +277,10 @@ ConsumerBaseUntemplated * KappaFactory::createConsumer ( std::string const& id )
 		return new KappaJetsConsumer();
 	else if(id == KappaTaggedJetsConsumer().GetConsumerId())
 		return new KappaTaggedJetsConsumer();
+	else if(id == PrintHltConsumer().GetConsumerId())
+		return new PrintHltConsumer();
+	else if(id == RunTimeConsumer<KappaTypes>().GetConsumerId())
+		return new RunTimeConsumer<KappaTypes>();
 	else
 		return FactoryBase::createConsumer( id );
 }

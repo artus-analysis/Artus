@@ -26,12 +26,23 @@ class GenTauDecayModeProducer: public KappaProducerBase
 {
 public:
 
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
+	virtual void Init(KappaSettings const& settings) override;
 
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE;
+	                     KappaSettings const& settings) const override;
+
+	enum class GenTauDecayMode : int
+	{
+		NONE = -1,
+		TT   = 1,
+		MT   = 2,
+		ET   = 3,
+		MM   = 4,
+		EM   = 5,
+		EE   = 6
+	};
 
 private:
 	int NeutralParticles(std::vector<MotherDaughterBundle*> finalStateProngs) const;

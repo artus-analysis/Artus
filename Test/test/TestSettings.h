@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Configuration/interface/SettingsBase.h"
 
 class TestSettings : public SettingsBase {
@@ -29,11 +28,16 @@ public:
 	// cases don't have a json file loaded and
 	// the code would fail if a lookup to the json file
 	// would happen
-	virtual stringvector GetFilters () const
-		ARTUS_CPP11_OVERRIDE
+	virtual stringvector GetFilters () const override
 	{
 		return stringvector();
 	}
+	virtual stringvector & GetTaggingFilters () const override
+	{
+		return m_taggingFilters;
+	}
+
+	mutable stringvector m_taggingFilters;
 
 	IMPL_PROPERTY(unsigned int, Offset)
 };

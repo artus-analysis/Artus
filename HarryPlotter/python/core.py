@@ -59,6 +59,9 @@ class HarryCore(object):
 		# Modules search dir from command line arguments
 		if self.args['modules_search_paths']:
 			default_modules_dirs += self.args['modules_search_paths']
+		# Modules search dir from MODULES_SEARCH_PATH shell variable
+		if tools.get_environment_variable('MODULES_SEARCH_PATH', fail_if_not_existing=False) is not None:
+			default_modules_dirs += tools.get_environment_variable('MODULES_SEARCH_PATH').split(':')
 		# Passed additonal modules dirs
 		if additional_modules_dirs:
 			default_modules_dirs += additional_modules_dirs
@@ -116,11 +119,15 @@ class HarryCore(object):
 			return
 		
 		# handle input modules (first)
-		if self._isvalid_processor(self.args["input_module"], processor_type=InputBase):
-			self.processors.append(self.available_processors[self.args["input_module"]]())
-		else:
-			log.info("Provide a valid input module or none at all. Default is \"{0}\"!".format(self.parser.get_default("input_modules")))
-			log.critical("Input module \"{0}\" not found!".format(self.args["input_module"]))
+		if isinstance(self.args["input_modules"], basestring):
+			self.args["input_modules"] = [self.args["input_modules"]]
+		for module in self.args["input_modules"]:
+			if self._isvalid_processor(module, processor_type=InputBase):
+				self.processors.append(self.available_processors[module]())
+			else:
+				log.info("Provide a valid input module or use the default. Default is \"{0}\"!".format(self.parser.get_default("input_modules")))
+				log.critical("Input module \"{0}\" cannot be not found or imported!".format(module))
+				sys.exit(1)
 
 		# handle analysis modules (second)
 		if self.args["analysis_modules"] is None:
@@ -130,7 +137,8 @@ class HarryCore(object):
 			if self._isvalid_processor(module, processor_type=AnalysisBase):
 				self.processors.append(self.available_processors[module]())
 			else:
-				log.critical("Analysis module \"{0}\" not found!".format(module))
+				log.critical("Analysis module \"{0}\" cannot be not found or imported!".format(module))
+				sys.exit(1)
 
 		# handle plot modules (third)
 		if isinstance(self.args["plot_modules"], basestring):
@@ -142,7 +150,8 @@ class HarryCore(object):
 			if self._isvalid_processor(module, processor_type=PlotBase):
 				self.processors.append(self.available_processors[module]())
 			else:
-				log.critical("Plot module \"{0}\" not found!".format(module))
+				log.critical("Plot module \"{0}\" cannot be not found or imported!".format(module))
+				sys.exit(1)
 
 		# let processors modify the parser and then parse the arguments again
 		for processor in self.processors:
@@ -183,17 +192,12 @@ class HarryCore(object):
 			plotData.plotdict["export_json"] = "default" if plotData.plotdict["json_defaults"] is None else plotData.plotdict["json_defaults"][0]
 		
 		# prepare aguments for all processors before running them
-		output_filenames = []
 		for processor in self.processors:
-			tmpPlotData = copy.deepcopy(plotData) if isinstance(processor, PlotBase) else plotData
-			processor.prepare_args(self.parser, tmpPlotData)
-			processor.run(tmpPlotData)
-			if isinstance(processor, PlotBase):
-				output_filenames.extend(tmpPlotData.plotdict.get("output_filenames", []))
-			else:
-				plotData = tmpPlotData
-		plotData = tmpPlotData
-		output_filenames = list(set(output_filenames))
+			processor.prepare_args(self.parser, plotData)
+			processor.run(plotData)
+		
+		# save plots
+		output_filenames = plotData.save()
 		
 		# export arguments into JSON file (2)
 		if plotData.plotdict["export_json"] != "default":
@@ -238,16 +242,16 @@ class HarryCore(object):
 
 	def _print_available_modules(self):
 		"""Prints all available modules to stdout."""
-		title_strings = ["Input modules:", "\nAnalysis modules:", "\nPlot modules:"]
+		title_strings = ["Input modules:", "Analysis modules:", "Plot modules:"]
 		baseclasses = [InputBase, AnalysisBase, PlotBase]
-		for title_string, baseclass in zip(title_strings, baseclasses):
-			log.info(tools.get_colored_string(title_string, "yellow"))
+		for index, (title_string, baseclass) in enumerate(zip(title_strings, baseclasses)):
+			log.info(("\n" if index > 0 else "")+tools.get_colored_string(title_string, "yellow"))
 			self._print_module_list(sorted([module for module in self.available_processors if issubclass(self.available_processors[module], baseclass)]))
 
 	def _print_module_list(self, module_list):
 		"""Print a list of modules (name and docstring)"""
 		for module in module_list:
-			log.info(tools.get_colored_string("\t{}".format(module), "green"))
+			log.info("\t"+tools.get_colored_string("{}".format(module), "green"))
 			if inspect.getdoc(self.available_processors[module]):
 				log.info(tools.get_indented_text("\t\t", inspect.getdoc(self.available_processors[module])))
 

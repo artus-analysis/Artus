@@ -47,7 +47,7 @@ public:
 	{
 	}
 
-	virtual bool GetEntry(long long lEvent ) ARTUS_CPP11_OVERRIDE {
+	virtual bool GetEntry(long long lEvent ) override {
 		assert(m_event.m_eventInfo);
 		assert(m_event.m_lumiInfo);
 
@@ -77,11 +77,11 @@ public:
 		return (resultGetEntry != 0);
 	}
 
-	virtual event_type const& GetCurrentEvent() const ARTUS_CPP11_OVERRIDE {
+	virtual event_type const& GetCurrentEvent() const override {
 		return m_event;
 	}
 
-	virtual long long GetEntries() const ARTUS_CPP11_OVERRIDE {
+	virtual long long GetEntries() const override {
 		return (m_batchMode ? m_fi.eventdata.GetEntriesFast() : m_fi.eventdata.GetEntries());
 	}
 

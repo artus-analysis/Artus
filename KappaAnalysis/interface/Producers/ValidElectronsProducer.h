@@ -59,6 +59,7 @@ public:
 
 	enum class ElectronID : int
 	{
+		INVALID = -2,
 		NONE  = -1,
 		MVANONTRIG = 0,
 		MVATRIG = 1,
@@ -79,7 +80,10 @@ public:
 		else if (electronID == "vbft95_tight") return ElectronID::VBTF95_TIGHT;
 		else if (electronID == "fakeable") return ElectronID::FAKEABLE;
 		else if (electronID == "user") return ElectronID::USER;
-		else return ElectronID::NONE;
+		else if (electronID == "none") return ElectronID::NONE;
+		else
+			LOG(FATAL) << "Could not find ElectronID " << electronID << "! If you want the ValidElectronsProducer to use no special ID, use \"none\" as argument."<< std::endl;
+		return ElectronID::INVALID;
 	}
 
 	enum class ElectronIsoType : int
@@ -125,7 +129,7 @@ public:
 		else return ElectronReco::NONE;
 	}
 
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
+	virtual std::string GetProducerId() const override {
 		return "ValidElectronsProducer";
 	}
 
@@ -148,7 +152,7 @@ public:
 	{
 	}
 
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(setting_type const& settings) override {
 		ProducerBase<TTypes>::Init(settings);
 		ValidPhysicsObjectTools<TTypes, KElectron>::Init(settings);
 		
@@ -172,7 +176,7 @@ public:
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
-	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	                     setting_type const& settings) const override
 	{
 		assert(event.m_electrons);
 		assert(event.m_vertexSummary);

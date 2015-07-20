@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/KappaAnalysis/interface/KappaEventProviderBase.h"
 
 /**
@@ -23,7 +22,7 @@ public:
 	{
 	}
 
-	virtual void WireEvent(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+	virtual void WireEvent(setting_type const& settings) override {
 		// Electrons
 		if (! settings.GetElectrons().empty())
 			this->m_event.m_electrons = this->template SecureFileInterfaceGet<KElectrons>(settings.GetElectrons());

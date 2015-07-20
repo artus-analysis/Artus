@@ -12,7 +12,7 @@ void CrossSectionWeightProducer::Produce( KappaEvent const& event,
 {
 	assert(event.m_genLumiMetadata);
 	
-	if (settings.GetCrossSection() > 0.0)
+	if (static_cast<double>(settings.GetCrossSection()) > 0.0)
 		product.m_weights["crossSectionPerEventWeight"] = settings.GetCrossSection();
 	else if (event.m_genLumiMetadata->xSectionExt > 0.)
 		product.m_weights["crossSectionPerEventWeight"] = event.m_genLumiMetadata->xSectionExt;

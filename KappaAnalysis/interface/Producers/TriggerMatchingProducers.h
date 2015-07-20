@@ -35,14 +35,14 @@ public:
 	{
 	}
 
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(KappaSettings const& settings) override {
 		KappaProducerBase::Init(settings);
 		
 		m_objectTriggerFiltersByIndexFromSettings = Utility::ParseMapTypes<size_t, std::string>(Utility::ParseVectorToMap((settings.*GetObjectTriggerFilterNames)()), m_objectTriggerFiltersByHltNameFromSettings);
 	}
 
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
+	                     KappaSettings const& settings) const override
 	{
 		assert(event.m_triggerObjects);
 		assert(event.m_triggerObjectMetadata);
@@ -79,11 +79,10 @@ public:
 			for (typename std::vector<TValidObject*>::iterator validObject = (product.*m_validObjects).begin();
 			     validObject != (product.*m_validObjects).end();)
 			{
-				bool objectMatched = false;
+				bool objectMatched = true;
 				
 				// loop over all filters
 				for (size_t filterIndex = event.m_triggerObjectMetadata->getMinFilterIndex(product.m_selectedHltPosition);
-					(! objectMatched) &&
 					(filterIndex < event.m_triggerObjectMetadata->getMaxFilterIndex(product.m_selectedHltPosition));
 				     ++filterIndex)
 				{
@@ -124,8 +123,8 @@ public:
 						continue;
 
 					// loop over all trigger objects for this filter
+					bool hasMatch = false;
 					for (std::vector<int>::const_iterator triggerObjectIndex = event.m_triggerObjects->toIdxFilter[filterIndex].begin();
-					     (! objectMatched) &&
 					     (triggerObjectIndex != event.m_triggerObjects->toIdxFilter[filterIndex].end());
 					     ++triggerObjectIndex)
 					{
@@ -134,9 +133,10 @@ public:
 						                                   (*validObject)->p4) < (settings.*GetDeltaRTriggerMatchingObjects)())
 						{
 							(product.*m_triggerMatchedObjects)[*validObject] = &(event.m_triggerObjects->trgObjects[*triggerObjectIndex]);
-							objectMatched = true;
+							hasMatch = true;
 						}
 					}
+					objectMatched = objectMatched && hasMatch;
 				}
 				
 				// invalidate the object if the trigger has not matched
@@ -189,7 +189,7 @@ class ElectronTriggerMatchingProducer: public TriggerMatchingProducerBase<KElect
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 	
 	ElectronTriggerMatchingProducer();
 
@@ -207,7 +207,7 @@ class MuonTriggerMatchingProducer: public TriggerMatchingProducerBase<KMuon>
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 	
 	MuonTriggerMatchingProducer();
 
@@ -225,7 +225,7 @@ class TauTriggerMatchingProducer: public TriggerMatchingProducerBase<KTau>
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 	
 	TauTriggerMatchingProducer();
 
@@ -243,7 +243,7 @@ class JetTriggerMatchingProducer: public TriggerMatchingProducerBase<KBasicJet>
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 	
 	JetTriggerMatchingProducer();
 

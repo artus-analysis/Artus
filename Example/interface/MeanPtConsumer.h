@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
-
 #include "TraxTypes.h"
 
 /*
@@ -23,15 +21,15 @@ public:
 
 	}
 
-	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE {
+	virtual std::string GetConsumerId() const override {
 		return "mean_pt";
 	}
 
 	virtual void ProcessFilteredEvent(TraxEvent const& event,
 			TraxProduct const& product,
-			setting_type const& setting) ARTUS_CPP11_OVERRIDE;
+			setting_type const& setting) override;
 
-	virtual void Finish(setting_type const& setting ) ARTUS_CPP11_OVERRIDE {
+	virtual void Finish(setting_type const& setting ) override {
 		// todo: print pipeline name here
 		LOG(INFO) << "Track mean Pt is " << m_mean << " [GeV].";
 	}

@@ -17,14 +17,15 @@ void CutFlow::AddFilterResult(FilterResult const& fres)
 	{
 		// only store, if passed
 		long addVal = 0;
-		if (it->second == FilterResult::Decision::Passed) {
+		if (it->filterDecision == FilterResult::Decision::Passed && 
+		    it->taggingMode == FilterResult::TaggingMode::Filtering) {
 			addVal = 1;
 		}
 
-		CutFlow::CutStat * stat = CutFlow::GetCutEntry(it->first);
-		if (stat == ARTUS_CPP11_NULLPTR)
+		CutFlow::CutStat * stat = CutFlow::GetCutEntry(it->filterName);
+		if (stat == nullptr)
 		{
-			m_cutCount.push_back(std::make_pair(it->first, addVal));
+			m_cutCount.push_back(std::make_pair(it->filterName, addVal));
 		}
 		else
 		{
@@ -42,7 +43,7 @@ CutFlow::CutStat * CutFlow::GetCutEntry(std::string const& filterName)
 			return &(*it);
 	}
 
-	return ARTUS_CPP11_NULLPTR;
+	return nullptr;
 }
 
 std::string CutFlow::ToString() const

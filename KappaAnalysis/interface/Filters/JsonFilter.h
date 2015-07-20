@@ -19,11 +19,11 @@ class JsonFilter: public FilterBase<KappaTypes>
 
 public:
 
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
 
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
+	virtual void Init(KappaSettings const& settings) override;
 	virtual bool DoesEventPass(KappaEvent const& event, KappaProduct const& product,
-	                           KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE;
+	                           KappaSettings const& settings) const override;
 
 
 private:

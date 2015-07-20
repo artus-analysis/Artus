@@ -5,9 +5,24 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import Artus.HarryPlotter.plotbase as plotbase
+import Artus.HarryPlotter.plotdata as plotdata
 import Artus.HarryPlotter.utility.roottools as roottools
 
 import ROOT
+
+
+class ExportPlotContainer(plotdata.PlotContainer):
+	def __init__(self, root_files=None):
+		self.root_files = root_files
+	
+	def finish(self):
+		pass
+	
+	def save(self, filename):
+		root_file = self.root_files.get(filename, None)
+		if not root_file is None:
+			root_file.Write()
+			root_file.Close()
 
 
 class ExportRoot(plotbase.PlotBase):
@@ -44,18 +59,37 @@ class ExportRoot(plotbase.PlotBase):
 		pass
 		
 	def create_canvas(self, plotData):
-		self.root_output_files = [ROOT.TFile(output_filename, plotData.plotdict["file_mode"]) for output_filename in plotData.plotdict["output_filenames"]]
+		plotData.plot = ExportPlotContainer(
+				{output_filename : ROOT.TFile(output_filename, plotData.plotdict["file_mode"]) for output_filename in plotData.plotdict["output_filenames"]}
+		)
 		
 	def prepare_histograms(self, plotData):
-		pass
+		# some debug info
+		if log.isEnabledFor(logging.DEBUG):
+			for index, (nick1, stack1) in enumerate(zip(plotData.plotdict["nicks"], plotData.plotdict["stacks"])):
+				log.debug("\nContents of nick %s, stack %s:" % (nick1, stack1))
+				plotData.plotdict["root_objects"][nick1].Print("range")
+				# print non empty over-/underflow bins separately
+				log.debug("\nOver-/underflow bins of nick %s, stack %s:" % (nick1, stack1))
+				if plotData.plotdict["root_objects"][nick1].GetDimension() == 1:
+					for xbin in range(0, plotData.plotdict["root_objects"][nick1].GetNbinsX() + 2):
+						if (xbin == 0 or xbin == plotData.plotdict["root_objects"][nick1].GetNbinsX() + 1):
+							if plotData.plotdict["root_objects"][nick1].GetBinContent(xbin) != 0.0:
+								print "[%i] = %s" % (xbin, plotData.plotdict["root_objects"][nick1].GetBinContent(xbin))
+				elif plotData.plotdict["root_objects"][nick1].GetDimension() == 2:
+					for xbin in range(0, plotData.plotdict["root_objects"][nick1].GetNbinsX() + 2):
+						for ybin in range(0, plotData.plotdict["root_objects"][nick1].GetNbinsY() + 2):
+							if (xbin == 0 or xbin == plotData.plotdict["root_objects"][nick1].GetNbinsX() + 1 or ybin == 0 or ybin == plotData.plotdict["root_objects"][nick1].GetNbinsY() + 1):
+								if plotData.plotdict["root_objects"][nick1].GetBinContent(xbin, ybin) != 0.0:
+									print "[%i][%i] = %s" % (xbin, ybin, plotData.plotdict["root_objects"][nick1].GetBinContent(xbin, ybin))
 		
 	def make_plots(self, plotData):
-		for root_output_file in self.root_output_files:
-			root_output_file.cd()
+		for root_filename, root_file in plotData.plot.root_files.iteritems():
+			root_file.cd()
 			
 			for nick, path in zip(plotData.plotdict["nicks"], plotData.plotdict["labels"]):
 				root_object = plotData.plotdict["root_objects"][nick]
-				roottools.RootTools.write_object(root_output_file, root_object, path)
+				roottools.RootTools.write_object(root_file, root_object, path)
 		
 	def modify_axes(self, plotData):
 		pass
@@ -65,12 +99,6 @@ class ExportRoot(plotbase.PlotBase):
 		
 	def add_texts(self, plotData):
 		pass
-		
-	def save_canvas(self, plotData):
-		for root_output_file, output_filename in zip(self.root_output_files, plotData.plotdict["output_filenames"]):
-			root_output_file.Write()
-			root_output_file.Close()
-			log.info("Exported root objects to \"%s\"." % output_filename)
 		
 	def plot_end(self, plotData):
 		pass

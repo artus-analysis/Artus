@@ -58,7 +58,7 @@ public:
 		delete factorizedJetCorrector;
 	}
 
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE
+	virtual void Init(KappaSettings const& settings) override
 	{
 		KappaProducerBase::Init(settings);
 		
@@ -84,13 +84,17 @@ public:
 			else {
 				jecUncertaintyParameters = new JetCorrectorParameters(settings.GetJetEnergyCorrectionUncertaintyParameters());
 			}
+			if ((!jecUncertaintyParameters->isValid()) || (jecUncertaintyParameters->size() == 0))
+				LOG(FATAL) << "Invalid definition " << settings.GetJetEnergyCorrectionUncertaintySource() 
+				           << " in file " << settings.GetJetEnergyCorrectionUncertaintyParameters();
 			jetCorrectionUncertainty = new JetCorrectionUncertainty(*jecUncertaintyParameters);
+			LOG(DEBUG) << "\t\t" << settings.GetJetEnergyCorrectionUncertaintySource();
 			LOG(DEBUG) << "\t\t" << settings.GetJetEnergyCorrectionUncertaintyParameters();
 		}
 	}
 
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
+	                     KappaSettings const& settings) const override
 	{
 		assert((event.*m_basicJetsMember));
 		assert(event.m_pileupDensity);
@@ -169,7 +173,7 @@ class JetCorrectionsProducer: public JetCorrectionsProducerBase<KBasicJet>
 public:
 	JetCorrectionsProducer();
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 };
 
 
@@ -185,7 +189,7 @@ public:
 
 	TaggedJetCorrectionsProducer();
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 };
 
 

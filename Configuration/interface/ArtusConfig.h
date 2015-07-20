@@ -16,7 +16,6 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/ProcessNodeBase.h"
 #include "Artus/Core/interface/ProducerBase.h"
 #include "Artus/Core/interface/FilterBase.h"
@@ -93,7 +92,7 @@ private:
 			if (ntype.first == ProcessNodeType::Producer ) {
 				auto * gProd = factory.createProducer ( ntype.second );
 
-				if ( gProd == ARTUS_CPP11_NULLPTR ){
+				if ( gProd == nullptr ){
 					LOG(FATAL) << "Global producer with id " << ntype.second << " not found!";
 				} else {
 					ProducerBaseAccess(	*gProd ).Init(gSettings);
@@ -102,7 +101,7 @@ private:
 			} else if (ntype.first == ProcessNodeType::Filter ) {
 				auto * gProd = factory.createFilter ( ntype.second );
 
-				if ( gProd == ARTUS_CPP11_NULLPTR ){
+				if ( gProd == nullptr ){
 					LOG(FATAL) << "Global filter with id " << ntype.second << " not found!";
 				} else {
 					FilterBaseAccess( *gProd ).Init(gSettings);
@@ -152,7 +151,7 @@ private:
 					if (ntype.first == ProcessNodeType::Producer ) {
 						auto * pProducer = factory.createProducer ( ntype.second );
 
-						if ( pProducer == ARTUS_CPP11_NULLPTR ){
+						if ( pProducer == nullptr ){
 							 LOG(FATAL) << "Local Producer with id " << ntype.second << " not found!";
 						} else {
 							pLine->AddProducer ( pProducer );
@@ -160,7 +159,7 @@ private:
 					} else if (ntype.first == ProcessNodeType::Filter ) {
 						auto * pProducer = factory.createFilter ( ntype.second );
 
-						if ( pProducer == ARTUS_CPP11_NULLPTR ){
+						if ( pProducer == nullptr ){
 							 LOG(FATAL) << "Local Filter with id " << ntype.second << " not found!";
 						} else {
 							pLine->AddFilter ( pProducer );
@@ -178,7 +177,7 @@ private:
 					// it is ok if they cannot be created here, because some might
 					// only be produced in the InitPipeline method below
 					// for example when using an alias for a set of producer
-					if ( pConsumer != ARTUS_CPP11_NULLPTR ){
+					if ( pConsumer != nullptr ){
 						pLine->AddConsumer ( pConsumer );
 					}
 				}
