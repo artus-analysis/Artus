@@ -225,7 +225,7 @@ doublevector& Get##SNAME () const { \
 VarCache<floatvector> m_##SNAME; \
 floatvector& Get##SNAME () const { \
 	try { \
-		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsFloatList(GetPropTree(), #SNAME )) \
+		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsFloatList(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
 	} \
 	catch(...) { \
 		try { \
@@ -242,7 +242,7 @@ floatvector& Get##SNAME () const { \
 VarCache<floatvector> m_##SNAME; \
 floatvector& Get##SNAME () const { \
 	try { \
-		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsFloatList(GetPropTree(), #SNAME )) \
+		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsFloatList(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
 	} \
 	catch(...) { \
 		try { \
