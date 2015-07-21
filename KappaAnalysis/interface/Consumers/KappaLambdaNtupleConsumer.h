@@ -22,13 +22,13 @@ public:
 	{
 		return "KappaLambdaNtupleConsumer";
 	}
-	
+
 	virtual void Init(setting_type const& settings) override
 	{
 		// add possible quantities for the lambda ntuples consumers
-		LambdaNtupleConsumer<TTypes>::AddIntQuantity("input", [](event_type const& event, product_type const& product) -> int
+		LambdaNtupleConsumer<TTypes>::AddIntQuantity("input", [](event_type const& event, product_type const& product)
 		{
-			return event.m_input;
+			return static_cast<int>(event.m_input);
 		});
 		LambdaNtupleConsumer<TTypes>::AddUInt64Quantity("run", [](event_type const& event, product_type const& product) -> uint64_t
 		{
@@ -42,7 +42,7 @@ public:
 		{
 			return event.m_eventInfo->nEvent;
 		});
-		
+
 		LambdaNtupleConsumer<TTypes>::AddIntQuantity("npv", [](event_type const& event, product_type const& product)
 		{
 			return event.m_vertexSummary->nVertices;
@@ -51,16 +51,16 @@ public:
 		bool bInpData = settings.GetInputIsData();
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("npuMean", [bInpData](event_type const& event, product_type const& product)
 		{
-			return (bInpData ?
-			        DefaultValues::UndefinedDouble :
-			        static_cast<KGenEventInfo*>(event.m_eventInfo)->nPUMean);
+			if (bInpData)
+				return DefaultValues::UndefinedFloat;
+			return static_cast<KGenEventInfo*>(event.m_eventInfo)->nPUMean;
 		});
 
 		LambdaNtupleConsumer<TTypes>::AddIntQuantity("npu", [bInpData](event_type const& event, product_type const& product)
 		{
-			return (bInpData ?
-			        DefaultValues::UndefinedInt :
-			        static_cast<KGenEventInfo*>(event.m_eventInfo)->nPU);
+			if (bInpData)
+				return DefaultValues::UndefinedInt;
+			return static_cast<int>(static_cast<KGenEventInfo*>(event.m_eventInfo)->nPU);
 		});
 
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("rho", [](event_type const& event, product_type const& product) {

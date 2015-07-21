@@ -183,7 +183,7 @@ public:
 					ProducerBaseAccess(prod).Produce(evtProvider.GetCurrentEvent(),
 							productGlobal, settings);
 					gettimeofday(&tEnd, nullptr);
-					runTime = ( tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec );
+					runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);
 					productGlobal.processorRunTime[prod.GetProducerId()] = runTime;
 				}
 				else if ( it->GetProcessNodeType () == ProcessNodeType::Filter )
@@ -195,7 +195,7 @@ public:
 							productGlobal, settings);
 					globalFilterResult.SetFilterDecision(flt.GetFilterId(), filterResult);
 					gettimeofday(&tEnd, nullptr);
-					runTime = ( tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec );
+					runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);
 					productGlobal.processorRunTime[flt.GetFilterId()] = runTime;
 				}
 				else

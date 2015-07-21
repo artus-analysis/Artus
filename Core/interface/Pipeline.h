@@ -193,14 +193,14 @@ public:
 			// already failed
 			if (! localFilterResult.HasPassed())
 				break;
-			
+
 			if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
 				ProducerForThisPipeline& prod = static_cast<ProducerForThisPipeline&>(*it);
 				//LOG(DEBUG) << prod.GetProducerId() << "::Produce (pipeline: " << m_pipelineSettings.GetName() << ")";
 				gettimeofday(&tStart, nullptr);
 				ProducerBaseAccess(prod).Produce(evt, localProduct, m_pipelineSettings);
 				gettimeofday(&tEnd, nullptr);
-				runTime = ( tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec );
+				runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);  // a long int might be needed here but SafeMaps for long ints are not yet working
 				localProduct.processorRunTime[prod.GetProducerId()] = runTime;
 			}
 			else if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
@@ -210,7 +210,7 @@ public:
 				const bool filterResult = FilterBaseAccess(flt).DoesEventPass(evt, localProduct, m_pipelineSettings);
 				localFilterResult.SetFilterDecision(flt.GetFilterId(), filterResult);
 				gettimeofday(&tEnd, nullptr);
-				runTime = ( tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec );
+				runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);  // a long int might be needed here but SafeMaps for long ints are not yet working
 				localProduct.processorRunTime[flt.GetFilterId()] = runTime;
 			}
 			else {
