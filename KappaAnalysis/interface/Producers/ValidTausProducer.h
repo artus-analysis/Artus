@@ -146,8 +146,11 @@ public:
 			for (std::map<std::string, std::vector<std::string> >::const_iterator discriminatorByHltName = discriminatorsByHltName.begin();
 				 validTau && (discriminatorByHltName != discriminatorsByHltName.end()); ++discriminatorByHltName)
 			{
-				if ((discriminatorByHltName->first == "default") ||
-					boost::regex_search(product.m_selectedHltName, boost::regex(discriminatorByHltName->first, boost::regex::icase | boost::regex::extended)))
+				bool hasMatch = false;
+				for (unsigned int iHlt = 0; iHlt < product.m_selectedHltName.size(); iHlt++)
+					hasMatch = hasMatch || boost::regex_search(product.m_selectedHltName.at(iHlt), boost::regex(discriminatorByHltName->first, boost::regex::icase | boost::regex::extended));
+
+				if ((discriminatorByHltName->first == "default") || hasMatch)
 				{
 					validTau = validTau && ApplyDiscriminators(*tau, discriminatorByHltName->second, event);
 				}
@@ -213,7 +216,6 @@ private:
 				|| tau->getDiscriminator("decayModeFindingNewDMs", event.m_tauMetadata) > 0.5)
 				//&& (tau->getDiscriminator("againstElectronVLooseMVA5", event.m_tauMetadata) > 0.5)
 				//&& (tau->getDiscriminator("againstMuonLoose3", event.m_tauMetadata) > 0.5)
-				//&& (std::abs(tau->track.ref.z() - vertex->position.z()) < 0.2)
 				// tau dZ requirement for sync
 				&& (Utility::ApproxEqual(tau->track.ref.z(), vertex->position.z()))
 		// do not use this atm since getDz only delivers -nan
@@ -222,7 +224,5 @@ private:
 				//&& (tau->getDiscriminator("byCombinedIsolationDeltaBetaCorrRaw3Hits", event.m_tauMetadata) < 1.0)
 		);
 	}
-	
-
 };
 
