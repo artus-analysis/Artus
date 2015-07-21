@@ -7,7 +7,7 @@
 
 /**
    \brief Reads settings for all parts of the KappaAnalysis code from a prepared
-   json configuration file. 
+   json configuration file.
 
    Defines settings that can be obtained from the json configuration file.
 */
@@ -16,10 +16,10 @@ class KappaSettings: public SettingsBase {
 public:
 
 	IMPL_SETTING_DEFAULT(bool, BatchMode, false);
-	
+
 	IMPL_SETTING(std::string, Nickname);
 
-	/// name of electron collection in kappa tuple	
+	/// name of electron collection in kappa tupl
 	IMPL_SETTING_DEFAULT(std::string, Electrons, "");
 	IMPL_SETTING_DEFAULT(std::string, ElectronMetadata, "");
 
@@ -44,7 +44,7 @@ public:
 
 	/// name of MET collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, Met, "");
-	
+
 	/// name of GenMET collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, GenMet, "");
 

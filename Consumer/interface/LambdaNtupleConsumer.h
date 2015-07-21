@@ -385,7 +385,7 @@ public:
 
 
 private:
-	TTree* m_tree = 0;
+	TTree* m_tree = nullptr;
 
 	std::vector<bool_extractor_lambda_base> m_boolValueExtractors;
 	std::vector<int_extractor_lambda_base> m_intValueExtractors;
