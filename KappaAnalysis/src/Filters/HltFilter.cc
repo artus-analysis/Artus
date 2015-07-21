@@ -24,15 +24,15 @@
 		}
 		else if (product.m_weights.at("hltPrescaleWeight") < 1.01)
 		{
-			return event.m_eventInfo->hltFired(product.m_selectedHltName, event.m_lumiInfo);;
+			return event.m_eventInfo->hltFired(product.m_selectedHltName.at(0), event.m_lumiInfo);;
 		}
 		else
 		{
 			if (! settings.GetAllowPrescaledTrigger())
 			{
 				LOG(FATAL) << "No unprescaled trigger found for event " << event.m_eventInfo->nEvent
-					       << "! Lowest prescale: " << product.m_weights.at("hltPrescaleWeight") << " (\"" << product.m_selectedHltName << "\").";
+					       << "! Lowest prescale: " << product.m_weights.at("hltPrescaleWeight") << " (\"" << product.m_selectedHltName.at(0) << "\").";
 			}
-			return (settings.GetAllowPrescaledTrigger() && event.m_eventInfo->hltFired(product.m_selectedHltName, event.m_lumiInfo));
+			return (settings.GetAllowPrescaledTrigger() && event.m_eventInfo->hltFired(product.m_selectedHltName.at(0), event.m_lumiInfo));
 		}
 	}

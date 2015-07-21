@@ -146,8 +146,11 @@ public:
 			for (std::map<std::string, std::vector<std::string> >::const_iterator discriminatorByHltName = discriminatorsByHltName.begin();
 				 validTau && (discriminatorByHltName != discriminatorsByHltName.end()); ++discriminatorByHltName)
 			{
-				if ((discriminatorByHltName->first == "default") ||
-					boost::regex_search(product.m_selectedHltName, boost::regex(discriminatorByHltName->first, boost::regex::icase | boost::regex::extended)))
+				bool hasMatch = false;
+				for (unsigned int iHlt = 0; iHlt < product.m_selectedHltName.size(); iHlt++)
+					hasMatch = hasMatch || boost::regex_search(product.m_selectedHltName.at(iHlt), boost::regex(discriminatorByHltName->first, boost::regex::icase | boost::regex::extended));
+
+				if ((discriminatorByHltName->first == "default") || hasMatch)
 				{
 					validTau = validTau && ApplyDiscriminators(*tau, discriminatorByHltName->second, event);
 				}
@@ -208,21 +211,12 @@ private:
 
 	bool IsTauIDRecommendation13TeV(KTau* tau, KappaEvent const& event) const
 	{
-		const KVertex* vertex = new KVertex(event.m_vertexSummary->pv); 
-		return (( tau->getDiscriminator("decayModeFinding", event.m_tauMetadata) > 0.5
-				|| tau->getDiscriminator("decayModeFindingNewDMs", event.m_tauMetadata) > 0.5)
-				//&& (tau->getDiscriminator("againstElectronVLooseMVA5", event.m_tauMetadata) > 0.5)
-				//&& (tau->getDiscriminator("againstMuonLoose3", event.m_tauMetadata) > 0.5)
-				//&& (std::abs(tau->track.ref.z() - vertex->position.z()) < 0.2)
-				// tau dZ requirement for sync
-				&& (Utility::ApproxEqual(tau->track.ref.z(), vertex->position.z()))
-		// do not use this atm since getDz only delivers -nan
-		//		&& (tau->track.getDz(vertex) > 0.5
-		//		|| tau->track.getDz(vertex) < -1.5 )
-				//&& (tau->getDiscriminator("byCombinedIsolationDeltaBetaCorrRaw3Hits", event.m_tauMetadata) < 1.0)
+		const KVertex* vertex = new KVertex(event.m_vertexSummary->pv);
+		return ( tau->getDiscriminator("decayModeFindingNewDMs", event.m_tauMetadata) > 0.5
+			 && (std::abs(tau->track.ref.z() - vertex->position.z()) < 0.2)
+			// tau dZ requirement for Phys14 sync
+			//&& (Utility::ApproxEqual(tau->track.ref.z(), vertex->position.z()))
 		);
 	}
-	
-
 };
 
