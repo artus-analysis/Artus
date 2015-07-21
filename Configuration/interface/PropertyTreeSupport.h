@@ -9,6 +9,8 @@
 #include <cstdint>
 
 #include <boost/property_tree/ptree.hpp>
+#include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include "Artus/Utility/interface/Collections.h"
 
@@ -17,30 +19,15 @@
  */
 class PropertyTreeSupport {
 public:
-	static stringvector GetAsStringList(boost::property_tree::ptree * propTree,
-	                                    std::string path);
+	template<class TSetting>
+	static std::vector< TSetting > GetAsList(boost::property_tree::ptree * propTree, std::string path)
+	{
+		std::vector< TSetting > vec;
+		BOOST_FOREACH(boost::property_tree::ptree::value_type & v, propTree->get_child(path))
+		{
+			vec.push_back(boost::lexical_cast<TSetting>(v.second.data().c_str()));
+		}
+		return vec;
+	}
 
-	static doublevector GetAsDoubleList(boost::property_tree::ptree * propTree,
-	                                    std::string path);
-
-	static doublevector GetAsDoubleList(boost::property_tree::ptree & propTree,
-	                                    std::string path);
-
-	static floatvector GetAsFloatList(boost::property_tree::ptree * propTree,
-	                                  std::string path);
-
-	static floatvector GetAsFloatList(boost::property_tree::ptree & propTree,
-	                                  std::string path);
-
-	static intvector GetAsIntList(boost::property_tree::ptree & propTree,
-	                              std::string path);
-
-	static intvector GetAsIntList(boost::property_tree::ptree * propTree,
-	                              std::string path);
-
-	static uint64vector GetAsUInt64List(boost::property_tree::ptree & propTree,
-	                                    std::string path);
-
-	static uint64vector GetAsUInt64List(boost::property_tree::ptree * propTree,
-	                                    std::string path);
 };

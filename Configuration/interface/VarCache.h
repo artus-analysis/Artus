@@ -34,7 +34,6 @@ public:
 	inline TData& GetValue() const {
 		if (! m_isCached)
 			LOG(FATAL) << "Non-cached variable used!";
-
 		return m_val;
 	}
 

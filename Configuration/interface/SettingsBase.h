@@ -76,14 +76,14 @@ public:
 	}
 
 	/// get list of all local producers
-	IMPL_SETTING_STRINGLIST( Processors )
-	IMPL_SETTING_STRINGLIST( Consumers )
+	IMPL_VSETTING(std::string, Processors )
+	IMPL_VSETTING(std::string, Consumers )
 
 	///
 	//IMPL_GLOBAL_SETTING_STRINGLIST( GlobalProcessors )
 	VarCache<stringvector> m_globalProcessors;
 	stringvector& GetGlobalProcessors () const {
-		RETURN_CACHED(m_globalProcessors, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Processors" ))
+		RETURN_CACHED(m_globalProcessors, PropertyTreeSupport::GetAsList<std::string>(GetPropTree(), "Processors" ))
 	}
 
 	std::vector<std::string> GetAllProcessors () const {
@@ -99,14 +99,14 @@ public:
 	}
 
 	// list of quantities needed for ntuple consumers
-	IMPL_SETTING_STRINGLIST(Quantities);
+	IMPL_VSETTING(std::string, Quantities);
 	//IMPL_SETTING_SORTED_STRINGLIST(Quantities);
 
 	virtual stringvector GetFilters () const {
 		return SettingsUtil::ExtractFilters(GetProcessors());
 	}
 
-	IMPL_SETTING_STRINGLIST_DEFAULT(TaggingFilters, std::vector<std::string>());
+	IMPL_VSETTING_DEFAULT(std::string, TaggingFilters, std::vector<std::string>());
 
 	typedef std::pair < std::string, size_t > PipelineInfo;
 	typedef std::vector<PipelineInfo> PipelineInfos;

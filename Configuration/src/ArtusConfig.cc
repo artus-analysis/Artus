@@ -123,7 +123,7 @@ void ArtusConfig::InitConfig( bool configPreLoaded )
 	el::Loggers::reconfigureLogger("default", defaultLoggingConfig);
 
 	m_outputPath = m_propTreeRoot.get<std::string>("OutputPath", "output.root");
-	m_fileNames = PropertyTreeSupport::GetAsStringList(&m_propTreeRoot, "InputFiles");
+	m_fileNames = PropertyTreeSupport::GetAsList<std::string>(&m_propTreeRoot, "InputFiles");
 	LOG(INFO) << "Loading " << m_fileNames.size() << " input files.";
 
 	if (m_fileNames.size() == 0)

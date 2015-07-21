@@ -30,6 +30,6 @@ public:
 
 	IMPL_SETTING( float, ProducerPtCorrectionFactorLocal )
 
-	IMPL_SETTING_STRINGLIST( Quantities )
+	IMPL_VSETTING(std::string, Quantities )
 
 };
