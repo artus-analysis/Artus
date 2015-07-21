@@ -1,6 +1,8 @@
 Artus	
 =====
 	
+(a dedicated documentation for HarryPlotter can be found [here](https://github.com/artus-analysis/Artus/blob/master/HarryPlotter/README.md "HarryPlotter documentation))
+
 Introduction
 ------------
 
