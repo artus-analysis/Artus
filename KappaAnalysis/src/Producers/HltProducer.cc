@@ -1,12 +1,28 @@
 
+#include "Artus/KappaAnalysis/interface/Consumers/KappaLambdaNtupleConsumer.h"
 #include "Artus/KappaAnalysis/interface/Producers/HltProducer.h"
 
 std::string HltProducer::GetProducerId() const {
 	return "HltProducer";
 }
 
+void HltProducer::Init(KappaSettings const& settings)
+{
+	KappaProducerBase::Init(settings);
+	
+	// add possible quantities for the lambda ntuples consumers
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nSelectedHltPaths", [](KappaEvent const& event, KappaProduct const& product)
+	{
+		return static_cast<int>(product.m_selectedHltNames.size());
+	});
+	LambdaNtupleConsumer<KappaTypes>::AddVStringQuantity("selectedHltPaths", [](KappaEvent const& event, KappaProduct const& product)
+	{
+		return product.m_selectedHltNames;
+	});
+}
+
 void HltProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                     KappaSettings const& settings) const
+                          KappaSettings const& settings) const
 {
 	assert(event.m_lumiInfo);
 	assert(event.m_eventInfo);
