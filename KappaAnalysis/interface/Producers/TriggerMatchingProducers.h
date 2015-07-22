@@ -58,15 +58,15 @@ public:
 			                                                          m_objectTriggerFiltersByHltNameFromSettings.end());
 		}
 		
-		if ((! product.m_selectedHltName.empty()) && ((settings.*GetDeltaRTriggerMatchingObjects)() > 0.0))
+		if ((! product.m_selectedHltNames.empty()) && ((settings.*GetDeltaRTriggerMatchingObjects)() > 0.0))
 		{
 /*
 			// TODO: remove debug output
-			for (unsigned int iHlt = 0; iHlt < product.m_selectedHltName.size(); iHlt++)
+			for (unsigned int iHlt = 0; iHlt < product.m_selectedHltNames.size(); iHlt++)
 			{
-				LOG(INFO) << product.m_selectedHltName.at(iHlt) << " (" << product.m_selectedHltPosition.at(iHlt) << ")";
-				for (size_t filterIndex = event.m_triggerObjectMetadata->getMinFilterIndex(product.m_selectedHltPosition.at(iHlt));
-			     	filterIndex <= event.m_triggerObjectMetadata->getMaxFilterIndex(product.m_selectedHltPosition.at(iHlt)); ++filterIndex)
+				LOG(INFO) << product.m_selectedHltNames.at(iHlt) << " (" << product.m_selectedHltPositions.at(iHlt) << ")";
+				for (size_t filterIndex = event.m_triggerObjectMetadata->getMinFilterIndex(product.m_selectedHltPositions.at(iHlt));
+			     	filterIndex <= event.m_triggerObjectMetadata->getMaxFilterIndex(product.m_selectedHltPositions.at(iHlt)); ++filterIndex)
 				{
 					LOG(INFO) << "\t" << event.m_triggerObjectMetadata->toFilter[filterIndex] << " (" << filterIndex << ")";
 					for (std::vector<int>::const_iterator triggerObjectIndex = event.m_triggerObjects->toIdxFilter[filterIndex].begin();
@@ -86,13 +86,13 @@ public:
 				bool objectMatched = false;
 
 				// loop over all fired HLT paths
-				for (unsigned int iHlt = 0; iHlt < product.m_selectedHltName.size(); iHlt++)
+				for (unsigned int iHlt = 0; iHlt < product.m_selectedHltNames.size(); iHlt++)
 				{
 					bool passAllFilters = true;
 
 					// loop over all filters for the particulat HLT fired
-					for (size_t filterIndex = event.m_triggerObjectMetadata->getMinFilterIndex(product.m_selectedHltPosition.at(iHlt));
-					(filterIndex < event.m_triggerObjectMetadata->getMaxFilterIndex(product.m_selectedHltPosition.at(iHlt)));
+					for (size_t filterIndex = event.m_triggerObjectMetadata->getMinFilterIndex(product.m_selectedHltPositions.at(iHlt));
+					(filterIndex < event.m_triggerObjectMetadata->getMaxFilterIndex(product.m_selectedHltPositions.at(iHlt)));
 				     	++filterIndex)
 					{
 						bool hltMatched = false;
@@ -104,7 +104,7 @@ public:
 					     	++objectTriggerFilterByHltName)
 						{
 							// check that the hlt name given in the config matches the hlt which fired in the event
-							if (boost::regex_search(product.m_selectedHltName.at(iHlt),
+							if (boost::regex_search(product.m_selectedHltNames.at(iHlt),
 						            boost::regex(objectTriggerFilterByHltName->first, boost::regex::icase | boost::regex::extended)))
 							{
 								hltMatched = true;

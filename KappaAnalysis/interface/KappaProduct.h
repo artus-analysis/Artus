@@ -95,8 +95,8 @@ public:
 	std::vector<KJet*> m_nonBTaggedJets;
 	
 	mutable HLTTools m_hltInfo = HLTTools();
-	std::vector<std::string> m_selectedHltName;
-	std::vector<int> m_selectedHltPosition;
+	std::vector<std::string> m_selectedHltNames;
+	std::vector<int> m_selectedHltPositions;
 
 	/// added by TriggerMatchingProducer
 	std::map<KElectron*, KLV*> m_triggerMatchedElectrons;

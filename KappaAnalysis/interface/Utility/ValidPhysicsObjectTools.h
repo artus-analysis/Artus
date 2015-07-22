@@ -71,8 +71,8 @@ protected:
 		     lowerPtCutByHltName != lowerPtCutsByHltName.end() && validObject; ++lowerPtCutByHltName)
 		{
 			bool hasMatch = false;
-			for (unsigned int iHlt = 0; iHlt < product.m_selectedHltName.size(); iHlt++)
-				hasMatch = hasMatch || boost::regex_search(product.m_selectedHltName.at(iHlt), boost::regex(lowerPtCutByHltName->first, boost::regex::icase | boost::regex::extended));
+			for (unsigned int iHlt = 0; iHlt < product.m_selectedHltNames.size(); iHlt++)
+				hasMatch = hasMatch || boost::regex_search(product.m_selectedHltNames.at(iHlt), boost::regex(lowerPtCutByHltName->first, boost::regex::icase | boost::regex::extended));
 
 			if ((physicsObject->p4.Pt() < *std::max_element(lowerPtCutByHltName->second.begin(), lowerPtCutByHltName->second.end()))
 			    &&
@@ -89,8 +89,8 @@ protected:
 		     upperAbsEtaCutByHltName != upperAbsEtaCutsByHltName.end() && validObject; ++upperAbsEtaCutByHltName)
 		{
 			bool hasMatch = false;
-			for (unsigned int iHlt = 0; iHlt < product.m_selectedHltName.size(); iHlt++)
-				hasMatch = hasMatch || boost::regex_search(product.m_selectedHltName.at(iHlt), boost::regex(upperAbsEtaCutByHltName->first, boost::regex::icase | boost::regex::extended));
+			for (unsigned int iHlt = 0; iHlt < product.m_selectedHltNames.size(); iHlt++)
+				hasMatch = hasMatch || boost::regex_search(product.m_selectedHltNames.at(iHlt), boost::regex(upperAbsEtaCutByHltName->first, boost::regex::icase | boost::regex::extended));
 
 			if ((std::abs(physicsObject->p4.Eta()) > *std::min_element(upperAbsEtaCutByHltName->second.begin(), upperAbsEtaCutByHltName->second.end()))
 			    &&

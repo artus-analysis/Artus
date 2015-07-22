@@ -83,17 +83,17 @@ void HltProducer::Produce(KappaEvent const& event, KappaProduct& product,
 			hltPrescaleWeight = 1.0;
 		}
 	
-		product.m_selectedHltName.push_back(selectedHltName);
+		product.m_selectedHltNames.push_back(selectedHltName);
 		product.m_weights["hltPrescaleWeight"] = hltPrescaleWeight;
 		//TODO: how to define the HLT prescale eventweight when more than one HLT fires? The product of them? The min. or max. value?  
 	
 		if (! selectedHltName.empty())
 		{
-			product.m_selectedHltPosition.push_back((int) product.m_hltInfo.getHLTPosition(selectedHltName));
+			product.m_selectedHltPositions.push_back((int) product.m_hltInfo.getHLTPosition(selectedHltName));
 		}
 		else
 		{
-			product.m_selectedHltPosition.push_back(DefaultValues::UndefinedInt);
+			product.m_selectedHltPositions.push_back(DefaultValues::UndefinedInt);
 		}
 	}
 }
