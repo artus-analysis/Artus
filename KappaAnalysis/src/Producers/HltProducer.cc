@@ -53,7 +53,8 @@ void HltProducer::Produce(KappaEvent const& event, KappaProduct& product,
 		if (! hltName.empty())
 		{
 			// look for trigger with lowest prescale
-			int prescale = product.m_hltInfo.getPrescale(hltName);
+			// do not use hltName here as a parameter because *hltPath is already cached.
+			int prescale = product.m_hltInfo.getPrescale(*hltPath);
 			if (prescale < lowestPrescale)
 			{
 				lowestPrescale = prescale;
