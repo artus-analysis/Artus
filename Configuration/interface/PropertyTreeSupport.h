@@ -11,6 +11,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/optional/optional.hpp>
 
 #include "Artus/Utility/interface/Collections.h"
 
@@ -19,6 +20,11 @@
  */
 class PropertyTreeSupport {
 public:
+	static bool DoesSettingExist(boost::property_tree::ptree * propTree, std::string path)
+	{
+		boost::optional< boost::property_tree::ptree& > child = propTree->get_child_optional(path);
+		return bool(child);
+	}
 	template<class TSetting>
 	static std::vector< TSetting > GetAsList(boost::property_tree::ptree * propTree, std::string path)
 	{

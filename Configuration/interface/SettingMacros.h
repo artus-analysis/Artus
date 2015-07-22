@@ -108,18 +108,19 @@ virtual std::vector< TYPE > & Get##SNAME () const { \
 	} \
 }
 
-#define IMPL_VSETTING_DEFAULT( TYPE, SNAME, DEFAULT_VAL ) \
+#define IMPL_VSETTING_DEFAULT_PRIVATE( TYPE, SNAME, DEFAULT_VAL, READGLOBAL ) \
 VarCache< std::vector< TYPE > > m_##SNAME; \
 virtual std::vector < TYPE > & Get##SNAME () const { \
-	try { \
-		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsList< TYPE >(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
+	if ( !READGLOBAL && PropertyTreeSupport::DoesSettingExist(GetPropTree(), GetPipelinePrefix() + #SNAME)) { \
+		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsList< TYPE >(GetPropTree(), GetPipelinePrefix() + #SNAME )); \
 	} \
-	catch(...) { \
-		try { \
-			RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsList< TYPE >(GetPropTree(), #SNAME )) \
-		} \
-		catch(...) { \
-			RETURN_CACHED(m_##SNAME, DEFAULT_VAL ) \
-		} \
+	else if (PropertyTreeSupport::DoesSettingExist(GetPropTree(), #SNAME)) { \
+		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsList< TYPE >(GetPropTree(), #SNAME )); \
+	} \
+	else { \
+		RETURN_CACHED(m_##SNAME, DEFAULT_VAL ); \
 	} \
 }
+
+#define IMPL_VSETTING_DEFAULT(TYPE, SNAME, DEFAULT_VAL) IMPL_VSETTING_DEFAULT_PRIVATE(TYPE, SNAME, DEFAULT_VAL, false)
+#define IMPL_VSETTING_DEFAULT_GLOBAL(TYPE, SNAME, DEFAULT_VAL) IMPL_VSETTING_DEFAULT_PRIVATE(TYPE, SNAME, DEFAULT_VAL, true)
