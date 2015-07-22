@@ -17,6 +17,7 @@ class TriggerMatchingProducerBase: public KappaProducerBase
 public:
 	
 	TriggerMatchingProducerBase(std::map<TValidObject*, KLV*> KappaProduct::*triggerMatchedObjects,
+	                            std::map<TValidObject*, std::map<std::string, std::map<std::string, KLV*> > > KappaProduct::*detailedTriggerMatchedObjects,
 	                            std::vector<TValidObject*> KappaProduct::*validObjects,
 	                            std::vector<TValidObject*> KappaProduct::*invalidObjects,
 	                            std::map<size_t, std::vector<std::string> > KappaProduct::*settingsObjectTriggerFiltersByIndex,
@@ -25,6 +26,7 @@ public:
 	                            float (KappaSettings::*GetDeltaRTriggerMatchingObjects)(void) const,
 	                            bool (KappaSettings::*GetInvalidateNonMatchingObjects)(void) const) :
 		m_triggerMatchedObjects(triggerMatchedObjects),
+		m_detailedTriggerMatchedObjects(detailedTriggerMatchedObjects),
 		m_validObjects(validObjects),
 		m_invalidObjects(invalidObjects),
 		m_settingsObjectTriggerFiltersByIndex(settingsObjectTriggerFiltersByIndex),
@@ -139,8 +141,21 @@ public:
 							if (ROOT::Math::VectorUtil::DeltaR(event.m_triggerObjects->trgObjects[*triggerObjectIndex].p4,
 							                                   (*validObject)->p4) < (settings.*GetDeltaRTriggerMatchingObjects)())
 							{
-								(product.*m_triggerMatchedObjects)[*validObject] = &(event.m_triggerObjects->trgObjects[*triggerObjectIndex]);
 								hasTriggerObjectMatch = true;
+								
+								// fill simple map: reco lepton --> trigger object
+								(product.*m_triggerMatchedObjects)[*validObject] = &(event.m_triggerObjects->trgObjects[*triggerObjectIndex]);
+								
+								// fill detailed map: reco lepton --> HLT name --> filter name --> trigger object
+								if ((product.*m_detailedTriggerMatchedObjects).count(*validObject) == 0)
+								{
+									(product.*m_detailedTriggerMatchedObjects)[*validObject] = std::map<std::string, std::map<std::string, KLV*> >();
+								}
+								if ((product.*m_detailedTriggerMatchedObjects)[*validObject].count(product.m_selectedHltNames.at(iHlt)) == 0)
+								{
+									(product.*m_detailedTriggerMatchedObjects)[*validObject][product.m_selectedHltNames.at(iHlt)] = std::map<std::string, KLV*>();
+								}
+								(product.*m_detailedTriggerMatchedObjects)[*validObject][product.m_selectedHltNames.at(iHlt)][event.m_triggerObjectMetadata->toFilter[filterIndex]] = &(event.m_triggerObjects->trgObjects[*triggerObjectIndex]);
 							}
 						}
 
@@ -178,6 +193,7 @@ public:
 
 private:
 	std::map<TValidObject*, KLV*> KappaProduct::*m_triggerMatchedObjects;
+	std::map<TValidObject*, std::map<std::string, std::map<std::string, KLV*> > > KappaProduct::*m_detailedTriggerMatchedObjects;
 	std::vector<TValidObject*> KappaProduct::*m_validObjects;
 	std::vector<TValidObject*> KappaProduct::*m_invalidObjects;
 	std::map<size_t, std::vector<std::string> > KappaProduct::*m_settingsObjectTriggerFiltersByIndex;
