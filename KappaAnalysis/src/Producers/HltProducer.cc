@@ -53,7 +53,7 @@ void HltProducer::Produce(KappaEvent const& event, KappaProduct& product,
 		}
 	}
 
- 	for (unsigned int iHlt = 0; iHlt < firedHltNames.size(); iHlt++)
+	for (unsigned int iHlt = 0; iHlt < firedHltNames.size(); iHlt++)
 	{
 		std::string selectedHltName;
 		double hltPrescaleWeight = 1.0;

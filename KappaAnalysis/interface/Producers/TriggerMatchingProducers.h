@@ -66,12 +66,12 @@ public:
 			{
 				LOG(INFO) << product.m_selectedHltNames.at(iHlt) << " (" << product.m_selectedHltPositions.at(iHlt) << ")";
 				for (size_t filterIndex = event.m_triggerObjectMetadata->getMinFilterIndex(product.m_selectedHltPositions.at(iHlt));
-			     	filterIndex <= event.m_triggerObjectMetadata->getMaxFilterIndex(product.m_selectedHltPositions.at(iHlt)); ++filterIndex)
+				     filterIndex <= event.m_triggerObjectMetadata->getMaxFilterIndex(product.m_selectedHltPositions.at(iHlt)); ++filterIndex)
 				{
 					LOG(INFO) << "\t" << event.m_triggerObjectMetadata->toFilter[filterIndex] << " (" << filterIndex << ")";
 					for (std::vector<int>::const_iterator triggerObjectIndex = event.m_triggerObjects->toIdxFilter[filterIndex].begin();
-				     	triggerObjectIndex != event.m_triggerObjects->toIdxFilter[filterIndex].end();
-				     	++triggerObjectIndex)
+					     triggerObjectIndex != event.m_triggerObjects->toIdxFilter[filterIndex].end();
+					     ++triggerObjectIndex)
 					{
 						LOG(INFO) << "\t\tpt = " << event.m_triggerObjects->trgObjects[*triggerObjectIndex].p4.Pt();
 					}
@@ -92,20 +92,20 @@ public:
 
 					// loop over all filters for the particulat HLT fired
 					for (size_t filterIndex = event.m_triggerObjectMetadata->getMinFilterIndex(product.m_selectedHltPositions.at(iHlt));
-					(filterIndex < event.m_triggerObjectMetadata->getMaxFilterIndex(product.m_selectedHltPositions.at(iHlt)));
-				     	++filterIndex)
+					     (filterIndex < event.m_triggerObjectMetadata->getMaxFilterIndex(product.m_selectedHltPositions.at(iHlt)));
+					     ++filterIndex)
 					{
 						bool hltMatched = false;
 						bool filterMatched = false;
 
 						// loop over the hlt names given in the config file
 						for (std::map<std::string, std::vector<std::string>>::const_iterator objectTriggerFilterByHltName = (product.*m_settingsObjectTriggerFiltersByHltName).begin();
-					     	(!hltMatched) && (objectTriggerFilterByHltName != (product.*m_settingsObjectTriggerFiltersByHltName).end());
-					     	++objectTriggerFilterByHltName)
+						     (!hltMatched) && (objectTriggerFilterByHltName != (product.*m_settingsObjectTriggerFiltersByHltName).end());
+						     ++objectTriggerFilterByHltName)
 						{
 							// check that the hlt name given in the config matches the hlt which fired in the event
 							if (boost::regex_search(product.m_selectedHltNames.at(iHlt),
-						            boost::regex(objectTriggerFilterByHltName->first, boost::regex::icase | boost::regex::extended)))
+							                        boost::regex(objectTriggerFilterByHltName->first, boost::regex::icase | boost::regex::extended)))
 							{
 								hltMatched = true;
 								std::vector<std::string> objectTriggerFilters = objectTriggerFilterByHltName->second;
@@ -117,7 +117,7 @@ public:
 								{
 									// check that the filter regexp matches the filter
 									if (boost::regex_search(event.m_triggerObjectMetadata->toFilter[filterIndex],
-								            boost::regex(*filterName, boost::regex::icase | boost::regex::extended)))
+									                        boost::regex(*filterName, boost::regex::icase | boost::regex::extended)))
 									{
 										filterMatched = true;
 									}
@@ -132,12 +132,12 @@ public:
 						// loop over all trigger objects for this filter
 						bool hasTriggerObjectMatch = false;
 						for (std::vector<int>::const_iterator triggerObjectIndex = event.m_triggerObjects->toIdxFilter[filterIndex].begin();
-					     	(triggerObjectIndex != event.m_triggerObjects->toIdxFilter[filterIndex].end());
-					     	++triggerObjectIndex)
+						     (triggerObjectIndex != event.m_triggerObjects->toIdxFilter[filterIndex].end());
+						     ++triggerObjectIndex)
 						{
 							// check the matching
 							if (ROOT::Math::VectorUtil::DeltaR(event.m_triggerObjects->trgObjects[*triggerObjectIndex].p4,
-						           (*validObject)->p4) < (settings.*GetDeltaRTriggerMatchingObjects)())
+							                                   (*validObject)->p4) < (settings.*GetDeltaRTriggerMatchingObjects)())
 							{
 								(product.*m_triggerMatchedObjects)[*validObject] = &(event.m_triggerObjects->trgObjects[*triggerObjectIndex]);
 								hasTriggerObjectMatch = true;
