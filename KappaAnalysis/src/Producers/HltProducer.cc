@@ -24,13 +24,13 @@ void HltProducer::Produce(KappaEvent const& event, KappaProduct& product,
 	// set LumiMetadat, needs to be done here for the case running over multiple files
 	product.m_hltInfo.setLumiInfo(event.m_lumiInfo);
 
-	// search trigger with lowest prescale
+	// search (independently) for trigger with lowest prescale and for fired triggers
 	std::string lowestPrescaleHltName;
 	int lowestPrescale = std::numeric_limits<int>::max();
-
-	std::vector<std::string> firedHltNames;
-	std::vector<int> firedHltPrescales;
-
+	
+	product.m_selectedHltNames.clear();
+	product.m_selectedHltPositions.clear();
+	product.m_selectedHltPrescales.clear();
 	for (stringvector::const_iterator hltPath = product.m_settingsHltPaths.begin(); hltPath != product.m_settingsHltPaths.end(); ++hltPath)
 	{
 		std::string hltName = product.m_hltInfo.getHLTName(*hltPath);
@@ -44,56 +44,25 @@ void HltProducer::Produce(KappaEvent const& event, KappaProduct& product,
 				lowestPrescaleHltName = hltName;
 			}
 			
-			// look for fired trigger
-			if (event.m_eventInfo->hltFired(hltName, event.m_lumiInfo))
+			// look for (unprescaled if requested) fired trigger
+			if (event.m_eventInfo->hltFired(hltName, event.m_lumiInfo) && (settings.GetAllowPrescaledTrigger() || (prescale <= 1)))
 			{
-				firedHltPrescales.push_back(prescale);
-				firedHltNames.push_back(hltName);
+				product.m_selectedHltNames.push_back(hltName);
+				
+				// do not use hltName here as a parameter because *hltPath is already cached.
+				product.m_selectedHltPositions.push_back(static_cast<int>(product.m_hltInfo.getHLTPosition(*hltPath)));
+				
+				product.m_selectedHltPrescales.push_back(prescale);
 			}
 		}
 	}
-
-	for (unsigned int iHlt = 0; iHlt < firedHltNames.size(); iHlt++)
+	
+	if ((! settings.GetAllowPrescaledTrigger()) && (lowestPrescale > 1))
 	{
-		std::string selectedHltName;
-		double hltPrescaleWeight = 1.0;
-	
-		if (! product.m_hltInfo.isPrescaled(firedHltNames.at(iHlt)))
-		{
-			if (firedHltPrescales.at(iHlt) == lowestPrescale)
-			{
-				selectedHltName = firedHltNames.at(iHlt);
-				hltPrescaleWeight = firedHltPrescales.at(iHlt);
-			}
-			else
-			{
-				selectedHltName = lowestPrescaleHltName;
-				hltPrescaleWeight = lowestPrescale;
-			}
-		}
-	
-		if (settings.GetAllowPrescaledTrigger() && firedHltPrescales.at(iHlt) > lowestPrescale && (! firedHltNames.empty()))
-		{
-			selectedHltName = firedHltNames.at(iHlt);
-			hltPrescaleWeight = firedHltPrescales.at(iHlt);
-		}
-	
-		if (hltPrescaleWeight <= 0.0)
-		{
-			hltPrescaleWeight = 1.0;
-		}
-	
-		product.m_selectedHltNames.push_back(selectedHltName);
-		product.m_weights["hltPrescaleWeight"] = hltPrescaleWeight;
-		//TODO: how to define the HLT prescale eventweight when more than one HLT fires? The product of them? The min. or max. value?  
-	
-		if (! selectedHltName.empty())
-		{
-			product.m_selectedHltPositions.push_back((int) product.m_hltInfo.getHLTPosition(selectedHltName));
-		}
-		else
-		{
-			product.m_selectedHltPositions.push_back(DefaultValues::UndefinedInt);
-		}
+		LOG(WARNING) << "No unprescaled trigger found for event " << event.m_eventInfo->nEvent
+		             << "! Lowest prescale: " << lowestPrescale << " (\"" << lowestPrescaleHltName << "\").";
 	}
+	
+	// TODO: how to define the HLT prescale eventweight when more than one HLT fires? The product of them? The min. or max. value? Maybe overwrite it later?
+	product.m_weights["hltPrescaleWeight"] = lowestPrescale;
 }
