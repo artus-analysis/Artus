@@ -28,8 +28,8 @@ void HltProducer::Produce(KappaEvent const& event, KappaProduct& product,
 	std::string lowestPrescaleHltName;
 	int lowestPrescale = std::numeric_limits<int>::max();
 
-	std::vector<std::string> firedHltName;
-	std::vector<int> prescaleFiredHlt;
+	std::vector<std::string> firedHltNames;
+	std::vector<int> firedHltPrescales;
 
 	for (stringvector::const_iterator hltPath = product.m_settingsHltPaths.begin(); hltPath != product.m_settingsHltPaths.end(); ++hltPath)
 	{
@@ -47,23 +47,23 @@ void HltProducer::Produce(KappaEvent const& event, KappaProduct& product,
 			// look for fired trigger
 			if (event.m_eventInfo->hltFired(hltName, event.m_lumiInfo))
 			{
-				prescaleFiredHlt.push_back(prescale);
-				firedHltName.push_back(hltName);
+				firedHltPrescales.push_back(prescale);
+				firedHltNames.push_back(hltName);
 			}
 		}
 	}
 
- 	for (unsigned int iHlt = 0; iHlt < firedHltName.size(); iHlt++)
+ 	for (unsigned int iHlt = 0; iHlt < firedHltNames.size(); iHlt++)
 	{
 		std::string selectedHltName;
 		double hltPrescaleWeight = 1.0;
 	
-		if (! product.m_hltInfo.isPrescaled(firedHltName.at(iHlt)))
+		if (! product.m_hltInfo.isPrescaled(firedHltNames.at(iHlt)))
 		{
-			if (prescaleFiredHlt.at(iHlt) == lowestPrescale)
+			if (firedHltPrescales.at(iHlt) == lowestPrescale)
 			{
-				selectedHltName = firedHltName.at(iHlt);
-				hltPrescaleWeight = prescaleFiredHlt.at(iHlt);
+				selectedHltName = firedHltNames.at(iHlt);
+				hltPrescaleWeight = firedHltPrescales.at(iHlt);
 			}
 			else
 			{
@@ -72,10 +72,10 @@ void HltProducer::Produce(KappaEvent const& event, KappaProduct& product,
 			}
 		}
 	
-		if (settings.GetAllowPrescaledTrigger() && prescaleFiredHlt.at(iHlt) > lowestPrescale && (! firedHltName.empty()))
+		if (settings.GetAllowPrescaledTrigger() && firedHltPrescales.at(iHlt) > lowestPrescale && (! firedHltNames.empty()))
 		{
-			selectedHltName = firedHltName.at(iHlt);
-			hltPrescaleWeight = prescaleFiredHlt.at(iHlt);
+			selectedHltName = firedHltNames.at(iHlt);
+			hltPrescaleWeight = firedHltPrescales.at(iHlt);
 		}
 	
 		if (hltPrescaleWeight <= 0.0)
