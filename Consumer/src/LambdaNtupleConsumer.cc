@@ -16,12 +16,15 @@ std::map<std::string, std::function<float(EventBase const&, ProductBase const& )
 std::map<std::string, std::function<double(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonDoubleQuantities
 	= std::map<std::string, std::function<double(EventBase const&, ProductBase const& ) >>();
 
+std::map<std::string, std::function<std::string(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonStringQuantities
+	= std::map<std::string, std::function<std::string(EventBase const&, ProductBase const& ) >>();
+
 std::map<std::string, std::function<std::vector<double>(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonVDoubleQuantities
 	= std::map<std::string, std::function<std::vector<double>(EventBase const&, ProductBase const& ) >>();
 
 std::map<std::string, std::function<std::vector<float>(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonVFloatQuantities
 	= std::map<std::string, std::function<std::vector<float>(EventBase const&, ProductBase const& ) >>();
 
-std::map<std::string, std::function<std::string(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonStringQuantities
-	= std::map<std::string, std::function<std::string(EventBase const&, ProductBase const& ) >>();
+std::map<std::string, std::function<std::vector<std::string>(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonVStringQuantities
+	= std::map<std::string, std::function<std::vector<std::string>(EventBase const&, ProductBase const& ) >>();
 

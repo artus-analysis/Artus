@@ -30,7 +30,7 @@ void PUWeightProducer::Init(KappaSettings const& settings) {
 void PUWeightProducer::Produce(KappaEvent const& event, KappaProduct& product,
                      KappaSettings const& settings) const
 {
-	assert(event.m_genEventInfo != NULL);
+	assert(event.m_genEventInfo != nullptr);
 
 	unsigned int puBin = static_cast<unsigned int>(static_cast<double>(event.m_genEventInfo->nPUMean) * m_bins);
 	if (puBin < m_pileupWeights.size())

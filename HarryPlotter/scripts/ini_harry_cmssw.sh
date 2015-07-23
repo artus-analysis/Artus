@@ -14,7 +14,7 @@ export HARRY_USERPC=`who am i | sed 's/.*(\([^]]*\)).*/\1/g'`
 if [[ $HARRY_USERPC == *"ekplx"* ]]; then
 	export HARRY_SSHPC=$HARRY_USERPC
 else
-	export HARRY_SSHPC=ekplx26.physik.uni-karlsruhe.de
+	export HARRY_SSHPC=ekplx69.physik.uni-karlsruhe.de
 fi
 export HARRY_REMOTE_DIR=plots_archive
 export HARRY_REMOTE_PATH=/disks/ekpwww/web/${HARRY_REMOTE_USER}/public_html
