@@ -20,12 +20,13 @@ void EventWeightProducer::Init(KappaSettings const& settings)
 {
 	ProducerBase<KappaTypes>::Init(settings);
 	pipelineName = settings.GetName();
+	m_baseWeight = settings.GetBaseWeight();
 }
 
 void EventWeightProducer::Produce(KappaEvent const& event, KappaProduct& product,
                                   KappaSettings const& settings) const
 {
-	double eventWeight = 1.0;
+	double eventWeight = m_baseWeight;
 	bool firstRun = m_weightNames.empty();
 
 	// loop over all previously calculated weights and multiply them
