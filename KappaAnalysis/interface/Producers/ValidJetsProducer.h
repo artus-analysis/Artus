@@ -97,13 +97,13 @@ public:
 		if (!noID && jetIDVersion != JetIDVersion::ID73X)
 			LOG(WARNING) << "This jet ID version is not valid for 73X samples.";
 
-		maxFraction = 1.0;
+		maxFraction = 1.0f;
 		if (jetID == "tight")
-			maxFraction = 0.90;
+			maxFraction = 0.90f;
 		else if (jetID ==  "medium")
-			maxFraction = 0.95;
+			maxFraction = 0.95f;
 		else if (jetID ==  "loose")
-			maxFraction = 0.99;
+			maxFraction = 0.99f;
 		else if (!noID)
 			LOG(FATAL) << "Jet ID of type '" << jetID << "' not implemented!";
 
