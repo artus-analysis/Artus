@@ -1,5 +1,6 @@
 Artus	
 =====
+[![Build Status](https://travis-ci.org/artus-analysis/Artus.svg)](https://travis-ci.org/artus-analysis/Artus)
 	
 (a dedicated documentation for HarryPlotter can be found [here](https://github.com/artus-analysis/Artus/blob/master/HarryPlotter/README.md "HarryPlotter documentation"))
 
