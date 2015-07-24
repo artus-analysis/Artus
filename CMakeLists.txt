@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 project (Artus)
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wfatal-errors -std=c++0x -fpic -Wall -O2 -g -Wno-unused-local-typedefs -DSTANDALONE -Wextra -Wno-unused-parameter -Wswitch-default -Wswitch-enum -Wsync-nand -Wunused-local-typedefs -Wtrampolines -Wfloat-equal -Wno-aggressive-loop-optimizations -Wpacked -Wwrite-strings -Wstrict-overflow=3 -Wredundant-decls -Wuseless-cast -Wdisabled-optimization -Wunsafe-loop-optimizations -Wzero-as-null-pointer-constant -Wdouble-promotion -Wmissing-declarations -Wnormalized=nfkc -Wlogical-op -Wstack-protector -Wmissing-include-dirs -Wvector-operation-performance -Wmissing-format-attribute -Wundef -Wconversion -Wcast-qual -Wcast-align -Wreturn-type -Wshadow")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -std=c++0x -fpic -Wall -O2 -g -DSTANDALONE -Wextra")
 
 # to compile with clang, use: cmake . -DCMAKE_CXX_COMPILER=/usr/bin/clang++ -DCMAKE_C_COMPILER=/usr/bin/clang
 
@@ -42,6 +42,10 @@ add_library(artus_core SHARED
 	Core/src/OsSignalHandler.cc
 )
 
+target_link_libraries(artus_core
+	${ROOT_LIBRARIES}
+	)
+
 add_library(artus_configuration SHARED
 	Configuration/src/ArtusConfig.cc
 	Configuration/src/PropertyTreeSupport.cc
@@ -52,10 +56,14 @@ add_library(artus_configuration SHARED
 if ( USE_BOOST_CMSSW )
 	target_link_libraries( artus_configuration
 			-L${BOOST_LIB_DIR}
-	        boost_program_options)
+	        boost_program_options
+			${ROOT_LIBRARIES}
+			)
 else()
 	target_link_libraries(artus_configuration
-	boost_program_options)
+	boost_program_options
+	${ROOT_LIBRARIES}
+	)
 endif()
 
 add_library(artus_consumer SHARED
@@ -80,6 +88,12 @@ add_library(artus_utility SHARED
 	Utility/src/DefaultValues.cc
 	Utility/src/CutRange.cc
 )
+
+target_link_libraries(artus_utility
+	${ROOT_LIBRARIES}
+	)
+
+
 
 if(EXISTS "../CondFormats")
 	message(STATUS "Looking for offline jet corrections: found ../CondFormats")
