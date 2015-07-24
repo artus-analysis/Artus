@@ -69,6 +69,10 @@ public:
 		VBTF95_TIGHT = 5,
 		FAKEABLE = 6,
 		USER  = 7,
+		VETO = 8,
+		LOOSE = 9,
+		MEDIUM = 10,
+		TIGHT = 11,
 	};
 	static ElectronID ToElectronID(std::string const& electronID)
 	{
@@ -81,6 +85,10 @@ public:
 		else if (electronID == "fakeable") return ElectronID::FAKEABLE;
 		else if (electronID == "user") return ElectronID::USER;
 		else if (electronID == "none") return ElectronID::NONE;
+		else if (electronID == "veto") return ElectronID::VETO;
+		else if (electronID == "loose") return ElectronID::LOOSE;
+		else if (electronID == "medium") return ElectronID::MEDIUM;
+		else if (electronID == "tight") return ElectronID::TIGHT;
 		else
 			LOG(FATAL) << "Could not find ElectronID " << electronID << "! If you want the ValidElectronsProducer to use no special ID, use \"none\" as argument."<< std::endl;
 		return ElectronID::INVALID;
@@ -228,6 +236,14 @@ public:
 				valid = valid && IsTightVbtf95Electron(*electron, event, product);
 			else if (electronID == ElectronID::FAKEABLE)
 				valid = valid && IsFakeableElectron(*electron, event, product);
+			else if (electronID == ElectronID::VETO)
+				valid = valid && (*electron)->idVeto();
+			else if (electronID == ElectronID::LOOSE)
+				valid = valid && (*electron)->idLoose();
+			else if (electronID == ElectronID::MEDIUM)
+				valid = valid && (*electron)->idMedium();
+			else if (electronID == ElectronID::TIGHT)
+				valid = valid && (*electron)->idTight();
 			else if (electronID != ElectronID::USER && electronID != ElectronID::NONE)
 				LOG(FATAL) << "Electron ID of type " << Utility::ToUnderlyingValue(electronID) << " not yet implemented!";
 
