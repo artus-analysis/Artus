@@ -48,7 +48,6 @@ target_link_libraries(artus_core
 
 add_library(artus_configuration SHARED
 	Configuration/src/ArtusConfig.cc
-	Configuration/src/PropertyTreeSupport.cc
 	Configuration/src/RootEnvironment.cc
 	Configuration/src/SettingsBase.cc
 )
