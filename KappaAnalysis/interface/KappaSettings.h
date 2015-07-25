@@ -283,6 +283,7 @@ public:
 	IMPL_SETTING(std::string, PileupWeightFile);
 	
 	IMPL_SETTING(std::string, EventWeight);
+	IMPL_SETTING_DEFAULT(double, BaseWeight, 1.0);
 
 	// TMVA reader settings
 	IMPL_VSETTING_DEFAULT(std::string, TmvaInputQuantities, {});

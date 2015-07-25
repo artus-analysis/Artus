@@ -18,4 +18,4 @@ else
 fi
 export HARRY_REMOTE_DIR=plots_archive
 export HARRY_REMOTE_PATH=/disks/ekpwww/web/${HARRY_REMOTE_USER}/public_html
-export HARRY_URL=http://www-ekp.physik.uni-karlsruhe.de/~${HARRY_REMOTE_USER}
+export HARRY_URL=http://www.ekp.kit.edu/~${HARRY_REMOTE_USER}

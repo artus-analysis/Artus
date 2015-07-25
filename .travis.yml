@@ -1,0 +1,27 @@
+sudo: required
+language: cpp
+notifications:
+  email:
+    on_success: never # default: change
+    on_failure: never # default: always
+compiler:
+  - gcc
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-4.8
+    - g++-4.8
+    - clang
+before_install:
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+  - sudo add-apt-repository --yes ppa:boost-latest/ppa
+  - sudo apt-get -qq update
+  - sudo apt-get install libboost1.54-all-dev 
+  - ./.install_dependencies.sh
+install: 
+  - cmake .
+  - make VERBOSE=1
+script: 
+  - ./artus_core_test

@@ -378,7 +378,7 @@ class PlotBase(processor.Processor):
 		# if lumi and energy are available:
 		if (not plotData.plotdict["lumis"] is None) and (not plotData.plotdict["energies"] is None):
 			for lumi, energy in zip(plotData.plotdict["lumis"], plotData.plotdict["energies"]):
-				if lumi < 0.01: # TODO make this configurable?
+				if lumi < 0.5:
 					unit = "pb"
 					factor = 1000
 				else:
