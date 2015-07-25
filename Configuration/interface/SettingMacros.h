@@ -99,9 +99,8 @@ virtual std::vector < TYPE > & Get##SNAME () const { \
 	else if (PropertyTreeSupport::DoesSettingExist(GetPropTree(), #SNAME)) { \
 		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsList< TYPE >(GetPropTree(), #SNAME )); \
 	} \
-	else { \
-		LOG(FATAL) << "Could not read value for config tag \"" << (#SNAME) << "\" in pipeline or global settings! It is either not specified or the specified type is incompatible!"; \
-	} \
+	LOG(FATAL) << "Could not read value for config tag \"" << (#SNAME) << "\" in pipeline or global settings! It is either not specified or the specified type is incompatible!"; \
+	throw std::runtime_error("Invalid Setting."); \
 }
 #define IMPL_VSETTING_DEFAULT_PRIVATE( TYPE, SNAME, DEFAULT_VAL, READGLOBAL) \
 VarCache< std::vector< TYPE > > m_##SNAME; \
@@ -119,5 +118,5 @@ virtual std::vector < TYPE > & Get##SNAME () const { \
 
 #define IMPL_VSETTING_DEFAULT(TYPE, SNAME, DEFAULT_VAL) IMPL_VSETTING_DEFAULT_PRIVATE(TYPE, SNAME, DEFAULT_VAL, false)
 #define IMPL_VSETTING_DEFAULT_GLOBAL(TYPE, SNAME, DEFAULT_VAL) IMPL_VSETTING_DEFAULT_PRIVATE(TYPE, SNAME, DEFAULT_VAL, true)
-#define IMPL_VSETTING(TYPE, SNAME, DEFAULT_VAL) IMPL_VSETTING_PRIVATE(TYPE, SNAME, DEFAULT_VAL, false)
-#define IMPL_VSETTING_GLOBAL(TYPE, SNAME, DEFAULT_VAL) IMPL_VSETTING_PRIVATE(TYPE, SNAME, DEFAULT_VAL, true)
+#define IMPL_VSETTING(TYPE, SNAME) IMPL_VSETTING_PRIVATE(TYPE, SNAME, false)
+#define IMPL_VSETTING_GLOBAL(TYPE, SNAME) IMPL_VSETTING_PRIVATE(TYPE, SNAME, true)
