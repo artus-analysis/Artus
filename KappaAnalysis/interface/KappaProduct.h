@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "Kappa/DataFormats/interface/Kappa.h"
@@ -96,8 +95,10 @@ public:
 	std::vector<KJet*> m_nonBTaggedJets;
 	
 	mutable HLTTools m_hltInfo = HLTTools();
-	std::string m_selectedHltName;
-	int m_selectedHltPosition;
+	// selected means fired (and unprescaled if requested)
+	std::vector<std::string> m_selectedHltNames;
+	std::vector<int> m_selectedHltPositions;
+	std::vector<int> m_selectedHltPrescales;
 
 	/// added by TriggerMatchingProducer
 	std::map<KElectron*, KLV*> m_triggerMatchedElectrons;
@@ -105,6 +106,14 @@ public:
 	std::map<KTau*, KLV*> m_triggerMatchedTaus;
 	std::map<KBasicJet*, KLV*> m_triggerMatchedJets;
 	std::map<KJet*, KLV*> m_triggerMatchedTaggedJets;
+	
+	/// added by TriggerMatchingProducer
+	// m_detailedTriggerMatchedElectrons[reco lepton][HLT name][filter name] = trigger object
+	std::map<KElectron*, std::map<std::string, std::map<std::string, KLV*> > > m_detailedTriggerMatchedElectrons;
+	std::map<KMuon*, std::map<std::string, std::map<std::string, KLV*> > > m_detailedTriggerMatchedMuons;
+	std::map<KTau*, std::map<std::string, std::map<std::string, KLV*> > > m_detailedTriggerMatchedTaus;
+	std::map<KBasicJet*, std::map<std::string, std::map<std::string, KLV*> > > m_detailedTriggerMatchedJets;
+	std::map<KJet*, std::map<std::string, std::map<std::string, KLV*> > > m_detailedTriggerMatchedTaggedJets;
 
 	/// added by GenMatchingProducer
 	std::map<KElectron*, KGenParticle*> m_genParticleMatchedElectrons;

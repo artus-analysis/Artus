@@ -179,23 +179,23 @@ public:
 				{
 					producer_base_type& prod = static_cast<producer_base_type&>(*it);
 					//LOG(DEBUG) << prod.GetProducerId() << "::Produce";
-					gettimeofday(&tStart, 0);
+					gettimeofday(&tStart, nullptr);
 					ProducerBaseAccess(prod).Produce(evtProvider.GetCurrentEvent(),
 							productGlobal, settings);
-					gettimeofday(&tEnd, 0);
-					runTime = ( tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec );
+					gettimeofday(&tEnd, nullptr);
+					runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);
 					productGlobal.processorRunTime[prod.GetProducerId()] = runTime;
 				}
 				else if ( it->GetProcessNodeType () == ProcessNodeType::Filter )
 				{
 					filter_base_type& flt = static_cast<filter_base_type&>(*it);
 					//LOG(DEBUG) << flt.GetFilterId() << "::DoesEventPass";
-					gettimeofday(&tStart, 0);
+					gettimeofday(&tStart, nullptr);
 					const bool filterResult = FilterBaseAccess(flt).DoesEventPass(evtProvider.GetCurrentEvent(),
 							productGlobal, settings);
 					globalFilterResult.SetFilterDecision(flt.GetFilterId(), filterResult);
-					gettimeofday(&tEnd, 0);
-					runTime = ( tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec );
+					gettimeofday(&tEnd, nullptr);
+					runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);
 					productGlobal.processorRunTime[flt.GetFilterId()] = runTime;
 				}
 				else

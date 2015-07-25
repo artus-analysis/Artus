@@ -1,4 +1,3 @@
-
 #include "Artus/KappaAnalysis/interface/Producers/GenParticleMatchingProducers.h"
 
 
@@ -28,14 +27,14 @@ void RecoJetGenParticleMatchingProducer::Produce(event_type const& event, produc
 			 validJet != product.m_validJets.end();)
 		{
 			KGenParticle* matchedParticle = Match(event, product, settings, static_cast<KLV*>(*validJet));
-			if (matchedParticle != NULL)
+			if (matchedParticle != nullptr)
 			{
 				product.m_genParticleMatchedJets[*validJet] = matchedParticle;
 			}
 
 			// invalidate (non) matching jets if requested
-			if (((matchedParticle == NULL) && m_InvalidateNonGenParticleMatchingRecoJets) ||
-			    ((matchedParticle != NULL) && m_InvalidateGenParticleMatchingRecoJets))
+			if (((matchedParticle == nullptr) && m_InvalidateNonGenParticleMatchingRecoJets) ||
+			    ((matchedParticle != nullptr) && m_InvalidateGenParticleMatchingRecoJets))
 			{
 				product.m_invalidJets.push_back(*validJet);
 				validJet = product.m_validJets.erase(validJet);
@@ -63,10 +62,10 @@ KGenParticle* RecoJetGenParticleMatchingProducer::Match(event_type const& event,
 	float deltaR = 0.0;
 	size_t nMatchingAlgoPartons = 0;
 	size_t nMatchingPhysPartons = 0;
-	KGenParticle* hardestPhysParton = NULL;
-	KGenParticle* hardestParton = NULL;
-	KGenParticle* hardestBQuark = NULL;
-	KGenParticle* hardestCQuark = NULL;
+	KGenParticle* hardestPhysParton = nullptr;
+	KGenParticle* hardestParton = nullptr;
+	KGenParticle* hardestBQuark = nullptr;
+	KGenParticle* hardestCQuark = nullptr;
 
 	// loop over all genParticles 
 	for (std::vector<KGenParticle>::iterator genParticle = event.m_genParticles->begin();
@@ -89,7 +88,7 @@ KGenParticle* RecoJetGenParticleMatchingProducer::Match(event_type const& event,
 					++nMatchingAlgoPartons;
 					if (std::abs(genParticle->pdgId()) == 5)
 					{ 
-						if (hardestBQuark == NULL)
+						if (hardestBQuark == nullptr)
 						{
 							hardestBQuark = &(*genParticle);
 						}
@@ -100,7 +99,7 @@ KGenParticle* RecoJetGenParticleMatchingProducer::Match(event_type const& event,
 					}
 					else if (std::abs(genParticle->pdgId()) == 4)
 					{ 
-						if (hardestCQuark == NULL)
+						if (hardestCQuark == nullptr)
 						{
 							hardestCQuark = &(*genParticle);
 						}
@@ -109,7 +108,7 @@ KGenParticle* RecoJetGenParticleMatchingProducer::Match(event_type const& event,
 							hardestCQuark = &(*genParticle);
 						}
 					}
-					else if (hardestParton == NULL)
+					else if (hardestParton == nullptr)
 					{
 						hardestParton = &(*genParticle);
 					}
@@ -179,7 +178,7 @@ KGenParticle* RecoJetGenParticleMatchingProducer::Match(event_type const& event,
 			return &(*hardestPhysParton);
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 

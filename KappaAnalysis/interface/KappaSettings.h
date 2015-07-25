@@ -7,7 +7,7 @@
 
 /**
    \brief Reads settings for all parts of the KappaAnalysis code from a prepared
-   json configuration file. 
+   json configuration file.
 
    Defines settings that can be obtained from the json configuration file.
 */
@@ -16,7 +16,7 @@ class KappaSettings: public SettingsBase {
 public:
 
 	IMPL_SETTING_DEFAULT(bool, BatchMode, false);
-	
+
 	IMPL_SETTING(std::string, Nickname);
 
 	/// name of electron collection in kappa tuple	
@@ -44,7 +44,7 @@ public:
 
 	/// name of MET collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, Met, "");
-	
+
 	/// name of GenMET collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, GenMet, "");
 
@@ -59,7 +59,7 @@ public:
 
 	/// name of vertexSummary collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, VertexSummary, "");
-	
+
 	/// name of track summary collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, TrackSummary, "");
 
@@ -97,7 +97,7 @@ public:
 	IMPL_VSETTING_DEFAULT(std::string, JsonFiles, {});
 	IMPL_SETTING_DEFAULT(int, PassRunLow, 0);
 	IMPL_SETTING_DEFAULT(int, PassRunHigh, 0);
-	
+
 	// Good Primary Vertex Filter
 	IMPL_SETTING(float, MaxPrimaryVertexZ);
 	IMPL_SETTING(float, MaxPrimaryVertexRho);
@@ -131,20 +131,20 @@ public:
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonMatchingMuons, true);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonMatchingTaus, true);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonMatchingJets, true);
-	
-	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoElectronsGenParticle, 0.5);
-	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoMuonGenParticle, 0.5);
-	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoTauGenParticle, 0.5);
-	
-	IMPL_SETTING_DEFAULT(float, MinDeltaRMatchedRecoElectrons, 0.5);
-	IMPL_SETTING_DEFAULT(float, MinDeltaRMatchedRecoMuons, 0.5);
-	IMPL_SETTING_DEFAULT(float, MinDeltaRMatchedRecoTaus, 0.5);
-	
-	IMPL_SETTING_DEFAULT(float, MinDeltaRValidElectrons, 0.5);
-	IMPL_SETTING_DEFAULT(float, MinDeltaRValidMuons, 0.5);
-	IMPL_SETTING_DEFAULT(float, MinDeltaRValidTaus, 0.5);
-	IMPL_SETTING_DEFAULT(float, MinDeltaRValidLeptons, 0.5);
-	
+
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoElectronsGenParticle, 0.5f);
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoMuonGenParticle, 0.5f);
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoTauGenParticle, 0.5f);
+
+	IMPL_SETTING_DEFAULT(float, MinDeltaRMatchedRecoElectrons, 0.5f);
+	IMPL_SETTING_DEFAULT(float, MinDeltaRMatchedRecoMuons, 0.5f);
+	IMPL_SETTING_DEFAULT(float, MinDeltaRMatchedRecoTaus, 0.5f);
+
+	IMPL_SETTING_DEFAULT(float, MinDeltaRValidElectrons, 0.5f);
+	IMPL_SETTING_DEFAULT(float, MinDeltaRValidMuons, 0.5f);
+	IMPL_SETTING_DEFAULT(float, MinDeltaRValidTaus, 0.5f);
+	IMPL_SETTING_DEFAULT(float, MinDeltaRValidLeptons, 0.5f);
+
 	std::vector<int> RecoElectronMatchingGenParticlePdgIds = {-11, 11};
 	std::vector<int> RecoMuonMatchingGenParticlePdgIds = {-13, 13};
 	std::vector<int> RecoTauMatchingGenParticlePdgIds = {-15, 15};
@@ -155,32 +155,32 @@ public:
 	IMPL_SETTING_DEFAULT(int, RecoElectronMatchingGenParticleStatus, -1);
 	IMPL_SETTING_DEFAULT(int, RecoMuonMatchingGenParticleStatus, -1);
 	IMPL_SETTING_DEFAULT(int, RecoTauMatchingGenParticleStatus, -1);
-	
-	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoJetGenParticle, 0.3);
+
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoJetGenParticle, 0.3f);
 	IMPL_SETTING_DEFAULT(std::string, JetMatchingAlgorithm, "algorithmic");
 	IMPL_SETTING_DEFAULT(int, RecoJetMatchingGenParticleStatus, 3);  //keep pythia6 status as default for back-compatibility
-	
+
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenParticleMatchingRecoElectrons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenParticleMatchingRecoMuons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenParticleMatchingRecoTaus, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenParticleMatchingRecoJets, false);
-	
+
 	IMPL_SETTING_DEFAULT(bool, InvalidateGenParticleMatchingRecoElectrons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateGenParticleMatchingRecoMuons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateGenParticleMatchingRecoTaus, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateGenParticleMatchingRecoJets, false);
 
-	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoElectronGenTau, 0.5);
-	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoMuonGenTau, 0.5);
-	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoTauGenTau, 0.5);
-	
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoElectronGenTau, 0.5f);
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoMuonGenTau, 0.5f);
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoTauGenTau, 0.5f);
+
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenTauMatchingRecoElectrons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenTauMatchingRecoMuons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenTauMatchingRecoTaus, false);
 
-	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoElectronGenTauJet, 0.5);
-	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoMuonGenTauJet, 0.5);
-	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoTauGenTauJet, 0.5);
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoElectronGenTauJet, 0.5f);
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoMuonGenTauJet, 0.5f);
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoTauGenTauJet, 0.5f);
 	
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenTauJetMatchingRecoElectrons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenTauJetMatchingRecoMuons, false);
@@ -208,11 +208,11 @@ public:
 	IMPL_VSETTING_DEFAULT(std::string, JetEnergyCorrectionParameters, {});
 	IMPL_SETTING_DEFAULT(std::string, JetEnergyCorrectionUncertaintyParameters, "");
 	IMPL_SETTING_DEFAULT(std::string, JetEnergyCorrectionUncertaintySource, "");
-	IMPL_SETTING_DEFAULT(float, JetEnergyCorrectionUncertaintyShift, 0.0);
-	
+	IMPL_SETTING_DEFAULT(float, JetEnergyCorrectionUncertaintyShift, 0.0f);
+
 	IMPL_SETTING_DEFAULT(std::string, ValidJetsInput, "auto");
 	IMPL_SETTING(std::string, JetID);
-	IMPL_SETTING_DEFAULT(float, JetLeptonLowerDeltaRCut, -1.0);
+	IMPL_SETTING_DEFAULT(float, JetLeptonLowerDeltaRCut, -1.0f);
 	IMPL_SETTING_DEFAULT(std::string, JetIDVersion, "2010");
 	IMPL_SETTING_DEFAULT(std::string, PuJetIDFullDiscrName, "puJetIDFullDiscriminant");
 	IMPL_VSETTING_DEFAULT(std::string, PuJetIDs, {});
@@ -253,14 +253,14 @@ public:
 	IMPL_VSETTING_DEFAULT(std::string, TauUpperAbsEtaCuts, {});
 	IMPL_VSETTING_DEFAULT(std::string, JetUpperAbsEtaCuts, {});
 	
-	IMPL_SETTING_DEFAULT(float, BTaggedJetAbsEtaCut, 0.0);
+	IMPL_SETTING_DEFAULT(float, BTaggedJetAbsEtaCut, 0.0f);
 	IMPL_SETTING_DEFAULT(std::string, BTaggedJetTrackCountingHighEffName, "TrackCountingHighEffBJetTags");
 	IMPL_SETTING_DEFAULT(std::string, BTaggedJetCombinedSecondaryVertexName, "CombinedSecondaryVertexBJetTags");
-	IMPL_SETTING_DEFAULT(float, BTaggedJetCombinedSecondaryVertexMediumWP, 0.0);
+	IMPL_SETTING_DEFAULT(float, BTaggedJetCombinedSecondaryVertexMediumWP, 0.0f);
 	IMPL_SETTING_DEFAULT(bool, ApplyBTagSF, false);
 	IMPL_SETTING(std::string, BTagSFMethod);
-	IMPL_SETTING_DEFAULT(float, BTagShift, 0.0);
-	IMPL_SETTING_DEFAULT(float, BMistagShift, 0.0);
+	IMPL_SETTING_DEFAULT(float, BTagShift, 0.0f);
+	IMPL_SETTING_DEFAULT(float, BMistagShift, 0.0f);
 	
 	//Reading Boson PdgId and Status code for GenTauDecayProducer studies.
 	IMPL_SETTING(int, BosonPdgId);

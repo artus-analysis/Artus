@@ -43,7 +43,7 @@ public:
 		m_tree = new TTree("runTime", "runTime");
 
 		// initialize branches
-		int i=0;
+		int i = 0;
 		std::string processorName;
 		m_runTime.resize(processors.size());
 		for (std::string processor : processors) {

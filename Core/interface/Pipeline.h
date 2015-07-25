@@ -103,10 +103,10 @@ public:
 	/// can create specific Filters and Consumers
 	virtual void InitPipeline(setting_type pset,
 			PipelineInitilizerBase<TTypes> const& initializer) {
-		
+
 		LOG(DEBUG) << "";
 		LOG(DEBUG) << "Initialize pipeline \"" << pset.GetName() << "\".";
-		
+
 		m_pipelineSettings = pset;
 		initializer.InitPipeline(this, pset);
 
@@ -193,24 +193,24 @@ public:
 			// already failed
 			if (! localFilterResult.HasPassed())
 				break;
-			
+
 			if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
 				ProducerForThisPipeline& prod = static_cast<ProducerForThisPipeline&>(*it);
 				//LOG(DEBUG) << prod.GetProducerId() << "::Produce (pipeline: " << m_pipelineSettings.GetName() << ")";
-				gettimeofday(&tStart, 0);
+				gettimeofday(&tStart, nullptr);
 				ProducerBaseAccess(prod).Produce(evt, localProduct, m_pipelineSettings);
-				gettimeofday(&tEnd, 0);
-				runTime = ( tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec );
+				gettimeofday(&tEnd, nullptr);
+				runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);  // a long int might be needed here but SafeMaps for long ints are not yet working
 				localProduct.processorRunTime[prod.GetProducerId()] = runTime;
 			}
 			else if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
 				FilterForThisPipeline & flt = static_cast<FilterForThisPipeline&>(*it);
 				//LOG(DEBUG) << flt.GetFilterId() << "::DoesEventPass (pipeline: " << m_pipelineSettings.GetName() << ")";
-				gettimeofday(&tStart, 0);
+				gettimeofday(&tStart, nullptr);
 				const bool filterResult = FilterBaseAccess(flt).DoesEventPass(evt, localProduct, m_pipelineSettings);
 				localFilterResult.SetFilterDecision(flt.GetFilterId(), filterResult);
-				gettimeofday(&tEnd, 0);
-				runTime = ( tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec );
+				gettimeofday(&tEnd, nullptr);
+				runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);  // a long int might be needed here but SafeMaps for long ints are not yet working
 				localProduct.processorRunTime[flt.GetFilterId()] = runTime;
 			}
 			else {
@@ -243,7 +243,7 @@ public:
 			}
 		}
 
-		return NULL;
+		return nullptr;
 	}
 
 	/// Return a reference to the settings used within this pipeline.
@@ -253,7 +253,7 @@ public:
 
 	/// Add a new Filter to this Pipeline. The object will be freed in Pipelines destructor.
 	virtual void AddFilter(FilterForThisPipeline * pFilter) {
-		if (FindFilter(pFilter->GetFilterId()) != NULL)
+		if (FindFilter(pFilter->GetFilterId()) != nullptr)
 			throw std::exception();
 
 		m_nodes.push_back(pFilter);

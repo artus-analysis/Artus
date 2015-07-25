@@ -93,7 +93,7 @@ public:
 	{
 	}
 
-	virtual void Init(setting_type const& settings) override 
+	virtual void Init(setting_type const& settings) override
 	{
 		KappaProducerBase::Init(settings);
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("ratioGenParticleMatched", [](event_type const & event, product_type const & product)
@@ -110,21 +110,21 @@ public:
 						 setting_type const& settings) const override
 	{
 		assert(event.m_genParticles);
-		
-		float ratioGenParticleMatched = 0;
-		
-		if ((settings.*GetDeltaRMatchingRecoLeptonsGenParticle)() > 0.0)
+
+		float ratioGenParticleMatched = 0.0f;
+
+		if ((settings.*GetDeltaRMatchingRecoLeptonsGenParticle)() > 0.0f)
 		{
 			// loop over all valid leptons to check
 			for (typename std::vector<TLepton*>::iterator validLepton = (product.*m_validLeptons).begin();
 				 validLepton != (product.*m_validLeptons).end();)
 			{
 				bool leptonMatched = false;
-				float deltaR = 0.0;
-				
+				float deltaR = 0.0f;
+
 				// loop over all genParticles
 				for (typename std::vector<KGenParticle>::iterator genParticle = event.m_genParticles->begin();
-					 !leptonMatched && genParticle != event.m_genParticles->end(); ++genParticle) 
+					 !leptonMatched && genParticle != event.m_genParticles->end(); ++genParticle)
 				{
 					// only use genParticles that will decay into comparable particles
 					if ((settings.*GetRecoLeptonMatchingGenParticlePdgIds)().empty() ||
