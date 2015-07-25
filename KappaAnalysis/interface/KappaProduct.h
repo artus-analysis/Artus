@@ -107,6 +107,8 @@ public:
 	std::map<KBasicJet*, KLV*> m_triggerMatchedJets;
 	std::map<KJet*, KLV*> m_triggerMatchedTaggedJets;
 	
+	std::map<KLepton*, KLV*> m_triggerMatchedLeptons;
+	
 	/// added by TriggerMatchingProducer
 	// m_detailedTriggerMatchedElectrons[reco lepton][HLT name][filter name] = trigger object
 	std::map<KElectron*, std::map<std::string, std::map<std::string, KLV*> > > m_detailedTriggerMatchedElectrons;
@@ -114,6 +116,8 @@ public:
 	std::map<KTau*, std::map<std::string, std::map<std::string, KLV*> > > m_detailedTriggerMatchedTaus;
 	std::map<KBasicJet*, std::map<std::string, std::map<std::string, KLV*> > > m_detailedTriggerMatchedJets;
 	std::map<KJet*, std::map<std::string, std::map<std::string, KLV*> > > m_detailedTriggerMatchedTaggedJets;
+	
+	std::map<KLepton*, std::map<std::string, std::map<std::string, KLV*> >* > m_detailedTriggerMatchedLeptons;
 
 	/// added by GenMatchingProducer
 	std::map<KElectron*, KGenParticle*> m_genParticleMatchedElectrons;

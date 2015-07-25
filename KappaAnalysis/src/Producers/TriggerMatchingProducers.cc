@@ -20,6 +20,24 @@ ElectronTriggerMatchingProducer::ElectronTriggerMatchingProducer() :
 {
 }
 
+void ElectronTriggerMatchingProducer::Produce(KappaEvent const& event, KappaProduct& product,
+                                              KappaSettings const& settings) const
+{
+	TriggerMatchingProducerBase<KElectron>::Produce(event, product, settings);
+	
+	for (std::map<KElectron*, KLV*>::iterator it = product.m_triggerMatchedElectrons.begin();
+	     it != product.m_triggerMatchedElectrons.end(); ++it)
+	{
+		product.m_triggerMatchedLeptons[&(*(it->first))] = &(*(it->second));
+	}
+	
+	for (std::map<KElectron*, std::map<std::string, std::map<std::string, KLV*> > >::iterator it = product.m_detailedTriggerMatchedElectrons.begin();
+	     it != product.m_detailedTriggerMatchedElectrons.end(); ++it)
+	{
+		product.m_detailedTriggerMatchedLeptons[&(*(it->first))] = &(it->second);
+	}
+}
+
 
 std::string MuonTriggerMatchingProducer::GetProducerId() const
 {
@@ -39,6 +57,24 @@ MuonTriggerMatchingProducer::MuonTriggerMatchingProducer() :
 {
 }
 
+void MuonTriggerMatchingProducer::Produce(KappaEvent const& event, KappaProduct& product,
+                                              KappaSettings const& settings) const
+{
+	TriggerMatchingProducerBase<KMuon>::Produce(event, product, settings);
+	
+	for (std::map<KMuon*, KLV*>::iterator it = product.m_triggerMatchedMuons.begin();
+	     it != product.m_triggerMatchedMuons.end(); ++it)
+	{
+		product.m_triggerMatchedLeptons[&(*(it->first))] = &(*(it->second));
+	}
+	
+	for (std::map<KMuon*, std::map<std::string, std::map<std::string, KLV*> > >::iterator it = product.m_detailedTriggerMatchedMuons.begin();
+	     it != product.m_detailedTriggerMatchedMuons.end(); ++it)
+	{
+		product.m_detailedTriggerMatchedLeptons[&(*(it->first))] = &(it->second);
+	}
+}
+
 
 std::string TauTriggerMatchingProducer::GetProducerId() const
 {
@@ -56,6 +92,24 @@ TauTriggerMatchingProducer::TauTriggerMatchingProducer() :
 	                                  &KappaSettings::GetDeltaRTriggerMatchingTaus,
 	                                  &KappaSettings::GetInvalidateNonMatchingTaus)
 {
+}
+
+void TauTriggerMatchingProducer::Produce(KappaEvent const& event, KappaProduct& product,
+                                              KappaSettings const& settings) const
+{
+	TriggerMatchingProducerBase<KTau>::Produce(event, product, settings);
+	
+	for (std::map<KTau*, KLV*>::iterator it = product.m_triggerMatchedTaus.begin();
+	     it != product.m_triggerMatchedTaus.end(); ++it)
+	{
+		product.m_triggerMatchedLeptons[&(*(it->first))] = &(*(it->second));
+	}
+	
+	for (std::map<KTau*, std::map<std::string, std::map<std::string, KLV*> > >::iterator it = product.m_detailedTriggerMatchedTaus.begin();
+	     it != product.m_detailedTriggerMatchedTaus.end(); ++it)
+	{
+		product.m_detailedTriggerMatchedLeptons[&(*(it->first))] = &(it->second);
+	}
 }
 
 

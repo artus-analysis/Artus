@@ -222,6 +222,9 @@ public:
 	virtual std::string GetProducerId() const override;
 	
 	ElectronTriggerMatchingProducer();
+	
+	virtual void Produce(KappaEvent const& event, KappaProduct& product,
+	                     KappaSettings const& settings) const override;
 
 };
 
@@ -240,6 +243,9 @@ public:
 	virtual std::string GetProducerId() const override;
 	
 	MuonTriggerMatchingProducer();
+	
+	virtual void Produce(KappaEvent const& event, KappaProduct& product,
+	                     KappaSettings const& settings) const override;
 
 };
 
@@ -258,6 +264,9 @@ public:
 	virtual std::string GetProducerId() const override;
 	
 	TauTriggerMatchingProducer();
+	
+	virtual void Produce(KappaEvent const& event, KappaProduct& product,
+	                     KappaSettings const& settings) const override;
 
 };
 
