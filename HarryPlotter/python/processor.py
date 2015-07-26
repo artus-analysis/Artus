@@ -48,23 +48,22 @@ class Processor(object):
 		for key in keys_of_list_args:
 			if not isinstance(plotData.plotdict[key], collections.Iterable) or isinstance(plotData.plotdict[key], basestring):
 				plotData.plotdict[key] = [plotData.plotdict[key]]
-		
-		
-		max_n_inputs = n_items if n_items != None else max([len(plotData.plotdict[key]) for key in keys_of_list_args])
-		
-		# expand/cut warnings, if needed
-		warning = False
-		for key, plot_list in [(key, plotData.plotdict[key]) for key in keys_of_list_args]:
-			if len(plot_list) != 1 and len(plot_list) < max_n_inputs:
-				warning = True
-				log.warning("Argument '%s' with length %d will be repeated until length %d! Is this correct?" % (key, len(plot_list), max_n_inputs))
-		if warning:
-			for key in [key for key in keys_of_list_args if len(plotData.plotdict[key]) == max_n_inputs]:
-				log.warning("Argument '%s' has length %d! Is this correct?" % (key, max_n_inputs))
-
+		max_n_inputs = n_items or max(len(plotData.plotdict[key]) for key in keys_of_list_args)
+		# warn if any input does not match length
+		if any((1 < len(plotData.plotdict[key]) < max_n_inputs) for key in keys_of_list_args):
+			log.warning(
+				"Parameters '%s' require parameter list length of %d."
+				" Parameters '%s' will be replicated to match required length." % (
+					"', '".join(key for key in keys_of_list_args if len(plotData.plotdict[key]) == max_n_inputs),
+					max_n_inputs,
+					"', '".join(key for key in keys_of_list_args if len(plotData.plotdict[key]) < max_n_inputs),
+				)
+			)
 		# expand/cut lists that are too short/long
-		for key, plot_list in [(key, plotData.plotdict[key]) for key in keys_of_list_args]:
-			plotData.plotdict[key] = (plot_list * max_n_inputs)[:max_n_inputs]
+		for key, plot_list in ( (key, plotData.plotdict[key]) for key in keys_of_list_args):
+			if len(plot_list) < max_n_inputs:
+				plot_list *= (max_n_inputs / len(plot_list)) + 1
+			plotData.plotdict[key] = plot_list[:max_n_inputs]
 		
 		if log.isEnabledFor(logging.DEBUG):
 			log.debug("Argument list expansion")
