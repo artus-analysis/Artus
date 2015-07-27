@@ -31,7 +31,7 @@ void ElectronTriggerMatchingProducer::Produce(KappaEvent const& event, KappaProd
 		product.m_triggerMatchedLeptons[&(*(it->first))] = &(*(it->second));
 	}
 	
-	for (std::map<KElectron*, std::map<std::string, std::map<std::string, KLV*> > >::iterator it = product.m_detailedTriggerMatchedElectrons.begin();
+	for (std::map<KElectron*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > >::iterator it = product.m_detailedTriggerMatchedElectrons.begin();
 	     it != product.m_detailedTriggerMatchedElectrons.end(); ++it)
 	{
 		product.m_detailedTriggerMatchedLeptons[&(*(it->first))] = &(it->second);
@@ -68,7 +68,7 @@ void MuonTriggerMatchingProducer::Produce(KappaEvent const& event, KappaProduct&
 		product.m_triggerMatchedLeptons[&(*(it->first))] = &(*(it->second));
 	}
 	
-	for (std::map<KMuon*, std::map<std::string, std::map<std::string, KLV*> > >::iterator it = product.m_detailedTriggerMatchedMuons.begin();
+	for (std::map<KMuon*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > >::iterator it = product.m_detailedTriggerMatchedMuons.begin();
 	     it != product.m_detailedTriggerMatchedMuons.end(); ++it)
 	{
 		product.m_detailedTriggerMatchedLeptons[&(*(it->first))] = &(it->second);
@@ -105,7 +105,7 @@ void TauTriggerMatchingProducer::Produce(KappaEvent const& event, KappaProduct& 
 		product.m_triggerMatchedLeptons[&(*(it->first))] = &(*(it->second));
 	}
 	
-	for (std::map<KTau*, std::map<std::string, std::map<std::string, KLV*> > >::iterator it = product.m_detailedTriggerMatchedTaus.begin();
+	for (std::map<KTau*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > >::iterator it = product.m_detailedTriggerMatchedTaus.begin();
 	     it != product.m_detailedTriggerMatchedTaus.end(); ++it)
 	{
 		product.m_detailedTriggerMatchedLeptons[&(*(it->first))] = &(it->second);
