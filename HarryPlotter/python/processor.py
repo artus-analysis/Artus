@@ -48,8 +48,13 @@ class Processor(object):
 		for key in keys_of_list_args:
 			if not isinstance(plotData.plotdict[key], collections.Iterable) or isinstance(plotData.plotdict[key], basestring):
 				plotData.plotdict[key] = [plotData.plotdict[key]]
-		
-		
+
+		# change "None" in input to None
+		for key in keys_of_list_args:
+			for index, item in enumerate(plotData.plotdict[key]):
+				if(item == "None"):
+					plotData.plotdict[key][index] = None
+
 		max_n_inputs = n_items if n_items != None else max([len(plotData.plotdict[key]) for key in keys_of_list_args])
 		
 		# expand/cut warnings, if needed
