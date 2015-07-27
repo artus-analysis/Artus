@@ -110,7 +110,7 @@ public:
 	std::map<KLepton*, KLV*> m_triggerMatchedLeptons;
 	
 	/// added by TriggerMatchingProducer
-	// m_detailedTriggerMatchedElectrons[reco lepton][HLT name][filter name] = trigger object
+	// m_detailedTriggerMatchedElectrons[reco lepton][HLT name][filter name] = {trigger objects}
 	std::map<KElectron*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > > m_detailedTriggerMatchedElectrons;
 	std::map<KMuon*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > > m_detailedTriggerMatchedMuons;
 	std::map<KTau*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > > m_detailedTriggerMatchedTaus;

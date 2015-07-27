@@ -15,6 +15,32 @@ class TriggerMatchingProducerBase: public KappaProducerBase
 {
 
 public:
+
+	// reccommended access to product.m_detailedTriggerMatched.... by using only the HLT paths where all configured filters match with the valid object
+	static std::vector<std::string> GetHltNamesWhereAllFiltersMatched(
+			std::map<std::string, std::map<std::string, std::vector<KLV*> > > const& detailedTriggerMatchedObjects
+	) {
+		std::vector<std::string> hltNames;
+		
+		for (std::pair<std::string, std::map<std::string, std::vector<KLV*> > > hltName : detailedTriggerMatchedObjects)
+		{
+			bool allFiltersMatched = true;
+			for (std::pair<std::string, std::vector<KLV*> > filterName : hltName.second)
+			{
+				if (filterName.second.size() == 0)
+				{
+					allFiltersMatched = false;
+				}
+			}
+			
+			if (allFiltersMatched)
+			{
+				hltNames.push_back(hltName.first);
+			}
+		}
+		
+		return hltNames;
+	}
 	
 	TriggerMatchingProducerBase(std::map<TValidObject*, KLV*> KappaProduct::*triggerMatchedObjects,
 	                            std::map<TValidObject*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > > KappaProduct::*detailedTriggerMatchedObjects,
@@ -60,6 +86,8 @@ public:
 			                                                          m_objectTriggerFiltersByHltNameFromSettings.end());
 		}
 		
+		(product.*m_triggerMatchedObjects).clear();
+		(product.*m_detailedTriggerMatchedObjects).clear();
 		if ((! product.m_selectedHltNames.empty()) && ((settings.*GetDeltaRTriggerMatchingObjects)() > 0.0))
 		{
 			bool hasHltAndFilterMatch = false;
@@ -128,22 +156,7 @@ public:
 											}
 										}
 										
-										if (matchedTriggerObjects.size() > 0)
-										{
-											(product.*m_triggerMatchedObjects)[*validObject] = matchedTriggerObjects.at(0);
-											(product.*m_detailedTriggerMatchedObjects)[*validObject][firedHltName][firedFilterName] = matchedTriggerObjects;
-										}
-										else // require matched with ALL filters specified
-										{
-											if ((product.*m_triggerMatchedObjects).count(*validObject))
-											{
-												(product.*m_triggerMatchedObjects).erase(*validObject);
-											}
-											if ((product.*m_detailedTriggerMatchedObjects).count(*validObject))
-											{
-												(product.*m_detailedTriggerMatchedObjects).erase(*validObject);
-											}
-										}
+										(product.*m_detailedTriggerMatchedObjects)[*validObject][firedHltName][firedFilterName] = matchedTriggerObjects;
 									}
 								}
 							}
@@ -152,28 +165,27 @@ public:
 				}
 			}
 			
-			// invalidate the object if the trigger has not matched
-			if (hasHltAndFilterMatch && (settings.*GetInvalidateNonMatchingObjects)())
+			for (typename std::pair<TValidObject*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > > triggerMatchingResult : (product.*m_detailedTriggerMatchedObjects))
 			{
-				for (typename std::vector<TValidObject*>::iterator validObject = (product.*m_validObjects).begin(); validObject != (product.*m_validObjects).end();)
+				// check matching results for having passed all configured filters
+				std::vector<std::string> hltNamesWhereAllFiltersMatched = TriggerMatchingProducerBase::GetHltNamesWhereAllFiltersMatched(triggerMatchingResult.second);
+				if (hltNamesWhereAllFiltersMatched.size() > 0)
 				{
-					
-					if ((product.*m_triggerMatchedObjects).count(*validObject) == 0)
-					{
-						(product.*m_invalidObjects).push_back(*validObject);
-						validObject = (product.*m_validObjects).erase(validObject);
-					}
-					else
-					{
-						++validObject;
-					}
+					// store first trigger object of first filter of first HLT name
+					(product.*m_triggerMatchedObjects)[triggerMatchingResult.first] = ((triggerMatchingResult.second)[hltNamesWhereAllFiltersMatched.front()].begin()->second).front();
 				}
-			
-				// preserve sorting of invalid objects
-				std::sort((product.*m_invalidObjects).begin(), (product.*m_invalidObjects).end(),
-				          [](TValidObject const* object1, TValidObject const* object2) -> bool
-				          { return object1->p4.Pt() > object2->p4.Pt(); });
+				else if (hasHltAndFilterMatch && (settings.*GetInvalidateNonMatchingObjects)())
+				{
+					// invalidate the object if the trigger has not matched
+					(product.*m_invalidObjects).push_back(triggerMatchingResult.first);
+					(product.*m_validObjects).erase(std::find((product.*m_validObjects).begin(), (product.*m_validObjects).end(), &(*triggerMatchingResult.first)));
+				}
 			}
+			
+			// preserve sorting of invalid objects
+			std::sort((product.*m_invalidObjects).begin(), (product.*m_invalidObjects).end(),
+			          [](TValidObject const* object1, TValidObject const* object2) -> bool
+			          { return object1->p4.Pt() > object2->p4.Pt(); });
 			
 			/*
 			// debug output
