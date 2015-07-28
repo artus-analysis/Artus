@@ -138,7 +138,7 @@ public:
 							if(deltaR<(settings.*GetDeltaRMatchingRecoLeptonsGenParticle)())
 							{
 								(product.*m_genParticleMatchedLeptons)[*validLepton] = &(*genParticle);
-								ratioGenParticleMatched += (1.0 / (product.*m_validLeptons).size());
+								ratioGenParticleMatched += (1.0f / (product.*m_validLeptons).size());
 								product.m_genParticleMatchDeltaR = deltaR;
 								leptonMatched = true;
 								//LOG(INFO) << this->GetProducerId() << " (event " << event.m_eventInfo->nEvent << "): " << (*validLepton)->p4 << " --> " << genParticle->p4 << ", pdg=" << genParticle->pdgId() << ", status=" << genParticle->status();

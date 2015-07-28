@@ -66,7 +66,7 @@ public:
 		
 		assert(event.m_genTaus);
 		
-		if ((settings.*GetDeltaRMatchingRecoObjectGenTau)() > 0.0)
+		if ((settings.*GetDeltaRMatchingRecoObjectGenTau)() > 0.0f)
 		{
 			// loop over all valid objects to check
 			for (typename std::vector<TValidObject*>::iterator validObject = (product.*m_validObjects).begin();
@@ -82,11 +82,11 @@ public:
 					// only use genTaus that will decay into comparable particles
 					if (MatchDecayMode(*genTau,tauDecayMode))
 					{
-						deltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, genTau->visible.p4);
+						deltaR = static_cast<float>(ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, genTau->visible.p4));
 						if(deltaR<(settings.*GetDeltaRMatchingRecoObjectGenTau)())
 						{
 							(product.*m_genTauMatchedObjects)[*validObject] = &(*genTau);
-							ratioGenTauMatched += 1./(product.*m_validObjects).size();
+							ratioGenTauMatched += 1.0 / (product.*m_validObjects).size();
 							product.m_genTauMatchDeltaR = deltaR;
 							objectMatched = true;
 							//LOG(INFO) << this->GetProducerId() << " (event " << event.m_eventInfo->nEvent << "): " << (*validObject)->p4 << " --> " << genTau->visible.p4;

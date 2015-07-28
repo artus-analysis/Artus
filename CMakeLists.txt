@@ -1,8 +1,9 @@
 cmake_minimum_required (VERSION 2.6)
 project (Artus)
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -std=c++0x -fpic -Wall -O2 -g -DSTANDALONE -Wextra")
-
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -std=c++0x -fpic -Wall -O2 -g -DSTANDALONE -Wextra -Wno-unused-parameter -DSTANDALONE -Wswitch-default -Wswitch-enum -Wsync-nand -Wunused-local-typedefs -Wtrampolines -Wno-aggressive-loop-optimizations -Wpacked -Wwrite-strings -Wstrict-overflow=3 -Wredundant-decls -Wuseless-cast -Wdisabled-optimization -Wmissing-declarations -Wnormalized=nfkc -Wlogical-op -Wmissing-include-dirs -Wvector-operation-performance -Wmissing-format-attribute -Wundef -Wcast-qual -Wcast-align -Wreturn-type")
+# warnings to be added in future when issues are fixed:
+# -Wunsafe-loop -Wzero-as-null-pointer-constant -Wfloat-equal -Wconversion -Wdouble-promotion -Wstack-protector
 # to compile with clang, use: cmake . -DCMAKE_CXX_COMPILER=/usr/bin/clang++ -DCMAKE_C_COMPILER=/usr/bin/clang
 
 # Load some basic macros which are needed later on
