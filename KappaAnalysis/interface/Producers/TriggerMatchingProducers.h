@@ -113,6 +113,7 @@ public:
 			     validObject != (product.*m_validObjects).end();)
 			{
 				bool objectMatched = false;
+				std::vector<KLV*> matchedTriggerObjects;
 
 				// loop over all fired HLT paths
 				for (unsigned int iHlt = 0; iHlt < product.m_selectedHltNames.size(); iHlt++)
@@ -160,6 +161,8 @@ public:
 
 						// loop over all trigger objects for this filter
 						bool hasTriggerObjectMatch = false;
+						std::vector<KLV*> matchedTriggerObjects;
+
 						for (std::vector<int>::const_iterator triggerObjectIndex = event.m_triggerObjects->toIdxFilter[filterIndex].begin();
 						     (triggerObjectIndex != event.m_triggerObjects->toIdxFilter[filterIndex].end());
 						     ++triggerObjectIndex)
@@ -169,6 +172,7 @@ public:
 							                                   (*validObject)->p4) < (settings.*GetDeltaRTriggerMatchingObjects)())
 							{
 								hasTriggerObjectMatch = true;
+								matchedTriggerObjects.push_back(&event.m_triggerObjects->trgObjects[*triggerObjectIndex]);
 								
 								// fill simple map: reco lepton --> trigger object
 								(product.*m_triggerMatchedObjects)[*validObject] = &(event.m_triggerObjects->trgObjects[*triggerObjectIndex]);
@@ -182,7 +186,7 @@ public:
 								{
 									(product.*m_detailedTriggerMatchedObjects)[*validObject][product.m_selectedHltNames.at(iHlt)] = std::map<std::string, std::vector<KLV*>>();
 								}
-								//(product.*m_detailedTriggerMatchedObjects)[*validObject][product.m_selectedHltNames.at(iHlt)][event.m_triggerObjectMetadata->toFilter[filterIndex]] = &(event.m_triggerObjects->trgObjects[*triggerObjectIndex]);
+								(product.*m_detailedTriggerMatchedObjects)[*validObject][product.m_selectedHltNames.at(iHlt)][event.m_triggerObjectMetadata->toFilter[filterIndex]] = matchedTriggerObjects;
 							}
 						}
 
