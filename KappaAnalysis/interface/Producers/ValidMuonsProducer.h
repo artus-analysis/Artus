@@ -141,16 +141,16 @@ public:
 			return product.m_validMuons.size();
 		});
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuonPt", [](event_type const& event, product_type const& product) {
-			return product.m_validMuons.size() >= 1 ? product.m_validMuons[0]->p4.Pt() : DefaultValues::UndefinedDouble;
+			return product.m_validMuons.size() >= 1 ? product.m_validMuons[0]->p4.Pt() : DefaultValues::UndefinedFloat;
 		});
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuonEta", [](event_type const& event, product_type const& product) {
-			return product.m_validMuons.size() >= 1 ? product.m_validMuons[0]->p4.Eta() : DefaultValues::UndefinedDouble;
+			return product.m_validMuons.size() >= 1 ? product.m_validMuons[0]->p4.Eta() : DefaultValues::UndefinedFloat;
 		});
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("trailingMuonPt", [](event_type const& event, product_type const& product) {
-			return product.m_validMuons.size() >= 2 ? product.m_validMuons[1]->p4.Pt() : DefaultValues::UndefinedDouble;
+			return product.m_validMuons.size() >= 2 ? product.m_validMuons[1]->p4.Pt() : DefaultValues::UndefinedFloat;
 		});
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("trailingMuonEta", [](event_type const& event, product_type const& product) {
-			return product.m_validMuons.size() >= 2 ? product.m_validMuons[1]->p4.Eta() : DefaultValues::UndefinedDouble;
+			return product.m_validMuons.size() >= 2 ? product.m_validMuons[1]->p4.Eta() : DefaultValues::UndefinedFloat;
 		});
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuMinusPt", [](event_type const& event, product_type const& product) {
 			for (unsigned int i = 0; i < product.m_validMuons.size(); i++)
@@ -271,9 +271,9 @@ public:
 			// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Muon_Isolation_AN1
 			if (muonIsoType == MuonIsoType::PF) {
 				if (muonIso == MuonIso::TIGHT)
-					validMuon = validMuon && ((((*muon)->pfIso() / (*muon)->p4.Pt()) < 0.12) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+					validMuon = validMuon && ((((*muon)->pfIso() / (*muon)->p4.Pt()) < 0.12f) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (muonIso == MuonIso::LOOSE)
-					validMuon = validMuon && ((((*muon)->pfIso() / (*muon)->p4.Pt()) < 0.20) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+					validMuon = validMuon && ((((*muon)->pfIso() / (*muon)->p4.Pt()) < 0.20f) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (muonIso == MuonIso::FAKEABLE)
 					validMuon = validMuon && IsFakeableMuonIso(*muon, event, product, settings);
 				else if (muonIso != MuonIso::NONE)
@@ -281,9 +281,9 @@ public:
 			}
 			else if (muonIsoType == MuonIsoType::DETECTOR) {
 				if (muonIso == MuonIso::TIGHT)
-					validMuon = validMuon && ((((*muon)->trackIso / (*muon)->p4.Pt()) < 0.05) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+					validMuon = validMuon && ((((*muon)->trackIso / (*muon)->p4.Pt()) < 0.05f) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (muonIso == MuonIso::LOOSE)
-					validMuon = validMuon && ((((*muon)->trackIso / (*muon)->p4.Pt()) < 0.10) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+					validMuon = validMuon && ((((*muon)->trackIso / (*muon)->p4.Pt()) < 0.10f) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (muonIso != MuonIso::NONE)
 					LOG(FATAL) << "Muon isolation of type " << Utility::ToUnderlyingValue(muonIso) << " not yet implemented!";
 			}
@@ -336,10 +336,10 @@ private:
 	{
 		return muon->isGlobalMuon()
 		       && muon->isPFMuon()
-		       && muon->globalTrack.chi2 / muon->globalTrack.nDOF < 10.0
+		       && muon->globalTrack.chi2 / muon->globalTrack.nDOF < 10.0f
 		       && muon->globalTrack.nValidMuonHits > 0
 		       && muon->nMatches > 1
-		       && std::abs(muon->dxy) < 0.2
+		       && std::abs(muon->dxy) < 0.2f
 		       && muon->track.nValidPixelHits > 0
 		       && muon->track.nTrackerLayers() > 8;
 	}
@@ -349,11 +349,11 @@ private:
 	{
 		return muon->isGlobalMuon()
 		       && muon->isPFMuon()
-		       && muon->globalTrack.chi2 / muon->globalTrack.nDOF < 10.0
+		       && muon->globalTrack.chi2 / muon->globalTrack.nDOF < 10.0f
 		       && muon->globalTrack.nValidMuonHits > 0
 		       && muon->nMatches > 1
-		       && std::abs(muon->dxy) < 0.2
-		       && std::abs(muon->dz) < 0.5
+		       && std::abs(muon->dxy) < 0.2f
+		       && std::abs(muon->dz) < 0.5f
 		       && muon->track.nValidPixelHits > 0
 		       && muon->track.nTrackerLayers() > 5;
 	}
@@ -390,32 +390,32 @@ private:
 		return muon->isPFMuon()
 		       && muon->isGlobalMuon()
 		       && muon->isTrackerMuon()
-		       && (std::abs(muon->dz) < 0.2);
+		       && (std::abs(muon->dz) < 0.2f);
 	}
-	
+
 	bool IsFakeableMuon(KMuon* muon, event_type const& event, product_type& product) const
 	{
 		return muon->isGlobalMuon()
-		       && std::abs(muon->dxy) < 0.2;
+		       && std::abs(muon->dxy) < 0.2f;
 	}
-	
+
 	bool IsFakeableMuonIso(KMuon* muon, event_type const& event, product_type& product, setting_type const& settings) const
 	{
 		bool validMuon = true;
-		
+
 		if (muon->p4.Pt() <= 20.0) {
 			validMuon = validMuon &&
-				   ((muon->trackIso < 8.0) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
-				   (muon->ecalIso  < 8.0) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
-				   (muon->hcalIso  < 8.0) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+				   ((muon->trackIso < 8.0f) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
+				   (muon->ecalIso  < 8.0f) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
+				   (muon->hcalIso  < 8.0f) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 		}
 		else {
 			validMuon = validMuon &&
-				   (((muon->trackIso / muon->p4.Pt()) < 0.4) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
-				   ((muon->ecalIso / muon->p4.Pt()) < 0.4) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
-				   ((muon->hcalIso / muon->p4.Pt()) < 0.4) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+				   (((muon->trackIso / muon->p4.Pt()) < 0.4f) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
+				   ((muon->ecalIso / muon->p4.Pt()) < 0.4f) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
+				   ((muon->hcalIso / muon->p4.Pt()) < 0.4f) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 		}
-		
+
 		return validMuon;
 	}
 };
