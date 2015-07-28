@@ -108,6 +108,8 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Legend position. The four arguments define the rectangle (x1 y1 x2 y2) for the legend. Without (or with too few) arguments, the default values from [0.6, 0.6, 0.9, 0.9] are used. [Default: %(default)s]")
 		self.formatting_options.add_argument("--legend-markers", type=str, nargs="+",
 		                                     help="Draw options for legend entries.")
+		self.formatting_options.add_argument("--extra-text", type=str, nargs="?",
+		                                     help="Extra text written on plot, e.g. \"Preliminary\" ")
 		
 	def prepare_args(self, parser, plotData):
 		super(PlotRoot, self).prepare_args(parser, plotData)
@@ -302,6 +304,7 @@ class PlotRoot(plotbase.PlotBase):
 				for z_bin in range(min(root_object.GetNbinsZ(), len(plotData.plotdict["z_tick_labels"]))):
 					root_object.GetZaxis().SetBinLabel(z_bin+1, plotData.plotdict["z_tick_labels"][z_bin])
 	
+			ROOT.TGaxis.SetMaxDigits(3)
 	def determine_plot_lims(self, plotData):
 		super(PlotRoot, self).determine_plot_lims(plotData)
 		
@@ -555,18 +558,17 @@ class PlotRoot(plotbase.PlotBase):
 			self.axes_histogram.GetXaxis().SetLabelSize(0)
 			self.axes_histogram.GetXaxis().SetTitleSize(0)
 			self.axes_histogram.GetYaxis().SetLabelSize(self.axes_histogram.GetYaxis().GetLabelSize() / (1.0 - self.plot_subplot_slider_y))
-			self.axes_histogram.GetYaxis().SetTitleSize(self.axes_histogram.GetYaxis().GetTitleSize() / (1.0 - self.plot_subplot_slider_y))
-			
+			self.axes_histogram.GetYaxis().SetTitleSize((self.axes_histogram.GetYaxis().GetTitleSize() / (1.0 - self.plot_subplot_slider_y))-0.01)
+
 			self.axes_histogram.GetYaxis().SetTitleOffset(self.axes_histogram.GetYaxis().GetTitleOffset() * (1.0 - self.plot_subplot_slider_y))
 			
 			self.subplot_axes_histogram.GetXaxis().SetLabelSize(self.subplot_axes_histogram.GetXaxis().GetLabelSize() / self.plot_subplot_slider_y)
-			self.subplot_axes_histogram.GetXaxis().SetTitleSize(self.subplot_axes_histogram.GetXaxis().GetTitleSize() / self.plot_subplot_slider_y)
+			self.subplot_axes_histogram.GetXaxis().SetTitleSize((self.subplot_axes_histogram.GetXaxis().GetTitleSize() / self.plot_subplot_slider_y) - 0.01)
 			self.subplot_axes_histogram.GetYaxis().SetLabelSize(self.subplot_axes_histogram.GetYaxis().GetLabelSize() / self.plot_subplot_slider_y)
-			self.subplot_axes_histogram.GetYaxis().SetTitleSize(self.subplot_axes_histogram.GetYaxis().GetTitleSize() / self.plot_subplot_slider_y)
+			self.subplot_axes_histogram.GetYaxis().SetTitleSize((self.subplot_axes_histogram.GetYaxis().GetTitleSize() / self.plot_subplot_slider_y) - 0.01)
 			
-			self.subplot_axes_histogram.GetXaxis().SetTitleOffset(2.0 * self.subplot_axes_histogram.GetXaxis().GetTitleOffset() * self.plot_subplot_slider_y)
+			self.subplot_axes_histogram.GetXaxis().SetTitleOffset(2.0 * self.subplot_axes_histogram.GetXaxis().GetTitleOffset() * self.plot_subplot_slider_y+0.2)
 			self.subplot_axes_histogram.GetYaxis().SetTitleOffset(self.subplot_axes_histogram.GetYaxis().GetTitleOffset() * self.plot_subplot_slider_y)
-			
 			self.subplot_axes_histogram.GetYaxis().SetNdivisions(5, 0, 0)
 		
 		if all([isinstance(root_object, ROOT.TF1) or (root_object.GetListOfFunctions().FindObject("palette") == None) for root_object in plotData.plotdict["root_objects"].values()]):
@@ -622,6 +624,7 @@ class PlotRoot(plotbase.PlotBase):
 		plotData.plot.plot_pad.cd()
 		self.legend = None
 		if plotData.plotdict["legend"] != None:
+			ROOT.gStyle.SetLegendBorderSize(0)
 			self.legend = ROOT.TLegend(*transformed_legend_pos)
 			self.legend.SetNColumns(plotData.plotdict["legend_cols"])
 			self.legend.SetColumnSeparation(0.1)
@@ -680,6 +683,7 @@ class PlotRoot(plotbase.PlotBase):
 		if(self.dataset_title != None):
 			title += self.dataset_title
 		CMS_lumi.lumi_sqrtS = title
+		CMS_lumi.extraText = plotData.plotdict["extra_text"]
 		CMS_lumi.CMS_lumi(plotData.plot.canvas, 0, 11)
 		#if self.dataset_title != "":
 		#	x_dataset_title = 0.94 if self.subplot_axes_histogram is None else 0.92
