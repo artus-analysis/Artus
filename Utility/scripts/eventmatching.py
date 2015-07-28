@@ -4,6 +4,7 @@
 import sys
 import ROOT
 import time
+import os
 import argparse
 
 
@@ -21,8 +22,10 @@ def main():
 		help="only write common events to output file")
 	parser.add_argument('-t', '--tree', type=str, nargs='+', default=list(["finalcuts_AK5PFJetsCHSL1L2L3Res/ntuple"]),
 		help="tree names (default: %(default)s)")
-	parser.add_argument('-f', '--out', type=str, default="output.root",
+	parser.add_argument('-f', '--out', type=str, default="eventmatching.root",
 		help="output file name (default: %(default)s)")
+	parser.add_argument('-j', '--json-output-dir', type=str, default=None,
+		help="output directory for JSON configs. (default: %(default)s)")
 	parser.add_argument('-v', '--verbose', action='store_true',
 		help="verbose comparison of common trees")
 	parser.add_argument('-i', '--ignore', type=str, nargs='+', default=None,
@@ -69,28 +72,28 @@ def main():
 	print "\nCopy to output trees:"
 	fout = ROOT.TFile(args.out, "RECREATE")
 	if len(args.input_files) == 3:
-		c1 = cpTree(com123, trees[0], "common" + args.nicks[0], 0)
+		c1 = cpTree(com123, trees[0], "common" + args.nicks[0], 0, jsonConfigsDir=args.json_output_dir)
 		stopWatch()
-		c2 = cpTree(com123, trees[1], "common" + args.nicks[1], 1)
+		c2 = cpTree(com123, trees[1], "common" + args.nicks[1], 1, jsonConfigsDir=args.json_output_dir)
 		stopWatch()
-		c3 = cpTree(com123, trees[2], "common" + args.nicks[2], 2)
+		c3 = cpTree(com123, trees[2], "common" + args.nicks[2], 2, jsonConfigsDir=args.json_output_dir)
 		stopWatch()
 		if not args.common:
-			cpTree(o1, trees[0], "only" + args.nicks[0], 0)
+			cpTree(o1, trees[0], "only" + args.nicks[0], 0, jsonConfigsDir=args.json_output_dir)
 			stopWatch()
-			cpTree(o2, trees[1], "only" + args.nicks[1], 0)  # treeIndex 0 is correct
+			cpTree(o2, trees[1], "only" + args.nicks[1], 0, jsonConfigsDir=args.json_output_dir)  # treeIndex 0 is correct
 			stopWatch()
-			cpTree(o3, trees[2], "only" + args.nicks[2], 0)  # treeIndex 0 is correct
+			cpTree(o3, trees[2], "only" + args.nicks[2], 0, jsonConfigsDir=args.json_output_dir)  # treeIndex 0 is correct
 			stopWatch()
 	else:
-		c1 = cpTree(com12, trees[0], "common" + args.nicks[0], 0)
+		c1 = cpTree(com12, trees[0], "common" + args.nicks[0], 0, jsonConfigsDir=args.json_output_dir)
 		stopWatch()
-		c2 = cpTree(com12, trees[1], "common" + args.nicks[1], 1)
+		c2 = cpTree(com12, trees[1], "common" + args.nicks[1], 1, jsonConfigsDir=args.json_output_dir)
 		stopWatch()
 		if not args.common:
-			cpTree(o1, trees[0], "only" + args.nicks[0], 0)
+			cpTree(o1, trees[0], "only" + args.nicks[0], 0, jsonConfigsDir=args.json_output_dir)
 			stopWatch()
-			cpTree(o2, trees[1], "only" + args.nicks[1], 0)  # treeIndex 0 is correct
+			cpTree(o2, trees[1], "only" + args.nicks[1], 0, jsonConfigsDir=args.json_output_dir)  # treeIndex 0 is correct
 			stopWatch()
 
 	fout.Write()
@@ -168,7 +171,7 @@ def compareLists(list1, list2):
 	return common, only1, only2
 
 
-def cpTree(eventList, tree, name, treeIndex=0, deactivate=None):
+def cpTree(eventList, tree, name, treeIndex=0, deactivate=None, jsonConfigsDir=None):
 	"""Copy the events in eventList[i][3+treeIndex] from tree to a new tree of name 'name'"""
 	if deactivate:
 		for q in quantities:
@@ -200,6 +203,12 @@ def cpTree(eventList, tree, name, treeIndex=0, deactivate=None):
 	print "\r  tree %r (%d branches, %d entries) to %r (%d branches, %d entries)" % (
 		tree.GetName(), len(tree.GetListOfBranches()), tree.GetEntries(),
 		name, len(outputTree.GetListOfBranches()), outputTree.GetEntries())
+	
+	if not jsonConfigsDir is None:
+		jsonConfigFileName = os.path.join(jsonConfigsDir, name+".json")
+		with open(jsonConfigFileName, "w") as jsonConfigFile:
+			jsonConfigFile.write("{\n\t\"EventWhitelist\" : [\n\t\t" + (",\n\t\t".join([str(entry[2]) for entry in eventList])) + "\n\t]\n}")
+		print "  EventWhitelist saved in JSON config file \"%s\"." % jsonConfigFileName
 	
 	return outputTree
 
