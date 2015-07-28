@@ -290,32 +290,7 @@ public:
 		}
 	}
 
-
-protected:
-	ElectronID electronID;
-	ElectronIsoType electronIsoType;
-	ElectronIso electronIso;
-	ElectronReco electronReco;
-
-	// Can be overwritten for analysis-specific use cases
-	virtual bool AdditionalCriteria(KElectron* electron, event_type const& event,
-	                                product_type& product, setting_type const& settings) const
-	{
-		return true;
-	}
-
-
-private:
-	std::vector<KElectron*> product_type::*m_validElectronsMember;
-	std::vector<KElectron*> product_type::*m_invalidElectronsMember;
-	std::string (setting_type::*GetElectronID)(void) const;
-	std::string (setting_type::*GetElectronIsoType)(void) const;
-	std::string (setting_type::*GetElectronIso)(void) const;
-	std::string (setting_type::*GetElectronReco)(void) const;
-
-	ValidElectronsInput validElectronsInput;
-
-	bool IsMVANonTrigElectron(KElectron* electron, KElectronMetadata* electronMeta) const
+	static bool IsMVANonTrigElectron(const KElectron* electron, const KElectronMetadata* electronMeta)
 	{
 		// Electron ID mva non trig (run 1)
 		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentification#Non_triggering_MVA
@@ -337,7 +312,7 @@ private:
 		return false;
 	}
 
-	bool IsMVATrigElectron(KElectron* electron, KElectronMetadata* electronMeta) const
+	static bool IsMVATrigElectron(const KElectron* electron, const KElectronMetadata* electronMeta)
 	{
 		// Electron ID mva trig (run 1)
 		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentification#Triggering_MVA
@@ -359,7 +334,7 @@ private:
 		return false;
 	}
 
-	bool IsVetoVbtf95Electron(KElectron* electron, event_type const& event, product_type& product) const
+	static bool IsVetoVbtf95Electron(const KElectron* electron, event_type const& event, product_type const& product)
 	{
 		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
 		{
@@ -385,7 +360,7 @@ private:
 		return false;
 	}
 
-	bool IsLooseVbtf95Electron(KElectron* electron, event_type const& event, product_type& product) const
+	static bool IsLooseVbtf95Electron(const KElectron* electron, event_type const& event, product_type const& product)
 	{
 		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
 		{
@@ -416,7 +391,7 @@ private:
 		return false;
 	}
 
-	bool IsMediumVbtf95Electron(KElectron* electron, event_type const& event, product_type& product) const
+	static bool IsMediumVbtf95Electron(const KElectron* electron, event_type const& event, product_type const& product)
 	{
 		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
 		{
@@ -448,7 +423,7 @@ private:
 		return false;
 	}
 
-	bool IsTightVbtf95Electron(KElectron* electron, event_type const& event, product_type& product) const
+	static bool IsTightVbtf95Electron(const KElectron* electron, event_type const& event, product_type const& product)
 	{
 		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
 		{
@@ -478,6 +453,31 @@ private:
 		}
 		return false;
 	}
+
+
+protected:
+	ElectronID electronID;
+	ElectronIsoType electronIsoType;
+	ElectronIso electronIso;
+	ElectronReco electronReco;
+
+	// Can be overwritten for analysis-specific use cases
+	virtual bool AdditionalCriteria(KElectron* electron, event_type const& event,
+	                                product_type& product, setting_type const& settings) const
+	{
+		return true;
+	}
+
+
+private:
+	std::vector<KElectron*> product_type::*m_validElectronsMember;
+	std::vector<KElectron*> product_type::*m_invalidElectronsMember;
+	std::string (setting_type::*GetElectronID)(void) const;
+	std::string (setting_type::*GetElectronIsoType)(void) const;
+	std::string (setting_type::*GetElectronIso)(void) const;
+	std::string (setting_type::*GetElectronReco)(void) const;
+
+	ValidElectronsInput validElectronsInput;
 
 	bool IsFakeableElectron(KElectron* electron, event_type const& event, product_type& product) const
 	{
