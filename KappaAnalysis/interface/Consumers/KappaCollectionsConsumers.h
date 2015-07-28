@@ -56,17 +56,26 @@ public:
 
 		if ((settings.*GetBranchGenMatchedObjects)())
 		{
-			m_tree->Branch("genParticle", &m_currentGenParticle);
-			m_tree->Branch("genParticleMatched", &m_currentGenParticleMatched, "genParticleMatched/O");
-			m_tree->Branch("genParticleMatchedDeltaR", &m_currentGenParticleMatchedDeltaR, "genParticleMatchedDeltaR/D");
+			if (m_genParticleMatchedObjectsAvailable && settings.GetAddGenMatchedParticles())
+			{
+				m_tree->Branch("genParticle", &m_currentGenParticle);
+				m_tree->Branch("genParticleMatched", &m_currentGenParticleMatched, "genParticleMatched/O");
+				m_tree->Branch("genParticleMatchedDeltaR", &m_currentGenParticleMatchedDeltaR, "genParticleMatchedDeltaR/D");
+			}
 
-			m_tree->Branch("genTau", &m_currentGenTau);
-			m_tree->Branch("genTauMatched", &m_currentGenTauMatched, "genTauMatched/O");
-			m_tree->Branch("genTauMatchedDeltaR", &m_currentGenTauMatchedDeltaR, "genTauMatchedDeltaR/D");
+			if (m_genTauMatchedObjectsAvailable && settings.GetAddGenMatchedTaus())
+			{
+				m_tree->Branch("genTau", &m_currentGenTau);
+				m_tree->Branch("genTauMatched", &m_currentGenTauMatched, "genTauMatched/O");
+				m_tree->Branch("genTauMatchedDeltaR", &m_currentGenTauMatchedDeltaR, "genTauMatchedDeltaR/D");
+			}
 
-			m_tree->Branch("genTauJet", &m_currentGenTauJet);
-			m_tree->Branch("genTauJetMatched", &m_currentGenTauJetMatched, "genTauJetMatched/O");
-			m_tree->Branch("genTauJetMatchedDeltaR", &m_currentGenTauJetMatchedDeltaR, "genTauJetMatchedDeltaR/D");
+			if (m_genTauJetMatchedObjectsAvailable && settings.GetAddGenMatchedTauJets())
+			{
+				m_tree->Branch("genTauJet", &m_currentGenTauJet);
+				m_tree->Branch("genTauJetMatched", &m_currentGenTauJetMatched, "genTauJetMatched/O");
+				m_tree->Branch("genTauJetMatchedDeltaR", &m_currentGenTauJetMatchedDeltaR, "genTauJetMatchedDeltaR/D");
+			}
 		}
 	}
 

@@ -296,4 +296,8 @@ public:
 	IMPL_SETTING_DEFAULT(bool, BranchGenMatchedTaus, false);
 	IMPL_SETTING_DEFAULT(bool, BranchGenMatchedJets, false);
 
+	IMPL_SETTING_DEFAULT(bool, AddGenMatchedParticles, true)
+	IMPL_SETTING_DEFAULT(bool, AddGenMatchedTaus, true)
+	IMPL_SETTING_DEFAULT(bool, AddGenMatchedTauJets, true)
+
 };
