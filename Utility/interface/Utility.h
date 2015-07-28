@@ -218,5 +218,19 @@ namespace Utility {
 		}
 		return matches;
 	}
+	
+	// Intersection of two vectors
+	template <class T>
+	static std::vector<T> Intersection(std::vector<T> vector1, std::vector<T> vector2)
+	{
+		std::sort(vector1.begin(), vector1.end()); // needed for std::set_intersection
+		std::sort(vector2.begin(), vector2.end()); // needed for std::set_intersection
+		std::vector<T> intersection(vector1.size() + vector2.size());
+		typename std::vector<std::string>::iterator intersectionEnd = std::set_intersection(
+				vector1.begin(), vector1.end(), vector2.begin(), vector2.end(), intersection.begin()
+		);
+		intersection.resize(intersectionEnd - intersection.begin());
+		return intersection;
+	}
 }
 
