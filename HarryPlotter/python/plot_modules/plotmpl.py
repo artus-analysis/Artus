@@ -125,7 +125,11 @@ class PlotMpl(plotbase.PlotBase):
 		# defaults for markers
 		for index, (marker, nick) in enumerate(zip(plotData.plotdict["markers"], plotData.plotdict["nicks"])):
 			if marker is None:
-				if (index == 0 and len(plotData.plotdict["markers"]) > 1) or plotData.plotdict['subplots'][index] or 'ratio' in nick:
+				if ((index == 0 and len(plotData.plotdict["markers"]) > 1)
+						or plotData.plotdict['subplots'][index]
+						or 'ratio' in nick
+						or isinstance(plotData.plotdict["root_objects"][nick], ROOT.TProfile)
+						or isinstance(plotData.plotdict["root_objects"][nick], ROOT.TGraph)):
 					plotData.plotdict["markers"][index] = "."
 				else:
 					plotData.plotdict["markers"][index] = "fill"
