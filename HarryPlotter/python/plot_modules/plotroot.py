@@ -108,7 +108,7 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Legend position. The four arguments define the rectangle (x1 y1 x2 y2) for the legend. Without (or with too few) arguments, the default values from [0.6, 0.6, 0.9, 0.9] are used. [Default: %(default)s]")
 		self.formatting_options.add_argument("--legend-markers", type=str, nargs="+",
 		                                     help="Draw options for legend entries.")
-		self.formatting_options.add_argument("--extra-text", type=str, nargs="?",
+		self.formatting_options.add_argument("--extra-text", type=str, nargs="?", default = "",
 		                                     help="Extra text written on plot, e.g. \"Preliminary\" ")
 		
 	def prepare_args(self, parser, plotData):
