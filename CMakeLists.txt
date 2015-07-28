@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 project (Artus)
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -std=c++0x -fpic -Wall -O2 -g -DSTANDALONE -Wextra")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -std=c++0x -fpic -Wall -O2 -g -DSTANDALONE -Wextra -Wno-unused-parameter")
 
 # to compile with clang, use: cmake . -DCMAKE_CXX_COMPILER=/usr/bin/clang++ -DCMAKE_C_COMPILER=/usr/bin/clang
 
