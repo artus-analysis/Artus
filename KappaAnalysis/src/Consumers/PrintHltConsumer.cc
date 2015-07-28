@@ -26,7 +26,7 @@ void PrintHltConsumer::ProcessFilteredEvent(event_type const& event, product_typ
 		// (in this example, this call is not really necessary)
 		std::string hltPath = product.m_hltInfo.getHLTName(*hltName);
 		size_t hltIndex = product.m_hltInfo.getHLTPosition(hltPath);
-		LOG(INFO) << "  HLT path: " << hltPath << " (index " << hltIndex << ")";
+		LOG(INFO) << "  HLT path: \"" << hltPath << "\" (index " << hltIndex << ")";
 
 		if (event.m_eventInfo->hltFired(hltPath, event.m_lumiInfo))
 		{
@@ -37,7 +37,7 @@ void PrintHltConsumer::ProcessFilteredEvent(event_type const& event, product_typ
 			     filterIndex < event.m_triggerObjectMetadata->getMaxFilterIndex(hltIndex); ++filterIndex)
 			{
 				std::string filterName = event.m_triggerObjectMetadata->toFilter[filterIndex];
-				LOG(INFO) << "      Filter: " << filterName << " (index " << filterIndex << ")";
+				LOG(INFO) << "      Filter: \"" << filterName << "\" (index " << filterIndex << ")";
 
 				// loop over all trigger objects of this filter
 				for (std::vector<int>::const_iterator triggerObjectIndex = event.m_triggerObjects->toIdxFilter[filterIndex].begin();
