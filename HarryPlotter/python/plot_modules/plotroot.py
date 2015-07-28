@@ -110,6 +110,8 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Draw options for legend entries.")
 		self.formatting_options.add_argument("--extra-text", type=str, nargs="?", default = "",
 		                                     help="Extra text written on plot, e.g. \"Preliminary\" ")
+		self.formatting_options.add_argument("--cms", nargs="?", type="bool", default=False, const=True,
+		                               help="Make a CMS publication plot. See https://ghm.web.cern.ch/ghm/plots/.")
 		
 	def prepare_args(self, parser, plotData):
 		super(PlotRoot, self).prepare_args(parser, plotData)
@@ -682,6 +684,8 @@ class PlotRoot(plotbase.PlotBase):
 			title += plotData.plotdict["title"] + "\t"
 		if(self.dataset_title != None):
 			title += self.dataset_title
+		if not plotData.plotdict["cms"]:
+			CMS_lumi.cmsText = ""
 		CMS_lumi.lumi_sqrtS = title
 		CMS_lumi.extraText = plotData.plotdict["extra_text"]
 		CMS_lumi.CMS_lumi(plotData.plot.canvas, 0, 11)
