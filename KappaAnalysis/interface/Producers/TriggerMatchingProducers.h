@@ -90,6 +90,7 @@ public:
 		(product.*m_detailedTriggerMatchedObjects).clear();
 		if ((! product.m_selectedHltNames.empty()) && ((settings.*GetDeltaRTriggerMatchingObjects)() > 0.0))
 		{
+			bool hasAllHltMatches = true;
 			bool hasHltAndFilterMatch = false;
 			
 			// loop over the hlt names given in the config file
@@ -137,7 +138,7 @@ public:
 									     validObject != (product.*m_validObjects).end(); ++validObject)
 									{
 										std::vector<KLV*> matchedTriggerObjects;
-										//LOG(DEBUG) << "\t\t\t\t\t\tvalidObject = " << *validObject;
+										//LOG(DEBUG) << "\t\t\t\t\t\tvalidObject = " << *validObject << ", (pt, eta, phi) = (" << (*validObject)->p4.Pt() << ", " << (*validObject)->p4.Phi() << ", " << (*validObject)->p4.Phi() << ")";
 										
 										// loop over all trigger objects for the fired filter
 										for (std::vector<int>::const_iterator triggerObjectIndex = event.m_triggerObjects->toIdxFilter[firedFilterIndex].begin();
@@ -145,7 +146,7 @@ public:
 										     ++triggerObjectIndex)
 										{
 											KLV triggerObject = event.m_triggerObjects->trgObjects.at(*triggerObjectIndex);
-											//LOG(DEBUG) << "\t\t\t\t\t\t\ttriggerObjectIndex, triggerObject = " << *triggerObjectIndex << ", " << &triggerObject;
+											//LOG(DEBUG) << "\t\t\t\t\t\t\ttriggerObjectIndex, triggerObject = " << *triggerObjectIndex << ", " << &triggerObject << ", (pt, eta, phi) = (" << triggerObject.p4.Pt() << ", " << triggerObject.p4.Phi() << ", " << triggerObject.p4.Phi() << ")";
 											
 											// check the matching
 											if (ROOT::Math::VectorUtil::DeltaR(triggerObject.p4, (*validObject)->p4) < (settings.*GetDeltaRTriggerMatchingObjects)())
@@ -162,6 +163,10 @@ public:
 							}
 						}
 					}
+					else
+					{
+						hasAllHltMatches = false;
+					}
 				}
 			}
 			
@@ -174,7 +179,7 @@ public:
 					// store first trigger object of first filter of first HLT name
 					(product.*m_triggerMatchedObjects)[triggerMatchingResult.first] = ((triggerMatchingResult.second)[hltNamesWhereAllFiltersMatched.front()].begin()->second).front();
 				}
-				else if (hasHltAndFilterMatch && (settings.*GetInvalidateNonMatchingObjects)())
+				else if (hasAllHltMatches && hasHltAndFilterMatch && (settings.*GetInvalidateNonMatchingObjects)())
 				{
 					// invalidate the object if the trigger has not matched
 					(product.*m_invalidObjects).push_back(triggerMatchingResult.first);
