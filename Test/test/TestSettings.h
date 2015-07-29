@@ -36,8 +36,17 @@ public:
 	{
 		return m_taggingFilters;
 	}
-
 	mutable stringvector m_taggingFilters;
+
+	long long GetProcessNEvents () const
+	{
+		return -1;
+	}
+
+	long long GetFirstEvent () const
+	{
+		return 0;
+	}
 
 	IMPL_PROPERTY(unsigned int, Offset)
 };
