@@ -47,6 +47,9 @@ public:
 	/// pipeline level, the default if no entry is in the json file will be 1
 	IMPL_SETTING_DEFAULT(size_t, Level, 1 )
 
+	IMPL_SETTING_DEFAULT(long long, FirstEvent, 0)
+	IMPL_SETTING_DEFAULT(long long, ProcessNEvents, -1) // -1 for no limit
+
 	IMPL_PROPERTY( std::string, Name )
 
 	IMPL_SETTING_DEFAULT( std::string , LogLevel, "unknown" )
