@@ -368,14 +368,13 @@ class PlotMpl(plotbase.PlotBase):
 					ax.set_ylim(ymax=self.y_max * (2 if plotData.plotdict["y_log"] else 1.2))
 
 		# set log scale
-		if plotData.plotdict["x_log"]:
-			ax.set_xscale('log', nonposx='clip')
-			# for log plots, we have to set the ticks again and set the formatter:
-			if plotData.plotdict["x_ticks"] is not None:
-				ax.set_xticks(plotData.plotdict["x_ticks"])
-				ax.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
-		if plotData.plotdict["y_log"]:
-			ax.set_yscale('log', nonposy='clip')
+		for axis in ['x', 'y']:
+			if plotData.plotdict[axis+"_log"]:
+				getattr(ax, 'set_{}scale'.format(axis))(**{'value': 'log', 'nonpos'+axis: 'clip'})
+				# for log plots, we have to set the ticks again and set the formatter:
+				if plotData.plotdict[axis+'_ticks'] is not None:
+					getattr(ax, 'set_{}ticks'.format(axis))(plotData.plotdict[axis+'_ticks'])
+					getattr(ax, 'get_{}axis'.format(axis))().set_major_formatter(matplotlib.ticker.ScalarFormatter())
 
 		for y, linestyle in zip(plotData.plotdict["lines"], self.default_linestyles*len(plotData.plotdict["lines"])):
 			ax.axhline(y, color='black', linestyle=linestyle)
