@@ -178,6 +178,10 @@ public:
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenTauMatchingRecoMuons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenTauMatchingRecoTaus, false);
 
+	IMPL_SETTING_DEFAULT(bool, InvalidateGenTauMatchingRecoElectrons, false);
+	IMPL_SETTING_DEFAULT(bool, InvalidateGenTauMatchingRecoMuons, false);
+	IMPL_SETTING_DEFAULT(bool, InvalidateGenTauMatchingRecoTaus, false);
+
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoElectronGenTauJet, 0.5f);
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoMuonGenTauJet, 0.5f);
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoTauGenTauJet, 0.5f);
