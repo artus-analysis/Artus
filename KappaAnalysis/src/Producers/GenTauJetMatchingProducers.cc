@@ -45,7 +45,7 @@ RecoTauGenTauJetMatchingProducer::RecoTauGenTauJetMatchingProducer() :
 	                                       RecoTauGenTauJetMatchingProducer::TauDecayMode::T,
 	                                       &setting_type::GetDeltaRMatchingRecoTauGenTauJet,
 	                                       &setting_type::GetInvalidateNonGenTauJetMatchingRecoTaus,
-					       &setting_type::GetInvalidateNonGenTauJetMatchingRecoTaus)
+					       &setting_type::GetInvalidateGenTauJetMatchingRecoTaus)
 {
 }
 
