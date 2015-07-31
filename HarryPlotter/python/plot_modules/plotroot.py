@@ -574,9 +574,9 @@ class PlotRoot(plotbase.PlotBase):
 			self.subplot_axes_histogram.GetYaxis().SetNdivisions(5, 0, 0)
 		
 		if all([isinstance(root_object, ROOT.TF1) or (root_object.GetListOfFunctions().FindObject("palette") == None) for root_object in plotData.plotdict["root_objects"].values()]):
-			plotData.plot.plot_pad.SetRightMargin(self.plot_pad_right_margin)
+			plotData.plot.plot_pad.SetRightMargin(0.05)
 			if not plotData.plot.subplot_pad is None:
-				plotData.plot.subplot_pad.SetRightMargin(self.plot_pad_right_margin)
+				plotData.plot.subplot_pad.SetRightMargin(0.05)
 		
 		# redraw axes only and update the canvas
 		plotData.plot.plot_pad.cd()
