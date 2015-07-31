@@ -673,37 +673,28 @@ class PlotRoot(plotbase.PlotBase):
 			if not size is None:
 				text_object.SetTextSize(size)
 
-		# set plot title using CMS_lumi functionality
-		#y_title = 0.94 if self.subplot_axes_histogram is None else 0.96
-		#if (not plotData.plotdict["title"] is None) and (plotData.plotdict["title"] != ""):
-		#	x_title = 0.2
-		#	title = self.text_box.AddText(x_title, y_title, plotData.plotdict["title"])
-		#	title.SetTextAlign(11)
-		title = ""
-		if plotData.plotdict["title"] != None:
-			title += plotData.plotdict["title"] + "\t"
-		if(self.dataset_title != None):
-			title += self.dataset_title
+		# lumi and energy: outside plot, top right, with best possible offset
+		if self.dataset_title != "":
+			self.dataset_title = re.sub(r"\\mathrm{(fb|pb)}", re.search(r"\\mathrm{(fb|pb)}", self.dataset_title).group(1), self.dataset_title)
+			CMS_lumi.lumi_sqrtS = self.dataset_title.replace("$", "").replace("\,", "")
+			CMS_lumi.lumiTextSize = 0.5
+			if not self.subplot_axes_histogram is None:
+				CMS_lumi.lumiTextOffset = 0.4
+
+		# normal plot title (e.g., 'own work', name of the channel...): outside plot, top left
+		y_title = 0.94 if self.subplot_axes_histogram is None else 0.95
+		if (not plotData.plotdict["title"] is None) and (plotData.plotdict["title"] != ""):
+			x_title = 0.2
+			title = self.text_box.AddText(x_title, y_title, plotData.plotdict["title"])
+			title.SetTextAlign(11)
+
+		# CMS text (only if specified): inside plot, top left
+		CMS_lumi.cmsTextSize = 0.5
 		if not plotData.plotdict["cms"]:
 			CMS_lumi.cmsText = ""
-		CMS_lumi.lumi_sqrtS = title
+
 		CMS_lumi.extraText = plotData.plotdict["extra_text"]
 		CMS_lumi.CMS_lumi(plotData.plot.canvas, 0, 11)
-		#if self.dataset_title != "":
-		#	x_dataset_title = 0.94 if self.subplot_axes_histogram is None else 0.92
-		#	if all([
-		#			(not isinstance(root_object, ROOT.TF1)) and (root_object.GetListOfFunctions().FindObject("palette") != None)
-		#			for root_object in plotData.plotdict["root_objects"].values()
-		#	]):
-		#		x_dataset_title = 0.8 if self.subplot_axes_histogram is None else 0.8
-		#	
-		#	self.dataset_title = re.sub(r"\\mathrm{(fb|pb)}", re.search(r"\\mathrm{(fb|pb)}", self.dataset_title).group(1), self.dataset_title)
-		#	dataset = self.text_box.AddText(
-		#			x_dataset_title,
-		#			y_title,
-		#			self.dataset_title.replace("$", "").replace("\,", "")
-		#	)
-		#	dataset.SetTextAlign(31)
 		
 		self.text_box.Draw()
 	
