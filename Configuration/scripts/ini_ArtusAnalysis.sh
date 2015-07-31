@@ -13,7 +13,7 @@ export KAPPATOOLSPATH=$(readlink -f $ARTUSPATH/../KappaTools)
 
 # configurations needed for compilation of C++ code
 #export BOOSTPATH=$(ls /afs/cern.ch/cms/${SCRAM_ARCH}/external/boost/* -d | tail -n 1)/
-export LD_LIBRARY_PATH="$KAPPATOOLSPATH/lib/:$KAPPAPATH/lib/:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="$KAPPATOOLSPATH/lib:$KAPPAPATH/lib:$LD_LIBRARY_PATH"
 
 # voms proxy path
 export X509_USER_PROXY=$HOME/.globus/x509up
