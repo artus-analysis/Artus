@@ -46,9 +46,18 @@ void PrintHltConsumer::ProcessFilteredEvent(event_type const& event, product_typ
 					KLV triggerObject = event.m_triggerObjects->trgObjects[*triggerObjectIndex];
 					LOG(INFO) << "        Trigger object: (pt = " << triggerObject.p4.Pt() << ", eta = " << triggerObject.p4.Eta() << ", phi = " << triggerObject.p4.Phi() << ", mass = " << triggerObject.p4.mass() << ")";
 				}
+				
+				if (filterName.empty())
+				{
+					LOG(FATAL) << "Empty filter name!";
+				}
 			}
 		}
 		
+		if (hltName->empty())
+		{
+			LOG(FATAL) << "Empty HLT name!";
+		}
 	}
 	LOG(INFO) << "==================================================";
 }
