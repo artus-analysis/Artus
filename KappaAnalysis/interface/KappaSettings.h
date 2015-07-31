@@ -189,6 +189,10 @@ public:
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenTauJetMatchingRecoElectrons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenTauJetMatchingRecoMuons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenTauJetMatchingRecoTaus, false);
+
+	IMPL_SETTING_DEFAULT(bool, InvalidateGenTauJetMatchingRecoElectrons, false);
+	IMPL_SETTING_DEFAULT(bool, InvalidateGenTauJetMatchingRecoMuons, false);
+	IMPL_SETTING_DEFAULT(bool, InvalidateGenTauJetMatchingRecoTaus, false);
 	
 	IMPL_SETTING(int, Year);
 	

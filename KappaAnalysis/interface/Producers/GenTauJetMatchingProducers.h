@@ -36,13 +36,15 @@ public:
 	                           std::vector<TValidObject*> product_type::*invalidObjects,
 	                           TauDecayMode tauDecayMode,
 	                           float (setting_type::*GetDeltaRMatchingRecoObjectGenTauJet)(void) const,
-	                           bool (setting_type::*GetInvalidateNonGenTauJetMatchingObjects)(void) const) :
+	                           bool (setting_type::*GetInvalidateNonGenTauJetMatchingObjects)(void) const,
+				   bool (setting_type::*GetInvalidateGenTauJetMatchingObjects)(void) const) :
 		m_genTauJetMatchedObjects(genTauJetMatchedObjects),
 		m_validObjects(validObjects),
 		m_invalidObjects(invalidObjects),
 		tauDecayMode(tauDecayMode),
 		GetDeltaRMatchingRecoObjectGenTauJet(GetDeltaRMatchingRecoObjectGenTauJet),
-		GetInvalidateNonGenTauJetMatchingObjects(GetInvalidateNonGenTauJetMatchingObjects)
+		GetInvalidateNonGenTauJetMatchingObjects(GetInvalidateNonGenTauJetMatchingObjects),
+		GetInvalidateGenTauJetMatchingObjects(GetInvalidateGenTauJetMatchingObjects)
 	{
 	}
 
@@ -80,8 +82,9 @@ public:
 						//LOG(INFO) << this->GetProducerId() << " (event " << event.m_eventInfo->nEvent << "): " << (*validObject)->p4 << " --> " << genTauJet->p4;
 					}
 				}
-				// invalidate the object if the trigger has not matched
-				if ((! objectMatched) && (settings.*GetInvalidateNonGenTauJetMatchingObjects)())
+				// invalidate the object if it has not matched
+				if (((! objectMatched) && (settings.*GetInvalidateNonGenTauJetMatchingObjects)()) ||
+				    (objectMatched && (settings.*GetInvalidateGenTauJetMatchingObjects)()))
 				{
 					(product.*m_invalidObjects).push_back(*validObject);
 					validObject = (product.*m_validObjects).erase(validObject);
@@ -92,7 +95,7 @@ public:
 				}
 			}
 			// preserve sorting of invalid objects
-			if ((settings.*GetInvalidateNonGenTauJetMatchingObjects)())
+			if ((settings.*GetInvalidateNonGenTauJetMatchingObjects)() || (settings.*GetInvalidateGenTauJetMatchingObjects)())
 			{
 				std::sort((product.*m_invalidObjects).begin(), (product.*m_invalidObjects).end(),
 						  [](TValidObject const* object1, TValidObject const* object2) -> bool
@@ -108,6 +111,7 @@ private:
 	TauDecayMode tauDecayMode;
 	float (setting_type::*GetDeltaRMatchingRecoObjectGenTauJet)(void) const;
 	bool (setting_type::*GetInvalidateNonGenTauJetMatchingObjects)(void) const;
+	bool (setting_type::*GetInvalidateGenTauJetMatchingObjects)(void) const;
 	
 	std::map<size_t, std::vector<std::string> > m_objectTriggerFiltersByIndex;
 	std::map<std::string, std::vector<std::string> > m_objectTriggerFiltersByHltName;
@@ -119,6 +123,7 @@ private:
  *  Required config tags:
  *  - DeltaRMatchingRecoElectronsGenTau (default provided)
  *  - InvalidateNonGenTauJetMatchingRecoElectrons (default provided)
+ *  - InvalidateGenTauJetMatchingRecoElectrons (default provided)
  */
 class RecoElectronGenTauJetMatchingProducer: public GenTauJetMatchingProducerBase<KElectron>
 {
@@ -136,6 +141,7 @@ public:
  *  Required config tags:
  *  - DeltaRMatchingRecoMuonGenTau (default provided)
  *  - InvalidateNonGenTauJetMatchingRecoMuons (default provided)
+ *  - InvalidateGenTauJetMatchingRecoMuons (default provided)
  */
 class RecoMuonGenTauJetMatchingProducer: public GenTauJetMatchingProducerBase<KMuon>
 {
@@ -153,6 +159,7 @@ public:
  *  Required config tags:
  *  - DeltaRMatchingRecoTauGenTau (default provided)
  *  - InvalidateNonGenTauJetMatchingRecoTaus (default provided)
+ *  - InvalidateGenTauJetMatchingRecoTaus (default provided)
  */
 class RecoTauGenTauJetMatchingProducer: public GenTauJetMatchingProducerBase<KTau>
 {
