@@ -292,6 +292,7 @@ public:
 	
 	IMPL_SETTING(std::string, EventWeight);
 	IMPL_SETTING_DEFAULT(double, BaseWeight, 1.0);
+	IMPL_SETTING_DEFAULT(double, GeneratorWeight, DefaultValues::UndefinedInt);
 
 	// TMVA reader settings
 	IMPL_SETTING_STRINGLIST_DEFAULT(TmvaInputQuantities, {});
