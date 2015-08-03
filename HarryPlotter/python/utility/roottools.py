@@ -836,4 +836,13 @@ class RootTools(object):
 		if not upper_threshold is None:
 			combined_values = [v for v in combined_values if v < upper_threshold]
 		return max(combined_values)
+	
+	@staticmethod
+	def scale_tgraph(tgraph, scalefactor):
+		N = tgraph.GetN()
+		x = tgraph.GetY()
+		for i in range(N):
+			x[i] *= scalefactor
+		tgraph.GetHistogram().Delete()
+		tgraph.SetHistogram(0)
 

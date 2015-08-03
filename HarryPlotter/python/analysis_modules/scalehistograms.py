@@ -4,7 +4,10 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
+import ROOT
+
 import Artus.HarryPlotter.analysisbase as analysisbase
+import Artus.HarryPlotter.utility.roottools as roottools
 
 class ScaleHistograms(analysisbase.AnalysisBase):
 	"""Scale selected root histogram(s) by a certain value."""
@@ -28,4 +31,7 @@ class ScaleHistograms(analysisbase.AnalysisBase):
 		for nick, root_histogram in plotData.plotdict["root_objects"].iteritems():
 			if nick in plotData.plotdict['scale_nicks']:
 				log.debug("Scale nick '{0}' by {1}".format(nick, plotData.plotdict['scale']))
-				root_histogram.Scale(plotData.plotdict['scale'])
+				if isinstance(root_histogram, ROOT.TGraph):
+					roottools.RootTools.scale_tgraph(root_histogram, plotData.plotdict['scale'])
+				else:
+					root_histogram.Scale(plotData.plotdict['scale'])
