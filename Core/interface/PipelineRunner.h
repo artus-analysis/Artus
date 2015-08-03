@@ -146,6 +146,8 @@ public:
 				LOG(FATAL)<< "Pipeline name '" << *itUnq << "' is not unique, but pipeline names must be unique";
 			}
 		}
+		// apparently evtProvider.GetEntries() is not reliable. Therefore, if 'ProcessNEvents' is not set (=-1), the loop condition
+		// always evaluates to true (processNEvents<0) = (-1<0) and is terminated via the 'if (!evtProvider.GetEntry(i)) break' statement
 		for (long long i = firstEvent; ( (processNEvents<0) || (i<(firstEvent + nEvents)) ); ++i)
 		{
 

@@ -28,10 +28,10 @@
      ElectronID
      ElectronIsoType
      ElectronIso
-     ElectronReco
+     ElectronReco				(string) for mva or mvatrig ID, perform an additional cut on 'track.nInnerHits'
      ElectronLowerPtCuts
      ElectronUpperAbsEtaCuts
-     DirectIso
+     DirectIso					(bool, default true) if false, inverse the decision of the isolation criterion
 */
 
 template<class TTypes>

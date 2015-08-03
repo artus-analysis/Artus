@@ -8,6 +8,21 @@
 #include "Artus/KappaAnalysis/interface/KappaTypes.h"
 
 
+/**
+   \brief KappaCollectionsConsumer, create an TTree with one entry for each valid (Kappa) object.
+
+   This producer creates an ntuple with all data members of the Kappa object as variables.
+   Additionally, a matching to gen particles is possible.
+   Implementations exist for (Tagged)Jets, Taus, Muons and Electrons.
+   The respective producer for valid objects has to be run before.
+
+   This Consumer needs the following config tags:
+     BranchGenMatched(Jets|Taus|Muons|Electrons)	(bool, default false) if true: match the valid reco objects to gen objects
+     AddGenMatchedParticles							(bool, default true) add a branch with the matching gen particles to the tree
+     AddGenMatchedTaus								(bool, default true) add a branch with the matching gen taus to the tree
+     AddGenMatchedTauJets							(bool, default true) add a branch with the matching gen tau jets to the tree
+*/
+
 template<class TObject, class TObjectMetaInfo>
 class KappaCollectionsConsumerBase: public ConsumerBase<KappaTypes>
 {
