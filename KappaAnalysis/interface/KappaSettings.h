@@ -4,6 +4,7 @@
 #include "Artus/Configuration/interface/SettingsBase.h"
 #include "Artus/Configuration/interface/SettingMacros.h"
 #include "Artus/Configuration/interface/PropertyTreeSupport.h"
+#include "Artus/Utility/interface/DefaultValues.h"
 
 /**
    \brief Reads settings for all parts of the KappaAnalysis code from a prepared
