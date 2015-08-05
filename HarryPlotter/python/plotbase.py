@@ -198,7 +198,7 @@ class PlotBase(processor.Processor):
 		plotData.plotdict["colors"] = [None if color is None else self.predefined_colors.get_predefined_color(color) for color in plotData.plotdict["colors"]]
 		
 		if plotData.plotdict["www"] != None:
-			plotData.plotdict["output_dir"] = "/".join(['websync', datetime.date.today().strftime('%Y_%m_%d'), (plotData.plotdict["www"] or "")])
+			plotData.plotdict["output_dir"] = os.path.join("websync", datetime.date.today().strftime("%Y_%m_%d"), (plotData.plotdict["www"] or ""))
 		# create output directory if not exisiting
 		try:
 			os.makedirs(plotData.plotdict["output_dir"])
