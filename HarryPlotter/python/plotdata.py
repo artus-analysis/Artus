@@ -88,7 +88,8 @@ class PlotData(object):
 					html_content += html_template_plot.substitute(
 							title=title,
 							href=href,
-							plot=plot
+							plot=plot,
+							json=os.path.splitext(plot)[0]+".json"
 					)
 				with open(os.path.join(self.plotdict["output_dir"], overview_filename), "w") as overview_file:
 					overview_file.write(html_template.substitute(url=url, html_content=html_content))
