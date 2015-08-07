@@ -196,12 +196,12 @@ class HarryCore(object):
 			processor.prepare_args(self.parser, plotData)
 			processor.run(plotData)
 		
-		# save plots
-		output_filenames = plotData.save()
-		
-		# export arguments into JSON file (2)
+		# export arguments into JSON file
 		if plotData.plotdict["export_json"] != "default":
 			export_args.save(plotData.plotdict["export_json"], indent=4)
+		
+		# save plots
+		output_filenames = plotData.save()
 		
 		del(plotData)
 		return output_filenames
