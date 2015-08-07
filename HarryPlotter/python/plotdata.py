@@ -9,6 +9,7 @@ log = logging.getLogger(__name__)
 
 import abc
 import datetime
+import glob
 import os
 import string
 
@@ -64,12 +65,7 @@ class PlotData(object):
 				remote_path = os.path.expandvars(os.path.join("$HARRY_REMOTE_PATH", remote_dir))
 				url = os.path.expandvars(os.path.join("$HARRY_URL", remote_dir, overview_filename))
 				
-				plots_for_gallery = [p for p in sorted(os.listdir(self.plotdict["output_dir"])) if (('.png' in p) or ('.pdf' in p))]
-				plots_to_copy = [os.path.basename(filename), overview_filename]
-				if self.plotdict.get('save_legend', False):
-					for f in self.plotdict['formats']:
-						plots_to_copy.append(".".join([self.plotdict['save_legend'], f]))
-
+				plots_for_gallery = [p for p in sorted(os.listdir(self.plotdict["output_dir"])) if all([not p.endswith("."+ext) for ext in ["json", "html"]])]
 				html_content = ""
 
 				log.info("Copying plots to webspace...")
@@ -83,7 +79,7 @@ class PlotData(object):
 				with open(os.path.expandvars("$ARTUSPATH/HarryPlotter/data/template_webplotting_plot.html")) as html_template_plot_file:
 					html_template_plot = string.Template(html_template_plot_file.read())
 				
-				for plot in [p for p in plots_for_gallery if (('.png' in p) or ('.pdf' in p))]:
+				for plot in [p for p in plots_for_gallery]:
 					# try to link to pdf file, if it exists
 					href = plot.replace('.png', '.pdf')
 					if href not in plots_for_gallery:
@@ -102,7 +98,7 @@ class PlotData(object):
 				create_dir_command = ["ssh", user+"@"+sshpc, "mkdir -p", remote_path]
 				log.debug("\nIssueing mkdir command: " + " ".join(create_dir_command))
 				logger.subprocessCall(create_dir_command)
-				rsync_command = ["rsync", "-u"] + [os.path.join(self.plotdict["output_dir"], p) for p in plots_to_copy] + ["%s@%s:%s" % (user, sshpc, remote_path)]
+				rsync_command = ["rsync", "-u"] + glob.glob(os.path.join(self.plotdict["output_dir"], "*.*")) + ["%s@%s:%s" % (user, sshpc, remote_path)]
 				log.debug("\nIssueing rsync command: " + " ".join(rsync_command) + "\n")
 				logger.subprocessCall(rsync_command)
 				log.info("Copied {0}; see {1}".format(filename.split("/")[-1], url))
