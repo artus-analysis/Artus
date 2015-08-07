@@ -9,8 +9,9 @@ log = logging.getLogger(__name__)
 
 import abc
 import datetime
-import subprocess
 import os
+import string
+import subprocess
 
 import Artus.Utility.tools as tools
 import Artus.HarryPlotter.utility.extrafunctions as extrafunctions
@@ -73,15 +74,28 @@ class PlotData(object):
 
 				log.info("Copying plots to webspace...")
 				# loop over plots, make gallery
+				
+				html_template = None
+				with open(os.path.expandvars("$ARTUSPATH/HarryPlotter/data/template_webplotting_overview.html")) as html_template_file:
+					html_template = string.Template(html_template_file.read())
+				
+				html_template_plot = None
+				with open(os.path.expandvars("$ARTUSPATH/HarryPlotter/data/template_webplotting_plot.html")) as html_template_plot_file:
+					html_template_plot = string.Template(html_template_plot_file.read())
+				
 				for plot in [p for p in plots_for_gallery if (('.png' in p) or ('.pdf' in p))]:
 					# try to link to pdf file, if it exists
 					href = plot.replace('.png', '.pdf')
 					if href not in plots_for_gallery:
 						href = plot
 					title = plot.split('/')[-1][:-4].replace('_', ' ')
-					html_content += htmlTemplatePlot % (title, href, title, plot)
-				with open(os.path.join(self.plotdict["output_dir"], overview_filename), 'w') as f:
-					f.write(htmlTemplate % (url, html_content))
+					html_content += html_template_plot.substitute(
+							title=title,
+							href=href,
+							plot=plot
+					)
+				with open(os.path.join(self.plotdict["output_dir"], overview_filename), "w") as overview_file:
+					overview_file.write(html_template.substitute(url=url, html_content=html_content))
 
 				# create remote dir, copy plots and overview file
 				create_dir_command = ['ssh', user+'@'+tools.get_environment_variable('HARRY_SSHPC'), 'mkdir -p', remote_path]
@@ -107,23 +121,3 @@ class PlotContainer(object):
 		""" Overwrite this function to define how a plot is saved. """
 		pass
 
-
-# these html templates are needed to create the web galleries
-htmlTemplate = """<!DOCTYPE html>
-<html>
-<head>
-<style type="text/css">
-div { float:left; }
-pre { display: inline; padding: 3px 7px; font-size: 16px; background-color: #F5F5F5; border: 1px solid rgba(0, 0, 0, 0.15); border-radius: 4px; }
-h3 { color: #888; font-size: 16px; }
-</style>
-</head>
-<body>
-<h1>Plot overview</h1>
-<p>A <a href=".">file list</a> is also available and all plots can be downloaded using</p>
-<p><code>wget -r -l 1 %s</code></p>
-%s
-</body>
-</html>
-"""
-htmlTemplatePlot = """<div><h3>%s</h3><a href="%s" title="%s"><img src="%s" height="400"></a></div>\n"""
