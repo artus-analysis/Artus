@@ -11,7 +11,6 @@ import abc
 import datetime
 import os
 import string
-import subprocess
 
 import Artus.Utility.tools as tools
 import Artus.HarryPlotter.utility.extrafunctions as extrafunctions
@@ -102,10 +101,10 @@ class PlotData(object):
 				sshpc = tools.get_environment_variable("HARRY_SSHPC")
 				create_dir_command = ["ssh", user+"@"+sshpc, "mkdir -p", remote_path]
 				log.debug("\nIssueing mkdir command: " + " ".join(create_dir_command))
-				subprocess.call(create_dir_command)
-				rsync_command =["rsync", "-u"] + [os.path.join(self.plotdict["output_dir"], p) for p in plots_to_copy] + ["%s@%s:%s" % (user, sshpc, remote_path)]
+				logger.subprocessCall(create_dir_command)
+				rsync_command = ["rsync", "-u"] + [os.path.join(self.plotdict["output_dir"], p) for p in plots_to_copy] + ["%s@%s:%s" % (user, sshpc, remote_path)]
 				log.debug("\nIssueing rsync command: " + " ".join(rsync_command) + "\n")
-				subprocess.call(rsync_command)
+				logger.subprocessCall(rsync_command)
 				log.info("Copied {0}; see {1}".format(filename.split("/")[-1], url))
 
 			return self.plotdict["output_filenames"]
