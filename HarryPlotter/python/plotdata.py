@@ -61,9 +61,10 @@ class PlotData(object):
 				user = tools.get_environment_variable("HARRY_REMOTE_USER")
 				overview_filename = 'overview.html'
 				date = datetime.date.today().strftime('%Y_%m_%d')
-				remote_dir = os.path.join(tools.get_environment_variable('HARRY_REMOTE_DIR'), date, (self.plotdict["www"] if type(self.plotdict["www"])==str else ""))
-				remote_path = os.path.join(tools.get_environment_variable('HARRY_REMOTE_PATH'), remote_dir)
-				url = os.path.join(tools.get_environment_variable('HARRY_URL'), remote_dir, overview_filename)
+				remote_dir = os.path.expandvars(os.path.join("$HARRY_REMOTE_DIR", date, (self.plotdict["www"] if type(self.plotdict["www"])==str else "")))
+				remote_path = os.path.expandvars(os.path.join("$HARRY_REMOTE_PATH", remote_dir))
+				url = os.path.expandvars(os.path.join("$HARRY_URL", remote_dir, overview_filename))
+				
 				plots_for_gallery = [p for p in sorted(os.listdir(self.plotdict["output_dir"])) if (('.png' in p) or ('.pdf' in p))]
 				plots_to_copy = [os.path.basename(filename), overview_filename]
 				if self.plotdict.get('save_legend', False):
@@ -98,10 +99,11 @@ class PlotData(object):
 					overview_file.write(html_template.substitute(url=url, html_content=html_content))
 
 				# create remote dir, copy plots and overview file
-				create_dir_command = ['ssh', user+'@'+tools.get_environment_variable('HARRY_SSHPC'), 'mkdir -p', remote_path]
+				sshpc = tools.get_environment_variable("HARRY_SSHPC")
+				create_dir_command = ["ssh", user+"@"+sshpc, "mkdir -p", remote_path]
 				log.debug("\nIssueing mkdir command: " + " ".join(create_dir_command))
 				subprocess.call(create_dir_command)
-				rsync_command =['rsync', '-u'] + [os.path.join(self.plotdict["output_dir"], p) for p in plots_to_copy] + ["%s@%s:%s" % (user, tools.get_environment_variable('HARRY_SSHPC'), remote_path)]
+				rsync_command =["rsync", "-u"] + [os.path.join(self.plotdict["output_dir"], p) for p in plots_to_copy] + ["%s@%s:%s" % (user, sshpc, remote_path)]
 				log.debug("\nIssueing rsync command: " + " ".join(rsync_command) + "\n")
 				subprocess.call(rsync_command)
 				log.info("Copied {0}; see {1}".format(filename.split("/")[-1], url))
