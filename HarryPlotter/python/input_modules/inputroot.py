@@ -19,13 +19,11 @@ import Artus.HarryPlotter.utility.roottools as roottools
 import Artus.Utility.progressiterator as pi
 import Artus.Utility.jsonTools as jsonTools
 from Artus.HarryPlotter.utility.tfilecontextmanager import TFileContextManager
-from Artus.HarryPlotter.utility.expressions import ExpressionsDict
 
 
 class InputRoot(inputfile.InputFile):
 	def __init__(self):
 		super(InputRoot, self).__init__()
-		self.expressions = ExpressionsDict()
 	
 	def modify_argument_parser(self, parser, args):
 		super(InputRoot, self).modify_argument_parser(parser, args)
@@ -79,9 +77,10 @@ class InputRoot(inputfile.InputFile):
 			plotData.plotdict["friend_trees"] = [None]
 
 		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "files", "directories", "folders", "weights", "friend_trees", "tree_draw_options"])
-		plotData.plotdict["folders"] = [folders.split() if folders else [""] for folders in plotData.plotdict["folders"]]
-		
 		inputbase.InputBase.prepare_nicks(plotData)
+		
+		plotData.plotdict["folders"] = [folders.split() if folders else [""] for folders in plotData.plotdict["folders"]]
+		plotData.plotdict["weights"] = [self.expressions.replace_expressions(expression) for expression in plotData.plotdict["weights"]]
 		
 		if plotData.plotdict["read_config"]:
 			self.read_input_json_dicts(plotData)
@@ -105,10 +104,10 @@ class InputRoot(inputfile.InputFile):
 		) in enumerate(pi.ProgressIterator(zip(
 				plotData.plotdict["files"],
 				plotData.plotdict["folders"],
-				[self.expressions.replace_expressions(expression) for expression in plotData.plotdict["x_expressions"]],
-				[self.expressions.replace_expressions(expression) for expression in plotData.plotdict["y_expressions"]],
-				[self.expressions.replace_expressions(expression) for expression in plotData.plotdict["z_expressions"]],
-				[self.expressions.replace_expressions(expression) for expression in plotData.plotdict["weights"]],
+				plotData.plotdict["x_expressions"],
+				plotData.plotdict["y_expressions"],
+				plotData.plotdict["z_expressions"],
+				plotData.plotdict["weights"],
 				plotData.plotdict["x_bins"],
 				plotData.plotdict["y_bins"],
 				plotData.plotdict["z_bins"],
