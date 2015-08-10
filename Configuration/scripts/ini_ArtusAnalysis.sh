@@ -1,11 +1,16 @@
 #!/bin/bash
 
 # get path of Artus installation
-if [[ ${BASH_SOURCE[0]} == *"${CMSSW_BASE}/bin/"* || ${BASH_SOURCE[0]} == *"${CMSSW_BASE}/src/Artus/"* ]]; then
-	export ARTUSPATH=$CMSSW_BASE/src/Artus
+BASHSOURCE=${BASH_SOURCE[0]}
+if [[ -n '${BASHSOURCE+1}' ]]; then
+   BASHSOURCE=$0
+fi
+
+if [[ ${BASHSOURCE} == *"${CMSSW_BASE}/bin/"* || ${BASHSOURCE} == *"${CMSSW_BASE}/src/Artus/"* ]]; then
+       export ARTUSPATH=$CMSSW_BASE/src/Artus
 else
 	# get Artus dir relative to location of this script
-	export ARTUSPATH=$(readlink -f $(dirname $(readlink -f ${BASH_SOURCE[0]}))/../..)
+       export ARTUSPATH=$(readlink -f $(dirname $(readlink -f $BASHSOURCE))/../..)
 fi
 
 export KAPPAPATH=$(readlink -f $ARTUSPATH/../Kappa)
@@ -13,10 +18,7 @@ export KAPPATOOLSPATH=$(readlink -f $ARTUSPATH/../KappaTools)
 
 # configurations needed for compilation of C++ code
 #export BOOSTPATH=$(ls /afs/cern.ch/cms/${SCRAM_ARCH}/external/boost/* -d | tail -n 1)/
-export LD_LIBRARY_PATH="$KAPPATOOLSPATH/lib:$KAPPAPATH/lib:$LD_LIBRARY_PATH"
-
-# voms proxy path
-export X509_USER_PROXY=$HOME/.globus/x509up
+export LD_LIBRARY_PATH="$KAPPATOOLSPATH/lib/:$KAPPAPATH/lib/:$LD_LIBRARY_PATH"
 
 # useful to redirect messages
 export USERPC=`who am i | sed 's/.*(\([^]]*\)).*/\1/g'`
