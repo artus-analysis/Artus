@@ -65,7 +65,7 @@ class PlotData(object):
 				remote_path = os.path.expandvars(os.path.join("$HARRY_REMOTE_PATH", remote_dir))
 				url = os.path.expandvars(os.path.join("$HARRY_URL", remote_dir, overview_filename))
 				
-				plots_for_gallery = [p for p in sorted(os.listdir(self.plotdict["output_dir"])) if (os.path.isfile(os.path.join(self.plotdict["output_dir"], p)) and all([not p.endswith("."+ext) for ext in ["json", "html"]]))]
+				plots_for_gallery = [p for p in sorted(os.listdir(self.plotdict["output_dir"])) if (os.path.isfile(os.path.join(self.plotdict["output_dir"], p)) and all([not p.endswith("."+ext) for ext in ["json", "html", "root"]]))]
 				html_content = ""
 
 				log.info("Copying plots to webspace...")
