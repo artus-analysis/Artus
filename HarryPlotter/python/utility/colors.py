@@ -26,4 +26,4 @@ class ColorsDict(object):
 			self.colors_dict.update(additional_colors)
 
 	def get_predefined_color(self, color):
-		return self.colors_dict.get(color.lower(), color)
+		return self.colors_dict.get(color, color)

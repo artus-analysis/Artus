@@ -27,4 +27,4 @@ class LabelsDict(object):
 			self.labels_dict.update(additional_labels)
 
 	def get_nice_label(self, label):
-		return self.labels_dict.get(label.lower(), label)
+		return self.labels_dict.get(label, label)
