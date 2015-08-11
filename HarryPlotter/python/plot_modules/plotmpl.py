@@ -651,8 +651,6 @@ class PlotMpl(plotbase.PlotBase):
 				if any([all([i<0.05 for i in color]) for color in [min_color, max_color]]):  # check if black is min or max color
 					mask_color = 'red'
 			cmap.set_bad(mask_color, alpha=None)
-		if z_log:
-			cmap.set_bad('gray', alpha=None)
 
 		artist = ax.pcolormesh(hist.xbinedges, hist.ybinedges, hist.bincontents, cmap=cmap, norm=norm)
 		return artist
