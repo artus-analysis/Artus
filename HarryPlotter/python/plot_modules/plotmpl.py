@@ -26,11 +26,12 @@ import numpy as np
 
 
 class MplPlotContainer(plotdata.PlotContainer):
-	def __init__(self, fig=None, axes=None, save_legend=False):
+	def __init__(self, fig=None, axes=None, save_legend=False, labels=None):
 		self.fig = fig
 		self.axes = axes
 		self.save_legend = save_legend
 		self.legend_fig = None
+		self.labels = labels
 	
 	def finish(self):
 		if self.save_legend != False:
@@ -38,7 +39,8 @@ class MplPlotContainer(plotdata.PlotContainer):
 			legend_ax = self.legend_fig.add_subplot(111, frameon=False)
 			legend_ax.xaxis.set_visible(False)
 			legend_ax.yaxis.set_visible(False)
-			legend = legend_ax.legend(*self.axes[0].get_legend_handles_labels(), loc='center')
+			handles, labels = PlotMpl.get_legend_handles_labels_ordered(self.axes[0], self.labels)
+			legend_ax.legend(handles, labels, loc='center')
 
 	def save(self, filename):
 		# use bbox tight and pad to not have labels cropped
@@ -210,7 +212,7 @@ class PlotMpl(plotbase.PlotBase):
 			kwargs = {'projection':'3d'} if (plotData.plotdict['3d'] is not False) else {}
 			axes = [fig.add_subplot(1,1,1, **kwargs)]
 
-		plotData.plot = MplPlotContainer(fig, axes, plotData.plotdict["save_legend"])
+		plotData.plot = MplPlotContainer(fig, axes, plotData.plotdict["save_legend"], plotData.plotdict["labels"])
 
 	def prepare_histograms(self, plotData):
 		super(PlotMpl, self).prepare_histograms(plotData)
@@ -431,10 +433,7 @@ class PlotMpl(plotbase.PlotBase):
 
 			# Only plot legend if there active legend handles
 			if len(ax.get_legend_handles_labels()[0]) > 1 and plotData.plotdict["legend"] is not None:
-				handles, labels = ax.get_legend_handles_labels()
-				# sort both labels and handles by order of 'labels' in plotdict
-				labels, handles = zip(*sorted(zip(labels, handles), key=lambda t: plotData.plotdict['labels'].index(t[0])))
-				legend = ax.legend(handles, labels, loc=plotData.plotdict["legend"], ncol=plotData.plotdict["legend_cols"], columnspacing=0.5, handletextpad=0.3)
+				legend = ax.legend(*self.get_legend_handles_labels_ordered(ax, plotData.plotdict['labels']), loc=plotData.plotdict["legend"], ncol=plotData.plotdict["legend_cols"], columnspacing=0.5, handletextpad=0.3)
 				legend.set_zorder(100)
 
 			if self.mpl_version >= 121:
@@ -446,7 +445,7 @@ class PlotMpl(plotbase.PlotBase):
 		if len(plotData.plot.axes) > 1:
 			for ax in [plotData.plot.axes[1]]:
 				if len(ax.get_legend_handles_labels()[0]) > 1 and plotData.plotdict["subplot_legend"] is not None:
-					ax.legend(loc=plotData.plotdict["subplot_legend"], ncol=1, columnspacing=0.5, handletextpad=0.3)
+					ax.legend(*self.get_legend_handles_labels_ordered(ax, plotData.plotdict['labels']), loc=plotData.plotdict["subplot_legend"], ncol=1, columnspacing=0.5, handletextpad=0.3)
 		# if plotData.plotdict['ratio'] and list(set(plotData.plotdict['ratio_labels'])) != [None]:
 			# plotData.plot.ax2.legend(loc=plotData.plotdict["legend"])
 
@@ -699,4 +698,10 @@ class PlotMpl(plotbase.PlotBase):
 		                                 plotData.plotdict["zorder"])
 		return zip_arguments
 
+	@staticmethod
+	def get_legend_handles_labels_ordered(ax, labellist):
+		# sort both labels and handles by order of 'labels' in plotdict
+		handles, labels = ax.get_legend_handles_labels()
+		labels, handles = zip(*sorted(zip(labels, handles), key=lambda t: labellist.index(t[0])))
+		return handles, labels
 
