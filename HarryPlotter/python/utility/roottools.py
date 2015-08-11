@@ -828,7 +828,7 @@ class RootTools(object):
 		combined_values = [v-e for v, e in zip(values, errors)]
 		if not lower_threshold is None:
 			combined_values = [v for v in combined_values if v > lower_threshold]
-		return min(combined_values)
+		return (min(combined_values) if len(combined_values) > 0 else 0.)
 	
 	@staticmethod
 	def get_max(values, errors, upper_threshold=None):
