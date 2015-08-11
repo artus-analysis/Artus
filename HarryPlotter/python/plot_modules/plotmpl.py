@@ -431,10 +431,10 @@ class PlotMpl(plotbase.PlotBase):
 
 			# Only plot legend if there active legend handles
 			if len(ax.get_legend_handles_labels()[0]) > 1 and plotData.plotdict["legend"] is not None:
-				# handles, labels = ax.get_legend_handles_labels()
-				# sort both labels and handles by labels
-				# labels, handles = zip(*sorted(zip(labels, handles), key=lambda t: t[0]))
-				legend = ax.legend(loc=plotData.plotdict["legend"], ncol=plotData.plotdict["legend_cols"], columnspacing=0.5, handletextpad=0.3)
+				handles, labels = ax.get_legend_handles_labels()
+				# sort both labels and handles by order of 'labels' in plotdict
+				labels, handles = zip(*sorted(zip(labels, handles), key=lambda t: plotData.plotdict['labels'].index(t[0])))
+				legend = ax.legend(handles, labels, loc=plotData.plotdict["legend"], ncol=plotData.plotdict["legend_cols"], columnspacing=0.5, handletextpad=0.3)
 				legend.set_zorder(100)
 
 			if self.mpl_version >= 121:

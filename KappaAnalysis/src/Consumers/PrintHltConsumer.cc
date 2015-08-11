@@ -49,7 +49,7 @@ void PrintHltConsumer::ProcessFilteredEvent(event_type const& event, product_typ
 				
 				if (filterName.empty())
 				{
-					LOG(FATAL) << "Empty filter name!";
+					LOG(WARNING) << "Empty filter name!";
 				}
 			}
 		}

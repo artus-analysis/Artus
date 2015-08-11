@@ -20,4 +20,4 @@ class BinningsDict(object):
 			self.binnings_dict.update(additional_binnings)
 
 	def get_binning(self, binning):
-		return self.binnings_dict.get(binning.lower(), binning)
+		return self.binnings_dict.get(binning, binning)

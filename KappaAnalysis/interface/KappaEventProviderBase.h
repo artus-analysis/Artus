@@ -60,6 +60,7 @@ public:
 		if (m_prevTree != m_fi.eventdata.GetTreeNumber())
 		{
 			m_prevTree = m_fi.eventdata.GetTreeNumber();
+			m_prevLumi = -1;
 			LOG(INFO) << "\nProcessing " << m_fi.eventdata.GetFile()->GetName() << " ...";
 		}
 
