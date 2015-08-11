@@ -55,7 +55,7 @@ void HltProducer::Produce(KappaEvent const& event, KappaProduct& product,
 			// look for trigger with lowest prescale
 			// do not use hltName here as a parameter because *hltPath is already cached.
 			int prescale = product.m_hltInfo.getPrescale(*hltPath);
-			if (prescale < lowestPrescale)
+			if (prescale < lowestPrescale && prescale > 0)
 			{
 				lowestPrescale = prescale;
 				lowestPrescaleHltName = hltName;
@@ -80,6 +80,11 @@ void HltProducer::Produce(KappaEvent const& event, KappaProduct& product,
 		             << "! Lowest prescale: " << lowestPrescale << " (\"" << lowestPrescaleHltName << "\").";
 	}
 	
+	if (! lowestPrescale > 0)
+	{
+		lowestPrescale = 1;
+	}
+
 	// TODO: how to define the HLT prescale eventweight when more than one HLT fires? The product of them? The min. or max. value? Maybe overwrite it later?
 	product.m_weights["hltPrescaleWeight"] = lowestPrescale;
 }
