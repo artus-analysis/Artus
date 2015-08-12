@@ -73,7 +73,8 @@ class PlotMpl(plotbase.PlotBase):
 			(0.9686274509803922, 0.5058823529411764, 0.7490196078431373),  # pink
 			(0.6, 0.6, 0.6)  # grey
 		]
-		self.default_marker_colors = ['black', 'red', 'blue', 'green', 'purple', 'orange', 'cyan']
+		self.default_marker_colors = ['black', 'red', 'blue', 'green', 'purple', 'orange', 'cyan',
+			'magenta', 'gold', 'saddlebrown', 'olivedrab', 'lightsteelblue', 'burlywood', 'lightcoral']
 		self.set_matplotlib_defaults()
 		self.nicelabels = labels.LabelsDict()
 		self.default_linestyles = ['--', '-.', ':', '-']
