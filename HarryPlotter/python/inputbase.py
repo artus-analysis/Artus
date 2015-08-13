@@ -50,7 +50,6 @@ class InputBase(processor.Processor):
 		# replace binnings with values from dictionaries
 		for axis in ['x', 'y', 'z']:
 			plotData.plotdict[axis+"_bins"] = [bins if bins is None else self.binnings.get_binning(bins).split() for bins in plotData.plotdict[axis+"_bins"]]
-			plotData.plotdict[axis+"_expressions"] = [expression if expression is None else self.expressions.replace_expressions(expression) for expression in plotData.plotdict[axis+"_expressions"]]
 		
 		# prepare scale factors
 		plotData.plotdict["scale_factors"] = [float(scale) if scale != None else 1.0 for scale in plotData.plotdict["scale_factors"]]
