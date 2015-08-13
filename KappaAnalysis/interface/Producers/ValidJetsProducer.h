@@ -117,6 +117,12 @@ public:
 		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nJets30",[this](KappaEvent const& event, KappaProduct const& product) {
 			return KappaProduct::GetNJetsAbovePtThreshold(product.m_validJets, 30.0);
 		} );
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nJets50",[this](KappaEvent const& event, KappaProduct const& product) {
+			return KappaProduct::GetNJetsAbovePtThreshold(product.m_validJets, 50.0);
+		} );
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nJets80",[this](KappaEvent const& event, KappaProduct const& product) {
+			return KappaProduct::GetNJetsAbovePtThreshold(product.m_validJets, 80.0);
+		} );
 
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingJetPt",[](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validJets.size() >= 1 ? product.m_validJets.at(0)->p4.Pt() : DefaultValues::UndefinedFloat;
