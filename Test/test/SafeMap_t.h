@@ -19,15 +19,15 @@ BOOST_AUTO_TEST_CASE( test_safemap )
 {
     {
         // test with std::map
-        std::map < int, std::string > myMap;
+        std::map < int, std::string > myMapa;
 
-        myMap [23] = "23";
-        myMap [42] = "42";
+        myMapa [23] = "23";
+        myMapa [42] = "42";
 
-        std::string const & rr1 = SafeMap::Get ( myMap, 42 );
+        std::string const & rr1 = SafeMap::Get ( myMapa, 42 );
         BOOST_CHECK( rr1 == "42" );
-        std::string const & rr2 = SafeMap::GetWithDefault ( myMap, 43, std::string("42") );
-        BOOST_CHECK( rr2 == std::string("42") );
+        std::string rr2 = SafeMap::GetWithDefault ( myMapa, 43, std::string("42") ); // removed "const &" argument, since in this CMSSW_7_4_X the conversion fails 
+        BOOST_CHECK_MESSAGE( rr2 == std::string("42"), "the map has value:" << rr2 );
     }
     {
         // test with boost::ptr_map

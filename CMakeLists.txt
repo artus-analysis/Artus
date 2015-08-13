@@ -11,7 +11,7 @@ include(FindROOT.cmake)
 
 if (DEFINED ENV{CMSSW_RELEASE_BASE} )
 	set(USE_BOOST_CMSSW TRUE)
-	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DSTANDALONE")
+	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DSTANDALONE -I $(CMSSW_RELEASE_BASE)/src")
 	execute_process(COMMAND ls $ENV{CMSSW_RELEASE_BASE}/../../../../$ENV{SCRAM_ARCH}/external/boost COMMAND tail -n 1 COMMAND tr -d '\n' OUTPUT_VARIABLE BOOSTVER)
 	set(BOOST_INCLUDE_DIR "/afs/cern.ch/cms/$ENV{SCRAM_ARCH}/external/boost/${BOOSTVER}/include/")
 	set(BOOST_LIB_DIR "/afs/cern.ch/cms/$ENV{SCRAM_ARCH}/external/boost/${BOOSTVER}/lib/")
