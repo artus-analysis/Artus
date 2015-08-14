@@ -23,18 +23,26 @@ class AddHistograms(analysisbase.AnalysisBase):
 				help="Nick names (whitespace separated) for the histograms to be added"
 		)
 		self.add_histograms_options.add_argument(
+				"--sum-scale-factors", nargs="+",
+				help="Scale factor (whitespace separated) for the histograms to be added [Default: 1]."
+		)
+		self.add_histograms_options.add_argument(
 				"--sum-result-nicks", nargs="+",
 				help="Nick names for the resulting sum histograms."
 		)
 
 	def prepare_args(self, parser, plotData):
 		super(AddHistograms, self).prepare_args(parser, plotData)
-		self.prepare_list_args(plotData, ["histogram_nicks", "sum_result_nicks"])
+		self.prepare_list_args(plotData, ["histogram_nicks", "sum_result_nicks","sum_scale_factors"])
 		
-		for index, (histogram_nicks, sum_result_nick) in enumerate(zip(
-				*[plotData.plotdict[k] for k in ["histogram_nicks", "sum_result_nicks"]]
+		for index, (histogram_nicks, sum_result_nick,sum_scale_factors) in enumerate(zip(
+				*[plotData.plotdict[k] for k in ["histogram_nicks", "sum_result_nicks","sum_scale_factors"]]
 		)):
 			plotData.plotdict["histogram_nicks"][index] = histogram_nicks.split()
+			if sum_scale_factors is None:
+				plotData.plotdict["sum_scale_factors"][index] = [1] * len(histogram_nicks.split())
+			else:
+				plotData.plotdict["sum_scale_factors"][index] = [float(sum_scale_factor) for sum_scale_factor in sum_scale_factors.split()]
 			if sum_result_nick is None:
 				plotData.plotdict["sum_result_nicks"][index] = "sum_{}".format(
 						"_".join(plotData.plotdict["histogram_nicks"][index]),
@@ -48,11 +56,11 @@ class AddHistograms(analysisbase.AnalysisBase):
 	def run(self, plotData=None):
 		super(AddHistograms, self).run(plotData)
 		
-		for histogram_nicks, sum_result_nick in zip(
-				*[plotData.plotdict[k] for k in ["histogram_nicks", "sum_result_nicks"]]
+		for histogram_nicks, sum_result_nick,sum_scale_factors in zip(
+				*[plotData.plotdict[k] for k in ["histogram_nicks", "sum_result_nicks","sum_scale_factors"]]
 		):
 			sum_histogram = None
-			for nick in histogram_nicks:
+			for nick, sum_scale_factor in zip(histogram_nicks, sum_scale_factors):
 				root_object = plotData.plotdict["root_objects"][nick]
 				assert(isinstance(root_object, ROOT.TH1))
 				if sum_histogram is None:
@@ -61,7 +69,8 @@ class AddHistograms(analysisbase.AnalysisBase):
 					)
 					sum_histogram.SetDirectory(0)
 				else:
-					sum_histogram.Add(root_object)
+					sum_histogram.Add(root_object, sum_scale_factor)
 					sum_histogram.SetDirectory(0)
+
 			plotData.plotdict["root_objects"][sum_result_nick] = sum_histogram
 
