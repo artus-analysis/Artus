@@ -55,7 +55,7 @@ public:
 
 		// MET info
 		if (! settings.GetMet().empty())
-			this->m_event.m_met = this->template SecureFileInterfaceGet<KMET>(settings.GetMet());
+			this->m_event.m_met = this->template SecureFileInterfaceGet<KMET>(settings.GetMet(), false);
 
 		//GenMET info
 		if (! settings.GetGenMet().empty())
