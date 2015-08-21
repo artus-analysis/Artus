@@ -3,9 +3,12 @@
 
 #include "Artus/Utility/interface/ArtusLogging.h"
 
+#include <algorithm>
+#include <iterator>
 #include <map>
-#include <type_traits>
+#include <sstream>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include <boost/lexical_cast.hpp>
@@ -231,6 +234,17 @@ namespace Utility {
 		);
 		intersection.resize(intersectionEnd - intersection.begin());
 		return intersection;
+	}
+	
+	// string conversion for vectors
+	template <class T>
+	static std::string ToString(std::vector<T> vector)
+	{
+		std::ostringstream stream;
+		std::copy(vector.begin(), vector.end(), std::ostream_iterator<T>(stream, ", "));
+		std::string string=stream.str();
+		//string.erase(string.length()-1);
+		return string;
 	}
 }
 
