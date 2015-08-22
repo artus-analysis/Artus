@@ -243,7 +243,10 @@ namespace Utility {
 		std::ostringstream stream;
 		std::copy(vector.begin(), vector.end(), std::ostream_iterator<T>(stream, ", "));
 		std::string string=stream.str();
-		//string.erase(string.length()-1);
+		if (string.length() > 0)
+		{
+			string.erase(string.length()-2);
+		}
 		return string;
 	}
 }
