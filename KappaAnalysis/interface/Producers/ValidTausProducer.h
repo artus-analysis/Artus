@@ -80,6 +80,7 @@ public:
 		discriminatorsByIndex = Utility::ParseMapTypes<size_t, std::string>(Utility::ParseVectorToMap(settings.GetTauDiscriminators()),
 		                                                                    discriminatorsByHltName);
 		tauID = ToTauID(settings.GetTauID());
+		oldTauDMs = settings.GetTauUseOldDMs();
 
 		// add possible quantities for the lambda ntuples consumers
 		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nTaus", [](KappaEvent const& event, KappaProduct const& product) {
@@ -157,7 +158,7 @@ public:
 			}
 			
 			if(tauID == TauID::RECOMMENDATION13TEV)
-					validTau = validTau && IsTauIDRecommendation13TeV(*tau, event);
+					validTau = validTau && IsTauIDRecommendation13TeV(*tau, event, oldTauDMs);
 			// kinematic cuts
 			validTau = validTau && this->PassKinematicCuts(*tau, event, product);
 			
@@ -208,11 +209,14 @@ private:
 	}
 
 	TauID tauID;
+	bool oldTauDMs;
 
-	bool IsTauIDRecommendation13TeV(KTau* tau, KappaEvent const& event) const
+	bool IsTauIDRecommendation13TeV(KTau* tau, KappaEvent const& event, bool const& oldTauDMs) const
 	{
 		const KVertex* vertex = new KVertex(event.m_vertexSummary->pv);
-		return ( tau->getDiscriminator("decayModeFindingNewDMs", event.m_tauMetadata) > 0.5
+		float decayModeDiscriminator = (oldTauDMs ? tau->getDiscriminator("decayModeFinding", event.m_tauMetadata)
+							  : tau->getDiscriminator("decayModeFindingNewDMs", event.m_tauMetadata));
+		return ( decayModeDiscriminator > 0.5
 			 && (std::abs(tau->track.ref.z() - vertex->position.z()) < 0.2)
 			// tau dZ requirement for Phys14 sync
 			//&& (Utility::ApproxEqual(tau->track.ref.z(), vertex->position.z()))
