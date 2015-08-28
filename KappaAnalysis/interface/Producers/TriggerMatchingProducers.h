@@ -213,28 +213,6 @@ public:
 					}
 				}
 			}
-			// does not work --> why?
-			*//*for (typename std::map<TValidObject*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > >::iterator validObject = (product.*m_detailedTriggerMatchedObjects).begin();
-			     validObject != (product.*m_detailedTriggerMatchedObjects).end(); ++validObject)
-			{
-				LOG(DEBUG) << "Reco object = " << validObject->first << " (" << validObject->second.size() << ")";
-				for (std::map<std::string, std::map<std::string, std::vector<KLV*> > >::iterator hltName = validObject->second.begin();
-				     hltName != validObject->second.begin(); ++hltName)
-				{
-					LOG(DEBUG) << "\tHLT name = " << hltName->first << " (" << hltName->second.size() << ")";
-					for (std::map<std::string, std::vector<KLV*> >::iterator filterName = hltName->second.begin();
-					     filterName != hltName->second.begin(); ++filterName)
-					{
-						LOG(DEBUG) << "\tFilter name = " << filterName->first << " (" << filterName->second.size() << ")";
-						for (std::vector<KLV*>::iterator triggerObject = filterName->second.begin();
-						     triggerObject != filterName->second.begin(); ++triggerObject)
-						{
-							LOG(DEBUG) << "\tTrigger object = " << *triggerObject;
-						}
-					}
-				}
-			}*//*
-			LOG(DEBUG) << "";
 			*/
 		}
 	}
