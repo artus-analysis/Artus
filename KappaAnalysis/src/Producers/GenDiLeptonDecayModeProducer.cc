@@ -19,21 +19,21 @@ void GenDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaProduct
                                            KappaSettings const& settings) const
 {
 	assert(event.m_genParticles);
-	
+
 	for (KGenParticles::const_iterator genParticle = event.m_genParticles->begin();
 		 genParticle != event.m_genParticles->end(); ++genParticle)
 	{
-		if ((abs(genParticle->pdgId()) == settings.GetBosonPdgId()) && (genParticle->status() == settings.GetBosonStatus()))
+		if ((std::abs(genParticle->pdgId()) == settings.GetBosonPdgId()) && (genParticle->status() == settings.GetBosonStatus()))
 		{
 			std::map<int, int> nDecayProductsPerType;
-			
+
 			for (std::vector<unsigned int>::const_iterator decayParticleIndex = genParticle->daughterIndices.begin();
 			     decayParticleIndex != genParticle->daughterIndices.end(); ++decayParticleIndex)
 			{
 				int pdgId = std::abs(event.m_genParticles->at(*decayParticleIndex).pdgId());
 				nDecayProductsPerType[pdgId] = SafeMap::GetWithDefault(nDecayProductsPerType, pdgId, 0) + 1;
 			}
-			
+
 			if (SafeMap::GetWithDefault(nDecayProductsPerType, DefaultValues::pdgIdElectron, 0) >= 2)
 			{
 				product.m_genDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::EE;
@@ -50,7 +50,7 @@ void GenDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaProduct
 			{
 				product.m_genDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::NONE;
 			}
-			
+
 			// exit loop after one boson is found
 			if (product.m_genDiLeptonDecayMode != KappaEnumTypes::DiLeptonDecayMode::NONE)
 			{

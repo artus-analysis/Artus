@@ -298,16 +298,16 @@ public:
 		if (electron->p4.Pt() < 10.0f)
 		{
 			return (
-				(abs(electron->p4.Eta()) < 0.8f && electron->getId("idMvaNonTrigV0", electronMeta) > 0.47f) ||
-				(abs(electron->p4.Eta()) > 0.8f && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("idMvaNonTrigV0", electronMeta) > 0.004f) ||
-				(abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5f && electron->getId("idMvaNonTrigV0", electronMeta) > 0.295f));
+				(std::abs(electron->p4.Eta()) < 0.8f && electron->getId("idMvaNonTrigV0", electronMeta) > 0.47f) ||
+				(std::abs(electron->p4.Eta()) > 0.8f && std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("idMvaNonTrigV0", electronMeta) > 0.004f) ||
+				(std::abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && std::abs(electron->p4.Eta()) < 2.5f && electron->getId("idMvaNonTrigV0", electronMeta) > 0.295f));
 		}
 		else if (electron->p4.Pt() >= 10.0f)
 		{
 			return (
-				(abs(electron->p4.Eta()) < 0.8f && electron->getId("idMvaNonTrigV0", electronMeta) > -0.34f) ||
-				(abs(electron->p4.Eta()) > 0.8f && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("idMvaNonTrigV0", electronMeta) > -0.65f) ||
-				(abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5f && electron->getId("idMvaNonTrigV0", electronMeta) > 0.6f));
+				(std::abs(electron->p4.Eta()) < 0.8f && electron->getId("idMvaNonTrigV0", electronMeta) > -0.34f) ||
+				(std::abs(electron->p4.Eta()) > 0.8f && std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("idMvaNonTrigV0", electronMeta) > -0.65f) ||
+				(std::abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && std::abs(electron->p4.Eta()) < 2.5f && electron->getId("idMvaNonTrigV0", electronMeta) > 0.6f));
 		}
 		return false;
 	}
@@ -320,16 +320,16 @@ public:
 		if (electron->p4.Pt() >= 10.0f && electron->p4.Pt() < 20.0f)
 		{
 			return (
-				(abs(electron->p4.Eta()) <= 0.8f && electron->getId("idMvaTrigV0", electronMeta) > 0.0f) ||
-				(abs(electron->p4.Eta()) > 0.8f && abs(electron->p4.Eta()) <= DefaultValues::EtaBorderEB && electron->getId("idMvaTrigV0", electronMeta) > 0.1f) ||
-				(abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) <= 2.5f && electron->getId("idMvaTrigV0", electronMeta) > 0.62f));
+				(std::abs(electron->p4.Eta()) <= 0.8f && electron->getId("idMvaTrigV0", electronMeta) > 0.0f) ||
+				(std::abs(electron->p4.Eta()) > 0.8f && std::abs(electron->p4.Eta()) <= DefaultValues::EtaBorderEB && electron->getId("idMvaTrigV0", electronMeta) > 0.1f) ||
+				(std::abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && std::abs(electron->p4.Eta()) <= 2.5f && electron->getId("idMvaTrigV0", electronMeta) > 0.62f));
 		}
 		else if (electron->p4.Pt() >= 20.0f)
 		{
 			return (
-				(abs(electron->p4.Eta()) < 0.8 && electron->getId("idMvaTrigV0", electronMeta) > 0.94f) ||
-				(abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("idMvaTrigV0", electronMeta) > 0.85f) ||
-				(abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getId("idMvaTrigV0", electronMeta) > 0.92f));
+				(std::abs(electron->p4.Eta()) < 0.8 && electron->getId("idMvaTrigV0", electronMeta) > 0.94f) ||
+				(std::abs(electron->p4.Eta()) > 0.8 && std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("idMvaTrigV0", electronMeta) > 0.85f) ||
+				(std::abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && std::abs(electron->p4.Eta()) < 2.5 && electron->getId("idMvaTrigV0", electronMeta) > 0.92f));
 		}
 		return false;
 	}

@@ -47,7 +47,7 @@ void GenParticleProducer::Produce(KappaEvent const& event, KappaProduct& product
 		for (KGenParticles::iterator part = event.m_genParticles->begin();
 		     part != event.m_genParticles->end(); ++part)
 		{
-			if (abs(part->pdgId()) == 11)
+			if (std::abs(part->pdgId()) == 11)
 			{
 				if ((settings.GetGenElectronStatus() == -1) || ( settings.GetGenElectronStatus() == part->status()))
 				{
@@ -64,7 +64,7 @@ void GenParticleProducer::Produce(KappaEvent const& event, KappaProduct& product
 		for (KGenParticles::iterator part = event.m_genParticles->begin();
 		     part != event.m_genParticles->end(); ++part)
 		{
-			if (abs(part->pdgId()) == 13)
+			if (std::abs(part->pdgId()) == 13)
 			{
 				if ((settings.GetGenMuonStatus() == -1) || ( settings.GetGenMuonStatus() == part->status()))
 				{
@@ -81,7 +81,7 @@ void GenParticleProducer::Produce(KappaEvent const& event, KappaProduct& product
 		for (KGenParticles::iterator part = event.m_genParticles->begin();
 		     part != event.m_genParticles->end(); ++part)
 		{
-			if (abs(part->pdgId()) == 15)
+			if (std::abs(part->pdgId()) == 15)
 			{
 				if ((settings.GetGenTauStatus() == -1) || ( settings.GetGenTauStatus() == part->status()))
 				{
