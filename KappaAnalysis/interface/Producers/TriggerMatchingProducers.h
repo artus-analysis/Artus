@@ -195,7 +195,6 @@ public:
 			/*
 			// debug output
 			LOG(INFO) << "Result of trigger matching (Run: " << event.m_eventInfo->nRun << ", Lumi: " << event.m_eventInfo->nLumi << ", Event: " << event.m_eventInfo->nEvent << "):";
-			// works
 			for (typename std::pair<TValidObject*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > > validObject : (product.*m_detailedTriggerMatchedObjects))
 			{
 				LOG(INFO) << "Reco object: (pt = " << validObject.first->p4.Pt() << ", eta = " << validObject.first->p4.Eta() << ", phi = " << validObject.first->p4.Phi() << ", mass = " << validObject.first->p4.mass() << ")";
