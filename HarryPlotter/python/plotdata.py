@@ -94,12 +94,17 @@ class PlotData(object):
 				with open(os.path.join(self.plotdict["output_dir"], overview_filename), "w") as overview_file:
 					overview_file.write(html_template.substitute(url=url, html_content=html_content))
 
-				# create remote dir, copy plots and overview file
+				files_to_copy = (
+					self.plotdict["output_filenames"]  # plots
+					+ [os.path.splitext(plot)[0]+".json" for plot in self.plotdict["output_filenames"]]  # json
+					+ [os.path.join(self.plotdict["output_dir"], overview_filename)]  # gallery file
+				)
+				# create remote dir, copy files
 				sshpc = tools.get_environment_variable("HARRY_SSHPC")
 				create_dir_command = ["ssh", user+"@"+sshpc, "mkdir -p", remote_path]
 				log.debug("\nIssueing mkdir command: " + " ".join(create_dir_command))
 				logger.subprocessCall(create_dir_command)
-				rsync_command = ["rsync", "-u", os.path.join(self.plotdict["output_dir"], overview_filename)] + self.plotdict["output_filenames"] + ["%s@%s:%s" % (user, sshpc, remote_path)]
+				rsync_command = ["rsync", "-u"] + files_to_copy + ["%s@%s:%s" % (user, sshpc, remote_path)]
 				log.debug("\nIssueing rsync command: " + " ".join(rsync_command) + "\n")
 				logger.subprocessCall(rsync_command)
 				log.info("Copied {0}; see {1}".format(filename.split("/")[-1], url))
