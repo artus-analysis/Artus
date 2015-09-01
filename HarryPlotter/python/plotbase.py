@@ -212,12 +212,10 @@ class PlotBase(processor.Processor):
 		# construct file name from x/y/z expressions if not specified by user
 		if plotData.plotdict["filename"] == None:
 			filename = ""
-			if plotData.plotdict["input_modules"] == ["InputInteractive"]:
-				filename = "plot"
-			else:
-				for expressions in [plotData.plotdict["z_expressions"],
-					                plotData.plotdict["y_expressions"],
-					                plotData.plotdict["x_expressions"]]:
+			for expressions in [plotData.plotdict.get("z_expressions", []),
+				                plotData.plotdict.get("y_expressions", []),
+				                plotData.plotdict.get("x_expressions", [])]:
+				try:
 					expression_string = reduce(lambda a, b: "%s__%s" % (str(a), str(b)), set(expressions))
 					if expression_string == None:
 						expression_string = "None"
@@ -226,6 +224,8 @@ class PlotBase(processor.Processor):
 						if len(filename) > 0:
 							filename += "_VS_"
 						filename += expression_string
+				except TypeError:  # no expressions given
+					filename = "plot"
 			plotData.plotdict["filename"] = filename
 
 		# write name of output file in dictionary
