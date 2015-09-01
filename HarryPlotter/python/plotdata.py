@@ -99,7 +99,7 @@ class PlotData(object):
 				create_dir_command = ["ssh", user+"@"+sshpc, "mkdir -p", remote_path]
 				log.debug("\nIssueing mkdir command: " + " ".join(create_dir_command))
 				logger.subprocessCall(create_dir_command)
-				rsync_command = ["rsync", "-u"] + glob.glob(os.path.join(self.plotdict["output_dir"], "*.*")) + ["%s@%s:%s" % (user, sshpc, remote_path)]
+				rsync_command = ["rsync", "-u", os.path.join(self.plotdict["output_dir"], overview_filename)] + self.plotdict["output_filenames"] + ["%s@%s:%s" % (user, sshpc, remote_path)]
 				log.debug("\nIssueing rsync command: " + " ".join(rsync_command) + "\n")
 				logger.subprocessCall(rsync_command)
 				log.info("Copied {0}; see {1}".format(filename.split("/")[-1], url))
