@@ -89,7 +89,7 @@ public:
 					return SafeMap::GetWithDefault(product.m_weights, quantity, SafeMap::GetWithDefault(product.m_optionalWeights, quantity, 1.0));
 				} );
 			}
-			if (boost::algorithm::icontains(quantity, "filter") &&
+			if ((boost::algorithm::icontains(quantity, "filter") || boost::algorithm::icontains(quantity, "cut")) &&
 			   (LambdaNtupleConsumer<TTypes>::GetFloatQuantities().count(quantity) == 0))
 			{
 				LOG(DEBUG) << "\tQuantity \"" << quantity << "\" is tried to be taken from prduct.fres (FilterResult).";
