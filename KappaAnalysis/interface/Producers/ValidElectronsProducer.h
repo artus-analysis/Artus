@@ -327,9 +327,9 @@ public:
 		else if (electron->p4.Pt() >= 20.0f)
 		{
 			return (
-				(std::abs(electron->p4.Eta()) < 0.8 && electron->getId("idMvaTrigV0", electronMeta) > 0.94f) ||
-				(std::abs(electron->p4.Eta()) > 0.8 && std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("idMvaTrigV0", electronMeta) > 0.85f) ||
-				(std::abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && std::abs(electron->p4.Eta()) < 2.5 && electron->getId("idMvaTrigV0", electronMeta) > 0.92f));
+				(std::abs(electron->p4.Eta()) < 0.8f && electron->getId("idMvaTrigV0", electronMeta) > 0.94f) ||
+				(std::abs(electron->p4.Eta()) > 0.8f && std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("idMvaTrigV0", electronMeta) > 0.85f) ||
+				(std::abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && std::abs(electron->p4.Eta()) < 2.5f && electron->getId("idMvaTrigV0", electronMeta) > 0.92f));
 		}
 		return false;
 	}
