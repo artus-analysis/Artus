@@ -95,10 +95,13 @@ class PlotData(object):
 					overview_file.write(html_template.substitute(url=url, html_content=html_content))
 
 				files_to_copy = (
-					self.plotdict["output_filenames"]  # plots
-					+ [os.path.splitext(plot)[0]+".json" for plot in self.plotdict["output_filenames"]]  # json
-					+ [os.path.join(self.plotdict["output_dir"], overview_filename)]  # gallery file
+					self.plotdict["output_filenames"]
+					+ [os.path.join(self.plotdict["output_dir"], overview_filename)]
 				)
+				if self.plotdict["export_json"]:
+					files_to_copy += [self.plotdict["export_json"]]
+				if self.plotdict["save_legend"]:
+					files_to_copy += [os.path.join(self.plotdict["output_dir"], ".".join([self.plotdict["save_legend"], _format])) for _format in self.plotdict["formats"]]
 				# create remote dir, copy files
 				sshpc = tools.get_environment_variable("HARRY_SSHPC")
 				create_dir_command = ["ssh", user+"@"+sshpc, "mkdir -p", remote_path]

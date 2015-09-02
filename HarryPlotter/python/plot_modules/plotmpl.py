@@ -701,6 +701,7 @@ class PlotMpl(plotbase.PlotBase):
 	def get_legend_handles_labels_ordered(ax, labellist):
 		# sort both labels and handles by order of 'labels' in plotdict
 		handles, labels = ax.get_legend_handles_labels()
-		labels, handles = zip(*sorted(zip(labels, handles), key=lambda t: labellist.index(t[0])))
+		if len(handles) > 0 and len(labels) > 0:
+			labels, handles = zip(*sorted(zip(labels, handles), key=lambda t: labellist.index(t[0])))
 		return handles, labels
 

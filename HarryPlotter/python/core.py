@@ -199,6 +199,8 @@ class HarryCore(object):
 		# export arguments into JSON file
 		if plotData.plotdict["export_json"] != "default" and plotData.plotdict["export_json"] not in [False, "False", None, "None"]:
 			export_args.save(plotData.plotdict["export_json"], indent=4)
+		else:
+			plotData.plotdict["export_json"] = None
 		
 		# save plots
 		output_filenames = plotData.save()
