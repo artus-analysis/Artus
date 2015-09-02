@@ -840,9 +840,16 @@ class RootTools(object):
 	@staticmethod
 	def scale_tgraph(tgraph, scalefactor):
 		N = tgraph.GetN()
-		x = tgraph.GetY()
+		y = tgraph.GetY()
 		for i in range(N):
-			x[i] *= scalefactor
+			y[i] *= scalefactor
+		yerr = tgraph.GetEY()
+		try:
+			yerr = tgraph.GetEY()
+			for i in range(N):
+				yerr[i] *= scalefactor
+		except IndexError:
+			pass
 		tgraph.GetHistogram().Delete()
 		tgraph.SetHistogram(0)
 
