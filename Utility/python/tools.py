@@ -8,6 +8,7 @@ log = logging.getLogger(__name__)
 import array
 import copy
 import fcntl
+import multiprocessing
 import os
 import re
 import sys
@@ -142,4 +143,10 @@ def get_indented_text(prefix, message, width=None):
 				replace_whitespace=False
 			)
 	return '\n'.join(['\n'.join(tmp_wrapped_texts)])
+
+def parallelize(function, arguments_list, n_processes=1):
+	pool = multiprocessing.Pool(processes=n_processes)
+	results = pool.map_async(function, arguments_list)
+	# 9999999 is needed for KeyboardInterrupt to work: http://stackoverflow.com/questions/1408356/keyboard-interrupts-with-pythons-multiprocessing-pool
+	return results.get(9999999)
 
