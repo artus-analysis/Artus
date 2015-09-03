@@ -1,0 +1,159 @@
+%\documentclass[a4paper,oneside,BCOR12.5mm,ngerman,12pt]{scrartcl}
+\documentclass[a4paper, oneside, 10pt]{scrartcl}
+
+\usepackage{booktabs}
+\usepackage{hepnames}
+\usepackage{hepunits}
+\usepackage{url}
+
+\input{include/tikz_includes}
+\input{include/colors}
+
+\begin{document}
+\section{Development of a General Analysis Framework in C++ \label{section_artus}}
+
+\subsection{Common Workflow of High Energy Physics Analyses \label{section_artus_analysis_workflow}}
+
+Between the data taking at the detector or the generation of Monte Carlo events with the subsequent detector simulation and the showcasing of the physical results, the following analysis steps have to be performed.
+
+The event reconstruction of the raw detector data is performed on large computing centres in the WLCG. The reconstructed data is stored in different formats at multiple sites in the WLCG. Usually, the AOD or the miniAOD format is used for physics analyses. These formats contain as much information about the events as needed to serve the general needs of the analysis groups.
+
+This step is followed by the skimming of data sets that are relevant for a specific analysis. Both the number of events as well as the event content is reduced in order to speed up the following processing of the data. By requiring data sets for certain high level triggers and applying cuts on event quantities, the number of events is reduced. Only the event quantities, that are relevant for a given analysis, are written out. The skimming step is usually performed on grid sites where the data is located. Sometimes, the data is also transferred to sites, where free computing resources are available. The output is an analysis-dependent n-tuple format that is stored at local file servers. The size of files needed for a certain analysis ranges from $\mathcal O(10)$~GB to few~TB.
+
+As an example, the $\PH\to\Pgt\Pgt\to\Pgm\Pgm$ analysis, used a data set containing only events that were accepted by double-muon triggers. Additionally, there was no need to store reconstructed \Pgt leptons (that decay hadronically) as there is no veto on taus like on electrons and third muons.
+
+The skimmed n-tuples are finally analysed by user code on local computing resources. Events are selected and categorised, high-level calculations based on the physics objects are performed and the output is either again written to smaller n-tuples or histograms. The events are usually processed with different configurations depending on the analysis needs. The output is then used for post-processing steps including the plotting of results. The post-processing does not necessarily require an event-based processing and therefore also needs on average the smallest computing resources.
+
+
+\subsection{The Artus Framework \label{section_artus_motivation}}
+
+The framework introduced in this section handles the last step, the user analysis. In many cases the code is developed without a strategy or structure according to the growing needs of the analysis. This leads to analysis code that convoluted, tangled and unstructured. Such code is difficult to understand and to maintain and also difficult to hand over to new people joining the analysis effort. Secondly, code is rarely shared among different analysis groups, although basic parts of the analysis like the processing n-tuple-structured data or the selection and identification of physics objects follow the same principles. This usually leads to code duplication slowing down the analysis effort.
+
+Following the structure of the CMSSW framework, the Artus framework\footnote{\url{https://github.com/artus-analysis/Artus}} provides a front-to-end solution for the analysis of event-based data. The basic concept of modules processing the events within an event loop is complemented by tools for the configuration of every step. The complete structure is explained in the next section~\ref{section_artus_structure}.
+
+This general framework is applicable to any kind of event processing analysis. The well-tested core is shared among various analyses, providing a reliable fundament for any new analysis. The highly modular structure guides the user to develop analysis software that is easily maintainable and constructively extensible. Thus, thes Artus framework avoids the aforementioned problems of separate user code for individual analyses.
+
+The Artus framework is written in C++. The core of the framework only depends on the boost library\footnote{\url{http://www.boost.org/}}. Further dependencies may be introduced by the actual analysis code. C++ is chosen for performance reasons and in order to be able to integrate existing frameworks and libraries that are commonly used in high energy physics.
+
+
+\subsection{Structure of the Framework \label{section_artus_structure}}
+
+The basic concept of the framework is taken from the code used for the $\PZ+\text{jet}$ analysis documented in reference~\cite{joram_phd}. It is generalised and extended to satisfy the needs of various analysis groups. The structure is illustrated in figure~\ref{figure_artus_structure}.
+
+\begin{figure}[p]
+\centering \input{figures/artus_structure}
+\caption[Structure of an Artus analysis.]{Structure of an Artus analysis. The input is read by an event provider. Within the pipelines the event content is analysed by the processors. Consumers in local pipelines write results to a common output. All parts of the analysis are configurable.}
+\label{figure_artus_structure}
+
+\vspace{10ex}
+
+\centering \input{figures/artus_pipeline}
+\caption[Organisation of processors in a pipeline.]{Organisation of processors in a pipeline. Producers and filters are run before the consumers. All processors can access the pipeline settings, the event content and the product. Only producers have write access to the product. Consumers can write results to the output file.}
+\label{figure_artus_pipeline}
+\end{figure}
+
+At the beginning a configuration file in the JSON format is read in. It contains information on the input data and settings for the pipelines and processors described in the following. Each of the modules described in the following has access to the settings read in from the configuration file.
+
+The input is handled by an event provider. Its purpose is to manage reading events contents from any kind of input into an event object and to provide information about the total number of events to be processed.
+
+The events are then sequentially processed by processors organised in pipelines. First, a so-called global pipeline is run. Then the execution is split up into multiple so-called local pipelines, that are also processed sequentially. The composition of a pipeline is illustrated in figure~\ref{figure_artus_pipeline}.
+
+Each pipeline has its own settings. The local pipelines can access both their own settings and the ones of the global pipeline. Thus, a mechanism exists that enables processing the same event with different configurations, whereas the costly reading of the input is only needed to be done once. Similarly, a product object is managed by each pipeline. The product is meant to store new quantities produced in the analysis. The product for the global pipeline is empty at the beginning of the processing of a new event. Local pipelines start with a copy of the global product.
+
+A pipeline consists of an arbitrary number of processor modules that are run in a sequence. Three kinds of processors are distinguished:
+\begin{description}
+\item[Producers] are meant to calculate new quantities based on the information in the event and the product and following the settings of the pipeline.
+\item[Filters] apply cuts. In case an event does not survive a requirement defined by a filter, the processing of the subsequent producers and filters is skipped.
+\item[Consumers] can be added to local pipelines. They are executed after the producers and filters. The task of consumers is to take quantities from the event and the product and store them in the output according to the pipeline settings.
+\end{description}
+Producers and filters can be configured in an arbitrary order. Consumers are executed after the chain of producers and filters. The output together with the complete configuration is written to a ROOT file. These processors are created and managed by a dedicated factory according to the configuration.
+
+This structure extends the established concepts of existing frameworks like FWLite~\cite{FWLite} from CMSSW to the following four main advantages:
+\begin{description}
+\item[Modular structure] Analysis steps are implemented in processors, breaking down the complete analysis in well-defined and easily understandable and writeable parts.
+\item[Re-utilisation of code] Processors can be shared among different analysis groups. Every user contributes to the testing of existing code and improves the confidence in this code.
+\item[Configurability] Each module uses settings that are read from the the configuration. Each pipeline is mapped to a separate sub-set of the configuration.
+\item[High performance] The concept of pipelines allows to analyse the data with different configurations at the same time, while the data is only read in only once and common processing steps are shared in the global pipeline. Therefore the cost-intensive input operations are reduced to a minimum.
+\end{description}
+
+
+\subsection{Building an End-user Analysis \label{section_artus_analysis}}
+
+In the Artus framework each concrete analysis is defined by a set of object types. It needs an implementation of the classes for settings, the event and the product. The settings class defines the tags that should be able to be read from the configuration file and the corresponding types of the values. The event class defines the event content being read from the input and the product class contains members for new quantities being calculated by the analysis. These three classes need to be derived from the base classes in the core of the framework.
+
+An implementation of an event provider must be available. The event provider must know how to read event content from the input files and how to store them in the event object. Furthermore, a factory managing the creation of analysis-specific processors needs to exists. These classes also have to be derived from the Artus base classes.
+
+The most important part of an analysis are the processors. The abstract processors of the Artus core need to be implemented to realise the physics needs of the analysis in the form of code. New processors have to be registered in the factory. After the basic structure of an analysis is set up, most of changes and additions are only related to the processors.
+
+Analyses that share the input file format can easily also share processors, that implement basic analysis steps in a general fashion. Analysis-specific parts can either derive from exiting processor classer or be modelled in new processors.
+
+
+\subsection{HarryPlotter -- Python Post-processing Framework \label{section_artus_harryplotter}}
+
+The computationally expensive event processing steps are followed by the post-processing of the results and their presentation. From a technical point of view the focus here is rather on flexibility than on performance. The inputs for this step are either histograms filled in the previous step or n-tuples whose entries can be filled into histograms at low no cost. For this reason, Python has been chosen as language for the HarryPlotter framework\footnote{\url{https://github.com/artus-analysis/Artus/tree/master/HarryPlotter}}. As the name implies, the main focus is on plotting of results. The modular structure allows to integrate multiple analysis steps and several output formats.
+
+\begin{figure}[htb]
+\centering \input{figures/harry_plotter}
+\caption{Structure of the HarryPlotter framework. The processing of input modules is followed by the run of analysis modules and concluded by the execution of plot modules. The configuration via a command line interface or via JSON files is parsed by an argument parser whose arguments are defined by the individual modules.}
+\label{figure_artus_harry_plotter}
+\end{figure}
+
+The structure of the framework is illustrated in figure~\ref{figure_artus_harry_plotter}. It follows the idea of processors in the Artus framework. Three kinds of processor modules are executed subsequently:
+\begin{enumerate}
+\item One or, in special cases, more input modules are run to read in data from an input source. The input format is defined by the input module. The most commonly used input module is the one that reads histograms or other objects from ROOT files.
+\item An arbitrary number of analysis modules is appended. They can perform calculations based on the inputs or the results of previously run analysis modules.
+\item One or, in special cases, multiple plot modules are executed in the last step. Their function is to output the processed data in the specified format. In most of the cases, the output is a plot but it is also possible to store the objects in new ROOT files.
+\end{enumerate}
+All processors share a common plot data objects and possible meta-data where they can add new information and read the existing one. For example, the input modules add histograms read in from input files and the plot modules access these histograms.
+
+The configuration is provided by an argument parser that can handle both arguments from a command line interface and content from JSON configuration files or Python dictionaries. This makes it possible to use either the HarryPlotter executable configured via the command line or call the main function within another Python script. The executable can perform one single plot per run. For the execution within a script functions exist to create multiple plots in parallel.
+
+The parsing of the arguments is performed in two steps. The first time it determines the sequence of modules to be executed. These modules are then initialised and can define additional arguments needed for their configuration, such that every module can manage its own settings but can also access the settings of entire program. After all arguments are defined the configuration is parsed a second time providing the full settings for the HarryPlotter run. Then all processors are executed as described above.
+
+
+\subsection{A Real World Application -- the $\PH\to\Pgt\Pgt$ Analysis \label{section_artus_example_htt}}
+
+Currently, the Artus framework is used for various user analysis of CMS data ranging from jet energy calibration and QCD studies to analyses in the scope of Higgs boson measurements and searches for physics beyond the Standard Model. As an example, the technical aspects of the $\PH\to\Pgt\Pgt$ analysis presented in this thesis are explained in the following.
+
+The $\PH\to\Pgt\Pgt$ analysis developed in the scope of this thesis makes use of skimmed data sets in the Kappa format. The Kappa framework\footnote{\url{https://github.com/KappaAnalysis/Kappa}} is designed for skimming CMS data into small n-tuples that can be analysed independently of the CMSSW software. The only dependence is the ROOT framework. The n-tuples store high-level information such as four-momentum vectors, collections of leptons and vertices. Similar as the Artus framework, Kappa aims to satisfy general analysis needs.
+
+A large part of the Artus software is specialised on the analysis of Kappa n-tuples\footnote{\url{https://github.com/artus-analysis/Artus/tree/master/KappaAnalysis}}. An event provider is available for reading Kappa n-tuples. The event class contains members for all important physics objects used in analyses. The branches of the n-tuples, that should be read in from the input files, are configurable. Reducing the amount of information transferred from the input files accelerates the analysis significantly.
+
+The structure of the pipelines is chosen such that for each decay channel a separate pipeline exists. Each of the pipelines is duplicated and modified in order to implement the different settings for shifts of quantities affected by systematic uncertainties. For example, the \Pgt energy scale is shifted up and down with respect to the nominal value. The change of the \Pgt four-momentum is then propagated through the entire analysis and the effect on the final result is studied. For this, each pipeline for decay channels involving hadronically decaying \Pgt leptons is duplicated three times and the setting for the \Pgt energy scale shift is modified accordingly. The global pipeline is used to perform actions that are common for all channels. This is for example the identification of jets and their correction as well as the filtering of valid data events.
+
+The producers and filters are implemented to perform small tasks of the analysis. Main producers are the ones for the identification and the selection of valid leptons and jets. Further producers perform the matching with trigger or generator objects and do the splitting into decay channels or the categorisation. Also the mass reconstruction is done in a separate producer. The selection of events according to high level trigger decisions as well as the selection of decay channels are examples for filters. The filters are executed as early as possible in the chain of processors in order to avoid running subsequent processors without real need.
+
+Table~\ref{table_artus_runtime_comparison} shows a runtime measurement for the baseline part of the $\PH\to\Pgt\Pgt$ in the four main channels ($\Pgm\Pgt$, $\Pe\Pgt$, $\Pe\Pgm$ and $\Pgt\Pgt$). It illustrates the main advantage of the Artus structure: sub-analyses with different sets of configurations can be performed in the same run avoiding the multiple IO overhead when the configurations would be performed sequentially in different runs.
+
+%time HiggsToTauTauAnalysis.py @HiggsAnalysis/KITHiggsToTauTau/data/ArtusWrapperConfigs/Sync13TeV.cfg -i HiggsAnalysis/KITHiggsToTauTau/data/Samples/NAF_sample_DYJetsToLLM50_RunIISpring15DR74_Asympt25ns_13TeV_MINIAOD_amcatnloFXFX-pythia8_recent.txt -f 10
+\begin{table}[h!]
+\centering
+\begin{tabular}{lrr}
+\textbf{Pipelines}                                & \textbf{Runtime / \minute} & \textbf{Event Rate / \reciprocal\second} \\ \midrule
+%0                                                & 5:53                             & 1296 \\
+ 0                                                & 5:12                             & 1470 \\ \midrule
+%\em                                              & 6:27                             & 1181 \\
+ 1 ($\Pe\Pe$)                                     & 6:31                             & 1174 \\
+%1 ($\Pe\Pgt$)                                    & 7:03                             & 1084 \\
+ 1 ($\Pe\Pgt$)                                    & 7:26                             & 1028 \\
+%1 ($\Pgm\Pgt$)                                   & 7:14                             & 1054 \\
+ 1 ($\Pgm\Pgt$)                                   & 7:14                             & 1052 \\
+%1 ($\Pgt\Pgt$)                                   & 6:14                             & 1224 \\
+ 1 ($\Pgt\Pgt$)                                   & 6:07                             & 1247 \\ \midrule
+%2 ($\Pgm\Pgt$, $\Pe\Pgt$)                        & 8:33                             & 893 \\
+ 2 ($\Pgm\Pgt$, $\Pe\Pgt$)                        & 8:32                             & 896 \\
+%3 ($\Pgm\Pgt$, $\Pe\Pgt$, $\Pe\Pgm$)             & 9:59                             & 760 \\
+ 3 ($\Pgm\Pgt$, $\Pe\Pgt$, $\Pe\Pgm$)             & 9:54                             & 767 \\
+%4 ($\Pgm\Pgt$, $\Pe\Pgt$, $\Pe\Pgm$, $\Pgt\Pgt$) & 10:46                            & 712 \\
+ 4 ($\Pgm\Pgt$, $\Pe\Pgt$, $\Pe\Pgm$, $\Pgt\Pgt$) & 10:01                            & 758 \\
+\end{tabular}
+\caption[Measurement of the runtime of the baseline $\PH\to\Pgt\Pgt$ analysis.]{Measurement of the runtime of the baseline $\PH\to\Pgt\Pgt$ analysis. The analysis is performed on 10 files with a total size of 6.1~GB containing 452229 simulated $\PZ+\text{jet}$ events. The measurement is performed with different numbers of pipelines, where each pipeline implements the analysis of one sub-channel of the analysis. The values are compared with the execution without any pipelines and without global processors. It is clearly visible, that the time needed for reading the inputs amounts to a large part of the overall runtime and that the simultaneous execution of multiple pipelines can reduce the runtime significantly compared to the case where different configuration are performed sequentially including separate IO operations.}
+\label{table_artus_runtime_comparison}
+\end{table}
+
+The outputs are flat n-tuples suitable for performing the background modelling step done in HarryPlotter. Histograms are read while cuts for the final event selection are applied. As an example, the cut on the transverse mass is applied on this level because events from control regions needed to be preserved for the background modelling step. For each background process, an analysis module has been developed performing the estimation of the samples. Most of them perform calculations on multiple histograms, defining the yield and the shape of the final quantity in signal and control regions. They add a single histogram to the plot data object containing the final estimation for a given sample. Similarly, ratios comparing the compatibility of data and the simulation for the sub-plots are determined and added this way.
+
+The post-processing step either outputs the plots shown in this thesis or writes the histograms to ROOT files and passes them over to the limit calculation tools.
+
+\end{document}
+
