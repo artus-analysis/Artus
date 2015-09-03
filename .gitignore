@@ -20,3 +20,5 @@ __init__.py
 /.python_links
 
 plots
+*.aux
+*.log
