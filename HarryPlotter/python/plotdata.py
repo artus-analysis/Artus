@@ -69,31 +69,38 @@ class PlotData(object):
 				html_content = ""
 
 				log.info("Copying plots to webspace...")
+
+				# get the html templates
+				html_texts = {}
+				for var in ['overview', 'description', 'plot']:
+					with open(os.path.expandvars("$ARTUSPATH/HarryPlotter/data/template_webplotting_{}.html".format(var))) as htmlfile:
+						html_texts[var] = string.Template(htmlfile.read())
+				html_texts['description'] = html_texts['description'].substitute(url=url)
+				if self.plotdict["www_text"]:
+					html_texts['description'] = self.plotdict["www_text"]
+
 				# loop over plots, make gallery
-				
-				html_template = None
-				with open(os.path.expandvars("$ARTUSPATH/HarryPlotter/data/template_webplotting_overview.html")) as html_template_file:
-					html_template = string.Template(html_template_file.read())
-				
-				html_template_plot = None
-				with open(os.path.expandvars("$ARTUSPATH/HarryPlotter/data/template_webplotting_plot.html")) as html_template_plot_file:
-					html_template_plot = string.Template(html_template_plot_file.read())
-				
 				for plot in [p for p in plots_for_gallery]:
 					# try to link to pdf file, if it exists
 					href = plot.replace('.png', '.pdf')
 					if href not in plots_for_gallery:
 						href = plot
 					filename = os.path.splitext(plot)[0]
-					html_content += html_template_plot.substitute(
+					html_content += html_texts['plot'].substitute(
 							title=filename,
 							href=href,
 							plot=plot,
 							json=filename+".json"
 					)
+				# put the html parts together and write
 				with open(os.path.join(self.plotdict["output_dir"], overview_filename), "w") as overview_file:
-					overview_file.write(html_template.substitute(url=url, html_content=html_content))
+					overview_file.write(html_texts['overview'].substitute(
+						html_content=html_content,
+						title=self.plotdict["www_title"],
+						text=html_texts['description']
+					))
 
+				# find out which files to copy
 				files_to_copy = (
 					self.plotdict["output_filenames"]
 					+ [os.path.join(self.plotdict["output_dir"], overview_filename)]

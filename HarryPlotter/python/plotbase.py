@@ -155,6 +155,10 @@ class PlotBase(processor.Processor):
 		                                 help="""Push output plots directly to your public EKP webspace.
 		                                 Default location is http://www-ekp.physik.uni-karlsruhe.de/~<USER>/plots_archive/<DATE>
 		                                 Optional argument is the name of a subdirectory that will appended to the default location.""")
+		self.other_options.add_argument("--www-title", type=str, default="Plot overview",
+		                                 help="Title for the web gallery. [Default: %(default)s]")
+		self.other_options.add_argument("--www-text", type=str, default=None,
+		                                 help="Text for the web gallery. [Default: download-link]")
 	
 	def prepare_args(self, parser, plotData):
 		super(PlotBase, self).prepare_args(parser, plotData)
