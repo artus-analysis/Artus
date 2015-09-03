@@ -110,7 +110,7 @@ class PlotData(object):
 				rsync_command = ["rsync", "-u"] + files_to_copy + ["%s@%s:%s" % (user, sshpc, remote_path)]
 				log.debug("\nIssueing rsync command: " + " ".join(rsync_command) + "\n")
 				logger.subprocessCall(rsync_command)
-				log.info("Copied {0}; see {1}".format(filename.split("/")[-1], url))
+				log.info("Copied {0}; see {1}".format(" ".join([f.split("/")[-1] for f in self.plotdict["output_filenames"]]), url))
 
 			return self.plotdict["output_filenames"]
 
