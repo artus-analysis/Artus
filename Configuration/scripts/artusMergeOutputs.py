@@ -10,13 +10,14 @@ import glob
 import os
 
 import ROOT
+ROOT.gROOT.SetBatch(True)
 ROOT.PyConfig.IgnoreCommandLineOptions = True
+ROOT.gErrorIgnoreLevel = ROOT.kError
 
 import Artus.Utility.progressiterator as pi
 
 
 def main():
-	ROOT.gROOT.SetBatch(True)
 	
 	parser = argparse.ArgumentParser(description="Merge Artus outputs per nick name.", parents=[logger.loggingParser])
 

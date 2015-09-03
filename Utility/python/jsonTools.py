@@ -13,7 +13,9 @@ import pprint
 import sys
 
 import ROOT
+ROOT.gROOT.SetBatch(True)
 ROOT.PyConfig.IgnoreCommandLineOptions = True
+ROOT.gErrorIgnoreLevel = ROOT.kError
 
 import Artus.Utility.tools as tools
 

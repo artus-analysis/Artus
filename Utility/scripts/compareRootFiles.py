@@ -8,6 +8,10 @@ log = logging.getLogger(__name__)
 import argparse
 
 import ROOT
+ROOT.gROOT.SetBatch(True)
+ROOT.PyConfig.IgnoreCommandLineOptions = True
+ROOT.gErrorIgnoreLevel = ROOT.kError
+
 import sys
 
 opt_all = False

@@ -2,10 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import ROOT
 import time
 import os
 import argparse
+
+import ROOT
+ROOT.gROOT.SetBatch(True)
+ROOT.PyConfig.IgnoreCommandLineOptions = True
+ROOT.gErrorIgnoreLevel = ROOT.kError
 
 
 def main():
