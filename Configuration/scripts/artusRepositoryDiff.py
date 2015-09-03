@@ -8,6 +8,7 @@ log = logging.getLogger(__name__)
 import argparse
 import os
 import shlex
+import subprocess
 
 import Artus.Utility.jsonTools as jsonTools
 import Artus.Utility.tools as tools
@@ -29,10 +30,18 @@ def main():
 	
 	repo_version1 = config1[repo_key1]
 	repo_version2 = config2[repo_key2]
+	diff_string = "%s...%s" % (repo_version1, repo_version2)
 	
 	command = "git diff %s..%s" % (repo_version1, repo_version2)
-	log.info(command)
-	logger.subprocessCall(shlex.split(command))
+	if log.isEnabledFor(logging.DEBUG):
+		log.info("")
+		logger.subprocessCall(shlex.split(command))
+	log.info("\n"+command)
+	
+	popen_cout, popen_cerr = subprocess.Popen("git config remote.origin.url".split(), stdout=subprocess.PIPE).communicate()
+	remote_url = popen_cout.replace("\n", "")
+	github_link = os.path.join(remote_url, "compare", diff_string)
+	log.info(github_link)
 	
 
 if __name__ == "__main__":
