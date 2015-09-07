@@ -71,7 +71,10 @@ public:
 			jecParameters.push_back(JetCorrectorParameters(*jecParametersFile));
 			LOG(DEBUG) << "\t\t" << *jecParametersFile;
 		}
-		factorizedJetCorrector = new FactorizedJetCorrector(jecParameters);
+		if (jecParameters.size() > 0)
+		{
+			factorizedJetCorrector = new FactorizedJetCorrector(jecParameters);
+		}
 		
 		// initialise uncertainty calculation
 		LOG(DEBUG) << "\tLoading JetCorrectionUncertainty from files...";
@@ -112,9 +115,12 @@ public:
 		}
 		
 		// apply jet energy corrections and uncertainty shift
-		correctJets(&correctJetsForJecTools, factorizedJetCorrector, jetCorrectionUncertainty,
-		            event.m_pileupDensity->rho, event.m_vertexSummary->nVertices, -1,
-		            settings.GetJetEnergyCorrectionUncertaintyShift());
+		if (factorizedJetCorrector != nullptr)
+		{
+			correctJets(&correctJetsForJecTools, factorizedJetCorrector, jetCorrectionUncertainty,
+			            event.m_pileupDensity->rho, event.m_vertexSummary->nVertices, -1,
+			            settings.GetJetEnergyCorrectionUncertaintyShift());
+		}
 		
 		// create the shared pointers to store in the product
 		(product.*m_correctedJetsMember).clear();
@@ -157,8 +163,8 @@ private:
 	std::vector<TJet>* KappaEvent::*m_basicJetsMember;
 	std::vector<std::shared_ptr<TJet> > KappaProduct::*m_correctedJetsMember;
 	
-	FactorizedJetCorrector* factorizedJetCorrector = 0;
-	JetCorrectionUncertainty* jetCorrectionUncertainty = 0;
+	FactorizedJetCorrector* factorizedJetCorrector = nullptr;
+	JetCorrectionUncertainty* jetCorrectionUncertainty = nullptr;
 };
 
 
