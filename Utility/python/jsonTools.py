@@ -313,7 +313,7 @@ class JsonDict(dict):
 									del value[index]
 								except KeyError, e:
 									log.fatal("Error removeing Key %s from Arguments" % element)
-									sys.exit()
+									sys.exit(1)
 
 		return jsonDict
 

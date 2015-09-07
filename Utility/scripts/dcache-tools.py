@@ -58,6 +58,7 @@ def list_of_files(prefix, src, recursive):
 def get_mapping_src_dst(src_files, src_files_recursive, dst_files):
 	if not (len(dst_files) == 1 or len(dst_files) == len(src_files)):
 		log.fatal("Wrong number of destinations!")
+		sys.exit(1)
 	
 	tmp_dst_files = (dst_files * len(src_files))[:len(src_files)]
 	
