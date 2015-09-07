@@ -22,3 +22,4 @@ __init__.py
 plots
 *.aux
 *.log
+*.spl

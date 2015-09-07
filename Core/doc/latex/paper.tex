@@ -1,5 +1,7 @@
-%\documentclass[a4paper,oneside,BCOR12.5mm,ngerman,12pt]{scrartcl}
-\documentclass[a4paper, oneside, 10pt]{scrartcl}
+
+% http://www.elsevier.com/authors/author-schemas/latex-instructions
+% http://ftp.math.purdue.edu/mirrors/ctan.org/macros/latex/contrib/elsarticle/doc/elsdoc.pdf
+\documentclass[3p]{elsarticle}
 
 \usepackage{booktabs}
 \usepackage{hepnames}
@@ -9,10 +11,35 @@
 \input{include/tikz_includes}
 \input{include/colors}
 
-\begin{document}
-\section{Development of a General Analysis Framework in C++ \label{section_artus}}
+% http://latex-community.org/forum/viewtopic.php?f=4&t=11123#p42875
+\makeatletter
+\def\ps@pprintTitle{%
+  \let\@oddhead\@empty
+  \let\@evenhead\@empty
+  \def\@oddfoot{\reset@font\hfil\thepage\hfil}
+  \let\@evenfoot\@oddfoot
+}
+\makeatother
 
-\subsection{Common Workflow of High Energy Physics Analyses \label{section_artus_analysis_workflow}}
+\begin{document}
+
+\begin{frontmatter}
+\title{Artus -- Framework for Event-based Data Analysis in High Energy Physics}
+
+\author[kit]{Thomas M\"uller}
+\address[kit]{Karlsruhe Institute of Technology, Wolfgang-Gaede-Stra\ss{}e 1, D-76131 Karlsruhe}
+
+\begin{abstract}
+abstract
+\end{abstract}
+
+%\begin{keyword}
+%keyword
+%\end{keyword}
+\end{frontmatter}
+
+
+\section{Common Workflow of High Energy Physics Analyses \label{section_artus_analysis_workflow}}
 
 Between the data taking at the detector or the generation of Monte Carlo events with the subsequent detector simulation and the showcasing of the physical results, the following analysis steps have to be performed.
 
@@ -25,7 +52,7 @@ As an example, the $\PH\to\Pgt\Pgt\to\Pgm\Pgm$ analysis, used a data set contain
 The skimmed n-tuples are finally analysed by user code on local computing resources. Events are selected and categorised, high-level calculations based on the physics objects are performed and the output is either again written to smaller n-tuples or histograms. The events are usually processed with different configurations depending on the analysis needs. The output is then used for post-processing steps including the plotting of results. The post-processing does not necessarily require an event-based processing and therefore also needs on average the smallest computing resources.
 
 
-\subsection{The Artus Framework \label{section_artus_motivation}}
+\section{The Artus Framework \label{section_artus_motivation}}
 
 The framework introduced in this section handles the last step, the user analysis. In many cases the code is developed without a strategy or structure according to the growing needs of the analysis. This leads to analysis code that convoluted, tangled and unstructured. Such code is difficult to understand and to maintain and also difficult to hand over to new people joining the analysis effort. Secondly, code is rarely shared among different analysis groups, although basic parts of the analysis like the processing n-tuple-structured data or the selection and identification of physics objects follow the same principles. This usually leads to code duplication slowing down the analysis effort.
 
@@ -36,7 +63,7 @@ This general framework is applicable to any kind of event processing analysis. T
 The Artus framework is written in C++. The core of the framework only depends on the boost library\footnote{\url{http://www.boost.org/}}. Further dependencies may be introduced by the actual analysis code. C++ is chosen for performance reasons and in order to be able to integrate existing frameworks and libraries that are commonly used in high energy physics.
 
 
-\subsection{Structure of the Framework \label{section_artus_structure}}
+\section{Structure of the Framework \label{section_artus_structure}}
 
 The basic concept of the framework is taken from the code used for the $\PZ+\text{jet}$ analysis documented in reference~\cite{joram_phd}. It is generalised and extended to satisfy the needs of various analysis groups. The structure is illustrated in figure~\ref{figure_artus_structure}.
 
@@ -77,7 +104,7 @@ This structure extends the established concepts of existing frameworks like FWLi
 \end{description}
 
 
-\subsection{Building an End-user Analysis \label{section_artus_analysis}}
+\section{Building an End-user Analysis \label{section_artus_analysis}}
 
 In the Artus framework each concrete analysis is defined by a set of object types. It needs an implementation of the classes for settings, the event and the product. The settings class defines the tags that should be able to be read from the configuration file and the corresponding types of the values. The event class defines the event content being read from the input and the product class contains members for new quantities being calculated by the analysis. These three classes need to be derived from the base classes in the core of the framework.
 
@@ -88,7 +115,7 @@ The most important part of an analysis are the processors. The abstract processo
 Analyses that share the input file format can easily also share processors, that implement basic analysis steps in a general fashion. Analysis-specific parts can either derive from exiting processor classer or be modelled in new processors.
 
 
-\subsection{HarryPlotter -- Python Post-processing Framework \label{section_artus_harryplotter}}
+\section{HarryPlotter -- Python Post-processing Framework \label{section_artus_harryplotter}}
 
 The computationally expensive event processing steps are followed by the post-processing of the results and their presentation. From a technical point of view the focus here is rather on flexibility than on performance. The inputs for this step are either histograms filled in the previous step or n-tuples whose entries can be filled into histograms at low no cost. For this reason, Python has been chosen as language for the HarryPlotter framework\footnote{\url{https://github.com/artus-analysis/Artus/tree/master/HarryPlotter}}. As the name implies, the main focus is on plotting of results. The modular structure allows to integrate multiple analysis steps and several output formats.
 
@@ -111,7 +138,7 @@ The configuration is provided by an argument parser that can handle both argumen
 The parsing of the arguments is performed in two steps. The first time it determines the sequence of modules to be executed. These modules are then initialised and can define additional arguments needed for their configuration, such that every module can manage its own settings but can also access the settings of entire program. After all arguments are defined the configuration is parsed a second time providing the full settings for the HarryPlotter run. Then all processors are executed as described above.
 
 
-\subsection{A Real World Application -- the $\PH\to\Pgt\Pgt$ Analysis \label{section_artus_example_htt}}
+\section{A Real World Application -- the $\PH\to\Pgt\Pgt$ Analysis \label{section_artus_example_htt}}
 
 Currently, the Artus framework is used for various user analysis of CMS data ranging from jet energy calibration and QCD studies to analyses in the scope of Higgs boson measurements and searches for physics beyond the Standard Model. As an example, the technical aspects of the $\PH\to\Pgt\Pgt$ analysis presented in this thesis are explained in the following.
 
