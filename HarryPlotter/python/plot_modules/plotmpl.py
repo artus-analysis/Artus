@@ -237,8 +237,8 @@ class PlotMpl(plotbase.PlotBase):
 				self.plot_dimension = 1
 				self.mplhist = MplGraph(root_object)
 
-				if (isinstance(root_object, ROOT.TGraphErrors) and  marker=='fill'):
-					self.plot_tgrapherrors_envelope(self.mplhist, ax, label, color, line_style, line_width)
+				if marker=='fill':
+					self.plot_tgrapherrors_envelope(self.mplhist, ax, label, color, line_style, line_width, step)
 				else:
 					self.plot_errorbar(self.mplhist, ax=ax,
 					               show_xerr=x_error, show_yerr=y_error,
@@ -671,17 +671,31 @@ class PlotMpl(plotbase.PlotBase):
 			cmap=cmap, linewidth=0, antialiased=True, shade=False)
 		return artist
 
-	def plot_tgrapherrors_envelope(self, mplhist, ax, label, color, line_style, line_width):
+	def plot_tgrapherrors_envelope(self, mplhist, ax, label, color, line_style, line_width, step):
 		""" Plot the envelope given by y-errors around a TGraphErrors"""
-		ax.plot(self.mplhist.x, self.mplhist.y, label=label, color=color, linestyle=line_style, linewidth=line_width)
-		ax.fill_between(self.mplhist.x,
-			[(y_val-error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)],
-			[(y_val+error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)],
-			facecolor=color,
-			edgecolor=color,
-			interpolate=True,
-			alpha=0.2
-		)
+		if step:
+			# central values:
+			ax.step(self.steppify_bin(mplhist.xbinedges, isx=True), self.steppify_bin(mplhist.y),
+				label=label, linestyle=line_style)
+			# plot errors as shaded area:
+			ax.fill_between(
+				self.steppify_bin(mplhist.xbinedges, isx=True),
+				self.steppify_bin([(y_val+error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)]),
+				y2=self.steppify_bin([(y_val-error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)]),
+				color=color,
+				alpha=0.2,
+			)
+		else:
+			# draw a smooth curve with error band around
+			ax.plot(self.mplhist.x, self.mplhist.y, label=label, color=color, linestyle=line_style, linewidth=line_width)
+			ax.fill_between(self.mplhist.x,
+				[(y_val-error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)],
+				[(y_val+error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)],
+				facecolor=color,
+				edgecolor=color,
+				interpolate=False,
+				alpha=0.2
+			)
 
 
 	def get_zip_arguments(self, plotData):
