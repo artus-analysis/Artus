@@ -78,11 +78,15 @@ public:
 		
 		// initialise uncertainty calculation
 		LOG(DEBUG) << "\tLoading JetCorrectionUncertainty from files...";
-		if (! settings.GetJetEnergyCorrectionUncertaintyParameters().empty())
+		if ((! settings.GetJetEnergyCorrectionUncertaintyParameters().empty()) &&
+		    (settings.GetJetEnergyCorrectionUncertaintyShift() != 0.0))
 		{
-			JetCorrectorParameters *jecUncertaintyParameters = NULL;
+			JetCorrectorParameters* jecUncertaintyParameters = nullptr;
 			if (!settings.GetJetEnergyCorrectionUncertaintySource().empty()) {
-				jecUncertaintyParameters = new JetCorrectorParameters(settings.GetJetEnergyCorrectionUncertaintyParameters(), settings.GetJetEnergyCorrectionUncertaintySource());
+				jecUncertaintyParameters = new JetCorrectorParameters(
+						settings.GetJetEnergyCorrectionUncertaintyParameters(),
+						settings.GetJetEnergyCorrectionUncertaintySource()
+				);
 			}
 			else {
 				jecUncertaintyParameters = new JetCorrectorParameters(settings.GetJetEnergyCorrectionUncertaintyParameters());
@@ -115,12 +119,9 @@ public:
 		}
 		
 		// apply jet energy corrections and uncertainty shift
-		if (factorizedJetCorrector != nullptr)
-		{
-			correctJets(&correctJetsForJecTools, factorizedJetCorrector, jetCorrectionUncertainty,
-			            event.m_pileupDensity->rho, event.m_vertexSummary->nVertices, -1,
-			            settings.GetJetEnergyCorrectionUncertaintyShift());
-		}
+		correctJets(&correctJetsForJecTools, factorizedJetCorrector, jetCorrectionUncertainty,
+		            event.m_pileupDensity->rho, event.m_vertexSummary->nVertices, -1,
+		            settings.GetJetEnergyCorrectionUncertaintyShift());
 		
 		// create the shared pointers to store in the product
 		(product.*m_correctedJetsMember).clear();
