@@ -107,7 +107,7 @@ class PlotData(object):
 				)
 				if self.plotdict["export_json"]:
 					files_to_copy += [self.plotdict["export_json"]]
-				if self.plotdict["save_legend"]:
+				if self.plotdict.get("save_legend", False):
 					files_to_copy += [os.path.join(self.plotdict["output_dir"], ".".join([self.plotdict["save_legend"], _format])) for _format in self.plotdict["formats"]]
 				# create remote dir, copy files
 				sshpc = tools.get_environment_variable("HARRY_SSHPC")
