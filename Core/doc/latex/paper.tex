@@ -54,7 +54,7 @@ The skimmed n-tuples are finally analysed by user code on local computing resour
 
 \section{The Artus Framework \label{section_artus_motivation}}
 
-The framework introduced in this section handles the last step, the user analysis. In many cases the code is developed without a strategy or structure according to the growing needs of the analysis. This leads to analysis code that convoluted, tangled and unstructured. Such code is difficult to understand and to maintain and also difficult to hand over to new people joining the analysis effort. Secondly, code is rarely shared among different analysis groups, although basic parts of the analysis like the processing n-tuple-structured data or the selection and identification of physics objects follow the same principles. This usually leads to code duplication slowing down the analysis effort.
+The framework introduced in this section handles the last step, the user analysis. In many cases the code is developed without a strategy or structure according to the growing needs of the analysis. This leads to analysis code that is convoluted, tangled and unstructured. Such code is difficult to understand and to maintain and also difficult to hand over to new people joining the analysis effort. Secondly, code is rarely shared among different analysis groups, although basic parts of the analysis like the processing n-tuple-structured data or the selection and identification of physics objects follow the same principles. This usually leads to code duplication slowing down the analysis effort.
 
 Following the structure of the CMSSW framework, the Artus framework\footnote{\url{https://github.com/artus-analysis/Artus}} provides a front-to-end solution for the analysis of event-based data. The basic concept of modules processing the events within an event loop is complemented by tools for the configuration of every step. The complete structure is explained in the next section~\ref{section_artus_structure}.
 
@@ -112,12 +112,12 @@ An implementation of an event provider must be available. The event provider mus
 
 The most important part of an analysis are the processors. The abstract processors of the Artus core need to be implemented to realise the physics needs of the analysis in the form of code. New processors have to be registered in the factory. After the basic structure of an analysis is set up, most of changes and additions are only related to the processors.
 
-Analyses that share the input file format can easily also share processors, that implement basic analysis steps in a general fashion. Analysis-specific parts can either derive from exiting processor classer or be modelled in new processors.
+Analyses that share the input file format can easily also share processors, that implement basic analysis steps in a general fashion. Analysis-specific parts can either derive from existing processor classer or be modelled in new processors.
 
 
 \section{HarryPlotter -- Python Post-processing Framework \label{section_artus_harryplotter}}
 
-The computationally expensive event processing steps are followed by the post-processing of the results and their presentation. From a technical point of view the focus here is rather on flexibility than on performance. The inputs for this step are either histograms filled in the previous step or n-tuples whose entries can be filled into histograms at low no cost. For this reason, Python has been chosen as language for the HarryPlotter framework\footnote{\url{https://github.com/artus-analysis/Artus/tree/master/HarryPlotter}}. As the name implies, the main focus is on plotting of results. The modular structure allows to integrate multiple analysis steps and several output formats.
+The computationally expensive event processing steps are followed by the post-processing of the results and their presentation. From a technical point of view the focus here is rather on flexibility than on performance. The inputs for this step are either histograms filled in the previous step or n-tuples whose entries can be filled into histograms at low cost. For this reason, Python has been chosen as language for the HarryPlotter framework\footnote{\url{https://github.com/artus-analysis/Artus/tree/master/HarryPlotter}}. As the name implies, the main focus is on plotting of results. The modular structure allows to integrate multiple analysis steps and several output formats.
 
 \begin{figure}[htb]
 \centering \input{figures/harry_plotter}
@@ -131,7 +131,7 @@ The structure of the framework is illustrated in figure~\ref{figure_artus_harry_
 \item An arbitrary number of analysis modules is appended. They can perform calculations based on the inputs or the results of previously run analysis modules.
 \item One or, in special cases, multiple plot modules are executed in the last step. Their function is to output the processed data in the specified format. In most of the cases, the output is a plot but it is also possible to store the objects in new ROOT files.
 \end{enumerate}
-All processors share a common plot data objects and possible meta-data where they can add new information and read the existing one. For example, the input modules add histograms read in from input files and the plot modules access these histograms.
+All processors share a common plot data object and possible meta-data where they can add new information and read the existing one. For example, the input modules add histograms read in from input files and the plot modules access these histograms.
 
 The configuration is provided by an argument parser that can handle both arguments from a command line interface and content from JSON configuration files or Python dictionaries. This makes it possible to use either the HarryPlotter executable configured via the command line or call the main function within another Python script. The executable can perform one single plot per run. For the execution within a script functions exist to create multiple plots in parallel.
 
