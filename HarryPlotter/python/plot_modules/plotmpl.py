@@ -200,6 +200,8 @@ class PlotMpl(plotbase.PlotBase):
 		super(PlotMpl, self).set_style(plotData)
 	
 	def create_canvas(self, plotData):
+		super(PlotMpl, self).create_canvas(plotData)
+		
 		# fig = plt.figure(figsize = [
 			# plotData.plotdict['axes_layout'][0] * matplotlib.rcParams['figure.figsize'][0],
 			# plotData.plotdict['axes_layout'][1] * matplotlib.rcParams['figure.figsize'][1]
