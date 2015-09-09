@@ -98,6 +98,7 @@ class InputBase(processor.Processor):
 
 			if isinstance(root_object, ROOT.TH1):
 				root_object.Scale(scale_factor)
+				log.debug("Scaling histogram {} by {}".format(nick, scale_factor))
 			elif scale_factor != 1.0:
 				log.warning("Scaling currently only implemented for histograms!")
 
