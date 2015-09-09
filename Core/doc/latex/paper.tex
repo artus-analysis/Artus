@@ -59,6 +59,21 @@ As an example, the $\PH\to\Pgt\Pgt\to\Pgm\Pgm$ analysis, used a data set contain
 
 The skimmed n-tuples are finally analysed by user code on local computing resources. Events are selected and categorised, high-level calculations based on the physics objects are performed and the output is either again written to smaller n-tuples or histograms. The events are usually processed with different configurations depending on the analysis needs. The output is then used for post-processing steps including the plotting of results. The post-processing does not necessarily require an event-based processing and therefore also needs on average the smallest computing resources.
 
+\section{Requirements and Challenges for Analysis Software\label{section_artus_challenges}}
+%define requirements based on previous section, following sections: describe how they are fullfilled
+Based on the workflow described in the previous section, the following demands for an analyis framework arise:
+\begin{itemize}
+ \item High performance to cope with massive data amounts % -> C++, pipelines, only necessary producers
+ \item Usable for different physics analyses % -> modular structure, producers
+ \item Flexibility %TODO define need for different configurations in previous section
+ \item Compatible with different data formats % -> data format defined outside (kappa)
+ \item Easy to install, use and understand; also for programming newcomers % test analysis, tutorial, documentation(TODO)
+ \item Possibility to include libraries and existing HEP code % -> C++ used
+ \item Reliable and checked source code % -> Unit tests, code sharing
+ \item Compatibility with different operating platforms/environments % standalone compile with make, integrated batch/GC functionality
+\end{itemize}
+The \artus design choices are fully based on these requirements.
+
 
 \section{The \artus Framework \label{section_artus_motivation}}
 
