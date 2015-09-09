@@ -21,20 +21,23 @@
 }
 \makeatother
 
+\newcommand{\software}[1]{\textsc{#1}\xspace}
+\newcommand{\artus}{\software{Artus}}
+
 \begin{document}
 
 \begin{frontmatter}
-\title{Artus -- Framework for Event-based Data Analysis in High Energy Physics}
+\title{\artus -- Framework for Event-based Data Analysis in High Energy Physics}
 
 \author[kit]{Thomas M\"uller, Thomas Hauth, Dominik Haitz}
 \address[kit]{Karlsruhe Institute of Technology, Wolfgang-Gaede-Stra\ss{}e 1, D-76131 Karlsruhe}
 
 \begin{abstract}
-We present Artus, a data-processing application for high energy physics experiments. Artus is designed for large-scale data analysis in a collaborative environment.
+We present \artus, a data-processing framework for high energy physics experiments. \artus is designed for large-scale data analysis in a collaborative environment.
 The architecture design choices take into account typical challenges and are based on experiences with similar applications.
 The structure of the framework and its advantages are described.
 An example usecase and performance measurements are presented.
-The framwork is well-tested and successfully used by several analysis groups.
+The framework is well-tested and successfully used by several analysis groups.
 
 \end{abstract}
 
@@ -57,15 +60,15 @@ As an example, the $\PH\to\Pgt\Pgt\to\Pgm\Pgm$ analysis, used a data set contain
 The skimmed n-tuples are finally analysed by user code on local computing resources. Events are selected and categorised, high-level calculations based on the physics objects are performed and the output is either again written to smaller n-tuples or histograms. The events are usually processed with different configurations depending on the analysis needs. The output is then used for post-processing steps including the plotting of results. The post-processing does not necessarily require an event-based processing and therefore also needs on average the smallest computing resources.
 
 
-\section{The Artus Framework \label{section_artus_motivation}}
+\section{The \artus Framework \label{section_artus_motivation}}
 
 The framework introduced in this section handles the last step, the user analysis. In many cases the code is developed without a strategy or structure according to the growing needs of the analysis. This leads to analysis code that is convoluted, tangled and unstructured. Such code is difficult to understand and to maintain and also difficult to hand over to new people joining the analysis effort. Secondly, code is rarely shared among different analysis groups, although basic parts of the analysis like the processing n-tuple-structured data or the selection and identification of physics objects follow the same principles. This usually leads to code duplication slowing down the analysis effort.
 
-Following the structure of the CMSSW framework, the Artus framework\footnote{\url{https://github.com/artus-analysis/Artus}} provides a front-to-end solution for the analysis of event-based data. The basic concept of modules processing the events within an event loop is complemented by tools for the configuration of every step. The complete structure is explained in the next section~\ref{section_artus_structure}.
+Following the structure of the CMSSW framework, the \artus framework\footnote{\url{https://github.com/artus-analysis/\artus}} provides a front-to-end solution for the analysis of event-based data. The basic concept of modules processing the events within an event loop is complemented by tools for the configuration of every step. The complete structure is explained in the next section~\ref{section_artus_structure}.
 
-This general framework is applicable to any kind of event processing analysis. The well-tested core is shared among various analyses, providing a reliable fundament for any new analysis. The highly modular structure guides the user to develop analysis software that is easily maintainable and constructively extensible. Thus, thes Artus framework avoids the aforementioned problems of separate user code for individual analyses.
+This general framework is applicable to any kind of event processing analysis. The well-tested core is shared among various analyses, providing a reliable fundament for any new analysis. The highly modular structure guides the user to develop analysis software that is easily maintainable and constructively extensible. Thus, thes \artus framework avoids the aforementioned problems of separate user code for individual analyses.
 
-The Artus framework is written in C++. The core of the framework only depends on the boost library\footnote{\url{http://www.boost.org/}}. Further dependencies may be introduced by the actual analysis code. C++ is chosen for performance reasons and in order to be able to integrate existing frameworks and libraries that are commonly used in high energy physics.
+The \artus framework is written in C++. The core of the framework only depends on the boost library\footnote{\url{http://www.boost.org/}}. Further dependencies may be introduced by the actual analysis code. C++ is chosen for performance reasons and in order to be able to integrate existing frameworks and libraries that are commonly used in high energy physics.
 
 
 \section{Structure of the Framework \label{section_artus_structure}}
@@ -74,7 +77,7 @@ The basic concept of the framework is taken from the code used for the $\PZ+\tex
 
 \begin{figure}[p]
 \centering \input{figures/artus_structure}
-\caption[Structure of an Artus analysis.]{Structure of an Artus analysis. The input is read by an event provider. Within the pipelines the event content is analysed by the processors. Consumers in local pipelines write results to a common output. All parts of the analysis are configurable.}
+\caption[Structure of an \artus analysis.]{Structure of an \artus analysis. The input is read by an event provider. Within the pipelines the event content is analysed by the processors. Consumers in local pipelines write results to a common output. All parts of the analysis are configurable.}
 \label{figure_artus_structure}
 
 \vspace{10ex}
@@ -111,11 +114,11 @@ This structure extends the established concepts of existing frameworks like FWLi
 
 \section{Building an End-user Analysis \label{section_artus_analysis}}
 
-In the Artus framework each concrete analysis is defined by a set of object types. It needs an implementation of the classes for settings, the event and the product. The settings class defines the tags that should be able to be read from the configuration file and the corresponding types of the values. The event class defines the event content being read from the input and the product class contains members for new quantities being calculated by the analysis. These three classes need to be derived from the base classes in the core of the framework.
+In the \artus framework each concrete analysis is defined by a set of object types. It needs an implementation of the classes for settings, the event and the product. The settings class defines the tags that should be able to be read from the configuration file and the corresponding types of the values. The event class defines the event content being read from the input and the product class contains members for new quantities being calculated by the analysis. These three classes need to be derived from the base classes in the core of the framework.
 
-An implementation of an event provider must be available. The event provider must know how to read event content from the input files and how to store them in the event object. Furthermore, a factory managing the creation of analysis-specific processors needs to exists. These classes also have to be derived from the Artus base classes.
+An implementation of an event provider must be available. The event provider must know how to read event content from the input files and how to store them in the event object. Furthermore, a factory managing the creation of analysis-specific processors needs to exists. These classes also have to be derived from the \artus base classes.
 
-The most important part of an analysis are the processors. The abstract processors of the Artus core need to be implemented to realise the physics needs of the analysis in the form of code. New processors have to be registered in the factory. After the basic structure of an analysis is set up, most of changes and additions are only related to the processors.
+The most important part of an analysis are the processors. The abstract processors of the \artus core need to be implemented to realise the physics needs of the analysis in the form of code. New processors have to be registered in the factory. After the basic structure of an analysis is set up, most of changes and additions are only related to the processors.
 
 Analyses that share the input file format can easily also share processors, that implement basic analysis steps in a general fashion. Analysis-specific parts can either derive from existing processor classer or be modelled in new processors.
 
@@ -130,7 +133,7 @@ The computationally expensive event processing steps are followed by the post-pr
 \label{figure_artus_harry_plotter}
 \end{figure}
 
-The structure of the framework is illustrated in figure~\ref{figure_artus_harry_plotter}. It follows the idea of processors in the Artus framework. Three kinds of processor modules are executed subsequently:
+The structure of the framework is illustrated in figure~\ref{figure_artus_harry_plotter}. It follows the idea of processors in the \artus framework. Three kinds of processor modules are executed subsequently:
 \begin{enumerate}
 \item One or, in special cases, more input modules are run to read in data from an input source. The input format is defined by the input module. The most commonly used input module is the one that reads histograms or other objects from ROOT files.
 \item An arbitrary number of analysis modules is appended. They can perform calculations based on the inputs or the results of previously run analysis modules.
@@ -145,17 +148,17 @@ The parsing of the arguments is performed in two steps. The first time it determ
 
 \section{A Real World Application -- the $\PH\to\Pgt\Pgt$ Analysis \label{section_artus_example_htt}}
 
-Currently, the Artus framework is used for various user analysis of CMS data ranging from jet energy calibration and QCD studies to analyses in the scope of Higgs boson measurements and searches for physics beyond the Standard Model. As an example, the technical aspects of the $\PH\to\Pgt\Pgt$ analysis presented in this thesis are explained in the following.
+Currently, the \artus framework is used for various user analysis of CMS data ranging from jet energy calibration and QCD studies to analyses in the scope of Higgs boson measurements and searches for physics beyond the Standard Model. As an example, the technical aspects of the $\PH\to\Pgt\Pgt$ analysis presented in this thesis are explained in the following.
 
-The $\PH\to\Pgt\Pgt$ analysis developed in the scope of this thesis makes use of skimmed data sets in the Kappa format. The Kappa framework\footnote{\url{https://github.com/KappaAnalysis/Kappa}} is designed for skimming CMS data into small n-tuples that can be analysed independently of the CMSSW software. The only dependence is the ROOT framework. The n-tuples store high-level information such as four-momentum vectors, collections of leptons and vertices. Similar as the Artus framework, Kappa aims to satisfy general analysis needs.
+The $\PH\to\Pgt\Pgt$ analysis developed in the scope of this thesis makes use of skimmed data sets in the Kappa format. The Kappa framework\footnote{\url{https://github.com/KappaAnalysis/Kappa}} is designed for skimming CMS data into small n-tuples that can be analysed independently of the CMSSW software. The only dependence is the ROOT framework. The n-tuples store high-level information such as four-momentum vectors, collections of leptons and vertices. Similar as the \artus framework, Kappa aims to satisfy general analysis needs.
 
-A large part of the Artus software is specialised on the analysis of Kappa n-tuples\footnote{\url{https://github.com/artus-analysis/Artus/tree/master/KappaAnalysis}}. An event provider is available for reading Kappa n-tuples. The event class contains members for all important physics objects used in analyses. The branches of the n-tuples, that should be read in from the input files, are configurable. Reducing the amount of information transferred from the input files accelerates the analysis significantly.
+A large part of the \artus software is specialised on the analysis of Kappa n-tuples\footnote{\url{https://github.com/artus-analysis/Artus/tree/master/KappaAnalysis}}. An event provider is available for reading Kappa n-tuples. The event class contains members for all important physics objects used in analyses. The branches of the n-tuples, that should be read in from the input files, are configurable. Reducing the amount of information transferred from the input files accelerates the analysis significantly.
 
 The structure of the pipelines is chosen such that for each decay channel a separate pipeline exists. Each of the pipelines is duplicated and modified in order to implement the different settings for shifts of quantities affected by systematic uncertainties. For example, the \Pgt energy scale is shifted up and down with respect to the nominal value. The change of the \Pgt four-momentum is then propagated through the entire analysis and the effect on the final result is studied. For this, each pipeline for decay channels involving hadronically decaying \Pgt leptons is duplicated three times and the setting for the \Pgt energy scale shift is modified accordingly. The global pipeline is used to perform actions that are common for all channels. This is for example the identification of jets and their correction as well as the filtering of valid data events.
 
 The producers and filters are implemented to perform small tasks of the analysis. Main producers are the ones for the identification and the selection of valid leptons and jets. Further producers perform the matching with trigger or generator objects and do the splitting into decay channels or the categorisation. Also the mass reconstruction is done in a separate producer. The selection of events according to high level trigger decisions as well as the selection of decay channels are examples for filters. The filters are executed as early as possible in the chain of processors in order to avoid running subsequent processors without real need.
 
-Table~\ref{table_artus_runtime_comparison} shows a runtime measurement for the baseline part of the $\PH\to\Pgt\Pgt$ in the four main channels ($\Pgm\Pgt$, $\Pe\Pgt$, $\Pe\Pgm$ and $\Pgt\Pgt$). It illustrates the main advantage of the Artus structure: sub-analyses with different sets of configurations can be performed in the same run avoiding the multiple IO overhead when the configurations would be performed sequentially in different runs.
+Table~\ref{table_artus_runtime_comparison} shows a runtime measurement for the baseline part of the $\PH\to\Pgt\Pgt$ in the four main channels ($\Pgm\Pgt$, $\Pe\Pgt$, $\Pe\Pgm$ and $\Pgt\Pgt$). It illustrates the main advantage of the \artus structure: sub-analyses with different sets of configurations can be performed in the same run avoiding the multiple IO overhead when the configurations would be performed sequentially in different runs.
 
 %time HiggsToTauTauAnalysis.py @HiggsAnalysis/KITHiggsToTauTau/data/ArtusWrapperConfigs/Sync13TeV.cfg -i HiggsAnalysis/KITHiggsToTauTau/data/Samples/NAF_sample_DYJetsToLLM50_RunIISpring15DR74_Asympt25ns_13TeV_MINIAOD_amcatnloFXFX-pythia8_recent.txt -f 10
 \begin{table}[h!]
