@@ -127,7 +127,8 @@ The basic concept of the framework is taken from the code used for the $\PZ+\tex
 \label{figure_artus_pipeline}
 \end{figure}
 
-At the beginning a configuration file in the JSON format is read in. It contains information on the input data and settings for the pipelines and processors described in the following. Each of the modules described in the following has access to the settings read in from the configuration file.
+\artus respects the separation of code and settings. Settings select what has to be done and with wich parameters. The code does perform these steps, ideally without the user being fully aware of implementation details. The single source of truth for an analysis is therefore a JSON file that completely defines the analysis. It contains information on the input data and settings for the pipelines and processors described in the following. Each of the modules described in the following has access to the settings read in from the configuration file.
+The \artus package comes with sophisticated tools written in python, that help in generating this JSON file.
 
 The input is handled by an event provider. Its purpose is to manage reading events contents from any kind of input into an event object and to provide information about the total number of events to be processed.
 
@@ -138,11 +139,11 @@ Each pipeline has its own settings. The local pipelines can access both their ow
 A pipeline consists of an arbitrary number of processor modules that are run in a sequence. Three kinds of processors are distinguished:
 \begin{description}
 \item[Producers] are meant to calculate new quantities based on the information in the event and the product and following the settings of the pipeline.
-\item[Filters] apply cuts. In case an event does not survive a requirement defined by a filter, the processing of the subsequent producers and filters is skipped.
+\item[Filters] apply a selection based on event properties. In case an event does not survive a requirement defined by a filter, the processing of the subsequent producers and filters can be skipped.
 \item[Consumers] can be added to local pipelines. They are executed after the producers and filters. The task of consumers is to take quantities from the event and the product and store them in the output according to the pipeline settings.
 \end{description}
-Producers and filters can be configured in an arbitrary order. Consumers are executed after the chain of producers and filters. The output together with the complete configuration is written to a ROOT file. These processors are created and managed by a dedicated factory according to the configuration.
-
+Producers and filters can be configured in an arbitrary order. Consumers are executed after the chain of producers and filters. The output together with the complete configuration is written to a ROOT \todo{Referenz auf ROOT?} file. These processors are created and managed by a dedicated factory according to the configuration.
+\todo{I would not put the remaining part of this chapter here. It should be either part of the requirements or part of the summary what Artus does achieve; but in this technical part in between it feels misplaced}
 This structure extends the established concepts of existing frameworks like FWLite~\cite{FWLite} from CMSSW to the following four main advantages:
 \begin{description}
 \item[Modular structure] Analysis steps are implemented in processors, breaking down the complete analysis in well-defined and easily understandable and writeable parts.
@@ -153,12 +154,12 @@ This structure extends the established concepts of existing frameworks like FWLi
 
 
 \section{Building an End-user Analysis \label{section_artus_analysis}}
-
+\todo{If I wouldn't know the structure already, the following part wouldn't have helped my. Either we support it with a drawing and more detailled explanations or we just refer to a readme...}
 In the \artus framework each concrete analysis is defined by a set of object types. It needs an implementation of the classes for settings, the event and the product. The settings class defines the tags that should be able to be read from the configuration file and the corresponding types of the values. The event class defines the event content being read from the input and the product class contains members for new quantities being calculated by the analysis. These three classes need to be derived from the base classes in the core of the framework.
 
 An implementation of an event provider must be available. The event provider must know how to read event content from the input files and how to store them in the event object. Furthermore, a factory managing the creation of analysis-specific processors needs to exists. These classes also have to be derived from the \artus base classes.
 
-The most important part of an analysis are the processors. The abstract processors of the \artus core need to be implemented to realise the physics needs of the analysis in the form of code. New processors have to be registered in the factory. After the basic structure of an analysis is set up, most of changes and additions are only related to the processors.
+The most important part of an analysis are the processors. The abstract processors of the \artus core need to be implemented to realise the physics needs of the analysis in the form of code. New processors have to be registered in the factory. After the basic structure of an analysis is set up, most changes and additions are only related to the processors.
 
 Analyses that share the input file format can easily also share processors, that implement basic analysis steps in a general fashion. Analysis-specific parts can either derive from existing processor classer or be modelled in new processors.
 
