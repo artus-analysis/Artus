@@ -73,15 +73,29 @@ The skimmed n-tuples are finally processed by user code on resources indipendent
 %define requirements based on previous section, following sections: describe how they are fullfilled
 Based on the workflow described in the previous section, the following demands for an analyis framework arise:
 \begin{itemize}
- \item High performance to cope with massive data amounts % -> C++, pipelines, only necessary producers
- \item Usable for different physics analyses % -> modular structure, producers
- \item Flexibility %TODO define need for different configurations in previous section
- \item Compatible with different data formats % -> data format defined outside (kappa)
- \item Easy to install, use and understand; also for programming newcomers % test analysis, tutorial, documentation(TODO)
- \item Possibility to include libraries and existing HEP code % -> C++ used
- \item Reliable and checked source code % -> Unit tests, code sharing
- \item Compatibility with different operating platforms/environments % standalone compile with make, integrated batch/GC functionality
+ \item Performance
+ \begin{itemize}
+  \item High performance for fast turnaround cycles, even with large data amounts % -> C++, pipelines, only necessary producers
+  \item Flexibility %TODO define need for different configurations in previous section
+ \end{itemize}
+ \item Maintainability
+ \begin{itemize}
+  \item Easy to install
+  \item Readable and understandable, also for programming newcomers
+  \item Compatibility with different operating platforms/environments % standalone compile with make, integrated batch/GC functionality
+  \item Compatible with different data formats % -> data format defined outside (kappa)
+  \item Clear separation of code, data and settings % -> json config
+ \end{itemize}
+
+ \item Reliability
+ \begin{itemize}
+  \item Use existing libraries and existing HEP code wherever possible % -> C++ used
+  \item Reliable and checked source code % -> Unit tests, code sharing
+  \item Avoids frequent re-implementations by being used in different physics analyses % -> modular structure, producers
+  \item Readable, since sourcecode is the most precise documentation possible
+ \end{itemize}
 \end{itemize}
+
 The \artus design choices are fully based on these requirements.
 
 
