@@ -63,7 +63,12 @@ The skimmed n-tuples are finally processed by user code on resources indipendent
 % collaborative environment, high fluctuation in developers/users with wide range of programming skills (bachelor-n00b to postdoc level)
 % different configurations also for one single analysis (testing etc.)
 
-
+\begin{figure}[p]
+\centering \input{figures/analysis_steps}
+\caption[Characteristics of an event-based analysis in high energy physics]{Characteristic of an event-based analysis in high energy physics. I/O intensive operations are done in highly parallel in the WLCG. The computing-intensive operations are only performed if really necessary. This means that selection steps are performed as early as possible.}
+\label{figure_analysis_steps}
+\end{figure}
+\clearpage
 \section{Requirements and Challenges for Analysis Software\label{section_artus_challenges}}
 %define requirements based on previous section, following sections: describe how they are fullfilled
 Based on the workflow described in the previous section, the following demands for an analyis framework arise:
