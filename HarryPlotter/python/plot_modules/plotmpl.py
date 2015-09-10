@@ -427,6 +427,13 @@ class PlotMpl(plotbase.PlotBase):
 
 	def add_labels(self, plotData):
 		super(PlotMpl, self).add_labels(plotData)
+		# apparently MPL 121 has a bug for the PDF backend for legends without frame.
+		# workaround: set legend.frameon True, but after legend creation set edgecolor to white.
+		if ('pdf' in plotData.plotdict["formats"]) and (not matplotlib.rcParams['legend.frameon']) and (self.mpl_version == 121):
+			matplotlib.rcParams['legend.frameon'] = True
+			legend_workaround=True
+		else:
+			legend_workaround=False
 
 		#iterate over all axis objects
 		for ax in [plotData.plot.axes[0]]:
@@ -438,6 +445,8 @@ class PlotMpl(plotbase.PlotBase):
 			if len(ax.get_legend_handles_labels()[0]) > 1 and plotData.plotdict["legend"] is not None:
 				legend = ax.legend(*self.get_legend_handles_labels_ordered(ax, plotData.plotdict['labels']), loc=plotData.plotdict["legend"], ncol=plotData.plotdict["legend_cols"], columnspacing=0.5, handletextpad=0.3)
 				legend.set_zorder(100)
+				if legend_workaround:
+					legend.get_frame().set_edgecolor('#FFFFFF')
 
 			if self.mpl_version >= 121:
 				plt.tight_layout()
@@ -448,9 +457,10 @@ class PlotMpl(plotbase.PlotBase):
 		if len(plotData.plot.axes) > 1:
 			for ax in [plotData.plot.axes[1]]:
 				if len(ax.get_legend_handles_labels()[0]) > 1 and plotData.plotdict["subplot_legend"] is not None:
-					ax.legend(*self.get_legend_handles_labels_ordered(ax, plotData.plotdict['labels']), loc=plotData.plotdict["subplot_legend"], ncol=1, columnspacing=0.5, handletextpad=0.3)
-		# if plotData.plotdict['ratio'] and list(set(plotData.plotdict['ratio_labels'])) != [None]:
-			# plotData.plot.ax2.legend(loc=plotData.plotdict["legend"])
+					legend = ax.legend(*self.get_legend_handles_labels_ordered(ax, plotData.plotdict['labels']), loc=plotData.plotdict["subplot_legend"], ncol=1, columnspacing=0.5, handletextpad=0.3)
+					if legend_workaround:
+						legend.get_frame().set_edgecolor('#FFFFFF')
+
 
 	def add_texts(self, plotData):
 		super(PlotMpl, self).add_texts(plotData)
