@@ -49,44 +49,30 @@ The framework is well-tested and successfully used by several analysis groups.\t
 
 
 \section{Common Workflow of High Energy Physics Analyses \label{section_artus_analysis_workflow}}
+% This section should contain a short description of a HEP/CMS-typical workflow.
+% Especially common problems and challenges should be highlighted.
+% From these problems, the design requirements for Artus are derived.
 
 Between the data taking at the detector or the generation of simulated events with the subsequent detector simulation and the showcasing of the physical results, the following analysis steps have shown to be the best compromise in terms of turnaround time and efficiency as explained in Figure \ref{figure_analysis_steps}.
 
-The event reconstruction of the raw detector data is performed on large computing centres in the WLCG\footnote{\url{http://wlcg-public.web.cern.ch}}, the Worldwide LHC Computing grid.
-The reconstructed data is stored in different formats at multiple sites in the WLCG.
-Usually, already a condensed format is used for physics analyses, where high-level physics objects are already reconstructed.
-These formats contain as much information about the events as needed to serve the general needs of the analysis groups.
+The reconstruction of the raw detector data is performed on large computing centres in the WLCG\footnote{\url{http://wlcg-public.web.cern.ch}}, the Worldwide LHC Computing Grid.
+The resulting data sets contain event information and high-level physics objects and are of $\mathcal O(10-100)$~TB in size. \todo{move file size numbers to Figure \ref{figure_analysis_steps}?}
 
-This step is followed by the selection of data sets that are relevant for a specific analysis.
-This step is usually being referred to as skimming.
-Skimming means, that only those events that are interesting for the analysis are selected, e.g.
-by requiring only data sets for certain high level triggers or the presence of certain physical objects with desired kinematical properties.
-Only the event quantities, that are relevant for a given analysis, are written out.
-Since the WLCG follows the concept of data locality, the skimming step is usually performed on grid sites where the data is located.
-With rising network bandwith over the last few years, data locality is weakened up and techniques arose that also allow the access of data on remote sites.
-The output of the skimming is an mostly analysis-dependent n-tuple format that is small enough to be at smaller file servers, often owned and operated by a single intitute.
-The size of files needed for a certain analysis ranges from $\mathcal O(10)$~GB to few~TB.
+This is followed by the selection of data that is relevant for a specific analysis, a step usually  referred to as \textit{skimming}.
+The output of the skimming is a mostly analysis-dependent n-tuple format that is small enough to be stored at local file servers, often owned and operated by a single institute.
+The size of these files ranges from $\mathcal O(10)$~GB to few~TB.
 
-As an example, the $\PH\to\Pgt\Pgt\to\Pgm\Pgm$ analysis, used a data set containing only events that were accepted by double-muon triggers.
-Additionally, there was no need to store reconstructed \Pgt leptons (that decay hadronically) as there is no veto on taus like on electrons and third muons.
-
-The skimmed n-tuples are finally processed by user code on resources indipendent from the WLCG.
-The analysis performs further events selectetion and categorization.
-High-level calculations based on the physics objects are performed and the output is either again written to smaller n-tuples or histograms.
+The skimmed n-tuples are finally processed by user code on local resources.
+This means performing further event selection and categorization steps or high-level calculations based on the physics objects.
 The events are usually processed with different configurations depending on the analysis needs.
 The output is then used for post-processing steps including the plotting of results.
-The post-processing does not necessarily require an event-based processing and therefore also needs on average the smallest computing resources.
 
-In many cases the code is developed without a strategy or structure according to the growing needs of the analysis.
-This leads to analysis code that is convoluted, tangled and unstructured.
+In many cases the code for the last step is developed without a strategy or structure according to the growing needs of the analysis.
+This leads to code that is convoluted, tangled and unstructured.
 Such code is difficult to understand and to maintain and also difficult to hand over to new people joining the analysis effort.
-Secondly, code is rarely shared among different analysis groups, although basic parts of the analysis like the processing n-tuple-structured data or the selection and identification of physics objects follow the same principles.
-This usually leads to code duplication slowing down the analysis effort.
-
-
-%Add:
-% collaborative environment, high fluctuation in developers/users with wide range of programming skills (bachelor-n00b to postdoc level)
-% different configurations also for one single analysis (testing etc.)
+Also, code is rarely shared among different groups, although basic parts of the analysis like data formats, the processing of n-tuple-structured files or the selection and identification of physics objects follow the same principles.
+The analysis groups usually consist of several people of different academic levels, some joining the analysis effort only for a short time.
+This results in a high user fluctuation and a wide range of programming skills.
 
 \begin{figure}[p]
 \centering \input{figures/analysis_steps}
@@ -132,7 +118,7 @@ The \artus design choices are fully based on these requirements.
 
 \section{The \artus Framework \label{section_artus_motivation}}
 
-The framework introduced in this section handles the last step, the user analysis.
+The framework introduced in this section handles the last step of the workflow, the user analysis.
 
 Following the structure of the CMSSW \todo{Referenz? zumindest github-link?} framework, the \artus framework\footnote{\url{https://github.com/artus-analysis/\artus}} provides a front-to-end solution for the analysis of event-based data.
 The basic concept of modules processing the events within an event loop is complemented by tools for the configuration of every step.
