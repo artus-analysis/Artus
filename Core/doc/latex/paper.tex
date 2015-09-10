@@ -77,6 +77,13 @@ The events are usually processed with different configurations depending on the 
 The output is then used for post-processing steps including the plotting of results.
 The post-processing does not necessarily require an event-based processing and therefore also needs on average the smallest computing resources.
 
+In many cases the code is developed without a strategy or structure according to the growing needs of the analysis.
+This leads to analysis code that is convoluted, tangled and unstructured.
+Such code is difficult to understand and to maintain and also difficult to hand over to new people joining the analysis effort.
+Secondly, code is rarely shared among different analysis groups, although basic parts of the analysis like the processing n-tuple-structured data or the selection and identification of physics objects follow the same principles.
+This usually leads to code duplication slowing down the analysis effort.
+
+
 %Add:
 % collaborative environment, high fluctuation in developers/users with wide range of programming skills (bachelor-n00b to postdoc level)
 % different configurations also for one single analysis (testing etc.)
@@ -126,11 +133,6 @@ The \artus design choices are fully based on these requirements.
 \section{The \artus Framework \label{section_artus_motivation}}
 
 The framework introduced in this section handles the last step, the user analysis.
-In many cases the code is developed without a strategy or structure according to the growing needs of the analysis.
-This leads to analysis code that is convoluted, tangled and unstructured.
-Such code is difficult to understand and to maintain and also difficult to hand over to new people joining the analysis effort.
-Secondly, code is rarely shared among different analysis groups, although basic parts of the analysis like the processing n-tuple-structured data or the selection and identification of physics objects follow the same principles.
-This usually leads to code duplication slowing down the analysis effort.
 
 Following the structure of the CMSSW \todo{Referenz? zumindest github-link?} framework, the \artus framework\footnote{\url{https://github.com/artus-analysis/\artus}} provides a front-to-end solution for the analysis of event-based data.
 The basic concept of modules processing the events within an event loop is complemented by tools for the configuration of every step.
