@@ -296,9 +296,9 @@ Then all processors are executed as described above.
 \section{A Real World Application -- the $\PH\to\Pgt\Pgt$ Analysis \label{section_artus_example_htt}}
 
 Currently, the \artus framework is used for various user analysis of CMS data ranging from jet energy calibration and QCD studies to analyses in the scope of Higgs boson measurements and searches for physics beyond the Standard Model.
-As an example, the technical aspects of the $\PH\to\Pgt\Pgt$ analysis presented in this thesis are explained in the following.
+As an example, the technical aspects of the $\PH\to\Pgt\Pgt$ analysis are explained in the following.
 
-The $\PH\to\Pgt\Pgt$ analysis developed in the scope of this thesis makes use of skimmed data sets in the Kappa format.
+The $\PH\to\Pgt\Pgt$ analysis makes use of skimmed data sets in the Kappa format.
 The Kappa framework\footnote{\url{https://github.com/KappaAnalysis/Kappa}} is designed for skimming CMS data into small n-tuples that can be analysed independently of the CMSSW software.
 The only dependence is the ROOT framework.
 The n-tuples store high-level information such as four-momentum vectors, collections of leptons and vertices.
@@ -366,7 +366,7 @@ Most of them perform calculations on multiple histograms, defining the yield and
 They add a single histogram to the plot data object containing the final estimation for a given sample.
 Similarly, ratios comparing the compatibility of data and the simulation for the sub-plots are determined and added this way.
 
-The post-processing step either outputs the plots shown in this thesis or writes the histograms to ROOT files and passes them over to the limit calculation tools.
+The post-processing step either output plots or writes the histograms to ROOT files and passes them over to the limit calculation tools.
 
 
 \vspace{2cm}
