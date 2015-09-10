@@ -52,27 +52,17 @@ The framework is well-tested and successfully used by several analysis groups.\t
 % This section should contain a short description of a HEP/CMS-typical workflow.
 % Especially common problems and challenges should be highlighted.
 % From these problems, the design requirements for Artus are derived.
+Without loss of generality, in what follows the workflow of the experiments collecting data at the Large Hadron Collider (LHC) at CERN is taken as an example to illustate the organization and needs of a modern High Energy Physics analysis.
 
 Between the data taking at the detector or the generation of simulated events with the subsequent detector simulation and the showcasing of the physical results, the following analysis steps have shown to be the best compromise in terms of turnaround time and efficiency as explained in Figure \ref{figure_analysis_steps}.
 
-The reconstruction of the raw detector data is performed on large computing centres in the WLCG\footnote{\url{http://wlcg-public.web.cern.ch}}, the Worldwide LHC Computing Grid.
-The resulting data sets contain event information and high-level physics objects and are of $\mathcal O(10-100)$~TB in size. \todo{move file size numbers to Figure \ref{figure_analysis_steps}?}
+The reconstruction of the raw data coming from the experiments is performed on large computing centres organized into the WLCG\footnote{\url{http://wlcg-public.web.cern.ch}}, the Worldwide LHC Computing Grid. The resulting datasets contain event information and high-level physics objects and are of $\mathcal O(10-100)$~TB in size. \todo{move file size numbers to Figure \ref{figure_analysis_steps}?}
 
-This is followed by the selection of data that is relevant for a specific analysis, a step usually  referred to as \textit{skimming}.
-The output of the skimming is a mostly analysis-dependent n-tuple format that is small enough to be stored at local file servers, often owned and operated by a single institute.
-The size of these files ranges from $\mathcal O(10)$~GB to few~TB.
+The data which are relevant for a specific analysis are selected in a step usually referred to as \textit{skimming}. The output of the skimming is a mostly analysis-dependent file, usually in an n-tuple format, small enough to be stored at local file servers, often owned and operated by a single institute. The size of these files ranges from $\mathcal O(10)$~GB to few~TB.
 
-The skimmed n-tuples are finally processed by user code on local resources.
-This means performing further event selection and categorization steps or high-level calculations based on the physics objects.
-The events are usually processed with different configurations depending on the analysis needs.
-The output is then used for post-processing steps including the plotting of results.
+Finally, the skimmed n-tuples are processed by user code running on local resources. This processing step includes further event selections, event categorization or high-level calculations based on the selected physics objects. The events are usually processed with different configurations, depending from the specific analysis needs. The output is then used for post-processing steps, including plotting of the results and their statistical interpretation.
 
-In many cases the code for the last step is developed without a strategy or structure according to the growing needs of the analysis.
-This leads to code that is convoluted, tangled and unstructured.
-Such code is difficult to understand and to maintain and also difficult to hand over to new people joining the analysis effort.
-Also, code is rarely shared among different groups, although basic parts of the analysis like data formats, the processing of n-tuple-structured files or the selection and identification of physics objects follow the same principles.
-The analysis groups usually consist of several people of different academic levels, some joining the analysis effort only for a short time.
-This results in a high user fluctuation and a wide range of programming skills.
+In many cases the code for the last step is developed without a predefined strategy or structure, following the evolving needs of the analysis which are often physics-driven and not always entirely predictable in the code design phase. This leads to convoluted, tangled and unstructured code, which is difficult to understand and to maintain and also difficult to hand over to new people joining the analysis effort. Also, code is rarely shared among different groups, although the basic parts of an analysis, such as handling of input data having the same formats, their processing and the selection and identification of physics objects follow similar or equivalent specifications. Looking at the user side, an analysis group usually consists of several people having different academic levels and different programming skills, some of them joining the analysis effort only for a short period of time and with a well-defined task.
 
 \begin{figure}[p]
 \centering \input{figures/analysis_steps}
