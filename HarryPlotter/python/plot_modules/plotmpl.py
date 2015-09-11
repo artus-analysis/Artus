@@ -210,7 +210,7 @@ class PlotMpl(plotbase.PlotBase):
 		axes = []
 		if plotData.plotdict["subplot_nicks"]:
 			axes = [plt.subplot2grid((100,1), (0, 0), rowspan=(100-plotData.plotdict["subplot_fraction"])),
-			        plt.subplot2grid((100,1), ((100-plotData.plotdict["subplot_fraction"]+1), 0), rowspan=plotData.plotdict["subplot_fraction"])]
+			        plt.subplot2grid((100,1), ((100-plotData.plotdict["subplot_fraction"]+4), 0), rowspan=plotData.plotdict["subplot_fraction"])]
 		else:
 			kwargs = {'projection':'3d'} if (plotData.plotdict['3d'] is not False) else {}
 			axes = [fig.add_subplot(1,1,1, **kwargs)]
