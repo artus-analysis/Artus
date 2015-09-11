@@ -79,6 +79,8 @@ class Cutflow(analysisbase.AnalysisBase):
 					if cut in filternames[nick]:
 						cut_efficiency = root_histogram.GetBinContent(filternames[nick].index(cut)+1)
 						cut_efficiency_error = root_histogram.GetBinError(filternames[nick].index(cut)+1)
+					elif plotData.plotdict["rel_cuts"]:
+						cut_efficiency = 1.
 					new_histo.SetBinContent(index+1, cut_efficiency)
 					new_histo.SetBinError(index+1, cut_efficiency_error)
 					new_histo.GetXaxis().SetBinLabel(index+1, cut)
