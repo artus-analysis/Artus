@@ -10,6 +10,7 @@ log = logging.getLogger(__name__)
 
 import os
 import subprocess
+from difflib import SequenceMatcher
 
 import ROOT
 
@@ -44,3 +45,20 @@ def isfloat(element):
 	except ValueError:
 		return False
 
+
+def merge_sequences(seq1,seq2):
+	"""http://stackoverflow.com/questions/14241320/interleave-different-length-lists-elimating-duplicates-and-preserve-order-in-py"""
+	sm=SequenceMatcher(a=seq1,b=seq2)
+	res = []
+	for (op, start1, end1, start2, end2) in sm.get_opcodes():
+		if op == 'equal' or op=='delete':
+			#This range appears in both sequences, or only in the first one.
+			res += seq1[start1:end1]
+		elif op == 'insert':
+			#This range appears in only the second sequence.
+			res += seq2[start2:end2]
+		elif op == 'replace':
+			#There are different ranges in each sequence - add both.
+			res += seq1[start1:end1]
+			res += seq2[start2:end2]
+	return res
