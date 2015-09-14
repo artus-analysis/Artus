@@ -117,8 +117,8 @@ public:
 			}
 			else
 			{
-				this->m_event.m_genLumiMetadata = this->template SecureFileInterfaceGetMeta<KGenLumiInfo>(settings.GetLumiMetadata());
-				this->m_event.m_lumiInfo = this->m_event.m_genLumiMetadata;
+				this->m_event.m_genLumiInfo = this->template SecureFileInterfaceGetMeta<KGenLumiInfo>(settings.GetLumiMetadata());
+				this->m_event.m_lumiInfo = this->m_event.m_genLumiInfo;
 			}
 		}
 		if (! settings.GetFilterMetadata().empty())
