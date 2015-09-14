@@ -40,7 +40,7 @@ class MplPlotContainer(plotdata.PlotContainer):
 			legend_ax.xaxis.set_visible(False)
 			legend_ax.yaxis.set_visible(False)
 			handles, labels = PlotMpl.get_legend_handles_labels_ordered(self.axes[0], self.labels)
-			legend_ax.legend(handles, labels, loc='center')
+			legend_ax.legend(handles, labels, loc='center', frameon=False)
 
 	def save(self, filename):
 		# use bbox tight and pad to not have labels cropped
@@ -452,7 +452,7 @@ class PlotMpl(plotbase.PlotBase):
 				plt.tight_layout()
 			# Decrease vertical distance between subplots
 			if self.plot_dimension < 2:
-				plt.subplots_adjust(hspace=0.2)
+				plotData.plot.fig.subplots_adjust(hspace=0.2)
 
 		if len(plotData.plot.axes) > 1:
 			for ax in [plotData.plot.axes[1]]:
