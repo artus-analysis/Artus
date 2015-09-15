@@ -33,7 +33,7 @@ public:
 	virtual ~NtupleConsumerBase() {
 	}
 
-	virtual void Init(setting_type const& pset) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(setting_type const& pset) override {
 		ConsumerBase<TTypes>::Init(pset);
 
 		m_quantitiesVector = pset.GetQuantities();
@@ -47,14 +47,14 @@ public:
 				   m_quantities.c_str());
 	}
 
-	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE
+	virtual std::string GetConsumerId() const override
 	{
 		return "ntuple";
 	}
 
 	virtual void ProcessFilteredEvent(event_type const& event,
 			product_type const& product,
-			setting_type const& setting) ARTUS_CPP11_OVERRIDE {
+			setting_type const& setting) override {
 		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product, setting);
 
 		// preallocated vector
@@ -72,7 +72,7 @@ public:
 	}
 
 
-	virtual void Finish(setting_type const& setting) ARTUS_CPP11_OVERRIDE
+	virtual void Finish(setting_type const& setting) override
 	{
 		RootFileHelper::SafeCd(setting.GetRootOutFile(),
 								setting.GetRootFileFolder());

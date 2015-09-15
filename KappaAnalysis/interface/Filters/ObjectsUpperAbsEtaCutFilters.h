@@ -39,7 +39,7 @@ protected:
 			std::vector<std::string> hltNames;
 			if (leptonUpperAbsEtaCut->first == "default") {
 				indices = defaultIndices;
-				LOG(WARNING) << "No lepton index for the Filter \"" << this->GetFilterId() << "\" specified. Check the possible 3 hardest leptons.";
+				LOG(WARNING) << "No lepton index for the Filter \"" << this->GetFilterId() << "\" specified. Check the possible " << defaultIndices.size() << " hardest leptons.";
 			}
 			else {
 				try {
@@ -77,7 +77,11 @@ protected:
 						size_t tmpIndex(*index);
 						this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 								[this, tmpHltName, pattern, tmpIndex](KappaEvent const& event, KappaProduct const& product) -> double {
-									return (((product.*m_validLeptonsMember).size() > tmpIndex && boost::regex_search(product.m_selectedHltName, pattern)) ?
+									bool hasMatch = false;
+									for (unsigned int iHlt = 0; iHlt < product.m_selectedHltNames.size(); iHlt++)
+										hasMatch = hasMatch || boost::regex_search(product.m_selectedHltNames.at(iHlt), pattern);
+
+									return (((product.*m_validLeptonsMember).size() > tmpIndex && hasMatch) ?
 									        std::abs((product.*m_validLeptonsMember).at(tmpIndex)->p4.Eta()) :
 									        -1.0);
 								},
@@ -100,11 +104,11 @@ private:
 class ElectronUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KElectron> {
 public:
 	
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
 	
 	ElectronUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KElectron>(&KappaProduct::m_validElectrons) {}
 	
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
+	virtual void Init(KappaSettings const& settings) override;
 };
 
 
@@ -113,11 +117,11 @@ public:
 class MuonUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KMuon> {
 public:
 	
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
 	
 	MuonUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KMuon>(&KappaProduct::m_validMuons) {}
 	
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
+	virtual void Init(KappaSettings const& settings) override;
 };
 
 
@@ -126,11 +130,11 @@ public:
 class TauUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KTau> {
 public:
 	
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
 	
 	TauUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KTau>(&KappaProduct::m_validTaus) {}
 	
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
+	virtual void Init(KappaSettings const& settings) override;
 };
 
 
@@ -139,10 +143,10 @@ public:
 class JetUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KBasicJet> {
 public:
 	
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
 	
 	JetUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KBasicJet>(&KappaProduct::m_validJets) {}
 	
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
+	virtual void Init(KappaSettings const& settings) override;
 };
 

@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/KappaAnalysis/interface/KappaEventProviderBase.h"
 
 /**
@@ -23,7 +22,7 @@ public:
 	{
 	}
 
-	virtual void WireEvent(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+	virtual void WireEvent(setting_type const& settings) override {
 		// Electrons
 		if (! settings.GetElectrons().empty())
 			this->m_event.m_electrons = this->template SecureFileInterfaceGet<KElectrons>(settings.GetElectrons());
@@ -56,7 +55,7 @@ public:
 
 		// MET info
 		if (! settings.GetMet().empty())
-			this->m_event.m_met = this->template SecureFileInterfaceGet<KMET>(settings.GetMet());
+			this->m_event.m_met = this->template SecureFileInterfaceGet<KMET>(settings.GetMet(), false);
 
 		//GenMET info
 		if (! settings.GetGenMet().empty())
@@ -118,8 +117,8 @@ public:
 			}
 			else
 			{
-				this->m_event.m_genLumiMetadata = this->template SecureFileInterfaceGetMeta<KGenLumiInfo>(settings.GetLumiMetadata());
-				this->m_event.m_lumiInfo = this->m_event.m_genLumiMetadata;
+				this->m_event.m_genLumiInfo = this->template SecureFileInterfaceGetMeta<KGenLumiInfo>(settings.GetLumiMetadata());
+				this->m_event.m_lumiInfo = this->m_event.m_genLumiInfo;
 			}
 		}
 		if (! settings.GetFilterMetadata().empty())

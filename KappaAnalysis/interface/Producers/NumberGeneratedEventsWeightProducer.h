@@ -1,8 +1,6 @@
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
-
 
 /**
    \brief NumberGeneratedEventsWeightProducer
@@ -14,10 +12,10 @@
 class NumberGeneratedEventsWeightProducer : public KappaProducerBase {
 public:
 
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 
 	virtual void Produce(KappaEvent const& event,
 	                     KappaProduct & product,
-	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE;
+	                     KappaSettings const& settings) const override;
 
 };

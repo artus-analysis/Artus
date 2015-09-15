@@ -48,8 +48,13 @@ class Processor(object):
 		for key in keys_of_list_args:
 			if not isinstance(plotData.plotdict[key], collections.Iterable) or isinstance(plotData.plotdict[key], basestring):
 				plotData.plotdict[key] = [plotData.plotdict[key]]
-		
-		
+
+		# change "None" in input to None
+		for key in keys_of_list_args:
+			for index, item in enumerate(plotData.plotdict[key]):
+				if(item == "None"):
+					plotData.plotdict[key][index] = None
+
 		max_n_inputs = n_items if n_items != None else max([len(plotData.plotdict[key]) for key in keys_of_list_args])
 		
 		# expand/cut warnings, if needed
@@ -65,6 +70,14 @@ class Processor(object):
 		# expand/cut lists that are too short/long
 		for key, plot_list in [(key, plotData.plotdict[key]) for key in keys_of_list_args]:
 			plotData.plotdict[key] = (plot_list * max_n_inputs)[:max_n_inputs]
+		
+		if log.isEnabledFor(logging.DEBUG):
+			log.debug("Argument list expansion")
+			for index in xrange(len(plotData.plotdict[keys_of_list_args[0]])):
+				log.debug("\tItem %d:" % index)
+				for key, value in [(key, plotData.plotdict[key][index]) for key in keys_of_list_args]:
+					log.debug("\t\t" + key + " -> " + str(value))
+			log.debug("")
 	
 	@classmethod
 	def name(cls):

@@ -29,7 +29,7 @@ public:
 	}
 
 	virtual bool DoesEventPass(event_type const& event, product_type const& product,
-	                           setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	                           setting_type const& settings) const override
 	{
 		if ((product.*m_validLeptons).size() >= 2)
 		{
@@ -73,7 +73,7 @@ class ValidElectronsMinDeltaRFilter: public ValidLeptonsMinDeltaRFilterBase<KEle
 public:
 
 	ValidElectronsMinDeltaRFilter();
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
 };
 
 
@@ -85,7 +85,7 @@ class ValidMuonsMinDeltaRFilter: public ValidLeptonsMinDeltaRFilterBase<KMuon>
 public:
 
 	ValidMuonsMinDeltaRFilter();
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
 };
 
 
@@ -97,7 +97,7 @@ class ValidTausMinDeltaRFilter: public ValidLeptonsMinDeltaRFilterBase<KTau>
 public:
 
 	ValidTausMinDeltaRFilter();
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
 };
 
 /** Filter events with too close valid leptons
@@ -108,6 +108,6 @@ class ValidLeptonsMinDeltaRFilter: public ValidLeptonsMinDeltaRFilterBase<KLepto
 public:
 
 	ValidLeptonsMinDeltaRFilter();
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
 };
 

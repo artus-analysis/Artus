@@ -45,25 +45,25 @@ ArtusConfig::ArtusConfig(int argc, char** argv) :
 }
 
 std::pair<bool, el::Level> ArtusConfig::parseLogLevel(
-		std::string const& m_minimumLogLevelString) const
+		std::string const& minimumLogLevelString) const
 {
-	if (m_minimumLogLevelString == "debug")
+	if (minimumLogLevelString == "debug")
 	{
 		return std::make_pair(true, el::Level::Debug);
 	}
-	else if (m_minimumLogLevelString == "info")
+	else if (minimumLogLevelString == "info")
 	{
 		return std::make_pair(true, el::Level::Info);
 	}
-	else if (m_minimumLogLevelString == "warning")
+	else if (minimumLogLevelString == "warning")
 	{
 		return std::make_pair(true, el::Level::Warning);
 	}
-	else if (m_minimumLogLevelString == "error")
+	else if (minimumLogLevelString == "error")
 	{
 		return std::make_pair(true, el::Level::Error);
 	}
-	else if (m_minimumLogLevelString == "critical")
+	else if (minimumLogLevelString == "critical")
 	{
 		return std::make_pair(true, el::Level::Fatal);
 	}

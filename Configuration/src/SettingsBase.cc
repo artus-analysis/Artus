@@ -20,7 +20,7 @@ stringvector SettingsUtil::ExtractFilters ( stringvector const& allProcessors ) 
 
 std::vector <SettingsBase::PipelineInfo> SettingsBase::GetPipelineInfos () const {
 
-	if ( ! m_pipelineInfos.IsCached() )	{
+	if ( ! m_pipelineInfos.IsCached() ) {
 		std::vector <SettingsBase::PipelineInfo> pinfo;
 
 		BOOST_FOREACH(boost::property_tree::ptree::value_type& v,

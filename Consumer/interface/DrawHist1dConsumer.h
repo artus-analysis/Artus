@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
-
 #include "DrawConsumerBase.h"
 #include "Hist1D.h"
 /*
@@ -36,11 +34,11 @@ public:
 	virtual ~DrawHist1dConsumerBase() {
 	}
 
-	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE {
+	virtual std::string GetConsumerId() const override {
 		return "hist1d";
 	}
 
-	virtual void Init(setting_type const& pset) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(setting_type const& pset) override {
 		DrawConsumerBase<TTypes>::Init(pset);
 
 		// init called
@@ -51,7 +49,7 @@ public:
 		m_hist->Init();
 	}
 
-	virtual void Finish( setting_type const& setting ) ARTUS_CPP11_OVERRIDE {
+	virtual void Finish( setting_type const& setting ) override {
 		// store hist
 		// + modifiers
 		//LOG(INFO) << "Storing Hist for " << this->GetProductName() << ".";
@@ -60,7 +58,7 @@ public:
 
 	virtual void ProcessFilteredEvent(event_type const& event,
 			product_type const& product,
-			setting_type const& setting ) ARTUS_CPP11_OVERRIDE {
+			setting_type const& setting ) override {
 
 		DrawConsumerBase<TTypes>::ProcessFilteredEvent(event, product, setting );
 

@@ -62,9 +62,9 @@ class Ratio(analysisbase.AnalysisBase):
 					numerator_histogram = root_object.Clone(
 							"ratio_" + hashlib.md5("_".join([str(ratio_numerator_nicks), str(ratio_denominator_nicks), ratio_result_nick])).hexdigest()
 					)
-					numerator_histogram.SetDirectory(0)
 				else:
 					numerator_histogram.Add(root_object)
+				if hasattr(numerator_histogram, "SetDirectory"):
 					numerator_histogram.SetDirectory(0)
 			
 			denominator_histogram = None
@@ -74,15 +74,18 @@ class Ratio(analysisbase.AnalysisBase):
 					denominator_histogram = root_object.Clone(
 							"ratio_denominator_" + hashlib.md5("_".join([str(ratio_numerator_nicks), str(ratio_denominator_nicks), ratio_result_nick])).hexdigest()
 					)
-					denominator_histogram.SetDirectory(0)
 				else:
 					denominator_histogram.Add(root_object)
+				if hasattr(denominator_histogram, "SetDirectory"):
 					denominator_histogram.SetDirectory(0)
 			
 			# calculate ratio
 			ratio_histogram = roottools.RootTools.to_histogram(numerator_histogram)
-			ratio_histogram.Divide(roottools.RootTools.to_histogram(denominator_histogram))
-			ratio_histogram.SetDirectory(0)
+			successful_division = ratio_histogram.Divide(roottools.RootTools.to_histogram(denominator_histogram))
+			if not successful_division:
+				log.warning("Could not successfully divide histogram(s) '{0}' by '{1}'!".format(",".join(ratio_numerator_nicks), ",".join(ratio_denominator_nicks)))
+			if hasattr(ratio_histogram, "SetDirectory"):
+				ratio_histogram.SetDirectory(0)
 			ratio_histogram.SetTitle("")
 			plotData.plotdict["root_objects"][ratio_result_nick] = ratio_histogram
 

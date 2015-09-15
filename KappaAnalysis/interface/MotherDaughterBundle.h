@@ -24,10 +24,10 @@ public:
 	KGenParticle* node;
 	// will have 0 entries, if there are no daughters
 	std::vector<MotherDaughterBundle> Daughters;
-	
+
 	enum class DecayMode : int
 	{
-        	NONE = -1,
+		NONE = -1,
 		E   = 1,
 		M   = 2,
 		//Greater 3 is hadronic
@@ -112,7 +112,7 @@ public:
 	}
 	void setDecayMode(MotherDaughterBundle* tauDaughters)
 	{
-		int pdgId = abs(tauDaughters->node->pdgId());
+		int pdgId = std::abs(tauDaughters->node->pdgId());
 		if (pdgId == DefaultValues::pdgIdTau)
 		{
 			if (this->decayMode == DecayMode::TAU) this->decayMode = DecayMode::TAUTAU;

@@ -6,6 +6,9 @@ std::string ElectronLowerPtCutsFilter::GetFilterId() const {
 }
 
 void ElectronLowerPtCutsFilter::Init(KappaSettings const& settings) {
+
+	FilterBase<KappaTypes>::Init(settings);
+
 	this->Initialise(settings.GetElectronLowerPtCuts());
 }
 
@@ -15,6 +18,9 @@ std::string MuonLowerPtCutsFilter::GetFilterId() const {
 }
 
 void MuonLowerPtCutsFilter::Init(KappaSettings const& settings) {
+
+	FilterBase<KappaTypes>::Init(settings);
+
 	this->Initialise(settings.GetMuonLowerPtCuts());
 }
 
@@ -24,6 +30,9 @@ std::string TauLowerPtCutsFilter::GetFilterId() const {
 }
 
 void TauLowerPtCutsFilter::Init(KappaSettings const& settings) {
+
+	FilterBase<KappaTypes>::Init(settings);
+
 	this->Initialise(settings.GetTauLowerPtCuts());
 }
 
@@ -33,6 +42,9 @@ std::string JetLowerPtCutsFilter::GetFilterId() const {
 }
 
 void JetLowerPtCutsFilter::Init(KappaSettings const& settings) {
+
+	FilterBase<KappaTypes>::Init(settings);
+
 	this->Initialise(settings.GetJetLowerPtCuts());
 }
 

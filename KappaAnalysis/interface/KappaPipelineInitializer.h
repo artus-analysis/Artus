@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/Pipeline.h"
 
 
@@ -15,7 +14,7 @@ public:
 
 	typedef Pipeline<TTypes> pipeline_type;
 
-	virtual void InitPipeline(pipeline_type * pLine, setting_type const& pset) const ARTUS_CPP11_OVERRIDE
+	virtual void InitPipeline(pipeline_type * pLine, setting_type const& pset) const override
 	{
 		// new implementation of pure PipelineInitilizerBase::InitPipeline
 	}

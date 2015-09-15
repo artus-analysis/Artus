@@ -6,13 +6,13 @@
 import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
-
 import argparse
 import sys
 
 
 class HarryParser(argparse.ArgumentParser):
 	def __init__(self, **kwargs):
+		logger.initLogger()  # get a basic logger without arguments
 		kwargs["add_help"] = False
 		kwargs["conflict_handler"] = "resolve"
 		kwargs["fromfile_prefix_chars"] = "@"
@@ -30,15 +30,14 @@ class HarryParser(argparse.ArgumentParser):
 		self.module_options = self.add_argument_group('Modules')
 		self.module_options.add_argument("--modules-search-paths", default=[], nargs="+",
 		                                 help="Additional paths to be searched for modules.")
-		self.module_options.add_argument("--input-module", default="InputRoot",
-		                                 help="Input Module. [Default: %(default)s]")
+		self.module_options.add_argument("--input-modules", default="InputRoot", nargs="+",
+		                                 help="Input Modules. [Default: %(default)s]")
 		self.module_options.add_argument("--analysis-modules", default=[], nargs="+",
 		                                 help="Analysis Modules. [Default: %(default)s]")
 		self.module_options.add_argument("--plot-modules", default="PlotMpl", nargs="+",
 		                                 help="Plot Modules. [Default: %(default)s]")
 		self.module_options.add_argument("--list-available-modules", default=False, action="store_true",
 		                                 help="List all available modules.")
-
 		
 		self.json_options = self.add_argument_group('JSON Configs')
 		self.json_options.add_argument("-j", "--json-defaults", nargs="+",
@@ -48,6 +47,14 @@ class HarryParser(argparse.ArgumentParser):
 
 		# Register new keyword 'bool' for parser
 		self.register('type','bool',self._str2bool) 
+
+	def set_defaults(self, **kwargs):
+		# check if argument exists. If not, its most likely an incorrect user input (e.g. misspelling)
+		existing_arguments = [action.dest for action in self._actions]  # is there an easier way to get this list?
+		for argument in kwargs.keys():
+			if argument not in existing_arguments:
+				log.warning("Trying to set unknown argument '{0}'".format(argument))
+		super(HarryParser, self).set_defaults(**kwargs)
 
 	@staticmethod
 	def _str2bool(v):

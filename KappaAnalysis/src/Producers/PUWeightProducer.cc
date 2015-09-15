@@ -10,7 +10,7 @@ std::string PUWeightProducer::GetProducerId() const {
 
 void PUWeightProducer::Init(KappaSettings const& settings) {
 	KappaProducerBase::Init(settings);
-	
+
 	const std::string histogramName = "pileup";
 	LOG(DEBUG) << "\tLoading pile-up weights from files...";
 	LOG(DEBUG) << "\t\t" << settings.GetPileupWeightFile() << "/" << histogramName;
@@ -30,12 +30,11 @@ void PUWeightProducer::Init(KappaSettings const& settings) {
 void PUWeightProducer::Produce(KappaEvent const& event, KappaProduct& product,
                      KappaSettings const& settings) const
 {
-	assert(event.m_genEventInfo != NULL);
-	
-	double npu = event.m_genEventInfo->nPUMean;
-	unsigned int puBin = (npu * m_bins);
+	assert(event.m_genEventInfo != nullptr);
+
+	unsigned int puBin = static_cast<unsigned int>(static_cast<double>(event.m_genEventInfo->nPUMean) * m_bins);
 	if (puBin < m_pileupWeights.size())
-		product.m_weights["puWeight"] = m_pileupWeights.at(int(npu * m_bins));
+		product.m_weights["puWeight"] = m_pileupWeights.at(puBin);
 	else
 		product.m_weights["puWeight"] = 0.0;
 }

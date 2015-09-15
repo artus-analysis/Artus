@@ -1,4 +1,3 @@
-
 #pragma once
 
 
@@ -17,72 +16,72 @@ class KappaEvent : public EventBase
 {
 public:
 	KappaEvent() : EventBase() {};
-	
-	size_t m_input = 0;
+
+	unsigned long m_input = 0;
 
 	/// pointer to electron collection
-	KElectrons* m_electrons = 0;
-	KElectronMetadata* m_electronMetadata = 0;
+	KElectrons* m_electrons = nullptr;
+	KElectronMetadata* m_electronMetadata = nullptr;
 
 	/// pointer to muon collection
-	KMuons* m_muons = 0;
-	KMuonMetadata* m_muonMetadata = 0;
+	KMuons* m_muons = nullptr;
+	KMuonMetadata* m_muonMetadata = nullptr;
 
 	/// pointer to tau collection
-	KTaus* m_taus = 0;
-	KTauMetadata* m_tauMetadata = 0;
-	KGenTaus* m_genTaus = 0;
-	KGenJets* m_genTauJets = 0;
+	KTaus* m_taus = nullptr;
+	KTauMetadata* m_tauMetadata = nullptr;
+	KGenTaus* m_genTaus = nullptr;
+	KGenJets* m_genTauJets = nullptr;
 
 	/// pointer to jet collection
-	KBasicJets* m_basicJets = 0;
-	KLVs* m_genJets = 0;
+	KBasicJets* m_basicJets = nullptr;
+	KLVs* m_genJets = nullptr;
 
 	/// pointer to tagged jet collection
-	KJets* m_tjets = 0;
+	KJets* m_tjets = nullptr;
 
 	/// pointer to jet area collection
-	KPileupDensity* m_pileupDensity = 0;
+	KPileupDensity* m_pileupDensity = nullptr;
 
 	/// pointer to MET collection
-	KMET* m_met = 0;
+	KMET* m_met = nullptr;
 
 	/// pointer to GenMET collection
-	KBasicMET* m_genMet = 0;
+	KBasicMET* m_genMet = nullptr;
 
 	/// pointers to PF candidates
-	KPFCandidates* m_pfChargedHadronsPileUp = 0;
-	KPFCandidates* m_pfChargedHadronsNoPileUp = 0;
-	KPFCandidates* m_pfNeutralHadronsNoPileUp = 0;
-	KPFCandidates* m_pfPhotonsNoPileUp = 0;
+	KPFCandidates* m_pfChargedHadronsPileUp = nullptr;
+	KPFCandidates* m_pfChargedHadronsNoPileUp = nullptr;
+	KPFCandidates* m_pfNeutralHadronsNoPileUp = nullptr;
+	KPFCandidates* m_pfPhotonsNoPileUp = nullptr;
 
 	/// pointer to beamspot collection
-	KBeamSpot* m_beamSpot = 0;
+	KBeamSpot* m_beamSpot = nullptr;
 
 	/// pointer to primary vertex summary
-	KVertexSummary* m_vertexSummary = 0;
+	KVertexSummary* m_vertexSummary = nullptr;
 
 	/// pointer to track summary
-	KTrackSummary* m_trackSummary = 0;
+	KTrackSummary* m_trackSummary = nullptr;
 
 	/// pointer to HCALNoise summary
-	KHCALNoiseSummary* m_hcalNoiseSummary = 0;
+	KHCALNoiseSummary* m_hcalNoiseSummary = nullptr;
 
 	/// pointer to generator particles
-	KGenParticles* m_genParticles = 0;
+	KGenParticles* m_genParticles = nullptr;
 
 	/// pointer to trigger infos and objects
-	KTriggerObjectMetadata* m_triggerObjectMetadata = 0;
-	KTriggerObjects* m_triggerObjects = 0;
+	KTriggerObjectMetadata* m_triggerObjectMetadata = nullptr;
+	KTriggerObjects* m_triggerObjects = nullptr;
 
 	/// pointer to metadata // TODO: move to Artus/Provider
-	KEventInfo* m_eventInfo = 0;
-	KGenEventInfo* m_genEventInfo = 0;
-	KLumiInfo* m_lumiInfo = 0;
-	KGenLumiInfo* m_genLumiMetadata = 0;
-	KFilterMetadata* m_filterMetadata = 0;
-	KFilterSummary* m_filterSummary = 0;
-	KJetMetadata* m_jetMetadata = 0;
+	KEventInfo* m_eventInfo = nullptr;
+	KGenEventInfo* m_genEventInfo = nullptr;
+	KLumiInfo* m_lumiInfo = nullptr;
+	KGenLumiInfo* m_genLumiInfo = nullptr;
+	KFilterMetadata* m_filterMetadata = nullptr;
+	KFilterSummary* m_filterSummary = nullptr;
+	KJetMetadata* m_jetMetadata = nullptr;
 };
 
 

@@ -26,12 +26,12 @@ class GenDiLeptonDecayModeProducer: public ProducerBase<KappaTypes>
 {
 public:
 
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
+	virtual void Init(KappaSettings const& settings) override;
 
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE;
+	                     KappaSettings const& settings) const override;
 
 private:
 	int NeutralParticles(std::vector<MotherDaughterBundle*> finalStateProngs) const;

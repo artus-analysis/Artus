@@ -9,9 +9,7 @@
 void MeanPtConsumer::ProcessFilteredEvent(TraxEvent const& event,
 		TraxProduct const& product, TraxSettings const& setting)
 {
-
-	m_mean = ((m_mean * m_itemCount) + event.m_floatPtSim) / (m_itemCount + 1);
-
+	// i++; m = (m * (i-1) + pt) / i = m + (pt - m) / i
 	m_itemCount++;
-
+	m_mean += (static_cast<double>(event.m_floatPtSim) - m_mean) / static_cast<double>(m_itemCount);
 }

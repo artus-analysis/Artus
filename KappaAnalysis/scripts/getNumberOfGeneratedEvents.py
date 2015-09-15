@@ -10,11 +10,13 @@ import os
 import re
 
 import ROOT
+ROOT.gROOT.SetBatch(True)
 ROOT.PyConfig.IgnoreCommandLineOptions = True
+ROOT.gErrorIgnoreLevel = ROOT.kError
 
 
 def main():
-	ROOT.gROOT.SetBatch(True)
+	
 	ROOT.gSystem.Load(os.path.expandvars("$CMSSW_BASE/src/Kappa/lib/libKappa"))
 	
 	parser = argparse.ArgumentParser(description="Print out the sum of entries in the Event trees of all inputs sorted by nick names.",

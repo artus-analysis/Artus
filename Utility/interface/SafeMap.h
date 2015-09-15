@@ -1,11 +1,10 @@
 
 #pragma once
-	
+
 #include <map>
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Utility/interface/ArtusLogging.h"
-	
+
 /*
 Can be used to retrieve a key from a map and get a solid message which key was not found:
 
@@ -49,7 +48,7 @@ public:
 	{
 		typename Container<Key, Value, Args...>::const_iterator it = m.find(key);
 		if (it == m.end())
-		    return *defaultValue;
+		    return defaultValue;
 		return *it->second;
 	}
 

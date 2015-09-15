@@ -29,7 +29,7 @@ public:
 	}
 
 	virtual bool DoesEventPass(event_type const& event, product_type const& product,
-	                           setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	                           setting_type const& settings) const override
 	{
 		if ((product.*m_genTauMatchedObjects).size() >= 2)
 		{
@@ -69,7 +69,7 @@ class GenTauMatchingRecoElectronMinDeltaRFilter: public GenTauMatchingRecoPartic
 public:
 
 	GenTauMatchingRecoElectronMinDeltaRFilter();
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
 };
 
 
@@ -81,7 +81,7 @@ class GenTauMatchingRecoMuonMinDeltaRFilter: public GenTauMatchingRecoParticleMi
 public:
 
 	GenTauMatchingRecoMuonMinDeltaRFilter();
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
 };
 
 
@@ -93,5 +93,5 @@ class GenTauMatchingRecoTauMinDeltaRFilter: public GenTauMatchingRecoParticleMin
 public:
 
 	GenTauMatchingRecoTauMinDeltaRFilter();
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
 };

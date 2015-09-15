@@ -32,26 +32,30 @@ public:
 	{
 		NONE = 0,
 		ALGORITHMIC = 1,
-		PHYSIC = 2,
+		PHYSICS = 2,
 	};
 	static JetMatchingAlgorithm ToJetMatchingAlgorithm(std::string const& jetMatchingAlgorithm)
 	{
 		if (jetMatchingAlgorithm == "algorithmic") return JetMatchingAlgorithm::ALGORITHMIC;
-		else if (jetMatchingAlgorithm == "physic") return JetMatchingAlgorithm::PHYSIC;
+		else if (jetMatchingAlgorithm == "physics") return JetMatchingAlgorithm::PHYSICS;
 		else return JetMatchingAlgorithm::NONE;
 	}
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE;
+	virtual void Init(setting_type const& settings) override;
 
 	virtual void Produce(event_type const& event, product_type& product,
-						 setting_type const& settings) const ARTUS_CPP11_OVERRIDE;
+						 setting_type const& settings) const override;
 
+	KGenParticle* Match(event_type const& event, product_type const& product,
+                        setting_type const& settings, KLV* const recoJet) const;
 
 private:
-	JetMatchingAlgorithm jetMatchingAlgorithm;
-
+	JetMatchingAlgorithm m_jetMatchingAlgorithm;
+	float m_DeltaRMatchingRecoJetGenParticle;
+	bool m_InvalidateNonGenParticleMatchingRecoJets;
+	bool m_InvalidateGenParticleMatchingRecoJets;
 };
 
 
@@ -74,6 +78,7 @@ public:
 	                                          std::vector<TLepton*> product_type::*validLeptons,
 	                                          std::vector<TLepton*> product_type::*invalidLeptons,
 	                                          std::vector<int>& (setting_type::*GetRecoLeptonMatchingGenParticlePdgIds)(void) const,
+	                                          int (setting_type::*GetRecoLeptonMatchingGenParticleStatus)(void) const,
 	                                          float (setting_type::*GetDeltaRMatchingRecoLeptonsGenParticle)(void) const,
 	                                          bool (setting_type::*GetInvalidateNonGenParticleMatchingLeptons)(void) const,
 	                                          bool (setting_type::*GetInvalidateGenParticleMatchingLeptons)(void) const) :
@@ -81,13 +86,14 @@ public:
 		m_validLeptons(validLeptons),
 		m_invalidLeptons(invalidLeptons),
 		GetRecoLeptonMatchingGenParticlePdgIds(GetRecoLeptonMatchingGenParticlePdgIds),
+		GetRecoLeptonMatchingGenParticleStatus(GetRecoLeptonMatchingGenParticleStatus),
 		GetDeltaRMatchingRecoLeptonsGenParticle(GetDeltaRMatchingRecoLeptonsGenParticle),
 		GetInvalidateNonGenParticleMatchingLeptons(GetInvalidateNonGenParticleMatchingLeptons),
 		GetInvalidateGenParticleMatchingLeptons(GetInvalidateGenParticleMatchingLeptons)
 	{
 	}
 
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE 
+	virtual void Init(setting_type const& settings) override
 	{
 		KappaProducerBase::Init(settings);
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("ratioGenParticleMatched", [](event_type const & event, product_type const & product)
@@ -101,37 +107,43 @@ public:
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
-						 setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+						 setting_type const& settings) const override
 	{
 		assert(event.m_genParticles);
-		
-		float ratioGenParticleMatched = 0;
-		
-		if ((settings.*GetDeltaRMatchingRecoLeptonsGenParticle)() > 0.0)
+
+		float ratioGenParticleMatched = 0.0f;
+
+		if ((settings.*GetDeltaRMatchingRecoLeptonsGenParticle)() > 0.0f)
 		{
 			// loop over all valid leptons to check
 			for (typename std::vector<TLepton*>::iterator validLepton = (product.*m_validLeptons).begin();
 				 validLepton != (product.*m_validLeptons).end();)
 			{
 				bool leptonMatched = false;
-				float deltaR = 0.0;
-				
+				float deltaR = 0.0f;
+
 				// loop over all genParticles
 				for (typename std::vector<KGenParticle>::iterator genParticle = event.m_genParticles->begin();
-					 !leptonMatched && genParticle != event.m_genParticles->end(); ++genParticle) 
+					 !leptonMatched && genParticle != event.m_genParticles->end(); ++genParticle)
 				{
 					// only use genParticles that will decay into comparable particles
 					if ((settings.*GetRecoLeptonMatchingGenParticlePdgIds)().empty() ||
 					    Utility::Contains((settings.*GetRecoLeptonMatchingGenParticlePdgIds)(), std::abs(genParticle->pdgId())))
 					{
-						deltaR = ROOT::Math::VectorUtil::DeltaR((*validLepton)->p4, genParticle->p4);
-						if(deltaR<(settings.*GetDeltaRMatchingRecoLeptonsGenParticle)())
+						// only use genParticles with the required status if requested
+						if ((settings.*GetRecoLeptonMatchingGenParticleStatus)() == -1 ||
+						    (settings.*GetRecoLeptonMatchingGenParticleStatus)() == genParticle->status())
 						{
-							(product.*m_genParticleMatchedLeptons)[*validLepton] = &(*genParticle);
-							ratioGenParticleMatched += (1.0 / (product.*m_validLeptons).size());
-							product.m_genParticleMatchDeltaR = deltaR;
-							leptonMatched = true;
-							//LOG(INFO) << this->GetProducerId() << " (event " << event.m_eventInfo->nEvent << "): " << (*validLepton)->p4 << " --> " << genParticle->p4 << ", pdg=" << genParticle->pdgId();
+							deltaR = ROOT::Math::VectorUtil::DeltaR((*validLepton)->p4, genParticle->p4);
+							if(deltaR<(settings.*GetDeltaRMatchingRecoLeptonsGenParticle)())
+							{
+								(product.*m_genParticleMatchedLeptons)[*validLepton] = &(*genParticle);
+								ratioGenParticleMatched += (1.0f / (product.*m_validLeptons).size());
+								product.m_genParticleMatchDeltaR = deltaR;
+								leptonMatched = true;
+								//LOG(INFO) << this->GetProducerId() << " (event " << event.m_eventInfo->nEvent << "): " << (*validLepton)->p4 << " --> " << genParticle->p4 << ", pdg=" << genParticle->pdgId() << ", status=" << genParticle->status();
+							}
+							else product.m_genParticleMatchDeltaR = DefaultValues::UndefinedFloat;
 						}
 						else product.m_genParticleMatchDeltaR = DefaultValues::UndefinedFloat;
 					}
@@ -171,6 +183,7 @@ private:
 	std::vector<TLepton*> product_type::*m_validLeptons;
 	std::vector<TLepton*> product_type::*m_invalidLeptons;
 	std::vector<int>& (setting_type::*GetRecoLeptonMatchingGenParticlePdgIds)(void) const;
+	int (setting_type::*GetRecoLeptonMatchingGenParticleStatus)(void) const;
 	float (setting_type::*GetDeltaRMatchingRecoLeptonsGenParticle)(void) const;
 	bool (setting_type::*GetInvalidateNonGenParticleMatchingLeptons)(void) const;
 	bool (setting_type::*GetInvalidateGenParticleMatchingLeptons)(void) const;
@@ -184,6 +197,7 @@ private:
 /** Producer for gen matched electrons
  *  Required config tags:
  *  - RecoElectronMatchingGenParticlePdgIds (default provided)
+ *  - RecoElectronMatchingGenParticleStatus (every status is used by default)
  *  - DeltaRMatchingRecoElectronsGenParticle (default provided)
  *  - InvalidateNonGenParticleMatchingRecoElectrons (default provided)
  *  - InvalidateGenParticleMatchingRecoElectrons (default provided)
@@ -193,7 +207,7 @@ class RecoElectronGenParticleMatchingProducer: public RecoLeptonGenParticleMatch
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 
 	RecoElectronGenParticleMatchingProducer();
 
@@ -203,6 +217,7 @@ public:
 /** Producer for gen matched muons
  *  Required config tags:
  *  - RecoMuonMatchingGenParticlePdgIds (default provided)
+ *  - RecoMuonMatchingGenParticleStatus (every status is used by default)
  *  - DeltaRMatchingRecoMuonGenParticle (default provided)
  *  - InvalidateNonGenParticleMatchingRecoMuons (default provided)
  *  - InvalidateGenParticleMatchingRecoMuons (default provided)
@@ -212,7 +227,7 @@ class RecoMuonGenParticleMatchingProducer: public RecoLeptonGenParticleMatchingP
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 	
 	RecoMuonGenParticleMatchingProducer();
 
@@ -222,6 +237,7 @@ public:
 /** Producer for gen matched taus
  *  Required config tags:
  *  - RecoTauMatchingGenParticlePdgIds (default provided)
+ *  - RecoTauMatchingGenParticleStatus (every status is used by default)
  *  - DeltaRMatchingRecoTauGenParticle (default provided)
  *  - InvalidateNonGenParticleMatchingRecoTaus (default provided)
  *  - InvalidateGenParticleMatchingRecoTaus (default provided)
@@ -231,7 +247,7 @@ class RecoTauGenParticleMatchingProducer: public RecoLeptonGenParticleMatchingPr
 
 public:
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 	
 	RecoTauGenParticleMatchingProducer();
 

@@ -21,14 +21,9 @@ bool GoodPrimaryVertexFilter::DoesEventPass(KappaEvent const& event, KappaProduc
                                                KappaSettings const& settings) const 
 {
 	assert(event.m_vertexSummary);
-	bool pass = false;
-	if (!(event.m_vertexSummary->pv.fake()) &&
+	return (!(event.m_vertexSummary->pv.fake()) &&
 	   (std::abs(event.m_vertexSummary->pv.position.Z()) < m_maxPrimaryVertexZ) &&
 	   (std::abs(event.m_vertexSummary->pv.position.Rho()) < m_maxPrimaryVertexRho) &&
-	   (event.m_vertexSummary->pv.nDOF > m_minPrimaryVertexFitnDOF))
-	{
-		pass = true;
-	}
-	return pass;
+	   (event.m_vertexSummary->pv.nDOF >= m_minPrimaryVertexFitnDOF));
 }
 

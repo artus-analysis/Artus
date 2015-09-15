@@ -20,5 +20,5 @@ class KappaCutFlowHistogramConsumer: public CutFlowHistogramConsumer<KappaTypes>
 
 public:
 	
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
+	virtual void Init(KappaSettings const& settings) override;
 };

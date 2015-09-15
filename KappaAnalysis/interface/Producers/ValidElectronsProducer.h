@@ -28,10 +28,10 @@
      ElectronID
      ElectronIsoType
      ElectronIso
-     ElectronReco
+     ElectronReco				(string) for mva or mvatrig ID, perform an additional cut on 'track.nInnerHits'
      ElectronLowerPtCuts
      ElectronUpperAbsEtaCuts
-     DirectIso
+     DirectIso					(bool, default true) if false, inverse the decision of the isolation criterion
 */
 
 template<class TTypes>
@@ -59,6 +59,7 @@ public:
 
 	enum class ElectronID : int
 	{
+		INVALID = -2,
 		NONE  = -1,
 		MVANONTRIG = 0,
 		MVATRIG = 1,
@@ -68,6 +69,10 @@ public:
 		VBTF95_TIGHT = 5,
 		FAKEABLE = 6,
 		USER  = 7,
+		VETO = 8,
+		LOOSE = 9,
+		MEDIUM = 10,
+		TIGHT = 11,
 	};
 	static ElectronID ToElectronID(std::string const& electronID)
 	{
@@ -79,7 +84,14 @@ public:
 		else if (electronID == "vbft95_tight") return ElectronID::VBTF95_TIGHT;
 		else if (electronID == "fakeable") return ElectronID::FAKEABLE;
 		else if (electronID == "user") return ElectronID::USER;
-		else return ElectronID::NONE;
+		else if (electronID == "none") return ElectronID::NONE;
+		else if (electronID == "veto") return ElectronID::VETO;
+		else if (electronID == "loose") return ElectronID::LOOSE;
+		else if (electronID == "medium") return ElectronID::MEDIUM;
+		else if (electronID == "tight") return ElectronID::TIGHT;
+		else
+			LOG(FATAL) << "Could not find ElectronID " << electronID << "! If you want the ValidElectronsProducer to use no special ID, use \"none\" as argument."<< std::endl;
+		return ElectronID::INVALID;
 	}
 
 	enum class ElectronIsoType : int
@@ -125,7 +137,7 @@ public:
 		else return ElectronReco::NONE;
 	}
 
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
+	virtual std::string GetProducerId() const override {
 		return "ValidElectronsProducer";
 	}
 
@@ -148,7 +160,7 @@ public:
 	{
 	}
 
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE {
+	virtual void Init(setting_type const& settings) override {
 		ProducerBase<TTypes>::Init(settings);
 		ValidPhysicsObjectTools<TTypes, KElectron>::Init(settings);
 		
@@ -164,15 +176,15 @@ public:
 			return product.m_validElectrons.size();
 		});
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingElePt", [](event_type const& event, product_type const& product) {
-			return product.m_validElectrons.size() >= 1 ? product.m_validElectrons[0]->p4.Pt() : DefaultValues::UndefinedDouble;
+			return product.m_validElectrons.size() >= 1 ? product.m_validElectrons[0]->p4.Pt() : DefaultValues::UndefinedFloat;
 		});
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingEleEta", [](event_type const& event, product_type const& product) {
-			return product.m_validElectrons.size() >= 1 ? product.m_validElectrons[0]->p4.Eta() : DefaultValues::UndefinedDouble;
+			return product.m_validElectrons.size() >= 1 ? product.m_validElectrons[0]->p4.Eta() : DefaultValues::UndefinedFloat;
 		});
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
-	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	                     setting_type const& settings) const override
 	{
 		assert(event.m_electrons);
 		assert(event.m_vertexSummary);
@@ -203,7 +215,7 @@ public:
 
 		for (std::vector<KElectron*>::iterator electron = electrons.begin(); electron != electrons.end(); ++electron)
 		{
-			bool validElectron = true;
+			bool valid = true;
 
 			// POG recommondations
 			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentification#Non_triggering_MVA
@@ -211,30 +223,38 @@ public:
 
 			// Electron IDs
 			if (electronID == ElectronID::MVANONTRIG)
-				validElectron = validElectron && IsMVANonTrigElectron(*electron, event.m_electronMetadata);
+				valid = valid && IsMVANonTrigElectron(*electron, event.m_electronMetadata);
 			else if (electronID == ElectronID::MVATRIG)
-				validElectron = validElectron && IsMVATrigElectron(*electron, event.m_electronMetadata);
+				valid = valid && IsMVATrigElectron(*electron, event.m_electronMetadata);
 			else if (electronID == ElectronID::VBTF95_VETO)
-				validElectron = validElectron && IsVetoVbtf95Electron(*electron, event, product);
+				valid = valid && IsVetoVbtf95Electron(*electron, event, product);
 			else if (electronID == ElectronID::VBTF95_LOOSE)
-				validElectron = validElectron && IsLooseVbtf95Electron(*electron, event, product);
+				valid = valid && IsLooseVbtf95Electron(*electron, event, product);
 			else if (electronID == ElectronID::VBTF95_MEDIUM)
-				validElectron = validElectron && IsMediumVbtf95Electron(*electron, event, product);
+				valid = valid && IsMediumVbtf95Electron(*electron, event, product);
 			else if (electronID == ElectronID::VBTF95_TIGHT)
-				validElectron = validElectron && IsTightVbtf95Electron(*electron, event, product);
+				valid = valid && IsTightVbtf95Electron(*electron, event, product);
 			else if (electronID == ElectronID::FAKEABLE)
-				validElectron = validElectron && IsFakeableElectron(*electron, event, product);
+				valid = valid && IsFakeableElectron(*electron, event, product);
+			else if (electronID == ElectronID::VETO)
+				valid = valid && (*electron)->idVeto();
+			else if (electronID == ElectronID::LOOSE)
+				valid = valid && (*electron)->idLoose();
+			else if (electronID == ElectronID::MEDIUM)
+				valid = valid && (*electron)->idMedium();
+			else if (electronID == ElectronID::TIGHT)
+				valid = valid && (*electron)->idTight();
 			else if (electronID != ElectronID::USER && electronID != ElectronID::NONE)
 				LOG(FATAL) << "Electron ID of type " << Utility::ToUnderlyingValue(electronID) << " not yet implemented!";
 
 			// Electron Isolation
 			if (electronIsoType == ElectronIsoType::PF) {
 				if (electronIso == ElectronIso::MVANONTRIG)
-					validElectron = validElectron && ((((*electron)->trackIso / (*electron)->p4.Pt()) < 0.4) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+					valid = valid && ((((*electron)->trackIso / (*electron)->p4.Pt()) < 0.4f) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (electronIso == ElectronIso::MVATRIG)
-					validElectron = validElectron && ((((*electron)->trackIso / (*electron)->p4.Pt()) < 0.15) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+					valid = valid && ((((*electron)->trackIso / (*electron)->p4.Pt()) < 0.15f) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (electronIso == ElectronIso::FAKEABLE)
-					validElectron = validElectron && IsFakeableElectronIso(*electron, event, product, settings);
+					valid = valid && IsFakeableElectronIso(*electron, event, product, settings);
 				else if (electronIso != ElectronIso::NONE)
 					LOG(FATAL) << "Electron isolation of type " << Utility::ToUnderlyingValue(electronIso) << " not yet implemented!";
 			}
@@ -244,38 +264,194 @@ public:
 			}
 
 			// Electron reconstruction
-			if (electronReco == ElectronReco::MVANONTRIG) {
-				validElectron = validElectron
-				                && ((*electron)->track.nInnerHits <= 1);
-				                // && sip is the significance of impact parameter in 3D of the electron GSF track < 4 TODO
-			}
-			else if (electronReco == ElectronReco::MVATRIG) {
-				validElectron = validElectron
-				                && ((*electron)->track.nInnerHits == 0);
-			}
+			if (electronReco == ElectronReco::MVANONTRIG)
+				valid = valid && ((*electron)->track.nInnerHits <= 1);
+				// && sip is the significance of impact parameter in 3D of the electron GSF track < 4 TODO
+			else if (electronReco == ElectronReco::MVATRIG)
+				valid = valid && ((*electron)->track.nInnerHits == 0);
 			else if (electronReco != ElectronReco::USER && electronReco != ElectronReco::NONE)
 			{
 				LOG(FATAL) << "Electron reconstruction of type " << Utility::ToUnderlyingValue(electronReco) << " not yet implemented!";
 			}
-			
-			// conversion veto per default
-			validElectron = validElectron && (! ((*electron)->electronType & (1 << KElectronType::hasConversionMatch)));
-			
-			// kinematic cuts
-			validElectron = validElectron && this->PassKinematicCuts(*electron, event, product);
-			
-			// check possible analysis-specific criteria
-			validElectron = validElectron && AdditionalCriteria(*electron, event, product, settings);
 
-			if (validElectron)
-			{
+			// conversion veto per default
+			valid = valid && (! ((*electron)->electronType & (1 << KElectronType::hasConversionMatch)));
+
+			// kinematic cuts
+			valid = valid && this->PassKinematicCuts(*electron, event, product);
+
+			// check possible analysis-specific criteria
+			valid = valid && AdditionalCriteria(*electron, event, product, settings);
+
+			if (valid)
 				(product.*m_validElectronsMember).push_back(*electron);
-			}
 			else
-			{
 				(product.*m_invalidElectronsMember).push_back(*electron);
-			}
 		}
+	}
+
+	static bool IsMVANonTrigElectron(const KElectron* electron, const KElectronMetadata* electronMeta)
+	{
+		// Electron ID mva non trig (run 1)
+		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentification#Non_triggering_MVA
+		// different thresholds depending on electron pT, eta
+		if (electron->p4.Pt() < 10.0f)
+		{
+			return (
+				(std::abs(electron->p4.Eta()) < 0.8f && electron->getId("idMvaNonTrigV0", electronMeta) > 0.47f) ||
+				(std::abs(electron->p4.Eta()) > 0.8f && std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("idMvaNonTrigV0", electronMeta) > 0.004f) ||
+				(std::abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && std::abs(electron->p4.Eta()) < 2.5f && electron->getId("idMvaNonTrigV0", electronMeta) > 0.295f));
+		}
+		else if (electron->p4.Pt() >= 10.0f)
+		{
+			return (
+				(std::abs(electron->p4.Eta()) < 0.8f && electron->getId("idMvaNonTrigV0", electronMeta) > -0.34f) ||
+				(std::abs(electron->p4.Eta()) > 0.8f && std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("idMvaNonTrigV0", electronMeta) > -0.65f) ||
+				(std::abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && std::abs(electron->p4.Eta()) < 2.5f && electron->getId("idMvaNonTrigV0", electronMeta) > 0.6f));
+		}
+		return false;
+	}
+
+	static bool IsMVATrigElectron(const KElectron* electron, const KElectronMetadata* electronMeta)
+	{
+		// Electron ID mva trig (run 1)
+		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentification#Triggering_MVA
+		// different thresholds depending on electron pT, eta
+		if (electron->p4.Pt() >= 10.0f && electron->p4.Pt() < 20.0f)
+		{
+			return (
+				(std::abs(electron->p4.Eta()) <= 0.8f && electron->getId("idMvaTrigV0", electronMeta) > 0.0f) ||
+				(std::abs(electron->p4.Eta()) > 0.8f && std::abs(electron->p4.Eta()) <= DefaultValues::EtaBorderEB && electron->getId("idMvaTrigV0", electronMeta) > 0.1f) ||
+				(std::abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && std::abs(electron->p4.Eta()) <= 2.5f && electron->getId("idMvaTrigV0", electronMeta) > 0.62f));
+		}
+		else if (electron->p4.Pt() >= 20.0f)
+		{
+			return (
+				(std::abs(electron->p4.Eta()) < 0.8f && electron->getId("idMvaTrigV0", electronMeta) > 0.94f) ||
+				(std::abs(electron->p4.Eta()) > 0.8f && std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("idMvaTrigV0", electronMeta) > 0.85f) ||
+				(std::abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && std::abs(electron->p4.Eta()) < 2.5f && electron->getId("idMvaTrigV0", electronMeta) > 0.92f));
+		}
+		return false;
+	}
+
+	static bool IsVetoVbtf95Electron(const KElectron* electron, event_type const& event, product_type const& product)
+	{
+		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
+		{
+			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Barrel_Cuts_eta_supercluster_1_4
+			return (std::abs(electron->dEtaIn) < 0.007f) &&
+			       (std::abs(electron->dPhiIn) < 0.8f) &&
+			       (electron->sigmaIetaIeta < 0.01f) &&
+			       (electron->hadronicOverEm < 0.15f) &&
+			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.04f) &&
+			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2f);
+			       // no isolation
+		}
+		else
+		{
+			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
+			return (std::abs(electron->dEtaIn) < 0.01f) &&
+			       (std::abs(electron->dPhiIn) < 0.7f) &&
+			       (electron->sigmaIetaIeta < 0.03f) &&
+			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.04f) &&
+			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2f);
+			       // no isolation
+		}
+		return false;
+	}
+
+	static bool IsLooseVbtf95Electron(const KElectron* electron, event_type const& event, product_type const& product)
+	{
+		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
+		{
+			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Barrel_Cuts_eta_supercluster_1_4
+			return (std::abs(electron->dEtaIn) < 0.007f) &&
+			       (std::abs(electron->dPhiIn) < 0.15f) &&
+			       (electron->sigmaIetaIeta < 0.01f) &&
+			       (electron->hadronicOverEm < 0.12f) &&
+			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02f) &&
+			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2f) &&
+			       (electron->fbrem < 0.05f);
+			       // no isolation
+			       // no conversion rejection
+		}
+		else
+		{
+			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
+			return (std::abs(electron->dEtaIn) < 0.009f) &&
+			       (std::abs(electron->dPhiIn) < 0.1f) &&
+			       (electron->sigmaIetaIeta < 0.03f) &&
+			       (electron->hadronicOverEm < 0.1f) &&
+			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02f) &&
+			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2f) &&
+			       (electron->fbrem < 0.05f);
+			       // no isolation
+			       // no conversion rejection
+		}
+		return false;
+	}
+
+	static bool IsMediumVbtf95Electron(const KElectron* electron, event_type const& event, product_type const& product)
+	{
+		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
+		{
+			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Barrel_Cuts_eta_supercluster_1_4
+			return (std::abs(electron->dEtaIn) < 0.004f) &&
+			       (std::abs(electron->dPhiIn) < 0.06f) &&
+			       (electron->sigmaIetaIeta < 0.01f) &&
+			       (electron->hadronicOverEm < 0.12f) &&
+			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02f) &&
+			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1f) &&
+			       (electron->fbrem < 0.05f);
+			       // no isolation
+			       // no conversion rejection
+		}
+		else
+		{
+			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
+			return (std::abs(electron->dEtaIn) < 0.007f) &&
+			       (std::abs(electron->dPhiIn) < 0.03f) &&
+			       (electron->sigmaIetaIeta < 0.03f) &&
+			       (electron->hadronicOverEm < 0.1f) &&
+			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02f) &&
+			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1f) &&
+			       (electron->fbrem < 0.05f);
+			       // no isolation
+			       // no conversion rejection
+		}
+
+		return false;
+	}
+
+	static bool IsTightVbtf95Electron(const KElectron* electron, event_type const& event, product_type const& product)
+	{
+		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
+		{
+			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Barrel_Cuts_eta_supercluster_1_4
+			return (std::abs(electron->dEtaIn) < 0.004f) &&
+			       (std::abs(electron->dPhiIn) < 0.03f) &&
+			       (electron->sigmaIetaIeta < 0.01f) &&
+			       (electron->hadronicOverEm < 0.12f) &&
+			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02f) &&
+			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1f) &&
+			       (electron->fbrem < 0.05f);
+			       // no isolation
+			       // no conversion rejection
+		}
+		else
+		{
+			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
+			return (std::abs(electron->dEtaIn) < 0.005f) &&
+			       (std::abs(electron->dPhiIn) < 0.02f) &&
+			       (electron->sigmaIetaIeta < 0.03f) &&
+			       (electron->hadronicOverEm < 0.1f) &&
+			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02f) &&
+			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1f) &&
+			       (electron->fbrem < 0.05f);
+			       // no isolation
+			       // no conversion rejection
+		}
+		return false;
 	}
 
 
@@ -289,8 +465,7 @@ protected:
 	virtual bool AdditionalCriteria(KElectron* electron, event_type const& event,
 	                                product_type& product, setting_type const& settings) const
 	{
-		bool validElectron = true;
-		return validElectron;
+		return true;
 	}
 
 
@@ -301,251 +476,36 @@ private:
 	std::string (setting_type::*GetElectronIsoType)(void) const;
 	std::string (setting_type::*GetElectronIso)(void) const;
 	std::string (setting_type::*GetElectronReco)(void) const;
-	
+
 	ValidElectronsInput validElectronsInput;
-
-	bool IsMVANonTrigElectron(KElectron* electron, KElectronMetadata* electronMeta) const
-	{
-		bool validElectron = true;
-
-		// Electron ID mva non trig (run 1)
-		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentification#Non_triggering_MVA
-		// different thresholds depending on electron pT, eta
-		validElectron = validElectron &&
-			(
-				(
-					(electron->p4.Pt() < 10.0)
-					&&
-					(
-						(abs(electron->p4.Eta()) < 0.8 && electron->getId("idMvaNonTrigV0", electronMeta) > 0.47)
-						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("idMvaNonTrigV0", electronMeta) > 0.004)
-						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getId("idMvaNonTrigV0", electronMeta) > 0.295)
-					)
-				)
-				||
-				(
-					(electron->p4.Pt() >= 10.0) &&
-					(
-						(abs(electron->p4.Eta()) < 0.8 && electron->getId("idMvaNonTrigV0", electronMeta) > -0.34)
-						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("idMvaNonTrigV0", electronMeta) > -0.65)
-						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getId("idMvaNonTrigV0", electronMeta) > 0.6)
-					)
-				)
-			);
-
-		return validElectron;
-	}
-
-	bool IsMVATrigElectron(KElectron* electron, KElectronMetadata* electronMeta) const
-	{
-		bool validElectron = true;
-
-		// Electron ID mva trig (run 1)
-		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentification#Triggering_MVA
-		// different thresholds depending on electron pT, eta
-		validElectron = validElectron &&
-			(
-				(
-					(electron->p4.Pt() >= 10.0)
-					&&
-					(electron->p4.Pt() < 20.0)
-					&&
-					(
-						(abs(electron->p4.Eta()) < 0.8 && electron->getId("idMvaTrigV0", electronMeta) > 0.0)
-						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("idMvaTrigV0", electronMeta) > 0.1)
-						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getId("idMvaTrigV0", electronMeta) > 0.62)
-					)
-				)
-				||
-				(
-					(electron->p4.Pt() >= 20.0) &&
-					(
-						(abs(electron->p4.Eta()) < 0.8 && electron->getId("idMvaTrigV0", electronMeta) > 0.94)
-						|| (abs(electron->p4.Eta()) > 0.8 && abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB && electron->getId("idMvaTrigV0", electronMeta) > 0.85)
-						|| (abs(electron->p4.Eta()) > DefaultValues::EtaBorderEB && abs(electron->p4.Eta()) < 2.5 && electron->getId("idMvaTrigV0", electronMeta) > 0.92)
-					)
-				)
-			);
-
-		return validElectron;
-	}
-
-	bool IsVetoVbtf95Electron(KElectron* electron, event_type const& event, product_type& product) const
-	{
-		bool validElectron = true;
-		
-		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
-		{
-			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Barrel_Cuts_eta_supercluster_1_4
-			validElectron = validElectron &&
-			                (std::abs(electron->dEtaIn) < 0.007) &&
-			                (std::abs(electron->dPhiIn) < 0.8) &&
-			                (electron->sigmaIetaIeta < 0.01) &&
-			                (electron->hadronicOverEm < 0.15) &&
-			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.04) &&
-			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2);
-			                // Isolation missing
-		}
-		else
-		{
-			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
-			validElectron = validElectron &&
-			                (std::abs(electron->dEtaIn) < 0.01) &&
-			                (std::abs(electron->dPhiIn) < 0.7) &&
-			                (electron->sigmaIetaIeta < 0.03) &&
-			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.04) &&
-			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2);
-			                // Isolation missing
-		}
-		
-		return validElectron;
-	}
-
-	bool IsLooseVbtf95Electron(KElectron* electron, event_type const& event, product_type& product) const
-	{
-		bool validElectron = true;
-		
-		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
-		{
-			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Barrel_Cuts_eta_supercluster_1_4
-			validElectron = validElectron &&
-			                (std::abs(electron->dEtaIn) < 0.007) &&
-			                (std::abs(electron->dPhiIn) < 0.15) &&
-			                (electron->sigmaIetaIeta < 0.01) &&
-			                (electron->hadronicOverEm < 0.12) &&
-			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
-			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2) &&
-			                (electron->fbrem < 0.05);
-			                // Isolation missing
-			                // Conversion rejection missing
-		}
-		else
-		{
-			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
-			validElectron = validElectron &&
-			                (std::abs(electron->dEtaIn) < 0.009) &&
-			                (std::abs(electron->dPhiIn) < 0.1) &&
-			                (electron->sigmaIetaIeta < 0.03) &&
-			                (electron->hadronicOverEm < 0.1) &&
-			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
-			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2) &&
-			                (electron->fbrem < 0.05);
-			                // Isolation missing
-			                // Conversion rejection missing
-		}
-		
-		return validElectron;
-	}
-
-	bool IsMediumVbtf95Electron(KElectron* electron, event_type const& event, product_type& product) const
-	{
-		bool validElectron = true;
-		
-		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
-		{
-			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Barrel_Cuts_eta_supercluster_1_4
-			validElectron = validElectron &&
-			                (std::abs(electron->dEtaIn) < 0.004) &&
-			                (std::abs(electron->dPhiIn) < 0.06) &&
-			                (electron->sigmaIetaIeta < 0.01) &&
-			                (electron->hadronicOverEm < 0.12) &&
-			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
-			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1) &&
-			                (electron->fbrem < 0.05);
-			                // Isolation missing
-			                // Conversion rejection missing
-		}
-		else
-		{
-			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
-			validElectron = validElectron &&
-			                (std::abs(electron->dEtaIn) < 0.007) &&
-			                (std::abs(electron->dPhiIn) < 0.03) &&
-			                (electron->sigmaIetaIeta < 0.03) &&
-			                (electron->hadronicOverEm < 0.1) &&
-			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
-			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1) &&
-			                (electron->fbrem < 0.05);
-			                // Isolation missing
-			                // Conversion rejection missing
-		}
-		
-		return validElectron;
-	}
-
-	bool IsTightVbtf95Electron(KElectron* electron, event_type const& event, product_type& product) const
-	{
-		bool validElectron = true;
-		
-		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
-		{
-			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Barrel_Cuts_eta_supercluster_1_4
-			validElectron = validElectron &&
-			                (std::abs(electron->dEtaIn) < 0.004) &&
-			                (std::abs(electron->dPhiIn) < 0.03) &&
-			                (electron->sigmaIetaIeta < 0.01) &&
-			                (electron->hadronicOverEm < 0.12) &&
-			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
-			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1) &&
-			                (electron->fbrem < 0.05);
-			                // Isolation missing
-			                // Conversion rejection missing
-		}
-		else
-		{
-			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
-			validElectron = validElectron &&
-			                (std::abs(electron->dEtaIn) < 0.005) &&
-			                (std::abs(electron->dPhiIn) < 0.02) &&
-			                (electron->sigmaIetaIeta < 0.03) &&
-			                (electron->hadronicOverEm < 0.1) &&
-			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
-			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1) &&
-			                (electron->fbrem < 0.05);
-			                // Isolation missing
-			                // Conversion rejection missing
-		}
-		
-		return validElectron;
-	}
 
 	bool IsFakeableElectron(KElectron* electron, event_type const& event, product_type& product) const
 	{
-		bool validElectron = true;
-		
 		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
 		{
-			validElectron = validElectron &&
-			                (std::abs(electron->dEtaIn) < 0.007) &&
-			                (std::abs(electron->dPhiIn) < 0.15) &&
-			                (electron->sigmaIetaIeta < 0.01) &&
-			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
-			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1);
+			return (std::abs(electron->dEtaIn) < 0.007f) &&
+			       (std::abs(electron->dPhiIn) < 0.15f) &&
+			       (electron->sigmaIetaIeta < 0.01f) &&
+			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02f) &&
+			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1f);
 		}
 		else
 		{
-			validElectron = validElectron &&
-			                (std::abs(electron->dEtaIn) < 0.009) &&
-			                (std::abs(electron->dPhiIn) < 0.1) &&
-			                (electron->sigmaIetaIeta < 0.03) &&
-			                (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02) &&
-			                (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1);
+			return (std::abs(electron->dEtaIn) < 0.009f) &&
+			       (std::abs(electron->dPhiIn) < 0.1f) &&
+			       (electron->sigmaIetaIeta < 0.03f) &&
+			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02f) &&
+			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1f);
 		}
-		
-		return validElectron;
+		return false;
 	}
 
 	bool IsFakeableElectronIso(KElectron* electron, event_type const& event, product_type& product,  setting_type const& settings) const
 	{
-		bool validElectron = true;
-		
-		validElectron = validElectron &&
-		                (((electron->trackIso / electron->p4.Pt()) < 0.2) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
-				((electron->ecalIso / electron->p4.Pt()) < 0.2) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
-				((electron->hcal1Iso / electron->p4.Pt()) < 0.2) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
-				((electron->hcal2Iso / electron->p4.Pt()) < 0.2) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
-		
-		return validElectron;
+		return (((electron->trackIso / electron->p4.Pt()) < 0.2f) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
+				((electron->ecalIso / electron->p4.Pt()) < 0.2f) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
+				((electron->hcal1Iso / electron->p4.Pt()) < 0.2f) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
+				((electron->hcal2Iso / electron->p4.Pt()) < 0.2f) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 	}
 };
 

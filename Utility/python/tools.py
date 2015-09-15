@@ -8,9 +8,11 @@ log = logging.getLogger(__name__)
 import array
 import copy
 import fcntl
-import re
-import termios
+import multiprocessing
 import os
+import re
+import sys
+import termios
 import textwrap
 
 
@@ -54,7 +56,7 @@ def matching_sublist(input_list, whitelist=[], blacklist=[]):
 		for item in whitelist_matches:
 			keep = True
 			for regex in blacklist:
-				if not re.search(regex, item) is None:
+				if not item is None and not re.search(regex, item) is None:
 					keep = False
 					continue
 			if keep:
@@ -99,14 +101,16 @@ def get_tty_size():
 	fcntl.ioctl(0, termios.TIOCGWINSZ, size, True)
 	return (size[0], size[2])
 
-def get_environment_variable(variable_name):
+def get_environment_variable(variable_name, fail_if_not_existing=True):
 	"""get variable from os, throw error if not set"""
 	try:
 		value = os.environ[variable_name]
 		return value
 	except KeyError:
-		log.critical("'{}' not in environment variables. Maybe you forgot to source an ini file?".format(variable_name))
-		sys.exit(1)
+		if fail_if_not_existing:
+			log.critical("'{}' not in environment variables. Maybe you forgot to source an ini file?".format(variable_name))
+			sys.exit(1)
+		return None
 
 def get_colored_string(string, color='green'):
 	d = {
@@ -125,10 +129,32 @@ def get_indented_text(prefix, message, width=None):
 		width = get_tty_size()[1]
 	expanded_indent = textwrap.fill(prefix+'$', replace_whitespace=False)[:-1]
 	subsequent_indent = ' ' * len(expanded_indent)
-	wrapper = textwrap.TextWrapper(
-			initial_indent=expanded_indent,
-			width=width,
-			subsequent_indent=subsequent_indent
-	)
-	return wrapper.fill(message)
+
+	# code below is needed to preserve line wrap:
+	# http://stackoverflow.com/questions/1166317/python-textwrap-library-how-to-preserve-line-breaks
+	tmp_wrapped_texts = []
+	for line in message.splitlines():
+		if line.strip() != '':
+			tmp_wrapped_texts += textwrap.wrap(line,
+				initial_indent=expanded_indent,
+				width=width,
+				subsequent_indent=subsequent_indent,
+				break_long_words=False,
+				replace_whitespace=False
+			)
+	return '\n'.join(['\n'.join(tmp_wrapped_texts)])
+
+def parallelize(function, arguments_list, n_processes=1):
+	if n_processes <= 1:
+		results = []
+		for arguments in arguments_list:
+			if isinstance(arguments, basestring):
+				results.append(function(arguments))
+			else:
+				results.append(function(*arguments))
+		return results
+	else:
+		pool = multiprocessing.Pool(processes=n_processes)
+		results = pool.map_async(function, arguments_list)
+		return results.get(9999999) # 9999999 is needed for KeyboardInterrupt to work: http://stackoverflow.com/questions/1408356/keyboard-interrupts-with-pythons-multiprocessing-pool
 

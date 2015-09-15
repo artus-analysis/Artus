@@ -30,6 +30,8 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 				help="Print events that are only in the first input.")
 		self.cutflow_options.add_argument("--events-only-in-2", action="store_true", default=False,
 				help="Print events that are only in the second input.")
+		self.cutflow_options.add_argument("--branch-names", type=str, nargs="+", default=["run", "lumi", "event"],
+				help="Branch names that serve as uniqe identifiers for each event. [Default: %(default)s]")
 	
 	def prepare_args(self, parser, plotData):
 		super(EventSelectionOverlap, self).prepare_args(parser, plotData)
@@ -46,6 +48,8 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 				"Intersection",
 				"Only " + labels[1],
 			]
+		if plotData.plotdict.get("x_ticks") == parser.get_default("x_ticks"):
+			plotData.plotdict["x_ticks"] = [-1, 0, 1]
 	
 	def run(self, plotData=None):
 		super(EventSelectionOverlap, self).run(plotData)
@@ -54,15 +58,14 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 		for index1, (nick1, tree1) in enumerate(plotData.plotdict.get("root_trees", {}).items()):
 			for index2, (nick2, tree2) in enumerate(plotData.plotdict.get("root_trees", {}).items()):
 				if index1 != index2 and len(plotData.plotdict["root_objects"]) == 0:
-
 					# Events in first ntuple
-					events1 = EventSelectionOverlap.get_events_set_from_tree(tree1, ["run", "lumi", "event"], plotData.plotdict['weights'][0])
+					events1 = EventSelectionOverlap.get_events_set_from_tree(tree1, plotData.plotdict["branch_names"], plotData.plotdict['weights'][0])
 					# Events in second ntuple
-					events2 = EventSelectionOverlap.get_events_set_from_tree(tree2, ["run", "lumi", "event"], plotData.plotdict['weights'][1])
+					events2 = EventSelectionOverlap.get_events_set_from_tree(tree2, plotData.plotdict["branch_names"], plotData.plotdict['weights'][1])
 
-					events_only1 = list(events2.difference(events1))
+					events_only1 = list(events1.difference(events2))
 					events_intersection = list(events1.intersection(events2))
-					events_only2 = list(events1.difference(events2))
+					events_only2 = list(events2.difference(events1))
 					
 					print_dict = jsonTools.JsonDict()
 					if plotData.plotdict["events_only_in_1"]:
@@ -77,7 +80,7 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 						print_dict["MatchRunLumiEventTuples"] = True
 						log.info(str(print_dict))
 
-					histogram = ROOT.TH1F("histogram_{0}".format(hashlib.md5("_".join([str(events_only1), str(events_intersection), str(events_only2)]))), "Event Selection Overlap", 3, -1.0, 1.0)
+					histogram = ROOT.TH1F("histogram_{0}".format(hashlib.md5("_".join([str(events_only1), str(events_intersection), str(events_only2)]))), "Event Selection Overlap", 3, -1.5, 1.5)
 
 					histogram.SetBinContent(1, len(events_only1))
 					histogram.SetBinContent(2, len(events_intersection))

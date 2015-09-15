@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
-
 #include "TraxTypes.h"
 
 class ThetaFilter: public TraxFilterBase {
@@ -16,14 +14,13 @@ public:
 	virtual ~ThetaFilter() {
 	}
 
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE {
+	virtual std::string GetFilterId() const override {
 		return "filter_theta";
 	}
 
 	virtual bool DoesEventPass(TraxEvent const& event,
 			TraxProduct const& product,
-			TraxSettings const& globalSettings) const
-	ARTUS_CPP11_OVERRIDE
+			TraxSettings const& globalSettings) const override
 	{
 		const float lowCut = globalSettings.GetFilterThetaLow();
 		const float highCut = globalSettings.GetFilterThetaHigh();

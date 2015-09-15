@@ -13,6 +13,7 @@ import copy
 import os
 import ROOT
 import sys
+import re
 
 import Artus.Utility.tools as tools
 
@@ -21,7 +22,8 @@ import Artus.HarryPlotter.plotdata as plotdata
 import Artus.HarryPlotter.utility.labels as labels
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
-
+import Artus.HarryPlotter.utility.tdrstyle as tdrstyle
+import Artus.HarryPlotter.utility.CMS_lumi as CMS_lumi
 
 class RootPlotContainer(plotdata.PlotContainer):
 	def __init__(self, canvas=None, plot_pad=None, subplot_pad=None):
@@ -106,8 +108,10 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Legend position. The four arguments define the rectangle (x1 y1 x2 y2) for the legend. Without (or with too few) arguments, the default values from [0.6, 0.6, 0.9, 0.9] are used. [Default: %(default)s]")
 		self.formatting_options.add_argument("--legend-markers", type=str, nargs="+",
 		                                     help="Draw options for legend entries.")
-		self.formatting_options.add_argument("--subplot-lines", nargs="+", type=float,
-		                                     help="Place auxiliary lines on the subplot at given y-values.")
+		self.formatting_options.add_argument("--extra-text", type=str, nargs="?", default = "",
+		                                     help="Extra text written on plot, e.g. \"Preliminary\" ")
+		self.formatting_options.add_argument("--cms", nargs="?", type="bool", default=False, const=True,
+		                               help="Make a CMS publication plot. See https://ghm.web.cern.ch/ghm/plots/.")
 		
 	def prepare_args(self, parser, plotData):
 		super(PlotRoot, self).prepare_args(parser, plotData)
@@ -182,9 +186,6 @@ class PlotRoot(plotbase.PlotBase):
 			plotData.plotdict["legend"] += [0.6, 0.6, 0.9, 0.9][len(plotData.plotdict["legend"]):]
 			plotData.plotdict["legend"] = plotData.plotdict["legend"][:4]
 		
-		if plotData.plotdict["subplot_lines"] is None:
-			plotData.plotdict["subplot_lines"] = []
-		
 		for key in ["labels", "x_label", "y_label", "z_label"]:
 			if isinstance(plotData.plotdict[key], basestring):
 				plotData.plotdict[key] = self.nice_labels.get_nice_label(plotData.plotdict[key])
@@ -196,12 +197,7 @@ class PlotRoot(plotbase.PlotBase):
 
 	def set_style(self, plotData):
 		super(PlotRoot, self).set_style(plotData)
-		
-		# load TDR Style
-		cwd = os.getcwd()
-		ROOT.gROOT.LoadMacro(os.path.expandvars("$ARTUSPATH/HarryPlotter/python/utility/tdrstyle.C")) # +"+") # compilation currently does not work
-		ROOT.setTDRStyle()
-		
+		tdrstyle.setTDRStyle()
 		# load custom painter (fixes for horizontal histograms)
 		ROOT.gROOT.LoadMacro(os.path.expandvars("$ARTUSPATH/HarryPlotter/python/utility/customhistogrampainter.C+"))
 
@@ -294,7 +290,7 @@ class PlotRoot(plotbase.PlotBase):
 					root_object.GetXaxis().SetTitle(plotData.plotdict["x_label"])
 				if (not plotData.plotdict["y_label"] is None) and (plotData.plotdict["y_label"] != ""):
 					root_object.GetYaxis().SetTitle(plotData.plotdict["y_label"])
-				if (not plotData.plotdict["z_label"] is None) and (plotData.plotdict["z_label"] != ""):
+				if (not plotData.plotdict["z_label"] is None) and (plotData.plotdict["z_label"] != "" and hasattr(root_object, "GetZaxis")):
 					root_object.GetZaxis().SetTitle(plotData.plotdict["z_label"])
 			
 			# tick labels
@@ -310,6 +306,7 @@ class PlotRoot(plotbase.PlotBase):
 				for z_bin in range(min(root_object.GetNbinsZ(), len(plotData.plotdict["z_tick_labels"]))):
 					root_object.GetZaxis().SetBinLabel(z_bin+1, plotData.plotdict["z_tick_labels"][z_bin])
 	
+			ROOT.TGaxis.SetMaxDigits(3)
 	def determine_plot_lims(self, plotData):
 		super(PlotRoot, self).determine_plot_lims(plotData)
 		
@@ -563,24 +560,23 @@ class PlotRoot(plotbase.PlotBase):
 			self.axes_histogram.GetXaxis().SetLabelSize(0)
 			self.axes_histogram.GetXaxis().SetTitleSize(0)
 			self.axes_histogram.GetYaxis().SetLabelSize(self.axes_histogram.GetYaxis().GetLabelSize() / (1.0 - self.plot_subplot_slider_y))
-			self.axes_histogram.GetYaxis().SetTitleSize(self.axes_histogram.GetYaxis().GetTitleSize() / (1.0 - self.plot_subplot_slider_y))
-			
+			self.axes_histogram.GetYaxis().SetTitleSize((self.axes_histogram.GetYaxis().GetTitleSize() / (1.0 - self.plot_subplot_slider_y))-0.01)
+
 			self.axes_histogram.GetYaxis().SetTitleOffset(self.axes_histogram.GetYaxis().GetTitleOffset() * (1.0 - self.plot_subplot_slider_y))
 			
 			self.subplot_axes_histogram.GetXaxis().SetLabelSize(self.subplot_axes_histogram.GetXaxis().GetLabelSize() / self.plot_subplot_slider_y)
-			self.subplot_axes_histogram.GetXaxis().SetTitleSize(self.subplot_axes_histogram.GetXaxis().GetTitleSize() / self.plot_subplot_slider_y)
+			self.subplot_axes_histogram.GetXaxis().SetTitleSize((self.subplot_axes_histogram.GetXaxis().GetTitleSize() / self.plot_subplot_slider_y) - 0.01)
 			self.subplot_axes_histogram.GetYaxis().SetLabelSize(self.subplot_axes_histogram.GetYaxis().GetLabelSize() / self.plot_subplot_slider_y)
-			self.subplot_axes_histogram.GetYaxis().SetTitleSize(self.subplot_axes_histogram.GetYaxis().GetTitleSize() / self.plot_subplot_slider_y)
+			self.subplot_axes_histogram.GetYaxis().SetTitleSize((self.subplot_axes_histogram.GetYaxis().GetTitleSize() / self.plot_subplot_slider_y) - 0.01)
 			
-			self.subplot_axes_histogram.GetXaxis().SetTitleOffset(2.0 * self.subplot_axes_histogram.GetXaxis().GetTitleOffset() * self.plot_subplot_slider_y)
+			self.subplot_axes_histogram.GetXaxis().SetTitleOffset(2.0 * self.subplot_axes_histogram.GetXaxis().GetTitleOffset() * self.plot_subplot_slider_y+0.2)
 			self.subplot_axes_histogram.GetYaxis().SetTitleOffset(self.subplot_axes_histogram.GetYaxis().GetTitleOffset() * self.plot_subplot_slider_y)
-			
 			self.subplot_axes_histogram.GetYaxis().SetNdivisions(5, 0, 0)
 		
 		if all([isinstance(root_object, ROOT.TF1) or (root_object.GetListOfFunctions().FindObject("palette") == None) for root_object in plotData.plotdict["root_objects"].values()]):
-			plotData.plot.plot_pad.SetRightMargin(self.plot_pad_right_margin)
+			plotData.plot.plot_pad.SetRightMargin(0.05)
 			if not plotData.plot.subplot_pad is None:
-				plotData.plot.subplot_pad.SetRightMargin(self.plot_pad_right_margin)
+				plotData.plot.subplot_pad.SetRightMargin(0.05)
 		
 		# redraw axes only and update the canvas
 		plotData.plot.plot_pad.cd()
@@ -594,7 +590,7 @@ class PlotRoot(plotbase.PlotBase):
 			plotData.plot.subplot_pad.Update()
 		
 		plotData.plot.canvas.Update()
-			
+		#tdrstyle.fixOverlay(self.plot_pad)
 		
 	def add_grid(self, plotData):
 		super(PlotRoot, self).add_grid(plotData)
@@ -630,6 +626,7 @@ class PlotRoot(plotbase.PlotBase):
 		plotData.plot.plot_pad.cd()
 		self.legend = None
 		if plotData.plotdict["legend"] != None:
+			ROOT.gStyle.SetLegendBorderSize(0)
 			self.legend = ROOT.TLegend(*transformed_legend_pos)
 			self.legend.SetNColumns(plotData.plotdict["legend_cols"])
 			self.legend.SetColumnSeparation(0.1)
@@ -675,27 +672,29 @@ class PlotRoot(plotbase.PlotBase):
 			text_object = self.text_box.AddText(x, y, text)
 			if not size is None:
 				text_object.SetTextSize(size)
-		
-		y_title = 0.94 if self.subplot_axes_histogram is None else 0.96
+
+		# lumi and energy: outside plot, top right, with best possible offset
+		if self.dataset_title != "":
+			self.dataset_title = re.sub(r"\\mathrm{(fb|pb)}", re.search(r"\\mathrm{(fb|pb)}", self.dataset_title).group(1), self.dataset_title)
+			CMS_lumi.lumi_sqrtS = self.dataset_title.replace("$", "").replace("\,", "")
+			CMS_lumi.lumiTextSize = 0.5
+			if not self.subplot_axes_histogram is None:
+				CMS_lumi.lumiTextOffset = 0.4
+
+		# normal plot title (e.g., 'own work', name of the channel...): outside plot, top left
+		y_title = 0.94 if self.subplot_axes_histogram is None else 0.95
 		if (not plotData.plotdict["title"] is None) and (plotData.plotdict["title"] != ""):
 			x_title = 0.2
 			title = self.text_box.AddText(x_title, y_title, plotData.plotdict["title"])
 			title.SetTextAlign(11)
-		
-		if self.dataset_title != "":
-			x_dataset_title = 0.94 if self.subplot_axes_histogram is None else 0.92
-			if all([
-					(not isinstance(root_object, ROOT.TF1)) and (root_object.GetListOfFunctions().FindObject("palette") != None)
-					for root_object in plotData.plotdict["root_objects"].values()
-			]):
-				x_dataset_title = 0.8 if self.subplot_axes_histogram is None else 0.8
-			
-			dataset = self.text_box.AddText(
-					x_dataset_title,
-					y_title,
-					self.dataset_title.replace("\mathrm{fb}", "fb").replace("$", "").replace("\,", "")
-			)
-			dataset.SetTextAlign(31)
+
+		# CMS text (only if specified): inside plot, top left
+		CMS_lumi.cmsTextSize = 0.5
+		if not plotData.plotdict["cms"]:
+			CMS_lumi.cmsText = ""
+
+		CMS_lumi.extraText = plotData.plotdict["extra_text"]
+		CMS_lumi.CMS_lumi(plotData.plot.canvas, 0, 11)
 		
 		self.text_box.Draw()
 	

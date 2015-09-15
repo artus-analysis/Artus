@@ -58,7 +58,7 @@ public:
 		delete factorizedJetCorrector;
 	}
 
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE
+	virtual void Init(KappaSettings const& settings) override
 	{
 		KappaProducerBase::Init(settings);
 		
@@ -71,15 +71,22 @@ public:
 			jecParameters.push_back(JetCorrectorParameters(*jecParametersFile));
 			LOG(DEBUG) << "\t\t" << *jecParametersFile;
 		}
-		factorizedJetCorrector = new FactorizedJetCorrector(jecParameters);
+		if (jecParameters.size() > 0)
+		{
+			factorizedJetCorrector = new FactorizedJetCorrector(jecParameters);
+		}
 		
 		// initialise uncertainty calculation
 		LOG(DEBUG) << "\tLoading JetCorrectionUncertainty from files...";
-		if (! settings.GetJetEnergyCorrectionUncertaintyParameters().empty())
+		if ((! settings.GetJetEnergyCorrectionUncertaintyParameters().empty()) &&
+		    (settings.GetJetEnergyCorrectionUncertaintyShift() != 0.0))
 		{
-			JetCorrectorParameters *jecUncertaintyParameters = NULL;
+			JetCorrectorParameters* jecUncertaintyParameters = nullptr;
 			if (!settings.GetJetEnergyCorrectionUncertaintySource().empty()) {
-				jecUncertaintyParameters = new JetCorrectorParameters(settings.GetJetEnergyCorrectionUncertaintyParameters(), settings.GetJetEnergyCorrectionUncertaintySource());
+				jecUncertaintyParameters = new JetCorrectorParameters(
+						settings.GetJetEnergyCorrectionUncertaintyParameters(),
+						settings.GetJetEnergyCorrectionUncertaintySource()
+				);
 			}
 			else {
 				jecUncertaintyParameters = new JetCorrectorParameters(settings.GetJetEnergyCorrectionUncertaintyParameters());
@@ -94,7 +101,7 @@ public:
 	}
 
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
+	                     KappaSettings const& settings) const override
 	{
 		assert((event.*m_basicJetsMember));
 		assert(event.m_pileupDensity);
@@ -157,8 +164,8 @@ private:
 	std::vector<TJet>* KappaEvent::*m_basicJetsMember;
 	std::vector<std::shared_ptr<TJet> > KappaProduct::*m_correctedJetsMember;
 	
-	FactorizedJetCorrector* factorizedJetCorrector = 0;
-	JetCorrectionUncertainty* jetCorrectionUncertainty = 0;
+	FactorizedJetCorrector* factorizedJetCorrector = nullptr;
+	JetCorrectionUncertainty* jetCorrectionUncertainty = nullptr;
 };
 
 
@@ -173,7 +180,7 @@ class JetCorrectionsProducer: public JetCorrectionsProducerBase<KBasicJet>
 public:
 	JetCorrectionsProducer();
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 };
 
 
@@ -189,7 +196,7 @@ public:
 
 	TaggedJetCorrectionsProducer();
 	
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 };
 
 

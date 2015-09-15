@@ -9,7 +9,7 @@
    Config tags:
    - EventWeight, e.g. "eventWeight"
    
-   Multiplies all entries in the map product.m_weights
+   Multiplies all entries in the map product.m_weights with m_baseWeight
    and writes the result to product.m_weights[settings.GetEventWeight()]
    
    By adding the weight quantity names to the Quantity config setting,
@@ -19,18 +19,19 @@
 class EventWeightProducer: public KappaProducerBase {
 public:
 
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 	
 	~EventWeightProducer();
 	
-	virtual void Init(KappaSettings const& settings) ARTUS_CPP11_OVERRIDE;
+	virtual void Init(KappaSettings const& settings) override;
 	
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE;
+	                     KappaSettings const& settings) const override;
 
 
 private:
 	std::string pipelineName;
 	mutable std::vector<std::string> m_weightNames;
+	double m_baseWeight;
 };
 

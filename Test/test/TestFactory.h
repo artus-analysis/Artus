@@ -21,9 +21,8 @@ public:
 	virtual ~TestFactory() {
 	}
 
-	virtual ProducerBaseUntemplated * createProducer(std::string const& id)
-			ARTUS_CPP11_OVERRIDE
-			{
+	virtual ProducerBaseUntemplated* createProducer(std::string const& id) override
+	{
 		if (TestLocalProducer().GetProducerId() == id) {
 			return new TestLocalProducer();
 		} else if (TestLocalProducerFromGlobal().GetProducerId() == id) {
@@ -36,12 +35,11 @@ public:
 			LOG(FATAL) << "Producer with id " << id << " not found!";
 		}
 
-		return ARTUS_CPP11_NULLPTR;
+		return nullptr;
 	}
 
-	virtual ConsumerBaseUntemplated * createConsumer(std::string const& id)
-			ARTUS_CPP11_OVERRIDE
-			{
+	virtual ConsumerBaseUntemplated* createConsumer(std::string const& id) override
+	{
 		if (TestConsumer().GetConsumerId() == id) {
 			return new TestConsumer();
 		} else if (TestConsumerLocalProduct().GetConsumerId() == id) {
@@ -50,12 +48,11 @@ public:
 			LOG(FATAL) << "Consumer with id " << id << " not found!";
 		}
 
-		return ARTUS_CPP11_NULLPTR;
+		return nullptr;
 	}
 
-	virtual FilterBaseUntemplated * createFilter(std::string const& id)
-			ARTUS_CPP11_OVERRIDE
-			{
+	virtual FilterBaseUntemplated * createFilter(std::string const& id) override
+	{
 		if (TestFilter().GetFilterId() == id) {
 			return new TestFilter();
 		} else if (TestFilter2().GetFilterId() == id) {
@@ -70,7 +67,7 @@ public:
 			LOG(FATAL) << "Filter with id " << id << " not found!";
 		}
 
-		return ARTUS_CPP11_NULLPTR;
+		return nullptr;
 	}
 
 };

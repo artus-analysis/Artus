@@ -44,7 +44,7 @@ public:
 	{
 	}
 
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
+	virtual void Init(setting_type const& settings) override
 	{
 		ProducerBase<TTypes>::Init(settings);
 		
@@ -89,7 +89,7 @@ public:
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
-	                     setting_type const& settings) const ARTUS_CPP11_OVERRIDE
+	                     setting_type const& settings) const override
 	{
 		// construct and fill input vector
 		std::vector<double> tmvaInputs(m_inputExtractors.size());
@@ -137,7 +137,7 @@ class GeneralTmvaClassificationReader: public TmvaClassificationReaderBase<Kappa
 {
 public:
 
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetProducerId() const override;
 	
 	GeneralTmvaClassificationReader();
 	

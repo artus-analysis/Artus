@@ -12,14 +12,15 @@ import sys
 import tempfile
 
 import ROOT
+ROOT.gROOT.SetBatch(True)
 ROOT.PyConfig.IgnoreCommandLineOptions = True
+ROOT.gErrorIgnoreLevel = ROOT.kError
 
 import Artus.Utility.jsonTools as jsonTools
 
 
 
 def main():
-	ROOT.gROOT.SetBatch(True)
 	
 	parser = argparse.ArgumentParser(description="Compare or print Artus configurations", parents=[logger.loggingParser])
 

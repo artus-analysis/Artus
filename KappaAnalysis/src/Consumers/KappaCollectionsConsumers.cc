@@ -1,4 +1,3 @@
-
 #include "Artus/KappaAnalysis/interface/Consumers/KappaCollectionsConsumers.h"
 
 
@@ -7,7 +6,7 @@ KappaElectronsConsumer::KappaElectronsConsumer() :
 	                             &product_type::m_validElectrons,
 	                             &setting_type::GetBranchGenMatchedElectrons,
 								 &setting_type::GetBranchObjectMatchedPF,
-	                             0,
+	                             nullptr,
 	                             &product_type::m_genParticleMatchedElectrons,
 	                             &product_type::m_genTauMatchedElectrons,
 	                             &product_type::m_genTauJetMatchedElectrons)
@@ -26,7 +25,7 @@ KappaMuonsConsumer::KappaMuonsConsumer() :
 	                             &product_type::m_validMuons,
 	                             &setting_type::GetBranchGenMatchedMuons,
 								 &setting_type::GetBranchObjectMatchedPF,
-	                             0,
+	                             nullptr,
 	                             &product_type::m_genParticleMatchedMuons,
 	                             &product_type::m_genTauMatchedMuons,
 	                             &product_type::m_genTauJetMatchedMuons)
@@ -65,10 +64,10 @@ KappaJetsConsumer::KappaJetsConsumer() :
 	                             &product_type::m_validJets,
 	                             &setting_type::GetBranchGenMatchedJets,
 	                             &setting_type::GetBranchObjectMatchedPF,
-	                             0,
+	                             nullptr,
 	                             &product_type::m_genParticleMatchedJets,
-	                             0,
-	                             0)
+	                             nullptr,
+	                             nullptr)
 {
 }
 
@@ -86,8 +85,8 @@ KappaTaggedJetsConsumer::KappaTaggedJetsConsumer() :
 	                             &setting_type::GetBranchObjectMatchedPF,
 	                             &event_type::m_jetMetadata,
 	                             &product_type::m_genParticleMatchedJets,
-	                             0,
-	                             0)
+	                             nullptr,
+	                             nullptr)
 {
 }
 
@@ -95,4 +94,3 @@ std::string KappaTaggedJetsConsumer::GetConsumerId() const
 {
 	return "KappaTaggedJetsConsumer";
 }
-

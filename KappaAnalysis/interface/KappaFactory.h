@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/FactoryBase.h"
 
 //template<class TTypes>
@@ -17,13 +16,10 @@ public:
 
 	virtual ~KappaFactory() {}
 
-	virtual ProducerBaseUntemplated * createProducer ( std::string const& id )
-		ARTUS_CPP11_OVERRIDE;
+	virtual ProducerBaseUntemplated* createProducer(std::string const& id) override;
 
-	virtual FilterBaseUntemplated * createFilter ( std::string const& id )
-		ARTUS_CPP11_OVERRIDE;
+	virtual FilterBaseUntemplated* createFilter(std::string const& id) override;
 
-	virtual ConsumerBaseUntemplated * createConsumer ( std::string const& id )
-		ARTUS_CPP11_OVERRIDE;
+	virtual ConsumerBaseUntemplated* createConsumer(std::string const& id) override;
 
 };

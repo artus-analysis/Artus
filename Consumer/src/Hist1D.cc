@@ -13,7 +13,7 @@
 
 Hist1D::Hist1D(std::string sName, std::string sFolder, ValueModifiers l) :
 		HistBase<Hist1D>(sName, sFolder), m_iBinCount(100), m_dBinLower(0.0f), m_dBinUpper(
-				200.0f), m_bUseCustomBin(false), m_modifiers(l) {
+				200.0f), m_bUseCustomBin(false), m_modifiers(l), m_hist(nullptr) {
 
 	// apply modifiers
 	for (auto const& m : m_modifiers) {
@@ -34,12 +34,12 @@ Hist1D::Hist1D(std::string sName, std::string sFolder, ValueModifiers l) :
 						this->m_iBinCount, this->m_dBinLower,
 						this->m_dBinUpper));
 	}
-	// store sum of weights^2 per bin to take the weight into consideration 
+	// store sum of weights^2 per bin to take the weight into consideration
 	// for the error computation
 	// From ROOT docu:
-	//  If Sumw2 has been called, the error per bin is computed as 
-	//  the sqrt(sum of squares of weights), otherwise the error is 
-	//  set equal to the sqrt(bin content). 
+	//  If Sumw2 has been called, the error per bin is computed as
+	//  the sqrt(sum of squares of weights), otherwise the error is
+	//  set equal to the sqrt(bin content).
 	m_hist->Sumw2();
 }
 

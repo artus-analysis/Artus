@@ -9,12 +9,13 @@ import argparse
 import os
 
 import ROOT
+ROOT.gROOT.SetBatch(True)
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gErrorIgnoreLevel = ROOT.kError
 
 
 def main():
-	ROOT.gROOT.SetBatch(True)
+	
 	ROOT.gSystem.Load(os.path.expandvars("$CMSSW_BASE/src/Kappa/lib/libKappa"))
 	
 	parser = argparse.ArgumentParser(description="Print out the available jet taggers in a kappa skim.", parents=[logger.loggingParser])

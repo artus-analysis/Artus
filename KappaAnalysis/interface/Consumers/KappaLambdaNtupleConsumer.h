@@ -1,9 +1,7 @@
-
 #pragma once
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Utility/interface/DefaultValues.h"
 #include "Artus/Utility/interface/Utility.h"
 
@@ -20,17 +18,17 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 
-	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE
+	virtual std::string GetConsumerId() const override
 	{
 		return "KappaLambdaNtupleConsumer";
 	}
-	
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
+
+	virtual void Init(setting_type const& settings) override
 	{
 		// add possible quantities for the lambda ntuples consumers
-		LambdaNtupleConsumer<TTypes>::AddIntQuantity("input", [](event_type const& event, product_type const& product) -> int
+		LambdaNtupleConsumer<TTypes>::AddIntQuantity("input", [](event_type const& event, product_type const& product)
 		{
-			return event.m_input;
+			return static_cast<int>(event.m_input);
 		});
 		LambdaNtupleConsumer<TTypes>::AddUInt64Quantity("run", [](event_type const& event, product_type const& product) -> uint64_t
 		{
@@ -44,20 +42,27 @@ public:
 		{
 			return event.m_eventInfo->nEvent;
 		});
-		
+
 		LambdaNtupleConsumer<TTypes>::AddIntQuantity("npv", [](event_type const& event, product_type const& product)
 		{
 			return event.m_vertexSummary->nVertices;
 		});
 
 		bool bInpData = settings.GetInputIsData();
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("npuMean", [bInpData](event_type const& event, product_type const& product)
+		{
+			if (bInpData)
+				return DefaultValues::UndefinedFloat;
+			return static_cast<KGenEventInfo*>(event.m_eventInfo)->nPUMean;
+		});
+
 		LambdaNtupleConsumer<TTypes>::AddIntQuantity("npu", [bInpData](event_type const& event, product_type const& product)
 		{
-			return (bInpData ?
-			        DefaultValues::UndefinedInt :
-			        static_cast<KGenEventInfo*>(event.m_eventInfo)->nPUMean);
+			if (bInpData)
+				return DefaultValues::UndefinedInt;
+			return static_cast<int>(static_cast<KGenEventInfo*>(event.m_eventInfo)->nPU);
 		});
-		
+
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("rho", [](event_type const& event, product_type const& product) {
 			return event.m_pileupDensity->rho;
 		});
@@ -82,6 +87,19 @@ public:
 				LambdaNtupleConsumer<TTypes>::AddFloatQuantity( quantity, [quantity](event_type const & event, product_type const & product)
 				{
 					return SafeMap::GetWithDefault(product.m_weights, quantity, SafeMap::GetWithDefault(product.m_optionalWeights, quantity, 1.0));
+				} );
+			}
+			if ((boost::algorithm::icontains(quantity, "filter") || boost::algorithm::icontains(quantity, "cut")) &&
+			   (LambdaNtupleConsumer<TTypes>::GetFloatQuantities().count(quantity) == 0))
+			{
+				LOG(DEBUG) << "\tQuantity \"" << quantity << "\" is tried to be taken from prduct.fres (FilterResult).";
+				LambdaNtupleConsumer<TTypes>::AddIntQuantity( quantity, [quantity](event_type const & event, product_type const & product)
+				{
+					if (product.fres.GetDecisionEntry(quantity) != nullptr)
+					{
+						return (product.fres.GetDecisionEntry(quantity)->filterDecision == FilterResult::Decision::Passed) ? 1 : 0;
+					}
+					return -1;
 				} );
 			}
 		}

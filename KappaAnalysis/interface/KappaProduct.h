@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "Kappa/DataFormats/interface/Kappa.h"
@@ -39,10 +38,10 @@ public:
 	// all weights in this map are multiplied into one "eventWeight" by the EventWeightProducer
 	// events in this map can be written out automatically by the KappaLambdaNtupleConsumer
 	std::map<std::string, double> m_weights;
-	
+
 	// events in this map can be written out automatically by the KappaLambdaNtupleConsumer
 	std::map<std::string, double> m_optionalWeights;
-	
+
 	// filled by GenTauDecayProducer
 	std::vector<MotherDaughterBundle> m_genBoson;
 
@@ -84,6 +83,9 @@ public:
 
 	/// added by GenParticleProducer
 	std::map<int, std::vector<KGenParticle*>> m_genParticlesMap;
+	std::vector<KGenParticle*> m_genElectrons;
+	std::vector<KGenParticle*> m_genMuons;
+	std::vector<KGenParticle*> m_genTaus;
 	
 	/// added by GenDiLeptonDecayModeProducer
 	KappaEnumTypes::DiLeptonDecayMode m_genDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::NONE;
@@ -93,8 +95,10 @@ public:
 	std::vector<KJet*> m_nonBTaggedJets;
 	
 	mutable HLTTools m_hltInfo = HLTTools();
-	std::string m_selectedHltName;
-	int m_selectedHltPosition;
+	// selected means fired (and unprescaled if requested)
+	std::vector<std::string> m_selectedHltNames;
+	std::vector<int> m_selectedHltPositions;
+	std::vector<int> m_selectedHltPrescales;
 
 	/// added by TriggerMatchingProducer
 	std::map<KElectron*, KLV*> m_triggerMatchedElectrons;
@@ -102,6 +106,18 @@ public:
 	std::map<KTau*, KLV*> m_triggerMatchedTaus;
 	std::map<KBasicJet*, KLV*> m_triggerMatchedJets;
 	std::map<KJet*, KLV*> m_triggerMatchedTaggedJets;
+	
+	std::map<KLepton*, KLV*> m_triggerMatchedLeptons;
+	
+	/// added by TriggerMatchingProducer
+	// m_detailedTriggerMatchedElectrons[reco lepton][HLT name][filter name] = {trigger objects}
+	std::map<KElectron*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > > m_detailedTriggerMatchedElectrons;
+	std::map<KMuon*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > > m_detailedTriggerMatchedMuons;
+	std::map<KTau*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > > m_detailedTriggerMatchedTaus;
+	std::map<KBasicJet*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > > m_detailedTriggerMatchedJets;
+	std::map<KJet*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > > m_detailedTriggerMatchedTaggedJets;
+	
+	std::map<KLepton*, std::map<std::string, std::map<std::string, std::vector<KLV*> > >* > m_detailedTriggerMatchedLeptons;
 
 	/// added by GenMatchingProducer
 	std::map<KElectron*, KGenParticle*> m_genParticleMatchedElectrons;
@@ -134,6 +150,7 @@ public:
 	int m_tau2DecayMode;
 	int m_tau1ProngSize;
 	int m_tau2ProngSize;
+	int m_genTauDecayMode;
 
 	// GenPartonCounterProducer
 	int m_genNPartons = -1;

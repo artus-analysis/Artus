@@ -70,12 +70,14 @@ protected:
 		for (std::map<std::string, std::vector<float> >::const_iterator lowerPtCutByHltName = lowerPtCutsByHltName.begin();
 		     lowerPtCutByHltName != lowerPtCutsByHltName.end() && validObject; ++lowerPtCutByHltName)
 		{
+			bool hasMatch = false;
+			for (unsigned int iHlt = 0; iHlt < product.m_selectedHltNames.size(); iHlt++)
+				hasMatch = hasMatch || boost::regex_search(product.m_selectedHltNames.at(iHlt), boost::regex(lowerPtCutByHltName->first, boost::regex::icase | boost::regex::extended));
+
 			if ((physicsObject->p4.Pt() < *std::max_element(lowerPtCutByHltName->second.begin(), lowerPtCutByHltName->second.end()))
 			    &&
 			    (
-			    	(lowerPtCutByHltName->first == "default")
-			    	||
-			    	boost::regex_search(product.m_selectedHltName, boost::regex(lowerPtCutByHltName->first, boost::regex::icase | boost::regex::extended))
+			    	(lowerPtCutByHltName->first == "default") || hasMatch 	
 			    )
 			   )
 			{
@@ -86,12 +88,14 @@ protected:
 		for (std::map<std::string, std::vector<float> >::const_iterator upperAbsEtaCutByHltName = upperAbsEtaCutsByHltName.begin();
 		     upperAbsEtaCutByHltName != upperAbsEtaCutsByHltName.end() && validObject; ++upperAbsEtaCutByHltName)
 		{
+			bool hasMatch = false;
+			for (unsigned int iHlt = 0; iHlt < product.m_selectedHltNames.size(); iHlt++)
+				hasMatch = hasMatch || boost::regex_search(product.m_selectedHltNames.at(iHlt), boost::regex(upperAbsEtaCutByHltName->first, boost::regex::icase | boost::regex::extended));
+
 			if ((std::abs(physicsObject->p4.Eta()) > *std::min_element(upperAbsEtaCutByHltName->second.begin(), upperAbsEtaCutByHltName->second.end()))
 			    &&
 			    (
-			    	(upperAbsEtaCutByHltName->first == "default")
-			    	||
-			    	boost::regex_search(product.m_selectedHltName, boost::regex(upperAbsEtaCutByHltName->first, boost::regex::icase | boost::regex::extended))
+			    	(upperAbsEtaCutByHltName->first == "default") || hasMatch
 			    )
 			   )
 			{

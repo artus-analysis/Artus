@@ -1,29 +1,24 @@
-
 #pragma once
 
 #include "TRandom3.h"
 #include <TMath.h>
 #include <iostream>
 
-class BtagSF {
+class BtagSF
+{
+  public:
+	BtagSF(int seed = 0);
+	~BtagSF();
 
- public:
-    
-  BtagSF( int seed=0 );
-  ~BtagSF();
-    
-  Bool_t isbtagged(Float_t pt, Float_t eta, Float_t csv, Int_t jetflavor, Bool_t isdata, UInt_t btagsys, UInt_t mistagsys, Bool_t is2012);
-  Double_t getSFb(Float_t pt, UInt_t btagsys, Bool_t is2012);
-  Double_t getSFc(Float_t pt, UInt_t btagsys, Bool_t is2012);
-  Double_t getSFl(Float_t pt, Float_t eta, UInt_t mistagsys, Bool_t is2012);
-  Double_t getMistag(Float_t pt, Float_t eta);
+	bool isbtagged(double pt, float eta, float csv, Int_t jetflavor, bool isdata,
+	               unsigned int btagsys, unsigned int mistagsys, bool is2012);
+	double getSFb(double pt, unsigned int btagsys, bool is2012);
+	double getSFc(double pt, unsigned int btagsys, bool is2012);
+	double getSFl(double pt, float eta, unsigned int mistagsys, bool is2012);
+	double getMistag(double pt, float eta);
 
-  enum { kNo, kDown, kUp };                     // systematic variations 
+	enum { kNo,	kDown, kUp }; // systematic variations
 
-
- private:
-  
-  TRandom3* randm;
-
+  private:
+	TRandom3* randm;
 };
-

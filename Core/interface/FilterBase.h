@@ -11,7 +11,6 @@
 #include <map>
 #include <sstream>
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Core/interface/ProcessNodeBase.h"
 #include "Artus/Utility/interface/ArtusLogging.h"
 
@@ -78,7 +77,7 @@ public:
 	// initialise global pre-filters
 	virtual void Init(setting_type const& settings)
 	{
-		LOG(INFO) << "Initialize Filter \"" << this->GetFilterId() << "\".";
+		LOG(DEBUG) << "Initialize filter \"" << this->GetFilterId() << "\".";
 	}
 
 	// process global event
@@ -93,9 +92,7 @@ public:
 		return GetFilterId();
 	}
 
-	virtual ProcessNodeType GetProcessNodeType () const
-		ARTUS_CPP11_OVERRIDE
-		ARTUS_CPP11_FINAL
+	virtual ProcessNodeType GetProcessNodeType () const override final
 	{
 		return ProcessNodeType::Filter;
 	}
@@ -104,7 +101,7 @@ protected:
 
 	virtual bool baseDoesEventPass(EventBase const& evt,
 			ProductBase const& prod,
-			SettingsBase const& settings ) const ARTUS_CPP11_OVERRIDE {
+			SettingsBase const& settings ) const override {
 		auto const& specEvent = static_cast < event_type const&> ( evt );
 		auto const& specProd = static_cast < product_type const&> ( prod );
 		auto const& specSetting = static_cast < setting_type const&> ( settings );
@@ -112,7 +109,7 @@ protected:
 		return DoesEventPass( specEvent, specProd, specSetting );
 	}
 
-	virtual void baseInit ( SettingsBase const& settings ) ARTUS_CPP11_OVERRIDE {
+	virtual void baseInit (SettingsBase const& settings) override {
 		auto const& specSettings = static_cast < setting_type const&> ( settings );
 
 		this->Init ( specSettings );

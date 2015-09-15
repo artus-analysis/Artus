@@ -45,7 +45,7 @@ bool HCALNoiseFilter::DoesEventPass(KappaEvent const& event, KappaProduct const&
 	       (event.m_hcalNoiseSummary->numIsolatedNoiseChannels < minNumIsolatedNoiseChannels) &&
 	       (event.m_hcalNoiseSummary->isolatedNoiseSumE < minIsolatedNoiseSumE) &&
 	       (event.m_hcalNoiseSummary->isolatedNoiseSumEt < minIsolatedNoiseSumEt) &&
-	       ((event.m_hcalNoiseSummary->hasBadRBXTS4TS5 == false) || (useTS4TS5 == false));
+	       (!event.m_hcalNoiseSummary->hasBadRBXTS4TS5 || !useTS4TS5);
 	return pass;
 }
 

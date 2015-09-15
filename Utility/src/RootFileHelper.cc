@@ -7,7 +7,7 @@
 void RootFileHelper::SafeCd(TDirectory * pDir, std::string const& dirName) {
 	assert(pDir);
 
-	if (pDir->GetDirectory(dirName.c_str()) == 0) {
+	if (pDir->GetDirectory(dirName.c_str()) == nullptr) {
 		pDir->mkdir(dirName.c_str());
 	}
 	pDir->cd(dirName.c_str());

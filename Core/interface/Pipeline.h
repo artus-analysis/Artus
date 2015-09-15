@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <sstream>
+#include <time.h>
 
 #include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
@@ -102,8 +103,10 @@ public:
 	/// can create specific Filters and Consumers
 	virtual void InitPipeline(setting_type pset,
 			PipelineInitilizerBase<TTypes> const& initializer) {
-		LOG(INFO) << "Initialize pipeline \"" << pset.GetName() << "\".";
-		
+
+		LOG(DEBUG) << "";
+		LOG(DEBUG) << "Initialize pipeline \"" << pset.GetName() << "\".";
+
 		m_pipelineSettings = pset;
 		initializer.InitPipeline(this, pset);
 
@@ -129,6 +132,7 @@ public:
 
 		// store the filter names for later use in RunEvent
 		m_filterNames = pset.GetFilters();
+		m_taggingFilters = pset.GetTaggingFilters();
 	}
 
 	/// Useful debug output of the Pipeline Content.
@@ -173,11 +177,15 @@ public:
 		// and allow this one to be modified by local producers/filters.
 		product_type localProduct ( globalProduct );
 		FilterResult localFilterResult ( globalFilterResult );
-		localFilterResult.AddFilterNames( m_filterNames );
+		localFilterResult.AddFilterNames( m_filterNames, m_taggingFilters );
 
 		// run Filters & Producers
 		for( ProcessNodeIterator it = m_nodes.begin();
 				it != m_nodes.end(); it ++ ) {
+
+			// variables for runtime measurement
+			timeval tStart, tEnd;
+			int runTime;
 
 			// stop processing as soon as one filter fails
 			// but the consumers will still be processed
@@ -185,22 +193,31 @@ public:
 			// already failed
 			if (! localFilterResult.HasPassed())
 				break;
-			
+
 			if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
 				ProducerForThisPipeline& prod = static_cast<ProducerForThisPipeline&>(*it);
 				//LOG(DEBUG) << prod.GetProducerId() << "::Produce (pipeline: " << m_pipelineSettings.GetName() << ")";
+				gettimeofday(&tStart, nullptr);
 				ProducerBaseAccess(prod).Produce(evt, localProduct, m_pipelineSettings);
+				gettimeofday(&tEnd, nullptr);
+				runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);  // a long int might be needed here but SafeMaps for long ints are not yet working
+				localProduct.processorRunTime[prod.GetProducerId()] = runTime;
 			}
 			else if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
 				FilterForThisPipeline & flt = static_cast<FilterForThisPipeline&>(*it);
 				//LOG(DEBUG) << flt.GetFilterId() << "::DoesEventPass (pipeline: " << m_pipelineSettings.GetName() << ")";
+				gettimeofday(&tStart, nullptr);
 				const bool filterResult = FilterBaseAccess(flt).DoesEventPass(evt, localProduct, m_pipelineSettings);
 				localFilterResult.SetFilterDecision(flt.GetFilterId(), filterResult);
+				gettimeofday(&tEnd, nullptr);
+				runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);  // a long int might be needed here but SafeMaps for long ints are not yet working
+				localProduct.processorRunTime[flt.GetFilterId()] = runTime;
 			}
 			else {
 				LOG(FATAL) << "ProcessNodeType not supported by the pipeline!";
 			}
 		}
+		localProduct.fres = localFilterResult;
 
 		// run Consumers
 		for (ConsumerVectorIterator itcons = m_consumer.begin(); itcons != m_consumer.end(); itcons++) {
@@ -226,7 +243,7 @@ public:
 			}
 		}
 
-		return NULL;
+		return nullptr;
 	}
 
 	/// Return a reference to the settings used within this pipeline.
@@ -236,7 +253,7 @@ public:
 
 	/// Add a new Filter to this Pipeline. The object will be freed in Pipelines destructor.
 	virtual void AddFilter(FilterForThisPipeline * pFilter) {
-		if (FindFilter(pFilter->GetFilterId()) != NULL)
+		if (FindFilter(pFilter->GetFilterId()) != nullptr)
 			throw std::exception();
 
 		m_nodes.push_back(pFilter);
@@ -268,5 +285,6 @@ private:
 	ProcessNodeVector m_nodes;
 	setting_type m_pipelineSettings;
 	stringvector m_filterNames;
+	stringvector m_taggingFilters;
 };
 

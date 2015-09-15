@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
 #include "Artus/Consumer/interface/ValueModifier.h"
 
 #include "Artus/Consumer/interface/DrawHist1dConsumer.h"
@@ -29,7 +28,7 @@ class TraxPipelineInitializer: public PipelineInitilizerBase<TraxTypes > {
 public:
 
 	virtual void InitPipeline(TraxPipeline * pLine,
-			TraxSettings const& pset) const ARTUS_CPP11_OVERRIDE
+			TraxSettings const& pset) const override
 			{
 
 		// define how to extract Pt and the range

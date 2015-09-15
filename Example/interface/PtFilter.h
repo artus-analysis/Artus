@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "Artus/Core/interface/Cpp11Support.h"
-
 #include "TraxTypes.h"
 
 class PtFilter: public TraxFilterBase
@@ -18,18 +16,18 @@ public:
 	{
 	}
 
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE
+	virtual std::string GetFilterId() const override
 	{
 		return "filter_pt";
 	}
 
-	virtual void Init(TraxSettings const& globalSettings) ARTUS_CPP11_OVERRIDE
+	virtual void Init(TraxSettings const& globalSettings) override
 	{
 		FilterBase<TraxTypes>::Init(globalSettings);
 	}
 
 	virtual bool DoesEventPass(TraxEvent const& event,
-			TraxProduct const& product, TraxSettings const& settings) const ARTUS_CPP11_OVERRIDE
+			TraxProduct const& product, TraxSettings const& settings) const override
 	{
 
 		const float lowCut = settings.GetFilterPtLow();

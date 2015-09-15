@@ -12,7 +12,8 @@ RecoElectronGenTauJetMatchingProducer::RecoElectronGenTauJetMatchingProducer() :
 	                                          &product_type::m_invalidElectrons,
 	                                          RecoElectronGenTauJetMatchingProducer::TauDecayMode::E,
 	                                          &setting_type::GetDeltaRMatchingRecoElectronGenTauJet,
-	                                          &setting_type::GetInvalidateNonGenTauJetMatchingRecoElectrons)
+	                                          &setting_type::GetInvalidateNonGenTauJetMatchingRecoElectrons,
+						  &setting_type::GetInvalidateGenTauJetMatchingRecoElectrons)
 {
 }
 
@@ -27,7 +28,8 @@ RecoMuonGenTauJetMatchingProducer::RecoMuonGenTauJetMatchingProducer() :
 	                                      &product_type::m_invalidMuons,
 	                                      RecoMuonGenTauJetMatchingProducer::TauDecayMode::M,
 	                                      &setting_type::GetDeltaRMatchingRecoMuonGenTauJet,
-	                                      &setting_type::GetInvalidateNonGenTauJetMatchingRecoMuons)
+	                                      &setting_type::GetInvalidateNonGenTauJetMatchingRecoMuons,
+					      &setting_type::GetInvalidateGenTauJetMatchingRecoMuons)
 {
 }
 
@@ -42,7 +44,8 @@ RecoTauGenTauJetMatchingProducer::RecoTauGenTauJetMatchingProducer() :
 	                                       &product_type::m_invalidTaus,
 	                                       RecoTauGenTauJetMatchingProducer::TauDecayMode::T,
 	                                       &setting_type::GetDeltaRMatchingRecoTauGenTauJet,
-	                                       &setting_type::GetInvalidateNonGenTauJetMatchingRecoTaus)
+	                                       &setting_type::GetInvalidateNonGenTauJetMatchingRecoTaus,
+					       &setting_type::GetInvalidateGenTauJetMatchingRecoTaus)
 {
 }
 

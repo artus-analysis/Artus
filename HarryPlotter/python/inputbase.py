@@ -11,11 +11,15 @@ import collections
 import ROOT
 
 import Artus.HarryPlotter.processor as processor
-
+from Artus.HarryPlotter.utility.binnings import BinningsDict
+from Artus.HarryPlotter.utility.expressions import ExpressionsDict
 
 class InputBase(processor.Processor):
 	def __init__(self):
 		super(InputBase, self).__init__()
+		
+		self.binnings = BinningsDict()
+		self.expressions = ExpressionsDict()
 	
 	def modify_argument_parser(self, parser, args):
 		self.input_options = parser.add_argument_group("Input options")
@@ -43,9 +47,9 @@ class InputBase(processor.Processor):
 		
 		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors"])
 		
-		plotData.plotdict["x_bins"] = [x_bins if x_bins is None else x_bins.split() for x_bins in plotData.plotdict["x_bins"]]
-		plotData.plotdict["y_bins"] = [y_bins if y_bins is None else y_bins.split() for y_bins in plotData.plotdict["y_bins"]]
-		plotData.plotdict["z_bins"] = [z_bins if z_bins is None else z_bins.split() for z_bins in plotData.plotdict["z_bins"]]
+		# replace binnings with values from dictionaries
+		for axis in ['x', 'y', 'z']:
+			plotData.plotdict[axis+"_bins"] = [bins if bins is None else self.binnings.get_binning(bins).split() for bins in plotData.plotdict[axis+"_bins"]]
 		
 		# prepare scale factors
 		plotData.plotdict["scale_factors"] = [float(scale) if scale != None else 1.0 for scale in plotData.plotdict["scale_factors"]]
@@ -94,6 +98,7 @@ class InputBase(processor.Processor):
 
 			if isinstance(root_object, ROOT.TH1):
 				root_object.Scale(scale_factor)
+				log.debug("Scaling histogram {} by {}".format(nick, scale_factor))
 			elif scale_factor != 1.0:
 				log.warning("Scaling currently only implemented for histograms!")
 

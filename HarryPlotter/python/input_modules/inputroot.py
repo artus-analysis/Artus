@@ -12,6 +12,7 @@ import os
 import sys
 import ROOT
 
+
 import Artus.HarryPlotter.inputbase as inputbase
 import Artus.HarryPlotter.input_modules.inputfile as inputfile
 import Artus.HarryPlotter.utility.roottools as roottools
@@ -42,17 +43,23 @@ class InputRoot(inputfile.InputFile):
 		self.input_options.add_argument("-z", "--z-expressions", type=str, nargs="+",
 		                                help="z-axis variable expression(s)")
 		self.input_options.add_argument("-w", "--weights", type=str, nargs="+", default="1.0",
-		                                help="Weight (cut) expression(s). [Default: %(default)s]")
+		                                help="Weight (cut) expression(s). See https://root.cern.ch/root/html/TTree.html#TTree:Draw@2 under 'selection...' for an explanation. [Default: %(default)s]")
 		
 		self.input_options.add_argument("--x-bins", type=str, nargs='+', default=[None],
-		                                help="Binings for x-axis. In case only one argument (per input) is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [Default: [\"25\"] for trees, no rebinning for histograms]")
+		                                help="Binnings for x-axis. Possible inputs:\
+		                                      --x-bins \"25\" for nBins; --x-bins \"20,0,1000\" for nBins, lower and upper limit;\
+		                                      --x-bins \"0 10 20 30 50 100 100\" for custom bin widths.\
+		                                      [Default: [\"25\"] for trees, no rebinning for histograms]")
 		self.input_options.add_argument("--y-bins", type=str, nargs='+', default=[None],
-		                                help="Binings for y-axis of 2D/3D histograms. In case only one argument (per input) is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [\"25\"] for trees, no rebinning for histograms]")
+		                                help="Binnings for y-axis of 2D/3D histograms. See help for --x-bins for more information. [Default: [\"25\"] for trees, no rebinning for histograms]")
 		self.input_options.add_argument("--z-bins", type=str, nargs='+', default=[None],
-		                                help="Binings for z-axis of 3D histograms. In case only one argument (per input) is specified, is is taken as for the first parameter of TTree::Draw. Multiple arguments specify custom bin edgeds. [\"25\"] for trees, no rebinning for histograms]")
+		                                help="Binnings for z-axis of 3D histograms. See help for --x-bins for more information. [Default: [\"25\"] for trees, no rebinning for histograms]")
 		
 		self.input_options.add_argument("--tree-draw-options", nargs='+', type=str, default="",
-		                                help="Optional argument for TTree:Draw() call. Use e.g. 'prof' or 'profs' for projections of 2D-Histograms to 1D. See also http://root.cern.ch/ooot/html/TTree.html#TTree:Draw. Specify \"TGraph\" for plotting y- vs. x-values into a TGraph. \"TGraphErrors\" leads to a graph with errors by specifying inputs with --x-expressions <x values>:<x errors> --y-expressions <y values>:<y errors>. \"TGraphAsymmErrorsX\" leads to a graph with asymmetric x-errors by specifying inputs with --x-expressions <x values>:<x errors (down)>:<x errors (up)> --y-expressions <y values>. \"TGraphAsymmErrorsY\" leads to a graph with asymmetric y-errors by specifying inputs with --x-expressions <x values> --y-expressions <y values>:<y errors (down)>:<y errors (up)>.")
+		                                help="Optional argument for TTree:Draw() call. Use e.g. \"prof\" or \"profs\" for projections of 2D-Histograms to 1D. See also http://root.cern.ch/ooot/html/TTree.html#TTree:Draw. Specify \"TGraph\" for plotting y- vs. x-values into a TGraph. \"TGraphErrors\" leads to a graph with errors by specifying inputs with --x-expressions <x values>:<x errors> --y-expressions <y values>:<y errors>. \"TGraphAsymmErrorsX\" leads to a graph with asymmetric x-errors by specifying inputs with --x-expressions <x values>:<x errors (down)>:<x errors (up)> --y-expressions <y values>. \"TGraphAsymmErrorsY\" leads to a graph with asymmetric y-errors by specifying inputs with --x-expressions <x values> --y-expressions <y values>:<y errors (down)>:<y errors (up)>. TTree::MakeProxy and TTree::Process is usued to fill the histograms from a tree instead of TTree::Draw or TTree::Project in case you specify the option \"proxy\" This is needed e.g. for formulas containing two branches/leafs with different non-fundamental types.")
+		
+		self.input_options.add_argument("--read-config", nargs="?", type="bool", default=False, const=True,
+		                                help="Read in the config stored in Artus ROOT outputs. [Default: %(default)s]")
 
 	def prepare_args(self, parser, plotData):
 		super(InputRoot, self).prepare_args(parser, plotData)
@@ -70,10 +77,13 @@ class InputRoot(inputfile.InputFile):
 			plotData.plotdict["friend_trees"] = [None]
 
 		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "files", "directories", "folders", "weights", "friend_trees", "tree_draw_options"])
+		inputbase.InputBase.prepare_nicks(plotData)
+		
 		plotData.plotdict["folders"] = [folders.split() if folders else [""] for folders in plotData.plotdict["folders"]]
 		
-		inputbase.InputBase.prepare_nicks(plotData)
-	
+		if plotData.plotdict["read_config"]:
+			self.read_input_json_dicts(plotData)
+
 	def run(self, plotData):
 		
 		root_tools = roottools.RootTools()
@@ -93,10 +103,10 @@ class InputRoot(inputfile.InputFile):
 		) in enumerate(pi.ProgressIterator(zip(
 				plotData.plotdict["files"],
 				plotData.plotdict["folders"],
-				plotData.plotdict["x_expressions"],
-				plotData.plotdict["y_expressions"],
-				plotData.plotdict["z_expressions"],
-				plotData.plotdict["weights"],
+				[self.expressions.replace_expressions(expression) for expression in plotData.plotdict["x_expressions"]],
+				[self.expressions.replace_expressions(expression) for expression in plotData.plotdict["y_expressions"]],
+				[self.expressions.replace_expressions(expression) for expression in plotData.plotdict["z_expressions"]],
+				[self.expressions.replace_expressions(expression) for expression in plotData.plotdict["weights"]],
 				plotData.plotdict["x_bins"],
 				plotData.plotdict["y_bins"],
 				plotData.plotdict["z_bins"],
@@ -137,6 +147,9 @@ class InputRoot(inputfile.InputFile):
 						y_bins=y_bins,
 						z_bins=z_bins,
 						name=None)
+			elif root_object_type == None:
+				log.critical("Error getting ROOT object from file. Exiting.")
+				sys.exit(1)
 			
 			log.debug("Input object %d (nick %s):" % (index, nick))
 			if log.isEnabledFor(logging.DEBUG):
@@ -153,10 +166,16 @@ class InputRoot(inputfile.InputFile):
 			# merging histograms with same nick names is done in upper class
 			plotData.plotdict.setdefault("root_objects", {}).setdefault(nick, []).append(root_histogram)
 
-			# if Artus config dict is present in root file ->  append to plotdict
+		# run upper class function at last
+		super(InputRoot, self).run(plotData)
+
+
+	def read_input_json_dicts(self, plotData):
+		"""If Artus config dict is present in root file -> append to plotdict"""
+		for root_files in plotData.plotdict["files"]:
 			# TODO: make TChain instead of using only first file?
 			with TFileContextManager(root_files[0], "READ") as tfile:
-				keys, names = zip(*root_tools.walk_root_directory(tfile))
+				keys, names = zip(*roottools.RootTools.walk_root_directory(tfile))
 			if jsonTools.JsonDict.PATH_TO_ROOT_CONFIG in names:
 				input_json_dict = jsonTools.JsonDict(root_files)
 			else:
@@ -165,7 +184,4 @@ class InputRoot(inputfile.InputFile):
 
 		# Raise warning if config dict could be read out for some, but not for all files
 		if ({} in plotData.input_json_dicts and not all([i == {} for i in plotData.input_json_dicts])):
-			log.warning("'config' dict could not be read for all input files!")
-
-		# run upper class function at last
-		super(InputRoot, self).run(plotData)
+			log.warning("'config' dict could not be read for all input files! (ignore this warning if you're not using Artus output files)")

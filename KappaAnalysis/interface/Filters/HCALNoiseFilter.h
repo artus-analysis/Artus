@@ -9,23 +9,23 @@
 class HCALNoiseFilter: public FilterBase<KappaTypes>
 {
 public:
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
+	virtual void Init(setting_type const& settings) override;
 	virtual bool DoesEventPass(KappaEvent const& event, KappaProduct const& product,
-	                           KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE;
+	                           KappaSettings const& settings) const override;
 
 private:
-	double minRatio;
-	double maxRatio;
+	bool useTS4TS5;
+	float minRatio;
+	float maxRatio;
 	int minHPDHits;
 	int minRBXHits;
 	int minHPDNoOtherHits;
 	int minZeros;
-	double minHighEHitTime;
-	double maxHighEHitTime;
-	double maxRBXEMF;
+	float minHighEHitTime;
+	float maxHighEHitTime;
+	float maxRBXEMF;
 	int minNumIsolatedNoiseChannels;
-	double minIsolatedNoiseSumE;
-	double minIsolatedNoiseSumEt;
-	bool useTS4TS5;
+	float minIsolatedNoiseSumE;
+	float minIsolatedNoiseSumEt;
 };

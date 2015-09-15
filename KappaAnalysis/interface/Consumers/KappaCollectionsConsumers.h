@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <TTree.h>
@@ -9,6 +8,21 @@
 #include "Artus/KappaAnalysis/interface/KappaTypes.h"
 
 
+/**
+   \brief KappaCollectionsConsumer, create an TTree with one entry for each valid (Kappa) object.
+
+   This producer creates an ntuple with all data members of the Kappa object as variables.
+   Additionally, a matching to gen particles is possible.
+   Implementations exist for (Tagged)Jets, Taus, Muons and Electrons.
+   The respective producer for valid objects has to be run before.
+
+   This Consumer needs the following config tags:
+     BranchGenMatched(Jets|Taus|Muons|Electrons)	(bool, default false) if true: match the valid reco objects to gen objects
+     AddGenMatchedParticles							(bool, default true) add a branch with the matching gen particles to the tree
+     AddGenMatchedTaus								(bool, default true) add a branch with the matching gen taus to the tree
+     AddGenMatchedTauJets							(bool, default true) add a branch with the matching gen tau jets to the tree
+*/
+
 template<class TObject, class TObjectMetaInfo>
 class KappaCollectionsConsumerBase: public ConsumerBase<KappaTypes>
 {
@@ -18,63 +32,70 @@ public:
 	typedef typename KappaTypes::event_type event_type;
 	typedef typename KappaTypes::product_type product_type;
 	typedef typename KappaTypes::setting_type setting_type;
-	
+
 	KappaCollectionsConsumerBase(std::string treeName,
 	                             std::vector<TObject*> product_type::*validObjects,
 	                             bool (setting_type::*GetBranchGenMatchedObjects)(void) const,
-	                             TObjectMetaInfo* event_type::*objectMetaInfo = 0,
-	                             std::map<TObject*, KGenParticle*> product_type::*genParticleMatchedObjects = 0,
-	                             std::map<TObject*, KGenTau*> product_type::*genTauMatchedObjects = 0,
-	                             std::map<TObject*, KGenJet*> product_type::*genTauJetMatchedObjects = 0) :
+	                             TObjectMetaInfo* event_type::*objectMetaInfo = nullptr,
+	                             std::map<TObject*, KGenParticle*> product_type::*genParticleMatchedObjects = nullptr,
+	                             std::map<TObject*, KGenTau*> product_type::*genTauMatchedObjects = nullptr,
+	                             std::map<TObject*, KGenJet*> product_type::*genTauJetMatchedObjects = nullptr) :
 		ConsumerBase<KappaTypes>(),
 		m_treeName(treeName),
 		m_validObjects(validObjects),
 		GetBranchGenMatchedObjects(GetBranchGenMatchedObjects),
 		m_objectMetaInfo(objectMetaInfo),
-		m_objectMetaInfoAvailable(objectMetaInfo != 0),
+		m_objectMetaInfoAvailable(objectMetaInfo != nullptr),
 		m_genParticleMatchedObjects(genParticleMatchedObjects),
-		m_genParticleMatchedObjectsAvailable(genParticleMatchedObjects != 0),
+		m_genParticleMatchedObjectsAvailable(genParticleMatchedObjects != nullptr),
 		m_genTauMatchedObjects(genTauMatchedObjects),
-		m_genTauMatchedObjectsAvailable(genTauMatchedObjects != 0),
+		m_genTauMatchedObjectsAvailable(genTauMatchedObjects != nullptr),
 		m_genTauJetMatchedObjects(genTauJetMatchedObjects),
-		m_genTauJetMatchedObjectsAvailable(genTauJetMatchedObjects != 0)
+		m_genTauJetMatchedObjectsAvailable(genTauJetMatchedObjects != nullptr)
 	{
 	}
-	
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE
+
+	virtual void Init(setting_type const& settings) override
 	{
 		ConsumerBase<KappaTypes>::Init(settings);
 
 		RootFileHelper::SafeCd(settings.GetRootOutFile(),
 		                       settings.GetRootFileFolder());
-		
 		m_tree = new TTree(m_treeName.c_str(), m_treeName.c_str());
-		
 		m_tree->Branch("object", &m_currentObject);
-		
+
 		if (m_objectMetaInfoAvailable)
 		{
 			m_tree->Branch("meta", &m_currentObjectMetaInfo);
 		}
-		
+
 		if ((settings.*GetBranchGenMatchedObjects)())
 		{
-			m_tree->Branch("genParticle", &m_currentGenParticle);
-			m_tree->Branch("genParticleMatched", &m_currentGenParticleMatched, "genParticleMatched/O");
-			m_tree->Branch("genParticleMatchedDeltaR", &m_currentGenParticleMatchedDeltaR, "genParticleMatchedDeltaR/D");
-			
-			m_tree->Branch("genTau", &m_currentGenTau);
-			m_tree->Branch("genTauMatched", &m_currentGenTauMatched, "genTauMatched/O");
-			m_tree->Branch("genTauMatchedDeltaR", &m_currentGenTauMatchedDeltaR, "genTauMatchedDeltaR/D");
-			
-			m_tree->Branch("genTauJet", &m_currentGenTauJet);
-			m_tree->Branch("genTauJetMatched", &m_currentGenTauJetMatched, "genTauJetMatched/O");
-			m_tree->Branch("genTauJetMatchedDeltaR", &m_currentGenTauJetMatchedDeltaR, "genTauJetMatchedDeltaR/D");
+			if (m_genParticleMatchedObjectsAvailable && settings.GetAddGenMatchedParticles())
+			{
+				m_tree->Branch("genParticle", &m_currentGenParticle);
+				m_tree->Branch("genParticleMatched", &m_currentGenParticleMatched, "genParticleMatched/O");
+				m_tree->Branch("genParticleMatchedDeltaR", &m_currentGenParticleMatchedDeltaR, "genParticleMatchedDeltaR/D");
+			}
+
+			if (m_genTauMatchedObjectsAvailable && settings.GetAddGenMatchedTaus())
+			{
+				m_tree->Branch("genTau", &m_currentGenTau);
+				m_tree->Branch("genTauMatched", &m_currentGenTauMatched, "genTauMatched/O");
+				m_tree->Branch("genTauMatchedDeltaR", &m_currentGenTauMatchedDeltaR, "genTauMatchedDeltaR/D");
+			}
+
+			if (m_genTauJetMatchedObjectsAvailable && settings.GetAddGenMatchedTauJets())
+			{
+				m_tree->Branch("genTauJet", &m_currentGenTauJet);
+				m_tree->Branch("genTauJetMatched", &m_currentGenTauJetMatched, "genTauJetMatched/O");
+				m_tree->Branch("genTauJetMatchedDeltaR", &m_currentGenTauJetMatchedDeltaR, "genTauJetMatchedDeltaR/D");
+			}
 		}
 	}
-	
+
 	virtual void ProcessFilteredEvent(event_type const& event, product_type const& product,
-	                                  setting_type const& settings) ARTUS_CPP11_OVERRIDE
+	                                  setting_type const& settings) override
 	{
 		for (typename std::vector<TObject*>::const_iterator validObject = (product.*m_validObjects).begin();
 		     validObject != (product.*m_validObjects).end(); ++validObject)
@@ -89,12 +110,12 @@ public:
 			
 			if ((settings.*GetBranchGenMatchedObjects)())
 			{
-				if (m_genParticleMatchedObjectsAvailable)
+				if (m_genParticleMatchedObjectsAvailable && settings.GetAddGenMatchedParticles())
 				{
-					KGenParticle* currentGenParticle = SafeMap::GetWithDefault((product.*m_genParticleMatchedObjects), *validObject, (KGenParticle*)(0));
-					m_currentGenParticle = (currentGenParticle != 0 ? *(static_cast<KGenParticle*>(currentGenParticle)) : KGenParticle());
-					m_currentGenParticleMatched = (currentGenParticle != 0);
-					if (currentGenParticle != 0)
+					KGenParticle* currentGenParticle = SafeMap::GetWithDefault((product.*m_genParticleMatchedObjects), *validObject, (KGenParticle*)(nullptr));
+					m_currentGenParticle = (currentGenParticle != nullptr ? *(static_cast<KGenParticle*>(currentGenParticle)) : KGenParticle());
+					m_currentGenParticleMatched = (currentGenParticle != nullptr);
+					if (currentGenParticle != nullptr)
 					{
 						m_currentGenParticleMatchedDeltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, currentGenParticle->p4);
 					}
@@ -104,12 +125,12 @@ public:
 					}
 				}
 				
-				if (m_genTauMatchedObjectsAvailable)
+				if (m_genTauMatchedObjectsAvailable && settings.GetAddGenMatchedTaus())
 				{
-					KGenTau* currentGenTau = SafeMap::GetWithDefault((product.*m_genTauMatchedObjects), *validObject, (KGenTau*)(0));
-					m_currentGenTau = (currentGenTau != 0 ? *(static_cast<KGenTau*>(currentGenTau)) : KGenTau());
-					m_currentGenTauMatched = (currentGenTau != 0);
-					if (currentGenTau != 0)
+					KGenTau* currentGenTau = SafeMap::GetWithDefault((product.*m_genTauMatchedObjects), *validObject, (KGenTau*)(nullptr));
+					m_currentGenTau = (currentGenTau != nullptr ? *(static_cast<KGenTau*>(currentGenTau)) : KGenTau());
+					m_currentGenTauMatched = (currentGenTau != nullptr);
+					if (currentGenTau != nullptr)
 					{
 						m_currentGenTauMatchedDeltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, currentGenTau->visible.p4);
 					}
@@ -119,12 +140,12 @@ public:
 					}
 				}
 				
-				if (m_genTauJetMatchedObjectsAvailable)
+				if (m_genTauJetMatchedObjectsAvailable && settings.GetAddGenMatchedTauJets())
 				{
-					KGenJet* currentGenTauJet = SafeMap::GetWithDefault((product.*m_genTauJetMatchedObjects), *validObject, (KGenJet*)(0));
-					m_currentGenTauJet = (currentGenTauJet != 0 ? *(static_cast<KGenJet*>(currentGenTauJet)) : KGenJet());
-					m_currentGenTauJetMatched = (currentGenTauJet != 0);
-					if (currentGenTauJet != 0)
+					KGenJet* currentGenTauJet = SafeMap::GetWithDefault((product.*m_genTauJetMatchedObjects), *validObject, (KGenJet*)(nullptr));
+					m_currentGenTauJet = (currentGenTauJet != nullptr ? *(static_cast<KGenJet*>(currentGenTauJet)) : KGenJet());
+					m_currentGenTauJetMatched = (currentGenTauJet != nullptr);
+					if (currentGenTauJet != nullptr)
 					{
 						m_currentGenTauJetMatchedDeltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, currentGenTauJet->p4);
 					}
@@ -139,7 +160,7 @@ public:
 		}
 	}
 	
-	virtual void Finish(setting_type const& settings) ARTUS_CPP11_OVERRIDE
+	virtual void Finish(setting_type const& settings) override
 	{
 		RootFileHelper::SafeCd(settings.GetRootOutFile(),
 		                       settings.GetRootFileFolder());
@@ -161,7 +182,7 @@ private:
 	std::map<TObject*, KGenJet*> product_type::*m_genTauJetMatchedObjects;
 	bool m_genTauJetMatchedObjectsAvailable = false;
 	
-	TTree* m_tree = 0;
+	TTree* m_tree = nullptr;
 	
 	TObject m_currentObject;
 	TObjectMetaInfo m_currentObjectMetaInfo;
@@ -183,7 +204,7 @@ class KappaElectronsConsumer: public KappaCollectionsConsumerBase<KElectron, int
 
 public:
 	KappaElectronsConsumer();
-	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetConsumerId() const override;
 };
 
 
@@ -193,7 +214,7 @@ class KappaMuonsConsumer: public KappaCollectionsConsumerBase<KMuon, int>
 
 public:
 	KappaMuonsConsumer();
-	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetConsumerId() const override;
 };
 
 
@@ -203,7 +224,7 @@ class KappaTausConsumer: public KappaCollectionsConsumerBase<KTau, KTauMetadata>
 
 public:
 	KappaTausConsumer();
-	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetConsumerId() const override;
 };
 
 
@@ -213,7 +234,7 @@ class KappaJetsConsumer: public KappaCollectionsConsumerBase<KBasicJet, int>
 
 public:
 	KappaJetsConsumer();
-	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetConsumerId() const override;
 };
 
 
@@ -223,6 +244,6 @@ class KappaTaggedJetsConsumer: public KappaCollectionsConsumerBase<KBasicJet, KJ
 
 public:
 	KappaTaggedJetsConsumer();
-	virtual std::string GetConsumerId() const ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetConsumerId() const override;
 };
 

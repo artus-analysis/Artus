@@ -8,6 +8,7 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import datetime
+import errno
 import hashlib
 import numpy
 import os
@@ -70,7 +71,7 @@ class PlotBase(processor.Processor):
 		
 		self.axis_options.add_argument("--z-lims", type=float, nargs=2,
 		                               help="Lower and Upper limit for z-axis.")
-		self.axis_options.add_argument("--z-label", type=str, default="",
+		self.axis_options.add_argument("--z-label", type=str, default="Events",
 		                               help="Z-axis label name. [Default: %(default)s]")
 		self.axis_options.add_argument("--z-log", nargs="?", type="bool", default=False, const=True,
 		                               help="Logarithmic z-axis. [Default: %(default)s]")
@@ -105,6 +106,10 @@ class PlotBase(processor.Processor):
 		                                     help="Place an axes grid on the subplot. [Default: %(default)s]")
 		self.formatting_options.add_argument("--stacks", type=str, nargs="+", default=[None],
 		                                     help="Defines nick names for stacking. Inputs with the same nick name will be stacked. By default, every input gets a unique nick name. [Default: %(default)s]")
+		self.formatting_options.add_argument("--lines", type=float, nargs="+", default=[],
+		                                     help="Place auxiliary lines at given y-values.")
+		self.formatting_options.add_argument("--subplot-lines", nargs="+", type=float, default=[1.],
+		                                     help="Place auxiliary lines on the subplot at given y-values.")
 
 		# plot labelling
 		self.labelling_options = parser.add_argument_group("Labelling options")
@@ -140,7 +145,7 @@ class PlotBase(processor.Processor):
 
 		# settings to increase usability
 		self.other_options = parser.add_argument_group("Other features")
-		self.other_options.add_argument("--live", default=None, nargs='?', const='gthumb',
+		self.other_options.add_argument("--live", default=None, nargs='?', const='gnome-open',
 		                                 help="Open plot in viewer after its creation. Parameter is the name of your desired viewer.")
 		self.other_options.add_argument("--userpc", nargs="?", type="bool", default=False, const=True,
 		                                 help="If 'live' is enabled, the image will be copied to the user desktop (via ssh) and the image viewer will be started on the user desktop with this option. [Default: %(default)s]")
@@ -150,13 +155,21 @@ class PlotBase(processor.Processor):
 		                                 help="""Push output plots directly to your public EKP webspace.
 		                                 Default location is http://www-ekp.physik.uni-karlsruhe.de/~<USER>/plots_archive/<DATE>
 		                                 Optional argument is the name of a subdirectory that will appended to the default location.""")
+		self.other_options.add_argument("--www-title", type=str, default="Plot overview",
+		                                 help="Title for the web gallery. [Default: %(default)s]")
+		self.other_options.add_argument("--www-text", type=str, default=None,
+		                                 help="Text for the web gallery. [Default: download-link]")
 	
 	def prepare_args(self, parser, plotData):
 		super(PlotBase, self).prepare_args(parser, plotData)
 		
 		if self.predefined_colors is None:
 			self.predefined_colors = colors.ColorsDict(color_scheme=plotData.plotdict["color_scheme"])
-		
+
+		if len(plotData.plotdict["nicks"]) == 0 or all(item is None for item in plotData.plotdict["nicks"]):
+			log.critical("No nicks to plot!")
+			sys.exit()
+
 		# delete nicks that do not need to be used for plotting
 		self.select_histograms(plotData)
 		
@@ -164,13 +177,15 @@ class PlotBase(processor.Processor):
 		for label_key, expression_key in zip(["x_label", "y_label", "z_label"],
 		                                   ["x_expressions", "y_expressions", "z_expressions"]):
 			if plotData.plotdict[label_key] == None:
-				if plotData.plotdict["input_module"] == "InputInteractive":
+				if plotData.plotdict["input_modules"] == ["InputInteractive"]:
 					plotData.plotdict[label_key] = str(label_key[1])
-				else:
-					plotData.plotdict[label_key] = reduce(lambda a, b: "%s, %s" % (str(a), str(b)), set(plotData.plotdict[expression_key]))
-			if plotData.plotdict[label_key] == None: plotData.plotdict[label_key] = ""
+				elif expression_key in plotData.plotdict:
+					plotData.plotdict[label_key] = reduce(lambda a, b: "%s, %s" % (str(a), str(b)), set(plotData.plotdict.get(expression_key, [""])))
+			if plotData.plotdict[label_key] == None:
+				plotData.plotdict[label_key] = ""
 			# if y/z-expressions exist, we dont want the axis to be labelled "Events"
-			if (list(set([x if x is None else str(x) for x in plotData.plotdict[expression_key]])) != [None]
+			if (expression_key in plotData.plotdict
+						and list(set([x if x is None else str(x) for x in plotData.plotdict[expression_key]])) != [None]
 						and len(list(set([x if x is None else str(x) for x in plotData.plotdict[expression_key]]))) == 1
 						and plotData.plotdict[label_key] == "Events"):
 				plotData.plotdict[label_key] = list(set([x if x is None else str(x) for x in plotData.plotdict[expression_key]]))[0]
@@ -187,21 +202,15 @@ class PlotBase(processor.Processor):
 		plotData.plotdict["colors"] = [None if color is None else self.predefined_colors.get_predefined_color(color) for color in plotData.plotdict["colors"]]
 		
 		if plotData.plotdict["www"] != None:
-			plotData.plotdict["output_dir"] = "/".join(['websync', datetime.date.today().strftime('%Y_%m_%d'), (plotData.plotdict["www"] or "")])
-		# create output directory if not exisiting
-		if not os.path.exists(plotData.plotdict["output_dir"]):
-			os.makedirs(plotData.plotdict["output_dir"])
-			log.info("Created output directory \"%s\"." % plotData.plotdict["output_dir"])
+			plotData.plotdict["output_dir"] = os.path.join("websync", datetime.date.today().strftime("%Y_%m_%d"), (plotData.plotdict["www"] or ""))
 		
 		# construct file name from x/y/z expressions if not specified by user
 		if plotData.plotdict["filename"] == None:
 			filename = ""
-			if plotData.plotdict["input_module"] == "InputInteractive":
-				filename = "plot"
-			else:
-				for expressions in [plotData.plotdict["z_expressions"],
-					                plotData.plotdict["y_expressions"],
-					                plotData.plotdict["x_expressions"]]:
+			for expressions in [plotData.plotdict.get("z_expressions", []),
+				                plotData.plotdict.get("y_expressions", []),
+				                plotData.plotdict.get("x_expressions", [])]:
+				try:
 					expression_string = reduce(lambda a, b: "%s__%s" % (str(a), str(b)), set(expressions))
 					if expression_string == None:
 						expression_string = "None"
@@ -210,6 +219,8 @@ class PlotBase(processor.Processor):
 						if len(filename) > 0:
 							filename += "_VS_"
 						filename += expression_string
+				except TypeError:  # no expressions given
+					filename = "plot"
 			plotData.plotdict["filename"] = filename
 
 		# write name of output file in dictionary
@@ -234,6 +245,9 @@ class PlotBase(processor.Processor):
 
 		if plotData.plotdict["legend"] == "None":
 			plotData.plotdict["legend"] = None
+		for key in ['lumis', 'energies']:
+			if plotData.plotdict[key] is not None and all([item in [0, "None"] for item in plotData.plotdict[key]]):
+				plotData.plotdict[key] = None
 
 	def run(self, plotData):
 		super(PlotBase, self).run(plotData)
@@ -275,7 +289,15 @@ class PlotBase(processor.Processor):
 		pass
 	
 	def create_canvas(self, plotData):
-		pass
+		# create output directory if not exisiting
+		try:
+			os.makedirs(plotData.plotdict["output_dir"])
+			log.info("Created output directory \"%s\"." % plotData.plotdict["output_dir"])
+		except OSError as exc:
+			# if target directory already exists, ignore exception:
+			if exc.errno == errno.EEXIST and os.path.isdir(plotData.plotdict["output_dir"]):
+				pass
+			else: raise
 	
 	def prepare_histograms(self, plotData):
 		# handle stacks
@@ -355,10 +377,22 @@ class PlotBase(processor.Processor):
 	
 	def add_texts(self, plotData):
 		self.dataset_title = ""
+		run_periods = []
+		# if lumi and energy are available:
 		if (not plotData.plotdict["lumis"] is None) and (not plotData.plotdict["energies"] is None):
-			run_periods = []
 			for lumi, energy in zip(plotData.plotdict["lumis"], plotData.plotdict["energies"]):
-				run_periods.append("%s \,\mathrm{fb}^{-1} (%s \,TeV)" % (str(lumi), str(int(energy))))
+				if lumi < 0.5:
+					unit = "pb"
+					factor = 1000
+				else:
+					unit = "fb"
+					factor = 1
+				run_periods.append("%s \,\mathrm{%s}^{-1} (%s \,TeV)" % (str(lumi*factor), unit, str(int(energy))))
+		# if only energy is available (MC-plots):
+		elif (not plotData.plotdict["energies"] is None):
+			for energy in plotData.plotdict["energies"]:
+				run_periods.append("\sqrt{s} = %s \,TeV" % str(int(energy)))
+		if len(run_periods) > 0:
 			self.dataset_title = "$" + (" + ".join(run_periods)) + "$"
 	
 	def plot_end(self, plotData):

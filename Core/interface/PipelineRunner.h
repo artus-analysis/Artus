@@ -10,6 +10,8 @@
 #include <vector>
 #include <algorithm>
 #include <unistd.h>
+#include <map>
+#include <sys/time.h>
 
 #include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_list.hpp>
@@ -113,11 +115,17 @@ public:
 	void RunPipelines(TEventProvider & evtProvider,
 			setting_type const& settings)
 	{
-		long long firstEvent = 0;
+		long long firstEvent = settings.GetFirstEvent();
 		long long nEvents = evtProvider.GetEntries();
+		long long processNEvents = settings.GetProcessNEvents();
+		if (processNEvents > 0)
+		{
+			nEvents = processNEvents;
+		}
 		const stringvector globlalFilterIds = settings.GetFilters();
+		const stringvector taggingFilters = settings.GetTaggingFilters();
 
-		// initilize pline filter decision
+		// initialize pline filter decision
 		FilterResult::FilterNames pipelineResultNames(m_pipelines.size());
 		std::transform(m_pipelines.begin(), m_pipelines.end(),
 				pipelineResultNames.begin(),
@@ -138,7 +146,9 @@ public:
 				LOG(FATAL)<< "Pipeline name '" << *itUnq << "' is not unique, but pipeline names must be unique";
 			}
 		}
-		for (long long i = firstEvent; true; ++i)
+		// apparently evtProvider.GetEntries() is not reliable. Therefore, if 'ProcessNEvents' is not set (=-1), the loop condition
+		// always evaluates to true (processNEvents<0) = (-1<0) and is terminated via the 'if (!evtProvider.GetEntry(i)) break' statement
+		for (long long i = firstEvent; ( (processNEvents<0) || (i<(firstEvent + nEvents)) ); ++i)
 		{
 
 			// quit here according to OS
@@ -153,16 +163,19 @@ public:
 			for (ProgressReportIterator it = m_progressReport.begin();
 					it != m_progressReport.end(); it++)
 			{
-				it->update(i, nEvents);
+				it->update(i-firstEvent, nEvents);
 			}
 
 			product_type productGlobal;
 			// use the lit of filters to bootstrap the filter list names
-			FilterResult globalFilterResult ( globlalFilterIds );
+			FilterResult globalFilterResult ( globlalFilterIds, taggingFilters );
 
 			for( ProcessNodesIterator it = m_globalNodes.begin();
 					it != m_globalNodes.end(); it ++ )
 			{
+				// variables for runtime measurement
+				timeval tStart, tEnd;
+				int runTime;
 
 				// stop processing as soon as one filter fails
 				// but the consumers will still be processed
@@ -173,16 +186,24 @@ public:
 				{
 					producer_base_type& prod = static_cast<producer_base_type&>(*it);
 					//LOG(DEBUG) << prod.GetProducerId() << "::Produce";
+					gettimeofday(&tStart, nullptr);
 					ProducerBaseAccess(prod).Produce(evtProvider.GetCurrentEvent(),
 							productGlobal, settings);
+					gettimeofday(&tEnd, nullptr);
+					runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);
+					productGlobal.processorRunTime[prod.GetProducerId()] = runTime;
 				}
 				else if ( it->GetProcessNodeType () == ProcessNodeType::Filter )
 				{
 					filter_base_type& flt = static_cast<filter_base_type&>(*it);
 					//LOG(DEBUG) << flt.GetFilterId() << "::DoesEventPass";
+					gettimeofday(&tStart, nullptr);
 					const bool filterResult = FilterBaseAccess(flt).DoesEventPass(evtProvider.GetCurrentEvent(),
 							productGlobal, settings);
 					globalFilterResult.SetFilterDecision(flt.GetFilterId(), filterResult);
+					gettimeofday(&tEnd, nullptr);
+					runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);
+					productGlobal.processorRunTime[flt.GetFilterId()] = runTime;
 				}
 				else
 				{
@@ -191,7 +212,7 @@ public:
 			}
 
 			// run the pipelines
-			FilterResult pipelineFilterRes(pipelineResultNames);
+			FilterResult pipelineFilterRes(pipelineResultNames, taggingFilters);
 
 			for (PipelinesIterator it = m_pipelines.begin();
 					it != m_pipelines.end(); it++)

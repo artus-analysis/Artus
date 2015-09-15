@@ -3,9 +3,12 @@
 
 #include "Artus/Utility/interface/ArtusLogging.h"
 
+#include <algorithm>
+#include <iterator>
 #include <map>
-#include <type_traits>
+#include <sstream>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include <boost/lexical_cast.hpp>
@@ -16,8 +19,6 @@
 #include <Math/Cartesian3D.h>
 #include <Math/SMatrix.h>
 #include <Math/VectorUtil.h>
-
-#include "Artus/Core/interface/Cpp11Support.h"
 
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > RMFLV;
@@ -219,6 +220,34 @@ namespace Utility {
 			}
 		}
 		return matches;
+	}
+	
+	// Intersection of two vectors
+	template <class T>
+	static std::vector<T> Intersection(std::vector<T> vector1, std::vector<T> vector2)
+	{
+		std::sort(vector1.begin(), vector1.end()); // needed for std::set_intersection
+		std::sort(vector2.begin(), vector2.end()); // needed for std::set_intersection
+		std::vector<T> intersection(vector1.size() + vector2.size());
+		typename std::vector<std::string>::iterator intersectionEnd = std::set_intersection(
+				vector1.begin(), vector1.end(), vector2.begin(), vector2.end(), intersection.begin()
+		);
+		intersection.resize(intersectionEnd - intersection.begin());
+		return intersection;
+	}
+	
+	// string conversion for vectors
+	template <class T>
+	static std::string ToString(std::vector<T> vector)
+	{
+		std::ostringstream stream;
+		std::copy(vector.begin(), vector.end(), std::ostream_iterator<T>(stream, ", "));
+		std::string string=stream.str();
+		if (string.length() > 0)
+		{
+			string.erase(string.length()-2);
+		}
+		return string;
 	}
 }
 

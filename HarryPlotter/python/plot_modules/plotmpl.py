@@ -13,6 +13,7 @@ import Artus.HarryPlotter.plotdata as plotdata
 from Artus.HarryPlotter.utility.mplhisto import MplHisto, MplGraph
 import Artus.HarryPlotter.utility.labels as labels
 
+import array
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
@@ -25,11 +26,12 @@ import numpy as np
 
 
 class MplPlotContainer(plotdata.PlotContainer):
-	def __init__(self, fig=None, axes=None, save_legend=False):
+	def __init__(self, fig=None, axes=None, save_legend=False, labels=None):
 		self.fig = fig
 		self.axes = axes
 		self.save_legend = save_legend
 		self.legend_fig = None
+		self.labels = labels
 	
 	def finish(self):
 		if self.save_legend != False:
@@ -37,12 +39,13 @@ class MplPlotContainer(plotdata.PlotContainer):
 			legend_ax = self.legend_fig.add_subplot(111, frameon=False)
 			legend_ax.xaxis.set_visible(False)
 			legend_ax.yaxis.set_visible(False)
-			legend = legend_ax.legend(*self.axes[0].get_legend_handles_labels(), loc='center')
+			handles, labels = PlotMpl.get_legend_handles_labels_ordered(self.axes[0], self.labels)
+			legend_ax.legend(handles, labels, loc='center', frameon=False)
 
 	def save(self, filename):
 		# use bbox tight and pad to not have labels cropped
 		# TODO should we use fixed bbox values?
-		self.fig.savefig(filename, bbox_inches='tight', pad_inches=0.1)
+		self.fig.savefig(filename, pad_inches=0.1, **({'bbox_inches': 'tight'} if '.pgf' not in filename else {}))
 		if self.save_legend != False:
 			legend_filename = os.path.join(os.path.dirname(filename), self.save_legend+os.path.splitext(filename)[-1])
 			self.legend_fig.savefig(
@@ -70,9 +73,11 @@ class PlotMpl(plotbase.PlotBase):
 			(0.9686274509803922, 0.5058823529411764, 0.7490196078431373),  # pink
 			(0.6, 0.6, 0.6)  # grey
 		]
-		self.default_marker_colors = ['black', 'red', 'blue', 'green', 'purple', 'orange', 'cyan']
+		self.default_marker_colors = ['black', 'red', 'blue', 'green', 'purple', 'orange', 'cyan',
+			'magenta', 'gold', 'saddlebrown', 'olivedrab', 'lightsteelblue', 'burlywood', 'lightcoral']
 		self.set_matplotlib_defaults()
 		self.nicelabels = labels.LabelsDict()
+		self.default_linestyles = ['--', '-.', ':', '-']
 
 
 	def modify_argument_parser(self, parser, args):
@@ -91,16 +96,22 @@ class PlotMpl(plotbase.PlotBase):
 		                                     help="If set, a 2D histogram is plotted in 3D. Optional Argument is the viewing angle. Default: %(default)s")
 		self.formatting_options.add_argument("--save-legend", type=str, nargs="?", default=False, const="legend",
 		                                     help="If set, the legend is saved as a separate file. Argument is the filename. Default: %(default)s")
+		self.formatting_options.add_argument("--marker-fill-styles", type=str, nargs="+",
+		                                     help="Fill style of the markers in the plot")
+		self.formatting_options.add_argument("--subplot-fraction", type=int, nargs="?", default=25,
+											 help="Hight fraction of the subplot in percent")
+		self.formatting_options.add_argument("--subplot-legend", type=str, nargs="?", default=None,
+		                                     help="Location of the subplot legend. Use 'None' to not set any legend")
+
 		self.formatting_options.set_defaults(legend="upper right")
-		
-		parser.set_defaults(colormap="afmhot")
+		self.formatting_options.set_defaults(colormap="afmhot")
 
 	def prepare_args(self, parser, plotData):
 		super(PlotMpl, self).prepare_args(parser, plotData)
 
 		self.prepare_list_args(
 				plotData,
-				["nicks", "colors", "labels", "markers", "line_styles", "line_widths", "x_errors", "y_errors", "step", "zorder", "edgecolors"],
+				["nicks", "colors", "labels", "markers", "marker_fill_styles", "line_styles", "line_widths", "x_errors", "y_errors", "step", "zorder", "edgecolors"],
 				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]
 		))
 
@@ -117,7 +128,11 @@ class PlotMpl(plotbase.PlotBase):
 		# defaults for markers
 		for index, (marker, nick) in enumerate(zip(plotData.plotdict["markers"], plotData.plotdict["nicks"])):
 			if marker is None:
-				if (index == 0 and len(plotData.plotdict["markers"]) > 1) or plotData.plotdict['subplots'][index] or 'ratio' in nick:
+				if ((index == 0 and len(plotData.plotdict["markers"]) > 1)
+						or plotData.plotdict['subplots'][index]
+						or 'ratio' in nick
+						or isinstance(plotData.plotdict["root_objects"][nick], ROOT.TProfile)
+						or isinstance(plotData.plotdict["root_objects"][nick], ROOT.TGraph)):
 					plotData.plotdict["markers"][index] = "."
 				else:
 					plotData.plotdict["markers"][index] = "fill"
@@ -149,6 +164,20 @@ class PlotMpl(plotbase.PlotBase):
 			if line_style is None:
 				plotData.plotdict["line_styles"][index] = ""
 
+		# default for line widths
+		for index, line_width in enumerate(plotData.plotdict["line_widths"]):
+			if line_width is None:
+				plotData.plotdict["line_widths"][index] = 2
+
+		# remove escape slashes
+		for index, marker_fill_style in enumerate(plotData.plotdict["marker_fill_styles"]):
+			plotData.plotdict["marker_fill_styles"][index] = marker_fill_style.replace("\\", "") if marker_fill_style else marker_fill_style
+
+		# default for marker fill styles
+		for index, marker_fill_style in enumerate(plotData.plotdict["marker_fill_styles"]):
+			if marker_fill_style is None:
+				plotData.plotdict["marker_fill_styles"][index] = "full"
+
 		# validate length of parameters first
 		zip_arguments = self.get_zip_arguments(plotData)
 		for argument in zip_arguments:
@@ -157,6 +186,13 @@ class PlotMpl(plotbase.PlotBase):
 				log.warning("This the invalid input: %s" % argument)
 				break
 
+
+		# check subplot-fraction range
+		if plotData.plotdict["subplot_fraction"] > 100:
+			plotData.plotdict["subplot_fraction"] = 100
+		elif plotData.plotdict["subplot_fraction"] < 0:
+			plotData.plotdict["subplot_fraction"] = 0
+
 	def run(self, plotData):
 		super(PlotMpl, self).run(plotData)
 
@@ -164,6 +200,8 @@ class PlotMpl(plotbase.PlotBase):
 		super(PlotMpl, self).set_style(plotData)
 	
 	def create_canvas(self, plotData):
+		super(PlotMpl, self).create_canvas(plotData)
+		
 		# fig = plt.figure(figsize = [
 			# plotData.plotdict['axes_layout'][0] * matplotlib.rcParams['figure.figsize'][0],
 			# plotData.plotdict['axes_layout'][1] * matplotlib.rcParams['figure.figsize'][1]
@@ -171,13 +209,13 @@ class PlotMpl(plotbase.PlotBase):
 		fig = plt.figure()
 		axes = []
 		if plotData.plotdict["subplot_nicks"]:
-			axes = [plt.subplot2grid((4,1), (0, 0), rowspan=3),
-			        plt.subplot2grid((4,1), (3, 0))]
+			axes = [plt.subplot2grid((100,1), (0, 0), rowspan=(100-plotData.plotdict["subplot_fraction"])),
+			        plt.subplot2grid((100,1), ((100-plotData.plotdict["subplot_fraction"]+4), 0), rowspan=plotData.plotdict["subplot_fraction"])]
 		else:
 			kwargs = {'projection':'3d'} if (plotData.plotdict['3d'] is not False) else {}
 			axes = [fig.add_subplot(1,1,1, **kwargs)]
 
-		plotData.plot = MplPlotContainer(fig, axes, plotData.plotdict["save_legend"])
+		plotData.plot = MplPlotContainer(fig, axes, plotData.plotdict["save_legend"], plotData.plotdict["labels"])
 
 	def prepare_histograms(self, plotData):
 		super(PlotMpl, self).prepare_histograms(plotData)
@@ -187,7 +225,7 @@ class PlotMpl(plotbase.PlotBase):
 
 		zip_arguments = self.get_zip_arguments(plotData)
 
-		for nick, color, edgecolor, label, marker, x_error, y_error, line_style, step, zorder in zip(*zip_arguments):
+		for nick, color, edgecolor, label, marker, marker_fill_style, x_error, y_error, line_style, line_width, step, zorder in zip(*zip_arguments):
 			if nick in plotData.plotdict["subplot_nicks"]:
 				ax = plotData.plot.axes[1]
 			else:
@@ -198,10 +236,14 @@ class PlotMpl(plotbase.PlotBase):
 			if isinstance(root_object, ROOT.TGraph):
 				self.plot_dimension = 1
 				self.mplhist = MplGraph(root_object)
-				self.plot_errorbar(self.mplhist, ax=ax,
-				                   show_xerr=x_error, show_yerr=y_error,
-				                   color=color, fmt=marker, capsize=0,
-				                   linestyle=line_style, label=label, zorder=zorder)
+
+				if marker=='fill':
+					self.plot_tgrapherrors_envelope(self.mplhist, ax, label, color, line_style, line_width, step)
+				else:
+					self.plot_errorbar(self.mplhist, ax=ax,
+					               show_xerr=x_error, show_yerr=y_error,
+					               color=color, fmt=marker, marker_fill_style=marker_fill_style, capsize=0,
+					               linestyle=line_style, linewidth=line_width, label=label, zorder=zorder)
 
 			elif isinstance(root_object, ROOT.TH2):
 				self.mplhist = MplHisto(root_object)
@@ -209,8 +251,15 @@ class PlotMpl(plotbase.PlotBase):
 					self.plot_dimension = 3
 				else:
 					self.plot_dimension = self.mplhist.dimension
-				vmin = plotData.plotdict["z_lims"][0] if plotData.plotdict["z_lims"] else None
-				vmax = plotData.plotdict["z_lims"][1] if plotData.plotdict["z_lims"] else None
+				if plotData.plotdict["z_lims"]:
+					vmin = plotData.plotdict["z_lims"][0]
+					vmax = plotData.plotdict["z_lims"][1]
+				# elif plotData.plotdict["z_log"]:
+				# 	vmin = 1
+				# 	vmax = None
+				else:
+					vmin = None
+					vmax = None
 				cmap = plt.cm.get_cmap(plotData.plotdict["colormap"])
 
 				if plotData.plotdict["3d"] is not False:
@@ -229,8 +278,8 @@ class PlotMpl(plotbase.PlotBase):
 				else:
 					self.plot_errorbar(self.mplhist, ax=ax,
 					                   show_xerr=x_error, show_yerr=y_error,
-					                   step=step, color=color, fmt=marker,
-					                   capsize=2, linestyle=line_style, label=label, zorder=zorder)
+					                   step=step, color=color, fmt=marker, marker_fill_style=marker_fill_style,
+					                   capsize=2, linestyle=line_style, linewidth=line_width, label=label, zorder=zorder)
 
 			# draw functions from dictionary
 			elif isinstance(root_object, ROOT.TF1):
@@ -241,8 +290,21 @@ class PlotMpl(plotbase.PlotBase):
 				for x in np.arange(x_range[0], x_range[1], (float(x_range[1])-float(x_range[0]))/sampling_points):
 					x_values.append(x)
 					y_values.append(root_object.Eval(x))
-				ax.plot(x_values, y_values, label=label, color=color, linestyle=line_style, linewidth=2)
+				ax.plot(x_values, y_values, label=label, color=color, linestyle=line_style, linewidth=line_width)
 
+				if y_error and nick in plotData.fit_results:
+					x = array.array('d', x_values)
+					y = array.array('d', [0.]*len(x_values))
+					plotData.fit_results[nick].GetConfidenceIntervals(len(x_values), 1, 1, x, y, 0.683)
+					conf_intervals = [i for i in y]
+
+					ax.fill_between(x_values,
+									[(y_val-c) for y_val, c in zip(y_values, conf_intervals)],
+									[(y_val+c) for y_val, c in zip(y_values, conf_intervals)],
+									facecolor=color,
+									edgecolor=color,
+									interpolate=True,
+									alpha=0.2)
 
 	def modify_axes(self, plotData):
 		# do what is needed for all plots:
@@ -256,51 +318,79 @@ class PlotMpl(plotbase.PlotBase):
 			ax.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]), position=(1., 0.), va='top', ha='right')
 		ax.set_ylabel(self.nicelabels.get_nice_label(plotData.plotdict["y_label"]), position=(0., 1.), va='top', ha='right')
 
+		#display 10^N instead of 1eN
+		for axis in ["xaxis", "yaxis"]:
+			getattr(ax, axis).major.formatter._useMathText = True
+
 		# set axis ticks
-		if plotData.plotdict["x_ticks"] is not None and self.mplhist.xlabels is None:
+		if plotData.plotdict["x_ticks"] is not None and not (hasattr(self.mplhist, "xlabels") and self.mplhist.xlabels is not None):
 			ax.set_xticks(plotData.plotdict["x_ticks"])
-		elif self.mplhist.xlabels is not None:
+		elif hasattr(self.mplhist, "xlabels") and self.mplhist.xlabels is not None:
 			plt.xticks(np.arange(len(self.mplhist.x)), self.mplhist.xlabels, rotation='75')
 		if plotData.plotdict["y_ticks"] is not None:
 			ax.set_yticks(plotData.plotdict["y_ticks"])
-		axis = 'both' if (self.mplhist.xlabels == None) else 'y'
+		axis = 'both' if (not hasattr(self.mplhist, "xlabels") or self.mplhist.xlabels == None) else 'y'
 		ax.ticklabel_format(style='sci',scilimits=(-3,4),axis=axis)
+		for axis, axisname in zip([ax.xaxis, ax.yaxis], ['x', 'y']):
+			if plotData.plotdict[axisname+"_tick_labels"] is not None:
+				axis.set_ticklabels(plotData.plotdict[axisname+"_tick_labels"])
 
 		# set axis limits
 		if self.plot_dimension != 3:
 			if plotData.plotdict["x_lims"] is not None:
 				ax.set_xlim([plotData.plotdict["x_lims"][0],plotData.plotdict["x_lims"][1]])
 			else:
-				ax.set_xlim(plotData.plotdict['root_objects'][plotData.plotdict['nicks'][0]].GetXaxis().GetBinLowEdge(1),
-						plotData.plotdict['root_objects'][plotData.plotdict['nicks'][0]].GetXaxis().GetBinUpEdge(
-							plotData.plotdict['root_objects'][plotData.plotdict['nicks'][0]].GetNbinsX()))
+				# iterate over root objects and get min and max x values
+				min_x_values, max_x_values = [], []
+				for nick in plotData.plotdict['nicks']:
+					if hasattr(plotData.plotdict['root_objects'][nick], "GetNbinsX"):  # for Histograms
+						min_x_values.append(plotData.plotdict['root_objects'][nick].GetXaxis().GetBinLowEdge(1))
+						max_x_values.append(plotData.plotdict['root_objects'][nick].GetXaxis().GetBinUpEdge(plotData.plotdict['root_objects'][nick].GetNbinsX()))
+					elif hasattr(plotData.plotdict['root_objects'][nick], "GetN") and hasattr(plotData.plotdict['root_objects'][nick], "GetX"):  # for TGraphs
+						min_x_values.append(ROOT.TMath.MinElement(plotData.plotdict['root_objects'][nick].GetN(), plotData.plotdict['root_objects'][nick].GetX()))
+						max_x_values.append(ROOT.TMath.MaxElement(plotData.plotdict['root_objects'][nick].GetN(), plotData.plotdict['root_objects'][nick].GetX()))
+					else:
+						log.warning("PlotMpl: modify_axes(): Could not determine x-limits for nick '{0}'".format(nick))
+				if min_x_values != [] and max_x_values != []:
+					ax.set_xlim(min(min_x_values), max(max_x_values))
+				else:
+					log.warning("PlotMpl: modify_axes(): Could not automatically set x-limits!")
 			if plotData.plotdict["y_lims"] is not None:
 				ax.set_ylim(plotData.plotdict["y_lims"][0],plotData.plotdict["y_lims"][1])
 			else:
-				if ax.dataLim.min[1] >= (-1E-6) and ax.get_ylim()[0] < 0.:
-					ax.set_ylim(ymin=0.0)
-				if all("TH" in obj.__class__.__name__ for obj in plotData.plotdict["root_objects"].values()):
-					ax.set_ylim(ymax=ax.dataLim.max[1] * (2 if plotData.plotdict["y_log"] else 1.2))
+				#if ax.dataLim.min[1] >= (-1E-6) and ax.get_ylim()[0] < 0.:
+				if plotData.plotdict["y_log"]:
+					if self.y_max > 1:
+						ax.set_ylim(ymin=1)
+					else:
+						ax.set_ylim(ymin=self.y_min)
+				else:
+					if any("TH" in obj.__class__.__name__ for obj in plotData.plotdict["root_objects"].values()):
+						ax.set_ylim(0)
+					else:
+						ax.set_ylim(self.y_min)
+				if all("TH1" in obj.__class__.__name__ for obj in plotData.plotdict["root_objects"].values()):
+					ax.set_ylim(ymax=self.y_max * (2 if plotData.plotdict["y_log"] else 1.2))
 
 		# set log scale
-		if plotData.plotdict["x_log"]:
-			ax.set_xscale('log', nonposx='clip')
-			# for log plots, we have to set the ticks again and set the formatter:
-			if plotData.plotdict["x_ticks"] is not None:
-				ax.set_xticks(plotData.plotdict["x_ticks"])
-				ax.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
-		if plotData.plotdict["y_log"]:
-			ax.set_yscale('log', nonposy='clip')
-			if plotData.plotdict["y_lims"] is None:
-				ax.set_ylim(ymin=0.9, ymax=ax.get_ylim()[1]*2)
+		for axis in ['x', 'y']:
+			if plotData.plotdict[axis+"_log"]:
+				getattr(ax, 'set_{}scale'.format(axis))(**{'value': 'log', 'nonpos'+axis: 'clip'})
+				# for log plots, we have to set the ticks again and set the formatter:
+				if plotData.plotdict[axis+'_ticks'] is not None:
+					getattr(ax, 'set_{}ticks'.format(axis))(plotData.plotdict[axis+'_ticks'])
+					getattr(ax, 'get_{}axis'.format(axis))().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+
+		for y, linestyle in zip(plotData.plotdict["lines"], self.default_linestyles*len(plotData.plotdict["lines"])):
+			ax.axhline(y, color='black', linestyle=linestyle)
 
 		# do special things for subplots
 		if plotData.plotdict["subplot_nicks"]:
 			ax2 = plotData.plot.axes[1]
 
 			# Horizontal line at unity
-			# TODO: should be made optional
-			ax2.axhline(1.0, color='black')
+			for y, linestyle in zip(plotData.plotdict["subplot_lines"], self.default_linestyles*len(plotData.plotdict["subplot_lines"])):
+				ax2.axhline(y, color='black', linestyle=linestyle)
 
 			if plotData.plotdict["y_subplot_lims"] != None:
 				ax2.set_ylim(*plotData.plotdict["y_subplot_lims"])
@@ -337,28 +427,40 @@ class PlotMpl(plotbase.PlotBase):
 
 	def add_labels(self, plotData):
 		super(PlotMpl, self).add_labels(plotData)
+		# apparently MPL 121 has a bug for the PDF backend for legends without frame.
+		# workaround: set legend.frameon True, but after legend creation set edgecolor to white.
+		if ('pdf' in plotData.plotdict["formats"]) and (not matplotlib.rcParams['legend.frameon']) and (self.mpl_version == 121):
+			matplotlib.rcParams['legend.frameon'] = True
+			legend_workaround=True
+		else:
+			legend_workaround=False
 
 		#iterate over all axis objects
 		for ax in [plotData.plot.axes[0]]:
 
 			if plotData.plotdict["title"]:
-				ax.set_title(plotData.plotdict["title"], fontsize=18)
+				ax.set_title(plotData.plotdict["title"], fontsize=18, horizontalalignment=('center' if (plotData.plotdict["energies"] is None) else 'right'))
 
 			# Only plot legend if there active legend handles
 			if len(ax.get_legend_handles_labels()[0]) > 1 and plotData.plotdict["legend"] is not None:
-				# handles, labels = ax.get_legend_handles_labels()
-				# sort both labels and handles by labels
-				# labels, handles = zip(*sorted(zip(labels, handles), key=lambda t: t[0]))
-				legend = ax.legend(loc=plotData.plotdict["legend"], ncol=plotData.plotdict["legend_cols"], columnspacing=0.5, handletextpad=0.3)
+				legend = ax.legend(*self.get_legend_handles_labels_ordered(ax, plotData.plotdict['labels']), loc=plotData.plotdict["legend"], ncol=plotData.plotdict["legend_cols"], columnspacing=0.5, handletextpad=0.3)
 				legend.set_zorder(100)
+				if legend_workaround:
+					legend.get_frame().set_edgecolor('#FFFFFF')
 
 			if self.mpl_version >= 121:
 				plt.tight_layout()
 			# Decrease vertical distance between subplots
 			if self.plot_dimension < 2:
-				plt.subplots_adjust(hspace=0.2)
-		# if plotData.plotdict['ratio'] and list(set(plotData.plotdict['ratio_labels'])) != [None]:
-			# plotData.plot.ax2.legend(loc=plotData.plotdict["legend"])
+				plotData.plot.fig.subplots_adjust(hspace=0.2)
+
+		if len(plotData.plot.axes) > 1:
+			for ax in [plotData.plot.axes[1]]:
+				if len(ax.get_legend_handles_labels()[0]) > 1 and plotData.plotdict["subplot_legend"] is not None:
+					legend = ax.legend(*self.get_legend_handles_labels_ordered(ax, plotData.plotdict['labels']), loc=plotData.plotdict["subplot_legend"], ncol=1, columnspacing=0.5, handletextpad=0.3)
+					if legend_workaround:
+						legend.get_frame().set_edgecolor('#FFFFFF')
+
 
 	def add_texts(self, plotData):
 		super(PlotMpl, self).add_texts(plotData)
@@ -407,7 +509,7 @@ class PlotMpl(plotbase.PlotBase):
 		matplotlib.rcParams["axes.formatter.limits"] = [-5, 5]
 		# legend
 		matplotlib.rcParams['legend.numpoints'] = 1
-		matplotlib.rcParams['legend.fontsize'] = 19
+		matplotlib.rcParams['legend.fontsize'] = 16
 		matplotlib.rcParams['legend.labelspacing'] = 0.3
 		#matplotlib.rcParams['legend.frameon'] = False
 		# Saving
@@ -415,6 +517,7 @@ class PlotMpl(plotbase.PlotBase):
 		matplotlib.rcParams['savefig.dpi'] = 150
 		#matplotlib.rcParams['savefig.format'] = 'png'
 		matplotlib.rcParams['agg.path.chunksize'] = 20000
+		matplotlib.rcParams['pgf.texsystem'] = 'pdflatex'
 
 	@staticmethod
 	def steppify_bin(arr, isx=False):
@@ -466,6 +569,7 @@ class PlotMpl(plotbase.PlotBase):
 			yerr = None
 
 		line_style = kwargs.pop('linestyle', '')
+		fillstyle = kwargs.pop('marker_fill_style', 'full')
 		capsize = kwargs.pop('capsize', 0)
 		fmt = kwargs.pop('fmt', '')
 		if fmt in ['bar', 'fill']:
@@ -477,10 +581,10 @@ class PlotMpl(plotbase.PlotBase):
 		# http://stackoverflow.com/a/18499120/3243729
 		if line_style:
 			if step:
-				ax.step(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(y), linestyle=line_style, **kwargs)
+				ax.step(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(y), fillstyle=fillstyle, linestyle=line_style, **kwargs)
 			else:
-				ax.plot(x, y, linestyle=line_style, **kwargs)
-		artist = ax.errorbar(x, y, xerr=xerr, yerr=yerr, label=label, capsize=capsize, fmt=fmt, linestyle='None', **kwargs)
+				ax.plot(x, y, linestyle=line_style, fillstyle=fillstyle, **kwargs)
+		artist = ax.errorbar(x, y, fillstyle=fillstyle, xerr=xerr, yerr=yerr, label=label, capsize=capsize, fmt=fmt, linestyle='None', **kwargs)
 		return artist
 
 	def plot_hist1d(self, hist, style='fill', ax=None, show_xerr=False, show_yerr=False, **kwargs):
@@ -543,7 +647,10 @@ class PlotMpl(plotbase.PlotBase):
 		if ax is None:
 			ax = plt.gca()
 		if (vmin, vmax) == (None,)*2:
-			vmin, vmax = np.amin(hist.bincontents), np.amax(hist.bincontents)
+			if z_log:
+				vmin, vmax = np.min(hist.bincontents[np.nonzero(hist.bincontents)]), np.amax(hist.bincontents)
+			else:
+				vmin, vmax = np.amin(hist.bincontents), np.amax(hist.bincontents)
 		norm = (LogNorm if z_log else Normalize)(vmin=vmin, vmax=vmax)
 
 		# special settings for masked arrays (TProfile2Ds):
@@ -574,17 +681,53 @@ class PlotMpl(plotbase.PlotBase):
 			cmap=cmap, linewidth=0, antialiased=True, shade=False)
 		return artist
 
+	def plot_tgrapherrors_envelope(self, mplhist, ax, label, color, line_style, line_width, step):
+		""" Plot the envelope given by y-errors around a TGraphErrors"""
+		if step:
+			# central values:
+			ax.step(self.steppify_bin(mplhist.xbinedges, isx=True), self.steppify_bin(mplhist.y),
+				label=label, linestyle=line_style)
+			# plot errors as shaded area:
+			ax.fill_between(
+				self.steppify_bin(mplhist.xbinedges, isx=True),
+				self.steppify_bin([(y_val+error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)]),
+				y2=self.steppify_bin([(y_val-error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)]),
+				color=color,
+				alpha=0.2,
+			)
+		else:
+			# draw a smooth curve with error band around
+			ax.plot(self.mplhist.x, self.mplhist.y, label=label, color=color, linestyle=line_style, linewidth=line_width)
+			ax.fill_between(self.mplhist.x,
+				[(y_val-error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)],
+				[(y_val+error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)],
+				facecolor=color,
+				edgecolor=color,
+				interpolate=False,
+				alpha=0.2
+			)
+
+
 	def get_zip_arguments(self, plotData):
 		zip_arguments = (list(plotData.plotdict["nicks"]),
 		                                 plotData.plotdict["colors"],
 		                                 plotData.plotdict["edgecolors"],
 		                                 plotData.plotdict["labels"],
 		                                 plotData.plotdict["markers"],
+		                                 plotData.plotdict["marker_fill_styles"],
 		                                 plotData.plotdict["x_errors"],
 		                                 plotData.plotdict["y_errors"],
 		                                 plotData.plotdict["line_styles"],
+		                                 plotData.plotdict["line_widths"],
 		                                 plotData.plotdict["step"],
 		                                 plotData.plotdict["zorder"])
 		return zip_arguments
 
+	@staticmethod
+	def get_legend_handles_labels_ordered(ax, labellist):
+		# sort both labels and handles by order of 'labels' in plotdict
+		handles, labels = ax.get_legend_handles_labels()
+		if len(handles) > 0 and len(labels) > 0:
+			labels, handles = zip(*sorted(zip(labels, handles), key=lambda t: labellist.index(t[0])))
+		return handles, labels
 

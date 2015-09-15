@@ -17,14 +17,14 @@ class GoodPrimaryVertexFilter: public FilterBase<KappaTypes>
 
 public:
 
-	virtual std::string GetFilterId() const ARTUS_CPP11_OVERRIDE;
-	virtual void Init(setting_type const& settings) ARTUS_CPP11_OVERRIDE;
+	virtual std::string GetFilterId() const override;
+	virtual void Init(setting_type const& settings) override;
 	virtual bool DoesEventPass(KappaEvent const& event, KappaProduct const& product,
-	                           KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE;
+	                           KappaSettings const& settings) const override;
 
 private:
 
-	double m_maxPrimaryVertexZ;
-	double m_maxPrimaryVertexRho;
-	double m_minPrimaryVertexFitnDOF;
+	float m_maxPrimaryVertexZ;
+	float m_maxPrimaryVertexRho;
+	float m_minPrimaryVertexFitnDOF;
 };

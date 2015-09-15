@@ -47,6 +47,7 @@ class ArtusWrapper(object):
 
 		#Expand Config
 		self.expandConfig()
+		self.projectPath = None
 		if self._args.batch:
 			self.projectPath = os.path.join(os.path.expandvars(self._args.work), date_now+"_"+self._args.project_name)
 
@@ -83,7 +84,7 @@ class ArtusWrapper(object):
 
 		#Run Artus if desired
 		if self._args.profile:
-			exitCode = self.measurePerformance()
+			exitCode = self.measurePerformance(self._args.profile)
 		elif self._args.batch:
 			exitCode = self.sendToBatchSystem()
 		elif not self._args.no_run:
@@ -343,12 +344,12 @@ class ArtusWrapper(object):
 		                                 help="Exit before running Artus to only check the configs.")
 		runningOptionsGroup.add_argument("--ld-library-paths", nargs="+",
 		                                 help="Add paths to environment variable LD_LIBRARY_PATH.")
-		runningOptionsGroup.add_argument("--profile", default=False, action="store_true",
-		                                 help="Measure performance with profiler.")
+		runningOptionsGroup.add_argument("--profile", default="",
+		                                 help="Measure performance with profiler. Choose igprof or valgrind.")
 		runningOptionsGroup.add_argument("-r", "--root", default=False, action="store_true",
 		                                 help="Open output file in ROOT TBrowser after completion.")
-		runningOptionsGroup.add_argument("-b", "--batch", default=False, action="store_true",
-		                                 help="Run with grid-control.")
+		runningOptionsGroup.add_argument("-b", "--batch", default=False, const="local", nargs="?",
+		                                 help="Run with grid-control. Optionally select backend. [Default: %(default)s]")
 		runningOptionsGroup.add_argument("--no-log-to-se", default=False, action="store_true",
 		                                 help="Do not write logfile in batch mode directly to SE.")
 		runningOptionsGroup.add_argument("--files-per-job", type=int, default=15,
@@ -414,7 +415,7 @@ class ArtusWrapper(object):
 		
 		sepath = "se path = " + (self._args.se_path if self._args.se_path else sepathRaw)
 		workdir = "workdir = " + os.path.join(self.projectPath, "workdir")
-
+		backend = open(os.path.expandvars("$CMSSW_BASE/src/Artus/Configuration/data/grid-control_backend_" + self._args.batch + ".conf"), 'r').read()
 		self.replacingDict = dict(
 				include = ("include = " + " ".join(self._args.gc_config_includes) if self._args.gc_config_includes else ""),
 				epilogexecutable = "epilog executable = $CMSSW_BASE/bin/" + os.path.join(os.path.expandvars("$SCRAM_ARCH"), os.path.basename(sys.argv[0])),
@@ -429,7 +430,8 @@ class ArtusWrapper(object):
 				cmdargs = "cmdargs = " + self._args.cmdargs,
 				dataset = "dataset = \n\t:ListProvider:" + dbsFileBasepath,
 				epilogarguments = epilogArguments,
-				seoutputfiles = "se output files = *.txt *.root" if self._args.no_log_to_se else "se output files = *.root"
+				seoutputfiles = "se output files = *.txt *.root" if self._args.no_log_to_se else "se output files = *.root",
+				backend = backend
 		)
 
 		self.modify_replacing_dict()
@@ -450,6 +452,9 @@ class ArtusWrapper(object):
 			exitCode = logger.subprocessCall(command.split())
 		
 		log.info("Output is written to directory \"%s\"" % sepathRaw)
+		log.info("\nMerge outputs in one file per nick using")
+		log.info("artusMergeOutputs.py %s" % self.projectPath)
+		log.info("artusMergeOutputsWithGC.py %s" % self.projectPath)
 
 		if exitCode != 0:
 			log.error("Exit with code %s.\n\n" % exitCode)
@@ -462,31 +467,44 @@ class ArtusWrapper(object):
 		pass # to be overwritten by deriving classes
 
 
-	def measurePerformance(self):
+	def measurePerformance(self, profTool):
 		"""run Artus with profiler"""
+		exitCode = 0
 
 		# check output directory
 		outputDir = os.path.dirname(self._args.output_file)
 		if outputDir and not os.path.exists(outputDir):
 			os.makedirs(outputDir)
 
-		# call C++ executable with profiler
-		profile_outputs = [os.path.join(outputDir, filename) for filename in ["igprof.pp.gz", "igprof.analyse.txt", "igprof.analyse.sql3"]]
-		
-		commands = [
-			# "valgrind --tool=callgrind --callgrind-out-file=" + profile_output + " " + self._executable + " " + self._configFilename,
-			# "callgrind_annotate --auto=yes " + profile_output,
+		commands=""
+		profile_outputs=""
+		if profTool == "igprof":
+			# call C++ executable with profiler igprof
+			profile_outputs = [os.path.join(outputDir, filename) for filename in ["igprof.pp.gz", "igprof.analyse.txt", "igprof.analyse.sql3"]]
+
+			commands = [
 			"igprof -d -pp -z -o " + profile_outputs[0] + " " + self._executable + " " + self._configFilename,
-			"execute-command.sh \"igprof-analyse -d -v -g " + profile_outputs[0] + " > " + profile_outputs[1] + "\"",
-			"execute-command.sh \"igprof-analyse --sqlite -d -v -g " + profile_outputs[0] + " | sqlite3 " + profile_outputs[2] + "\"",
+			"execute-command.sh igprof-analyse -d -v -g " + profile_outputs[0] + " > " + profile_outputs[1],
+			"execute-command.sh igprof-analyse --sqlite -d -v -g " + profile_outputs[0] + " | sqlite3 " + profile_outputs[2],
 			"igprof-navigator " + profile_outputs[2],
-		]
-		
+			]
+		elif profTool == "valgrind":
+			# call C++ executable with profiler valgrind
+			profile_outputs = [os.path.join(outputDir, filename) for filename in ["callgrind.out.8080"]]
+
+			commands = [
+			"valgrind --tool=callgrind --callgrind-out-file=" + profile_outputs[0] + " " + self._executable + " " + self._configFilename,
+			"callgrind_annotate --auto=yes " + profile_outputs[0],
+			]
+		else:
+			log.info(profTool + "is not a valid profiler")
+
 		for command in commands:
 			log.info("Execute \"%s\"." % command)
-			logger.subprocessCall(command.split(), shell=True)
-		
-		log.info("Profiling output is written to \"%s\"." % "\", \"".join(profile_outputs))
+			logger.subprocessCall(command.split())
+
+		if profile_outputs:
+			log.info("Profiling output is written to \"%s\"." % "\", \"".join(profile_outputs))
 
 		return 0
 

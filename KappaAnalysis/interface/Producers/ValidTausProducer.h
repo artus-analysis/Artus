@@ -36,6 +36,19 @@ public:
 		UNCORRECTED = 1,
 		CORRECTED = 2,
 	};
+
+	enum class TauID : int
+	{
+		NONE = 0,
+		RECOMMENDATION13TEV = 1,
+	};
+
+	static TauID ToTauID(std::string const& tauIDMethod)
+	{
+		if(tauIDMethod == "TauIDRecommendation13TeV") return TauID::RECOMMENDATION13TEV;
+		else return TauID::NONE;
+	}
+
 	static ValidTausInput ToValidTausInput(std::string const& validTausInput)
 	{
 		if (validTausInput == "uncorrected") return ValidTausInput::UNCORRECTED;
@@ -43,7 +56,7 @@ public:
 		else return ValidTausInput::AUTO;
 	}
 
-	virtual std::string GetProducerId() const ARTUS_CPP11_OVERRIDE {
+	virtual std::string GetProducerId() const override {
 		return "ValidTausProducer";
 	}
 	
@@ -51,11 +64,12 @@ public:
 		KappaProducerBase(),
 		ValidPhysicsObjectTools<KappaTypes, KTau>(&KappaSettings::GetTauLowerPtCuts,
 		                                    &KappaSettings::GetTauUpperAbsEtaCuts,
-		                                    &KappaProduct::m_validTaus)
+		                                    &KappaProduct::m_validTaus),
+		tauID(TauID::NONE)
 	{
 	}
 	
-	virtual void Init(KappaSettings const& settings)  ARTUS_CPP11_OVERRIDE
+	virtual void Init(KappaSettings const& settings)  override
 	{
 		KappaProducerBase::Init(settings);
 		ValidPhysicsObjectTools<KappaTypes, KTau>::Init(settings);
@@ -65,27 +79,29 @@ public:
 		// parse additional config tags
 		discriminatorsByIndex = Utility::ParseMapTypes<size_t, std::string>(Utility::ParseVectorToMap(settings.GetTauDiscriminators()),
 		                                                                    discriminatorsByHltName);
-		
+		tauID = ToTauID(settings.GetTauID());
+		oldTauDMs = settings.GetTauUseOldDMs();
+
 		// add possible quantities for the lambda ntuples consumers
 		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nTaus", [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validTaus.size();
 		} );
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingTauPt", [](KappaEvent const& event, KappaProduct const& product) {
-			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->p4.Pt() : DefaultValues::UndefinedDouble;
+			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->p4.Pt() : DefaultValues::UndefinedFloat;
 		});
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingTauEta", [](KappaEvent const& event, KappaProduct const& product) {
-			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->p4.Eta() : DefaultValues::UndefinedDouble;
+			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->p4.Eta() : DefaultValues::UndefinedFloat;
 		});
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingTauPt", [](KappaEvent const& event, KappaProduct const& product) {
-			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->p4.Pt() : DefaultValues::UndefinedDouble;
+			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->p4.Pt() : DefaultValues::UndefinedFloat;
 		});
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingTauEta", [](KappaEvent const& event, KappaProduct const& product) {
-			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->p4.Eta() : DefaultValues::UndefinedDouble;
+			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->p4.Eta() : DefaultValues::UndefinedFloat;
 		});
 	}
 
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const ARTUS_CPP11_OVERRIDE
+	                     KappaSettings const& settings) const override
 	{
 		assert(event.m_taus);
 		assert(event.m_tauMetadata);
@@ -131,13 +147,18 @@ public:
 			for (std::map<std::string, std::vector<std::string> >::const_iterator discriminatorByHltName = discriminatorsByHltName.begin();
 				 validTau && (discriminatorByHltName != discriminatorsByHltName.end()); ++discriminatorByHltName)
 			{
-				if ((discriminatorByHltName->first == "default") ||
-					boost::regex_search(product.m_selectedHltName, boost::regex(discriminatorByHltName->first, boost::regex::icase | boost::regex::extended)))
+				bool hasMatch = false;
+				for (unsigned int iHlt = 0; iHlt < product.m_selectedHltNames.size(); iHlt++)
+					hasMatch = hasMatch || boost::regex_search(product.m_selectedHltNames.at(iHlt), boost::regex(discriminatorByHltName->first, boost::regex::icase | boost::regex::extended));
+
+				if ((discriminatorByHltName->first == "default") || hasMatch)
 				{
 					validTau = validTau && ApplyDiscriminators(*tau, discriminatorByHltName->second, event);
 				}
 			}
 			
+			if(tauID == TauID::RECOMMENDATION13TEV)
+					validTau = validTau && IsTauIDRecommendation13TeV(*tau, event, oldTauDMs);
 			// kinematic cuts
 			validTau = validTau && this->PassKinematicCuts(*tau, event, product);
 			
@@ -187,5 +208,19 @@ private:
 		return validTau;
 	}
 
+	TauID tauID;
+	bool oldTauDMs;
+
+	bool IsTauIDRecommendation13TeV(KTau* tau, KappaEvent const& event, bool const& oldTauDMs) const
+	{
+		const KVertex* vertex = new KVertex(event.m_vertexSummary->pv);
+		float decayModeDiscriminator = (oldTauDMs ? tau->getDiscriminator("decayModeFinding", event.m_tauMetadata)
+							  : tau->getDiscriminator("decayModeFindingNewDMs", event.m_tauMetadata));
+		return ( decayModeDiscriminator > 0.5
+			 && (std::abs(tau->track.ref.z() - vertex->position.z()) < 0.2)
+			// tau dZ requirement for Phys14 sync
+			//&& (Utility::ApproxEqual(tau->track.ref.z(), vertex->position.z()))
+		);
+	}
 };
 
