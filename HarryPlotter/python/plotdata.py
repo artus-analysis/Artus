@@ -59,16 +59,13 @@ class PlotData(object):
 			if self.plotdict["www"] != None:
 				# set some needed variables
 				user = tools.get_environment_variable("HARRY_REMOTE_USER")
+				html_content = ""
 				overview_filename = 'overview.html'
 				date = datetime.date.today().strftime('%Y_%m_%d')
 				remote_dir = os.path.expandvars(os.path.join("$HARRY_REMOTE_DIR", date, (self.plotdict["www"] if type(self.plotdict["www"])==str else "")))
 				remote_path = os.path.expandvars(os.path.join("$HARRY_REMOTE_PATH", remote_dir))
 				url = os.path.expandvars(os.path.join("$HARRY_URL", remote_dir, overview_filename))
-				
 				plots_for_gallery = [p for p in sorted(os.listdir(self.plotdict["output_dir"])) if (os.path.isfile(os.path.join(self.plotdict["output_dir"], p)) and all([not p.endswith("."+ext) for ext in ["json", "html", "root"]]))]
-				html_content = ""
-
-				log.info("Copying plots to webspace...")
 
 				# get the html templates
 				html_texts = {}
@@ -79,19 +76,24 @@ class PlotData(object):
 				if self.plotdict["www_text"]:
 					html_texts['description'] = self.plotdict["www_text"]
 
-				# loop over plots, make gallery
-				for plot in [p for p in plots_for_gallery]:
-					# try to link to pdf file, if it exists
-					href = plot.replace('.png', '.pdf')
-					if href not in plots_for_gallery:
-						href = plot
-					filename = os.path.splitext(plot)[0]
+				# loop over plots, make gallery (one entry for multiple formats)
+				for plot in list(set([os.path.splitext(plot)[0] for plot in plots_for_gallery])):
+					formats = [os.path.splitext(p)[1] for p in plots_for_gallery if (plot == os.path.splitext(p)[0])]
+					# use png for preview, if it exists
+					image = plot + ('.png' if (plot +'.png' in plots_for_gallery) else formats[0])
+
+					# links for the different formats
+					links = ""
+					for fileformat in formats:
+						links +=' <a href="{}">{}</a>'.format(plot+fileformat, fileformat[1:])
+
 					html_content += html_texts['plot'].substitute(
-							title=filename,
-							href=href,
-							plot=plot,
+							title=plot,
+							image=image,
+							links=links,
 							json=filename+".json"
 					)
+
 				# put the html parts together and write
 				with open(os.path.join(self.plotdict["output_dir"], overview_filename), "w") as overview_file:
 					overview_file.write(html_texts['overview'].substitute(
@@ -109,7 +111,9 @@ class PlotData(object):
 					files_to_copy += [self.plotdict["export_json"]]
 				if self.plotdict.get("save_legend", False):
 					files_to_copy += [os.path.join(self.plotdict["output_dir"], ".".join([self.plotdict["save_legend"], _format])) for _format in self.plotdict["formats"]]
+
 				# create remote dir, copy files
+				log.info("Copying plots to webspace...")
 				sshpc = tools.get_environment_variable("HARRY_SSHPC")
 				create_dir_command = ["ssh", user+"@"+sshpc, "mkdir -p", remote_path]
 				log.debug("\nIssueing mkdir command: " + " ".join(create_dir_command))
