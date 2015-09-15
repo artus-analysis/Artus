@@ -77,7 +77,7 @@ class PlotData(object):
 					html_texts['description'] = self.plotdict["www_text"]
 
 				# loop over plots, make gallery (one entry for multiple formats)
-				for plot in list(set([os.path.splitext(plot)[0] for plot in plots_for_gallery])):
+				for plot in sorted(list(set([os.path.splitext(plot)[0] for plot in plots_for_gallery]))):
 					formats = [os.path.splitext(p)[1] for p in plots_for_gallery if (plot == os.path.splitext(p)[0])]
 					# use png for preview, if it exists
 					image = plot + ('.png' if (plot +'.png' in plots_for_gallery) else formats[0])
