@@ -32,9 +32,6 @@ class Cutflow(analysisbase.AnalysisBase):
 			plotData.plotdict["x_label"] = ""
 		if plotData.plotdict["y_label"] == parser.get_default("y_label"):
 			plotData.plotdict["y_label"] = ("Relative " if plotData.plotdict["rel_cuts"] else "") + "Cut Efficiency"
-		
-		if plotData.plotdict["y_lims"] == parser.get_default("y_lims"):
-			plotData.plotdict["y_lims"] = [1e-5, 1.5] if plotData.plotdict["y_log"] else [0.0, 1.1]
 	
 	def run(self, plotData=None):
 		super(Cutflow, self).run(plotData)
