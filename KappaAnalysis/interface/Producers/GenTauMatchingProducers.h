@@ -41,6 +41,8 @@ public:
 		m_genTauMatchedObjects(genTauMatchedObjects),
 		m_validObjects(validObjects),
 		m_invalidObjects(invalidObjects),
+		//m_validObjects(validObjects),
+		//m_validObjects(validObjects),
 		tauDecayMode(tauDecayMode),
 		GetDeltaRMatchingRecoObjectGenTau(GetDeltaRMatchingRecoObjectGenTau),
 		GetInvalidateNonGenTauMatchingObjects(GetInvalidateNonGenTauMatchingObjects),
@@ -59,6 +61,14 @@ public:
 		{
 			return product.m_genTauMatchDeltaR;
 		});
+		//MuonsConsumer<KappaTypes>::AddFloatQuantity("genTauMatchedMuonsDeltaR", [](event_type const & event, product_type const & product)
+		//{
+		//	return product.m_genTauMatchDeltaR;
+		//});
+		//LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genTauMatchedTausDeltaR", [](event_type const & event, product_type const & product)
+		//{
+		//	return product.m_genTauMatchDeltaR;
+		//});
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,
@@ -76,12 +86,10 @@ public:
 			{
 				bool objectMatched = false;
 				float deltaR = 0;
-				
 				// loop over all genTaus
 				for (typename std::vector<KGenTau>::iterator genTau = event.m_genTaus->begin();
 					 !objectMatched && genTau != event.m_genTaus->end();++genTau) 
 				{
-					// only use genTaus that will decay into comparable particles
 					if (MatchDecayMode(*genTau,tauDecayMode))
 					{
 						deltaR = static_cast<float>(ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, genTau->visible.p4));
@@ -122,6 +130,31 @@ public:
 			product.m_genTauMatchDeltaR = DefaultValues::UndefinedFloat;
 		}
 		product.m_ratioGenTauMatched = ratioGenTauMatched;
+		//std::cout << "Output Map Lenght: " << (product.*m_genTauMatchedObjects).size() << std::endl;
+		//check distance of previously matched particles
+		//print if smaller 1 (.5)
+		//if ((product.*m_genTauMatchedObjects).size() >= 2)
+		//{
+		//	float deltaRMatched = 0;
+		//	int matchid1 = 0;
+		//	for (typename std::map<TValidObject*, KGenTau*>::iterator validMatchedObject = (product.*m_genTauMatchedObjects).begin();
+		//	validMatchedObject != (product.*m_genTauMatchedObjects).end(); ++validMatchedObject)
+		//	{
+		//		int matchid2 = 0;
+		//		for (typename std::map<TValidObject*, KGenTau*>::iterator validMatchedObject2 = (product.*m_genTauMatchedObjects).begin();
+		//				validMatchedObject2 != (product.*m_genTauMatchedObjects).end(); ++validMatchedObject2)
+		//		{	
+		//			if (matchid2 > matchid1)
+		//			{
+		//				deltaRMatched = ROOT::Math::VectorUtil::DeltaR(validMatchedObject->first->p4, validMatchedObject2->first->p4);
+		//				//if (deltaRMatched < 0.5)
+		//				std::cout << "DeltaR between matched particle " << matchid1 << " and " << matchid2 << " :  " << deltaRMatched << std::endl;
+		//			}
+		//			matchid2 += 1;
+		//		}
+		//		matchid1 += 1;
+		//	}
+		//}
 	}
 	
 	virtual bool MatchDecayMode(KGenTau const &genTau, TauDecayMode tauDecayMode) const

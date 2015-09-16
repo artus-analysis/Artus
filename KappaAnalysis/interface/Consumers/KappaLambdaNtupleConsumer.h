@@ -47,7 +47,6 @@ public:
 		{
 			return event.m_vertexSummary->nVertices;
 		});
-
 		bool bInpData = settings.GetInputIsData();
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("npuMean", [bInpData](event_type const& event, product_type const& product)
 		{
@@ -63,6 +62,12 @@ public:
 			return static_cast<int>(static_cast<KGenEventInfo*>(event.m_eventInfo)->nPU);
 		});
 
+		LambdaNtupleConsumer<TTypes>::AddIntQuantity("ootPU", [](event_type const& event, product_type const& product)
+		{
+			return static_cast<KGenEventInfo*>(event.m_eventInfo)->nPUm1 +
+				static_cast<KGenEventInfo*>(event.m_eventInfo)->nPUp1;
+		});
+		
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("rho", [](event_type const& event, product_type const& product) {
 			return event.m_pileupDensity->rho;
 		});
