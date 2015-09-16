@@ -10,8 +10,6 @@
 
 /**
    \brief KappaCollectionsConsumer, create an TTree with one entry for each valid (Kappa) object.
-=======
->>>>>>> Stashed changes
 
    This producer creates an ntuple with all data members of the Kappa object as variables.
    Additionally, a matching to gen particles is possible.
@@ -38,7 +36,7 @@ public:
 	KappaCollectionsConsumerBase(std::string treeName,
 	                             std::vector<TObject*> product_type::*validObjects,
 	                             bool (setting_type::*GetBranchGenMatchedObjects)(void) const,
-								 bool (setting_type::*GetBranchObjectMatchedPF)(void) const,
+	                             bool (setting_type::*GetBranchObjectMatchedPF)(void) const,
 	                             bool (setting_type::*GetBranchObjectMatchedPFEtsum)(void) const,
 	                             TObjectMetaInfo* event_type::*objectMetaInfo = nullptr,
 	                             std::map<TObject*, KGenParticle*> product_type::*genParticleMatchedObjects = nullptr,

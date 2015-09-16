@@ -41,8 +41,6 @@ public:
 		m_genTauMatchedObjects(genTauMatchedObjects),
 		m_validObjects(validObjects),
 		m_invalidObjects(invalidObjects),
-		//m_validObjects(validObjects),
-		//m_validObjects(validObjects),
 		tauDecayMode(tauDecayMode),
 		GetDeltaRMatchingRecoObjectGenTau(GetDeltaRMatchingRecoObjectGenTau),
 		GetInvalidateNonGenTauMatchingObjects(GetInvalidateNonGenTauMatchingObjects),
@@ -61,14 +59,6 @@ public:
 		{
 			return product.m_genTauMatchDeltaR;
 		});
-		//MuonsConsumer<KappaTypes>::AddFloatQuantity("genTauMatchedMuonsDeltaR", [](event_type const & event, product_type const & product)
-		//{
-		//	return product.m_genTauMatchDeltaR;
-		//});
-		//LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genTauMatchedTausDeltaR", [](event_type const & event, product_type const & product)
-		//{
-		//	return product.m_genTauMatchDeltaR;
-		//});
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,

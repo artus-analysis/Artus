@@ -192,60 +192,7 @@ public:
 			}
 			return DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<TTypes>::AddIntQuantity("mirrortest06", [](event_type const& event, product_type const& product) {
-			if (product.m_validMuons.size() == 2)
-			{
-				double cut = 0.6;
-				ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > origmu0(product.m_validMuons[0]->p4.Pt(),product.m_validMuons[0]->p4.Eta(),-1.*product.m_validMuons[0]->p4.Phi(),product.m_validMuons[0]->p4.M());
-				
-				ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > origmu1(product.m_validMuons[1]->p4.Pt(),product.m_validMuons[1]->p4.Eta(),-1.*product.m_validMuons[1]->p4.Phi(),product.m_validMuons[1]->p4.M());
-				
-				double deltaR1 = ROOT::Math::VectorUtil::DeltaR(origmu0, product.m_validMuons[1]->p4);
-				double deltaR2 = ROOT::Math::VectorUtil::DeltaR(origmu1, product.m_validMuons[0]->p4);
-				//Check Mu 0 was not mirrored in original Mu 1
-				if ( (deltaR1 < cut) or (deltaR2 < cut))
-					return 0;
-				else
-					return 1;
-			}	
-			return DefaultValues::UndefinedInt;
-		});
-		LambdaNtupleConsumer<TTypes>::AddIntQuantity("mirrortest05", [](event_type const& event, product_type const& product) {
-			if (product.m_validMuons.size() == 2)
-			{
-				double cut = 0.5;
-				ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > origmu0(product.m_validMuons[0]->p4.Pt(),product.m_validMuons[0]->p4.Eta(),-1.*product.m_validMuons[0]->p4.Phi(),product.m_validMuons[0]->p4.M());
-				
-				ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > origmu1(product.m_validMuons[1]->p4.Pt(),product.m_validMuons[1]->p4.Eta(),-1.*product.m_validMuons[1]->p4.Phi(),product.m_validMuons[1]->p4.M());
-				
-				double deltaR1 = ROOT::Math::VectorUtil::DeltaR(origmu0, product.m_validMuons[1]->p4);
-				double deltaR2 = ROOT::Math::VectorUtil::DeltaR(origmu1, product.m_validMuons[0]->p4);
-				//Check Mu 0 was not mirrored in original Mu 1
-				if ( (deltaR1 < cut) or (deltaR2 < cut))
-					return 0;
-				else
-					return 1;
-			}	
-			return DefaultValues::UndefinedInt;
-		});
-		LambdaNtupleConsumer<TTypes>::AddIntQuantity("mirrortest04", [](event_type const& event, product_type const& product) {
-			if (product.m_validMuons.size() == 2)
-			{
-				double cut = 0.4;
-				ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > origmu0(product.m_validMuons[0]->p4.Pt(),product.m_validMuons[0]->p4.Eta(),-1.*product.m_validMuons[0]->p4.Phi(),product.m_validMuons[0]->p4.M());
-				
-				ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > origmu1(product.m_validMuons[1]->p4.Pt(),product.m_validMuons[1]->p4.Eta(),-1.*product.m_validMuons[1]->p4.Phi(),product.m_validMuons[1]->p4.M());
-				
-				double deltaR1 = ROOT::Math::VectorUtil::DeltaR(origmu0, product.m_validMuons[1]->p4);
-				double deltaR2 = ROOT::Math::VectorUtil::DeltaR(origmu1, product.m_validMuons[0]->p4);
-				//Check Mu 0 was not mirrored in original Mu 1
-				if ( (deltaR1 < cut) or (deltaR2 < cut))
-					return 0;
-				else
-					return 1;
-			}	
-			return DefaultValues::UndefinedInt;
-		});
+		
 		LambdaNtupleConsumer<TTypes>::AddIntQuantity("npv", [](event_type const& event, product_type const& product)
 		{
 			return event.m_vertexSummary->nVertices;

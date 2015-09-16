@@ -24,7 +24,7 @@ export USERPC=`who am i | sed 's/.*(\([^]]*\)).*/\1/g'`
 if [[ `hostname` == *naf* ]]; then
 	export ARTUS_WORK_BASE="/nfs/dust/cms/user/${USER}/artus/"
 elif [[ `hostname` == *ekp* ]]; then
-	export ARTUS_WORK_BASE="/storage/6/${USER}/artus/"
+	export ARTUS_WORK_BASE="/storage/a/${USER}/artus/"
 elif [[ `hostname` == *cern* ]]; then
 	export ARTUS_WORK_BASE="/afs/cern.ch/work/${USER:0:1}/${USER}/artus/"
 fi
