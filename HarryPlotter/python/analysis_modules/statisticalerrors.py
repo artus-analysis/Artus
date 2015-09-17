@@ -15,22 +15,27 @@ class StatisticalErrors(histogrammanipulationbase.HistogramManipulationBase):
 		super(StatisticalErrors, self).modify_argument_parser(parser, args)
 
 		self.StatisticalErrors_options = parser.add_argument_group("StatisticalErrors options")
-		self.StatisticalErrors_options.add_argument("--stat-error", type=str, nargs='*', default=[],
+		self.StatisticalErrors_options.add_argument("--stat-error-nicks", type=str, nargs="+",
 				help="List the nicks you want to make stat error (-> module whitelist ).")
-		self.StatisticalErrors_options.add_argument("--relative-error", action="store_true", default=False,
-				help="Do not plot absolute errors, but relative to bin content (in %).")
+		self.StatisticalErrors_options.add_argument("--stat-error-relative", action="store_true", default=False,
+				help="Do not plot absolute errors, but relative to bin content. [Default: %(default)s]")
+		self.StatisticalErrors_options.add_argument("--stat-error-relative-percent", action="store_true", default=False,
+				help="Output relative errors as percentage. [Default: %(default)s]")
 
 	def prepare_args(self, parser, plotData):
 		super(StatisticalErrors, self).prepare_args(parser, plotData)
-		self.whitelist = plotData.plotdict['stat_error']
-		self.relative_error = plotData.plotdict['relative_error']
+		self.whitelist = plotData.plotdict["stat_error_nicks"]
+		self.relative_error = plotData.plotdict["stat_error_relative"]
+		self.relative_error_percent = plotData.plotdict["stat_error_relative_percent"]
 
 	def _manipulate_bin(self, histogram, global_bin):
 		new_bin_content = histogram.GetBinError(global_bin)
 		if self.relative_error:
 			content = histogram.GetBinContent(global_bin)
 			if content > 0:
-				new_bin_content *= (100./content)
+				new_bin_content /= content
+				if self.relative_error_percent:
+					new_bin_content *= 100.0
 			else:
 				new_bin_content = 0
 		histogram.SetBinContent(global_bin, new_bin_content)
