@@ -90,13 +90,14 @@ class Cutflow(analysisbase.AnalysisBase):
 		:param cutflow_histograms: list of cutflow histograms
 		:type cutflow_histograms: list[:py:class:`ROOT.TH1`]
 		:param all_cuts: alternative sequence of cuts to use
+		:type all_cuts: list[str]
 
 		:returns: completed histograms by nickname
 
 		:note: Cutflows are *not* modified inplace, but are replaced in
 		       ``plotData`` if cuts are inserted.
 		:raises ValueError: if the ordering of ``all_cuts`` conflicts with
-		                    any cutflow's label sequence
+		                    any cutflow's sequence of labels
 		"""
 		# get list of filternames (= bin labels) from all cutflow histograms
 		filternames = {}
@@ -104,11 +105,17 @@ class Cutflow(analysisbase.AnalysisBase):
 			filternames[nick] = []
 			for binnumber in range(1, root_histogram.GetNbinsX()+1):
 				filternames[nick].append(root_histogram.GetXaxis().GetBinLabel(binnumber))
-		if len(set( [len(filternames[nick]) for nick in filternames] )) == 1:
+		if not all_cuts and len(set(tuple(cutlabels) for cutlabels in filternames.values())) == 1:
 			return
-		log.warning("Cutflow histograms have different number of bins! New histograms containing all cuts will be constructed.")
-		new_cutflows = {}
+		if not all_cuts:
+			log.warning("Cutflow histograms have different number of bins! New histograms containing all cuts will be constructed.")
+			all_cuts = extrafunctions.merge_sequences(*filternames.values())
+		else:
+			# if we can merge desired cuts and individual cuts, subsequences don't have conflicting order
+			for nick, cuts in filternames.iteritems():
+				_ = extrafunctions.merge_sequences(all_cuts, cuts)
 		# recreate histograms with all cuts
+		new_cutflows = {}
 		all_cuts = all_cuts or extrafunctions.merge_sequences(*filternames.values())
 		for nick, root_histogram in cutflow_histograms.iteritems():
 			new_histo = ROOT.TH1F(root_histogram.GetName()+"_new", root_histogram.GetTitle()+"_new", len(all_cuts), 0, len(all_cuts))
