@@ -108,7 +108,7 @@ public:
 			maxFraction = 0.90f;
 		else if (jetID ==  "medium")
 			maxFraction = 0.95f;
-		else if (jetID ==  "loose")
+		else if (jetID ==  "loose" || jetID == "looselepveto")
 			maxFraction = 0.99f;
 		else if (!noID)
 			LOG(FATAL) << "Jet ID of type '" << jetID << "' not implemented!";
@@ -117,7 +117,7 @@ public:
 		    jetIDVersion == JetIDVersion::ID73X ||
 		    jetIDVersion == JetIDVersion::ID73Xtemp ||
 		    jetIDVersion == JetIDVersion::ID73XnoHF ||
-		    jetIDVersion == JetIDVersion::ID2015 && jetID == "tightlepveto")
+		    (jetIDVersion == JetIDVersion::ID2015 && (jetID == "tightlepveto" || jetID == "looselepveto")))
 		{
 			maxMuFraction = 0.8f;
 			maxCEMFraction = maxFraction;
