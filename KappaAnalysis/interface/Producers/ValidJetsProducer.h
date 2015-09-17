@@ -93,7 +93,7 @@ public:
 
 		validJetsInput = ToValidJetsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidJetsInput())));
 		jetIDVersion = ToJetIDVersion(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetJetIDVersion())));
-		jetID = boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetJetID()));
+		std::string jetID = boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetJetID()));
 
 		noID = (jetID == "none");
 		if (jetID == "medium" && jetIDVersion != JetIDVersion::ID2010)
@@ -264,7 +264,6 @@ private:
 	std::vector<std::shared_ptr<TJet> > KappaProduct::*m_correctedJetsMember;
 
 	bool noID;
-	std::string jetID;
 	ValidJetsInput validJetsInput;
 	JetIDVersion jetIDVersion;
 	float maxFraction;
