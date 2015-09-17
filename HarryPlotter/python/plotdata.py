@@ -91,7 +91,7 @@ class PlotData(object):
 							title=plot,
 							image=image,
 							links=links,
-							json=filename+".json"
+							json=plot+".json"
 					)
 
 				# put the html parts together and write
