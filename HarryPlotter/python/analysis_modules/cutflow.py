@@ -20,22 +20,51 @@ class Cutflow(analysisbase.AnalysisBase):
 	def modify_argument_parser(self, parser, args):
 		super(Cutflow, self).modify_argument_parser(parser, args)
 		
-		self.cutflow_options = parser.add_argument_group("Cutflow options")
+		self.cutflow_options = parser.add_argument_group(
+			"Cutflow options",
+			"Prepares cutflow histograms for plotting by computing efficiencies. "
+			"If neither cutflow names nor nicks are set, cutflow histograms are "
+			"guessed."
+		)
+		self.cutflow_options.add_argument("--cutflow-names", nargs="*", default=[],
+				help="Names of cutflow histograms; if not given, histograms are guessed.")
+		self.cutflow_options.add_argument("--cutflow-nicks", nargs="*", default=[],
+				help="Nicks of cutflow histograms; if not given, histograms are guessed.")
 		self.cutflow_options.add_argument("--rel-cuts", action="store_true", default=False,
 				help="Scale bins relative to respective left bins.")
-	
+		self.cutflow_options.add_argument("--cutflow-base-bin", default='1',
+				help="Cut to use as base level (1.0 in absolute cutflow), either as an index or label. [Default: %(default)s]")
+		self.cutflow_options.add_argument("--cutflow-sequence", nargs="*", default=[],
+				help="Cuts to show for cutflows.")
+
 	def prepare_args(self, parser, plotData):
 		super(Cutflow, self).prepare_args(parser, plotData)
 		if plotData.plotdict["x_label"] == parser.get_default("x_label"):
 			plotData.plotdict["x_label"] = ""
 		if plotData.plotdict["y_label"] == parser.get_default("y_label"):
 			plotData.plotdict["y_label"] = ("Relative " if plotData.plotdict["rel_cuts"] else "") + "Cut Efficiency"
+		# integer index or string label
+		try:
+			plotData.plotdict["cutflow_base_bin"] = int(plotData.plotdict["cutflow_base_bin"])
+		except ValueError:
+			plotData.plotdict["cutflow_base_bin"] = str(plotData.plotdict["cutflow_base_bin"])
 	
 	def run(self, plotData=None):
 		super(Cutflow, self).run(plotData)
-		cutflows = self._get_cutflows(plotData)
-		cutflows = self._add_missing_cuts(plotData, cutflows)
-		cutflows = self._compile_efficiencies(cutflows, relative=plotData.plotdict["rel_cuts"])
+		cutflows = self._get_cutflows(
+			plotData,
+			histo_names=plotData.plotdict["cutflow_names"],
+			histo_nicks=plotData.plotdict["cutflow_nicks"]
+		)
+		cutflows = self._add_missing_cuts(
+			plotData, cutflows,
+			all_cuts=plotData.plotdict["cutflow_sequence"]
+		)
+		cutflows = self._compile_efficiencies(
+			cutflows,
+			relative=plotData.plotdict["rel_cuts"],
+			base_bin=plotData.plotdict["cutflow_base_bin"]
+		)
 
 	def _get_cutflows(self, plotData, histo_names=(), histo_nicks=()):
 		"""
@@ -78,7 +107,11 @@ class Cutflow(analysisbase.AnalysisBase):
 					root_histogram.SetBinContent(x_bin, new_bin_content)
 				root_histogram.SetBinContent(1, 1.0)
 			else:
-				root_histogram.Scale(1.0 / root_histogram.GetBinContent(1))
+				# typecheck for different ROOT interfaces...
+				if isinstance(base_bin, basestring):
+					root_histogram.Scale(1.0 / root_histogram.GetBinContent(root_histogram.GetXaxis().FindBin(base_bin)))
+				else:
+					root_histogram.Scale(1.0 / root_histogram.GetBinContent(base_bin))
 		return cutflow_histograms
 
 	def _add_missing_cuts(self, plotData, cutflow_histograms, all_cuts=()):
