@@ -163,7 +163,7 @@ class ArtusWrapper(object):
 	def removeUnwantedInputFiles(self):
 		if self._args.batch:  # shrink config by inputFiles since this is replaced anyway in batch mode
 			self._config["InputFiles"] = [""]
-		elif self._args.fast:
+		elif not self._args.fast is None:
 			self._config["InputFiles"] = self._config["InputFiles"][:min(len(self._config["InputFiles"]), self._args.fast)]
 	
 	def remove_pipeline_copies(self):
@@ -219,6 +219,9 @@ class ArtusWrapper(object):
 			tmpInputFiles = self._config["InputFiles"]
 			self._config["InputFiles"] = []
 			self.setInputFilenames(tmpInputFiles)
+		
+		if not self._args.n_events is None:
+			self._config["ProcessNEvents"] = self._args.n_events
 
 		if self._args.output_file:
 			self.setOutputFilename(self._args.output_file)
@@ -332,8 +335,10 @@ class ArtusWrapper(object):
 		                                help="Log specified environment variables.")
 		configOptionsGroup.add_argument("-s", "--save-config", default="",
 		                                help="Save the JSON config to FILENAME.")
-		configOptionsGroup.add_argument('-f', '--fast', type=int, default=False,
-		                                help="limit number of input files or grid-control jobs. 3=files[0:3].")
+		configOptionsGroup.add_argument("-f", "--fast", type=int,
+		                                help="Limit number of input files or grid-control jobs. 3=files[0:3].")
+		configOptionsGroup.add_argument("-e", "--n-events", type=int,
+		                                help="Limit number of events to process.")
 		configOptionsGroup.add_argument("--gc-config", default="$CMSSW_BASE/src/Artus/Configuration/data/grid-control_base_config.conf",
 		                                help="Path to grid-control base config that is replace by the wrapper. [Default: %(default)s]")
 		configOptionsGroup.add_argument("--gc-config-includes", nargs="+",
@@ -418,7 +423,7 @@ class ArtusWrapper(object):
 				epilogexecutable = "epilog executable = $CMSSW_BASE/bin/" + os.path.join(os.path.expandvars("$SCRAM_ARCH"), os.path.basename(sys.argv[0])),
 				sepath = sepath,
 				workdir = workdir,
-				jobs = "" if not self._args.fast else "jobs = " + str(self._args.fast),
+				jobs = "" if self._args.fast is None else "jobs = " + str(self._args.fast),
 				inputfiles = "input files = \n\t" + self._configFilename,
 				filesperjob = "files per job = " + str(self._args.files_per_job),
 				areafiles = self._args.area_files if (self._args.area_files != None) else "",
