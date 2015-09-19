@@ -69,6 +69,8 @@ class PlotRoot(plotbase.PlotBase):
 		                               help="Symmetric x-axis limits of the plot. The parameters of --x-lims are taken as <center> <range/2>")
 		self.axis_options.add_argument("--y-lims", type=float, nargs="+",
 		                               help="Lower and Upper limit for y-axis.")
+		self.axis_options.add_argument("--rel-y-lims", type=float, nargs=2,
+		                               help="Relative lower and upper margin for auto y-lims. [Default: [0.9, 1.1] for lin. y-axis and [0.5, 2.0] for log. y-axis.]")
 		self.axis_options.add_argument("--sym-y-lims", nargs="?", type="bool", default=False, const=True,
 		                               help="Symmetric y-axis limits of the plot. The parameters of --y-lims are taken as <center> <range/2>")
 		self.axis_options.add_argument("--z-lims", type=float, nargs="+",
@@ -180,6 +182,10 @@ class PlotRoot(plotbase.PlotBase):
 			plotData.plotdict["marker_styles"][index] = marker_style
 			plotData.plotdict["fill_styles"][index] = fill_style
 			plotData.plotdict["legend_markers"][index] = legend_marker
+		
+		# defaults for axis ranges
+		if plotData.plotdict["rel_y_lims"] is None:
+			plotData.plotdict["rel_y_lims"] = [0.5, 2.0] if plotData.plotdict["y_log"] else [0.9, 1.1]
 		
 		# defaults for legend position
 		if not plotData.plotdict["legend"] is None:
@@ -336,8 +342,8 @@ class PlotRoot(plotbase.PlotBase):
 				self.y_min = plotData.plotdict["y_lims"][0] - plotData.plotdict["y_lims"][1]
 				self.y_max = plotData.plotdict["y_lims"][0] + plotData.plotdict["y_lims"][1]
 			else:
-				tmp_y_min = self.y_min * ((0.9 if self.y_min > 0.0 else 1.1) if self.max_dim < 3 else 1.0)
-				tmp_y_max = self.y_max * ((1.1 if self.y_max > 0.0 else 0.9) if self.max_dim < 3 else 1.0)
+				tmp_y_min = self.y_min * ((plotData.plotdict["rel_y_lims"][0] if self.y_min > 0.0 else plotData.plotdict["rel_y_lims"][1]) if self.max_dim < 3 else 1.0)
+				tmp_y_max = self.y_max * ((plotData.plotdict["rel_y_lims"][1] if self.y_max > 0.0 else plotData.plotdict["rel_y_lims"][0]) if self.max_dim < 3 else 1.0)
 				if not plotData.plotdict["y_lims"] is None:
 					center = plotData.plotdict["y_lims"][0]
 					width = max([abs(y - center) for y in [tmp_y_min, tmp_y_max]])
@@ -353,18 +359,12 @@ class PlotRoot(plotbase.PlotBase):
 			if not plotData.plotdict["y_lims"] is None:
 				self.y_min = plotData.plotdict["y_lims"][0]
 			elif self.max_dim < 3:
-				if plotData.plotdict["y_log"]:
-					self.y_min *= (0.5 if self.y_min > 0.0 else 2.0)
-				else:
-					self.y_min *= (0.9 if self.y_min > 0.0 else 1.1)
+				self.y_min *= (plotData.plotdict["rel_y_lims"][0] if self.y_min > 0.0 else plotData.plotdict["rel_y_lims"][1])
 		
 			if not plotData.plotdict["y_lims"] is None and len(plotData.plotdict["y_lims"]) > 1:
 				self.y_max = plotData.plotdict["y_lims"][1]
 			elif self.max_dim < 3:
-				if plotData.plotdict["y_log"]:
-					self.y_max *= (2.0 if self.y_max > 0.0 else 0.5)
-				else:
-					self.y_max *= (1.1 if self.y_max > 0.0 else 0.9)
+				self.y_max *= (plotData.plotdict["rel_y_lims"][1] if self.y_max > 0.0 else plotData.plotdict["rel_y_lims"][0])
 		
 		# z lims
 		if plotData.plotdict["sym_z_lims"] and (not plotData.plotdict["z_log"]):
