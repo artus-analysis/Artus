@@ -28,7 +28,10 @@ class BinErrorsOfEmptyBins(histogrammanipulationbase.HistogramManipulationBase):
 	
 	def _selector(self, nick, root_histogram, plotData):
 		if isinstance(root_histogram, ROOT.TH1):
-			self.bin_error_for_empty_bins = plotData.plotdict["empty_bin_error_scale"] * root_histogram.GetSumOfWeights() / root_histogram.GetEntries()
+			if root_histogram.GetEntries() == 0:
+				self.bin_error_for_empty_bins = 0.0
+			else:
+				self.bin_error_for_empty_bins = plotData.plotdict["empty_bin_error_scale"] * root_histogram.GetSumOfWeights() / root_histogram.GetEntries()
 		else:
 			return False
 		return super(BinErrorsOfEmptyBins, self)._selector(nick, root_histogram, plotData)
