@@ -19,12 +19,22 @@ class BinErrorsOfEmptyBins(histogrammanipulationbase.HistogramManipulationBase):
 		super(BinErrorsOfEmptyBins, self).modify_argument_parser(parser, args)
 		
 		self.empty_bins_options = parser.add_argument_group("Empty bins errors options")
-		self.empty_bins_options.add_argument("--empty-bin-error-scale", type=float, default=0.6,
-				help="Scale factor for bin errors of empty bins = sf * sum of weights / entries of histogram. [Default: %(default)s]")
+		self.empty_bins_options.add_argument(
+				"--nicks-empty-bins", nargs="+", default=[],
+				help="Nicks of histograms to be corrected. [Default: all]"
+		)
+		self.empty_bins_options.add_argument(
+				"--empty-bin-error-scale", type=float, default=0.6,
+				help="Scale factor for bin errors of empty bins = sf * sum of weights / entries of histogram. [Default: %(default)s]"
+		)
 	
 	def prepare_args(self, parser, plotData):
 		super(BinErrorsOfEmptyBins, self).prepare_args(parser, plotData)
-		self.whitelist = plotData.plotdict["nicks"]
+		
+		if len(plotData.plotdict["nicks_empty_bins"]) > 0:
+			self.whitelist = plotData.plotdict["nicks_empty_bins"]
+		else:
+			self.whitelist = plotData.plotdict["nicks"]
 	
 	def _selector(self, nick, root_histogram, plotData):
 		if isinstance(root_histogram, ROOT.TH1):
