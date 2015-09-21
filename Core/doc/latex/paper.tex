@@ -79,31 +79,19 @@ Maybe not put this figure on a dedicated page?}
 \section{Requirements and Challenges for Analysis Software\label{section_artus_challenges}}
 %define requirements based on previous section, following sections: describe how they are fullfilled
 Based on the workflow described in the previous section, the following demands for an analyis framework arise:
-\begin{itemize}
- \item Performance
- \begin{itemize}
-  \item High performance for fast turnaround cycles, even with large data amounts % -> C++, pipelines, only necessary producers
-  \item Flexibility %TODO define need for different configurations in previous section
- \end{itemize}
- \item Maintainability
- \begin{itemize}
-  \item Easy to install
-  \item Readable and understandable, also for programming newcomers
-  \item Compatibility with different operating platforms/environments % standalone compile with make, integrated batch/GC functionality
-  \item Compatible with different data formats % -> data format defined outside (kappa)
-  \item Clear separation of code, data and settings % -> json config
- \end{itemize}
+\subsection{Performance}
+The main performance indicator is the \emph{turnaround time}, which means the time that is needed for the whole analysis in case new requirements arise. Since the runtime is often limited by the transfer speed to the storage elements, \artus is designed to load each event only once from the storage system and performs all necessary steps directly. This is made possible with the pipelining concept. Still, since analysis requirements sometimes change within a few hours, a high flexibility is needed. This explains the need for a modular structure, where only those parts of the code are executed that really are necessary for the analysis.
+\subsection{Maintainability}
+Keeping code maintained, i.e. up-to-date with the latest requirements while not losing backwards compatibility is a challenge for each software project. The first important step is an always updated recipe that works out of the box on each machine offering CVMFS. To make the entry level as low as possible, beginners can start with an example analysis. In \artus, everything is steered via JSON config files. The modules then implement what has to be done while the data is stored in desired data format.
 
- \item Reliability
- \begin{itemize}
-  \item Use existing libraries and existing HEP code wherever possible % -> C++ used
-  \item Reliable and checked source code % -> Unit tests, code sharing
-  \item Avoids frequent re-implementations by being used in different physics analyses % -> modular structure, producers
-  \item Readable, since sourcecode is the most precise documentation possible
- \end{itemize}
-\end{itemize}
+\artus has the built-in possibility to submit analysis jobs with grid-control, a job submission tool.
 
-The \artus design choices are fully based on these requirements.
+
+
+\subsection{Reliability}
+In most cases, analysis never leave prototype status. This leads to frequent re-implementations and low trust in reliability. \artus allows the re-use of analysis code due to its modular structur as well as sharing it between different analysis groups, with improves code quality by far.
+
+Sourcecode and configuration files have become the most precise form of documentation. Therefore, readability also for people who have not written the code is crucial. Also, if possible, standard existing libraries from HEP are interfaced.
 
 
 \section{The \artus Framework \label{section_artus_motivation}}
