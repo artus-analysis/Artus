@@ -344,8 +344,8 @@ public:
 			       (electron->sigmaIetaIeta < 0.01f) &&
 			       (electron->hadronicOverEm < 0.15f) &&
 			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.04f) &&
-			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2f);
-			       // no isolation
+			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2f) &&
+			       (electron->pfIso() / electron->p4.Pt() < 0.15f);
 		}
 		else
 		{
@@ -355,7 +355,7 @@ public:
 			       (electron->sigmaIetaIeta < 0.03f) &&
 			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.04f) &&
 			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2f);
-			       // no isolation
+			       (electron->pfIso() / electron->p4.Pt() < 0.15f);
 		}
 		return false;
 	}
@@ -364,29 +364,11 @@ public:
 	{
 		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
 		{
-			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Barrel_Cuts_eta_supercluster_1_4
-			return (std::abs(electron->dEtaIn) < 0.007f) &&
-			       (std::abs(electron->dPhiIn) < 0.15f) &&
-			       (electron->sigmaIetaIeta < 0.01f) &&
-			       (electron->hadronicOverEm < 0.12f) &&
-			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02f) &&
-			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2f) &&
-			       (electron->fbrem < 0.05f);
-			       // no isolation
-			       // no conversion rejection
+			return CutBasedID(electron, event, 0.007f, 0.15f, 0.01f, 0.12f, 0.02f, 0.2f, 0.05f, 0.15f, 1);
 		}
 		else
 		{
-			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
-			return (std::abs(electron->dEtaIn) < 0.009f) &&
-			       (std::abs(electron->dPhiIn) < 0.1f) &&
-			       (electron->sigmaIetaIeta < 0.03f) &&
-			       (electron->hadronicOverEm < 0.1f) &&
-			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02f) &&
-			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2f) &&
-			       (electron->fbrem < 0.05f);
-			       // no isolation
-			       // no conversion rejection
+			return CutBasedID(electron, event, 0.009f, 0.1f, 0.03f, 0.1f, 0.02f, 0.2f, 0.05f, 0.15f, 1);
 		}
 		return false;
 	}
@@ -395,31 +377,12 @@ public:
 	{
 		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
 		{
-			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Barrel_Cuts_eta_supercluster_1_4
-			return (std::abs(electron->dEtaIn) < 0.004f) &&
-			       (std::abs(electron->dPhiIn) < 0.06f) &&
-			       (electron->sigmaIetaIeta < 0.01f) &&
-			       (electron->hadronicOverEm < 0.12f) &&
-			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02f) &&
-			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1f) &&
-			       (electron->fbrem < 0.05f);
-			       // no isolation
-			       // no conversion rejection
+			return CutBasedID(electron, event, 0.004f, 0.06f, 0.01f, 0.12f, 0.02f, 0.1f, 0.05f, 0.15f, 1);
 		}
 		else
 		{
-			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
-			return (std::abs(electron->dEtaIn) < 0.007f) &&
-			       (std::abs(electron->dPhiIn) < 0.03f) &&
-			       (electron->sigmaIetaIeta < 0.03f) &&
-			       (electron->hadronicOverEm < 0.1f) &&
-			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02f) &&
-			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1f) &&
-			       (electron->fbrem < 0.05f);
-			       // no isolation
-			       // no conversion rejection
+			return CutBasedID(electron, event, 0.007f, 0.03f, 0.03f, 0.1f, 0.02f, 0.1f, 0.05f, 0.15f, 1);
 		}
-
 		return false;
 	}
 
@@ -427,31 +390,30 @@ public:
 	{
 		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
 		{
-			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Barrel_Cuts_eta_supercluster_1_4
-			return (std::abs(electron->dEtaIn) < 0.004f) &&
-			       (std::abs(electron->dPhiIn) < 0.03f) &&
-			       (electron->sigmaIetaIeta < 0.01f) &&
-			       (electron->hadronicOverEm < 0.12f) &&
-			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02f) &&
-			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1f) &&
-			       (electron->fbrem < 0.05f);
-			       // no isolation
-			       // no conversion rejection
+			return CutBasedID(electron, event, 0.004f, 0.03f, 0.01f, 0.12f, 0.02f, 0.1f, 0.05f, 0.18f, 0);
 		}
 		else
 		{
-			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
-			return (std::abs(electron->dEtaIn) < 0.005f) &&
-			       (std::abs(electron->dPhiIn) < 0.02f) &&
-			       (electron->sigmaIetaIeta < 0.03f) &&
-			       (electron->hadronicOverEm < 0.1f) &&
-			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02f) &&
-			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1f) &&
-			       (electron->fbrem < 0.05f);
-			       // no isolation
-			       // no conversion rejection
+			return CutBasedID(electron, event, 0.005f, 0.02f, 0.03f, 0.1f, 0.02f, 0.1f, 0.05f, 0.18f, 0);
 		}
 		return false;
+	}
+
+	static bool CutBasedID(const KElectron* electron, event_type const& event,
+	                        float dEtaIn, float dPhiIn, float sigmaIetaIeta,
+	                        float hadronicOverEm, float Dxy, float Dz, float EP,
+	                        float pfiso, int missingHits)
+	{
+		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
+		return (std::abs(electron->dEtaIn) < dEtaIn) &&
+		       (std::abs(electron->dPhiIn) < dPhiIn) &&
+		       (electron->sigmaIetaIeta < sigmaIetaIeta) &&
+		       (electron->hadronicOverEm < hadronicOverEm) &&
+		       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < Dxy) &&
+		       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < Dz) &&
+		       (std::abs(1.0f/(electron->ecalEnergy) - 1.0f/(electron->ecalEnergy/electron->eSuperClusterOverP)) < EP) &&
+		       (electron->track.nInnerHits <= missingHits);
+		       // no conversion rejection
 	}
 
 
