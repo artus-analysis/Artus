@@ -348,7 +348,7 @@ class ArtusWrapper(object):
 		                                 help="Measure performance with profiler. Choose igprof or valgrind.")
 		runningOptionsGroup.add_argument("-r", "--root", default=False, action="store_true",
 		                                 help="Open output file in ROOT TBrowser after completion.")
-		runningOptionsGroup.add_argument("-b", "--batch", default=False, const="local", nargs="?",
+		runningOptionsGroup.add_argument("-b", "--batch", default=False, const="naf", nargs="?",
 		                                 help="Run with grid-control. Optionally select backend. [Default: %(default)s]")
 		runningOptionsGroup.add_argument("--no-log-to-se", default=False, action="store_true",
 		                                 help="Do not write logfile in batch mode directly to SE.")
