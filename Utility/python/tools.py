@@ -148,10 +148,7 @@ def parallelize(function, arguments_list, n_processes=1):
 	if n_processes <= 1:
 		results = []
 		for arguments in arguments_list:
-			if isinstance(arguments, basestring):
-				results.append(function(arguments))
-			else:
-				results.append(function(*arguments))
+			results.append(function(arguments))
 		return results
 	else:
 		pool = multiprocessing.Pool(processes=min(n_processes, len(arguments_list)))
