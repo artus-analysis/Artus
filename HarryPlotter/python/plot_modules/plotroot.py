@@ -299,15 +299,7 @@ class PlotRoot(plotbase.PlotBase):
 				if (not plotData.plotdict["z_label"] is None) and (plotData.plotdict["z_label"] != "" and hasattr(root_object, "GetZaxis")):
 					root_object.GetZaxis().SetTitle(plotData.plotdict["z_label"])
 			
-			# tick labels
-			if plotData.plotdict["x_tick_labels"] and len(plotData.plotdict["x_tick_labels"]) > 0:
-				for x_bin in range(min(root_object.GetNbinsX(), len(plotData.plotdict["x_tick_labels"]))):
-					root_object.GetXaxis().SetBinLabel(x_bin+1, plotData.plotdict["x_tick_labels"][x_bin])
-			
-			if plotData.plotdict["y_tick_labels"] and len(plotData.plotdict["y_tick_labels"]) > 0:
-				for y_bin in range(min(root_object.GetNbinsY(), len(plotData.plotdict["y_tick_labels"]))):
-					root_object.GetYaxis().SetBinLabel(y_bin+1, plotData.plotdict["y_tick_labels"][y_bin])
-			
+			# tick labels (z-axis) TODO: unify this with the x and y bin labels mechanism?
 			if plotData.plotdict["z_tick_labels"] and len(plotData.plotdict["z_tick_labels"]) > 0:
 				for z_bin in range(min(root_object.GetNbinsZ(), len(plotData.plotdict["z_tick_labels"]))):
 					root_object.GetZaxis().SetBinLabel(z_bin+1, plotData.plotdict["z_tick_labels"][z_bin])
@@ -439,17 +431,19 @@ class PlotRoot(plotbase.PlotBase):
 		super(PlotRoot, self).make_plots(plotData)
 		
 		# draw empty histograms for the axes
-		n_bins = 1 # TODO: consider axis ticks
-		n_sub_bins = 1 # TODO: consider axis ticks
+		n_binsX = len(plotData.plotdict["x_tick_labels"]) if plotData.plotdict["x_tick_labels"] else 1
+		n_binsY = len(plotData.plotdict["y_tick_labels"]) if plotData.plotdict["y_tick_labels"] else 1
+		n_sub_binsX = len(plotData.plotdict["x_tick_labels"]) if plotData.plotdict["x_tick_labels"] else 1
+		n_sub_binsY = len(plotData.plotdict["y_tick_labels"]) if plotData.plotdict["y_tick_labels"] else 1
 		
 		if plotData.plot.plot_pad:
 			plotData.plot.plot_pad.cd()
 			if self.max_dim == 2:
-				self.axes_histogram = ROOT.TH1F("axes_histogram", "", n_bins, self.x_min, self.x_max)
+				self.axes_histogram = ROOT.TH2F("axes_histogram", "", n_binsX, self.x_min, self.x_max, n_binsY, self.y_min, self.y_max)
 				self.axes_histogram.SetMinimum(self.y_min)
 				self.axes_histogram.SetMaximum(self.y_max)
 			else:
-				self.axes_histogram = ROOT.TH2F("axes_histogram", "", n_bins, self.x_min, self.x_max, n_bins, self.y_min, self.y_max)
+				self.axes_histogram = ROOT.TH2F("axes_histogram", "", n_binsX, self.x_min, self.x_max, n_binsY, self.y_min, self.y_max)
 				self.axes_histogram.SetMinimum(self.z_min)
 				self.axes_histogram.SetMaximum(self.z_max)
 			
@@ -460,13 +454,21 @@ class PlotRoot(plotbase.PlotBase):
 				self.axes_histogram.GetYaxis().SetTitle(plotData.plotdict["y_label"])
 			if (self.max_dim > 2) and (not plotData.plotdict["z_label"] is None) and (plotData.plotdict["z_label"] != ""):
 				self.axes_histogram.GetZaxis().SetTitle(plotData.plotdict["z_label"])
+
+			# tick labels
+			if plotData.plotdict["x_tick_labels"] and len(plotData.plotdict["x_tick_labels"]) > 0:
+				for x_bin in range(n_binsX):
+					self.axes_histogram.GetXaxis().SetBinLabel(x_bin+1, plotData.plotdict["x_tick_labels"][x_bin])
+			if plotData.plotdict["y_tick_labels"] and len(plotData.plotdict["y_tick_labels"]) > 0:
+				for y_bin in range(n_binsY):
+					self.axes_histogram.GetYaxis().SetBinLabel(y_bin+1, plotData.plotdict["y_tick_labels"][y_bin])
 			
 			self.axes_histogram.Draw("AXIS")
 		
 		if plotData.plot.subplot_pad:
 			plotData.plot.subplot_pad.cd()
 			if self.max_sub_dim == 2:
-				self.subplot_axes_histogram = ROOT.TH1F("subplot_axes_histogram", "", n_sub_bins, self.x_min, self.x_max)
+				self.subplot_axes_histogram = ROOT.TH2F("subplot_axes_histogram", "", n_sub_binsX, self.x_min, self.x_max, n_sub_binsY, self.y_sub_min, self.y_sub_max)
 				self.subplot_axes_histogram.SetMinimum(self.y_sub_min)
 				self.subplot_axes_histogram.SetMaximum(self.y_sub_max)
 			else:
@@ -482,6 +484,11 @@ class PlotRoot(plotbase.PlotBase):
 			#if (self.max_sub_dim > 2) and (not plotData.plotdict["z_subplot_label"] is None) and (plotData.plotdict["z_subplot_label"] != ""):
 			#	self.subplot_axes_histogram.GetZaxis().SetTitle(plotData.plotdict["z_subplot_label"])
 			
+			# tick labels
+			if plotData.plotdict["x_tick_labels"] and len(plotData.plotdict["x_tick_labels"]) > 0:
+				for x_bin in range(n_sub_binsX):
+					self.subplot_axes_histogram.GetXaxis().SetBinLabel(x_bin+1, plotData.plotdict["x_tick_labels"][x_bin])
+
 			self.subplot_axes_histogram.Draw("AXIS")
 			
 			for line_graph in self.subplot_line_graphs:
