@@ -26,6 +26,8 @@ class FunctionPlot(analysisbase.AnalysisBase):
 						help="Fit backend. ROOT and RooFit are available. Check sourcecode which parts of RooFit are implemented. [Default: %(default)s]")
 		self.function_options.add_argument("--function-display-result", action='store_true',
 						help="Display the parameters of the fit on the plots")
+		self.function_options.add_argument("--function-fit-parameter-names", type=str, nargs="+", default=["Parameter"],
+						help="Names of the parameters (e.g. 'Slope'). Only relevant if --function-display-result is True. [Default: %(default)s]")
 
 
 	def prepare_args(self, parser, plotData):
@@ -178,9 +180,15 @@ class FunctionPlot(analysisbase.AnalysisBase):
 		text = "Fit results"
 		if len(plotData.plotdict["function_fit"]) > 1:  # only add the nickname if more than one fit
 			text += " {}:".format(function_nick)
+
+		# expand paramter_names if necessary
+		if len(plotData.plotdict["function_fit_parameter_names"]) < plotData.plotdict["root_objects"][function_nick].GetNpar():
+			plotData.plotdict["function_fit_parameter_names"] *= plotData.plotdict["root_objects"][function_nick].GetNpar()/len(plotData.plotdict["function_fit_parameter_names"])
+		l = max([len(s) for s in plotData.plotdict["function_fit_parameter_names"]])
+
 		for i_par in range(plotData.plotdict["root_objects"][function_nick].GetNpar()):
 			#TODO automatically adjust decimal precision
-			text += "\n  $Parameter {} = {:.3f} \pm {:.3f}$".format(i_par,
+			text += "\n  ${} = {:.3f} \pm {:.3f}$".format(plotData.plotdict["function_fit_parameter_names"][i_par],
 			        plotData.plotdict["root_objects"][function_nick].GetParameter(i_par),
 			        plotData.plotdict["root_objects"][function_nick].GetParError(i_par))
 		text += "\n  $\chi^2 / \mathit{{n.d.f}} = {:.2f} / {}$".format(
