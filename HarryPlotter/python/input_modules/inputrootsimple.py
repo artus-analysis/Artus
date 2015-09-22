@@ -19,9 +19,9 @@ class InputRootSimple(inputbase.InputBase):
 		super(InputRootSimple, self).modify_argument_parser(parser, args)
 		
 		self.input_options.add_argument("-i", "--files", type=str, nargs="+",
-		                                help="Input (root) file(s).")
+		                                default='', help="Input (root) file(s).")
 		self.input_options.add_argument("--root-names", nargs="+",
-		                                help="Name(s) of ROOT/RooFit objects to retrieve.")
+		                                default=[], help="Name(s) of ROOT/RooFit objects to retrieve.")
 
 	def prepare_args(self, parser, plotData):
 		super(InputRootSimple, self).prepare_args(parser, plotData)
@@ -34,7 +34,7 @@ class InputRootSimple(inputbase.InputBase):
 			plotData.plotdict["filename"] = None
 
 	def run(self, plotData):
-		for index, filename in enumerate(plotData.plotdict['files']):
+		for index, filename in enumerate(plotData.plotdict["files"]):
 			file = ROOT.TFile(filename)
 
 			for name in plotData.plotdict["root_names"]:
