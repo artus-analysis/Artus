@@ -171,6 +171,11 @@ public:
 		electronIso = ToElectronIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetElectronIso)())));
 		electronReco = ToElectronReco(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetElectronReco)())));
 		
+		if ((boost::algorithm::contains((settings.*GetElectronID)(), "vbft95")) && (electronIso==ElectronIso::NONE))
+		{
+			LOG(WARNING) << "ValidElectronsProducer: using cutbased vbft95 ID, but isolation is not set!";
+		}
+
 		// add possible quantities for the lambda ntuples consumers
 		LambdaNtupleConsumer<TTypes>::AddIntQuantity("nElectrons", [](event_type const& event, product_type const& product) {
 			return product.m_validElectrons.size();
@@ -344,8 +349,8 @@ public:
 			       (electron->sigmaIetaIeta < 0.01f) &&
 			       (electron->hadronicOverEm < 0.15f) &&
 			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.04f) &&
-			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2f) &&
-			       (electron->pfIso() / electron->p4.Pt() < 0.15f);
+			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2f);
+			       // no isolation
 		}
 		else
 		{
@@ -355,7 +360,7 @@ public:
 			       (electron->sigmaIetaIeta < 0.03f) &&
 			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.04f) &&
 			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2f);
-			       (electron->pfIso() / electron->p4.Pt() < 0.15f);
+			       // no isolation
 		}
 		return false;
 	}
@@ -413,6 +418,7 @@ public:
 		       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < Dz) &&
 		       (std::abs(1.0f/(electron->ecalEnergy) - 1.0f/(electron->ecalEnergy/electron->eSuperClusterOverP)) < EP) &&
 		       (electron->track.nInnerHits <= missingHits);
+		       // no isolation
 		       // no conversion rejection
 	}
 
