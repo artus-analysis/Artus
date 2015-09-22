@@ -80,6 +80,9 @@ class PlotBase(processor.Processor):
 		self.axis_options.add_argument("--z-tick-labels", type=str, nargs="+",
 		                               help="Custom tick labels for the Z-axis")
 
+		# canvas settings
+		self.canvas_options = parser.add_argument_group("Canvas options")
+
 		#plot formatting
 		self.formatting_options = parser.add_argument_group("Formatting options")
 		self.formatting_options.add_argument("--color-scheme", default="default",
