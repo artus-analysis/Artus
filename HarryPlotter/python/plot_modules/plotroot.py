@@ -88,6 +88,9 @@ class PlotRoot(plotbase.PlotBase):
 		self.axis_options.add_argument("--reverse-z-axis", nargs="?", type="bool", default=False, const=True,
 		                               help="Reverse Z axis labelling. [Default: %(default)s]")
 		
+		self.canvas_options.add_argument("--left-pad-margin", nargs=1, type=float, default=None,
+		                               help="Left margin of pad. [Default: %(default)s]")
+		
 		self.formatting_options.add_argument("-C", "--colors", type=str, nargs="+",
 		                                     help="Colors for the plots. For each plot up to two colors (whitespace separated) can be specified, the first for lines and markers and the second for filled areas.")
 		self.formatting_options.add_argument("--colormap", nargs="?", type="bool", default=False, const=True,
@@ -251,6 +254,8 @@ class PlotRoot(plotbase.PlotBase):
 		
 		self.plot_pad_right_margin = plot_pad.GetRightMargin()
 		plot_pad.SetRightMargin(0.25)
+		if not plotData.plotdict["left_pad_margin"] is None:
+			plot_pad.SetLeftMargin(plotData.plotdict["left_pad_margin"][0])
 		if not subplot_pad is None:
 			subplot_pad.SetRightMargin(0.25)
 		
