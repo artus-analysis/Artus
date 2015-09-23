@@ -339,6 +339,19 @@ Similarly, ratios comparing the compatibility of data and the simulation for the
 
 The post-processing step either outputs plots or writes the histograms to ROOT files and passes them over to the limit calculation tools.
 
+\section{Conclusion}
+% what Artus does
+% what it brought to the analysis:
+% - code reuse among analysis groups
+% - faster turnaround
+% - faster new analysis
+% - increased data in Run 2
+
+The \artus analysis framework presented in this paper offers a comprehensive and well-integrated solution for event-based data analyses in the HEP domain. In conjunction with the plotting toolkit HarryPlotter, all data analysis needs are covered.
+
+The modular and structured manner, in which the processing required for an analysis, can be expressed within the \artus framework, allowed the involved research groups to share and re-use source code on a scale not possible before. The concept underlying the \artus framework also enabled us to share program code between analysis and even across different universities and research centres.
+
+Especially new students joining the analysis groups can contribute very quickly. Once they have understood general concept and structure of an \artus analysis, they can contribute by writing their own producers or filters while the full complexity of the event-processing is taken care of by the \artus framework. In a similar manner, using the \artus framework, it is now much less work to set up a new analysis because a rich library of processors, filters and consumers exists and can be reused for new analysis.
 
 \vspace{2cm}
 \input{include/bib}
