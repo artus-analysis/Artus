@@ -87,19 +87,21 @@ Maybe not put this figure on a dedicated page?}
 \section{Requirements and Challenges for Analysis Software\label{section_artus_challenges}}
 %define requirements based on previous section, following sections: describe how they are fullfilled
 Based on the workflow described in the previous section, the following demands for an analysis framework arise:
-\subsection{Performance}
+
+\begin{description}
+\item[Performance:]
 The main performance indicator is the \emph{turnaround time}, which means the time that is needed to run the whole analysis in case new requirements arise. Since the runtime is often limited by the transfer speed of the storage servers, \artus is designed to load each event only once and perform all necessary processing steps. This is made possible with the pipelining concept. Still, since analysis requirements sometimes change within a few hours, a high level of flexibility is needed. This explains the need for a modular structure, where only those parts of the code are executed that really are necessary for the analysis.
-\subsection{Maintainability}
+
+\item[Maintainability:]
 Source code maintenance, i.e. to be up-to-date with the latest requirements while not losing backwards compatibility, is a challenge for each software project. The first important step is to always have  an updated recipe that works out of the box on each machine offering CVMFS. To make the entry level as low as possible, beginners can start with an example analysis. In \artus, everything is steered via JSON configuration files. The modules then implement what has to be done while the data is stored in desired data format.
 
 \artus has the built-in possibility to submit analysis jobs with grid-control, a job submission tool.
 
-
-
-\subsection{Reliability}
+\item[Reliability:]
 In most cases, analyses never leave prototype status. This leads to frequent re-implementations and low trust in reliability. \artus allows the re-use of analysis code due to its modular structure as well as sharing it between different analysis groups, and therefore improving code quality significantly.
 
 Source code and configuration files have become the most precise form of documentation. Therefore, readability also for people who have not written the code is crucial. Also, if possible, existing and well-established libraries of the HEP community are interfaced.
+\end{description}
 
 
 \section{The \artus Framework \label{section_artus_motivation}}
@@ -196,12 +198,12 @@ Therefore it should not be too far from the technical descriptions.
 }
 This structure extends the established concepts of existing frameworks like FWLite~\cite{FWLite} from CMSSW to the following four main advantages:
 \begin{description}
-\item[Modular structure] Analysis steps are implemented in processors, breaking down the complete analysis in well-defined and easily understandable and writable parts.
-\item[Re-utilization of code] Processors can be shared among different analysis groups.
+\item[Modular structure:] Analysis steps are implemented in processors, breaking down the complete analysis in well-defined and easily understandable and writable parts.
+\item[Re-utilization of code:] Processors can be shared among different analysis groups.
 Every user contributes to the testing of existing code and improves the confidence in this code.
-\item[Configurability] Each module uses settings that are read from the the configuration.
+\item[Configurability:] Each module uses settings that are read from the the configuration.
 Each pipeline is mapped to a separate sub-set of the configuration.
-\item[High performance] The concept of pipelines allows to analyze the data with different configurations at the same time, while the data is only read in only once and common processing steps are shared in the global pipeline.
+\item[High performance:] The concept of pipelines allows to analyze the data with different configurations at the same time, while the data is only read in only once and common processing steps are shared in the global pipeline.
 Therefore, the cost-intensive input operations are reduced to a minimum.
 \end{description}
 
