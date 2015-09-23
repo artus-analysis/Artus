@@ -8,7 +8,7 @@
 \usepackage{hepunits}
 \usepackage{url}
 \usepackage{palatino}
-\usepackage[hidelinks=true,bookmarks=true,plainpages=false]{hyperref}
+\usepackage[hidelinks,bookmarks=true,plainpages=false]{hyperref}
 \usepackage[colorinlistoftodos,prependcaption]{todonotes}
 
 \input{include/tikz_includes}
@@ -58,7 +58,8 @@ The framework is well-tested and successfully used by several analysis groups.\t
 %\tableofcontents
 
 
-\section{Common Workflow of High Energy Physics Analyses \label{section_artus_analysis_workflow}}
+\section{Common Workflow of High Energy Physics Analyses}
+\label{section_artus_analysis_workflow}
 % This section should contain a short description of a HEP/CMS-typical workflow.
 % Especially common problems and challenges should be highlighted.
 % From these problems, the design requirements for Artus are derived.
@@ -97,7 +98,8 @@ The data reduction is achieved by performing the data-intensive operations only 
 \todo[inline]{Should we drop CMS-specific technical terms like AOD/miniAOD?
 Maybe not put this figure on a dedicated page?}
 
-\section{Requirements and Challenges for Analysis Software\label{section_artus_challenges}}
+\section{Requirements and Challenges for Analysis Software}
+\label{section_artus_challenges}
 %define requirements based on previous section, following sections: describe how they are fullfilled
 Based on the workflow described in the previous section, the following demands for an analysis framework arise:
 
@@ -120,7 +122,7 @@ The modules then implement what has to be done while the data is stored in desir
 
 \item[Reliability:]
 In most cases, analyses never leave prototype status.
-This leads to frequent re-implementations and low trust in reliability.
+This leads to frequent re-imple\-men\-ta\-tions and low trust in reliability.
 \artus allows the re-use of analysis code due to its modular structure as well as sharing it between different analysis groups, and therefore improving code quality significantly.
 
 Source code and configuration files have become the most precise form of documentation.
@@ -129,7 +131,8 @@ Also, if possible, existing and well-established libraries of the HEP community 
 \end{description}
 
 
-\section{The \artus Framework \label{section_artus_motivation}}
+\section{The \artus Framework}
+\label{section_artus_motivation}
 
 The framework introduced in this section handles the last step of the workflow, the user analysis.
 
@@ -150,7 +153,8 @@ C++ is chosen for performance reasons and in order to be able to integrate exist
 \artus has no need to use multi-core techniques, since it can be parallelized trivially by splitting the input dataset and sending it to different computing instances.
 This is possible, because the processed events are know to be independent of each other.
 
-\section{Structure of the Framework \label{section_artus_structure}}
+\section{Structure of the Framework}
+\label{section_artus_structure}
 
 The basic concept of the framework is taken from the code used for the $\PZ+\text{jet}$ analysis documented in reference~\cite{joram_phd}.
 It is generalized and extended to satisfy the needs of various analysis groups.
@@ -221,7 +225,7 @@ It should be either part of the requirements or part of the summary what Artus d
 I think the idea was to explain how certain design decisions, e.g.\ pipelines, achieve the \artus design goals.
 Therefore it should not be too far from the technical descriptions.
 }
-This structure extends the established concepts of existing frameworks like FWLite~\cite{FWLite} from CMSSW to the following four main advantages:
+This structure extends the established concepts of existing frameworks like FWLite from CMSSW to the following four main advantages:
 \begin{description}
 \item[Modular structure:] Analysis steps are implemented in processors, breaking down the complete analysis in well-defined and easily understandable and writable parts.
 \item[Re-utilization of code:] Processors can be shared among different analysis groups.
@@ -233,7 +237,8 @@ Therefore, the cost-intensive input operations are reduced to a minimum.
 \end{description}
 
 
-\section{Building an End-user Analysis \label{section_artus_analysis}}
+\section{Building an End-user Analysis}
+\label{section_artus_analysis}
 \todo[inline]{If I would not know the structure already, the following part would not have helped my.
 Either we support it with a drawing and more detailed explanations or we just refer to a readme...
 Maybe rewrite parts of this section}
@@ -257,7 +262,8 @@ Analyses that share the input file format can easily also share processors, that
 Analysis-specific parts can either derive from existing processor classer or be modeled in new processors.
 
 
-\section{HarryPlotter -- Python Post-processing Framework \label{section_artus_harryplotter}}
+\section{HarryPlotter -- Python Post-processing Framework}
+\label{section_artus_harryplotter}
 
 The computationally expensive event processing steps are followed by the post-processing of the results and their presentation.
 From a technical point of view, the focus here is rather on flexibility than on performance.
@@ -302,7 +308,8 @@ After all arguments are defined, the configuration is parsed a second time provi
 Then all processors are executed as described above.
 
 
-\section{A Real World Application -- the $\PH\to\Pgt\Pgt$ Analysis \label{section_artus_example_htt}}
+\section{\texorpdfstring{A Real World Application -- the $\PH\to\Pgt\Pgt$ Analysis}{A Real World Application - the H to Tau Tau Analysis}}
+\label{section_artus_example_htt}
 
 Currently, the \artus framework is used for various user analyses of CMS data, ranging from jet energy calibration and QCD studies to analyses in the scope of Higgs boson measurements and searches for physics beyond the Standard Model.
 As an example, the technical aspects of the $\PH\to\Pgt\Pgt$ analysis are explained in the following.
@@ -379,6 +386,7 @@ Similarly, ratios comparing the compatibility of data and the simulation for the
 The post-processing step either outputs plots or writes the histograms to ROOT files and passes them over to the limit calculation tools.
 
 \section{Conclusion}
+\label{section_conclusion}
 % what Artus does
 % what it brought to the analysis:
 % - code reuse among analysis groups
