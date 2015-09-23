@@ -284,7 +284,8 @@ def compareNtuple(directory1, directory2, ntupleID):
 		ntuple1.GetEntry(n)
 		ntuple2.GetEntry(n)
 		for i in range(nleaves1):
-			if leaves1.UncheckedAt(i).GetValue() != leaves2.UncheckedAt(i).GetValue():
+			value2 = leaves2.UncheckedAt(i).GetValue() or 1e-9
+			if (leaves1.UncheckedAt(i).GetValue() - leaves2.UncheckedAt(i).GetValue()) / value2 > 1e-6:
 				log.critical("different leaf value: " + str(leaves1.UncheckedAt(i).GetValue()) + ", " + str(leaves2.UncheckedAt(i).GetValue()) + " for name " + leaves1.UncheckedAt(i).GetName())
 				if leaves1.UncheckedAt(i).GetValue() != 0:
 					# save relative difference between the two leaves
