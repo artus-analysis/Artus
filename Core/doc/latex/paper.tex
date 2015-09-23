@@ -62,21 +62,34 @@ The framework is well-tested and successfully used by several analysis groups.\t
 % This section should contain a short description of a HEP/CMS-typical workflow.
 % Especially common problems and challenges should be highlighted.
 % From these problems, the design requirements for Artus are derived.
-The workflow of the experiments collecting data at the Large Hadron Collider (LHC) at CERN is taken as an example to illustrate the organization and needs of a modern High Energy Physics (HEP) analysis. Still, equal or very similar requirements are also present for HEP experiments not located at the LHC.
+The workflow of the experiments collecting data at the Large Hadron Collider (LHC) at CERN is taken as an example to illustrate the organization and needs of a modern High Energy Physics (HEP) analysis.
+Still, equal or very similar requirements are also present for HEP experiments not located at the LHC.
 
 Between the data taking at the detector or the generation of simulated events with the subsequent detector simulation and the showcasing of the physical results, the following analysis steps have shown to be the best compromise in terms of turnaround time and efficiency as explained in Figure \ref{figure_analysis_steps}.
 
-The reconstruction of the raw data coming from the experiments is performed on large computing centers organized into the WLCG\footnote{\url{http://wlcg-public.web.cern.ch}}, the Worldwide LHC Computing Grid. The resulting datasets contain event information and high-level physics objects and are of $\mathcal O(10-100)$~TB in size. \todo[inline]{move file size numbers to Figure \ref{figure_analysis_steps}?}
+The reconstruction of the raw data coming from the experiments is performed on large computing centers organized into the WLCG\footnote{\url{http://wlcg-public.web.cern.ch}}, the Worldwide LHC Computing Grid.
+The resulting datasets contain event information and high-level physics objects and are of $\mathcal O(10-100)$~TB in size.
+\todo[inline]{move file size numbers to Figure \ref{figure_analysis_steps}?}
 
-The data which are relevant for a specific analysis are selected in a step usually referred to as \textit{skimming}. The output of the skimming process is an analysis-dependent file, usually in an n-tuple format, and small enough to be stored on local file servers, often owned and operated by a single institute. The size of these files ranges from $\mathcal O(10)$~GB to few~TB.
+The data which are relevant for a specific analysis are selected in a step usually referred to as \textit{skimming}.
+The output of the skimming process is an analysis-dependent file, usually in an n-tuple format, and small enough to be stored on local file servers, often owned and operated by a single institute.
+The size of these files ranges from $\mathcal O(10)$~GB to few~TB.
 
-Finally, the skimmed n-tuples are processed by user code running on local resources. This processing step includes further event selections, event categorization or high-level calculations based on the selected physics objects. The events are usually processed with different configurations, depending on the specific analysis needs. The output is then used for post-processing steps, including plotting of the results and their statistical interpretation.
+Finally, the skimmed n-tuples are processed by user code running on local resources.
+This processing step includes further event selections, event categorization or high-level calculations based on the selected physics objects.
+The events are usually processed with different configurations, depending on the specific analysis needs.
+The output is then used for post-processing steps, including plotting of the results and their statistical interpretation.
 
-In many cases, the code for the last step is developed without a predefined strategy or structure, following the evolving needs of the analysis which are often physics-driven and not always entirely predictable in the code design phase. This leads to convoluted, tangled and unstructured code, which is difficult to understand and to maintain and also difficult to hand over to new people joining the analysis effort. Also, code is rarely shared among different groups, although the basic parts of an analysis, such as handling of input data having the same formats, their processing and the selection and identification of physics objects follow similar or equivalent specifications. Looking at the user side, an analysis group usually consists of several people having different academic levels and different programming skills, some of them joining the analysis effort only for a short period of time and with a well-defined task.
+In many cases, the code for the last step is developed without a predefined strategy or structure, following the evolving needs of the analysis which are often physics-driven and not always entirely predictable in the code design phase.
+This leads to convoluted, tangled and unstructured code, which is difficult to understand and to maintain and also difficult to hand over to new people joining the analysis effort.
+Also, code is rarely shared among different groups, although the basic parts of an analysis, such as handling of input data having the same formats, their processing and the selection and identification of physics objects follow similar or equivalent specifications.
+Looking at the user side, an analysis group usually consists of several people having different academic levels and different programming skills, some of them joining the analysis effort only for a short period of time and with a well-defined task.
 
 \begin{figure}[t]
 \centering \input{figures/analysis_steps}
-\caption[Characteristics of an event-based analysis in high energy physics]{Characteristic of an event-based analysis in high energy physics, numbers taken from \cite{joram_phd}. Data size is reduced by six orders of magnitude, turnaround time by a factor of 4. I/O intensive operations are done in highly parallel in the WLCG.
+\caption[Characteristics of an event-based analysis in high energy physics]{Characteristic of an event-based analysis in high energy physics, numbers taken from \cite{joram_phd}.
+Data size is reduced by six orders of magnitude, turnaround time by a factor of 4.
+I/O intensive operations are done in highly parallel in the WLCG.
 The data reduction is achieved by performing the data-intensive operations only rarely and applying sensible event selection steps as early as possible.}
 \label{figure_analysis_steps}
 \end{figure}
@@ -90,17 +103,29 @@ Based on the workflow described in the previous section, the following demands f
 
 \begin{description}
 \item[Performance:]
-The main performance indicator is the \emph{turnaround time}, which means the time that is needed to run the whole analysis in case new requirements arise. Since the runtime is often limited by the transfer speed of the storage servers, \artus is designed to load each event only once and perform all necessary processing steps. This is made possible with the pipelining concept. Still, since analysis requirements sometimes change within a few hours, a high level of flexibility is needed. This explains the need for a modular structure, where only those parts of the code are executed that really are necessary for the analysis.
+The main performance indicator is the \emph{turnaround time}, which means the time that is needed to run the whole analysis in case new requirements arise.
+Since the runtime is often limited by the transfer speed of the storage servers, \artus is designed to load each event only once and perform all necessary processing steps.
+This is made possible with the pipelining concept.
+Still, since analysis requirements sometimes change within a few hours, a high level of flexibility is needed.
+This explains the need for a modular structure, where only those parts of the code are executed that really are necessary for the analysis.
 
 \item[Maintainability:]
-Source code maintenance, i.e. to be up-to-date with the latest requirements while not losing backwards compatibility, is a challenge for each software project. The first important step is to always have  an updated recipe that works out of the box on each machine offering CVMFS. To make the entry level as low as possible, beginners can start with an example analysis. In \artus, everything is steered via JSON configuration files. The modules then implement what has to be done while the data is stored in desired data format.
+Source code maintenance, i.e. to be up-to-date with the latest requirements while not losing backwards compatibility, is a challenge for each software project.
+The first important step is to always have  an updated recipe that works out of the box on each machine offering CVMFS.
+To make the entry level as low as possible, beginners can start with an example analysis.
+In \artus, everything is steered via JSON configuration files.
+The modules then implement what has to be done while the data is stored in desired data format.
 
 \artus has the built-in possibility to submit analysis jobs with grid-control, a job submission tool.
 
 \item[Reliability:]
-In most cases, analyses never leave prototype status. This leads to frequent re-implementations and low trust in reliability. \artus allows the re-use of analysis code due to its modular structure as well as sharing it between different analysis groups, and therefore improving code quality significantly.
+In most cases, analyses never leave prototype status.
+This leads to frequent re-implementations and low trust in reliability.
+\artus allows the re-use of analysis code due to its modular structure as well as sharing it between different analysis groups, and therefore improving code quality significantly.
 
-Source code and configuration files have become the most precise form of documentation. Therefore, readability also for people who have not written the code is crucial. Also, if possible, existing and well-established libraries of the HEP community are interfaced.
+Source code and configuration files have become the most precise form of documentation.
+Therefore, readability also for people who have not written the code is crucial.
+Also, if possible, existing and well-established libraries of the HEP community are interfaced.
 \end{description}
 
 
@@ -361,11 +386,15 @@ The post-processing step either outputs plots or writes the histograms to ROOT f
 % - faster new analysis
 % - increased data in Run 2
 
-The \artus analysis framework presented in this paper offers a comprehensive and well-integrated solution for event-based data analyses in the HEP domain. In conjunction with the plotting toolkit HarryPlotter, all data analysis needs are covered.
+The \artus analysis framework presented in this paper offers a comprehensive and well-integrated solution for event-based data analyses in the HEP domain.
+In conjunction with the plotting toolkit HarryPlotter, all data analysis needs are covered.
 
-The modular and structured manner, in which the processing required for an analysis, can be expressed within the \artus framework, allowed the involved research groups to share and re-use source code on a scale not possible before. The concept underlying the \artus framework also enabled us to share program code between analysis and even across different universities and research centers.
+The modular and structured manner, in which the processing required for an analysis, can be expressed within the \artus framework, allowed the involved research groups to share and re-use source code on a scale not possible before.
+The concept underlying the \artus framework also enabled us to share program code between analysis and even across different universities and research centers.
 
-Especially new students joining the analysis groups can contribute very quickly. Once they have understood general concept and structure of an \artus analysis, they can contribute by writing their own producers or filters while the full complexity of the event-processing is taken care of by the \artus framework. In a similar manner, using the \artus framework, it is now much less work to set up a new analysis because a rich library of processors, filters and consumers exists and can be reused for new analysis.
+Especially new students joining the analysis groups can contribute very quickly.
+Once they have understood general concept and structure of an \artus analysis, they can contribute by writing their own producers or filters while the full complexity of the event-processing is taken care of by the \artus framework.
+In a similar manner, using the \artus framework, it is now much less work to set up a new analysis because a rich library of processors, filters and consumers exists and can be reused for new analysis.
 
 \vspace{2cm}
 \input{include/bib}
