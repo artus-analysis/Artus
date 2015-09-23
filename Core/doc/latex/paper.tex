@@ -39,7 +39,7 @@ We present \artus, an event-based data-processing framework for high energy phys
 The architecture design choices take into account typical challenges and are based on experiences with similar applications.
 The structure of the framework and its advantages are described.
 An example use case and performance measurements are presented.
-The framework is well-tested and successfully used by several analysis groups.\todo{Mention them, maybe with publications? -> mentioned at the beginning of Htt chapter. Do we have publications?}
+The framework is well-tested and successfully used by several analysis groups.\todo[inline]{Mention them, maybe with publications? -> mentioned at the beginning of Htt chapter. Do we have publications?}
 \end{abstract}
 
 %\begin{keyword}
@@ -56,7 +56,7 @@ The workflow of the experiments collecting data at the Large Hadron Collider (LH
 
 Between the data taking at the detector or the generation of simulated events with the subsequent detector simulation and the showcasing of the physical results, the following analysis steps have shown to be the best compromise in terms of turnaround time and efficiency as explained in Figure \ref{figure_analysis_steps}.
 
-The reconstruction of the raw data coming from the experiments is performed on large computing centres organized into the WLCG\footnote{\url{http://wlcg-public.web.cern.ch}}, the Worldwide LHC Computing Grid. The resulting datasets contain event information and high-level physics objects and are of $\mathcal O(10-100)$~TB in size. \todo{move file size numbers to Figure \ref{figure_analysis_steps}?}
+The reconstruction of the raw data coming from the experiments is performed on large computing centres organized into the WLCG\footnote{\url{http://wlcg-public.web.cern.ch}}, the Worldwide LHC Computing Grid. The resulting datasets contain event information and high-level physics objects and are of $\mathcal O(10-100)$~TB in size. \todo[inline]{move file size numbers to Figure \ref{figure_analysis_steps}?}
 
 The data which are relevant for a specific analysis are selected in a step usually referred to as \textit{skimming}. The output of the skimming process is an analysis-dependent file, usually in an n-tuple format, and small enough to be stored on local file servers, often owned and operated by a single institute. The size of these files ranges from $\mathcal O(10)$~GB to few~TB.
 
@@ -71,7 +71,7 @@ The data reduction is achieved by performing the data-intensive operations only 
 \label{figure_analysis_steps}
 \end{figure}
 
-\todo{Should we drop CMS-specific technical terms like AOD/miniAOD?
+\todo[inline]{Should we drop CMS-specific technical terms like AOD/miniAOD?
 Maybe not put this figure on a dedicated page?}
 
 \section{Requirements and Challenges for Analysis Software\label{section_artus_challenges}}
@@ -96,7 +96,7 @@ Source code and configuration files have become the most precise form of documen
 
 The framework introduced in this section handles the last step of the workflow, the user analysis.
 
-Following the structure of the CMSSW \todo{Referenz? zumindest github-link?} framework, the \artus framework\footnote{\url{https://github.com/artus-analysis/\artus}} provides a front-to-end solution for the analysis of event-based data.
+Following the structure of the CMSSW \todo[inline]{Referenz? zumindest github-link?} framework, the \artus framework\footnote{\url{https://github.com/artus-analysis/\artus}} provides a front-to-end solution for the analysis of event-based data.
 The basic concept of modules processing events within an event loop is complemented by tools for the configuration of every step.
 The complete structure is explained in the next section~\ref{section_artus_structure}.
 
@@ -175,10 +175,10 @@ The task of consumers is to take quantities from the event and the product and s
 \end{description}
 Producers and filters can be configured in an arbitrary order.
 Consumers are executed after the chain of producers and filters.
-The output together with the complete configuration is written to a ROOT \todo{Referenz auf ROOT?} file.
+The output together with the complete configuration is written to a ROOT \todo[inline]{Referenz auf ROOT?} file.
 These processors are created and managed by a dedicated factory according to the configuration.
 
-\todo{I would not put the remaining part of this chapter here.
+\todo[inline]{I would not put the remaining part of this chapter here.
 It should be either part of the requirements or part of the summary what Artus does achieve; but in this technical part in between it feels misplaced
 -> Should we put this part into a dedicated section directly after this one?
 I think the idea was to explain how certain design decisions, e.g. pipelines, achieve the \artus design goals.
@@ -197,7 +197,7 @@ Therefore, the cost-intensive input operations are reduced to a minimum.
 
 
 \section{Building an End-user Analysis \label{section_artus_analysis}}
-\todo{If I wouldn't know the structure already, the following part wouldn't have helped my.
+\todo[inline]{If I wouldn't know the structure already, the following part wouldn't have helped my.
 Either we support it with a drawing and more detailled explanations or we just refer to a readme...
 Maybe rewrite parts of this section}
 In the \artus framework, each concrete analysis is defined by a set of object types.
