@@ -64,15 +64,15 @@ Finally, the skimmed n-tuples are processed by user code running on local resour
 
 In many cases, the code for the last step is developed without a predefined strategy or structure, following the evolving needs of the analysis which are often physics-driven and not always entirely predictable in the code design phase. This leads to convoluted, tangled and unstructured code, which is difficult to understand and to maintain and also difficult to hand over to new people joining the analysis effort. Also, code is rarely shared among different groups, although the basic parts of an analysis, such as handling of input data having the same formats, their processing and the selection and identification of physics objects follow similar or equivalent specifications. Looking at the user side, an analysis group usually consists of several people having different academic levels and different programming skills, some of them joining the analysis effort only for a short period of time and with a well-defined task.
 
-\begin{figure}[p]
+\begin{figure}[t]
 \centering \input{figures/analysis_steps}
 \caption[Characteristics of an event-based analysis in high energy physics]{Characteristic of an event-based analysis in high energy physics, numbers taken from \cite{joram_phd}. Data size is reduced by six orders of magnitude, turnaround time by a factor of 4. I/O intensive operations are done in highly parallel in the WLCG.
 The data reduction is achieved by performing the data-intensive operations only rarely and applying sensible event selection steps as early as possible.}
 \label{figure_analysis_steps}
 \end{figure}
+
 \todo{Should we drop CMS-specific technical terms like AOD/miniAOD?
 Maybe not put this figure on a dedicated page?}
-\clearpage
 
 \section{Requirements and Challenges for Analysis Software\label{section_artus_challenges}}
 %define requirements based on previous section, following sections: describe how they are fullfilled
@@ -237,7 +237,7 @@ The configuration via a command line interface or via JSON files is parsed by an
 \label{figure_artus_harry_plotter}
 \end{figure}
 
-The structure of the framework is illustrated in figure~\ref{figure_artus_harry_plotter}.
+The structure of the framework is illustrated in Figure~\ref{figure_artus_harry_plotter}.
 It follows the idea of processors in the \artus framework.
 Three kinds of processor modules are executed subsequently:
 \begin{enumerate}
