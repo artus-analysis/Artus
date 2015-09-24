@@ -4,6 +4,7 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
+import Artus.Utility.jsonTools as jsonTools
 import Artus.HarryPlotter.plotbase as plotbase
 import Artus.HarryPlotter.plotdata as plotdata
 import Artus.HarryPlotter.utility.roottools as roottools
@@ -92,7 +93,19 @@ class ExportRoot(plotbase.PlotBase):
 			for nick, path in zip(plotData.plotdict["nicks"], plotData.plotdict["labels"]):
 				root_object = plotData.plotdict["root_objects"][nick]
 				roottools.RootTools.write_object(root_file, root_object, path)
-		
+				
+				metadata = plotData.metadata.get(nick, None)
+				if not metadata is None:
+					root_metadata = {key : value for key, value in metadata.iteritems() if isinstance(value, ROOT.TObject)}
+					json_metadata = jsonTools.JsonDict({key : value for key, value in metadata.iteritems() if not isinstance(value, ROOT.TObject)})
+					
+					for key, meta_root_object in root_metadata.iteritems():
+						roottools.RootTools.write_object(root_file, meta_root_object, path+"_"+key)
+					
+					if len(json_metadata) > 0:
+						meta_json_object = ROOT.TObjString(json_metadata.toString())
+						roottools.RootTools.write_object(root_file, meta_json_object, path+"_metadata")
+	
 	def modify_axes(self, plotData):
 		pass
 		
