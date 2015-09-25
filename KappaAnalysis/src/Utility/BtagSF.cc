@@ -116,7 +116,7 @@ double BtagSF::getSFb(double pt, unsigned int btagsys, bool is2012)
 
 	unsigned int nbins = is2012 ? 16 : 14;
 
-	for (unsigned int ibin = 0; ibin < nbins; ibin++)
+	for (unsigned int ibin = 0; ibin < nbins; ++ibin)
 	{
 		if (!is2012)
 		{
@@ -196,7 +196,7 @@ double BtagSF::getSFc(double pt, unsigned int btagsys, bool is2012)
 
 	unsigned int nbins = is2012 ? 16 : 14;
 
-	for (unsigned int ibin = 0; ibin < nbins; ibin++)
+	for (unsigned int ibin = 0; ibin < nbins; ++ibin)
 	{
 		if (!is2012)
 		{

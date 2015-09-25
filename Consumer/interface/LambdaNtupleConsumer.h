@@ -266,7 +266,7 @@ public:
 				LOG(FATAL) << "No lambda expression available for quantity \"" << *quantity << "\"!";
 			}
 
-			quantityIndex++;
+			++quantityIndex;
 		}
 
 		// create tree
@@ -298,47 +298,47 @@ public:
 			if (LambdaNtupleQuantities::CommonFloatQuantities.count(*quantity) > 0)
 			{
 				m_tree->Branch(quantity->c_str(), &(m_floatValues[floatQuantityIndex]), (*quantity + "/F").c_str());
-				floatQuantityIndex++;
+				++floatQuantityIndex;
 			}
 			else if (LambdaNtupleQuantities::CommonIntQuantities.count(*quantity) > 0)
 			{
 				m_tree->Branch(quantity->c_str(), &(m_intValues[intQuantityIndex]), (*quantity + "/I").c_str());
-				intQuantityIndex++;
+				++intQuantityIndex;
 			}
 			else if (LambdaNtupleQuantities::CommonUInt64Quantities.count(*quantity) > 0)
 			{
 				m_tree->Branch(quantity->c_str(), &(m_uint64Values[uint64QuantityIndex]), (*quantity + "/l").c_str());
-				uint64QuantityIndex++;
+				++uint64QuantityIndex;
 			}
 			else if (LambdaNtupleQuantities::CommonDoubleQuantities.count(*quantity) > 0)
 			{
 				m_tree->Branch(quantity->c_str(), &(m_doubleValues[doubleQuantityIndex]), (*quantity + "/D").c_str());
-				doubleQuantityIndex++;
+				++doubleQuantityIndex;
 			}
 			else if (LambdaNtupleQuantities::CommonVDoubleQuantities.count(*quantity) > 0)
 			{
 				m_tree->Branch(quantity->c_str(), &(m_vDoubleValues[vDoubleQuantityIndex]));
-				vDoubleQuantityIndex++;
+				++vDoubleQuantityIndex;
 			}
 			else if (LambdaNtupleQuantities::CommonVFloatQuantities.count(*quantity) > 0)
 			{
 				m_tree->Branch(quantity->c_str(), &(m_vFloatValues[vFloatQuantityIndex]));
-				vFloatQuantityIndex++;
+				++vFloatQuantityIndex;
 			}
 			else if (LambdaNtupleQuantities::CommonBoolQuantities.count(*quantity) > 0)
 			{
 				m_tree->Branch(quantity->c_str(), &(m_boolValues[boolQuantityIndex]), (*quantity + "/O").c_str());
-				boolQuantityIndex++;
+				++boolQuantityIndex;
 			}
 			else if (LambdaNtupleQuantities::CommonStringQuantities.count(*quantity) > 0)
 			{
 				m_tree->Branch(quantity->c_str(), &(m_stringValues[stringQuantityIndex]));
-				stringQuantityIndex++;
+				++stringQuantityIndex;
 			}
 			else if (LambdaNtupleQuantities::CommonVStringQuantities.count(*quantity) > 0)
 			{
 				m_tree->Branch(quantity->c_str(), &(m_vStringValues[vStringQuantityIndex]));
-				vStringQuantityIndex++;
+				++vStringQuantityIndex;
 			}
 		}
 	}
@@ -360,7 +360,7 @@ public:
 			{
 				LOG(FATAL) << "Could not call lambda function for bool quantity \"" << m_boolQuantities.at(boolValueIndex) << "\"!";
 			}
-			boolValueIndex++;
+			++boolValueIndex;
 		}
 
 		size_t intValueIndex = 0;
@@ -375,7 +375,7 @@ public:
 			{
 				LOG(FATAL) << "Could not call lambda function for int quantity \"" << m_intQuantities.at(intValueIndex) << "\"!";
 			}
-			intValueIndex++;
+			++intValueIndex;
 		}
 
 		size_t uint64ValueIndex = 0;
@@ -390,7 +390,7 @@ public:
 			{
 				LOG(FATAL) << "Could not call lambda function for uint64 quantity \"" << m_uint64Quantities.at(uint64ValueIndex) << "\"!";
 			}
-			uint64ValueIndex++;
+			++uint64ValueIndex;
 		}
 
 		size_t floatValueIndex = 0;
@@ -405,7 +405,7 @@ public:
 			{
 				LOG(FATAL) << "Could not call lambda function for float quantity \"" << m_floatQuantities.at(floatValueIndex) << "\"!";
 			}
-			floatValueIndex++;
+			++floatValueIndex;
 		}
 
 		size_t doubleValueIndex = 0;
@@ -420,7 +420,7 @@ public:
 			{
 				LOG(FATAL) << "Could not call lambda function for double quantity \"" << m_doubleQuantities.at(doubleValueIndex) << "\"!";
 			}
-			doubleValueIndex++;
+			++doubleValueIndex;
 		}
 		
 		size_t stringValueIndex = 0;
@@ -435,7 +435,7 @@ public:
 			{
 				LOG(FATAL) << "Could not call lambda function for string quantity \"" << m_stringQuantities.at(stringValueIndex) << "\"!";
 			}
-			stringValueIndex++;
+			++stringValueIndex;
 		}
 		
 		size_t vDoubleValueIndex = 0;
@@ -450,7 +450,7 @@ public:
 			{
 				LOG(FATAL) << "Could not call lambda function for vDouble quantity \"" << m_vDoubleQuantities.at(vDoubleValueIndex) << "\"!";
 			}
-			vDoubleValueIndex++;
+			++vDoubleValueIndex;
 		}
 		
 		size_t vFloatValueIndex = 0;
@@ -465,7 +465,7 @@ public:
 			{
 				LOG(FATAL) << "Could not call lambda function for vFloat quantity \"" << m_vFloatQuantities.at(vFloatValueIndex) << "\"!";
 			}
-			vFloatValueIndex++;
+			++vFloatValueIndex;
 		}
 		
 		size_t vStringValueIndex = 0;
@@ -480,7 +480,7 @@ public:
 			{
 				LOG(FATAL) << "Could not call lambda function for vString quantity \"" << m_vStringQuantities.at(vStringValueIndex) << "\"!";
 			}
-			vStringValueIndex++;
+			++vStringValueIndex;
 		}
 
 		// fill tree

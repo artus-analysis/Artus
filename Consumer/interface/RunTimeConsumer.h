@@ -50,7 +50,7 @@ public:
 		    processorName = ArtusConfig::ParseProcessNode(processor).second;
 		    m_processorNames.push_back(processorName);
 			m_tree->Branch(processorName.c_str(), &(m_runTime[i]), (processorName + "/I").c_str());
-			i++;
+			++i;
 		}
 	}
 
@@ -74,7 +74,7 @@ public:
 		int i=0;
 		for (std::string processor : m_processorNames) {
 			m_runTime[i]=SafeMap::GetWithDefault (product.processorRunTime, processor, DefaultValues::UndefinedInt);
-			i++;
+			++i;
 		}
 
 		// fill tree

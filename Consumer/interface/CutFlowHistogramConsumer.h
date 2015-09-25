@@ -66,7 +66,7 @@ public:
 		// fill bins of histograms corresponding to passed filters
 		FilterResult::FilterDecisions const& filterDecisions = filterResult.GetFilterDecisions();
 		for(FilterResult::FilterDecisions::const_iterator filterDecision = filterDecisions.begin();
-		    filterDecision != filterDecisions.end(); filterDecision++)
+		    filterDecision != filterDecisions.end(); ++filterDecision)
 		{
 			++bin;
 			if (filterDecision->filterDecision == FilterResult::Decision::Passed ||

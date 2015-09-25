@@ -84,11 +84,11 @@ public:
 
 			bool oneIncreased = false;
 			if (ix < (resX.size() - 1)) {
-				ix++;
+				++ix;
 				oneIncreased = true;
 			}
 			if (iy < (resY.size() - 1)) {
-				iy++;
+				++iy;
 				oneIncreased = true;
 			}
 			if (!oneIncreased)

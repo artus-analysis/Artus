@@ -20,18 +20,18 @@ public:
 
 	virtual void Init(TestSettings const& setting) override {
 		//m_pipeline = pset;
-		iInit++;
+		++iInit;
 	}
 
 	virtual void Finish(TestSettings const& setting) override {
-		iFinish++;
+		++iFinish;
 	}
 
 	virtual void ProcessFilteredEvent(TestEvent const& event,
 			TestProduct const& product,
 			TestSettings const& setting) override
 	{
-		iProcessFilteredEvent++;
+		++iProcessFilteredEvent;
 	}
 
 	// this method is called for all events
@@ -46,12 +46,12 @@ public:
 			BOOST_CHECK_EQUAL(event.iVal + 5 + 23, product.iGlobalProduct);
 		}
 
-		iProcessEvent++;
+		++iProcessEvent;
 		fres = result;
 	}
 
 	virtual void Process(TestSettings const& setting) override {
-		iProcess++;
+		++iProcess;
 	}
 
 	void CheckCalls(int ProcessFilteredEvt, int ProcessEvt,	int Process_ = 0) {

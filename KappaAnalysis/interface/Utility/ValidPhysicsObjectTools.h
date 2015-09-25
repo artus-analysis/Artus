@@ -60,36 +60,33 @@ protected:
 		for (std::map<size_t, std::vector<float> >::const_iterator upperAbsEtaCutByIndex = upperAbsEtaCutsByIndex.begin();
 		     upperAbsEtaCutByIndex != upperAbsEtaCutsByIndex.end() && validObject; ++upperAbsEtaCutByIndex)
 		{
-			if ((std::abs(physicsObject->p4.Eta()) > *std::min_element(upperAbsEtaCutByIndex->second.begin(), upperAbsEtaCutByIndex->second.end()))
+			if (std::abs(physicsObject->p4.Eta()) > *std::min_element(upperAbsEtaCutByIndex->second.begin(), upperAbsEtaCutByIndex->second.end())
 			    && (upperAbsEtaCutByIndex->first == (product.*m_validPhysicsObjectsMember).size()))
 			{
 				validObject = false;
 			}
 		}
-		
+
 		for (std::map<std::string, std::vector<float> >::const_iterator lowerPtCutByHltName = lowerPtCutsByHltName.begin();
 		     lowerPtCutByHltName != lowerPtCutsByHltName.end() && validObject; ++lowerPtCutByHltName)
 		{
 			bool hasMatch = false;
-			for (unsigned int iHlt = 0; iHlt < product.m_selectedHltNames.size(); iHlt++)
+			for (unsigned int iHlt = 0; iHlt < product.m_selectedHltNames.size(); ++iHlt)
 				hasMatch = hasMatch || boost::regex_search(product.m_selectedHltNames.at(iHlt), boost::regex(lowerPtCutByHltName->first, boost::regex::icase | boost::regex::extended));
 
 			if ((physicsObject->p4.Pt() < *std::max_element(lowerPtCutByHltName->second.begin(), lowerPtCutByHltName->second.end()))
-			    &&
-			    (
-			    	(lowerPtCutByHltName->first == "default") || hasMatch 	
-			    )
+			    && (lowerPtCutByHltName->first == "default" || hasMatch)
 			   )
 			{
 				validObject = false;
 			}
 		}
-		
+
 		for (std::map<std::string, std::vector<float> >::const_iterator upperAbsEtaCutByHltName = upperAbsEtaCutsByHltName.begin();
 		     upperAbsEtaCutByHltName != upperAbsEtaCutsByHltName.end() && validObject; ++upperAbsEtaCutByHltName)
 		{
 			bool hasMatch = false;
-			for (unsigned int iHlt = 0; iHlt < product.m_selectedHltNames.size(); iHlt++)
+			for (unsigned int iHlt = 0; iHlt < product.m_selectedHltNames.size(); ++iHlt)
 				hasMatch = hasMatch || boost::regex_search(product.m_selectedHltNames.at(iHlt), boost::regex(upperAbsEtaCutByHltName->first, boost::regex::icase | boost::regex::extended));
 
 			if ((std::abs(physicsObject->p4.Eta()) > *std::min_element(upperAbsEtaCutByHltName->second.begin(), upperAbsEtaCutByHltName->second.end()))
@@ -111,7 +108,7 @@ private:
 	std::vector<std::string>& (setting_type::*GetLowerPtCuts)(void) const;
 	std::vector<std::string>& (setting_type::*GetUpperAbsEtaCuts)(void) const;
 	std::vector<TPhysicsObject*> product_type::*m_validPhysicsObjectsMember;
-	
+
 	std::map<size_t, std::vector<float> > lowerPtCutsByIndex;
 	std::map<std::string, std::vector<float> > lowerPtCutsByHltName;
 	std::map<size_t, std::vector<float> > upperAbsEtaCutsByIndex;

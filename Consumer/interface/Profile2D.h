@@ -21,7 +21,6 @@ public:
 	public:
 		DataPoint(double x, double y, double weight) :
 				m_fx(x), m_fy(y), m_fweight(weight) {
-
 		}
 
 		double m_fx, m_fy, m_fweight;

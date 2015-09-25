@@ -63,7 +63,7 @@ public:
 		{
 			if (this->finalStates[i]->getCharge() == 1 || this->finalStates[i]->getCharge() == -1)
 			{
-				chargedParticles++;
+				++chargedParticles;
 			}
 		}
 		if(chargedParticles==1)	this->finalStateOneProngs = this->finalStates;

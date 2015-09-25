@@ -148,7 +148,7 @@ public:
 				 validTau && (discriminatorByHltName != discriminatorsByHltName.end()); ++discriminatorByHltName)
 			{
 				bool hasMatch = false;
-				for (unsigned int iHlt = 0; iHlt < product.m_selectedHltNames.size(); iHlt++)
+				for (unsigned int iHlt = 0; iHlt < product.m_selectedHltNames.size(); ++iHlt)
 					hasMatch = hasMatch || boost::regex_search(product.m_selectedHltNames.at(iHlt), boost::regex(discriminatorByHltName->first, boost::regex::icase | boost::regex::extended));
 
 				if ((discriminatorByHltName->first == "default") || hasMatch)
