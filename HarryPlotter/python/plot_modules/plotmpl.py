@@ -704,7 +704,7 @@ class PlotMpl(plotbase.PlotBase):
 				facecolor=color,
 				edgecolor=color,
 				interpolate=False,
-				alpha=0.2
+				alpha=0.5
 			)
 
 
