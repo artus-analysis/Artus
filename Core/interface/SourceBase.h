@@ -4,8 +4,7 @@
  *   Dominik Haitz <Dominik.Haitz@kit.edu>
  */
 
-#ifndef SOURCEBASE_H_
-#define SOURCEBASE_H_
+#pragma once
 
 template < class TEvent, class TProduct, class TSettings >
 class SourceBase
@@ -53,6 +52,3 @@ public:
 		LOG(FATAL) << "Implement this for your class!";
 	}
 };
-
-
-#endif /* SOURCEBASE_H_ */
