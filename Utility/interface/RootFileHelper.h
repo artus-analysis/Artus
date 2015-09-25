@@ -29,7 +29,7 @@ public:
 	                 bool detachFromDirectory=true)
 	{
 		T* object = static_cast<T*>(directory->Get(objectName.c_str()));
-		if (object == NULL)
+		if (object == nullptr)
 		{
 			LOG(FATAL) << "Cannot load \"" << objectName << "\" from directory \"" << directory->GetName() << "\"!";
 		}

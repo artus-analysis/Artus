@@ -45,7 +45,8 @@ public:
 
 	void createFinalStates(MotherDaughterBundle* root)
 	{
-		if (this->finalState == true) root->finalStates.push_back(this);
+		if (this->finalState)
+			root->finalStates.push_back(this);
 		else if (this->Daughters.size() != 0)
 		{
 			for(unsigned int i = 0; i<this->Daughters.size(); ++i)
