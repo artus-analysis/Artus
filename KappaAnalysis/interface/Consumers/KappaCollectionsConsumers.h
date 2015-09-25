@@ -112,7 +112,7 @@ public:
 			{
 				if (m_genParticleMatchedObjectsAvailable && settings.GetAddGenMatchedParticles())
 				{
-					KGenParticle* currentGenParticle = SafeMap::GetWithDefault((product.*m_genParticleMatchedObjects), *validObject, (KGenParticle*)(nullptr));
+					KGenParticle* currentGenParticle = SafeMap::GetWithDefault((product.*m_genParticleMatchedObjects), *validObject, static_cast<KGenParticle*>(nullptr));
 					m_currentGenParticle = (currentGenParticle != nullptr ? *(static_cast<KGenParticle*>(currentGenParticle)) : KGenParticle());
 					m_currentGenParticleMatched = (currentGenParticle != nullptr);
 					if (currentGenParticle != nullptr)
@@ -127,7 +127,7 @@ public:
 				
 				if (m_genTauMatchedObjectsAvailable && settings.GetAddGenMatchedTaus())
 				{
-					KGenTau* currentGenTau = SafeMap::GetWithDefault((product.*m_genTauMatchedObjects), *validObject, (KGenTau*)(nullptr));
+					KGenTau* currentGenTau = SafeMap::GetWithDefault((product.*m_genTauMatchedObjects), *validObject, static_cast<KGenTau*>(nullptr));
 					m_currentGenTau = (currentGenTau != nullptr ? *(static_cast<KGenTau*>(currentGenTau)) : KGenTau());
 					m_currentGenTauMatched = (currentGenTau != nullptr);
 					if (currentGenTau != nullptr)
@@ -142,7 +142,7 @@ public:
 				
 				if (m_genTauJetMatchedObjectsAvailable && settings.GetAddGenMatchedTauJets())
 				{
-					KGenJet* currentGenTauJet = SafeMap::GetWithDefault((product.*m_genTauJetMatchedObjects), *validObject, (KGenJet*)(nullptr));
+					KGenJet* currentGenTauJet = SafeMap::GetWithDefault((product.*m_genTauJetMatchedObjects), *validObject, static_cast<KGenJet*>(nullptr));
 					m_currentGenTauJet = (currentGenTauJet != nullptr ? *(static_cast<KGenJet*>(currentGenTauJet)) : KGenJet());
 					m_currentGenTauJetMatched = (currentGenTauJet != nullptr);
 					if (currentGenTauJet != nullptr)

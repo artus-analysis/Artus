@@ -57,10 +57,10 @@ public:
 		int bin = 0;
 
 		// fill first bin of histograms with all events
-		m_cutFlowUnweightedHist->Fill(float(bin));
+		m_cutFlowUnweightedHist->Fill(static_cast<float>(bin));
 
 		if(m_addWeightedCutFlow) {
-			m_cutFlowWeightedHist->Fill(float(bin), weight);
+			m_cutFlowWeightedHist->Fill(static_cast<float>(bin), weight);
 		}
 
 		// fill bins of histograms corresponding to passed filters
@@ -72,10 +72,10 @@ public:
 			if (filterDecision->filterDecision == FilterResult::Decision::Passed ||
 			    filterDecision->taggingMode == FilterResult::TaggingMode::Tagging)
 			{
-				m_cutFlowUnweightedHist->Fill(float(bin));
+				m_cutFlowUnweightedHist->Fill(static_cast<float>(bin));
 
 				if(m_addWeightedCutFlow) {
-					m_cutFlowWeightedHist->Fill(float(bin), weight);
+					m_cutFlowWeightedHist->Fill(static_cast<float>(bin), weight);
 				}
 			}
 		}

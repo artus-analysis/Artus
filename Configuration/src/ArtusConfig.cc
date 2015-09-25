@@ -21,8 +21,8 @@ ArtusConfig::ArtusConfig(int argc, char** argv) :
 		("log-level", boost::program_options::value< std::string >(&m_minimumLogLevelString),
 		 "Detail level of logging (debug, info, warning, error, critical). [Default: taken from JSON config or info]")
 		("json-config", boost::program_options::value< std::string >(&m_jsonConfigFileName),
-		 "JSON config file")
-	;
+		 "JSON config file");
+
 	
 	boost::program_options::positional_options_description positionalProgramOptions;
 	positionalProgramOptions.add("json-config", 1);

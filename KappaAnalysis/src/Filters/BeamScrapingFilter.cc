@@ -17,14 +17,11 @@ void BeamScrapingFilter::Init(setting_type const& settings)
 }
 
 bool BeamScrapingFilter::DoesEventPass(KappaEvent const& event, KappaProduct const& product,
-                                               KappaSettings const& settings) const 
+                                       KappaSettings const& settings) const
 {
 	assert(event.m_trackSummary);
 
-	bool pass = false;
-	if ((double)event.m_trackSummary->nTracksHQ / event.m_trackSummary->nTracks > m_purityRatio) {
-		pass = true;
-	}
-	return pass;
+	return (static_cast<double>(event.m_trackSummary->nTracksHQ) /
+	        static_cast<double>(event.m_trackSummary->nTracks) > m_purityRatio);
 }
 

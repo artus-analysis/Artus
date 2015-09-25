@@ -7,7 +7,7 @@ BtagSF::~BtagSF() { delete randm; }
 bool BtagSF::isbtagged(double pt, float eta, float csv, Int_t jetflavor, bool isdata,
                        unsigned int btagsys, unsigned int mistagsys, bool is2012)
 {
-	randm->SetSeed((int)((eta + 5) * 100000));
+	randm->SetSeed(static_cast<int>((eta + 5.) * 100000.));
 
 	bool btagged = isdata && (csv > 0.679f);
 	double SFb = 0.0;

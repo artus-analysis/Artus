@@ -73,7 +73,7 @@ public:
 		for (std::vector<std::string>::const_iterator quantity = (settings.*GetTmvaInputQuantities)().begin();
 		     quantity != (settings.*GetTmvaInputQuantities)().end(); ++quantity)
 		{
-			tmvaReader.AddVariable(*quantity, (float*)(0));
+			tmvaReader.AddVariable(*quantity, static_cast<float*>(nullptr));
 		}
 		
 		// loading TMVA weight files
