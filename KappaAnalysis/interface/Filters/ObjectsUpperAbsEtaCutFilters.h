@@ -19,7 +19,7 @@ public:
 	
 	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
 	
-	LeptonUpperAbsEtaCutsFilter(std::vector<TLepton*> KappaProduct::*validLeptons) :
+	explicit LeptonUpperAbsEtaCutsFilter(std::vector<TLepton*> KappaProduct::*validLeptons) :
 		CutRangeFilterBase<KappaTypes>(),
 		m_validLeptonsMember(validLeptons)
 	{

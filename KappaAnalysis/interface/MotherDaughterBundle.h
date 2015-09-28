@@ -13,7 +13,7 @@
 */
 class MotherDaughterBundle {
 public:
-	MotherDaughterBundle( KGenParticle* newnode ) : node( newnode ) {};
+	explicit MotherDaughterBundle(KGenParticle* newnode) : node(newnode) {}
 	~MotherDaughterBundle() {};
 	bool finalState = false;
 	std::vector<MotherDaughterBundle*> finalStates;
