@@ -195,7 +195,7 @@ class PlotRoot(plotbase.PlotBase):
 			plotData.plotdict["legend"] += [0.6, 0.6, 0.9, 0.9][len(plotData.plotdict["legend"]):]
 			plotData.plotdict["legend"] = plotData.plotdict["legend"][:4]
 		
-		for key in ["labels", "x_label", "y_label", "z_label", "title"]:
+		for key in ["labels", "x_label", "y_label", "x_tick_labels", "y_tick_labels", "z_label", "title"]:
 			if isinstance(plotData.plotdict[key], basestring):
 				plotData.plotdict[key] = self.nice_labels.get_nice_label(plotData.plotdict[key])
 			elif isinstance(plotData.plotdict[key], collections.Iterable):
