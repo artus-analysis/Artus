@@ -40,7 +40,7 @@ public:
 	// a signal listener with the OS to handle Ctrl-C commands send
 	// by the user to the console. In this case the processing will be stopped
 	// after the current event and the root file will be properly written.
-	PipelineRunner(bool registerSignalHandler = true) : m_registerSignalHandler(registerSignalHandler)
+	explicit PipelineRunner(bool registerSignalHandler = true) : m_registerSignalHandler(registerSignalHandler)
 	{
 		// this is the default
 		// use AddProgressReport / ClearProgressReports to adapt it to your needs

@@ -10,7 +10,7 @@
 
 class TestConsumer: public ConsumerBase<TestTypes> {
 public:
-	TestConsumer( bool checkInProcessEvent = true) : bCheckInProcessEvent(checkInProcessEvent), iFinish(0), iInit(0),
+	explicit TestConsumer(bool checkInProcessEvent = true) : bCheckInProcessEvent(checkInProcessEvent), iFinish(0), iInit(0),
 		iProcessFilteredEvent(0), iProcessEvent(0), iProcess(0) {
 	}
 

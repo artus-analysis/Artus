@@ -60,8 +60,7 @@ private:
 
 class ValueModifierBinCount: public ValueModifier {
 public:
-	ValueModifierBinCount(size_t bc) :
-			m_binCount(bc) {
+	explicit ValueModifierBinCount(size_t bc) : m_binCount(bc) {
 	}
 
 	virtual ~ValueModifierBinCount() {

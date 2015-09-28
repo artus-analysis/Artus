@@ -27,13 +27,11 @@ public:
 
 class SettingsBase {
 public:
-
 	SettingsBase() :
 			m_RootOutFile(nullptr) {
 	}
 
-	SettingsBase( std::string const& name ) : m_Name ( name ),
-			m_RootOutFile(nullptr){
+	explicit SettingsBase(std::string const& name) : m_Name (name),	m_RootOutFile(nullptr) {
 	}
 
 	virtual ~SettingsBase() {

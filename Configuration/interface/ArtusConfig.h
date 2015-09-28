@@ -29,7 +29,7 @@ public:
 	ArtusConfig(int argc, char** argv);
 	
 	// parses the json config from a stringstream
-	ArtusConfig( std::stringstream & sStream );
+	explicit ArtusConfig(std::stringstream& sStream);
 
 	void SaveConfig(TFile* outputFile) const;
 

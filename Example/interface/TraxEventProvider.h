@@ -18,7 +18,7 @@
 
 class TraxEventProvider: public RootEventProvider<TraxTypes> {
 public:
-	TraxEventProvider(stringvector const & fileNames) :
+	explicit TraxEventProvider(stringvector const& fileNames) :
 	                  RootEventProvider<TraxTypes>(fileNames,
 	                  // hardcode the root treename already here
 	                  "ec") {

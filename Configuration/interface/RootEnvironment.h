@@ -10,7 +10,7 @@
 
 class RootEnvironment {
 public:
-	RootEnvironment(const ArtusConfig & artusConfig);
+	explicit RootEnvironment(const ArtusConfig& artusConfig);
 	~RootEnvironment() { Close(); };
 	
 	inline TFile* GetRootFile() const { return m_rootFile; };

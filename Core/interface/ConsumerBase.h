@@ -57,9 +57,7 @@ protected:
 
 class ConsumerBaseAccess {
 public:
-	ConsumerBaseAccess ( ConsumerBaseUntemplated & cb ) : m_cb(cb) {
-
-	}
+	explicit ConsumerBaseAccess (ConsumerBaseUntemplated& cb) : m_cb(cb) {}
 
 	void Process( SettingsBase const& settings ){
 		m_cb.baseProcess( settings );
