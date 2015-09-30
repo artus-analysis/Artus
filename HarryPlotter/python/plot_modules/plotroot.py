@@ -332,6 +332,9 @@ class PlotRoot(plotbase.PlotBase):
 				self.x_min = plotData.plotdict["x_lims"][0]
 				if len(plotData.plotdict["x_lims"]) > 1:
 					self.x_max = plotData.plotdict["x_lims"][1]
+		if self.x_min == self.x_max:
+			self.x_min -= 1.0
+			self.x_max += 1.0
 		
 		# y lims
 		if plotData.plotdict["sym_y_lims"] and (not plotData.plotdict["y_log"]):
@@ -362,6 +365,8 @@ class PlotRoot(plotbase.PlotBase):
 				self.y_max = plotData.plotdict["y_lims"][1]
 			elif self.max_dim < 3:
 				self.y_max *= (plotData.plotdict["rel_y_lims"][1] if self.y_max > 0.0 else plotData.plotdict["rel_y_lims"][0])
+		if self.y_min == self.y_max:
+			self.y_max += 1.0
 		
 		# z lims
 		if plotData.plotdict["sym_z_lims"] and (not plotData.plotdict["z_log"]):
@@ -398,6 +403,8 @@ class PlotRoot(plotbase.PlotBase):
 					self.z_max *= (1.1 if self.z_max > 0.0 else 0.9)
 				else:
 					self.z_max *= (1.01 if self.z_max > 0.0 else 0.99)
+		if (not self.z_min is None) and (not self.z_max is None) and (self.z_min == self.z_max):
+			self.z_max += 1.0
 		
 		# y subplot lims
 		if plotData.plotdict["sym_y_subplot_lims"]:
@@ -425,12 +432,16 @@ class PlotRoot(plotbase.PlotBase):
 				self.y_sub_max = plotData.plotdict["y_subplot_lims"][1]
 			elif not self.y_sub_max is None:
 				self.y_sub_max *= (1.1 if self.y_sub_max > 0.0 else 0.9)
+		if (not self.y_sub_min is None) and (not self.y_sub_max is None) and (self.y_sub_min == self.y_sub_max):
+			self.y_sub_max += 1.0
 		
 		# z subplot lims
 		if not self.z_sub_min is None:
 			self.z_sub_min *= (0.9 if self.z_sub_min > 0.0 else 1.1)
 		if not self.z_sub_max is None:
 			self.z_sub_max *= (1.1 if self.z_sub_max > 0.0 else 0.9)
+		if (not self.z_sub_min is None) and (not self.z_sub_max is None) and (self.z_sub_min == self.z_sub_max):
+			self.z_sub_max += 1.0
 		
 	def make_plots(self, plotData):
 		super(PlotRoot, self).make_plots(plotData)
