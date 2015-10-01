@@ -36,11 +36,19 @@ class ExportRoot(plotbase.PlotBase):
 		super(ExportRoot, self).modify_argument_parser(parser, args)
 		
 		self.root_export_options = parser.add_argument_group("ROOT Export options")
-		self.root_export_options.add_argument("--file-mode", default="RECREATE",
-		                                      help="Mode for opening ROOT output file. [Default: %(default)s]")
+		self.root_export_options.add_argument(
+				"--file-mode", default="RECREATE",
+				help="Mode for opening ROOT output file. [Default: %(default)s]"
+		)
 		
-		self.formatting_options.add_argument("-L", "--labels", type=str, nargs="+",
-		                                     help="Paths for the ROOT objects in the file.")
+		self.formatting_options.add_argument(
+				"-L", "--labels", type=str, nargs="+",
+				help="Paths for the ROOT objects in the file."
+		)
+		self.formatting_options.add_argument(
+				"--nicks-instead-labels", nargs="?", type="bool", default=False, const=True,
+				help="Use the nicks to specify the paths of the ROOT objects in the file. [Default: %(default)s]"
+		)
 		
 		self.output_options.set_defaults(formats=["root"])
 	
@@ -92,6 +100,9 @@ class ExportRoot(plotbase.PlotBase):
 			
 			for nick, path in zip(plotData.plotdict["nicks"], plotData.plotdict["labels"]):
 				root_object = plotData.plotdict["root_objects"][nick]
+				
+				if plotData.plotdict["nicks_instead_labels"]:
+					path = nick
 				roottools.RootTools.write_object(root_file, root_object, path)
 				
 				metadata = plotData.metadata.get(nick, None)
