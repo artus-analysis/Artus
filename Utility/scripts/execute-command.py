@@ -6,21 +6,21 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import argparse
+import os
 
 
 def main():
 	
-	parser = argparse.ArgumentParser(description="Execute bash commands.",
+	parser = argparse.ArgumentParser(description="Execute bash command.",
 	                                 parents=[logger.loggingParser])
 	
-	parser.add_argument("commands", nargs="+",
-	                    help="Bash commands to be executed.")
+	parser.add_argument("command", nargs="+",
+	                    help="Bash command to be executed.")
 	
 	args = parser.parse_args()
 	logger.initLogger(args)
 	
-	for command in args.commands:
-		logger.subprocessCall(command, shell=True)
+	logger.subprocessCall(os.path.expandvars(" ".join(args.command)), shell=True)
 
 
 if __name__ == "__main__":
