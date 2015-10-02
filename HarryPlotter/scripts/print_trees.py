@@ -31,6 +31,6 @@ if __name__ == "__main__":
 		for key, path in elements:
 			if key.GetClassName().startswith("TTree") or key.GetClassName().startswith("TNtuple"):
 				tree = root_file.Get(path)
-				log.info("\nContent of tree \"tree\":\n".format(tree=path))
+				log.info("\nContent of tree \"{tree}\":\n".format(tree=path))
 				tree.Scan("*")
 
