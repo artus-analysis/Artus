@@ -16,6 +16,14 @@ class HarryParser(argparse.ArgumentParser):
 		kwargs["add_help"] = False
 		kwargs["conflict_handler"] = "resolve"
 		kwargs["fromfile_prefix_chars"] = "@"
+		kwargs["formatter_class"] = argparse.RawDescriptionHelpFormatter
+		kwargs["epilog"] = (
+			"Parameter replication: Several list parameters are internally matched by\n"
+			"  their indizes. If they are of different length, short parameter lists\n"
+			"  are replicated element wise to meet the required length. For example,\n"
+			"  setting the inputs i1, i2, i3 and weights w1, w2 creates the matching\n"
+			"  i1->w1, i2->w2 and i3->w1.\n"
+		)
 		kwargs.setdefault("parents", []).append(logger.loggingParser)
 		
 		super(HarryParser, self).__init__(**kwargs)
