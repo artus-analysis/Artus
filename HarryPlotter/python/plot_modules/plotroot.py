@@ -365,6 +365,9 @@ class PlotRoot(plotbase.PlotBase):
 				self.y_max = plotData.plotdict["y_lims"][1]
 			elif self.max_dim < 3:
 				self.y_max *= (plotData.plotdict["rel_y_lims"][1] if self.y_max > 0.0 else plotData.plotdict["rel_y_lims"][0])
+				if plotData.plotdict["cms"]:
+					self.y_max *= 1.2
+
 		if self.y_min == self.y_max:
 			self.y_max += 1.0
 		
