@@ -57,15 +57,16 @@ class Processor(object):
 
 		max_n_inputs = n_items if n_items != None else max([len(plotData.plotdict[key]) for key in keys_of_list_args])
 		
-		# expand/cut warnings, if needed
-		warning = False
-		for key, plot_list in [(key, plotData.plotdict[key]) for key in keys_of_list_args]:
-			if len(plot_list) != 1 and len(plot_list) < max_n_inputs:
-				warning = True
-				log.warning("Argument '%s' with length %d will be repeated until length %d! Is this correct?" % (key, len(plot_list), max_n_inputs))
-		if warning:
-			for key in [key for key in keys_of_list_args if len(plotData.plotdict[key]) == max_n_inputs]:
-				log.warning("Argument '%s' has length %d! Is this correct?" % (key, max_n_inputs))
+		# warn if any input requires replication to match length
+		if any((1 < len(plotData.plotdict[key]) < max_n_inputs) for key in keys_of_list_args):
+			log.warning(
+				"Parameters '%s' require parameter list length of %d."
+				" Parameters %s will be replicated to match required length." % (
+					"', '".join(key for key in keys_of_list_args if len(plotData.plotdict[key]) == max_n_inputs),
+					max_n_inputs,
+					", ".join("'%s'(%d)" % (key, len(plotData.plotdict[key])) for key in keys_of_list_args if 1 < len(plotData.plotdict[key]) < max_n_inputs),
+				)
+			)
 
 		# expand/cut lists that are too short/long
 		for key, plot_list in [(key, plotData.plotdict[key]) for key in keys_of_list_args]:
