@@ -35,7 +35,9 @@ class Cutflow(analysisbase.AnalysisBase):
 		self.cutflow_options.add_argument("--cutflow-base-bin", default='1',
 				help="Cut to use as base level (1.0 in absolute cutflow), either as an index or label. [Default: %(default)s]")
 		self.cutflow_options.add_argument("--cutflow-sequence", nargs="*", default=[],
-				help="Cuts to show for cutflows.")
+				help="Cuts to show for cutflows. [Default: <extracted from cutflows>]")
+		self.cutflow_options.add_argument("--cutflow-blacklist", nargs="*", default=[],
+				help="Cuts to erase from the cutflow sequence.")
 
 	def prepare_args(self, parser, plotData):
 		super(Cutflow, self).prepare_args(parser, plotData)
@@ -56,14 +58,15 @@ class Cutflow(analysisbase.AnalysisBase):
 			histo_names=plotData.plotdict["cutflow_names"],
 			histo_nicks=plotData.plotdict["cutflow_nicks"]
 		)
-		cutflows = self._add_missing_cuts(
+		cutflows = self._align_cuts(
 			plotData, cutflows,
-			all_cuts=plotData.plotdict["cutflow_sequence"]
+			all_cuts=plotData.plotdict["cutflow_sequence"],
+			cut_blacklist=plotData.plotdict["cutflow_blacklist"],
 		)
 		cutflows = self._compile_efficiencies(
 			cutflows,
 			relative=plotData.plotdict["rel_cuts"],
-			base_bin=plotData.plotdict["cutflow_base_bin"]
+			base_bin=plotData.plotdict["cutflow_base_bin"],
 		)
 
 	def _get_cutflows(self, plotData, histo_names=(), histo_nicks=()):
@@ -114,7 +117,7 @@ class Cutflow(analysisbase.AnalysisBase):
 					root_histogram.Scale(1.0 / root_histogram.GetBinContent(base_bin))
 		return cutflow_histograms
 
-	def _add_missing_cuts(self, plotData, cutflow_histograms, all_cuts=()):
+	def _align_cuts(self, plotData, cutflow_histograms, all_cuts=(), cut_blacklist=()):
 		"""
 		Ensure all cutflows have the same cuts and use the same sequence
 
@@ -138,18 +141,18 @@ class Cutflow(analysisbase.AnalysisBase):
 			filternames[nick] = []
 			for binnumber in range(1, root_histogram.GetNbinsX()+1):
 				filternames[nick].append(root_histogram.GetXaxis().GetBinLabel(binnumber))
-		if not all_cuts and len(set(tuple(cutlabels) for cutlabels in filternames.values())) == 1:
+		_unique_cutflows = set(tuple(cutlabels) for cutlabels in filternames.values())
+		if not all_cuts and not cut_blacklist and len(_unique_cutflows) == 1:
+			# no modification required
 			return
-		if not all_cuts:
+		if not all_cuts and len(_unique_cutflows) > 1:
 			log.warning("Cutflow histograms have different number of bins! New histograms containing all cuts will be constructed.")
-			all_cuts = extrafunctions.merge_sequences(*filternames.values())
-		else:
-			# if we can merge desired cuts and individual cuts, subsequences don't have conflicting order
-			for nick, cuts in filternames.iteritems():
-				_ = extrafunctions.merge_sequences(all_cuts, cuts)
+		# if we can merge desired cuts and individual cuts, subsequences don't have conflicting order
+		all_cuts = extrafunctions.merge_sequences(all_cuts, *_unique_cutflows)
+		if cut_blacklist:
+			all_cuts = [cut for cut in all_cuts if cut not in cut_blacklist]
 		# recreate histograms with all cuts
 		new_cutflows = {}
-		all_cuts = all_cuts or extrafunctions.merge_sequences(*filternames.values())
 		for nick, root_histogram in cutflow_histograms.iteritems():
 			new_histo = ROOT.TH1F(root_histogram.GetName()+"_new", root_histogram.GetTitle()+"_new", len(all_cuts), 0, len(all_cuts))
 			# missing leading cuts are always perfect
