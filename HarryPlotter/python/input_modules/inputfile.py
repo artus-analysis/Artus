@@ -43,7 +43,7 @@ class InputFile(inputbase.InputBase):
 				files.append(file_args)
 			else:
 				for file_arg in file_args.split():
-					for directory in directories.split():
+					for directory in directories.split() if directories else [None]:
 						paths_before_globbing.append(os.path.expandvars(os.path.join(directory, file_arg) if directory else file_arg))
 						files.extend(glob.glob(paths_before_globbing[-1]))
 				if len(files) == 0:
