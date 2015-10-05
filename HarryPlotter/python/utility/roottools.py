@@ -268,8 +268,9 @@ class RootTools(object):
 						x_bins=self.x_bin_edges[binning_identifier],
 						y_bins=None if y_expression is None else self.y_bin_edges[binning_identifier],
 						z_bins=None if z_expression is None else self.z_bin_edges[binning_identifier],
-						profile_histogram="prof" in option.lower(),
-						name=name
+						profile_histogram=("prof" in option.lower()),
+						name=name,
+						profile_error_option=(option.lower().replace("prof", ''))
 					)
 		
 		# prepare TChain
@@ -407,7 +408,7 @@ class RootTools(object):
 
 
 	@staticmethod
-	def create_root_histogram(x_bins, y_bins=None, z_bins=None, profile_histogram=False, name=None):
+	def create_root_histogram(x_bins, y_bins=None, z_bins=None, profile_histogram=False, name=None, profile_error_option=""):
 		"""
 		Create an empty ROOT histogram with a given binning
 		"""
@@ -455,6 +456,8 @@ class RootTools(object):
 			histogram_args.extend([len(y_bin_edges)-1, y_bin_edges])
 			if not z_bins is None:
 				histogram_args.extend([len(z_bin_edges)-1, z_bin_edges])
+		if profile_histogram:
+			histogram_args.append(profile_error_option)
 		
 		log.debug(histogram_class_name+"("+", ".join(["\""+arg+"\"" if isinstance(arg, basestring) else str(arg) for arg in histogram_args])+")")
 		root_histogram = histogram_class(*histogram_args)
