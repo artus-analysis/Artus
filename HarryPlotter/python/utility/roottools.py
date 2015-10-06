@@ -858,3 +858,9 @@ class RootTools(object):
 		tgraph.GetHistogram().Delete()
 		tgraph.SetHistogram(0)
 
+	@staticmethod
+	def tgraph_get_point(tgraph, i):
+		tmpX, tmpY = ROOT.Double(0), ROOT.Double(0)
+		tgraph.GetPoint(i, tmpX, tmpY)
+		return float(tmpX), float(tmpY)
+

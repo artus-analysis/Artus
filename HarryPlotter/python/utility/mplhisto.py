@@ -8,6 +8,8 @@ import numpy as np
 import ROOT
 import sys
 
+import Artus.HarryPlotter.utility.roottools as roottools
+
 class MplGraph:
 
 	def __init__(self, rootgraph):
@@ -24,10 +26,7 @@ class MplGraph:
 		self.y = np.zeros((rootgraph.GetN()))
 
 		for i in xrange(rootgraph.GetN()):
-			tmpX, tmpY = ROOT.Double(0), ROOT.Double(0)
-			rootgraph.GetPoint(i, tmpX, tmpY)
-			self.x[i] = tmpX
-			self.y[i] = tmpY
+			self.x[i], self.y[i] = roottools.RootTools.tgraph_get_point(rootgraph, i)
 		self.xerr = np.array([rootgraph.GetErrorX(i) for i in xrange(rootgraph.GetN())])
 		self.xerrl = np.array([rootgraph.GetErrorXlow(i) for i in xrange(rootgraph.GetN())])
 		self.xerru = np.array([rootgraph.GetErrorXhigh(i) for i in xrange(rootgraph.GetN())])
