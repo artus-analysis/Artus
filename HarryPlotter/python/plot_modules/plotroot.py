@@ -708,7 +708,7 @@ class PlotRoot(plotbase.PlotBase):
 				CMS_lumi.lumiTextOffset = 0.4
 
 		# normal plot title (e.g., 'own work', name of the channel...): outside plot, top left
-		y_title = 0.94 if self.subplot_axes_histogram is None else 0.95
+		y_title = 0.94 if self.subplot_axes_histogram is None else 0.955
 		if (not plotData.plotdict["title"] is None) and (plotData.plotdict["title"] != ""):
 			x_title = 0.2
 			title = self.text_box.AddText(x_title, y_title, plotData.plotdict["title"])
