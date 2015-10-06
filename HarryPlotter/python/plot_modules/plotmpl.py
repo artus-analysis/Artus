@@ -470,14 +470,14 @@ class PlotMpl(plotbase.PlotBase):
 		for ax in [plotData.plot.axes[0]]:
 			if (not self.plot_dimension == 3) and (self.dataset_title != ""):
 				plt.text(
-						1.0, 1.030, self.dataset_title,
+						1.0, 1.030, self.dataset_title, zorder=100,
 						transform=ax.transAxes, fontsize=18, horizontalalignment="right"
 				)
 		
 		if plotData.plotdict["texts"] != [None]:
 			for ax in [plotData.plot.axes[0]]:
 				for x, y, text in zip(plotData.plotdict['texts_x'], plotData.plotdict['texts_y'], plotData.plotdict['texts']):
-					ax.text(x, y, text, transform=ax.transAxes, fontsize=18, ha="left", va="top")
+					ax.text(x, y, text, transform=ax.transAxes, fontsize=18, ha="left", va="top", zorder=100)
 
 	def set_matplotlib_defaults(self):
 		# Set matplotlib rc settings
