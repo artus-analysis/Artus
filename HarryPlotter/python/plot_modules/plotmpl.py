@@ -702,8 +702,8 @@ class PlotMpl(plotbase.PlotBase):
 			# draw a smooth curve with error band around
 			ax.plot(self.mplhist.x, self.mplhist.y, label=label, color=color, linestyle=line_style, linewidth=line_width, zorder=zorder)
 			ax.fill_between(self.mplhist.x,
-				[(y_val-error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)],
-				[(y_val+error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)],
+				[(y_val-error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerrl)],
+				[(y_val+error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerru)],
 				facecolor=color,
 				edgecolor=color,
 				interpolate=False,
