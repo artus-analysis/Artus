@@ -700,7 +700,8 @@ class PlotMpl(plotbase.PlotBase):
 			)
 		else:
 			# draw a smooth curve with error band around
-			ax.plot(self.mplhist.x, self.mplhist.y, label=label, color=color, linestyle=line_style, linewidth=line_width, zorder=zorder)
+			ax.plot(self.mplhist.x, self.mplhist.y,
+				color=color, linestyle=line_style, linewidth=line_width, zorder=zorder)
 			ax.fill_between(self.mplhist.x,
 				[(y_val-error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerrl)],
 				[(y_val+error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerru)],
@@ -710,6 +711,8 @@ class PlotMpl(plotbase.PlotBase):
 				alpha=alpha,
 				zorder=zorder
 			)
+			patch_for_label = plt.Rectangle((0, 0), 0, 0, label=label, color=color)
+			ax.add_patch(patch_for_label)
 
 
 	def get_zip_arguments(self, plotData):
