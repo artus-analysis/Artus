@@ -96,5 +96,5 @@ class StatisticalErrors(analysisbase.AnalysisBase):
 		result = error
 		if relative and (central != 0.0):
 			result /= central
-		return result
+		return (result*100. if percent else result)
 
