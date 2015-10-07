@@ -141,7 +141,7 @@ class InputInteractive(inputbase.InputBase):
 						root_histogram.FillN(len(x_values), array.array("d", x_values), array.array("d", y_values), weights)
 					else:
 						set_bin_errors = any([bin_error != 0.0 for bin_error in z_errors])
-						for x_value, y_value, z_value, bin_error in zip(x_values, y_values, y_errors):
+						for x_value, y_value, z_value, bin_error in zip(x_values, y_values, z_values, z_errors):
 							global_bin = root_histogram.FindBin(x_value, y_value)
 							root_histogram.SetBinContent(global_bin, z_value)
 							if set_bin_errors:
