@@ -361,7 +361,7 @@ class ArtusWrapper(object):
 		                                 help="Files per batch job. [Default: %(default)s]")
 		runningOptionsGroup.add_argument("--area-files", default=None,
 		                                 help="Additional area files. [Default: %(default)s]")
-		runningOptionsGroup.add_argument("--wall-time", default="02:00:00",
+		runningOptionsGroup.add_argument("--wall-time", default="24:00:00",
 		                                 help="Wall time of batch jobs. [Default: %(default)s]")
 		runningOptionsGroup.add_argument("--memory", type=int, default=3000,
 		                                 help="Memory (in MB) for batch jobs. [Default: %(default)s]")
