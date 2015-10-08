@@ -412,7 +412,6 @@ class RootTools(object):
 		"""
 		Create an empty ROOT histogram with a given binning
 		"""
-		
 		# prepare unique histogram name
 		if name == None:
 			name = "histogram_{0}".format(hashlib.md5("_".join([str(x_bins), str(y_bins), str(z_bins), str(profile_histogram)])).hexdigest())
@@ -422,7 +421,7 @@ class RootTools(object):
 		if isinstance(x_bins, basestring) or ((len(x_bins) == 1) and isinstance(x_bins[0], basestring)):
 			x_binning_string, x_bin_edges = RootTools.prepare_binning(x_bins[0])
 		else:
-			x_bin_edges = x_bins
+			x_bin_edges = array.array('d', x_bins)
 		
 		y_bin_edges = None
 		if not y_bins is None:

@@ -42,6 +42,11 @@ class InputInteractive(inputbase.InputBase):
 			except:
 				return input_string
 		
+		for key in ["x_bins", "y_bins", "z_bins"]:
+			for index, binning in enumerate(plotData.plotdict[key]):	
+				if (not binning is None) and (len(binning) > 1):
+					plotData.plotdict[key][index] = [float(bin_edge) for bin_edge in binning]
+		
 		# parse values/errors to plot
 		values_keys = ["x_expressions", "y_expressions", "z_expressions"]
 		errors_keys = ["x_errors", "y_errors", "z_errors"]
