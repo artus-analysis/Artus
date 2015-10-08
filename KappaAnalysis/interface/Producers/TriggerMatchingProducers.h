@@ -194,47 +194,24 @@ public:
 			
 			/*
 			// debug output
-			LOG(DEBUG) << "";
-			LOG(DEBUG) << "Result of trigger matching:";
-			// works
+			LOG(INFO) << "Result of trigger matching (Run: " << event.m_eventInfo->nRun << ", Lumi: " << event.m_eventInfo->nLumi << ", Event: " << event.m_eventInfo->nEvent << "):";
 			for (typename std::pair<TValidObject*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > > validObject : (product.*m_detailedTriggerMatchedObjects))
 			{
-				LOG(DEBUG) << "Reco object = " << validObject.first << " (" << validObject.second.size() << ")";
+				LOG(INFO) << "Reco object: (pt = " << validObject.first->p4.Pt() << ", eta = " << validObject.first->p4.Eta() << ", phi = " << validObject.first->p4.Phi() << ", mass = " << validObject.first->p4.mass() << ")";
 				for (std::pair<std::string, std::map<std::string, std::vector<KLV*> > > hltName : validObject.second)
 				{
-					LOG(DEBUG) << "\tHLT name = " << hltName.first << " (" << hltName.second.size() << ")";
+					LOG(INFO) << "\tHLT name: " << hltName.first;
 					for (std::pair<std::string, std::vector<KLV*> > filterName : hltName.second)
 					{
-						LOG(DEBUG) << "\t\tFilter name = " << filterName.first << " (" << filterName.second.size() << ")";
+						LOG(INFO) << "\t\tFilter name: " << filterName.first;
 						for (KLV* triggerObject : filterName.second)
 						{
-							LOG(DEBUG) << "\t\t\tTrigger object = " << triggerObject;
+							LOG(INFO) << "\t\t\tTrigger object: (pt = " << triggerObject->p4.Pt() << ", eta = " << triggerObject->p4.Eta() << ", phi = " << triggerObject->p4.Phi() << ", mass = " << triggerObject->p4.mass() << ")";
 						}
 					}
 				}
 			}
-			// does not work --> why?
-			*//*for (typename std::map<TValidObject*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > >::iterator validObject = (product.*m_detailedTriggerMatchedObjects).begin();
-			     validObject != (product.*m_detailedTriggerMatchedObjects).end(); ++validObject)
-			{
-				LOG(DEBUG) << "Reco object = " << validObject->first << " (" << validObject->second.size() << ")";
-				for (std::map<std::string, std::map<std::string, std::vector<KLV*> > >::iterator hltName = validObject->second.begin();
-				     hltName != validObject->second.begin(); ++hltName)
-				{
-					LOG(DEBUG) << "\tHLT name = " << hltName->first << " (" << hltName->second.size() << ")";
-					for (std::map<std::string, std::vector<KLV*> >::iterator filterName = hltName->second.begin();
-					     filterName != hltName->second.begin(); ++filterName)
-					{
-						LOG(DEBUG) << "\tFilter name = " << filterName->first << " (" << filterName->second.size() << ")";
-						for (std::vector<KLV*>::iterator triggerObject = filterName->second.begin();
-						     triggerObject != filterName->second.begin(); ++triggerObject)
-						{
-							LOG(DEBUG) << "\tTrigger object = " << *triggerObject;
-						}
-					}
-				}
-			}*//*
-			LOG(DEBUG) << "";
+			LOG(INFO) << "==================================================";
 			*/
 		}
 	}

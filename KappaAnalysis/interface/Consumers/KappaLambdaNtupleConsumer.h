@@ -47,7 +47,6 @@ public:
 		{
 			return event.m_vertexSummary->nVertices;
 		});
-
 		bool bInpData = settings.GetInputIsData();
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("npuMean", [bInpData](event_type const& event, product_type const& product)
 		{
@@ -63,6 +62,12 @@ public:
 			return static_cast<int>(static_cast<KGenEventInfo*>(event.m_eventInfo)->nPU);
 		});
 
+		LambdaNtupleConsumer<TTypes>::AddIntQuantity("ootPU", [](event_type const& event, product_type const& product)
+		{
+			return static_cast<KGenEventInfo*>(event.m_eventInfo)->nPUm1 +
+				static_cast<KGenEventInfo*>(event.m_eventInfo)->nPUp1;
+		});
+		
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("rho", [](event_type const& event, product_type const& product) {
 			return event.m_pileupDensity->rho;
 		});
@@ -89,7 +94,7 @@ public:
 					return SafeMap::GetWithDefault(product.m_weights, quantity, SafeMap::GetWithDefault(product.m_optionalWeights, quantity, 1.0));
 				} );
 			}
-			if (boost::algorithm::icontains(quantity, "filter") &&
+			if ((boost::algorithm::icontains(quantity, "filter") || boost::algorithm::icontains(quantity, "cut")) &&
 			   (LambdaNtupleConsumer<TTypes>::GetFloatQuantities().count(quantity) == 0))
 			{
 				LOG(DEBUG) << "\tQuantity \"" << quantity << "\" is tried to be taken from prduct.fres (FilterResult).";

@@ -1,0 +1,77 @@
+\begin{tikzpicture}[scale=1.0]
+\node at (0cm,0cm) [draw, rectangle, minimum height=2.5cm, minimum width=5ex, node distance=2.5cm+0.2cm] (processor1) {\rotatebox{90}{Producer A}};
+\node [draw, rectangle, minimum height=2.5cm, minimum width=5ex, node distance=5ex+0.3cm, right of=processor1] (processor2) {\rotatebox{90}{Filter B}};
+\node [draw, rectangle, minimum height=2.5cm, minimum width=5ex, node distance=5ex+0.3cm, right of=processor2] (processor3) {\rotatebox{90}{Producer C}};
+\node [draw, rectangle, minimum height=2.5cm, minimum width=5ex, node distance=5ex+0.3cm, right of=processor3] (processor4) {\rotatebox{90}{Filter D}};
+\node [draw, rectangle, minimum height=2.5cm, minimum width=5ex, node distance=5ex+0.3cm, right of=processor4] (processor5) {\rotatebox{90}{Filter E}};
+\node [draw, rectangle, minimum height=2.5cm, minimum width=5ex, node distance=5ex+0.3cm, right of=processor5] (processor6) {\rotatebox{90}{Producer F}};
+\node [draw, rectangle, minimum height=2.5cm, minimum width=5ex, node distance=5ex+0.3cm, right of=processor6] (processor7) {\rotatebox{90}{Producer G}};
+\node [draw, rectangle, minimum height=2.5cm, minimum width=5ex, node distance=5ex+0.3cm, right of=processor7] (processor8) {\rotatebox{90}{Producer H}};
+\node [rectangle, minimum height=2.5cm, minimum width=5ex, node distance=5ex+0.3cm, right of=processor8] (processor9) {\textbf{$\cdots$}};
+\node [draw, rectangle, minimum height=2.5cm, minimum width=5ex, node distance=5ex+0.3cm, right of=processor9] (processor10) {\rotatebox{90}{Consumer 1}};
+\node [draw, rectangle, minimum height=2.5cm, minimum width=5ex, node distance=5ex+0.3cm, right of=processor10] (processor11) {\rotatebox{90}{Consumer 2}};
+\node [draw, rectangle, minimum height=2.5cm, minimum width=5ex, node distance=5ex+0.3cm, right of=processor11] (processor12) {\rotatebox{90}{Consumer 3}};
+\node [rectangle, minimum height=2.5cm, minimum width=5ex, node distance=5ex+0.3cm, right of=processor12] (processor13) {\textbf{$\cdots$}};
+
+\draw[->, thick] (processor1) -- (processor2);
+\draw[->, thick] (processor2) -- (processor3);
+\draw[->, thick] (processor3) -- (processor4);
+\draw[->, thick] (processor4) -- (processor5);
+\draw[->, thick] (processor5) -- (processor6);
+\draw[->, thick] (processor6) -- (processor7);
+\draw[->, thick] (processor7) -- (processor8);
+\draw[->, thick] (processor8) -- (processor9);
+\draw[->, thick] (processor9) -- (processor10);
+\draw[->, thick] (processor10) -- (processor11);
+\draw[->, thick] (processor11) -- (processor12);
+\draw[->, thick] (processor12) -- (processor13);
+
+\node [draw, rectangle, rounded corners, minimum width=3.5cm, minimum height=5ex, node distance=1.25cm+2.5ex+1cm, above of=processor5, KIT_gruen_1] (settings) {Settings};
+\node [draw, rectangle, rounded corners, minimum width=3.5cm, minimum height=5ex, node distance=1.25cm+2.5ex+1cm+5ex+0.2cm, above of=processor9, KIT_rot_1] (event) {Event};
+\node [draw, rectangle, rounded corners, minimum width=3.5cm, minimum height=5ex, node distance=1.25cm+2.5ex+1cm, below of=processor5, KIT_rot_1] (product) {Product};
+\node [draw, rectangle, rounded corners, minimum width=3.5cm, minimum height=5ex, node distance=1.25cm+2.5ex+1cm+5ex-0.05cm, below of=processor11, KIT_blau_1] (output) {Output};
+
+\draw[->, thick, KIT_gruen_1] (settings) -- ($ (settings) + (0cm,-2.5ex-0.4cm) $) -- ($ (processor1) + (-1ex,1.25cm+0.6cm) $) -- ($ (processor1) + (-1ex,1.25cm) $);
+\draw[->, thick, KIT_gruen_1] (settings) -- ($ (settings) + (0cm,-2.5ex-0.4cm) $) -- ($ (processor2) + (-1ex,1.25cm+0.6cm) $) -- ($ (processor2) + (-1ex,1.25cm) $);
+\draw[->, thick, KIT_gruen_1] (settings) -- ($ (settings) + (0cm,-2.5ex-0.4cm) $) -- ($ (processor3) + (-1ex,1.25cm+0.6cm) $) -- ($ (processor3) + (-1ex,1.25cm) $);
+\draw[->, thick, KIT_gruen_1] (settings) -- ($ (settings) + (0cm,-2.5ex-0.4cm) $) -- ($ (processor4) + (-1ex,1.25cm+0.6cm) $) -- ($ (processor4) + (-1ex,1.25cm) $);
+\draw[->, thick, KIT_gruen_1] (settings) -- ($ (settings) + (0cm,-2.5ex-0.4cm) $) -- ($ (processor5) + (-1ex,1.25cm+0.6cm) $) -- ($ (processor5) + (-1ex,1.25cm) $);
+\draw[->, thick, KIT_gruen_1] (settings) -- ($ (settings) + (0cm,-2.5ex-0.4cm) $) -- ($ (processor6) + (-1ex,1.25cm+0.6cm) $) -- ($ (processor6) + (-1ex,1.25cm) $);
+\draw[->, thick, KIT_gruen_1] (settings) -- ($ (settings) + (0cm,-2.5ex-0.4cm) $) -- ($ (processor7) + (-1ex,1.25cm+0.6cm) $) -- ($ (processor7) + (-1ex,1.25cm) $);
+\draw[->, thick, KIT_gruen_1] (settings) -- ($ (settings) + (0cm,-2.5ex-0.4cm) $) -- ($ (processor8) + (-1ex,1.25cm+0.6cm) $) -- ($ (processor8) + (-1ex,1.25cm) $);
+\draw[->, thick, KIT_gruen_1] (settings) -- ($ (settings) + (0cm,-2.5ex-0.4cm) $) -- ($ (processor10) + (-1ex,1.25cm+0.6cm) $) -- ($ (processor10) + (-1ex,1.25cm) $);
+\draw[->, thick, KIT_gruen_1] (settings) -- ($ (settings) + (0cm,-2.5ex-0.4cm) $) -- ($ (processor11) + (-1ex,1.25cm+0.6cm) $) -- ($ (processor11) + (-1ex,1.25cm) $);
+\draw[->, thick, KIT_gruen_1] (settings) -- ($ (settings) + (0cm,-2.5ex-0.4cm) $) -- ($ (processor12) + (-1ex,1.25cm+0.6cm) $) -- ($ (processor12) + (-1ex,1.25cm) $);
+
+\draw[->, thick, KIT_rot_1] (event) -- ($ (event) + (0cm,-5ex-0.2cm-2.5ex-0.6cm) $) -- ($ (processor1) + (1ex,1.25cm+0.4cm) $) -- ($ (processor1) + (1ex,1.25cm) $);
+\draw[->, thick, KIT_rot_1] (event) -- ($ (event) + (0cm,-5ex-0.2cm-2.5ex-0.6cm) $) -- ($ (processor2) + (1ex,1.25cm+0.4cm) $) -- ($ (processor2) + (1ex,1.25cm) $);
+\draw[->, thick, KIT_rot_1] (event) -- ($ (event) + (0cm,-5ex-0.2cm-2.5ex-0.6cm) $) -- ($ (processor3) + (1ex,1.25cm+0.4cm) $) -- ($ (processor3) + (1ex,1.25cm) $);
+\draw[->, thick, KIT_rot_1] (event) -- ($ (event) + (0cm,-5ex-0.2cm-2.5ex-0.6cm) $) -- ($ (processor4) + (1ex,1.25cm+0.4cm) $) -- ($ (processor4) + (1ex,1.25cm) $);
+\draw[->, thick, KIT_rot_1] (event) -- ($ (event) + (0cm,-5ex-0.2cm-2.5ex-0.6cm) $) -- ($ (processor5) + (1ex,1.25cm+0.4cm) $) -- ($ (processor5) + (1ex,1.25cm) $);
+\draw[->, thick, KIT_rot_1] (event) -- ($ (event) + (0cm,-5ex-0.2cm-2.5ex-0.6cm) $) -- ($ (processor6) + (1ex,1.25cm+0.4cm) $) -- ($ (processor6) + (1ex,1.25cm) $);
+\draw[->, thick, KIT_rot_1] (event) -- ($ (event) + (0cm,-5ex-0.2cm-2.5ex-0.6cm) $) -- ($ (processor7) + (1ex,1.25cm+0.4cm) $) -- ($ (processor7) + (1ex,1.25cm) $);
+\draw[->, thick, KIT_rot_1] (event) -- ($ (event) + (0cm,-5ex-0.2cm-2.5ex-0.6cm) $) -- ($ (processor8) + (1ex,1.25cm+0.4cm) $) -- ($ (processor8) + (1ex,1.25cm) $);
+\draw[->, thick, KIT_rot_1] (event) -- ($ (event) + (0cm,-5ex-0.2cm-2.5ex-0.6cm) $) -- ($ (processor10) + (1ex,1.25cm+0.4cm) $) -- ($ (processor10) + (1ex,1.25cm) $);
+\draw[->, thick, KIT_rot_1] (event) -- ($ (event) + (0cm,-5ex-0.2cm-2.5ex-0.6cm) $) -- ($ (processor11) + (1ex,1.25cm+0.4cm) $) -- ($ (processor11) + (1ex,1.25cm) $);
+\draw[->, thick, KIT_rot_1] (event) -- ($ (event) + (0cm,-5ex-0.2cm-2.5ex-0.6cm) $) -- ($ (processor12) + (1ex,1.25cm+0.4cm) $) -- ($ (processor12) + (1ex,1.25cm) $);
+
+\draw[<->, very thick, dashed, KIT_rot_1] ($ (product) + (-1.3cm,2.5ex) $) -- ($ (product) + (-1.3cm,2.5ex+0.4cm) $) -- ($ (processor1) + (0cm,-1.25cm-0.6cm) $) -- (processor1);
+\draw[<->, very thick, dashed, KIT_rot_1] ($ (product) + (-1.3cm,2.5ex) $) -- ($ (product) + (-1.3cm,2.5ex+0.4cm) $) -- ($ (processor3) + (0cm,-1.25cm-0.6cm) $) -- (processor3);
+\draw[<->, very thick, dashed, KIT_rot_1] ($ (product) + (-1.3cm,2.5ex) $) -- ($ (product) + (-1.3cm,2.5ex+0.4cm) $) -- ($ (processor6) + (0cm,-1.25cm-0.6cm) $) -- (processor6);
+\draw[<->, very thick, dashed, KIT_rot_1] ($ (product) + (-1.3cm,2.5ex) $) -- ($ (product) + (-1.3cm,2.5ex+0.4cm) $) -- ($ (processor7) + (0cm,-1.25cm-0.6cm) $) -- (processor7);
+\draw[<->, very thick, dashed, KIT_rot_1] ($ (product) + (-1.3cm,2.5ex) $) -- ($ (product) + (-1.3cm,2.5ex+0.4cm) $) -- ($ (processor8) + (0cm,-1.25cm-0.6cm) $) -- (processor8);
+
+\draw[->, thick, KIT_rot_1] ($ (product) + (1.3cm,2.5ex) $) -- ($ (product) + (1.3cm,2.5ex+0.6cm) $) -- ($ (processor2) + (0cm,-1.25cm-0.4cm) $) -- (processor2);
+\draw[->, thick, KIT_rot_1] ($ (product) + (1.3cm,2.5ex) $) -- ($ (product) + (1.3cm,2.5ex+0.6cm) $) -- ($ (processor4) + (0cm,-1.25cm-0.4cm) $) -- (processor4);
+\draw[->, thick, KIT_rot_1] ($ (product) + (1.3cm,2.5ex) $) -- ($ (product) + (1.3cm,2.5ex+0.6cm) $) -- ($ (processor5) + (0cm,-1.25cm-0.4cm) $) -- (processor5);
+\draw[->, thick, KIT_rot_1] ($ (product) + (1.3cm,2.5ex) $) -- ($ (product) + (1.3cm,2.5ex+0.6cm) $) -- ($ (processor10) + (-1ex,-1.25cm-0.4cm) $) -- ($ (processor10) + (-1ex,-1.25cm) $);
+\draw[->, thick, KIT_rot_1] ($ (product) + (1.3cm,2.5ex) $) -- ($ (product) + (1.3cm,2.5ex+0.6cm) $) -- ($ (processor11) + (-1ex,-1.25cm-0.4cm) $) -- ($ (processor11) + (-1ex,-1.25cm) $);
+\draw[->, thick, KIT_rot_1] ($ (product) + (1.3cm,2.5ex) $) -- ($ (product) + (1.3cm,2.5ex+0.6cm) $) -- ($ (processor12) + (-1ex,-1.25cm-0.4cm) $) -- ($ (processor12) + (-1ex,-1.25cm) $);
+
+\draw[<-, thick, KIT_blau_1] ($ (output) + (1ex,2.5ex) $) -- ($ (output) + (1ex,2.5ex+0.4cm+5ex-0.05cm) $) -- ($ (processor10) + (1ex,-1.25cm-0.6cm) $) -- ($ (processor10) + (1ex,-1.25cm) $);
+\draw[<-, thick, KIT_blau_1] ($ (output) + (1ex,2.5ex) $) -- ($ (output) + (1ex,2.5ex+0.4cm+5ex-0.05cm) $) -- ($ (processor11) + (1ex,-1.25cm-0.6cm) $) -- ($ (processor11) + (1ex,-1.25cm) $);
+\draw[<-, thick, KIT_blau_1] ($ (output) + (1ex,2.5ex) $) -- ($ (output) + (1ex,2.5ex+0.4cm+5ex-0.05cm) $) -- ($ (processor12) + (1ex,-1.25cm-0.6cm) $) -- ($ (processor12) + (1ex,-1.25cm) $);
+
+\draw[dashed, thin] ($ (processor1) + (-2.5ex-0.2cm,1.25cm+1cm+5ex+0.1cm) $) rectangle ($ (processor13) + (2.5ex+0.2cm,-1.25cm-1cm-5ex-0.1cm) $);
+\node at ($ (processor1) + (-2.5ex-0.2cm+2em,1.25cm+1cm+5ex+0.1cm+1.5ex) $) {\textit{Pipeline}};
+\end{tikzpicture}

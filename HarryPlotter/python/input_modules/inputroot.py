@@ -43,7 +43,7 @@ class InputRoot(inputfile.InputFile):
 		self.input_options.add_argument("-z", "--z-expressions", type=str, nargs="+",
 		                                help="z-axis variable expression(s)")
 		self.input_options.add_argument("-w", "--weights", type=str, nargs="+", default="1.0",
-		                                help="Weight (cut) expression(s). [Default: %(default)s]")
+		                                help="Weight (cut) expression(s). See https://root.cern.ch/root/html/TTree.html#TTree:Draw@2 under 'selection...' for an explanation. [Default: %(default)s]")
 		
 		self.input_options.add_argument("--x-bins", type=str, nargs='+', default=[None],
 		                                help="Binnings for x-axis. Possible inputs:\

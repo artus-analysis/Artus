@@ -31,6 +31,8 @@ class PlotMplRectangle(plotbase.PlotBase):
 			help="alpha value of the rectangle (0=transparent, 1=opaque). [Default:%(default)s]")
 		self.rectangle_options.add_argument("--rectangle-color", nargs="*", type=str, default=['grey'],
 			help="color of the rectangle. [Default: %(default)s]")
+		self.rectangle_options.add_argument("--rectangle-hatch", nargs="*", type=str, default=[None],
+			help="hatch of the rectangle. [Default: %(default)s]")
 
 	@staticmethod
 	def _plot_rectangle_count(plotData):
@@ -46,10 +48,10 @@ class PlotMplRectangle(plotbase.PlotBase):
 		assert plotData.plotdict['rectangle_x'] is None or len(plotData.plotdict['rectangle_x']) % 2 == 0, "x coordinates must be (multiple) pairs"
 		assert plotData.plotdict['rectangle_y'] is None or len(plotData.plotdict['rectangle_y']) % 2 == 0, "y coordinates must be (multiple) pairs"
 		# expand missing parameters with defaults
+		# TODO do this with standard harry parameter expansion
 		rectangle_count = self._plot_rectangle_count(plotData)
-		plotData.plotdict['rectangle_alpha'] += parser.get_default('rectangle_alpha')*(rectangle_count - len(plotData.plotdict['rectangle_alpha']))
-		plotData.plotdict['rectangle_color'] += parser.get_default('rectangle_color')*(rectangle_count - len(plotData.plotdict['rectangle_color']))
-
+		for parameter in ['alpha', 'color', 'hatch']:
+			plotData.plotdict['rectangle_{}'.format(parameter)] += parser.get_default('rectangle_{}'.format(parameter))*(rectangle_count - len(plotData.plotdict['rectangle_{}'.format(parameter)]))
 
 	def run(self, plotData):
 		for rect_id in xrange(self._plot_rectangle_count(plotData)):
@@ -66,6 +68,7 @@ class PlotMplRectangle(plotbase.PlotBase):
 						alpha=plotData.plotdict['rectangle_alpha'][rect_id],
 						edgecolor=None,
 						linewidth=0,
+						hatch=plotData.plotdict['rectangle_hatch'][rect_id],
 						**({'transform': ax.transAxes} if plotData.plotdict['rectangle_relative'] else {})
 					)
 				)

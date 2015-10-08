@@ -52,6 +52,8 @@ public:
 		             // first run 2 version identical to run 1 legacy version
 		ID73X = 3,   // new run 2 version identical to ID2014 but change in cmssw 7.3.x fraction definitions
 		ID73Xtemp = 4, // temporary recommendation for first run 2 events due to ID problems in the forward region
+		ID73XnoHF = 5, // as temp but invalidate forward jets
+		ID2015 = 6,  // new jet ID for run 2 updated on 2015-09-11
 	};
 
 	static ValidJetsInput ToValidJetsInput(std::string const& validJetsInput)
@@ -65,9 +67,11 @@ public:
 		if (jetIDVersion == "2010") return JetIDVersion::ID2010;
 		else if (jetIDVersion == "2014") return JetIDVersion::ID2014;
 		else if (jetIDVersion == "73x") return JetIDVersion::ID73X;
-		else if (jetIDVersion == "73xtemp") return JetIDVersion::ID73X;
+		else if (jetIDVersion == "73xtemp") return JetIDVersion::ID73Xtemp;
+		else if (jetIDVersion == "73xnohf") return JetIDVersion::ID73XnoHF;
+		else if (jetIDVersion == "2015") return JetIDVersion::ID2015;
 		else LOG(FATAL) << "Jet ID version '" << jetIDVersion << "' is not available";
-		return JetIDVersion::ID73X;
+		return JetIDVersion::ID2015;
 	}
 
 	ValidJetsProducerBase(std::vector<TJet>* KappaEvent::*jets,
@@ -94,11 +98,13 @@ public:
 		noID = (jetID == "none");
 		if (jetID == "medium" && jetIDVersion != JetIDVersion::ID2010)
 			LOG(WARNING) << "Since 2012, the medium jet ID is not supported officially any longer.";
-		if (!noID && jetIDVersion != JetIDVersion::ID73X)
+		if (!noID && (jetIDVersion == JetIDVersion::ID2010 || jetIDVersion == JetIDVersion::ID2014))
 			LOG(WARNING) << "This jet ID version is not valid for 73X samples.";
 
+		maxMuFraction = 1.0f;
+		maxCEMFraction = 0.99f;
 		maxFraction = 1.0f;
-		if (jetID == "tight")
+		if (jetID == "tight" || jetID == "tightlepveto")
 			maxFraction = 0.90f;
 		else if (jetID ==  "medium")
 			maxFraction = 0.95f;
@@ -106,6 +112,16 @@ public:
 			maxFraction = 0.99f;
 		else if (!noID)
 			LOG(FATAL) << "Jet ID of type '" << jetID << "' not implemented!";
+		// special rules
+		if (jetIDVersion == JetIDVersion::ID2014 ||
+		    jetIDVersion == JetIDVersion::ID73X ||
+		    jetIDVersion == JetIDVersion::ID73Xtemp ||
+		    jetIDVersion == JetIDVersion::ID73XnoHF ||
+		    jetIDVersion == JetIDVersion::ID2015 && jetID == "tightlepveto")
+		{
+			maxMuFraction = 0.8f;
+			maxCEMFraction = maxFraction;
+		}
 
 		// add possible quantities for the lambda ntuples consumers
 		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nJets",[](KappaEvent const& event, KappaProduct const& product) {
@@ -116,6 +132,12 @@ public:
 		} );
 		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nJets30",[this](KappaEvent const& event, KappaProduct const& product) {
 			return KappaProduct::GetNJetsAbovePtThreshold(product.m_validJets, 30.0);
+		} );
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nJets50",[this](KappaEvent const& event, KappaProduct const& product) {
+			return KappaProduct::GetNJetsAbovePtThreshold(product.m_validJets, 50.0);
+		} );
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nJets80",[this](KappaEvent const& event, KappaProduct const& product) {
+			return KappaProduct::GetNJetsAbovePtThreshold(product.m_validJets, 80.0);
 		} );
 
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingJetPt",[](KappaEvent const& event, KappaProduct const& product) {
@@ -179,21 +201,30 @@ public:
 			validJet = validJet
 					   && ((*jet)->neutralHadronFraction < maxFraction)
 					   && ((*jet)->photonFraction + (*jet)->hfEMFraction < maxFraction)
-					   && ((*jet)->nConstituents > 1);
+					   && ((*jet)->nConstituents > 1)
+					   && ((*jet)->muonFraction < maxMuFraction);
 			if (jetIDVersion == JetIDVersion::ID2010 || jetIDVersion == JetIDVersion::ID2014)  // CMSSW <7.3.X
 				validJet = validJet && ((*jet)->neutralHadronFraction + (*jet)->hfHadronFraction < maxFraction);
-			if (jetIDVersion != JetIDVersion::ID2010)  // definition since 2014
-				validJet = validJet && ((*jet)->muonFraction < 0.8f);
-			// for run 2 startup: temporarily no jet ID in forward region
-			if (jetIDVersion == JetIDVersion::ID73Xtemp && std::abs((*jet)->p4.eta()) > 3.0f)
-				validJet = true;
+
+					
 			// jets, |eta| < 2.4 (tracker)
 			if (std::abs((*jet)->p4.eta()) <= 2.4f)
 			{
 				validJet = validJet
 						   && ((*jet)->chargedHadronFraction > 0.0f)
 						   && ((*jet)->nCharged > 0)
-						   && ((*jet)->electronFraction < maxFraction);  // == CEM
+						   && ((*jet)->electronFraction < maxCEMFraction);  // == CEM
+			}
+			// for run 2 startup: temporarily no jet ID in forward region
+			if (jetIDVersion == JetIDVersion::ID73Xtemp && std::abs((*jet)->p4.eta()) > 3.0f)
+				validJet = true;
+			if (jetIDVersion == JetIDVersion::ID73XnoHF && std::abs((*jet)->p4.eta()) > 3.0f)
+				validJet = false;
+			// for run 2: new jet ID in forward region
+			if (jetIDVersion == JetIDVersion::ID2015 && std::abs((*jet)->p4.eta()) > 3.0f)
+			{
+				validJet = ((*jet)->photonFraction + (*jet)->hfEMFraction < 0.90f)
+				           && ((*jet)->nConstituents - (*jet)->nCharged > 10);
 			}
 			// ability to apply no jet ID
 			validJet = validJet || noID;
@@ -237,6 +268,8 @@ private:
 	ValidJetsInput validJetsInput;
 	JetIDVersion jetIDVersion;
 	float maxFraction;
+	float maxMuFraction;
+	float maxCEMFraction;
 };
 
 

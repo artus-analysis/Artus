@@ -13,7 +13,9 @@ import pprint
 import sys
 
 import ROOT
+ROOT.gROOT.SetBatch(True)
 ROOT.PyConfig.IgnoreCommandLineOptions = True
+ROOT.gErrorIgnoreLevel = ROOT.kError
 
 import Artus.Utility.tools as tools
 
@@ -300,7 +302,9 @@ class JsonDict(dict):
 					pass
 					#del jsonDict[key]
 				else:
-					if isinstance(value, basestring) and value.strip().startswith(JsonDict.COMMENT_DELIMITER):
+					if isinstance(value, dict):
+						JsonDict.deepuncomment(value)
+					elif isinstance(value, basestring) and value.strip().startswith(JsonDict.COMMENT_DELIMITER):
 						del jsonDict[key]
 					elif isinstance(value, collections.Iterable) and not isinstance(value, basestring):
 						for index, element in list(enumerate(value))[::-1]:
@@ -309,10 +313,8 @@ class JsonDict(dict):
 									del value[index]
 								except KeyError, e:
 									log.fatal("Error removeing Key %s from Arguments" % element)
-									sys.exit()
+									sys.exit(1)
 
-					if isinstance(value, dict):
-						JsonDict.deepuncomment(value)
 		return jsonDict
 
 	@staticmethod

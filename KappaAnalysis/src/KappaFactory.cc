@@ -6,6 +6,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/GenTauDecayProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenTauDecayModeProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenParticleProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/GenMuonFSRProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ElectronCorrectionsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/MuonCorrectionsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/TauCorrectionsProducer.h"
@@ -32,6 +33,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/NicknameProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenTauMatchingProducers.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenTauJetMatchingProducers.h"
+#include "Artus/KappaAnalysis/interface/Producers/PFCandidatesProducer.h"
 
 // filter
 #include "Artus/KappaAnalysis/interface/Filters/RunLumiEventFilter.h"
@@ -51,6 +53,7 @@
 #include "Artus/KappaAnalysis/interface/Filters/GoodPrimaryVertexFilter.h"
 #include "Artus/KappaAnalysis/interface/Filters/BeamScrapingFilter.h"
 #include "Artus/KappaAnalysis/interface/Filters/HCALNoiseFilter.h"
+#include "Artus/KappaAnalysis/interface/Filters/nPUFilter.h"
 
 // consumer
 #include "Artus/KappaAnalysis/interface/Consumers/KappaCutFlowHistogramConsumer.h"
@@ -70,6 +73,8 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
   		return new GenTauDecayModeProducer();
 	else if(id == GenParticleProducer().GetProducerId())
   		return new GenParticleProducer();
+	else if(id == GenMuonFSRProducer().GetProducerId())
+  		return new GenMuonFSRProducer();
 	else if(id == HltProducer().GetProducerId())
 		return new HltProducer();
 	else if(id == ElectronCorrectionsProducer().GetProducerId())
@@ -149,6 +154,8 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new RecoMuonGenTauJetMatchingProducer();
 	else if(id == RecoTauGenTauJetMatchingProducer().GetProducerId())
 		return new RecoTauGenTauJetMatchingProducer();
+	else if(id == PFCandidatesProducer().GetProducerId())
+		return new PFCandidatesProducer();
 	else
 		return FactoryBase::createProducer( id );	
 }
@@ -255,6 +262,8 @@ FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
 		return new HCALNoiseFilter();
 	else if(id == BeamScrapingFilter().GetFilterId())
 		return new BeamScrapingFilter();
+	else if(id ==nPUFilter().GetFilterId())
+		return new nPUFilter();
 	else
 		return FactoryBase::createFilter( id );
 }

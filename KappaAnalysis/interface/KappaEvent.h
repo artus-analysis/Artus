@@ -54,6 +54,8 @@ public:
 	KPFCandidates* m_pfChargedHadronsNoPileUp = nullptr;
 	KPFCandidates* m_pfNeutralHadronsNoPileUp = nullptr;
 	KPFCandidates* m_pfPhotonsNoPileUp = nullptr;
+	KPFCandidates* m_pfAllChargedParticlesNoPileUp = nullptr;
+	KPFCandidates* m_pfAllChargedParticlesPileUp = nullptr;
 
 	/// pointer to beamspot collection
 	KBeamSpot* m_beamSpot = nullptr;
@@ -78,7 +80,7 @@ public:
 	KEventInfo* m_eventInfo = nullptr;
 	KGenEventInfo* m_genEventInfo = nullptr;
 	KLumiInfo* m_lumiInfo = nullptr;
-	KGenLumiInfo* m_genLumiMetadata = nullptr;
+	KGenLumiInfo* m_genLumiInfo = nullptr;
 	KFilterMetadata* m_filterMetadata = nullptr;
 	KFilterSummary* m_filterSummary = nullptr;
 	KJetMetadata* m_jetMetadata = nullptr;

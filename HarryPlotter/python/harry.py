@@ -6,7 +6,6 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import collections
-from multiprocessing import Pool
 
 import ROOT
 import sys
@@ -90,10 +89,8 @@ class HarryPlotter(object):
 		failed_plots = []
 		if len(harry_args) > 1 and n_processes > 1:
 			log.info("Creating {:d} plots in {:d} processes".format(len(harry_args), n_processes))
-			pool = Pool(processes=n_processes)
-			results = pool.map_async(pool_plot, zip([self]*len(harry_args), harry_args))
-			# 9999999 is needed for KeyboardInterrupt to work: http://stackoverflow.com/questions/1408356/keyboard-interrupts-with-pythons-multiprocessing-pool
-			tmp_output_filenames, tmp_failed_plots, tmp_error_messages = zip(*([result for result in results.get(9999999) if not result is None and result != (None,)]))
+			results = tools.parallelize(pool_plot, zip([self]*len(harry_args), harry_args), n_processes)
+			tmp_output_filenames, tmp_failed_plots, tmp_error_messages = zip(*([result for result in results if not result is None and result != (None,)]))
 			output_filenames = [output_filename for output_filename in tmp_output_filenames if not output_filename is None]
 			failed_plots = [(failed_plot, error_message) for failed_plot, error_message in zip(tmp_failed_plots, tmp_error_messages) if not failed_plot is None]
 		

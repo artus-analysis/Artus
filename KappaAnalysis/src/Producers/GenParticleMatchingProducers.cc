@@ -8,7 +8,7 @@ std::string RecoJetGenParticleMatchingProducer::GetProducerId() const {
 void RecoJetGenParticleMatchingProducer::Init(setting_type const& settings)
 {
 	KappaProducerBase::Init(settings);
-	
+
 	m_jetMatchingAlgorithm = ToJetMatchingAlgorithm(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetJetMatchingAlgorithm())));
 	m_DeltaRMatchingRecoJetGenParticle = settings.GetDeltaRMatchingRecoJetGenParticle();
 	m_InvalidateNonGenParticleMatchingRecoJets = settings.GetInvalidateNonGenParticleMatchingRecoJets();
@@ -19,7 +19,7 @@ void RecoJetGenParticleMatchingProducer::Produce(event_type const& event, produc
                                                  setting_type const& settings) const
 {
 	assert(event.m_genParticles);
-	
+
 	if (m_DeltaRMatchingRecoJetGenParticle > 0.0f)
 	{
 		// loop over all valid objects (jets) to check
@@ -44,7 +44,7 @@ void RecoJetGenParticleMatchingProducer::Produce(event_type const& event, produc
 				++validJet;
 			}
 		}
-		
+
 		// preserve sorting of invalid jets
 		if (m_InvalidateNonGenParticleMatchingRecoJets || m_InvalidateGenParticleMatchingRecoJets)
 		{
@@ -72,11 +72,11 @@ KGenParticle* RecoJetGenParticleMatchingProducer::Match(event_type const& event,
 	     genParticle != event.m_genParticles->end(); ++genParticle)
 	{
 		// only use genParticles with id 21, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5
-		if ((abs(genParticle->pdgId()) == 1) ||
-		    (abs(genParticle->pdgId()) == 2) ||
-		    (abs(genParticle->pdgId()) == 3) ||
-		    (abs(genParticle->pdgId()) == 4) ||
-		    (abs(genParticle->pdgId()) == 5) ||
+		if ((std::abs(genParticle->pdgId()) == 1) ||
+		    (std::abs(genParticle->pdgId()) == 2) ||
+		    (std::abs(genParticle->pdgId()) == 3) ||
+		    (std::abs(genParticle->pdgId()) == 4) ||
+		    (std::abs(genParticle->pdgId()) == 5) ||
 		    (genParticle->pdgId()) == 21)
 		{
 			deltaR = ROOT::Math::VectorUtil::DeltaR((recoJet)->p4, genParticle->p4);

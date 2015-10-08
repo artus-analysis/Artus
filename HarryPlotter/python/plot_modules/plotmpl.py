@@ -40,7 +40,7 @@ class MplPlotContainer(plotdata.PlotContainer):
 			legend_ax.xaxis.set_visible(False)
 			legend_ax.yaxis.set_visible(False)
 			handles, labels = PlotMpl.get_legend_handles_labels_ordered(self.axes[0], self.labels)
-			legend_ax.legend(handles, labels, loc='center')
+			legend_ax.legend(handles, labels, loc='center', frameon=False)
 
 	def save(self, filename):
 		# use bbox tight and pad to not have labels cropped
@@ -73,7 +73,8 @@ class PlotMpl(plotbase.PlotBase):
 			(0.9686274509803922, 0.5058823529411764, 0.7490196078431373),  # pink
 			(0.6, 0.6, 0.6)  # grey
 		]
-		self.default_marker_colors = ['black', 'red', 'blue', 'green', 'purple', 'orange', 'cyan']
+		self.default_marker_colors = ['black', 'red', 'blue', 'green', 'purple', 'orange', 'cyan',
+			'magenta', 'gold', 'saddlebrown', 'olivedrab', 'lightsteelblue', 'burlywood', 'lightcoral']
 		self.set_matplotlib_defaults()
 		self.nicelabels = labels.LabelsDict()
 		self.default_linestyles = ['--', '-.', ':', '-']
@@ -199,6 +200,8 @@ class PlotMpl(plotbase.PlotBase):
 		super(PlotMpl, self).set_style(plotData)
 	
 	def create_canvas(self, plotData):
+		super(PlotMpl, self).create_canvas(plotData)
+		
 		# fig = plt.figure(figsize = [
 			# plotData.plotdict['axes_layout'][0] * matplotlib.rcParams['figure.figsize'][0],
 			# plotData.plotdict['axes_layout'][1] * matplotlib.rcParams['figure.figsize'][1]
@@ -207,7 +210,7 @@ class PlotMpl(plotbase.PlotBase):
 		axes = []
 		if plotData.plotdict["subplot_nicks"]:
 			axes = [plt.subplot2grid((100,1), (0, 0), rowspan=(100-plotData.plotdict["subplot_fraction"])),
-			        plt.subplot2grid((100,1), ((100-plotData.plotdict["subplot_fraction"]+1), 0), rowspan=plotData.plotdict["subplot_fraction"])]
+			        plt.subplot2grid((100,1), ((100-plotData.plotdict["subplot_fraction"]+4), 0), rowspan=plotData.plotdict["subplot_fraction"])]
 		else:
 			kwargs = {'projection':'3d'} if (plotData.plotdict['3d'] is not False) else {}
 			axes = [fig.add_subplot(1,1,1, **kwargs)]
@@ -234,8 +237,8 @@ class PlotMpl(plotbase.PlotBase):
 				self.plot_dimension = 1
 				self.mplhist = MplGraph(root_object)
 
-				if (isinstance(root_object, ROOT.TGraphErrors) and  marker=='fill'):
-					self.plot_tgrapherrors_envelope(self.mplhist, ax, label, color, line_style, line_width)
+				if marker=='fill':
+					self.plot_tgrapherrors_envelope(self.mplhist, ax, label, color, line_style, line_width, step)
 				else:
 					self.plot_errorbar(self.mplhist, ax=ax,
 					               show_xerr=x_error, show_yerr=y_error,
@@ -424,6 +427,13 @@ class PlotMpl(plotbase.PlotBase):
 
 	def add_labels(self, plotData):
 		super(PlotMpl, self).add_labels(plotData)
+		# apparently MPL 121 has a bug for the PDF backend for legends without frame.
+		# workaround: set legend.frameon True, but after legend creation set edgecolor to white.
+		if ('pdf' in plotData.plotdict["formats"]) and (not matplotlib.rcParams['legend.frameon']) and (self.mpl_version == 121):
+			matplotlib.rcParams['legend.frameon'] = True
+			legend_workaround=True
+		else:
+			legend_workaround=False
 
 		#iterate over all axis objects
 		for ax in [plotData.plot.axes[0]]:
@@ -435,19 +445,22 @@ class PlotMpl(plotbase.PlotBase):
 			if len(ax.get_legend_handles_labels()[0]) > 1 and plotData.plotdict["legend"] is not None:
 				legend = ax.legend(*self.get_legend_handles_labels_ordered(ax, plotData.plotdict['labels']), loc=plotData.plotdict["legend"], ncol=plotData.plotdict["legend_cols"], columnspacing=0.5, handletextpad=0.3)
 				legend.set_zorder(100)
+				if legend_workaround:
+					legend.get_frame().set_edgecolor('#FFFFFF')
 
 			if self.mpl_version >= 121:
 				plt.tight_layout()
 			# Decrease vertical distance between subplots
 			if self.plot_dimension < 2:
-				plt.subplots_adjust(hspace=0.2)
+				plotData.plot.fig.subplots_adjust(hspace=0.2)
 
 		if len(plotData.plot.axes) > 1:
 			for ax in [plotData.plot.axes[1]]:
 				if len(ax.get_legend_handles_labels()[0]) > 1 and plotData.plotdict["subplot_legend"] is not None:
-					ax.legend(*self.get_legend_handles_labels_ordered(ax, plotData.plotdict['labels']), loc=plotData.plotdict["subplot_legend"], ncol=1, columnspacing=0.5, handletextpad=0.3)
-		# if plotData.plotdict['ratio'] and list(set(plotData.plotdict['ratio_labels'])) != [None]:
-			# plotData.plot.ax2.legend(loc=plotData.plotdict["legend"])
+					legend = ax.legend(*self.get_legend_handles_labels_ordered(ax, plotData.plotdict['labels']), loc=plotData.plotdict["subplot_legend"], ncol=1, columnspacing=0.5, handletextpad=0.3)
+					if legend_workaround:
+						legend.get_frame().set_edgecolor('#FFFFFF')
+
 
 	def add_texts(self, plotData):
 		super(PlotMpl, self).add_texts(plotData)
@@ -668,17 +681,31 @@ class PlotMpl(plotbase.PlotBase):
 			cmap=cmap, linewidth=0, antialiased=True, shade=False)
 		return artist
 
-	def plot_tgrapherrors_envelope(self, mplhist, ax, label, color, line_style, line_width):
+	def plot_tgrapherrors_envelope(self, mplhist, ax, label, color, line_style, line_width, step):
 		""" Plot the envelope given by y-errors around a TGraphErrors"""
-		ax.plot(self.mplhist.x, self.mplhist.y, label=label, color=color, linestyle=line_style, linewidth=line_width)
-		ax.fill_between(self.mplhist.x,
-			[(y_val-error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)],
-			[(y_val+error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)],
-			facecolor=color,
-			edgecolor=color,
-			interpolate=True,
-			alpha=0.2
-		)
+		if step:
+			# central values:
+			ax.step(self.steppify_bin(mplhist.xbinedges, isx=True), self.steppify_bin(mplhist.y),
+				label=label, linestyle=line_style)
+			# plot errors as shaded area:
+			ax.fill_between(
+				self.steppify_bin(mplhist.xbinedges, isx=True),
+				self.steppify_bin([(y_val+error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)]),
+				y2=self.steppify_bin([(y_val-error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)]),
+				color=color,
+				alpha=0.2,
+			)
+		else:
+			# draw a smooth curve with error band around
+			ax.plot(self.mplhist.x, self.mplhist.y, label=label, color=color, linestyle=line_style, linewidth=line_width)
+			ax.fill_between(self.mplhist.x,
+				[(y_val-error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)],
+				[(y_val+error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)],
+				facecolor=color,
+				edgecolor=color,
+				interpolate=False,
+				alpha=0.2
+			)
 
 
 	def get_zip_arguments(self, plotData):
@@ -700,6 +727,7 @@ class PlotMpl(plotbase.PlotBase):
 	def get_legend_handles_labels_ordered(ax, labellist):
 		# sort both labels and handles by order of 'labels' in plotdict
 		handles, labels = ax.get_legend_handles_labels()
-		labels, handles = zip(*sorted(zip(labels, handles), key=lambda t: labellist.index(t[0])))
+		if len(handles) > 0 and len(labels) > 0:
+			labels, handles = zip(*sorted(zip(labels, handles), key=lambda t: labellist.index(t[0])))
 		return handles, labels
 

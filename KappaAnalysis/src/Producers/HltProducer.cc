@@ -92,7 +92,7 @@ void HltProducer::Produce(KappaEvent const& event, KappaProduct& product,
 	{
 		lowestPrescale = 1;
 	}
-	if (! (lowestSelectedPrescale > 0))
+	if (! (lowestSelectedPrescale > 0) || (lowestSelectedPrescale == std::numeric_limits<int>::max()))
 	{
 		lowestSelectedPrescale = 1;
 	}

@@ -481,7 +481,7 @@ void GenTauDecayProducer::Produce(KappaEvent const& event, KappaProduct& product
 		 part != event.m_genParticles->end(); ++part)
 	{
 		// Filling Higgs, its daughter & granddaughter particles 
-		if ((abs(part->pdgId()) == bosonPdgId) && (part->status() == bosonStatus))
+		if ((std::abs(part->pdgId()) == bosonPdgId) && (part->status() == bosonStatus))
 		{
 			
 			product.m_genBoson.push_back( MotherDaughterBundle(&(*part)) );

@@ -48,7 +48,7 @@ class InputFastNLO(inputbase.InputBase):
 			fnlo.CalcCrossSection()
 
 			# create histogram
-			x_binning = sorted(list(set([item for sublist in fnlo.GetDim0BinBoundaries() for item in sublist])))
+			x_binning = sorted(list(set([item for sublist in fnlo.GetDim0BinBounds() for item in sublist])))
 			root_histogram = ROOT.TH1D(str(member),str(member),len(x_binning)-1, array('d', x_binning))
 
 			# fill values for central xsec

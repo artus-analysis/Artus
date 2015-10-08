@@ -71,15 +71,22 @@ public:
 			jecParameters.push_back(JetCorrectorParameters(*jecParametersFile));
 			LOG(DEBUG) << "\t\t" << *jecParametersFile;
 		}
-		factorizedJetCorrector = new FactorizedJetCorrector(jecParameters);
+		if (jecParameters.size() > 0)
+		{
+			factorizedJetCorrector = new FactorizedJetCorrector(jecParameters);
+		}
 		
 		// initialise uncertainty calculation
 		LOG(DEBUG) << "\tLoading JetCorrectionUncertainty from files...";
-		if (! settings.GetJetEnergyCorrectionUncertaintyParameters().empty())
+		if ((! settings.GetJetEnergyCorrectionUncertaintyParameters().empty()) &&
+		    (settings.GetJetEnergyCorrectionUncertaintyShift() != 0.0))
 		{
-			JetCorrectorParameters *jecUncertaintyParameters = NULL;
+			JetCorrectorParameters* jecUncertaintyParameters = nullptr;
 			if (!settings.GetJetEnergyCorrectionUncertaintySource().empty()) {
-				jecUncertaintyParameters = new JetCorrectorParameters(settings.GetJetEnergyCorrectionUncertaintyParameters(), settings.GetJetEnergyCorrectionUncertaintySource());
+				jecUncertaintyParameters = new JetCorrectorParameters(
+						settings.GetJetEnergyCorrectionUncertaintyParameters(),
+						settings.GetJetEnergyCorrectionUncertaintySource()
+				);
 			}
 			else {
 				jecUncertaintyParameters = new JetCorrectorParameters(settings.GetJetEnergyCorrectionUncertaintyParameters());
@@ -157,8 +164,8 @@ private:
 	std::vector<TJet>* KappaEvent::*m_basicJetsMember;
 	std::vector<std::shared_ptr<TJet> > KappaProduct::*m_correctedJetsMember;
 	
-	FactorizedJetCorrector* factorizedJetCorrector = 0;
-	JetCorrectionUncertainty* jetCorrectionUncertainty = 0;
+	FactorizedJetCorrector* factorizedJetCorrector = nullptr;
+	JetCorrectionUncertainty* jetCorrectionUncertainty = nullptr;
 };
 
 

@@ -59,6 +59,8 @@ class ExportRoot(plotbase.PlotBase):
 		pass
 		
 	def create_canvas(self, plotData):
+		super(ExportRoot, self).create_canvas(plotData)
+		
 		plotData.plot = ExportPlotContainer(
 				{output_filename : ROOT.TFile(output_filename, plotData.plotdict["file_mode"]) for output_filename in plotData.plotdict["output_filenames"]}
 		)

@@ -1,0 +1,52 @@
+\begin{tikzpicture}[scale=1.0]
+%\draw[step=1cm, very thin, red] (-8cm,-10cm) grid (5cm,3cm);
+
+\node[draw, rectangle, rounded corners, minimum width=0.8cm, minimum height=5.3cm, KIT_rot_1] (event) at (0cm-2.5cm-0.5cm,0cm-1cm-2cm+0.75cm) {\rotatebox{90}{Event}};
+\node[draw, rectangle, minimum width=0.8cm, minimum height=5.3cm] (eventprovider) at (0cm-2.5cm-0.5cm-1.5cm,0cm-1cm-2cm+0.75cm) {\rotatebox{90}{Event Provider}};
+\node[draw, rectangle, rounded corners, minimum width=0.8cm, minimum height=5.3cm, KIT_rot_1, fill=KIT_rot_5] (input) at (0cm-2.5cm-0.5cm-1.5cm-1.5cm,0cm-1cm-2cm+0.75cm) {\rotatebox{90}{Input}};
+
+\node[draw, rectangle, minimum width=3.8cm, minimum height=0.8cm] (globalpipeline) at (0cm,0cm) {Global Pipeline};
+
+\draw[->, thick] ($ (input) + (0.4cm,2.2cm) $) -- ($ (eventprovider) + (-0.4cm,2.2cm) $);
+\draw[->, thick] ($ (eventprovider) + (0.4cm,2.2cm) $) -- ($ (event) + (-0.4cm,2.2cm) $);
+\draw[->, thick] ($ (event) + (0.4cm,2.2cm) $) -- (globalpipeline);
+
+\draw[->, thick, KIT_rot_1] ($ (event) + (0.4cm,2.4cm) $) -- ($ (event) + (0.4cm+0.9cm,2.4cm) $);
+\draw[->, thick, KIT_rot_1] ($ (event) + (0.4cm,0.5cm) $) -- ($ (event) + (0.4cm+0.9cm,0.5cm) $);
+\draw[->, thick, KIT_rot_1] ($ (event) + (0.4cm,0.4cm) $) -- ($ (event) + (0.4cm+1.9cm,0.4cm) $);
+\draw[->, thick, KIT_rot_1] ($ (event) + (0.4cm,0.3cm) $) -- ($ (event) + (0.4cm+2.9cm,0.3cm) $);
+
+\node[draw, rectangle, minimum width=0.8cm, minimum height=3.3cm] (localpipeline1) at (0cm-1.5cm,0cm-1cm-2cm-0.25cm) {\rotatebox{90}{Local Pipeline 1}};
+\node[draw, rectangle, minimum width=0.8cm, minimum height=3.3cm] (localpipeline2) at (0cm-0.5cm,0cm-1cm-2cm-0.25cm) {\rotatebox{90}{Local Pipeline 2}};
+\node[draw, rectangle, minimum width=0.8cm, minimum height=3.3cm] (localpipeline3) at (0cm+0.5cm,0cm-1cm-2cm-0.25cm) {\rotatebox{90}{Local Pipeline 3}};
+\node[rectangle, minimum width=0.8cm, minimum height=3.3cm] (localpipeline4) at (0cm+1.5cm,0cm-1cm-2cm-0.25cm) {\textbf{$\cdots$}};
+\node[KIT_rot_1] at ($ (globalpipeline) + (-0.5cm+0.5cm,0cm-1cm-0.2cm+1.5ex) $) {\textit{duplicate product}};
+
+\draw[->, thick] (globalpipeline) -- ($ (globalpipeline) + (2cm+0.2cm,0cm) $) -- ($ (globalpipeline) + (2cm+0.2cm,0cm-1cm-0.2cm) $) -- ($ (globalpipeline) + (-2cm+0.5cm,0cm-1cm-0.2cm) $) -- (localpipeline1);
+\draw[->, thick] (globalpipeline) -- ($ (globalpipeline) + (2cm+0.2cm,0cm) $) -- ($ (globalpipeline) + (2cm+0.2cm,0cm-1cm-0.2cm) $) -- ($ (globalpipeline) + (-2cm+1.5cm,0cm-1cm-0.2cm) $) -- (localpipeline2);
+\draw[->, thick] (globalpipeline) -- ($ (globalpipeline) + (2cm+0.2cm,0cm) $) -- ($ (globalpipeline) + (2cm+0.2cm,0cm-1cm-0.2cm) $) -- ($ (globalpipeline) + (-2cm+2.5cm,0cm-1cm-0.2cm) $) -- (localpipeline3);
+
+\node[draw, rectangle, rounded corners, minimum width=3.8cm, minimum height=0.8cm, KIT_blau_1, fill=KIT_blau_5] (output) at (0cm,0cm-1cm-2cm-2cm-1cm) {Output};
+\draw[dotted, thick, KIT_blau_1] ($ (output) + (-1cm,0.4cm) $) -- ($ (output) + (-1cm,-0.4cm) $);
+\draw[dotted, thick, KIT_blau_1] ($ (output) + (0cm,0.4cm) $) -- ($ (output) + (0cm,-0.4cm) $);
+\draw[dotted, thick, KIT_blau_1] ($ (output) + (1cm,0.4cm) $) -- ($ (output) + (1cm,-0.4cm) $);
+
+\draw[->, thick] ($ (localpipeline1) + (0cm,-1.65cm) $) -- ($ (localpipeline1) + (0cm,-1.75cm-0.5cm-0.1cm) $);
+\draw[->, thick] ($ (localpipeline2) + (0cm,-1.65cm) $) -- ($ (localpipeline2) + (0cm,-1.75cm-0.5cm-0.1cm) $);
+\draw[->, thick] ($ (localpipeline3) + (0cm,-1.65cm) $) -- ($ (localpipeline3) + (0cm,-1.75cm-0.5cm-0.1cm) $);
+
+\node[draw, rectangle, rounded corners, minimum width=0.8cm, minimum height=5.3cm, KIT_gruen_1, fill=KIT_gruen_5] (configuration) at (0cm+2.5cm+0.5cm,0cm-1cm-2cm+0.75cm) {\rotatebox{90}{Configuration}};
+
+\draw[dotted, thick, KIT_gruen_1] ($ (configuration) + (-0.4cm,1.5cm) $) -- ($ (configuration) + (0.4cm,1.5cm) $);
+
+\draw[->, thick, KIT_gruen_1] ($ (configuration) + (-0.4cm,2.4cm) $) -- ($ (configuration) + (-0.4cm-0.9cm,2.4cm) $);
+\draw[->, thick, KIT_gruen_1] ($ (configuration) + (-0.4cm,0.5cm) $) -- ($ (configuration) + (-0.4cm-3.9cm,0.5cm) $);
+\draw[->, thick, KIT_gruen_1] ($ (configuration) + (-0.4cm,0.4cm) $) -- ($ (configuration) + (-0.4cm-2.9cm,0.4cm) $);
+\draw[->, thick, KIT_gruen_1] ($ (configuration) + (-0.4cm,0.3cm) $) -- ($ (configuration) + (-0.4cm-1.9cm,0.3cm) $);
+\draw[->, thick, KIT_gruen_1] (configuration) -- ($ (configuration) + (0cm,2.65cm+0.4cm) $) -- ($ (eventprovider) + (-0.2cm,2.65cm+0.4cm) $) -- ($ (eventprovider) + (-0.2cm,2.65cm-0.2cm) $);
+
+\draw[->, thick] (configuration) |- (output);
+
+\draw[dashed, thin] ($ (eventprovider) + (0cm,2.65cm) $) -- ($ (eventprovider) + (0cm,2.65cm+0.2cm) $) -- ($ (configuration) + (-0.6cm,2.65cm+0.2cm) $) -- ($ (configuration) + (-0.6cm,-2.65cm-0.2cm) $) -- ($ (eventprovider) + (0cm,-2.65cm-0.2cm) $) -- ($ (eventprovider) + (0cm,-2.65cm) $);
+\node at ($ (eventprovider) + (1cm,-2.65cm-0.2cm-1.5ex) $) {\textit{Event Loop}};
+\end{tikzpicture}

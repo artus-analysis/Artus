@@ -80,6 +80,7 @@ public:
 		discriminatorsByIndex = Utility::ParseMapTypes<size_t, std::string>(Utility::ParseVectorToMap(settings.GetTauDiscriminators()),
 		                                                                    discriminatorsByHltName);
 		tauID = ToTauID(settings.GetTauID());
+		oldTauDMs = settings.GetTauUseOldDMs();
 
 		// add possible quantities for the lambda ntuples consumers
 		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nTaus", [](KappaEvent const& event, KappaProduct const& product) {
@@ -97,6 +98,50 @@ public:
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingTauEta", [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->p4.Eta() : DefaultValues::UndefinedFloat;
 		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau0_hpsPFTauDiscriminationByRawChargedIsolationDBSumPtCorr", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->getDiscriminator("hpsPFTauDiscriminationByRawChargedIsolationDBSumPtCorr", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau1_hpsPFTauDiscriminationByRawChargedIsolationDBSumPtCorr", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->getDiscriminator("hpsPFTauDiscriminationByRawChargedIsolationDBSumPtCorr", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau0_hpsPFTauDiscriminationByRawCombinedIsolationDBSumPtCorr", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->getDiscriminator("hpsPFTauDiscriminationByRawCombinedIsolationDBSumPtCorr", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau1_hpsPFTauDiscriminationByRawCombinedIsolationDBSumPtCorr", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->getDiscriminator("hpsPFTauDiscriminationByRawCombinedIsolationDBSumPtCorr", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau0_hpsPFTauDiscriminationByRawCombinedIsolationDBSumPtCorr3Hits", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->getDiscriminator("hpsPFTauDiscriminationByRawCombinedIsolationDBSumPtCorr3Hits", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau1_hpsPFTauDiscriminationByRawCombinedIsolationDBSumPtCorr3Hits", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->getDiscriminator("hpsPFTauDiscriminationByRawCombinedIsolationDBSumPtCorr3Hits", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau0_hpsPFTauDiscriminationByRawGammaIsolationDBSumPtCorr", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->getDiscriminator("hpsPFTauDiscriminationByRawGammaIsolationDBSumPtCorr", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau1_hpsPFTauDiscriminationByRawGammaIsolationDBSumPtCorr", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->getDiscriminator("hpsPFTauDiscriminationByRawGammaIsolationDBSumPtCorr", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau0_hpsPFTauMVA3IsolationChargedIsoPtSum", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->getDiscriminator("hpsPFTauMVA3IsolationChargedIsoPtSum", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau1_hpsPFTauMVA3IsolationChargedIsoPtSum", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->getDiscriminator("hpsPFTauMVA3IsolationChargedIsoPtSum", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau0_hpsPFTauMVA3IsolationNeutralIsoPtSum", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->getDiscriminator("hpsPFTauMVA3IsolationNeutralIsoPtSum", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau1_hpsPFTauMVA3IsolationNeutralIsoPtSum", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->getDiscriminator("hpsPFTauMVA3IsolationNeutralIsoPtSum", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau0_hpsPFTauMVA3IsolationPUcorrPtSum", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->getDiscriminator("hpsPFTauMVA3IsolationPUcorrPtSum", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau1_hpsPFTauMVA3IsolationPUcorrPtSum", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->getDiscriminator("hpsPFTauMVA3IsolationPUcorrPtSum", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+
+
 	}
 
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
@@ -104,7 +149,7 @@ public:
 	{
 		assert(event.m_taus);
 		assert(event.m_tauMetadata);
-	
+
 		// select input source
 		std::vector<KTau*> taus;
 		if ((validTausInput == ValidTausInput::AUTO && (product.m_correctedTaus.size() > 0)) || (validTausInput == ValidTausInput::CORRECTED))
@@ -157,7 +202,7 @@ public:
 			}
 			
 			if(tauID == TauID::RECOMMENDATION13TEV)
-					validTau = validTau && IsTauIDRecommendation13TeV(*tau, event);
+					validTau = validTau && IsTauIDRecommendation13TeV(*tau, event, oldTauDMs);
 			// kinematic cuts
 			validTau = validTau && this->PassKinematicCuts(*tau, event, product);
 			
@@ -208,11 +253,14 @@ private:
 	}
 
 	TauID tauID;
+	bool oldTauDMs;
 
-	bool IsTauIDRecommendation13TeV(KTau* tau, KappaEvent const& event) const
+	bool IsTauIDRecommendation13TeV(KTau* tau, KappaEvent const& event, bool const& oldTauDMs) const
 	{
 		const KVertex* vertex = new KVertex(event.m_vertexSummary->pv);
-		return ( tau->getDiscriminator("decayModeFindingNewDMs", event.m_tauMetadata) > 0.5
+		float decayModeDiscriminator = (oldTauDMs ? tau->getDiscriminator("decayModeFinding", event.m_tauMetadata)
+							  : tau->getDiscriminator("decayModeFindingNewDMs", event.m_tauMetadata));
+		return ( decayModeDiscriminator > 0.5
 			 && (std::abs(tau->track.ref.z() - vertex->position.z()) < 0.2)
 			// tau dZ requirement for Phys14 sync
 			//&& (Utility::ApproxEqual(tau->track.ref.z(), vertex->position.z()))

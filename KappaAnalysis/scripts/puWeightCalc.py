@@ -222,11 +222,14 @@ def options():
 	args = parser.parse_args()
 
 	# distribute files to data (1 file) and mc (rest)
-	args.dfile = args.files[0]
-	args.mfile = args.files[1:]
-	if len(args.files) > 2 and args.files[0][:8] == args.files[1][:8]:  # assume: first is different -> data
-		args.dfile = ""
-		args.mfile = args.files
+	args.dfile = None
+	args.mfile = []
+	if args.files:
+		args.dfile = args.files[0]
+		args.mfile = args.files[1:]
+		if len(args.files) > 2 and args.files[0][:8] == args.files[1][:8]:  # assume: first is different -> data
+			args.dfile = ""
+			args.mfile = args.files
 	if not args.dfile or not args.mfile:
 		args.save = True
 
@@ -237,7 +240,7 @@ def options():
 		#print "I", args.dataoutput
 		args.dataoutput = args.dataoutput[5:args.dataoutput.find("Collision") - 1]
 		args.dataoutput = "data_" + args.dataoutput + ".root"
-	if not args.dataoutput and not args.inputLumiJSON:
+	if args.dfile and not args.dataoutput and not args.inputLumiJSON:
 		args.dataoutput = args.dfile.split('/')[-1]
 
 	# mc: mc_kappa539_MC12_madgraph.root

@@ -55,7 +55,7 @@ public:
 
 		// MET info
 		if (! settings.GetMet().empty())
-			this->m_event.m_met = this->template SecureFileInterfaceGet<KMET>(settings.GetMet());
+			this->m_event.m_met = this->template SecureFileInterfaceGet<KMET>(settings.GetMet(), false);
 
 		//GenMET info
 		if (! settings.GetGenMet().empty())
@@ -66,6 +66,10 @@ public:
 			this->m_event.m_pfChargedHadronsPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(settings.GetPFChargedHadronsPileUp());
 		if (! settings.GetPFChargedHadronsNoPileUp().empty())
 			this->m_event.m_pfChargedHadronsNoPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(settings.GetPFChargedHadronsNoPileUp());
+		if (! settings.GetPFAllChargedParticlesNoPileUp().empty())
+			this->m_event.m_pfAllChargedParticlesNoPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(settings.GetPFAllChargedParticlesNoPileUp());
+		if (! settings.GetPFAllChargedParticlesPileUp().empty())
+			this->m_event.m_pfAllChargedParticlesPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(settings.GetPFAllChargedParticlesPileUp());
 		if (! settings.GetPFNeutralHadronsNoPileUp().empty())
 			this->m_event.m_pfNeutralHadronsNoPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(settings.GetPFNeutralHadronsNoPileUp());
 		if (! settings.GetPFPhotonsNoPileUp().empty())
@@ -117,8 +121,8 @@ public:
 			}
 			else
 			{
-				this->m_event.m_genLumiMetadata = this->template SecureFileInterfaceGetMeta<KGenLumiInfo>(settings.GetLumiMetadata());
-				this->m_event.m_lumiInfo = this->m_event.m_genLumiMetadata;
+				this->m_event.m_genLumiInfo = this->template SecureFileInterfaceGetMeta<KGenLumiInfo>(settings.GetLumiMetadata());
+				this->m_event.m_lumiInfo = this->m_event.m_genLumiInfo;
 			}
 		}
 		if (! settings.GetFilterMetadata().empty())

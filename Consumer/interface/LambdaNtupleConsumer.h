@@ -189,11 +189,20 @@ public:
 		m_uint64ValueExtractors.clear();
 		m_doubleValueExtractors.clear();
 		m_stringValueExtractors.clear();
-
 		m_vDoubleValueExtractors.clear();
 		m_vFloatValueExtractors.clear();
 		m_vStringValueExtractors.clear();
-
+		
+		m_boolQuantities.clear();
+		m_intQuantities.clear();
+		m_uint64Quantities.clear();
+		m_floatQuantities.clear();
+		m_doubleQuantities.clear();
+		m_stringQuantities.clear();
+		m_vDoubleQuantities.clear();
+		m_vFloatQuantities.clear();
+		m_vStringQuantities.clear();
+		
 		size_t quantityIndex = 0;
 		for (std::vector<std::string>::iterator quantity = settings.GetQuantities().begin();
 		     quantity != settings.GetQuantities().end(); ++quantity)
@@ -202,46 +211,55 @@ public:
 			{
 				//LOG(DEBUG) << "Init float quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
 				m_floatValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetFloatQuantities(), *quantity));
+				m_floatQuantities.push_back(*quantity);
 			}
 			else if (LambdaNtupleConsumer<TTypes>::GetIntQuantities().count(*quantity) > 0)
 			{
 				//LOG(DEBUG) << "Init int quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
 				m_intValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetIntQuantities(), *quantity));
+				m_intQuantities.push_back(*quantity);
 			}
 			else if (LambdaNtupleConsumer<TTypes>::GetUInt64Quantities().count(*quantity) > 0)
 			{
 				//LOG(DEBUG) << "Init uint64 quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
 				m_uint64ValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetUInt64Quantities(), *quantity));
+				m_uint64Quantities.push_back(*quantity);
 			}
 			else if (LambdaNtupleConsumer<TTypes>::GetDoubleQuantities().count(*quantity) > 0)
 			{
 				//LOG(DEBUG) << "Init double quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
 				m_doubleValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetDoubleQuantities(), *quantity));
+				m_doubleQuantities.push_back(*quantity);
 			}
 			else if (LambdaNtupleConsumer<TTypes>::GetVDoubleQuantities().count(*quantity) > 0)
 			{
 				//LOG(DEBUG) << "Init vDouble quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
 				m_vDoubleValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetVDoubleQuantities(), *quantity));
+				m_vDoubleQuantities.push_back(*quantity);
 			}
 			else if (LambdaNtupleConsumer<TTypes>::GetVFloatQuantities().count(*quantity) > 0)
 			{
 				//LOG(DEBUG) << "Init vFloat quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
 				m_vFloatValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetVFloatQuantities(), *quantity));
+				m_vFloatQuantities.push_back(*quantity);
 			}
 			else if (LambdaNtupleConsumer<TTypes>::GetBoolQuantities().count(*quantity) > 0)
 			{
 				//LOG(DEBUG) << "Init bool quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
 				m_boolValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetBoolQuantities(), *quantity));
+				m_boolQuantities.push_back(*quantity);
 			}
 			else if (LambdaNtupleConsumer<TTypes>::GetStringQuantities().count(*quantity) > 0)
 			{
 				//LOG(DEBUG) << "Init string quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
 				m_stringValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetStringQuantities(), *quantity));
+				m_stringQuantities.push_back(*quantity);
 			}
 			else if (LambdaNtupleConsumer<TTypes>::GetVStringQuantities().count(*quantity) > 0)
 			{
 				//LOG(DEBUG) << "Init vString quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
 				m_vStringValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetVStringQuantities(), *quantity));
+				m_vStringQuantities.push_back(*quantity);
 			}
 			else
 			{
@@ -334,8 +352,14 @@ public:
 		for(typename std::vector<bool_extractor_lambda_base>::iterator valueExtractor = m_boolValueExtractors.begin();
 		    valueExtractor != m_boolValueExtractors.end(); ++valueExtractor)
 		{
-			//LOG(DEBUG) << "Retrieving bool value for float quantity (index " << floatValueIndex << ") ...";
-			m_boolValues[boolValueIndex] = (*valueExtractor)(event, product);
+			try
+			{
+				m_boolValues[boolValueIndex] = (*valueExtractor)(event, product);
+			}
+			catch (...)
+			{
+				LOG(FATAL) << "Could not call lambda function for bool quantity \"" << m_boolQuantities.at(boolValueIndex) << "\"!";
+			}
 			boolValueIndex++;
 		}
 
@@ -343,8 +367,14 @@ public:
 		for(typename std::vector<int_extractor_lambda_base>::iterator valueExtractor = m_intValueExtractors.begin();
 		    valueExtractor != m_intValueExtractors.end(); ++valueExtractor)
 		{
-			//LOG(DEBUG) << "Retrieving int value for float quantity (index " << floatValueIndex << ") ...";
-			m_intValues[intValueIndex] = (*valueExtractor)(event, product);
+			try
+			{
+				m_intValues[intValueIndex] = (*valueExtractor)(event, product);
+			}
+			catch (...)
+			{
+				LOG(FATAL) << "Could not call lambda function for int quantity \"" << m_intQuantities.at(intValueIndex) << "\"!";
+			}
 			intValueIndex++;
 		}
 
@@ -352,8 +382,14 @@ public:
 		for(typename std::vector<uint64_extractor_lambda_base>::iterator valueExtractor = m_uint64ValueExtractors.begin();
 		    valueExtractor != m_uint64ValueExtractors.end(); ++valueExtractor)
 		{
-			//LOG(DEBUG) << "Retrieving uint64 value for float quantity (index " << floatValueIndex << ") ...";
-			m_uint64Values[uint64ValueIndex] = (*valueExtractor)(event, product);
+			try
+			{
+				m_uint64Values[uint64ValueIndex] = (*valueExtractor)(event, product);
+			}
+			catch (...)
+			{
+				LOG(FATAL) << "Could not call lambda function for uint64 quantity \"" << m_uint64Quantities.at(uint64ValueIndex) << "\"!";
+			}
 			uint64ValueIndex++;
 		}
 
@@ -361,8 +397,14 @@ public:
 		for(typename std::vector<float_extractor_lambda_base>::iterator valueExtractor = m_floatValueExtractors.begin();
 		    valueExtractor != m_floatValueExtractors.end(); ++valueExtractor)
 		{
-			//LOG(DEBUG) << "Retrieving float value for float quantity (index " << floatValueIndex << ") ...";
-			m_floatValues[floatValueIndex] = (*valueExtractor)(event, product);
+			try
+			{
+				m_floatValues[floatValueIndex] = (*valueExtractor)(event, product);
+			}
+			catch (...)
+			{
+				LOG(FATAL) << "Could not call lambda function for float quantity \"" << m_floatQuantities.at(floatValueIndex) << "\"!";
+			}
 			floatValueIndex++;
 		}
 
@@ -370,8 +412,14 @@ public:
 		for(typename std::vector<double_extractor_lambda_base>::iterator valueExtractor = m_doubleValueExtractors.begin();
 		    valueExtractor != m_doubleValueExtractors.end(); ++valueExtractor)
 		{
-			//LOG(DEBUG) << "Retrieving double value for float quantity (index " << floatValueIndex << ") ...";
-			m_doubleValues[doubleValueIndex] = (*valueExtractor)(event, product);
+			try
+			{
+				m_doubleValues[doubleValueIndex] = (*valueExtractor)(event, product);
+			}
+			catch (...)
+			{
+				LOG(FATAL) << "Could not call lambda function for double quantity \"" << m_doubleQuantities.at(doubleValueIndex) << "\"!";
+			}
 			doubleValueIndex++;
 		}
 		
@@ -379,8 +427,14 @@ public:
 		for(typename std::vector<string_extractor_lambda_base>::iterator valueExtractor = m_stringValueExtractors.begin();
 		    valueExtractor != m_stringValueExtractors.end(); ++valueExtractor)
 		{
-			//LOG(DEBUG) << "Retrieving string value for float quantity (index " << floatValueIndex << ") ...";
-			m_stringValues[stringValueIndex] = (*valueExtractor)(event, product);
+			try
+			{
+				m_stringValues[stringValueIndex] = (*valueExtractor)(event, product);
+			}
+			catch (...)
+			{
+				LOG(FATAL) << "Could not call lambda function for string quantity \"" << m_stringQuantities.at(stringValueIndex) << "\"!";
+			}
 			stringValueIndex++;
 		}
 		
@@ -388,8 +442,14 @@ public:
 		for(typename std::vector<vDouble_extractor_lambda_base>::iterator valueExtractor = m_vDoubleValueExtractors.begin();
 		    valueExtractor != m_vDoubleValueExtractors.end(); ++valueExtractor)
 		{
-			//LOG(DEBUG) << "Retrieving vDouble value for float quantity (index " << floatValueIndex << ") ...";
-			m_vDoubleValues[vDoubleValueIndex] = (*valueExtractor)(event, product);
+			try
+			{
+				m_vDoubleValues[vDoubleValueIndex] = (*valueExtractor)(event, product);
+			}
+			catch (...)
+			{
+				LOG(FATAL) << "Could not call lambda function for vDouble quantity \"" << m_vDoubleQuantities.at(vDoubleValueIndex) << "\"!";
+			}
 			vDoubleValueIndex++;
 		}
 		
@@ -397,8 +457,14 @@ public:
 		for(typename std::vector<vFloat_extractor_lambda_base>::iterator valueExtractor = m_vFloatValueExtractors.begin();
 		    valueExtractor != m_vFloatValueExtractors.end(); ++valueExtractor)
 		{
-			//LOG(DEBUG) << "Retrieving vFloat value for float quantity (index " << floatValueIndex << ") ...";
-			m_vFloatValues[vFloatValueIndex] = (*valueExtractor)(event, product);
+			try
+			{
+				m_vFloatValues[vFloatValueIndex] = (*valueExtractor)(event, product);
+			}
+			catch (...)
+			{
+				LOG(FATAL) << "Could not call lambda function for vFloat quantity \"" << m_vFloatQuantities.at(vFloatValueIndex) << "\"!";
+			}
 			vFloatValueIndex++;
 		}
 		
@@ -406,8 +472,14 @@ public:
 		for(typename std::vector<vString_extractor_lambda_base>::iterator valueExtractor = m_vStringValueExtractors.begin();
 		    valueExtractor != m_vStringValueExtractors.end(); ++valueExtractor)
 		{
-			//LOG(DEBUG) << "Retrieving vString value for float quantity (index " << floatValueIndex << ") ...";
-			m_vStringValues[vStringValueIndex] = (*valueExtractor)(event, product);
+			try
+			{
+				m_vStringValues[vStringValueIndex] = (*valueExtractor)(event, product);
+			}
+			catch (...)
+			{
+				LOG(FATAL) << "Could not call lambda function for vString quantity \"" << m_vStringQuantities.at(vStringValueIndex) << "\"!";
+			}
 			vStringValueIndex++;
 		}
 
@@ -434,6 +506,16 @@ private:
 	std::vector<vDouble_extractor_lambda_base> m_vDoubleValueExtractors;
 	std::vector<vFloat_extractor_lambda_base> m_vFloatValueExtractors;
 	std::vector<vString_extractor_lambda_base> m_vStringValueExtractors;
+
+	std::vector<std::string> m_boolQuantities;
+	std::vector<std::string> m_intQuantities;
+	std::vector<std::string> m_uint64Quantities;
+	std::vector<std::string> m_floatQuantities;
+	std::vector<std::string> m_doubleQuantities;
+	std::vector<std::string> m_stringQuantities;
+	std::vector<std::string> m_vDoubleQuantities;
+	std::vector<std::string> m_vFloatQuantities;
+	std::vector<std::string> m_vStringQuantities;
 
 	std::vector<char> m_boolValues; // needs to be char vector because of bitset treatment of bool vector
 	std::vector<int> m_intValues;

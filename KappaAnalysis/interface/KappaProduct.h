@@ -38,10 +38,10 @@ public:
 	// all weights in this map are multiplied into one "eventWeight" by the EventWeightProducer
 	// events in this map can be written out automatically by the KappaLambdaNtupleConsumer
 	std::map<std::string, double> m_weights;
-	
+
 	// events in this map can be written out automatically by the KappaLambdaNtupleConsumer
 	std::map<std::string, double> m_optionalWeights;
-	
+
 	// filled by GenTauDecayProducer
 	std::vector<MotherDaughterBundle> m_genBoson;
 
@@ -60,6 +60,10 @@ public:
 	/// added by ValidMuonsProducer
 	std::vector<KMuon*> m_validMuons;
 	std::vector<KMuon*> m_invalidMuons;
+	
+	/// added by MuonFSRProducer	
+	std::vector<double> m_sumMuonFSRPt;
+	std::vector<double> m_MuonPt;
 
 	/// added by TauEnergyCorrectionProducer
 	// needs to be a shared_ptr in order to be deleted when the product is deleted
@@ -139,6 +143,9 @@ public:
 	std::map<KElectron*, KGenJet*> m_genTauJetMatchedElectrons;
 	std::map<KMuon*, KGenJet*> m_genTauJetMatchedMuons;
 	std::map<KTau*, KGenJet*> m_genTauJetMatchedTaus;
+	
+	//std::map<KMuon*, KPFCandidates*> m_pfChargedHadronsPileUp;
+	//std::map<KMuon*, std::vector<KPFCandidates*> > m_pfChargedHadronsPileUp;
 	
 	// MVA outputs
 	std::vector<double> m_discriminators;

@@ -50,6 +50,8 @@ class PlotLaTeX(plotbase.PlotBase):
 		super(PlotLaTeX, self).set_style(plotData)
 
 	def create_canvas(self, plotData):
+		super(PlotLaTeX, self).create_canvas(plotData)
+		
 		plotData.plot = LaTeXContainer()
 		plotData.plot.latex_head = r"""
 \documentclass[12pt]{article}

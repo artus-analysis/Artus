@@ -155,6 +155,10 @@ class PlotBase(processor.Processor):
 		                                 help="""Push output plots directly to your public EKP webspace.
 		                                 Default location is http://www-ekp.physik.uni-karlsruhe.de/~<USER>/plots_archive/<DATE>
 		                                 Optional argument is the name of a subdirectory that will appended to the default location.""")
+		self.other_options.add_argument("--www-title", type=str, default="Plot overview",
+		                                 help="Title for the web gallery. [Default: %(default)s]")
+		self.other_options.add_argument("--www-text", type=str, default=None,
+		                                 help="Text for the web gallery. [Default: download-link]")
 	
 	def prepare_args(self, parser, plotData):
 		super(PlotBase, self).prepare_args(parser, plotData)
@@ -199,25 +203,14 @@ class PlotBase(processor.Processor):
 		
 		if plotData.plotdict["www"] != None:
 			plotData.plotdict["output_dir"] = os.path.join("websync", datetime.date.today().strftime("%Y_%m_%d"), (plotData.plotdict["www"] or ""))
-		# create output directory if not exisiting
-		try:
-			os.makedirs(plotData.plotdict["output_dir"])
-			log.info("Created output directory \"%s\"." % plotData.plotdict["output_dir"])
-		except OSError as exc:
-			# if target directory already exists, ignore exception:
-			if exc.errno == errno.EEXIST and os.path.isdir(plotData.plotdict["output_dir"]):
-				pass
-			else: raise
 		
 		# construct file name from x/y/z expressions if not specified by user
 		if plotData.plotdict["filename"] == None:
 			filename = ""
-			if plotData.plotdict["input_modules"] == ["InputInteractive"]:
-				filename = "plot"
-			else:
-				for expressions in [plotData.plotdict["z_expressions"],
-					                plotData.plotdict["y_expressions"],
-					                plotData.plotdict["x_expressions"]]:
+			for expressions in [plotData.plotdict.get("z_expressions", []),
+				                plotData.plotdict.get("y_expressions", []),
+				                plotData.plotdict.get("x_expressions", [])]:
+				try:
 					expression_string = reduce(lambda a, b: "%s__%s" % (str(a), str(b)), set(expressions))
 					if expression_string == None:
 						expression_string = "None"
@@ -226,6 +219,8 @@ class PlotBase(processor.Processor):
 						if len(filename) > 0:
 							filename += "_VS_"
 						filename += expression_string
+				except TypeError:  # no expressions given
+					filename = "plot"
 			plotData.plotdict["filename"] = filename
 
 		# write name of output file in dictionary
@@ -294,7 +289,15 @@ class PlotBase(processor.Processor):
 		pass
 	
 	def create_canvas(self, plotData):
-		pass
+		# create output directory if not exisiting
+		try:
+			os.makedirs(plotData.plotdict["output_dir"])
+			log.info("Created output directory \"%s\"." % plotData.plotdict["output_dir"])
+		except OSError as exc:
+			# if target directory already exists, ignore exception:
+			if exc.errno == errno.EEXIST and os.path.isdir(plotData.plotdict["output_dir"]):
+				pass
+			else: raise
 	
 	def prepare_histograms(self, plotData):
 		# handle stacks

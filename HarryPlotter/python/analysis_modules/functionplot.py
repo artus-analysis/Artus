@@ -24,6 +24,9 @@ class FunctionPlot(analysisbase.AnalysisBase):
 						help="Function range. Default is whole plot range if histogram is drawn. Format x_min,x_max.")
 		self.function_options.add_argument("--fit-backend", type=str, nargs="+", default="ROOT",
 						help="Fit backend. ROOT and RooFit are available. Check sourcecode which parts of RooFit are implemented. [Default: %(default)s]")
+		self.function_options.add_argument("--function-display-result", action='store_true',
+						help="Display the parameters of the fit on the plots")
+
 
 	def prepare_args(self, parser, plotData):
 		self.prepare_list_args(plotData, ["functions", "function_parameters", "function_nicknames",
@@ -81,6 +84,8 @@ class FunctionPlot(analysisbase.AnalysisBase):
 					                                           fit_backend=fit_backend)
 					plotData.plotdict["root_objects"][function_nick] = root_function
 					plotData.fit_results[function_nick] = fit_result
+					if plotData.plotdict["function_display_result"]:
+						self.add_results_text(plotData, function_nick)
 				else:
 					plotData.plotdict["root_objects"][function_nick] = self.create_tf1(function, x_range[0], x_range[1], function_parameters)
 
@@ -167,3 +172,21 @@ class FunctionPlot(analysisbase.AnalysisBase):
 			parameters.append(root_function.GetParameter(parameter_index))
 			parameter_errors.append(root_function.GetParError(parameter_index))
 		return parameters, parameter_errors, chi_square, ndf
+
+	def add_results_text(self, plotData, function_nick):
+		"""Add fit result parameter values and chi2 to plotdict['text']"""
+		text = "Fit results"
+		if len(plotData.plotdict["function_fit"]) > 1:  # only add the nickname if more than one fit
+			text += " {}:".format(function_nick)
+		for i_par in range(plotData.plotdict["root_objects"][function_nick].GetNpar()):
+			#TODO automatically adjust decimal precision
+			text += "\n  $Parameter {} = {:.3f} \pm {:.3f}$".format(i_par,
+			        plotData.plotdict["root_objects"][function_nick].GetParameter(i_par),
+			        plotData.plotdict["root_objects"][function_nick].GetParError(i_par))
+		text += "\n  $\chi^2 / \mathit{{n.d.f}} = {:.2f} / {}$".format(
+		        plotData.fit_results[function_nick].Chi2(),
+		        plotData.fit_results[function_nick].Ndf())
+		if plotData.plotdict["texts"] == [None]:
+			plotData.plotdict["texts"] = [text]
+		else:
+			plotData.plotdict["texts"] += [text]

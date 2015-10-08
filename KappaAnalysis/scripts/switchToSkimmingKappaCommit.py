@@ -11,6 +11,7 @@ import shlex
 import sys
 
 import ROOT
+ROOT.gROOT.SetBatch(True)
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gErrorIgnoreLevel = ROOT.kError
 
@@ -18,7 +19,7 @@ import Artus.Utility.tools as tools
 
 
 def main():
-	ROOT.gROOT.SetBatch(True)
+	
 	ROOT.gSystem.Load(os.path.expandvars("$CMSSW_BASE/src/Kappa/lib/libKappa"))
 	
 	parser = argparse.ArgumentParser(description="Switch to the Kappa commit that has been used for a certain skim.",
