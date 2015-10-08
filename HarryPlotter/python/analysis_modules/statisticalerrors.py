@@ -38,7 +38,7 @@ class StatisticalErrors(analysisbase.AnalysisBase):
 		for nick in plotData.plotdict["stat_error_nicks"]:
 			root_object = plotData.plotdict["root_objects"][nick]
 			
-			if isinstance(root_object, ROOT.TH1):
+			if isinstance(root_object, ROOT.TH1) and not isinstance(root_object, ROOT.TProfile):
 				for x_bin in xrange(1, root_object.GetNbinsX()+1):
 					for y_bin in xrange(1, root_object.GetNbinsY()+1):
 						for z_bin in xrange(1, root_object.GetNbinsZ()+1):
@@ -96,5 +96,5 @@ class StatisticalErrors(analysisbase.AnalysisBase):
 		result = error
 		if relative and (central != 0.0):
 			result /= central
-		return result
+		return (result*100. if percent else result)
 
