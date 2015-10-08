@@ -10,7 +10,7 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
-from fastnlo import fastNLOLHAPDF
+import fastnlo
 import ROOT
 import numpy as np
 from array import array
@@ -28,7 +28,11 @@ class InputFastNLO(inputbase.InputBase):
 			help="PDF sets. [Default: %(default)s]")
 		self.fastnlo_options.add_argument('--members', type=int, nargs="+", default=[0],
 			help="PDF set members. [Default: %(default)s]")
-
+		self.fastnlo_options.add_argument('--pdf-uncertainty-style', type=str, default=None,
+			help="PDF Uncertainty style. [Default: %(default)s]",
+			choices=["kPDFNone", "kHessianSymmetric", "kHessianAsymmetric",
+			         "kHessianAsymmetricMax", "kHessianCTEQCL68", "kMCSampling", "kHeraPDF10"]
+		)
 
 	def prepare_args(self, parser, plotData):
 		if isinstance(plotData.plotdict['fastnlo_files'], basestring):
@@ -42,22 +46,35 @@ class InputFastNLO(inputbase.InputBase):
 				plotData.plotdict['pdf_sets'],
 				plotData.plotdict['members']
 		):
-			fnlo = fastNLOLHAPDF(str(filename))
+			fnlo = fastnlo.fastNLOLHAPDF(str(filename))
 			fnlo.SetLHAPDFFilename(str(pdfset))
 			fnlo.SetLHAPDFMember(member)
 			fnlo.CalcCrossSection()
 
-			# create histogram
 			x_binning = sorted(list(set([item for sublist in fnlo.GetDim0BinBounds() for item in sublist])))
-			root_histogram = ROOT.TH1D(str(member),str(member),len(x_binning)-1, array('d', x_binning))
 
-			# fill values for central xsec
-			xs = np.array(fnlo.GetCrossSection())
-			xs[xs <= 0.] = 0.  # ?
-			for i in range(0, fnlo.GetNDim0Bins()):
-				root_histogram.SetBinContent(i+1, xs[i])
+			if plotData.plotdict['pdf_uncertainty_style'] is None:
+				# create histogram
+				root_object = ROOT.TH1D(str(member),str(member),len(x_binning)-1, array('d', x_binning))
+
+				# fill values for central xsec
+				xs = np.array(fnlo.GetCrossSection())
+				xs[xs <= 0.] = 0.  # ?
+				for i in range(0, fnlo.GetNDim0Bins()):
+					root_object.SetBinContent(i+1, xs[i])
+			else:
+				# if uncertainties should be calculated, TGraphAsymmErrors must be used
+				crosssections, pdf_error_up, pdf_error_down = fnlo.GetPDFUncertaintyVec(getattr(fastnlo, plotData.plotdict['pdf_uncertainty_style']))
+				root_object = ROOT.TGraphAsymmErrors(len(crosssections))
+				for i, xs in enumerate(crosssections):
+					x_center = 0.5*(x_binning[i] + x_binning[i+1])
+					root_object.SetPoint(i, x_center, xs)
+					root_object.SetPointEYhigh(i, xs*pdf_error_up[i])
+					root_object.SetPointEYlow(i, xs*abs(pdf_error_down[i]))
+					root_object.SetPointEXlow(i, x_center-x_binning[i])
+					root_object.SetPointEXhigh(i, x_binning[i+1]-x_center)
 
 			# append nick and histo to plotdict
 			nick = "_".join([filename, pdfset, str(member)])
 			plotData.plotdict.setdefault("nicks", []).append(nick)
-			plotData.plotdict.setdefault("root_objects", {})[nick] = root_histogram
+			plotData.plotdict.setdefault("root_objects", {})[nick] = root_object

@@ -91,7 +91,7 @@ class PlotData(object):
 							title=plot,
 							image=image,
 							links=links,
-							json=filename+".json"
+							json=plot+".json"
 					)
 
 				# put the html parts together and write
@@ -107,6 +107,8 @@ class PlotData(object):
 					self.plotdict["output_filenames"]
 					+ [os.path.join(self.plotdict["output_dir"], overview_filename)]
 				)
+				if "additional_output_files" in self.plotdict:
+					files_to_copy += self.plotdict["additional_output_files"]
 				if self.plotdict["export_json"]:
 					files_to_copy += [self.plotdict["export_json"]]
 				if self.plotdict.get("save_legend", False):

@@ -148,13 +148,10 @@ def parallelize(function, arguments_list, n_processes=1):
 	if n_processes <= 1:
 		results = []
 		for arguments in arguments_list:
-			if isinstance(arguments, basestring):
-				results.append(function(arguments))
-			else:
-				results.append(function(*arguments))
+			results.append(function(arguments))
 		return results
 	else:
-		pool = multiprocessing.Pool(processes=n_processes)
+		pool = multiprocessing.Pool(processes=min(n_processes, len(arguments_list)))
 		results = pool.map_async(function, arguments_list)
 		return results.get(9999999) # 9999999 is needed for KeyboardInterrupt to work: http://stackoverflow.com/questions/1408356/keyboard-interrupts-with-pythons-multiprocessing-pool
 

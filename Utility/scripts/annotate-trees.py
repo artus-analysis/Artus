@@ -88,6 +88,8 @@ def main():
 			friend_tree.Fill()
 		
 		friend_tree.AddFriend(tree, tree.GetName())
+		tree.AddFriend(friend_tree, friend_tree.GetName())
+		
 		root_file.Write()
 		root_file.Close()
 		

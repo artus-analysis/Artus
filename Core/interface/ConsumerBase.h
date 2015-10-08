@@ -168,7 +168,7 @@ protected:
 
 	virtual void baseProcessFilteredEvent(EventBase const& evt,
 			ProductBase const& prod,
-			SettingsBase const& setting ) {
+			SettingsBase const& setting) override {
 
 		auto const& specEvent = static_cast < event_type const&> ( evt );
 		auto const& specProd = static_cast < product_type const&> ( prod );

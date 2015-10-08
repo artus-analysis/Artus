@@ -17,7 +17,7 @@ class KappaEvent : public EventBase
 public:
 	KappaEvent() : EventBase() {};
 
-	unsigned long m_input = 0;
+	long m_input = 0;
 
 	/// pointer to electron collection
 	KElectrons* m_electrons = nullptr;

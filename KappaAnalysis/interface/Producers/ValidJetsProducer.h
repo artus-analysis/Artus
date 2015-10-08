@@ -93,7 +93,7 @@ public:
 
 		validJetsInput = ToValidJetsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidJetsInput())));
 		jetIDVersion = ToJetIDVersion(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetJetIDVersion())));
-		jetID = boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetJetID()));
+		std::string jetID = boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetJetID()));
 
 		noID = (jetID == "none");
 		if (jetID == "medium" && jetIDVersion != JetIDVersion::ID2010)
@@ -108,7 +108,7 @@ public:
 			maxFraction = 0.90f;
 		else if (jetID ==  "medium")
 			maxFraction = 0.95f;
-		else if (jetID ==  "loose")
+		else if (jetID ==  "loose" || jetID == "looselepveto")
 			maxFraction = 0.99f;
 		else if (!noID)
 			LOG(FATAL) << "Jet ID of type '" << jetID << "' not implemented!";
@@ -117,7 +117,7 @@ public:
 		    jetIDVersion == JetIDVersion::ID73X ||
 		    jetIDVersion == JetIDVersion::ID73Xtemp ||
 		    jetIDVersion == JetIDVersion::ID73XnoHF ||
-		    jetIDVersion == JetIDVersion::ID2015 && jetID == "tightlepveto")
+		    (jetIDVersion == JetIDVersion::ID2015 && (jetID == "tightlepveto" || jetID == "looselepveto")))
 		{
 			maxMuFraction = 0.8f;
 			maxCEMFraction = maxFraction;
@@ -264,7 +264,6 @@ private:
 	std::vector<std::shared_ptr<TJet> > KappaProduct::*m_correctedJetsMember;
 
 	bool noID;
-	std::string jetID;
 	ValidJetsInput validJetsInput;
 	JetIDVersion jetIDVersion;
 	float maxFraction;

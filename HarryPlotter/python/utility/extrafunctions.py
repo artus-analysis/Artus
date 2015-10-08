@@ -45,8 +45,28 @@ def isfloat(element):
 	except ValueError:
 		return False
 
+def merge_sequences(*sequences):
+	"""
+	Merge lists preserving relative order
 
-def merge_sequences(seq1,seq2):
+	:param sequences: lists to merge
+	:type seuqnces: list[list]
+	:returns: ordered union of all lists
+	:rtype: list
+
+	:see: `Stackoverflow thread<http://stackoverflow.com/questions/14241320/interleave-different-length-lists-elimating-duplicates-and-preserve-order-in-py>`_
+	:raises ValueError: If individual sequences have non-unique elements or several
+	                    sequences have the same elements in different order
+	"""
+	if len(sequences) == 1:
+		return sequences[0]
+	if len(sequences) == 2:
+		return _merge_sequences(*sequences)
+	if len(sequences) % 2 == 0:
+		return _merge_sequences(*[_merge_sequences(sequences[idx-1], sequences[idx]) for idx in xrange(1,len(sequences),2)])
+	return _merge_sequences(*[_merge_sequences(sequences[idx-1], sequences[idx]) for idx in xrange(1,len(sequences),2)] + [sequences[-1]])
+
+def _merge_sequences(seq1,seq2):
 	"""http://stackoverflow.com/questions/14241320/interleave-different-length-lists-elimating-duplicates-and-preserve-order-in-py"""
 	sm=SequenceMatcher(a=seq1,b=seq2)
 	res = []
@@ -61,4 +81,7 @@ def merge_sequences(seq1,seq2):
 			#There are different ranges in each sequence - add both.
 			res += seq1[start1:end1]
 			res += seq2[start2:end2]
+	# duplicates indicat non-unique (implicitly unordered) positions or differently ordered subsequences
+	if len(set(res)) != len(res):
+		raise ValueError("Sequences have non-unique elements or differently ordered subsequences")
 	return res
