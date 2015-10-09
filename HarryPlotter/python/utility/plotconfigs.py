@@ -41,4 +41,28 @@ class PlotConfigs(object):
 					plot_config["filename"] = os.path.basename(path)
 					plot_configs.append(plot_config)
 		return plot_configs
+	
+	@staticmethod
+	def all_runtimes(root_filename, plot_config_template=None):
+		if plot_config_template is None:
+			plot_config_template = {}
+		
+		plot_configs = []
+		with tfilecontextmanager.TFileContextManager(root_filename, "READ") as root_file:
+			elements = roottools.RootTools.walk_root_directory(root_file)
+			for key, path in elements:
+				if path.endswith("runTime") and (key.GetClassName().startswith("TTree") or key.GetClassName().startswith("TNtuple")):
+					tree = root_file.Get(path)
+					for branch in [branch.GetName() for branch in tree.GetListOfBranches()]:
+						plot_config = copy.deepcopy(plot_config_template)
+						plot_config["files"] = root_filename
+						plot_config["folders"] = [path]
+						plot_config["x_expressions"] = [branch]
+						plot_config["weights"] = ["({0}>=0.0)".format(branch)]
+						plot_config["title"] = branch
+						plot_config["x_label"] = "Runtime per Event / #mus"
+						plot_config["output_dir"] = os.path.join(plot_config.get("output_dir", ""), os.path.dirname(path))
+						plot_config["filename"] = branch
+						plot_configs.append(plot_config)
+		return plot_configs
 
