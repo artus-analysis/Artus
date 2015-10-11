@@ -45,7 +45,7 @@ class SplitGraphComponents(analysisbase.AnalysisBase):
 		
 		for nick in plotData.plotdict["split_graph_nicks"]:
 			graph = plotData.plotdict["root_objects"][nick]
-			assert isinstance(graph, ROOT.TGraphErrors) or isinstance(graph, ROOT.TGraph2DErrors)
+			assert any([isinstance(graph, graph_class) for graph_class in [ROOT.TGraphErrors, ROOT.TGraphAsymmErrors, ROOT.TGraph2DErrors]])
 			
 			n_points = graph.GetN()
 			is_graph_2d = isinstance(graph, ROOT.TGraph2DErrors)
