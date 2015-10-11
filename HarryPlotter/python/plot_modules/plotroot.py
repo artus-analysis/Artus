@@ -482,6 +482,9 @@ class PlotRoot(plotbase.PlotBase):
 				for y_bin in range(n_binsY):
 					self.axes_histogram.GetYaxis().SetBinLabel(y_bin+1, plotData.plotdict["y_tick_labels"][y_bin])
 			
+			# avoid scientific notation for x-axis
+			self.axes_histogram.GetXaxis().SetNoExponent(True)
+			
 			self.axes_histogram.Draw("AXIS")
 		
 		if plotData.plot.subplot_pad:
@@ -507,7 +510,10 @@ class PlotRoot(plotbase.PlotBase):
 			if plotData.plotdict["x_tick_labels"] and len(plotData.plotdict["x_tick_labels"]) > 0:
 				for x_bin in range(n_sub_binsX):
 					self.subplot_axes_histogram.GetXaxis().SetBinLabel(x_bin+1, plotData.plotdict["x_tick_labels"][x_bin])
-
+			
+			# avoid scientific notation for x-axis
+			self.axes_histogram.GetXaxis().SetNoExponent(True)
+			
 			self.subplot_axes_histogram.Draw("AXIS")
 			
 			for line_graph in self.subplot_line_graphs:
