@@ -67,6 +67,7 @@ class AddHistograms(analysisbase.AnalysisBase):
 					sum_histogram = root_object.Clone(
 							"sum_" + hashlib.md5("_".join([str(histogram_nicks), sum_result_nick])).hexdigest()
 					)
+					sum_histogram.Scale(sum_scale_factor)
 					sum_histogram.SetDirectory(0)
 				else:
 					sum_histogram.Add(root_object, sum_scale_factor)
