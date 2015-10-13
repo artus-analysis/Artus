@@ -21,7 +21,7 @@ class PlotMplRunRanges(plotbase.PlotBase):
 		if plotData.plotdict['run_range_year'] == 2012:
 			self.runs = [[' 2012A', 190456.], [' 2012B', 193834.], [' 2012C', 197770.], [' 2012D', 203773.]]
 		elif plotData.plotdict['run_range_year'] == 2015:
-			pass  # TODO: add 2015 run periods
+			self.runs = [[' 2015A', 248036.], [' 2015B', 251162.], [' 2015C', 253888.], [' 2015D', 256629.]]
 
 	def run(self, plotData):
 		for [runlabel, runnumber] in self.runs:
