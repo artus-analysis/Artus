@@ -64,7 +64,10 @@ public:
 	/// added by TauEnergyCorrectionProducer
 	// needs to be a shared_ptr in order to be deleted when the product is deleted
 	std::vector<std::shared_ptr<KTau> > m_correctedTaus;
-
+	
+	/// added by <Lepton>CorrectionProducers
+	std::map<const KLepton*, const KLepton*> m_originalLeptons; // key: corrected, value: original
+	
 	/// added by ValidTausProducer
 	std::vector<KTau*> m_validTaus;
 	std::vector<KTau*> m_invalidTaus;
@@ -76,6 +79,7 @@ public:
 	/// added by JetEnergyCorrectionProducer
 	std::vector<std::shared_ptr<KBasicJet> > m_correctedJets;
 	std::vector<std::shared_ptr<KJet> > m_correctedTaggedJets;
+	std::map<const KBasicJet*, const KBasicJet*> m_originalJets; // key: corrected, value: original
 	
 	/// added by ValidJetsProducer
 	std::vector<KBasicJet*> m_validJets;

@@ -24,6 +24,7 @@ void TauCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& prod
 		 tau != event.m_taus->end(); ++tau)
 	{
 		product.m_correctedTaus[tauIndex] = std::shared_ptr<KTau>(new KTau(*tau));
+		product.m_originalLeptons[product.m_correctedTaus[tauIndex].get()] = &(*tau);
 		++tauIndex;
 	}
 	
