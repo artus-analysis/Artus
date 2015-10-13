@@ -6,6 +6,10 @@
 	Basic usage: harry.py HARRY-ARGS --plot-modules PlotMpl PlotMplLegendTable --legend-table-column-headers a b --legend-table-row-headers 1 2 3
 """
 
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
+
 import numpy as np
 import os
 from matplotlib.patches import Rectangle
@@ -55,7 +59,7 @@ class PlotMplLegendTable(plotbase.PlotBase):
 
 		# check
 		if (n_rows * n_columns != len(handles)):
-			log.warning("'N_columns times N_rows' does not correspond to number of legend handles!")
+			log.warning("'N_columns ({}) times N_rows ({})' does not correspond to number of legend handles ({})!".format(n_columns, n_rows, len(handles)) )
 
 		# get handles
 		legend_handles = [rectangle]*(n_rows+1)
