@@ -31,6 +31,8 @@ def main():
 	                    help="Output directory for the filelists. [Default: %(default)s]")
 	parser.add_argument("-r", "--create-recent-symlinks", default=False, action="store_true",
 	                    help="Create symlinks to filelists as recent ones. [Default: %(default)s]")
+	parser.add_argument("-c", "--crab", default=False, action="store_true",
+	                    help="Skimming output directory was created by Crab (it has a different structure). [Default: %(default)s]")
 
 	args = parser.parse_args()
 	logger.initLogger(args)
@@ -46,6 +48,15 @@ def main():
 	for skimming_dir in skimming_dirs:
 		nick = os.path.basename(skimming_dir)
 		files = sorted(glob.glob(os.path.join(skimming_dir, "*.root")))
+
+		if args.crab:			
+			nick = os.path.basename(glob.glob(os.path.join(skimming_dir, "crab_*"))[0]).strip("crab_")
+			files = sorted(glob.glob(os.path.join(skimming_dir, "crab_*/*/*/*.root")))
+
+		if (len(files) == 0):
+			log.critical("Input file list empty. If the skims have been produced with Crab, switch on the --crab option")
+			sys.exit(1)
+
 		filelists = os.path.join(args.output_dir, "%s_sample_%s_%s.txt" % ("%s", nick, "%s"))
 		
 		dcache_settings = {
