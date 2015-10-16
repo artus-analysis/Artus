@@ -59,6 +59,8 @@
 #include "Artus/KappaAnalysis/interface/Consumers/KappaCollectionsConsumers.h"
 #include "Artus/KappaAnalysis/interface/Consumers/PrintHltConsumer.h"
 #include "Artus/KappaAnalysis/interface/Consumers/PrintEventsConsumer.h"
+#include "Artus/KappaAnalysis/interface/Consumers/EventCountConsumer.h"
+#include "Artus/Consumer/interface/RunTimeConsumer.h"
 #include "Artus/Consumer/interface/RunTimeConsumer.h"
 
 
@@ -280,6 +282,8 @@ ConsumerBaseUntemplated * KappaFactory::createConsumer ( std::string const& id )
 		return new KappaTaggedJetsConsumer();
 	else if(id == PrintHltConsumer().GetConsumerId())
 		return new PrintHltConsumer();
+	else if(id == EventCountConsumer().GetConsumerId())
+		return new EventCountConsumer();
 	else if(id == PrintEventsConsumer().GetConsumerId())
 		return new PrintEventsConsumer();
 	else if(id == RunTimeConsumer<KappaTypes>().GetConsumerId())
