@@ -512,7 +512,7 @@ class PlotRoot(plotbase.PlotBase):
 					self.subplot_axes_histogram.GetXaxis().SetBinLabel(x_bin+1, plotData.plotdict["x_tick_labels"][x_bin])
 			
 			# avoid scientific notation for x-axis
-			self.axes_histogram.GetXaxis().SetNoExponent(True)
+			self.subplot_axes_histogram.GetXaxis().SetNoExponent(True)
 			
 			self.subplot_axes_histogram.Draw("AXIS")
 			
