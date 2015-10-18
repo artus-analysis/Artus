@@ -44,14 +44,16 @@ def main():
 	args.output_dir = os.path.expandvars(args.output_dir)
 	
 	skimming_dirs = glob.glob(os.path.join(args.skimming_dir, "*_*TeV*"))
+	if args.crab:
+		skimming_dirs = glob.glob(os.path.join(args.skimming_dir, "*/crab_*"))
 	
 	for skimming_dir in skimming_dirs:
 		nick = os.path.basename(skimming_dir)
 		files = sorted(glob.glob(os.path.join(skimming_dir, "*.root")))
 
-		if args.crab:			
-			nick = os.path.basename(glob.glob(os.path.join(skimming_dir, "crab_*"))[0]).strip("crab_")
-			files = sorted(glob.glob(os.path.join(skimming_dir, "crab_*/*/*/*.root")))
+		if args.crab:
+			nick = nick.strip("crab_")
+			files = sorted(glob.glob(os.path.join(skimming_dir, "*/*/*.root")))
 
 		if (len(files) == 0):
 			log.critical("Input file list empty. If the skims have been produced with Crab, switch on the --crab option")
