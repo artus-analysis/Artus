@@ -484,6 +484,10 @@ class PlotRoot(plotbase.PlotBase):
 			
 			# avoid scientific notation for x-axis
 			self.axes_histogram.GetXaxis().SetNoExponent(True)
+
+			# avoid scientific notation for y-axis if a title is present
+			if (not plotData.plotdict["title"] is None):
+				self.axes_histogram.GetYaxis().SetNoExponent(True)
 			
 			self.axes_histogram.Draw("AXIS")
 		
