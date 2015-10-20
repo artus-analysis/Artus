@@ -102,6 +102,8 @@ class PlotMpl(plotbase.PlotBase):
 											 help="Hight fraction of the subplot in percent")
 		self.formatting_options.add_argument("--subplot-legend", type=str, nargs="?", default=None,
 		                                     help="Location of the subplot legend. Use 'None' to not set any legend")
+		self.formatting_options.add_argument("--alphas", type=float, nargs="+", default=[1.0],
+		                                     help="Alpha (opacity) values for bands, shaded areas etc. 0.0 -> fully transparent. [Default: %(default)s]")
 
 		self.formatting_options.set_defaults(legend="upper right")
 		self.formatting_options.set_defaults(colormap="afmhot")
@@ -111,7 +113,7 @@ class PlotMpl(plotbase.PlotBase):
 
 		self.prepare_list_args(
 				plotData,
-				["nicks", "colors", "labels", "markers", "marker_fill_styles", "line_styles", "line_widths", "x_errors", "y_errors", "step", "zorder", "edgecolors"],
+				["nicks", "colors", "labels", "markers", "marker_fill_styles", "line_styles", "line_widths", "x_errors", "y_errors", "step", "zorder", "edgecolors", "alphas"],
 				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]
 		))
 
@@ -225,7 +227,7 @@ class PlotMpl(plotbase.PlotBase):
 
 		zip_arguments = self.get_zip_arguments(plotData)
 
-		for nick, color, edgecolor, label, marker, marker_fill_style, x_error, y_error, line_style, line_width, step, zorder in zip(*zip_arguments):
+		for nick, color, edgecolor, label, marker, marker_fill_style, x_error, y_error, line_style, line_width, step, zorder, alpha in zip(*zip_arguments):
 			if nick in plotData.plotdict["subplot_nicks"]:
 				ax = plotData.plot.axes[1]
 			else:
@@ -238,7 +240,7 @@ class PlotMpl(plotbase.PlotBase):
 				self.mplhist = MplGraph(root_object)
 
 				if marker=='fill':
-					self.plot_tgrapherrors_envelope(self.mplhist, ax, label, color, line_style, line_width, step)
+					self.plot_tgrapherrors_envelope(self.mplhist, ax, label, color, line_style, line_width, step, zorder, alpha)
 				else:
 					self.plot_errorbar(self.mplhist, ax=ax,
 					               show_xerr=x_error, show_yerr=y_error,
@@ -272,9 +274,9 @@ class PlotMpl(plotbase.PlotBase):
 				self.plot_dimension = self.mplhist.dimension
 
 				if marker=="bar":
-					self.plot_hist1d(self.mplhist, style='bar', ax=ax, show_yerr=y_error, label=label, color=color, edgecolor=edgecolor, alpha=1.0, zorder=zorder)
+					self.plot_hist1d(self.mplhist, style='bar', ax=ax, show_yerr=y_error, label=label, color=color, edgecolor=edgecolor, alpha=alpha, zorder=zorder)
 				elif marker=='fill':
-					self.plot_hist1d(self.mplhist, style='fill', ax=ax, show_yerr=y_error, label=label, color=color, edgecolor=edgecolor, alpha=1.0, zorder=zorder)
+					self.plot_hist1d(self.mplhist, style='fill', ax=ax, show_yerr=y_error, label=label, color=color, edgecolor=edgecolor, alpha=alpha, zorder=zorder)
 				else:
 					self.plot_errorbar(self.mplhist, ax=ax,
 					                   show_xerr=x_error, show_yerr=y_error,
@@ -304,7 +306,7 @@ class PlotMpl(plotbase.PlotBase):
 									facecolor=color,
 									edgecolor=color,
 									interpolate=True,
-									alpha=0.2)
+									alpha=alpha)
 
 	def modify_axes(self, plotData):
 		# do what is needed for all plots:
@@ -468,14 +470,14 @@ class PlotMpl(plotbase.PlotBase):
 		for ax in [plotData.plot.axes[0]]:
 			if (not self.plot_dimension == 3) and (self.dataset_title != ""):
 				plt.text(
-						1.0, 1.030, self.dataset_title,
+						1.0, 1.030, self.dataset_title, zorder=100,
 						transform=ax.transAxes, fontsize=18, horizontalalignment="right"
 				)
 		
 		if plotData.plotdict["texts"] != [None]:
 			for ax in [plotData.plot.axes[0]]:
 				for x, y, text in zip(plotData.plotdict['texts_x'], plotData.plotdict['texts_y'], plotData.plotdict['texts']):
-					ax.text(x, y, text, transform=ax.transAxes, fontsize=18, ha="left", va="top")
+					ax.text(x, y, text, transform=ax.transAxes, fontsize=18, ha="left", va="top", zorder=100)
 
 	def set_matplotlib_defaults(self):
 		# Set matplotlib rc settings
@@ -587,7 +589,7 @@ class PlotMpl(plotbase.PlotBase):
 		artist = ax.errorbar(x, y, fillstyle=fillstyle, xerr=xerr, yerr=yerr, label=label, capsize=capsize, fmt=fmt, linestyle='None', **kwargs)
 		return artist
 
-	def plot_hist1d(self, hist, style='fill', ax=None, show_xerr=False, show_yerr=False, **kwargs):
+	def plot_hist1d(self, hist, style='fill', ax=None, show_xerr=False, show_yerr=False, alpha=1.0, **kwargs):
 		""" Plot a one-dimensional histogram.
 		
 		Args:
@@ -608,13 +610,13 @@ class PlotMpl(plotbase.PlotBase):
 
 		if style == 'fill':
 			ax.fill_between(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(hist.bincontents), 
-			                y2=bottom, color=color, edgecolor=edgecolor, alpha=1.0, zorder=1)
+			                y2=bottom, color=color, edgecolor=edgecolor, alpha=alpha, zorder=1)
 			# draw the legend proxy
-			artist = plt.Rectangle((0, 0), 0, 0, label=label, facecolor=color, edgecolor=edgecolor, alpha=1.0)
+			artist = plt.Rectangle((0, 0), 0, 0, label=label, facecolor=color, edgecolor=edgecolor, alpha=alpha)
 			ax.add_patch(artist)
 		elif style == 'bar':
 			artist = ax.bar(hist.xl, hist.bincontents, hist.xbinwidth, bottom=bottom,
-			                label=label, fill=True, facecolor=color, edgecolor=edgecolor, ecolor=color, alpha=1.0)
+			                label=label, fill=True, facecolor=color, edgecolor=edgecolor, ecolor=color, alpha=alpha)
 
 		if show_xerr:
 			xerr = np.array((hist.xerrl, hist.xerru))
@@ -681,31 +683,36 @@ class PlotMpl(plotbase.PlotBase):
 			cmap=cmap, linewidth=0, antialiased=True, shade=False)
 		return artist
 
-	def plot_tgrapherrors_envelope(self, mplhist, ax, label, color, line_style, line_width, step):
+	def plot_tgrapherrors_envelope(self, mplhist, ax, label, color, line_style, line_width, step, zorder, alpha):
 		""" Plot the envelope given by y-errors around a TGraphErrors"""
 		if step:
 			# central values:
 			ax.step(self.steppify_bin(mplhist.xbinedges, isx=True), self.steppify_bin(mplhist.y),
-				label=label, linestyle=line_style)
+				label=label, linestyle=line_style, zorder=zorder)
 			# plot errors as shaded area:
 			ax.fill_between(
 				self.steppify_bin(mplhist.xbinedges, isx=True),
 				self.steppify_bin([(y_val+error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)]),
 				y2=self.steppify_bin([(y_val-error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)]),
 				color=color,
-				alpha=0.2,
+				alpha=alpha,
+				zorder=zorder
 			)
 		else:
 			# draw a smooth curve with error band around
-			ax.plot(self.mplhist.x, self.mplhist.y, label=label, color=color, linestyle=line_style, linewidth=line_width)
+			ax.plot(self.mplhist.x, self.mplhist.y,
+				color=color, linestyle=line_style, linewidth=line_width, zorder=zorder)
 			ax.fill_between(self.mplhist.x,
-				[(y_val-error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)],
-				[(y_val+error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)],
+				[(y_val-error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerrl)],
+				[(y_val+error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerru)],
 				facecolor=color,
 				edgecolor=color,
 				interpolate=False,
-				alpha=0.2
+				alpha=alpha,
+				zorder=zorder
 			)
+			patch_for_label = plt.Rectangle((0, 0), 0, 0, label=label, color=color)
+			ax.add_patch(patch_for_label)
 
 
 	def get_zip_arguments(self, plotData):
@@ -720,7 +727,8 @@ class PlotMpl(plotbase.PlotBase):
 		                                 plotData.plotdict["line_styles"],
 		                                 plotData.plotdict["line_widths"],
 		                                 plotData.plotdict["step"],
-		                                 plotData.plotdict["zorder"])
+		                                 plotData.plotdict["zorder"],
+		                                 plotData.plotdict["alphas"])
 		return zip_arguments
 
 	@staticmethod

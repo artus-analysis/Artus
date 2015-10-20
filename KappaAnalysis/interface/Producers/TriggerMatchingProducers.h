@@ -101,7 +101,7 @@ public:
 				//LOG(DEBUG) << "objectTriggerFilterByHltName->first = " << objectTriggerFilterByHltName->first;
 				
 				// loop over all fired HLT paths
-				for (unsigned int firedHltIndex = 0; firedHltIndex < product.m_selectedHltNames.size(); firedHltIndex++)
+				for (unsigned int firedHltIndex = 0; firedHltIndex < product.m_selectedHltNames.size(); ++firedHltIndex)
 				{
 					std::string firedHltName = product.m_selectedHltNames.at(firedHltIndex);
 					int firedHltPosition = product.m_selectedHltPositions.at(firedHltIndex);

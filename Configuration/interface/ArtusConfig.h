@@ -29,7 +29,7 @@ public:
 	ArtusConfig(int argc, char** argv);
 	
 	// parses the json config from a stringstream
-	ArtusConfig( std::stringstream & sStream );
+	explicit ArtusConfig(std::stringstream& sStream);
 
 	void SaveConfig(TFile* outputFile) const;
 
@@ -84,8 +84,7 @@ private:
 
 		TGlobalSettings gSettings = GetSettings< TGlobalSettings >();
 		stringvector globalProds = gSettings.GetProcessors();
-		for ( stringvector::const_iterator it = globalProds.begin();
-			it != globalProds.end(); it ++ ) {
+		for (stringvector::const_iterator it = globalProds.begin(); it != globalProds.end(); ++it) {
 
 			NodeTypePair ntype = ParseProcessNode( *it );
 
@@ -143,8 +142,7 @@ private:
 
 			// add local producer
 			stringvector localProducers = pset.GetProcessors();
-			for ( stringvector::const_iterator it = localProducers.begin();
-				it != localProducers.end(); it ++ ) {
+			for (stringvector::const_iterator it = localProducers.begin(); it != localProducers.end(); ++it) {
 
 					NodeTypePair ntype = ParseProcessNode( *it );
 
@@ -169,8 +167,7 @@ private:
 
 			// add consumer
 			stringvector localConsumers = pset.GetConsumers();
-			for ( stringvector::const_iterator it = localConsumers.begin();
-				it != localConsumers.end(); it ++ ) {
+			for (stringvector::const_iterator it = localConsumers.begin(); it != localConsumers.end(); ++it) {
 					auto * pConsumer = factory.createConsumer ( *it );
 
 					// special case for consumer:

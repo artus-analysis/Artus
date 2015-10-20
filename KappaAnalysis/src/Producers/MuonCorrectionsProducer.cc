@@ -24,6 +24,7 @@ void MuonCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& pro
 		 muon != event.m_muons->end(); ++muon)
 	{
 		product.m_correctedMuons[muonIndex] = std::shared_ptr<KMuon>(new KMuon(*muon));
+		product.m_originalLeptons[product.m_correctedMuons[muonIndex].get()] = &(*muon);
 		++muonIndex;
 	}
 	

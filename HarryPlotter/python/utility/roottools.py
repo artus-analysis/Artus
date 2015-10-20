@@ -268,8 +268,9 @@ class RootTools(object):
 						x_bins=self.x_bin_edges[binning_identifier],
 						y_bins=None if y_expression is None else self.y_bin_edges[binning_identifier],
 						z_bins=None if z_expression is None else self.z_bin_edges[binning_identifier],
-						profile_histogram="prof" in option.lower(),
-						name=name
+						profile_histogram=("prof" in option.lower()),
+						name=name,
+						profile_error_option=(option.lower().replace("prof", ''))
 					)
 		
 		# prepare TChain
@@ -407,11 +408,10 @@ class RootTools(object):
 
 
 	@staticmethod
-	def create_root_histogram(x_bins, y_bins=None, z_bins=None, profile_histogram=False, name=None):
+	def create_root_histogram(x_bins, y_bins=None, z_bins=None, profile_histogram=False, name=None, profile_error_option=""):
 		"""
 		Create an empty ROOT histogram with a given binning
 		"""
-		
 		# prepare unique histogram name
 		if name == None:
 			name = "histogram_{0}".format(hashlib.md5("_".join([str(x_bins), str(y_bins), str(z_bins), str(profile_histogram)])).hexdigest())
@@ -421,7 +421,7 @@ class RootTools(object):
 		if isinstance(x_bins, basestring) or ((len(x_bins) == 1) and isinstance(x_bins[0], basestring)):
 			x_binning_string, x_bin_edges = RootTools.prepare_binning(x_bins[0])
 		else:
-			x_bin_edges = x_bins
+			x_bin_edges = array.array('d', x_bins)
 		
 		y_bin_edges = None
 		if not y_bins is None:
@@ -455,6 +455,8 @@ class RootTools(object):
 			histogram_args.extend([len(y_bin_edges)-1, y_bin_edges])
 			if not z_bins is None:
 				histogram_args.extend([len(z_bin_edges)-1, z_bin_edges])
+		if profile_histogram:
+			histogram_args.append(profile_error_option)
 		
 		log.debug(histogram_class_name+"("+", ".join(["\""+arg+"\"" if isinstance(arg, basestring) else str(arg) for arg in histogram_args])+")")
 		root_histogram = histogram_class(*histogram_args)
@@ -717,8 +719,8 @@ class RootTools(object):
 		for directory in path.split("/")[:-1]:
 			if root_directory.Get(directory) == None:
 				root_directory.mkdir(directory)
-			directory = root_directory.Get(directory)
-			directory.cd()
+			root_directory = root_directory.Get(directory)
+			root_directory.cd()
 		root_object.Write(path.split("/")[-1], ROOT.TObject.kWriteDelete)
 		root_file.cd()
 	
@@ -854,4 +856,10 @@ class RootTools(object):
 			pass
 		tgraph.GetHistogram().Delete()
 		tgraph.SetHistogram(0)
+
+	@staticmethod
+	def tgraph_get_point(tgraph, i):
+		tmpX, tmpY = ROOT.Double(0), ROOT.Double(0)
+		tgraph.GetPoint(i, tmpX, tmpY)
+		return float(tmpX), float(tmpY)
 

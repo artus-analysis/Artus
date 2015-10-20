@@ -14,7 +14,7 @@ void ValueModifierRange::applyHistBeforeCreation(Hist1D * h1, size_t index) {
 }
 
 void ValueModifierBinCount::applyHistBeforeCreation(Hist1D * h1, size_t index) {
-	h1->m_iBinCount = (int) m_binCount;
+	h1->m_iBinCount = static_cast<int>(m_binCount);
 }
 
 void ValueModifierRange::applyHist2DBeforeCreation(Hist2D * h1, size_t index) {

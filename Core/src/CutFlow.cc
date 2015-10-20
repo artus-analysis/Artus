@@ -1,4 +1,3 @@
-
 #include <sstream>
 #include <map>
 #include <iomanip>
@@ -9,15 +8,15 @@
 // sum up all passed events per filter
 void CutFlow::AddFilterResult(FilterResult const& fres)
 {
-	m_overallEventCount++;
+	++m_overallEventCount;
 
 	auto const& dec = fres.GetFilterDecisions();
 	for (FilterResult::FilterDecisions::const_iterator it = dec.begin();
-	     it != dec.end(); it++)
+	     it != dec.end(); ++it)
 	{
 		// only store, if passed
 		long addVal = 0;
-		if (it->filterDecision == FilterResult::Decision::Passed && 
+		if (it->filterDecision == FilterResult::Decision::Passed &&
 		    it->taggingMode == FilterResult::TaggingMode::Filtering) {
 			addVal = 1;
 		}
@@ -37,7 +36,7 @@ void CutFlow::AddFilterResult(FilterResult const& fres)
 CutFlow::CutStat * CutFlow::GetCutEntry(std::string const& filterName)
 {
 	for (CutFlow::CutCount::iterator it = m_cutCount.begin();
-	     it != m_cutCount.end(); it++)
+	     it != m_cutCount.end(); ++it)
 	{
 		if (filterName == it->first)
 			return &(*it);
@@ -58,9 +57,9 @@ std::string CutFlow::ToString() const
 	sOut << std::endl;
 
 	for (CutFlow::CutCount::const_iterator it = m_cutCount.begin();
-	     it != m_cutCount.end(); it++)
+	     it != m_cutCount.end(); ++it)
 	{
-		const float ratioPassed = float( it->second ) / float( m_overallEventCount );
+		const float ratioPassed = static_cast<float>(it->second) / static_cast<float>(m_overallEventCount);
 
 		sOut << it->first << "\t\t";
 		sOut << "| " << it->second << "\t\t\t\t";

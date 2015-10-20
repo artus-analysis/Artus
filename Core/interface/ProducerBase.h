@@ -48,9 +48,7 @@ protected:
 
 class ProducerBaseAccess {
 public:
-	ProducerBaseAccess ( ProducerBaseUntemplated & cb ) : m_cb(cb) {
-
-	}
+	explicit ProducerBaseAccess(ProducerBaseUntemplated& cb) : m_cb(cb) {}
 
 	void Init ( SettingsBase const& settings ){
 		m_cb.baseInit( settings );

@@ -23,6 +23,7 @@ void ElectronCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct&
 		 electron != event.m_electrons->end(); ++electron)
 	{
 		product.m_correctedElectrons[electronIndex] = std::shared_ptr<KElectron>(new KElectron(*electron));
+		product.m_originalLeptons[product.m_correctedElectrons[electronIndex].get()] = &(*electron);
 		++electronIndex;
 	}
 	

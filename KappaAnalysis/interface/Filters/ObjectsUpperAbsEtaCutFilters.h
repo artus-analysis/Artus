@@ -19,7 +19,7 @@ public:
 	
 	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
 	
-	LeptonUpperAbsEtaCutsFilter(std::vector<TLepton*> KappaProduct::*validLeptons) :
+	explicit LeptonUpperAbsEtaCutsFilter(std::vector<TLepton*> KappaProduct::*validLeptons) :
 		CutRangeFilterBase<KappaTypes>(),
 		m_validLeptonsMember(validLeptons)
 	{
@@ -78,7 +78,7 @@ protected:
 						this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 								[this, tmpHltName, pattern, tmpIndex](KappaEvent const& event, KappaProduct const& product) -> double {
 									bool hasMatch = false;
-									for (unsigned int iHlt = 0; iHlt < product.m_selectedHltNames.size(); iHlt++)
+									for (unsigned int iHlt = 0; iHlt < product.m_selectedHltNames.size(); ++iHlt)
 										hasMatch = hasMatch || boost::regex_search(product.m_selectedHltNames.at(iHlt), pattern);
 
 									return (((product.*m_validLeptonsMember).size() > tmpIndex && hasMatch) ?

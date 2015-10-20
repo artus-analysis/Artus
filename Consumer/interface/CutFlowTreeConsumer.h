@@ -62,7 +62,7 @@ public:
 		size_t filterIndex = 0;
 		FilterResult::FilterDecisions const& filterDecisions = filterResult.GetFilterDecisions();
 		for(FilterResult::FilterDecisions::const_iterator filterDecision = filterDecisions.begin();
-		    filterDecision != filterDecisions.end(); filterDecision++)
+		    filterDecision != filterDecisions.end(); ++filterDecision)
 		{
 			if ((filterDecision->filterDecision != FilterResult::Decision::Passed) &&
 			    (filterDecision->taggingMode == FilterResult::TaggingMode::Filtering)) {

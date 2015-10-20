@@ -131,6 +131,7 @@ public:
 			 jet != correctJetsForJecTools.end(); ++jet)
 		{
 			(product.*m_correctedJetsMember)[jetIndex] = std::shared_ptr<TJet>(new TJet(*jet));
+			product.m_originalJets[(product.*m_correctedJetsMember)[jetIndex].get()] = &(*jet);
 			++jetIndex;
 		}
 		

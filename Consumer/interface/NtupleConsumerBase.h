@@ -63,8 +63,8 @@ public:
 		//iterate over string vector and fill the array for each quantity
 		size_t arrayI = 0;
 		for (stringvector::iterator it = m_quantitiesVector.begin(); it != m_quantitiesVector.end(); ++it) {
-			array[ arrayI ] = returnvalue(*it, event, product);
-			arrayI ++;
+			array[arrayI] = returnvalue(*it, event, product);
+			++arrayI;
 		}
 
 		// add the array to the ntuple

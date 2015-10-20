@@ -15,7 +15,7 @@ void PUWeightProducer::Init(KappaSettings const& settings) {
 	LOG(DEBUG) << "\tLoading pile-up weights from files...";
 	LOG(DEBUG) << "\t\t" << settings.GetPileupWeightFile() << "/" << histogramName;
 	TFile file(settings.GetPileupWeightFile().c_str(), "READONLY");
-	TH1D* pileupHistogram = (TH1D*) file.Get(histogramName.c_str());
+	TH1D* pileupHistogram = dynamic_cast<TH1D*>(file.Get(histogramName.c_str()));
 
 	m_pileupWeights.clear();
 	for (int i = 1; i <= pileupHistogram->GetNbinsX(); ++i)

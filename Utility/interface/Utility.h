@@ -249,5 +249,4 @@ namespace Utility {
 		}
 		return string;
 	}
-}
-
+} // namespace Utility

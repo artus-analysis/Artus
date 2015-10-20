@@ -14,8 +14,7 @@ public:
 	TestSettings() : SettingsBase(), m_Level( 1), m_Offset(23) {
 	}
 
-	TestSettings( std::string lineName ) : SettingsBase( lineName ), m_Level( 1) {
-
+	explicit TestSettings(std::string lineName) : SettingsBase(lineName), m_Level(1) {
 	}
 
 	std::string ToString() const {

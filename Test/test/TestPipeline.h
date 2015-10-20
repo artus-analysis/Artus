@@ -20,7 +20,7 @@ public:
 	virtual bool RunEvent( TestEvent const& event,
                            TestProduct const& globalProduct,
                            FilterResult const& globalFilterResult) override {
-		iRunEvent++;
+		++iRunEvent;
 		//if (bCheckProducer) {
 		//BOOST_CHECK(globalProduct.iGlobalProduct == 1);
 		//}
@@ -30,11 +30,11 @@ public:
 	}
 
 	virtual void Run() override {
-		iRun ++;
+		++iRun;
 	}
 
 	virtual void FinishPipeline() override {
-		iFinish++;
+		++iFinish;
 	}
 
 	void CheckCalls(int RunEvt, int Run_ = 0) {

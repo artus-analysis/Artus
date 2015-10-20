@@ -110,8 +110,7 @@ public:
 		m_pipelineSettings = pset;
 		initializer.InitPipeline(this, pset);
 
-		for( ProcessNodeIterator it = m_nodes.begin();
-				it != m_nodes.end(); it ++ ) {
+		for(ProcessNodeIterator it = m_nodes.begin(); it != m_nodes.end(); ++it) {
 			if ( it->GetProcessNodeType () == ProcessNodeType::Producer ){
 				ProducerBaseAccess(	static_cast< ProducerForThisPipeline &> ( *it )	)
 						. Init ( pset );
@@ -142,9 +141,8 @@ public:
 		s << m_pipelineSettings.ToString() << std::endl;
 		s << "== Pipeline Filter: ";
 
-		for( ProcessNodeIterator it = m_nodes.begin();
-				it != m_nodes.end(); it ++ ) {
-			if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
+		for (ProcessNodeIterator it = m_nodes.begin(); it != m_nodes.end(); ++it) {
+			if (it->GetProcessNodeType () == ProcessNodeType::Filter) {
 				s << std::endl << static_cast<FilterForThisPipeline &> ( *it ) . GetFilterId();
 			}
 		}
@@ -180,8 +178,7 @@ public:
 		localFilterResult.AddFilterNames( m_filterNames, m_taggingFilters );
 
 		// run Filters & Producers
-		for( ProcessNodeIterator it = m_nodes.begin();
-				it != m_nodes.end(); it ++ ) {
+		for (ProcessNodeIterator it = m_nodes.begin(); it != m_nodes.end(); ++it) {
 
 			// variables for runtime measurement
 			timeval tStart, tEnd;
@@ -220,7 +217,7 @@ public:
 		localProduct.fres = localFilterResult;
 
 		// run Consumers
-		for (ConsumerVectorIterator itcons = m_consumer.begin(); itcons != m_consumer.end(); itcons++) {
+		for (ConsumerVectorIterator itcons = m_consumer.begin(); itcons != m_consumer.end(); ++itcons) {
 			//LOG(DEBUG) << itcons->GetConsumerId() << "::ProcessFilteredEvent/ProcessEvent (pipeline: " << m_pipelineSettings.GetName() << ")";
 			if (localFilterResult.HasPassed()) {
 				ConsumerBaseAccess(*itcons).ProcessFilteredEvent(evt, localProduct, GetSettings());
@@ -234,9 +231,8 @@ public:
 
 	/// Find and return a Filter by it's id in this pipeline.
 	virtual FilterBaseUntemplated* FindFilter(std::string sFilterId) {
-		for( ProcessNodeIterator it = m_nodes.begin();
-				it != m_nodes.end(); it ++ ) {
-			if ( it->GetProcessNodeType () == ProcessNodeType::Filter ) {
+		for (ProcessNodeIterator it = m_nodes.begin(); it != m_nodes.end(); ++it) {
+			if (it->GetProcessNodeType () == ProcessNodeType::Filter) {
 				FilterForThisPipeline * filter = &( static_cast<FilterForThisPipeline&> ( *it ) );
 				if ( filter->GetFilterId() == sFilterId )
 					return filter;

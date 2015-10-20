@@ -44,9 +44,7 @@ protected:
 
 class FilterBaseAccess  {
 public:
-	FilterBaseAccess ( FilterBaseUntemplated & cb ) : m_cb(cb) {
-
-	}
+	explicit FilterBaseAccess(FilterBaseUntemplated& cb) : m_cb(cb) {}
 
 	bool DoesEventPass(EventBase const& event,
 			ProductBase const& product, SettingsBase const& settings) const

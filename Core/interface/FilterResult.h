@@ -34,7 +34,7 @@ public:
 	typedef std::list<DecisionEntry> FilterDecisions;
 
 	FilterResult();
-	FilterResult(FilterNames const& initialFilterNames );
+	explicit FilterResult(FilterNames const& initialFilterNames);
 	FilterResult(FilterNames const& initialFilterNames, FilterNames const& taggingFilters );
 
 	DecisionEntry * GetDecisionEntry( std::string const& filterName );

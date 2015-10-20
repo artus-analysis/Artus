@@ -60,8 +60,7 @@ private:
 
 class ValueModifierBinCount: public ValueModifier {
 public:
-	ValueModifierBinCount(size_t bc) :
-			m_binCount(bc) {
+	explicit ValueModifierBinCount(size_t bc) : m_binCount(bc) {
 	}
 
 	virtual ~ValueModifierBinCount() {
@@ -86,9 +85,9 @@ public:
 	static ValueModifiers getZModifier(size_t binCount = 500);
 	static ValueModifiers getEtaModifier(size_t binCount = 100);
 	static ValueModifiers getThetaModifier();
-	static ValueModifiers getPtModifier(float);
-	static ValueModifiers getPtModifier(float, float);
-	static ValueModifiers getMassModifier(float, float);
+	static ValueModifiers getPtModifier(float maxPt);
+	static ValueModifiers getPtModifier(float minPt, float maxPt);
+	static ValueModifiers getMassModifier(float lowMass, float upperMass);
 
 	static ValueModifiers getRunModifier();
 

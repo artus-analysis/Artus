@@ -8,7 +8,7 @@
 \usepackage{hepunits}
 \usepackage{url}
 \usepackage{palatino}
-\usepackage[hidelinks=true,bookmarks=true,plainpages=false]{hyperref}
+\usepackage[hidelinks,bookmarks=true,plainpages=false]{hyperref}
 \usepackage[colorinlistoftodos,prependcaption]{todonotes}
 
 \input{include/tikz_includes}
@@ -42,12 +42,12 @@
 \address{Karlsruhe Institute of Technology, Wolfgang-Gaede-Stra\ss{}e 1, D-76131 Karlsruhe}
 
 \begin{abstract}
-We present \artus, an event-based data-processing framework for high energy physics experiments.
-\mbox{\artus} is designed for large-scale data analysis in a collaborative environment.
+\artus is an event-based data-processing framework for high energy physics experiments.
+It is designed for large-scale data analysis in a collaborative environment.
 The architecture design choices take into account typical challenges and are based on experiences with similar applications.
 The structure of the framework and its advantages are described.
 An example use case and performance measurements are presented.
-The framework is well-tested and successfully used by several analysis groups.\todo[inline]{Mention them, maybe with publications? -> mentioned at the beginning of Htt chapter. Do we have publications?}
+The framework is well-tested and successfully used by several analysis groups.
 \end{abstract}
 
 %\begin{keyword}
@@ -58,16 +58,17 @@ The framework is well-tested and successfully used by several analysis groups.\t
 %\tableofcontents
 
 
-\section{Common Workflow of High Energy Physics Analyses \label{section_artus_analysis_workflow}}
+\section{Typical Workflow of High Energy Physics Analyses}
+\label{section_artus_analysis_workflow}
 % This section should contain a short description of a HEP/CMS-typical workflow.
 % Especially common problems and challenges should be highlighted.
 % From these problems, the design requirements for Artus are derived.
 The workflow of the experiments collecting data at the Large Hadron Collider (LHC) at CERN is taken as an example to illustrate the organization and needs of a modern High Energy Physics (HEP) analysis.
 Still, equal or very similar requirements are also present for HEP experiments not located at the LHC.
 
-Between the data taking at the detector or the generation of simulated events with the subsequent detector simulation and the showcasing of the physical results, the following analysis steps have shown to be the best compromise in terms of turnaround time and efficiency as explained in Figure \ref{figure_analysis_steps}.
+Between the data taking at the detector or the generation of simulated events with the subsequent detector simulation and the presentation of the physical results, the following analysis steps have shown to be the best compromise in terms of turnaround time and efficiency as explained in Figure \ref{figure_analysis_steps}.
 
-The reconstruction of the raw data coming from the experiments is performed on large computing centers organized into the WLCG\footnote{\url{http://wlcg-public.web.cern.ch}}, the Worldwide LHC Computing Grid.
+The reconstruction of the raw data coming from the experiments is performed on large computing centers organized in the WLCG\footnote{\url{http://wlcg-public.web.cern.ch}}, the Worldwide LHC Computing Grid.
 The resulting datasets contain event information and high-level physics objects and are of $\mathcal O(10-100)$~TB in size.
 \todo[inline]{move file size numbers to Figure \ref{figure_analysis_steps}?}
 
@@ -97,7 +98,8 @@ The data reduction is achieved by performing the data-intensive operations only 
 \todo[inline]{Should we drop CMS-specific technical terms like AOD/miniAOD?
 Maybe not put this figure on a dedicated page?}
 
-\section{Requirements and Challenges for Analysis Software\label{section_artus_challenges}}
+\section{Requirements and Challenges for Analysis Software}
+\label{section_artus_challenges}
 %define requirements based on previous section, following sections: describe how they are fullfilled
 Based on the workflow described in the previous section, the following demands for an analysis framework arise:
 
@@ -120,20 +122,21 @@ The modules then implement what has to be done while the data is stored in desir
 
 \item[Reliability:]
 In most cases, analyses never leave prototype status.
-This leads to frequent re-implementations and low trust in reliability.
+This leads to frequent re-imple\-men\-ta\-tions and low trust in reliability.
 \artus allows the re-use of analysis code due to its modular structure as well as sharing it between different analysis groups, and therefore improving code quality significantly.
 
-Source code and configuration files have become the most precise form of documentation.
+Source code and configuration files have become the most precise form of description.
 Therefore, readability also for people who have not written the code is crucial.
 Also, if possible, existing and well-established libraries of the HEP community are interfaced.
 \end{description}
 
 
-\section{The \artus Framework \label{section_artus_motivation}}
+\section{The \artus Framework}
+\label{section_artus_motivation}
 
 The framework introduced in this section handles the last step of the workflow, the user analysis.
 
-Following the structure of the CMSSW \todo[inline]{Referenz? zumindest github-link?} framework, the \artus framework\footnote{\url{https://github.com/artus-analysis/artus}} provides a front-to-end solution for the analysis of event-based data.
+Following the structure of the CMSSW~\cite{cmssw} \todo[inline]{Referenz? zumindest github-link?} framework, the \artus framework\footnote{\url{https://github.com/artus-analysis/artus}} provides a front-to-end solution for the analysis of event-based data.
 The basic concept of modules processing events within an event loop is complemented by tools for the configuration of every step.
 The complete structure is explained in the next section~\ref{section_artus_structure}.
 
@@ -150,11 +153,12 @@ C++ is chosen for performance reasons and in order to be able to integrate exist
 \artus has no need to use multi-core techniques, since it can be parallelized trivially by splitting the input dataset and sending it to different computing instances.
 This is possible, because the processed events are know to be independent of each other.
 
-\section{Structure of the Framework \label{section_artus_structure}}
+\section{Structure of the Framework}
+\label{section_artus_structure}
 
 The basic concept of the framework is taken from the code used for the $\PZ+\text{jet}$ analysis documented in reference~\cite{joram_phd}.
 It is generalized and extended to satisfy the needs of various analysis groups.
-The structure is illustrated in figure~\ref{figure_artus_structure}.
+The structure is illustrated in Figure~\ref{figure_artus_structure}.
 
 \begin{figure}[p]
 \centering \input{figures/artus_structure}
@@ -190,7 +194,7 @@ Its purpose is to manage reading events contents from any kind of input into an 
 The events are then sequentially processed by processors organized in pipelines.
 First, a so-called global pipeline is run.
 Then, the execution is split up into multiple so-called local pipelines, that are also processed sequentially.
-The composition of a pipeline is illustrated in figure~\ref{figure_artus_pipeline}.
+The composition of a pipeline is illustrated in Figure~\ref{figure_artus_pipeline}.
 
 Each pipeline has its own settings.
 The local pipelines can access both their own settings and the ones of the global pipeline.
@@ -221,19 +225,20 @@ It should be either part of the requirements or part of the summary what Artus d
 I think the idea was to explain how certain design decisions, e.g.\ pipelines, achieve the \artus design goals.
 Therefore it should not be too far from the technical descriptions.
 }
-This structure extends the established concepts of existing frameworks like FWLite~\cite{FWLite} from CMSSW to the following four main advantages:
+This structure extends the established concepts of existing frameworks like FWLite from CMSSW to the following four main advantages:
 \begin{description}
 \item[Modular structure:] Analysis steps are implemented in processors, breaking down the complete analysis in well-defined and easily understandable and writable parts.
 \item[Re-utilization of code:] Processors can be shared among different analysis groups.
 Every user contributes to the testing of existing code and improves the confidence in this code.
 \item[Configurability:] Each module uses settings that are read from the the configuration.
 Each pipeline is mapped to a separate sub-set of the configuration.
-\item[High performance:] The concept of pipelines allows to analyze the data with different configurations at the same time, while the data is only read in only once and common processing steps are shared in the global pipeline.
+\item[High performance:] The concept of pipelines allows to analyze the data with different configurations at the same time, while the data is read in only once and common processing steps are shared in the global pipeline.
 Therefore, the cost-intensive input operations are reduced to a minimum.
 \end{description}
 
 
-\section{Building an End-user Analysis \label{section_artus_analysis}}
+\section{Building an End-user Analysis}
+\label{section_artus_analysis}
 \todo[inline]{If I would not know the structure already, the following part would not have helped my.
 Either we support it with a drawing and more detailed explanations or we just refer to a readme...
 Maybe rewrite parts of this section}
@@ -250,14 +255,14 @@ These classes also have to be derived from the \artus base classes.
 
 The most important part of an analysis are the processors.
 The abstract processors of the \artus core need to be implemented to realize the physics needs of the analysis in the form of code.
-New processors have to be registered in the factory.
 After the basic structure of an analysis is set up, most changes and additions are only related to the processors.
 
 Analyses that share the input file format can easily also share processors, that implement basic analysis steps in a general fashion.
 Analysis-specific parts can either derive from existing processor classer or be modeled in new processors.
 
 
-\section{HarryPlotter -- Python Post-processing Framework \label{section_artus_harryplotter}}
+\section{HarryPlotter -- A Python Framework for Post-processing}
+\label{section_artus_harryplotter}
 
 The computationally expensive event processing steps are followed by the post-processing of the results and their presentation.
 From a technical point of view, the focus here is rather on flexibility than on performance.
@@ -302,7 +307,8 @@ After all arguments are defined, the configuration is parsed a second time provi
 Then all processors are executed as described above.
 
 
-\section{A Real World Application -- the $\PH\to\Pgt\Pgt$ Analysis \label{section_artus_example_htt}}
+\section{\texorpdfstring{A Real World Application -- the $\PH\to\Pgt\Pgt$ Analysis}{A Real World Application - the H to Tau Tau Analysis}}
+\label{section_artus_example_htt}
 
 Currently, the \artus framework is used for various user analyses of CMS data, ranging from jet energy calibration and QCD studies to analyses in the scope of Higgs boson measurements and searches for physics beyond the Standard Model.
 As an example, the technical aspects of the $\PH\to\Pgt\Pgt$ analysis are explained in the following.
@@ -333,7 +339,7 @@ Also the mass reconstruction is done in a separate producer.
 The selection of events according to high level trigger decisions as well as the selection of decay channels are examples for filters.
 The filters are executed as early as possible in the chain of processors in order to avoid running subsequent processors without real need.
 
-Table~\ref{table_artus_runtime_comparison} shows a runtime measurement for the baseline part of the $\PH\to\Pgt\Pgt$ in the four main channels ($\Pgm\Pgt$, $\Pe\Pgt$, $\Pe\Pgm$ and $\Pgt\Pgt$).
+Table~\ref{table_artus_runtime_comparison} shows a runtime measurement for the baseline part of the $\PH\to\Pgt\Pgt$ in the four main decay channels ($\Pgm\Pgt$, $\Pe\Pgt$, $\Pe\Pgm$ and $\Pgt\Pgt$).
 It illustrates the main advantage of the \artus structure: sub-analyses with different sets of configurations can be performed in the same run avoiding the multiple IO overhead when the configurations would be performed sequentially in different runs.
 
 %time HiggsToTauTauAnalysis.py @HiggsAnalysis/KITHiggsToTauTau/data/ArtusWrapperConfigs/Sync13TeV.cfg -i HiggsAnalysis/KITHiggsToTauTau/data/Samples/NAF_sample_DYJetsToLLM50_RunIISpring15DR74_Asympt25ns_13TeV_MINIAOD_amcatnloFXFX-pythia8_recent.txt -f 10
@@ -379,6 +385,7 @@ Similarly, ratios comparing the compatibility of data and the simulation for the
 The post-processing step either outputs plots or writes the histograms to ROOT files and passes them over to the limit calculation tools.
 
 \section{Conclusion}
+\label{section_conclusion}
 % what Artus does
 % what it brought to the analysis:
 % - code reuse among analysis groups
@@ -387,7 +394,7 @@ The post-processing step either outputs plots or writes the histograms to ROOT f
 % - increased data in Run 2
 
 The \artus analysis framework presented in this paper offers a comprehensive and well-integrated solution for event-based data analyses in the HEP domain.
-In conjunction with the plotting toolkit HarryPlotter, all data analysis needs are covered.
+In conjunction with the post-processing toolkit HarryPlotter, all data analysis needs are covered.
 
 The modular and structured manner, in which the processing required for an analysis, can be expressed within the \artus framework, allowed the involved research groups to share and re-use source code on a scale not possible before.
 The concept underlying the \artus framework also enabled us to share program code between analysis and even across different universities and research centers.

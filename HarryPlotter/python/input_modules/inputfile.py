@@ -36,15 +36,16 @@ class InputFile(inputbase.InputBase):
 		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "files", "directories"])
 		
 		# prepare files
-		for index, (file_args, directory) in enumerate(zip(plotData.plotdict["files"], plotData.plotdict["directories"])):
+		for index, (file_args, directories) in enumerate(zip(plotData.plotdict["files"], plotData.plotdict["directories"])):
 			paths_before_globbing = []
 			files = []
 			if file_args.startswith("root:/"):
 				files.append(file_args)
 			else:
 				for file_arg in file_args.split():
-					paths_before_globbing.append(os.path.expandvars(os.path.join(directory, file_arg) if directory else file_arg))
-					files.extend(glob.glob(paths_before_globbing[-1]))
+					for directory in directories.split() if directories else [None]:
+						paths_before_globbing.append(os.path.expandvars(os.path.join(directory, file_arg) if directory else file_arg))
+						files.extend(glob.glob(paths_before_globbing[-1]))
 				if len(files) == 0:
 					log.error("Input argument %d (%s) does not contain any existing files!" % (index, ", ".join(paths_before_globbing)))
 					sys.exit(1)

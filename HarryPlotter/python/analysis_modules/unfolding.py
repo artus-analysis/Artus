@@ -46,6 +46,9 @@ class Unfolding(analysisbase.AnalysisBase):
 				help="Location of libRooUnfold library file")
 		self.Unfolding_options.add_argument("--unfolding-iterations", type=int, default=4,
 				help="Number of iterations for unfolding")
+		self.Unfolding_options.add_argument("--unfolding-method", type=str, default="dagostini",
+				choices=['dagostini', 'binbybin', 'svd'],
+				help="Method for unfolding. [Default: %(default)s]")
 
 	def prepare_args(self, parser, plotData):
 		super(Unfolding, self).prepare_args(parser, plotData)
@@ -74,6 +77,7 @@ class Unfolding(analysisbase.AnalysisBase):
 				plotData.plotdict["root_objects"][reco],
 				plotData.plotdict["root_objects"][gen],
 				plotData.plotdict["root_objects"][data],
+				plotData.plotdict["unfolding_method"],
 				plotData.plotdict["libRooUnfold"],
 				variation,
 				plotData.plotdict["unfolding_iterations"]
@@ -82,7 +86,7 @@ class Unfolding(analysisbase.AnalysisBase):
 			plotData.plotdict["nicks"].append(new_nick)
 
 
-def doUnfolding(hResponse_input, hMeas, hTrue, hData, libRooUnfold_path, variation=0, iterations=4):
+def doUnfolding(hResponse_input, hMeas, hTrue, hData, method, libRooUnfold_path, variation=0, iterations=4):
 	"""return unfolded distribution"""
 	ROOT.gSystem.Load(libRooUnfold_path)
 
@@ -97,10 +101,12 @@ def doUnfolding(hResponse_input, hMeas, hTrue, hData, libRooUnfold_path, variati
 	response = ROOT.RooUnfoldResponse(hMeas, hTrue, hResponse, hMeas.GetName(), hMeas.GetTitle())
 
 	#TODO make this configurable
-	unfold = ROOT.RooUnfoldBayes(response, hData, iterations)
-	#  OR
-	# unfold= ROOT.RooUnfoldSvd	 (response, hMeas, 20);   #  OR
-	# unfold= ROOT.RooUnfoldTUnfold (response, hMeas);
+	if method == 'dagostini':
+		unfold = ROOT.RooUnfoldBayes(response, hData, iterations)
+	elif method == 'svd':
+		unfold = ROOT.RooUnfoldSvd(response, hData, iterations)  # singular value decomposition
+	elif method == 'binbybin':
+		unfold = ROOT.RooUnfoldBinByBin(response, hData)  # bin-by-bin (simple correction factors)
 
 	hReco = unfold.Hreco()
 	return hReco

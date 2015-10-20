@@ -21,10 +21,10 @@ class SumOfHistograms(analysisbase.AnalysisBase):
 		super(SumOfHistograms, self).modify_argument_parser(parser, args)
 		
 		self.sum_histograms_options = parser.add_argument_group("Options for adding up histograms")
-		self.sum_histograms_options.add_argument("--sum-nicks", nargs="+", required=True,
+		self.sum_histograms_options.add_argument("--sum-nicks", nargs="+",
 				help="Nick names for the histograms to sum up, whitespace separated.")
-		self.sum_histograms_options.add_argument("--sum-scale-factors, whitespace separated.", nargs="+", default=["1.0"],
-				help="Scale factors for the histograms to sum up.")
+		self.sum_histograms_options.add_argument("--sum-scale-factors", nargs="+", default=["1.0"],
+				help="Scale factors for the histograms to sum up, whitespace separated.")
 		self.sum_histograms_options.add_argument("--sum-result-nicks", nargs="+", default=[None],
 				help="Nick names for the resulting histograms.")
 

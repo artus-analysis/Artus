@@ -13,7 +13,7 @@
 */
 class MotherDaughterBundle {
 public:
-	MotherDaughterBundle( KGenParticle* newnode ) : node( newnode ) {};
+	explicit MotherDaughterBundle(KGenParticle* newnode) : node(newnode) {}
 	~MotherDaughterBundle() {};
 	bool finalState = false;
 	std::vector<MotherDaughterBundle*> finalStates;
@@ -45,7 +45,8 @@ public:
 
 	void createFinalStates(MotherDaughterBundle* root)
 	{
-		if (this->finalState == true) root->finalStates.push_back(this);
+		if (this->finalState)
+			root->finalStates.push_back(this);
 		else if (this->Daughters.size() != 0)
 		{
 			for(unsigned int i = 0; i<this->Daughters.size(); ++i)
@@ -62,7 +63,7 @@ public:
 		{
 			if (this->finalStates[i]->getCharge() == 1 || this->finalStates[i]->getCharge() == -1)
 			{
-				chargedParticles++;
+				++chargedParticles;
 			}
 		}
 		if(chargedParticles==1)	this->finalStateOneProngs = this->finalStates;

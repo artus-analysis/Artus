@@ -35,7 +35,7 @@ void GenPartonCounterProducer::Produce(KappaEvent const& event, KappaProduct& pr
 			    std::abs(genParticle->pdgId()) == 6 ||
 			    std::abs(genParticle->pdgId()) == 21)
 
-				nPartons++;
+				++nPartons;
 		}
 
 		// start counting partons after finding a boson (for example W or Z)

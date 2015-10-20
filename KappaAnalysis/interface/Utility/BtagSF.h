@@ -7,7 +7,7 @@
 class BtagSF
 {
   public:
-	BtagSF(int seed = 0);
+	explicit BtagSF(int seed = 0);
 	~BtagSF();
 
 	bool isbtagged(double pt, float eta, float csv, Int_t jetflavor, bool isdata,

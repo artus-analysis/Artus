@@ -8,7 +8,7 @@
 
 class ProgressReportBase {
 public:
-	virtual ~ProgressReportBase() {  };
+	virtual ~ProgressReportBase() {}
 
 	virtual void update(long long currentIndex, long long maxItems) = 0;
 
@@ -18,9 +18,9 @@ public:
 class ConsoleProgressReport: public ProgressReportBase {
 public:
 
-	ConsoleProgressReport(float reportIntervall = 0.1f);
-	
-	virtual ~ConsoleProgressReport() {  };
+	explicit ConsoleProgressReport(float reportIntervall = 0.1f);
+
+	virtual ~ConsoleProgressReport() {}
 
 	virtual void update(long long currentIndex, long long maxItems) override;
 

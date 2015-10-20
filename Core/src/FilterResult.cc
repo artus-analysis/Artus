@@ -25,7 +25,7 @@ FilterResult::FilterResult(FilterNames const& initialFilterNames, FilterNames co
 
 FilterResult::DecisionEntry * FilterResult::GetDecisionEntry( std::string const& filterName ) {
 	for ( FilterResult::FilterDecisions::iterator it = m_filterDecisions.begin();
-			it != m_filterDecisions.end(); it ++ ) {
+			it != m_filterDecisions.end(); ++it) {
 		if ( filterName == it->filterName )
 			return & ( *it );
 	}
@@ -35,7 +35,7 @@ FilterResult::DecisionEntry * FilterResult::GetDecisionEntry( std::string const&
 
 FilterResult::DecisionEntry const* FilterResult::GetDecisionEntry( std::string const& filterName ) const {
 	for ( FilterResult::FilterDecisions::const_iterator it = m_filterDecisions.begin();
-			it != m_filterDecisions.end(); it ++ ) {
+			it != m_filterDecisions.end(); ++it) {
 		if ( filterName == it->filterName )
 			return & ( *it );
 	}
@@ -61,8 +61,7 @@ void FilterResult::AddFilterNames( FilterNames const& fn, FilterNames const& tag
 }
 
 void FilterResult::AddFilterNames( FilterNames const& fn ){
-	for ( FilterResult::FilterNames::const_iterator it = fn.begin();
-			it != fn.end(); it ++ ) {
+	for (FilterResult::FilterNames::const_iterator it = fn.begin(); it != fn.end(); ++it) {
 		FilterResult::DecisionEntry * entr = GetDecisionEntry( * it );
 		if ( entr == nullptr ) {
 			m_filterDecisions.push_back( DecisionEntry(*it, Decision::Undefined, IsTaggingFilter(*it)));
@@ -85,7 +84,7 @@ bool FilterResult::HasPassed() const {
 
 	m_cacheHasPassed = true;
 	for (FilterResult::FilterDecisions::const_iterator it = GetFilterDecisions().begin();
-			it != GetFilterDecisions().end(); it++) {
+			it != GetFilterDecisions().end(); ++it) {
 		if (it->filterDecision == FilterResult::Decision::NotPassed &&
 		    it->taggingMode == FilterResult::TaggingMode::Filtering)
 			m_cacheHasPassed = false;
@@ -97,7 +96,7 @@ bool FilterResult::HasPassed() const {
 
 bool FilterResult::HasPassedIfExcludingFilter(std::string const& excludedFilter) const {
 	for (FilterResult::FilterDecisions::const_iterator it = GetFilterDecisions().begin();
-			it != GetFilterDecisions().end(); it++) {
+			it != GetFilterDecisions().end(); ++it) {
 		if (it->filterDecision == FilterResult::Decision::NotPassed &&
 		    it->taggingMode == FilterResult::TaggingMode::Filtering)
 		{
@@ -142,7 +141,7 @@ std::string FilterResult::ToString() const {
 	s << "== Filter Decision == " << std::endl;
 
 	for (FilterResult::FilterDecisions::const_iterator it = m_filterDecisions.begin();
-			it != m_filterDecisions.end(); it++) {
+			it != m_filterDecisions.end(); ++it) {
 		s << it->filterName << " : " << FilterResult::DecisionToString( it->filterDecision ) << std::endl;
 	}
 

@@ -40,7 +40,7 @@ public:
 	// a signal listener with the OS to handle Ctrl-C commands send
 	// by the user to the console. In this case the processing will be stopped
 	// after the current event and the root file will be properly written.
-	PipelineRunner(bool registerSignalHandler = true) : m_registerSignalHandler(registerSignalHandler)
+	explicit PipelineRunner(bool registerSignalHandler = true) : m_registerSignalHandler(registerSignalHandler)
 	{
 		// this is the default
 		// use AddProgressReport / ClearProgressReports to adapt it to your needs
@@ -161,7 +161,7 @@ public:
 			if (!evtProvider.GetEntry(i))
 			break;
 			for (ProgressReportIterator it = m_progressReport.begin();
-					it != m_progressReport.end(); it++)
+					it != m_progressReport.end(); ++it)
 			{
 				it->update(i-firstEvent, nEvents);
 			}
@@ -170,8 +170,7 @@ public:
 			// use the lit of filters to bootstrap the filter list names
 			FilterResult globalFilterResult ( globlalFilterIds, taggingFilters );
 
-			for( ProcessNodesIterator it = m_globalNodes.begin();
-					it != m_globalNodes.end(); it ++ )
+			for (ProcessNodesIterator it = m_globalNodes.begin(); it != m_globalNodes.end(); ++it)
 			{
 				// variables for runtime measurement
 				timeval tStart, tEnd;
@@ -214,8 +213,7 @@ public:
 			// run the pipelines
 			FilterResult pipelineFilterRes(pipelineResultNames, taggingFilters);
 
-			for (PipelinesIterator it = m_pipelines.begin();
-					it != m_pipelines.end(); it++)
+			for (PipelinesIterator it = m_pipelines.begin(); it != m_pipelines.end(); ++it)
 			{
 				if (it->GetSettings().GetLevel() == 1)
 				{
@@ -229,14 +227,14 @@ public:
 		}
 
 		for (ProgressReportIterator it = m_progressReport.begin();
-				it != m_progressReport.end(); it++)
+				it != m_progressReport.end(); ++it)
 		{
 			it->finish();
 		}
 
 		// first safe the results ( > plots ) from all level one pipelines
 		for (PipelinesIterator it = m_pipelines.begin();
-				!(it == m_pipelines.end()); it++)
+				!(it == m_pipelines.end()); ++it)
 		{
 			if (it->GetSettings().GetLevel() == 1)
 				it->FinishPipeline();
@@ -252,7 +250,7 @@ public:
 		{
 			noPipelineRun = true;
 			for (PipelinesIterator it = m_pipelines.begin();
-					it != m_pipelines.end(); it++)
+					it != m_pipelines.end(); ++it)
 			{
 				if (osHasSIGINT())
 				{
@@ -268,7 +266,7 @@ public:
 					it->FinishPipeline();
 				}
 			}
-			curLevel++;
+			++curLevel;
 		}
 	}
 

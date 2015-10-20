@@ -29,6 +29,7 @@ class PlotData(object):
 		super(PlotData, self).__init__()
 		self.plotdict = args
 		self.plot = None
+		self.metadata = {} # key: nick to which the value belongs
 		self.input_json_dicts = []
 		self.fit_results = {}
 	

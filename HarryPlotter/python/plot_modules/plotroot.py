@@ -195,7 +195,7 @@ class PlotRoot(plotbase.PlotBase):
 			plotData.plotdict["legend"] += [0.6, 0.6, 0.9, 0.9][len(plotData.plotdict["legend"]):]
 			plotData.plotdict["legend"] = plotData.plotdict["legend"][:4]
 		
-		for key in ["labels", "x_label", "y_label", "z_label", "title"]:
+		for key in ["labels", "x_label", "y_label", "x_tick_labels", "y_tick_labels", "z_label", "title"]:
 			if isinstance(plotData.plotdict[key], basestring):
 				plotData.plotdict[key] = self.nice_labels.get_nice_label(plotData.plotdict[key])
 			elif isinstance(plotData.plotdict[key], collections.Iterable):
@@ -332,6 +332,9 @@ class PlotRoot(plotbase.PlotBase):
 				self.x_min = plotData.plotdict["x_lims"][0]
 				if len(plotData.plotdict["x_lims"]) > 1:
 					self.x_max = plotData.plotdict["x_lims"][1]
+		if self.x_min == self.x_max:
+			self.x_min -= 1.0
+			self.x_max += 1.0
 		
 		# y lims
 		if plotData.plotdict["sym_y_lims"] and (not plotData.plotdict["y_log"]):
@@ -362,6 +365,11 @@ class PlotRoot(plotbase.PlotBase):
 				self.y_max = plotData.plotdict["y_lims"][1]
 			elif self.max_dim < 3:
 				self.y_max *= (plotData.plotdict["rel_y_lims"][1] if self.y_max > 0.0 else plotData.plotdict["rel_y_lims"][0])
+				if plotData.plotdict["cms"]:
+					self.y_max *= 1.2
+
+		if self.y_min == self.y_max:
+			self.y_max += 1.0
 		
 		# z lims
 		if plotData.plotdict["sym_z_lims"] and (not plotData.plotdict["z_log"]):
@@ -398,6 +406,8 @@ class PlotRoot(plotbase.PlotBase):
 					self.z_max *= (1.1 if self.z_max > 0.0 else 0.9)
 				else:
 					self.z_max *= (1.01 if self.z_max > 0.0 else 0.99)
+		if (not self.z_min is None) and (not self.z_max is None) and (self.z_min == self.z_max):
+			self.z_max += 1.0
 		
 		# y subplot lims
 		if plotData.plotdict["sym_y_subplot_lims"]:
@@ -425,12 +435,16 @@ class PlotRoot(plotbase.PlotBase):
 				self.y_sub_max = plotData.plotdict["y_subplot_lims"][1]
 			elif not self.y_sub_max is None:
 				self.y_sub_max *= (1.1 if self.y_sub_max > 0.0 else 0.9)
+		if (not self.y_sub_min is None) and (not self.y_sub_max is None) and (self.y_sub_min == self.y_sub_max):
+			self.y_sub_max += 1.0
 		
 		# z subplot lims
 		if not self.z_sub_min is None:
 			self.z_sub_min *= (0.9 if self.z_sub_min > 0.0 else 1.1)
 		if not self.z_sub_max is None:
 			self.z_sub_max *= (1.1 if self.z_sub_max > 0.0 else 0.9)
+		if (not self.z_sub_min is None) and (not self.z_sub_max is None) and (self.z_sub_min == self.z_sub_max):
+			self.z_sub_max += 1.0
 		
 	def make_plots(self, plotData):
 		super(PlotRoot, self).make_plots(plotData)
@@ -468,6 +482,13 @@ class PlotRoot(plotbase.PlotBase):
 				for y_bin in range(n_binsY):
 					self.axes_histogram.GetYaxis().SetBinLabel(y_bin+1, plotData.plotdict["y_tick_labels"][y_bin])
 			
+			# avoid scientific notation for x-axis
+			self.axes_histogram.GetXaxis().SetNoExponent(True)
+
+			# avoid scientific notation for y-axis if a title is present
+			if (not plotData.plotdict["title"] is None):
+				self.axes_histogram.GetYaxis().SetNoExponent(True)
+			
 			self.axes_histogram.Draw("AXIS")
 		
 		if plotData.plot.subplot_pad:
@@ -493,7 +514,10 @@ class PlotRoot(plotbase.PlotBase):
 			if plotData.plotdict["x_tick_labels"] and len(plotData.plotdict["x_tick_labels"]) > 0:
 				for x_bin in range(n_sub_binsX):
 					self.subplot_axes_histogram.GetXaxis().SetBinLabel(x_bin+1, plotData.plotdict["x_tick_labels"][x_bin])
-
+			
+			# avoid scientific notation for x-axis
+			self.subplot_axes_histogram.GetXaxis().SetNoExponent(True)
+			
 			self.subplot_axes_histogram.Draw("AXIS")
 			
 			for line_graph in self.subplot_line_graphs:
@@ -694,7 +718,7 @@ class PlotRoot(plotbase.PlotBase):
 				CMS_lumi.lumiTextOffset = 0.4
 
 		# normal plot title (e.g., 'own work', name of the channel...): outside plot, top left
-		y_title = 0.94 if self.subplot_axes_histogram is None else 0.95
+		y_title = 0.95 if self.subplot_axes_histogram is None else 0.96
 		if (not plotData.plotdict["title"] is None) and (plotData.plotdict["title"] != ""):
 			x_title = 0.2
 			title = self.text_box.AddText(x_title, y_title, plotData.plotdict["title"])
