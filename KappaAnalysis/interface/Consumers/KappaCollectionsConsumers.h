@@ -152,7 +152,6 @@ public:
 		m_pfPhotonsNoPileUpEtsum_0025 = 0;
 		m_pfPhotonsNoPileUpEtsum_005 = 0;
 		m_pfPhotonsNoPileUpEtsum_01 = 0;
-		
 		m_nPU = static_cast<KGenEventInfo*>(event.m_eventInfo)->nPU;
 		m_nPUMean = static_cast<KGenEventInfo*>(event.m_eventInfo)->nPUMean;
 		//m_puWeight = *((product.m_weights)->puWeight);
