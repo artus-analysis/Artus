@@ -31,6 +31,8 @@ class StatisticalErrors(analysisbase.AnalysisBase):
 	
 	def prepare_args(self, parser, plotData):
 		super(StatisticalErrors, self).prepare_args(parser, plotData)
+		if plotData.plotdict["stat_error_nicks"] is None:
+			plotData.plotdict["stat_error_nicks"] = plotData.plotdict["nicks"]
 	
 	def run(self, plotData=None):
 		super(StatisticalErrors, self).run(plotData)
