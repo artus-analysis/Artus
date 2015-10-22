@@ -140,7 +140,7 @@ def getDistributionFromSkim(filelist, nmax=80, save=True, bins=1600, name="pileu
 		chain.Add(f)
 	print "Files added, starting to fill...",
 	result = ROOT.TH1D(name, "True Number of Pile-Up Interactions;nputruth;events", bins, 0.0, nmax)
-	chain.Draw("KEventMetadata.numPUInteractionsTruth >> " + name)
+	chain.Draw("eventInfo.nPUMean >> " + name)
 	print "done"
 	return result
 
