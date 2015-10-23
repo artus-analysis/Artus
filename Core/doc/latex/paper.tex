@@ -5,7 +5,7 @@
 
 \usepackage{booktabs}
 \usepackage{hepnames}
-\usepackage{hepunits}
+\usepackage{siunitx}
 \usepackage{url}
 \usepackage{palatino}
 \usepackage[hidelinks,bookmarks=true,plainpages=false]{hyperref}
@@ -30,8 +30,9 @@
 \begin{document}
 
 \begin{frontmatter}
-\title{\artus -- Framework for Event-based Data Analysis in High Energy Physics}
+\title{\artus{} -- Framework for Event-based Data Analysis in High Energy Physics}
 
+\author{Joram Berger}
 \author{Fabio Colombo}
 \author{Raphael Friese}
 \author{Dominik Haitz}
@@ -64,17 +65,16 @@ The framework is well-tested and successfully used by several analysis groups.
 % Especially common problems and challenges should be highlighted.
 % From these problems, the design requirements for Artus are derived.
 The workflow of the experiments collecting data at the Large Hadron Collider (LHC) at CERN is taken as an example to illustrate the organization and needs of a modern High Energy Physics (HEP) analysis.
-Still, equal or very similar requirements are also present for HEP experiments not located at the LHC.
+Nonetheless, equal or very similar requirements are also present for HEP experiments not located at the LHC.
 
 Between the data taking at the detector or the generation of simulated events with the subsequent detector simulation and the presentation of the physical results, the following analysis steps have shown to be the best compromise in terms of turnaround time and efficiency as explained in Figure \ref{figure_analysis_steps}.
 
-The reconstruction of the raw data coming from the experiments is performed on large computing centers organized in the WLCG\footnote{\url{http://wlcg-public.web.cern.ch}}, the Worldwide LHC Computing Grid.
-The resulting datasets contain event information and high-level physics objects and are of $\mathcal O(10-100)$~TB in size.
-\todo[inline]{move file size numbers to Figure \ref{figure_analysis_steps}?}
+The reconstruction of the raw data coming from the experiments is performed on large computing centers organized in the Worldwide LHC Computing Grid (WLCG)~\cite{wlcg}.
+The resulting datasets contain event information and high-level physics objects and are in the order of \SI{100}{TB} in size.
 
 The data which are relevant for a specific analysis are selected in a step usually referred to as \textit{skimming}.
 The output of the skimming process is an analysis-dependent file, usually in an n-tuple format, and small enough to be stored on local file servers, often owned and operated by a single institute.
-The size of these files ranges from $\mathcal O(10)$~GB to few~TB.
+The size of these files ranges from several \SI{10}{GB} to few~TB.
 
 Finally, the skimmed n-tuples are processed by user code running on local resources.
 This processing step includes further event selections, event categorization or high-level calculations based on the selected physics objects.
@@ -225,14 +225,14 @@ It should be either part of the requirements or part of the summary what Artus d
 I think the idea was to explain how certain design decisions, e.g.\ pipelines, achieve the \artus design goals.
 Therefore it should not be too far from the technical descriptions.
 }
-This structure extends the established concepts of existing frameworks like FWLite from CMSSW to the following four main advantages:
+This structure extends the established concepts of existing frameworks~\cite{cmssw} to the following four main advantages:
 \begin{description}
-\item[Modular structure:] Analysis steps are implemented in processors, breaking down the complete analysis in well-defined and easily understandable and writable parts.
-\item[Re-utilization of code:] Processors can be shared among different analysis groups.
+\item[Modular structure] Analysis steps are implemented in processors, breaking down the complete analysis in well-defined and easily understandable and writable parts.
+\item[Re-utilization of code] Processors can be shared among different analysis groups.
 Every user contributes to the testing of existing code and improves the confidence in this code.
-\item[Configurability:] Each module uses settings that are read from the the configuration.
-Each pipeline is mapped to a separate sub-set of the configuration.
-\item[High performance:] The concept of pipelines allows to analyze the data with different configurations at the same time, while the data is read in only once and common processing steps are shared in the global pipeline.
+\item[Configurability] Each module uses settings which are read from the the configuration.
+A separate sub-set of the configuration is created for each pipeline.
+\item[High performance] The concept of pipelines allows to analyze the data with different configurations at the same time, while the data is read in only once and common processing steps are shared in the global pipeline.
 Therefore, the cost-intensive input operations are reduced to a minimum.
 \end{description}
 
@@ -347,7 +347,7 @@ It illustrates the main advantage of the \artus structure: sub-analyses with dif
 \centering
 \begin{tabular}{lrr}
 \toprule
-\textbf{Pipelines}                                & \textbf{Runtime / \minute} & \textbf{Event Rate / \reciprocal\second} \\ \midrule
+\textbf{Pipelines}                                & \textbf{Runtime / \si{min}} & \textbf{Event Rate / \si{s^{-1}} } \\ \midrule
 %0                                                & 5:53                             & 1296 \\
  0                                                & 5:12                             & 1470 \\ \midrule
 %\em                                              & 6:27                             & 1181 \\
