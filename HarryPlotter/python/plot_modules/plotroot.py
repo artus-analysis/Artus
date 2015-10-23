@@ -65,11 +65,13 @@ class PlotRoot(plotbase.PlotBase):
 		
 		self.axis_options.add_argument("--x-lims", type=float, nargs="+",
 		                               help="Lower and Upper limit for x-axis.")
+		self.axis_options.add_argument("--x-rel-lims", type=float, nargs=2, default=[1.0, 1.0],
+		                               help="Relative lower and upper margin for auto x-lims. [Default: %(default)s]")
 		self.axis_options.add_argument("--sym-x-lims", nargs="?", type="bool", default=False, const=True,
 		                               help="Symmetric x-axis limits of the plot. The parameters of --x-lims are taken as <center> <range/2>")
 		self.axis_options.add_argument("--y-lims", type=float, nargs="+",
 		                               help="Lower and Upper limit for y-axis.")
-		self.axis_options.add_argument("--rel-y-lims", type=float, nargs=2,
+		self.axis_options.add_argument("--rel-y-lims", type=float, nargs=2, # TODO: should be renamed into --y-rel-lims for consistency reasons
 		                               help="Relative lower and upper margin for auto y-lims. [Default: [0.9, 1.1] for lin. y-axis and [0.5, 2.0] for log. y-axis.]")
 		self.axis_options.add_argument("--sym-y-lims", nargs="?", type="bool", default=False, const=True,
 		                               help="Symmetric y-axis limits of the plot. The parameters of --y-lims are taken as <center> <range/2>")
@@ -319,11 +321,17 @@ class PlotRoot(plotbase.PlotBase):
 				self.x_min = plotData.plotdict["x_lims"][0] - plotData.plotdict["x_lims"][1]
 				self.x_max = plotData.plotdict["x_lims"][0] + plotData.plotdict["x_lims"][1]
 			else:
+				tmp_x_min = self.x_min * plotData.plotdict["x_rel_lims"][0]
+				tmp_x_max = self.x_max * plotData.plotdict["x_rel_lims"][1]
+				
 				if not plotData.plotdict["x_lims"] is None:
 					center = plotData.plotdict["x_lims"][0]
-					width = max([abs(x - center) for x in [self.x_min, self.x_max]])
+					width = max([abs(x - center) for x in [tmp_x_min, tmp_x_max]])
 					self.x_min = center - width
 					self.x_max = center + width
+				else:
+					self.x_min = tmp_x_min
+					self.x_max = tmp_x_max
 		else:
 			if plotData.plotdict["sym_x_lims"]:
 				log.warning("Symmetric limits are not yet implemented for logarithmic axes!")
@@ -332,6 +340,11 @@ class PlotRoot(plotbase.PlotBase):
 				self.x_min = plotData.plotdict["x_lims"][0]
 				if len(plotData.plotdict["x_lims"]) > 1:
 					self.x_max = plotData.plotdict["x_lims"][1]
+				else:
+					self.x_max *= plotData.plotdict["x_rel_lims"][1]
+			else:
+				self.x_min *= plotData.plotdict["x_rel_lims"][0]
+				self.x_max *= plotData.plotdict["x_rel_lims"][1]
 		if self.x_min == self.x_max:
 			self.x_min -= 1.0
 			self.x_max += 1.0
