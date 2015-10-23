@@ -198,7 +198,8 @@ class PlotBase(processor.Processor):
 			plotData.plotdict["labels"] = plotData.plotdict["nicks"]
 		
 		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles", "line_widths"],
-				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]))
+				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]),
+				help="Plotting style options")
 		# stacks are expanded by appending None's
 		plotData.plotdict["stacks"] = plotData.plotdict["stacks"]+[None]*(len(plotData.plotdict["nicks"])-len(plotData.plotdict["stacks"]))
 		
@@ -239,7 +240,7 @@ class PlotBase(processor.Processor):
 
 		# prepare arguments for text label(s)
 		if plotData.plotdict["texts"] is not None:
-			self.prepare_list_args(plotData, ["texts", "texts_y", "texts_x", "texts_size"])
+			self.prepare_list_args(plotData, ["texts", "texts_y", "texts_x", "texts_size"], help="texts for plotting")
 			if len(plotData.plotdict["texts"]) == 1 and plotData.plotdict["texts"][0] is None:
 				plotData.plotdict["texts"] = []
 				plotData.plotdict["texts_x"] = []
