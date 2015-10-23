@@ -90,8 +90,10 @@ class PlotRoot(plotbase.PlotBase):
 		self.axis_options.add_argument("--reverse-z-axis", nargs="?", type="bool", default=False, const=True,
 		                               help="Reverse Z axis labelling. [Default: %(default)s]")
 		
-		self.canvas_options.add_argument("--left-pad-margin", nargs=1, type=float, default=None,
-		                               help="Left margin of pad. [Default: %(default)s]")
+		self.canvas_options.add_argument("--left-pad-margin", type=float, default=None,
+		                               help="Left margin of pad. [Default: automatically determined]")
+		self.canvas_options.add_argument("--right-pad-margin", type=float, default=None,
+		                               help="Right margin of pad. [Default: automatically determined]")
 		
 		self.formatting_options.add_argument("-C", "--colors", type=str, nargs="+",
 		                                     help="Colors for the plots. For each plot up to two colors (whitespace separated) can be specified, the first for lines and markers and the second for filled areas.")
@@ -257,7 +259,9 @@ class PlotRoot(plotbase.PlotBase):
 		self.plot_pad_right_margin = plot_pad.GetRightMargin()
 		plot_pad.SetRightMargin(0.25)
 		if not plotData.plotdict["left_pad_margin"] is None:
-			plot_pad.SetLeftMargin(plotData.plotdict["left_pad_margin"][0])
+			plot_pad.SetLeftMargin(plotData.plotdict["left_pad_margin"])
+		if not plotData.plotdict["right_pad_margin"] is None:
+			plot_pad.SetRightMargin(plotData.plotdict["right_pad_margin"])
 		if not subplot_pad is None:
 			subplot_pad.SetRightMargin(0.25)
 		
@@ -622,7 +626,7 @@ class PlotRoot(plotbase.PlotBase):
 			self.subplot_axes_histogram.GetYaxis().SetTitleOffset(self.subplot_axes_histogram.GetYaxis().GetTitleOffset() * self.plot_subplot_slider_y)
 			self.subplot_axes_histogram.GetYaxis().SetNdivisions(5, 0, 0)
 		
-		if all([isinstance(root_object, ROOT.TF1) or (root_object.GetListOfFunctions().FindObject("palette") == None) for root_object in plotData.plotdict["root_objects"].values()]):
+		if all([isinstance(root_object, ROOT.TF1) or (root_object.GetListOfFunctions().FindObject("palette") == None) for root_object in plotData.plotdict["root_objects"].values()]) and (plotData.plotdict["right_pad_margin"] is None):
 			plotData.plot.plot_pad.SetRightMargin(0.05)
 			if not plotData.plot.subplot_pad is None:
 				plotData.plot.subplot_pad.SetRightMargin(0.05)
