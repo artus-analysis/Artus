@@ -8,6 +8,7 @@ import subprocess
 import copy
 import array
 import sys
+import difflib
 
 """
 This is a tool for reweighting MC to match pile-up in data.
@@ -56,23 +57,26 @@ def main():
 		if op.save:
 			saveDistributionToFile(op.dataoutput, data, op.data_histo)
 	if data and mc:
-		print >> sys.stderr,  data.GetNbinsX(), mc.GetNbinsX()
+		print >> sys.stderr,  "Bins (data, mc)", data.GetNbinsX(), mc.GetNbinsX()
+		# use mc to data bin count? this may break later for bin count factors != 2 - MF20151023
 		if data.GetNbinsX() > 1000:
+			print >> sys.stderr, "rebinned data"
 			data.Rebin()
 		if mc.GetNbinsX() > 1000:
 			mc.Rebin()
-		weights = calcWeights(data, mc, op.verbose, not op.no_warning, op.rebin, op.binning)
+			print >> sys.stderr, "rebinned mc"
+		weights = calcWeights(data, mc, verbose=op.verbose, warn=not op.no_warning, rebin=op.rebin, binning=op.binning, weight_limits=op.weight_limits)
 		saveDistributionToFile(op.output, weights)
 	else:
 		print >> sys.stderr,  "No weights calculated."
 		sys.exit(1)
 
 
-def calcWeights(data, mc, verbose=False, warn=True, rebin=False, binning=()):
+def calcWeights(data, mc, verbose=False, warn=True, rebin=False, binning=(), weight_limits=(float("-inf"), float("inf"))):
 	# checks
 	n = data.GetNbinsX()
 	if n != mc.GetNbinsX():
-		print >> sys.stderr,  'Binning of input histograms is not compatible.'
+		print >> sys.stderr,  'Number of bins in input histograms is not compatible.'
 	print >> sys.stderr,  "Weight calculation ..."
 
 	if rebin:
@@ -87,32 +91,44 @@ def calcWeights(data, mc, verbose=False, warn=True, rebin=False, binning=()):
 					data.SetBinContent(i, sumdata)
 					mc.SetBinContent(i, summc)
 
+	bin_centers = [data.GetBinCenter(i) for i in range(1, n+1)]
 	if warn:
 		missing_data, missing_mc, missing_both = [], [], set()
 		for i in range(1, n + 1):
-			if data.GetBinContent(i) <= 0 and data.GetBinLowEdge(i) < 59:
+			if data.GetBinContent(i) <= 0:
 				missing_data.append(data.GetBinCenter(i))
-			if mc.GetBinContent(i) <= 0 and mc.GetBinLowEdge(i) < 59:
+			if mc.GetBinContent(i) <= 0:
 				missing_mc.append(mc.GetBinCenter(i))
 		if missing_data and missing_mc:
 			missing_both.update(missing_data)
 			missing_both.intersection(missing_mc)
-			print >> sys.stderr,  "WARNING: No data & mc events with npu =", sorted(missing_both)
+			print >> sys.stderr,  "WARNING: No data & mc events with npu in", format_bin_ranges(sorted(missing_both), bin_centers)
 		if missing_data:
-			print >> sys.stderr,  "WARNING: No data events with npu =", [npu for npu in missing_data if not npu in missing_both]
+			print >> sys.stderr,  "WARNING: No data events with npu in", format_bin_ranges([npu for npu in missing_data if not npu in missing_both], bin_centers)
 		if missing_mc:
-			print >> sys.stderr,  "WARNING: No mc events with npu =", [npu for npu in missing_mc if not npu in missing_both]
+			print >> sys.stderr,  "WARNING: No mc events with npu in", format_bin_ranges([npu for npu in missing_mc if not npu in missing_both], bin_centers)
 
-	# calculate
+	# calculate weights
 	data.Scale(1.0 / data.Integral())
 	mc.Scale(1.0 / mc.Integral())
 	weights = data.Clone('pileup')
 	weights.SetTitle('pileup weights;n_{PU}^{truth};weight')
 	weights.Divide(mc)
 
+	# warn of excessive weights
+	min_weight, max_weight = weight_limits
+	min_bins, max_bins = [], []
 	for i in range(1, weights.GetNbinsX() + 1):
-		if weights.GetBinContent(i) > 3:
-			weights.SetBinContent(i, 3.0)
+		if weights.GetBinContent(i) > max_weight:
+			weights.SetBinContent(i, max_weight)
+			max_bins.append(weights.GetBinCenter(i))
+		elif weights.GetBinContent(i) < min_weight:
+			weights.SetBinContent(i, min_weight)
+			min_bins.append(weights.GetBinCenter(i))
+	if min_bins:
+		print >> sys.stderr, "WARNING: Bins truncated to lower limit (%f) in" % min_weight, format_bin_ranges([npu for npu in min_bins], bin_centers)
+	if max_bins:
+		print >> sys.stderr, "WARNING: Bins truncated to upper limit (%f) in" % max_weight, format_bin_ranges([npu for npu in max_bins], bin_centers)
 	return weights
 
 
@@ -170,6 +186,29 @@ def getDistributionFromFile(filename, histoname="pileup"):
 	return copy.deepcopy(histo)
 
 
+def format_bin_ranges(bins, all_bins=None, fmt_str="%.2f"):
+	"""
+	Format ranges of bins to be more readable
+
+	If `all_bins` is given, it must be a superset of `bins`. It allows
+	consecutive bins to be joined, e.g. 1, 2, 3 becomes 1-3.
+	"""
+	if all_bins is None or len(bins) <= 1:
+		bin_strs = [fmt_str % binc for binc in bins]
+	else:
+		bin_strs = []
+		for bin_idx, all_bin_idx, match_len in difflib.SequenceMatcher(a=bins, b=all_bins).get_matching_blocks():
+			if match_len == 0:
+				continue
+			if match_len <= 2:
+				bin_strs.append(fmt_str % bins[bin_idx])
+			if match_len == 2:
+				bin_strs.append(fmt_str % bins[bin_idx+1])
+			elif match_len > 2:
+				bin_strs.append((fmt_str % bins[bin_idx]) + "-" + (fmt_str % bins[bin_idx+match_len-1]))
+	return "[" + ", ".join(bin_strs) + "]"
+
+
 def options():
 	parser = argparse.ArgumentParser(
 		description="%(prog)s calculates the weights for MC reweighting "
@@ -206,7 +245,10 @@ def options():
 	parser.add_argument('-b', '--numPileupBins', type=int, default=800,
 		help="Number of desired pile-up bins. [default: %(default)s].")
 	parser.add_argument('-r', '--rebin', action='store_true',
-		help="verbosity")
+		help="merge low and high range bins")
+	parser.add_argument('-w', '--weight-limits', nargs="*", default=[0, 4],
+		help="Limit excessive weights. No value: no limits. One value: max if >1, "
+			 "else min. Two values: min and max. [Default: %(default)s]")
 	parser.add_argument('-v', '--verbose', action='store_true',
 		help="verbosity")
 	parser.add_argument('-c', '--check', action='store_true',
@@ -256,7 +298,18 @@ def options():
 	# if rebinning is activated, low stat bins are merged
 	args.binning = []
 	if args.rebin:
+		# ranges to merge and new binning to use for them - others are left untouched
 		args.binning = [[0, 1, 2, 3.5, 5], range(45, args.maxPileupBin + 1)]
+
+	# ensure all weight limits are present
+	if not args.weight_limits:
+		args.weight_limits = (float("-inf"), float("inf"))
+	if len(args.weight_limits) == 1:
+		args.weight_limits = (float("-inf"), args.weight_limits[0]) if args.weight_limits[0] > 1 else (args.weight_limits[0], float("inf"))
+	if len(args.weight_limits) > 2:
+		print >> sys.stderr, "WARNING: ignoring additional weight limits",
+		args.weight_limits = args.weight_limits[:2]
+	assert args.weight_limits[0] < args.weight_limits[1], "Lower weight limit must be smaller than upper limit"
 
 	if args.verbose:
 		print >> sys.stderr, "Using options:"
