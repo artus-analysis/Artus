@@ -246,7 +246,7 @@ def options():
 		help="Number of desired pile-up bins. [default: %(default)s].")
 	parser.add_argument('-r', '--rebin', action='store_true',
 		help="merge low and high range bins")
-	parser.add_argument('-w', '--weight-limits', nargs="*", default=[0, 4],
+	parser.add_argument('-w', '--weight-limits', nargs="*", default=[0, 4], type=float,
 		help="Limit excessive weights. No value: no limits. One value: max if >1, "
 			 "else min. Two values: min and max. [Default: %(default)s]")
 	parser.add_argument('-v', '--verbose', action='store_true',
