@@ -149,7 +149,7 @@ public:
 											//LOG(DEBUG) << "\t\t\t\t\t\t\ttriggerObjectIndex, triggerObject = " << *triggerObjectIndex << ", " << &triggerObject << ", (pt, eta, phi) = (" << triggerObject.p4.Pt() << ", " << triggerObject.p4.Phi() << ", " << triggerObject.p4.Phi() << ")";
 											
 											// check the matching
-											if (ROOT::Math::VectorUtil::DeltaR(triggerObject.p4, (*validObject)->p4) < (settings.*GetDeltaRTriggerMatchingObjects)())
+											if (ROOT::Math::VectorUtil::DeltaR(triggerObject.p4, (*validObject)->p4) < (settings.*GetDeltaRTriggerMatchingObjects)() && triggerObject.p4.Pt() > settings.GetTriggerObjectLowerPtCut())
 											{
 												//LOG(DEBUG) << "\t\t\t\t\t\t\t\tobjectMatched";
 												
