@@ -396,6 +396,8 @@ class PlotMpl(plotbase.PlotBase):
 
 			if plotData.plotdict["y_subplot_lims"] != None:
 				ax2.set_ylim(*plotData.plotdict["y_subplot_lims"])
+			if plotData.plotdict["y_subplot_ticks"] is not None:
+				ax2.set_yticks(plotData.plotdict["y_subplot_ticks"])
 
 			ax2.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]),position=(1., 0.), va='top', ha='right')
 			ax2.set_ylabel(plotData.plotdict["y_subplot_label"])

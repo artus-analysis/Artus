@@ -66,6 +66,8 @@ class PlotBase(processor.Processor):
 		                               help="Logarithmic y-axis. [Default: %(default)s]")
 		self.axis_options.add_argument("--y-ticks", type=float, nargs="+",
 		                               help="Custom ticks for the Y-axis")
+		self.axis_options.add_argument("--y-subplot-ticks", type=float, nargs="+",
+		                               help="Custom ticks for the Y-axis of the subplot")
 		self.axis_options.add_argument("--y-tick-labels", type=str, nargs="+",
 		                               help="Custom tick labels for the Y-axis")
 		
