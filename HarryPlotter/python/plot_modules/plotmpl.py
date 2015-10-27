@@ -373,8 +373,10 @@ class PlotMpl(plotbase.PlotBase):
 					else:
 						ax.set_ylim(ymin=self.y_min)
 				else:
-					if any("TH" in obj.__class__.__name__ for obj in plotData.plotdict["root_objects"].values()):
+					if any("TH1" in obj.__class__.__name__ for obj in plotData.plotdict["root_objects"].values()):
 						ax.set_ylim(0)
+					elif any("TH2" in obj.__class__.__name__ for obj in plotData.plotdict["root_objects"].values()):
+						ax.set_ylim(self.y_min, self.y_max)
 					else:
 						ax.set_ylim(self.y_min)
 				if all("TH1" in obj.__class__.__name__ for obj in plotData.plotdict["root_objects"].values()):
