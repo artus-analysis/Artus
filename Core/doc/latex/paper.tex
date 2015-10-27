@@ -95,8 +95,6 @@ The data reduction is achieved by performing the data-intensive operations only 
 \label{figure_analysis_steps}
 \end{figure}
 
-\todo[inline]{Should we drop CMS-specific technical terms like AOD/miniAOD?
-Maybe not put this figure on a dedicated page?}
 
 \section{Requirements and Challenges for Analysis Software}
 \label{section_artus_challenges}
@@ -104,23 +102,22 @@ Maybe not put this figure on a dedicated page?}
 Based on the workflow described in the previous section, the following demands for an analysis framework arise:
 
 \begin{description}
-\item[Performance:]
-The main performance indicator is the \emph{turnaround time}, which means the time that is needed to run the whole analysis in case new requirements arise.
-Since the runtime is often limited by the transfer speed of the storage servers, \artus is designed to load each event only once and perform all necessary processing steps.
-This is made possible with the pipelining concept.
+\item[Performance]
+The main performance indicator is the \emph{turnaround time} which is the time needed to run the whole analysis in case new requirements arise.
+Since the runtime is often limited by the transfer speed of the storage servers, the software should load each event only once and perform all necessary processing steps.
 Still, since analysis requirements sometimes change within a few hours, a high level of flexibility is needed.
-This explains the need for a modular structure, where only those parts of the code are executed that really are necessary for the analysis.
+This explains the need for a modular structure, where only those parts of the code are executed that are really necessary for the analysis.
 
-\item[Maintainability:]
+\item[Maintainability]
 Source code maintenance, i.e.\ to be up-to-date with the latest requirements while not losing backwards compatibility, is a challenge for each software project.
-The first important step is to always have  an updated recipe that works out of the box on each machine offering CVMFS.
+The first important step is to always have an updated recipe that works out of the box on each machine offering CVMFS.
 To make the entry level as low as possible, beginners can start with an example analysis.
 In \artus, everything is steered via JSON configuration files.
 The modules then implement what has to be done while the data is stored in desired data format.
 
-\artus has the built-in possibility to submit analysis jobs with grid-control, a job submission tool.
+%\artus has the built-in possibility to submit analysis jobs with grid-control, a job submission tool.
 
-\item[Reliability:]
+\item[Reliability]
 In most cases, analyses never leave prototype status.
 This leads to frequent re-imple\-men\-ta\-tions and low trust in reliability.
 \artus allows the re-use of analysis code due to its modular structure as well as sharing it between different analysis groups, and therefore improving code quality significantly.
@@ -150,8 +147,8 @@ The core of the framework only depends on the boost library\footnote{\url{http:/
 Further dependencies may be introduced by the actual analysis code.
 C++ is chosen for performance reasons and in order to be able to integrate existing frameworks and libraries that are commonly used in high energy physics.
 
-\artus has no need to use multi-core techniques, since it can be parallelized trivially by splitting the input dataset and sending it to different computing instances.
-This is possible, because the processed events are know to be independent of each other.
+Multi-core techniques are not required since the processing can be trivially parallelized by splitting the input dataset and sending it to different computing instances.
+This is possible, because the processed events are known to be independent of each other.
 
 \section{Structure of the Framework}
 \label{section_artus_structure}
@@ -219,12 +216,6 @@ Consumers are executed after the chain of producers and filters.
 The output together with the complete configuration is written to a ROOT \todo[inline]{Referenz auf ROOT?} file.
 These processors are created and managed by a dedicated factory according to the configuration.
 
-\todo[inline]{I would not put the remaining part of this chapter here.
-It should be either part of the requirements or part of the summary what Artus does achieve; but in this technical part in between it feels misplaced
--> Should we put this part into a dedicated section directly after this one?
-I think the idea was to explain how certain design decisions, e.g.\ pipelines, achieve the \artus design goals.
-Therefore it should not be too far from the technical descriptions.
-}
 This structure extends the established concepts of existing frameworks~\cite{cmssw} to the following four main advantages:
 \begin{description}
 \item[Modular structure] Analysis steps are implemented in processors, breaking down the complete analysis in well-defined and easily understandable and writable parts.
