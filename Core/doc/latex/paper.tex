@@ -110,22 +110,24 @@ This explains the need for a modular structure, where only those parts of the co
 
 \item[Maintainability]
 Source code maintenance, i.e.\ to be up-to-date with the latest requirements while not losing backwards compatibility, is a challenge for each software project.
-\todo[inline]{Didn't we agree to remove the following sentence?} The first important step is to always have an updated recipe that works out of the box on each machine offering CVMFS.
 To make the entry level as low as possible, beginners can start with an example analysis.
 In \artus, everything is steered via JSON configuration files.
 The modules then implement what has to be done while the data is stored in desired data format.
 
-%\artus has the built-in possibility to submit analysis jobs with grid-control, a job submission tool.
-
 \item[Reliability]
-In most cases, analyses never leave prototype status.
+In most cases, analysis code is written from scratch for very specific tasks and it is used only by very small groups of analysts.
 This leads to frequent re-imple\-men\-ta\-tions and low trust in reliability.
-\artus allows the re-use of analysis code due to its modular structure as well as sharing it between different analysis groups, and therefore improving code quality significantly.
+An ideal framework should allow to re-use analysis code due to its modular structure as well as sharing it between different analysis groups, and therefore improving code quality significantly.
 
-Source code and configuration files have become the most precise form of description.
+Source code and configuration files are the most precise form of describing the processes.
 Therefore, readability also for people who have not written the code is crucial.
 Also, if possible, existing and well-established libraries of the HEP community are interfaced.
+
+\item[Flexibility]
+While not aiming at feature-completeness, the software should make it easy to cover all analysis needs by being flexible and extendible.
+This comprises new data formats, physical quantites and analysis steps, for instance.
 \end{description}
+
 
 
 \section{The \artus Framework}
@@ -135,7 +137,7 @@ The framework introduced in this section handles the last step of the workflow, 
 
 Following the structure of the CMSSW~\cite{cmssw} framework, the \artus framework\footnote{\url{https://github.com/artus-analysis/artus}} provides a front-to-end solution for the analysis of event-based data.
 The basic concept of modules processing events within an event loop is complemented by tools for the configuration of every step.
-The complete structure is explained in the next section~\ref{section_artus_structure}.
+The complete structure is explained in the next section.
 
 This general framework is applicable to any kind of event processing analysis.
 The well-tested core is shared among various analyses, providing a reliable fundament for any new analysis.
@@ -149,6 +151,7 @@ C++ is chosen for performance reasons and in order to be able to integrate exist
 
 Multi-core techniques are not required since the processing can be trivially parallelized by splitting the input dataset and sending it to different computing instances.
 This is possible, because the processed events are known to be independent of each other.
+The framework comes with a built-in possibility to submit analysis jobs with the job submission tool grid-control.
 
 \section{Structure of the Framework}
 \label{section_artus_structure}
