@@ -230,26 +230,23 @@ Therefore, the cost-intensive input operations are reduced to a minimum.
 
 \section{Building an End-user Analysis}
 \label{section_artus_analysis}
-\todo[inline]{If I would not know the structure already, the following part would not have helped my.
-Either we support it with a drawing and more detailed explanations or we just refer to a readme...
-Maybe rewrite parts of this section}
-In the \artus framework, each concrete analysis is defined by a set of object types.
-The analysis programmer must provide an implementation of the classes for settings, the event and the product class.
+In order to create a custom analysis, the analysis programmer can build his own code on the \artus classes by deriving from them.
+He must provide an implementation of the settings, the event and the product class.
 The settings class defines the tags that are read from the configuration file and the corresponding types of these values.
-The event class defines the event content which is read from the input and the product class contains members for new quantities calculated during the analysis stage.
+The \emph{event} class defines the event content which is read from the input and the product class contains members for new quantities calculated during the analysis stage.
 These three classes need to be derived from the base classes provided by the core of the \artus framework.
 
-An implementation of an event provider must be available.
+An implementation of an \emph{event provider} must be available.
 The event provider must know how to read event content from the input files and how to store them in the event object.
 Furthermore, a factory managing the creation of analysis-specific processors needs to exist.
 These classes also have to be derived from the \artus base classes.
 
-The most important part of an analysis are the processors.
+The most important part of an analysis are the \emph{processors}.
 The abstract processors of the \artus core need to be implemented to realize the physics needs of the analysis in the form of code.
 After the basic structure of an analysis is set up, most changes and additions are only related to the processors.
 
 Analyses that share the input file format can easily also share processors, that implement basic analysis steps in a general fashion.
-Analysis-specific parts can either derive from existing processor classer or be modeled in new processors.
+Analysis-specific parts can either derive from existing processor classes or be modeled in new processors.
 
 
 \section{HarryPlotter -- A Python Framework for Post-processing}
@@ -294,8 +291,6 @@ For the execution within a script, functions exist to create multiple plots in p
 The parsing of the arguments is performed in two steps:
 First, the sequence of modules to be executed is determined.
 These modules are then initialized and can define additional arguments needed for their configuration, such that every module can manage its own settings but can also access the settings of the entire program.
-After all arguments are defined, the configuration is parsed a second time providing the full settings for the HarryPlotter run.
-Then all processors are executed as described above.
 
 
 \section{\texorpdfstring{A Real World Application -- the $\PH\to\Pgt\Pgt$ Analysis}{A Real World Application - the H to Tau Tau Analysis}}
