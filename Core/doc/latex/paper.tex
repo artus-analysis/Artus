@@ -325,11 +325,8 @@ Also the mass reconstruction is done in a separate producer.
 The selection of events according to high level trigger decisions as well as the selection of decay channels are examples for filters.
 The filters are executed as early as possible in the chain of processors in order to avoid running subsequent processors without real need.
 
-Table~\ref{table_artus_runtime_comparison} shows a runtime measurement for the baseline part of the $\PH\to\Pgt\Pgt$ in the four main decay channels ($\Pgm\Pgt$, $\Pe\Pgt$, $\Pe\Pgm$ and $\Pgt\Pgt$).
-It illustrates the main advantage of the \artus structure: sub-analyses with different sets of configurations can be performed in the same run avoiding the multiple IO overhead when the configurations would be performed sequentially in different runs.
-
 %time HiggsToTauTauAnalysis.py @HiggsAnalysis/KITHiggsToTauTau/data/ArtusWrapperConfigs/Sync13TeV.cfg -i HiggsAnalysis/KITHiggsToTauTau/data/Samples/NAF_sample_DYJetsToLLM50_RunIISpring15DR74_Asympt25ns_13TeV_MINIAOD_amcatnloFXFX-pythia8_recent.txt -f 10
-\begin{table}[h!]
+\begin{table}[!ht]
 \centering
 \begin{tabular}{lrr}
 \toprule
@@ -359,6 +356,9 @@ The values are compared with the execution without any pipelines and without glo
 It is clearly visible, that the time needed for reading the inputs amounts to a large part of the overall runtime and that the simultaneous execution of multiple pipelines can reduce the runtime significantly compared to the case where different configuration are performed sequentially including separate IO operations.}
 \label{table_artus_runtime_comparison}
 \end{table}
+
+Table~\ref{table_artus_runtime_comparison} shows a runtime measurement for the baseline part of the $\PH\to\Pgt\Pgt$ in the four main decay channels ($\Pgm\Pgt$, $\Pe\Pgt$, $\Pe\Pgm$ and $\Pgt\Pgt$).
+It illustrates the main advantage of the \artus structure: sub-analyses with different sets of configurations can be performed in the same run avoiding the multiple IO overhead when the configurations would be performed sequentially in different runs.
 
 The outputs are flat n-tuples suitable for performing the background modeling step done in HarryPlotter.
 Histograms are read while cuts for the final event selection are applied.
