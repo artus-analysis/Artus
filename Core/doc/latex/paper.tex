@@ -227,8 +227,8 @@ This structure extends the established concepts of existing frameworks~\cite{cms
 \begin{description}
 \item[Modular structure] Analysis steps are implemented in processors, breaking down the complete analysis in well-defined and easily understandable and writable parts.
 \item[Re-utilization of code] Processors can be shared among different analysis groups.
-Every user contributes to the testing of existing code and improves the confidence in this code.
-\item[Configurability] Each module uses settings which are read from the the configuration.
+Every user contributes to the testing of existing code and improves the confidence in it.
+\item[Configurability] Each module uses settings which are read from the configuration.
 A separate sub-set of the configuration is created for each pipeline.
 \item[High performance] The concept of pipelines allows to analyze the data with different configurations at the same time, while the data is read in only once and common processing steps are shared in the global pipeline.
 Therefore, the cost-intensive input operations are reduced to a minimum.
@@ -240,8 +240,8 @@ Therefore, the cost-intensive input operations are reduced to a minimum.
 In order to create a custom analysis, the user can build his own code on the \artus classes by deriving from them.
 He must provide an implementation of the settings, the event and the product class.
 The settings class defines the tags that are read from the configuration file and the corresponding types of these values.\todo[inline]{better "and the types of the corresponding values"?}
-The \emph{event} class defines the event content which is read from the input and the product class contains members for new quantities calculated during the analysis stage.
-These three classes need to be derived from the base classes provided by the core of the \artus framework.
+The \emph{event} class defines the event content which is read from the input and the \emph{product} class contains members for new quantities calculated during the analysis stage.
+These classes need to be derived from the base classes provided by the core of the \artus framework.
 
 An implementation of an \emph{event provider} must be available.
 The event provider must know how to read event content from the input files and how to store them in the event object.
@@ -342,7 +342,7 @@ The filters are executed as early as possible in the chain of processors in orde
 %0                                                & 5:53                             & 1296 \\
  0                                                & 5:12                             & 1470 \\ \midrule
 %\em                                              & 6:27                             & 1181 \\
- 1 ($\Pe\Pe$)                                     & 6:31                             & 1174 \\
+ 1 ($\Pe\Pgm$)                                    & 6:31                             & 1174 \\
 %1 ($\Pe\Pgt$)                                    & 7:03                             & 1084 \\
  1 ($\Pe\Pgt$)                                    & 7:26                             & 1028 \\
 %1 ($\Pgm\Pgt$)                                   & 7:14                             & 1054 \\
@@ -359,7 +359,7 @@ The filters are executed as early as possible in the chain of processors in orde
 \end{tabular}
 \caption[Measurement of the runtime of the baseline $\PH\to\Pgt\Pgt$ analysis.]{Measurement of the runtime of the baseline $\PH\to\Pgt\Pgt$ analysis.
 The analysis is performed on 10 files with a total size of 6.1~GB containing 452229 simulated $\PZ+\text{jet}$ events.
-The measurement is performed with different numbers of pipelines, where each pipeline implements the analysis of one sub-channel of the analysis.
+The measurement is performed with different numbers of pipelines, where each pipeline implements the analysis of one sub-channel.
 The values are compared with the execution without any pipelines and without global processors.
 It is clearly visible, that the time needed for reading the inputs amounts to a large part of the overall runtime and that the simultaneous execution of multiple pipelines can reduce the runtime significantly compared to the case where different configuration are performed sequentially including separate IO operations.}
 \label{table_artus_runtime_comparison}
@@ -370,7 +370,7 @@ It illustrates the main advantage of the \artus structure: sub-analyses with dif
 
 The outputs are flat n-tuples suitable for performing the background modeling step which is done in \harryplotter.
 Histograms are read while the final event selection is applied.
-As an example, the selection on the transverse mass is applied on this level because events from control regions needed to be preserved for the background modeling step.
+As an example, the selection on the transverse mass is applied on this level because events from control regions need to be preserved for the background modeling step.
 For each background process, an analysis module has been developed performing the estimation of the samples.
 Most of them perform calculations on multiple histograms, defining the yield and the shape of the final quantity in signal and control regions.
 They add a single histogram to the plot data object containing the final estimation for a given sample.
@@ -395,7 +395,7 @@ The concept underlying the \artus framework also enabled sharing program code be
 
 Especially new students\todo[inline]{Das klingt ja schon fast, als st\"unden am Ende "echte" Menschen hinter den besprochenen Dingen. F\"ur Paper eher ungew\"ohnlich?} joining the analysis groups can contribute very quickly.
 Once they have understood general concept and structure of an \artus analysis, they can contribute by writing their own producers or filters while the full complexity of the event-processing is taken care of by the \artus framework.
-In a similar manner, using the \artus framework, it is now much less work to set up a new analysis because a rich library of processors, filters and consumers exists and can be reused for a new analysis.
+In a similar manner, using the \artus framework, it is now much less work to set up a new analysis because a rich library of processors, filters and consumers exists and can be reused for new analyses.
 
 \vspace{2cm}
 \input{include/bib}
