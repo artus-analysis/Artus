@@ -214,11 +214,14 @@ def format_bin_ranges(bins, all_bins=None, fmt_str="%.2f"):
 
 def options():
 	parser = argparse.ArgumentParser(
-		description="%(prog)s calculates the weights for MC reweighting "
-			"according to the number of pile-up interactions. Use cases: "
-			"%(prog)s /path/to/skim/*.root Cert_JSON.txt pileup_JSON.txt or"
-			"%(prog)s mcdist.root datadist.root")
-	parser.add_argument('files', metavar='input', type=str, nargs='*',
+		description="""
+%(prog)s calculates the weights for MC reweighting to match the number of
+pile-up interactions in data. Use cases:
+  %(prog)s Cert_JSON.txt /mc/skim/*.root -i pileup_JSON.txt [options]
+  %(prog)s datadist.root mcdist.root [options]
+		""".strip(),
+		formatter_class=argparse.RawDescriptionHelpFormatter)
+	parser.add_argument('files', metavar='input', type=str, nargs='+',
 		help="""
 		input files as [data] [mc, [mc, [...]]] - 'data' may be a root file
 		with the distribution of pile-up interactions in data or a run json file
