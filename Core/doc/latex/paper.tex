@@ -139,7 +139,7 @@ This comprises new data formats, physical quantites and analysis steps, for inst
 
 The framework introduced in this section handles the last step of the workflow, the user analysis.
 
-Following the structure of the CMSSW~\cite{cmssw} framework, the \artus framework\footnote{\url{https://github.com/artus-analysis/artus}} provides a front-to-end solution for the analysis of event-based data.
+Following the structure of the CMS software framework~\cite{cms, cmssw}, the \artus framework\footnote{\url{https://github.com/artus-analysis/artus}} provides a front-to-end solution for the analysis of event-based data.
 The basic concept of modules processing events within an event loop is complemented by tools for the configuration of every step.
 The complete structure is explained in the next section.
 
@@ -149,7 +149,7 @@ The highly modular structure guides the user to develop analysis software that i
 Thus, the \artus framework avoids the aforementioned problems of separate user code for individual analyses.
 
 The \artus framework is written in C++.
-The core of the framework only depends on the boost library\footnote{\url{http://www.boost.org}}.
+The core of the framework only depends on the boost library~\cite{boost}.
 Further dependencies may be introduced by the actual analysis code.
 C++ is chosen for performance reasons and in order to be able to integrate existing frameworks and libraries that are commonly used in high energy physics.
 
