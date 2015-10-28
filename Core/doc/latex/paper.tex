@@ -32,7 +32,7 @@
 \begin{document}
 
 \begin{frontmatter}
-\title{\artus{} -- Framework for Event-based Data Analysis in High Energy Physics}
+\title{\artus{} -- A Framework for Event-based Data Analysis in High Energy Physics}
 
 \author{Joram Berger}
 \author{Fabio Colombo}
@@ -69,7 +69,7 @@ The framework is well-tested and successfully used by several analysis groups.
 The workflow of the experiments collecting data at the Large Hadron Collider (LHC) at CERN is taken as an example to illustrate the organization and needs of a modern High Energy Physics (HEP) analysis.
 Nonetheless, equal or very similar requirements are also present for HEP experiments not located at the LHC.
 
-Between the data taking at the detector or the generation of simulated events with the subsequent detector simulation and the presentation of the physical results, the following analysis steps have shown to be the best compromise in terms of turnaround time and efficiency as explained in Figure \ref{figure_analysis_steps}.
+Between the data taking at the detector or the generation of simulated events and the presentation of the physical results, the following analysis steps have shown to be the best compromise in terms of turnaround time and efficiency as explained in Figure \ref{figure_analysis_steps}.
 
 The reconstruction of the raw data coming from the experiments is performed on large computing centers organized in the Worldwide LHC Computing Grid (WLCG)~\cite{wlcg}.
 The resulting datasets contain event information and high-level physics objects and are in the order of \SI{100}{TB} in size.
@@ -79,21 +79,22 @@ The output of the skimming process is an analysis-dependent file\todo[inline]{be
 The size of these files ranges from several \SI{10}{GB} to few~TB.
 
 Finally, the skimmed n-tuples are processed by user code running on local resources.
-This processing step includes further event selections, event categorization or high-level calculations based on the selected physics objects.
+This processing step includes further event selections, event categorization or high-level calculations based on the reconstructed physics objects.
 The events are usually processed with different configurations, depending on the specific analysis needs.
 The output is then used for post-processing steps, including plotting of the results and their statistical interpretation.
 
 In many cases, the code for the last step is developed without a predefined strategy or structure, following the evolving needs of the analysis which are often physics-driven and not always entirely predictable in the code design phase.
 This leads to convoluted, tangled and unstructured code, which is difficult to understand and to maintain and also difficult to hand over to new people joining the analysis effort.
-Also, code is rarely shared among different groups, although the basic parts of an analysis, such as handling of input data having the same formats, their processing and the selection and identification of physics objects follow similar or equivalent specifications.
-Looking at the user side, an analysis group usually consists of several people having different academic levels and different programming skills, some of them joining the analysis effort only for a short period of time and with a well-defined task.
+Also, code is rarely shared among different groups, although the basic parts of an analysis, such as handling of input data in the same formats, their processing and the selection and identification of physics objects follow similar or equivalent specifications.
+Looking at the user side, an analysis group usually consists of several people having different academic levels and different programming skills, some of them joining the analysis effort only for a short period of time and limited to a well-defined task.
 
 \begin{figure}[t]
 \centering \input{figures/analysis_steps}
 \caption[Characteristics of an event-based analysis in high energy physics]{Characteristic of an event-based analysis in high energy physics, numbers taken from \cite{joram_phd}.
 Data size is reduced by six orders of magnitude, the turnaround time by a factor of 10000.
 I/O intensive operations are done highly parallelized in the WLCG.
-The data reduction is achieved by performing the data-intensive operations only rarely and applying analysis specific event selection steps as early as possible.}
+The data reduction is achieved by applying analysis specific event selection steps as early as possible.
+Performing the data-intensive operations only in the first step of this sequence reduces the run time of the analysis.}
 \label{figure_analysis_steps}
 \end{figure}
 
@@ -112,9 +113,10 @@ This explains the need for a modular structure, where only those parts of the co
 
 \item[Maintainability]
 Source code maintenance, i.e.\ to be up-to-date with the latest requirements while not losing backwards compatibility, is a challenge for each software project.
-To make the entry level as low as possible, beginners can start with an example analysis.
-In \artus, everything is steered via JSON configuration files.
-The modules then implement what has to be done while the data is stored in desired data format.
+To make the entry level as low as possible, beginners can start with an example analysis. 
+Up-to-date recipes should allow the installation and execution of the example analysis out-of-the box.
+Steering the analysis in detail with configuration files makes it possible to re-use the same code for differing analysis requirements.
+The modules should encapsulate the actual operations providing and enforcing a clear code structure while the data is stored in the desired data format.
 
 \item[Reliability]
 In most cases, analysis code is written from scratch for very specific tasks and it is used only by very small groups of analysts.
@@ -143,7 +145,7 @@ The complete structure is explained in the next section.
 
 This general framework is applicable to any kind of event processing analysis.
 The well-tested core is shared among various analyses, providing a reliable fundament for any new analysis.
-The highly modular structure guides the user to develop analysis software that is easily maintainable and constructively extensible.
+The highly modular structure guides the user to develop analysis software that is easily maintainable and extensible.
 Thus, the \artus framework avoids the aforementioned problems of separate user code for individual analyses.
 
 The \artus framework is written in C++.
@@ -152,13 +154,13 @@ Further dependencies may be introduced by the actual analysis code.
 C++ is chosen for performance reasons and in order to be able to integrate existing frameworks and libraries that are commonly used in high energy physics.
 
 Multi-core techniques are not required since the processing can be trivially parallelized by splitting the input dataset and sending it to different computing instances.
-This is possible, because the processed events are known to be independent of each other.
+This is possible because the processed events are known to be independent of each other.
 The framework comes with a built-in possibility to submit analysis jobs with the job submission tool grid-control.
 
 \section{Structure of the Framework}
 \label{section_artus_structure}
 
-The basic concept of the framework is taken from the code used for the $\PZ+\text{jet}$ analysis documented in reference~\cite{joram_phd}.
+The basic concept of the framework is taken from the code used for the $\PZ+\text{jet}$ analysis documented in~\cite{joram_phd}.
 It is generalized and extended to satisfy the needs of various analysis groups.
 The structure is illustrated in Figure~\ref{figure_artus_structure}.
 
@@ -183,19 +185,19 @@ Consumers can write results to the output file.}
 \end{figure}
 
 \artus respects the separation of code and configuration.
-Settings select\todo[inline]{better "specify" instead of "select"?} what has to be done and with which parameters.
-The code does perform these steps, ideally without the user being fully aware of implementation details.
-The single source of truth for an analysis is therefore a JSON file that completely defines the analysis.
+Settings specify what has to be done and with which parameters.
+The code performs the selected steps---ideally without requiring the user to be fully aware of implementation details.
+Hence, the JSON file completely defines the analysis.
 It contains information on the input data and settings for the pipelines and processors described in the following.
 Each of the modules described in the following has access to the settings read in from the configuration file.
-The \artus package comes with sophisticated tools written in python, that help in generating this JSON file.
+The \artus package comes with sophisticated tools written in Python which help in generating this JSON file.
 
 The input is handled by an event provider.
-Its purpose is to manage reading events contents from any kind of input into an event object and to provide information about the total number of events to be processed.
+Its purpose is to manage the import of event contents from any kind of input to the internal event object and to provide information about the total number of events to be processed.
 
 The events are then sequentially processed by processors organized in pipelines.
 First, a so-called global pipeline is run.
-Then,\todo[inline]{No comma here?} the execution is split up into multiple so-called local pipelines, that are also processed sequentially.
+Then the execution is split up into multiple so-called local pipelines which are also processed sequentially.
 The composition of a pipeline is illustrated in Figure~\ref{figure_artus_pipeline}.
 
 Each pipeline has its own settings.
@@ -209,9 +211,9 @@ Local pipelines start with a copy of the global product.
 A pipeline consists of an arbitrary number of processor modules that are run in a sequence.
 Three kinds of processors are distinguished:
 \begin{description}
-\item[Producers] are meant to calculate new quantities based on the information in the event and the product and following the settings of the pipeline.
+\item[Producers] are meant to calculate new quantities based on the information in the event and the product according to the settings of the pipeline.
 \item[Filters] apply a selection based on event properties.
-In case an event does not fulfill a requirement defined by a filter, the processing of the subsequent producers and filters can be skipped.
+In case an event does not fulfill a requirement defined by a filter, the execution of the subsequent processors can be skipped.
 \item[Consumers] can be added to local pipelines.
 They are executed after the producers and filters.
 The task of consumers is to take quantities from the event and the product and store them in the output according to the pipeline settings.
@@ -219,7 +221,7 @@ The task of consumers is to take quantities from the event and the product and s
 Producers and filters can be configured in an arbitrary order.
 Consumers are executed after the chain of producers and filters.
 The output together with the complete configuration is written to a ROOT~\cite{root} file.
-These processors are created and managed by a dedicated factory according to the configuration.
+These processors are created and managed by a dedicated factory class according to the configuration.
 
 This structure extends the established concepts of existing frameworks~\cite{cmssw} to the following four main advantages:
 \begin{description}
@@ -235,7 +237,7 @@ Therefore, the cost-intensive input operations are reduced to a minimum.
 
 \section{Building an End-user Analysis}
 \label{section_artus_analysis}
-In order to create a custom analysis, the analysis programmer can build his own code on the \artus classes by deriving from them.
+In order to create a custom analysis, the user can build his own code on the \artus classes by deriving from them.
 He must provide an implementation of the settings, the event and the product class.
 The settings class defines the tags that are read from the configuration file and the corresponding types of these values.\todo[inline]{better "and the types of the corresponding values"?}
 The \emph{event} class defines the event content which is read from the input and the product class contains members for new quantities calculated during the analysis stage.
@@ -243,14 +245,14 @@ These three classes need to be derived from the base classes provided by the cor
 
 An implementation of an \emph{event provider} must be available.
 The event provider must know how to read event content from the input files and how to store them in the event object.
-Furthermore, a factory managing the creation of analysis-specific processors needs to exist.
+Furthermore, a factory class defining the creation of analysis-specific processors is required.
 These classes also have to be derived from the \artus base classes.
 
 The most important part of an analysis are the \emph{processors}.
 The abstract processors of the \artus core need to be implemented to realize the physics needs of the analysis in the form of code.
 After the basic structure of an analysis is set up, most changes and additions are only related to the processors.
 
-Analyses that share the input file format can easily also share processors, that implement basic analysis steps in a general fashion.
+Analyses shareing the input file format can easily also share processors which implement basic analysis steps in a general fashion.
 Analysis-specific parts can either derive from existing processor classes or be modeled in new processors.
 
 
@@ -301,27 +303,28 @@ These modules are then initialized and can define additional arguments needed fo
 \section{\texorpdfstring{A Real World Application -- the $\PH\to\Pgt\Pgt$ Analysis}{A Real World Application - the H to Tau Tau Analysis}}
 \label{section_artus_example_htt}
 
-Currently, the \artus framework is used for various user analyses of CMS data, ranging from jet energy calibration and QCD studies to analyses in the scope of Higgs boson measurements and searches for physics beyond the Standard Model.
+Currently, the \artus framework is used for various user analyses of CMS data, ranging from jet energy calibration and QCD studies to Higgs boson measurements and searches for physics beyond the Standard Model.
 As an example, the technical aspects of the $\PH\to\Pgt\Pgt$ analysis are explained in the following.
 
-The $\PH\to\Pgt\Pgt$ analysis makes use of skimmed data sets in the Kappa format.
-The Kappa framework\footnote{\url{https://github.com/KappaAnalysis/Kappa}} is designed for skimming CMS data into small n-tuples that can be analyzed independently of the CMSSW software.
+The $\PH\to\Pgt\Pgt$ analysis makes use of skimmed data sets in the \kapa format.
+The \kapa framework~\cite{kappa} is designed for skimming CMS data into small n-tuples that can be analyzed independently of the CMSSW software.
 The only dependence is the ROOT framework.
 The n-tuples store high-level information such as four-momentum vectors, collections of leptons and vertices.
-Similar as the \artus framework, Kappa aims to satisfy general analysis needs.
+Similar to the \artus framework, \kapa aims to satisfy general analysis needs.
 
-A large part of the \artus software is specialized on the analysis of Kappa n-tuples\footnote{\url{https://github.com/artus-analysis/Artus/tree/master/KappaAnalysis}}.
-An event provider is available for reading Kappa n-tuples.
+A large part of the \artus software is specialized on the analysis of \kapa n-tuples\footnote{\url{https://github.com/artus-analysis/Artus/tree/master/KappaAnalysis}}.
+An event provider is available for reading \kapa n-tuples.
 The event class contains members for all important physics objects used in analyses.
-The branches of the n-tuples, that should be read in from the input files, are configurable and which reduces the amount of information transferred from the input files and therefore accelerates the analysis significantly.
+The branches of the n-tuples, that should be read in from the input files, are configurable.
+This reduces the amount of information transferred from the input files and therefore accelerates the analysis significantly.
 
-The structure of the pipelines is chosen such that, for each decay channel, a separate pipeline exists.
+The structure of the pipelines is chosen such that a separate pipeline exists for each decay channel.
 Each of the pipelines is duplicated and modified in order to implement the different settings for shifts of quantities affected by systematic uncertainties.
 For example, the \Pgt energy scale is shifted up and down with respect to the nominal value.
 The change of the \Pgt four-momentum is then propagated through the entire analysis and the effect on the final result is studied.
 For this, each pipeline for decay channels involving hadronically decaying \Pgt leptons is duplicated three times and the setting for the \Pgt energy scale shift is modified accordingly.
 The global pipeline is used to perform actions that are common for all channels.
-This is for example the identification of jets and their corrections as well as the filtering of valid data events.
+This is for example the identification and correction of jets as well as the filtering of valid data events.
 
 The producers and filters are implemented to perform small tasks of the analysis.
 Main producers are the ones for the identification and the selection of valid leptons and jets.
@@ -363,11 +366,11 @@ It is clearly visible, that the time needed for reading the inputs amounts to a 
 \end{table}
 
 Table~\ref{table_artus_runtime_comparison} shows a runtime measurement for the baseline part of the $\PH\to\Pgt\Pgt$ in the four main decay channels ($\Pgm\Pgt$, $\Pe\Pgt$, $\Pe\Pgm$ and $\Pgt\Pgt$).
-It illustrates the main advantage of the \artus structure: sub-analyses with different sets of configurations can be performed in the same run avoiding the multiple IO overhead when the configurations would be performed sequentially in different runs.
+It illustrates the main advantage of the \artus structure: sub-analyses with different sets of configurations can be performed in the same run avoiding the multiple I/O overhead when the configurations would be executed sequentially in different runs.
 
-The outputs are flat n-tuples suitable for performing the background modeling step done in HarryPlotter.
-Histograms are read while cuts for the final event selection are applied.
-As an example, the cut on the transverse mass is applied on this level because events from control regions needed to be preserved for the background modeling step.
+The outputs are flat n-tuples suitable for performing the background modeling step which is done in \harryplotter.
+Histograms are read while the final event selection is applied.
+As an example, the selection on the transverse mass is applied on this level because events from control regions needed to be preserved for the background modeling step.
 For each background process, an analysis module has been developed performing the estimation of the samples.
 Most of them perform calculations on multiple histograms, defining the yield and the shape of the final quantity in signal and control regions.
 They add a single histogram to the plot data object containing the final estimation for a given sample.
@@ -388,11 +391,11 @@ The \artus analysis framework presented in this paper offers a comprehensive and
 In conjunction with the post-processing toolkit \harryplotter, all data analysis needs are covered.
 
 The modular and structured manner, in which the processing required for an analysis, can be expressed within the \artus framework, allowed the involved research groups to share and re-use source code on a scale not possible before.
-The concept underlying the \artus framework also enabled us to share program code between analysis and even across different universities and research centers.
+The concept underlying the \artus framework also enabled sharing program code between analyses and even across different universities and research centers.
 
 Especially new students\todo[inline]{Das klingt ja schon fast, als st\"unden am Ende "echte" Menschen hinter den besprochenen Dingen. F\"ur Paper eher ungew\"ohnlich?} joining the analysis groups can contribute very quickly.
 Once they have understood general concept and structure of an \artus analysis, they can contribute by writing their own producers or filters while the full complexity of the event-processing is taken care of by the \artus framework.
-In a similar manner, using the \artus framework, it is now much less work to set up a new analysis because a rich library of processors, filters and consumers exists and can be reused for new analysis.
+In a similar manner, using the \artus framework, it is now much less work to set up a new analysis because a rich library of processors, filters and consumers exists and can be reused for a new analysis.
 
 \vspace{2cm}
 \input{include/bib}
