@@ -75,7 +75,7 @@ The reconstruction of the raw data coming from the experiments is performed on l
 The resulting datasets contain event information and high-level physics objects and are in the order of \SI{100}{TB} in size.
 
 The data which are relevant for a specific analysis are selected in a step usually referred to as \textit{skimming}.
-The output of the skimming process is an analysis-dependent file\todo[inline]{better "format" instead of "file"? (needs restructuring of the sentence a bit}, usually in an n-tuple format, and small enough to be stored on local file servers, often owned and operated by a single institute.
+The output of the skimming process is stored in an n-tuple format on local file servers, often owned and operated by a single institute.
 The size of these files ranges from several \SI{10}{GB} to few~TB.
 
 Finally, the skimmed n-tuples are processed by user code running on local resources.
@@ -106,7 +106,7 @@ Based on the workflow described in the previous section, the following demands f
 
 \begin{description}
 \item[Performance]
-The main performance indicator is the \emph{turnaround time} which is the time needed to run the whole\todo[inline]{"entire" always better than "whole"?} analysis in case new requirements arise.
+The main performance indicator is the \emph{turnaround time} which is the time needed to run the entire analysis in case new requirements arise.
 Since the runtime is often limited by the transfer speed of the storage servers, the software should load each event only once and perform all necessary processing steps.
 Still, since analysis requirements sometimes change within a few hours, a high level of flexibility is needed.
 This explains the need for a modular structure, where only those parts of the code are executed that are really necessary for the analysis.
@@ -239,7 +239,7 @@ Therefore, the cost-intensive input operations are reduced to a minimum.
 \label{section_artus_analysis}
 In order to create a custom analysis, the user can build his own code on the \artus classes by deriving from them.
 He must provide an implementation of the settings, the event and the product class.
-The settings class defines the tags that are read from the configuration file and the corresponding types of these values.\todo[inline]{better "and the types of the corresponding values"?}
+The settings class defines the tags that are read from the configuration file and the types of the corresponding values.
 The \emph{event} class defines the event content which is read from the input and the \emph{product} class contains members for new quantities calculated during the analysis stage.
 These classes need to be derived from the base classes provided by the core of the \artus framework.
 
@@ -393,8 +393,8 @@ In conjunction with the post-processing toolkit \harryplotter, all data analysis
 The modular and structured manner, in which the processing required for an analysis, can be expressed within the \artus framework, allowed the involved research groups to share and re-use source code on a scale not possible before.
 The concept underlying the \artus framework also enabled sharing program code between analyses and even across different universities and research centers.
 
-Especially new students\todo[inline]{Das klingt ja schon fast, als st\"unden am Ende "echte" Menschen hinter den besprochenen Dingen. F\"ur Paper eher ungew\"ohnlich?} joining the analysis groups can contribute very quickly.
-Once they have understood general concept and structure of an \artus analysis, they can contribute by writing their own producers or filters while the full complexity of the event-processing is taken care of by the \artus framework.
+Especially new students joining the analysis groups can contribute very quickly.
+Having understood general concept and structure of an \artus analysis, they can contribute by writing their own producers or filters while the full complexity of the event-processing is taken care of by the \artus framework.
 In a similar manner, using the \artus framework, it is now much less work to set up a new analysis because a rich library of processors, filters and consumers exists and can be reused for new analyses.
 
 \vspace{2cm}
