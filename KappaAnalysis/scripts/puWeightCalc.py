@@ -226,6 +226,13 @@ pile-up interactions in data. Use cases:
   %(prog)s Cert_JSON.txt /mc/skim/*.root -i pileup_JSON.txt [options]
   %(prog)s datadist.root mcdist.root [options]
 		""".strip(),
+		epilog="""
+%(prog)s may output warnings to stderr. These are for diagnostics only and
+formatted to be human readable.
+Additional data is written exclusively to stdout. These are machine readable
+key-value pairs separated by ' = ' using repr(value), e.g.
+foo_bar = "quax string value".
+		""".strip(),
 		formatter_class=argparse.RawDescriptionHelpFormatter)
 	parser.add_argument('files', metavar='input', type=str, nargs='+',
 		help="""
