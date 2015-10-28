@@ -129,6 +129,9 @@ def calcWeights(data, mc, verbose=False, warn=True, rebin=False, binning=(), wei
 		print >> sys.stderr, "WARNING: Bins truncated to lower limit (%f) in" % min_weight, format_bin_ranges([npu for npu in min_bins], bin_centers)
 	if max_bins:
 		print >> sys.stderr, "WARNING: Bins truncated to upper limit (%f) in" % max_weight, format_bin_ranges([npu for npu in max_bins], bin_centers)
+	# check efficiency of weights for matching MC to data
+	mc.Multiply(weights)
+	print "weight_efficiency =", mc.Integral()
 	return weights
 
 
