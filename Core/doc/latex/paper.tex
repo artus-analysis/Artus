@@ -26,6 +26,8 @@
 
 \newcommand{\software}[1]{\textsc{#1}\xspace}
 \newcommand{\artus}{\software{Artus}}
+\newcommand{\kapa}{{\Large$\kappa$}\software{appa}}
+\newcommand{\harryplotter}{\software{HarryPlotter}}
 
 \begin{document}
 
@@ -252,19 +254,19 @@ Analyses that share the input file format can easily also share processors, that
 Analysis-specific parts can either derive from existing processor classes or be modeled in new processors.
 
 
-\section{HarryPlotter -- A Python Framework for Post-processing}
+\section{\harryplotter -- A Python Framework for Post-processing}
 \label{section_artus_harryplotter}
 
 The computationally expensive event processing steps are followed by the post-processing of the results and their presentation.
 From a technical point of view, the focus here is rather on flexibility than on performance.
 The inputs for this step are either histograms filled in the previous step or n-tuples whose entries can be filled into histograms with reasonable computing costs.
-For this reason, Python has been chosen as language for the HarryPlotter framework\footnote{\url{https://github.com/artus-analysis/Artus/tree/master/HarryPlotter}}.
+For this reason, Python has been chosen as language for the \harryplotter framework\footnote{\url{https://github.com/artus-analysis/Artus/tree/master/HarryPlotter}}.
 As the name implies, the main focus is on plotting of results.
 The modular structure allows to integrate multiple analysis steps and several output formats.
 
 \begin{figure}[htb]
 \centering \input{figures/harry_plotter}
-\caption{Structure of the HarryPlotter framework.
+\caption{Structure of the \harryplotter framework.
 The processing of input modules is followed by the run of analysis modules and concluded by the execution of plot modules.
 The configuration via a command line interface or via JSON files is parsed by an argument parser whose arguments are defined by the individual modules.}
 \label{figure_artus_harry_plotter}
@@ -287,7 +289,7 @@ All processors share a common plot data object and possible meta-data where they
 For example, the input modules add histograms read from input files and the plot modules access these histograms.
 
 The configuration is provided by an argument parser that can handle both arguments from a command line interface and content from JSON configuration files or Python dictionaries.
-This makes it possible to use either the HarryPlotter executable configured via the command line or call the main function within another Python script.
+This makes it possible to use either the \harryplotter executable configured via the command line or call the main function within another Python script.
 The executable can perform one single plot per run.
 For the execution within a script, functions exist to create multiple plots in parallel.
 
@@ -383,7 +385,7 @@ The post-processing step either outputs plots or writes the histograms to ROOT f
 % - increased data in Run 2
 
 The \artus analysis framework presented in this paper offers a comprehensive and well-integrated solution for event-based data analyses in the HEP domain.
-In conjunction with the post-processing toolkit HarryPlotter, all data analysis needs are covered.
+In conjunction with the post-processing toolkit \harryplotter, all data analysis needs are covered.
 
 The modular and structured manner, in which the processing required for an analysis, can be expressed within the \artus framework, allowed the involved research groups to share and re-use source code on a scale not possible before.
 The concept underlying the \artus framework also enabled us to share program code between analysis and even across different universities and research centers.
