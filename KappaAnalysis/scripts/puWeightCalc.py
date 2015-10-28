@@ -131,7 +131,7 @@ def calcWeights(data, mc, verbose=False, warn=True, rebin=False, binning=(), wei
 		print >> sys.stderr, "WARNING: Bins truncated to upper limit (%f) in" % max_weight, format_bin_ranges([npu for npu in max_bins], bin_centers)
 	# check efficiency of weights for matching MC to data
 	mc.Multiply(weights)
-	print "weight_efficiency =", mc.Integral()
+	emit_data("weight_efficiency", mc.Integral())
 	return weights
 
 
@@ -187,6 +187,12 @@ def getDistributionFromFile(filename, histoname="pileup"):
 		print >> sys.stderr, "The histogram %s could not be found in %s." % (histoname, filename)
 		sys.exit(1)
 	return copy.deepcopy(histo)
+
+
+# Formatting/Output
+def emit_data(key, value):
+	"""Write a key/value pair for machine processing"""
+	print >> sys.stdout, str(key) + " = " + repr(value)
 
 
 def format_bin_ranges(bins, all_bins=None, fmt_str="%.2f"):
