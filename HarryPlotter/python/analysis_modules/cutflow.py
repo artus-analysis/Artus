@@ -144,7 +144,7 @@ class Cutflow(analysisbase.AnalysisBase):
 		_unique_cutflows = set(tuple(cutlabels) for cutlabels in filternames.values())
 		if not all_cuts and not cut_blacklist and len(_unique_cutflows) == 1:
 			# no modification required
-			return
+			return cutflow_histograms
 		if not all_cuts and len(_unique_cutflows) > 1:
 			log.warning("Cutflow histograms have different number of bins! New histograms containing all cuts will be constructed.")
 		# if we can merge desired cuts and individual cuts, subsequences don't have conflicting order
