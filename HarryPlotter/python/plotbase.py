@@ -29,6 +29,10 @@ class PlotBase(processor.Processor):
 		super(PlotBase, self).__init__()
 		
 		self.predefined_colors = None
+		self.rel_y_lim_default={
+			"lin":[0.9, 1.1],
+			"log":[0.5, 2.0],
+		}
 	
 	def modify_argument_parser(self, parser, args):
 		super(PlotBase, self).modify_argument_parser(parser, args)
@@ -56,6 +60,8 @@ class PlotBase(processor.Processor):
 		
 		self.axis_options.add_argument("--y-lims", type=float, nargs=2,
 		                               help="Lower and Upper limit for y-axis.")
+		self.axis_options.add_argument("--y-rel-lims", type=float, nargs=2,
+		                               help="Relative lower and upper margin for auto y-lims. [Default: [{}] for lin. y-axis and [{}] for log. y-axis.]".format(','.join([str(i) for i in self.rel_y_lim_default["lin"]]), ','.join([ str(i) for i in self.rel_y_lim_default["log"]]) ))
 		self.axis_options.add_argument("--y-subplot-lims", type=float, nargs=2,
 		                               help="Lower and Upper limit for y-axis of a possible subplot.")
 		self.axis_options.add_argument("--y-label", type=str, default="Events",
@@ -66,6 +72,8 @@ class PlotBase(processor.Processor):
 		                               help="Logarithmic y-axis. [Default: %(default)s]")
 		self.axis_options.add_argument("--y-ticks", type=float, nargs="+",
 		                               help="Custom ticks for the Y-axis")
+		self.axis_options.add_argument("--y-subplot-ticks", type=float, nargs="+",
+		                               help="Custom ticks for the Y-axis of the subplot")
 		self.axis_options.add_argument("--y-tick-labels", type=str, nargs="+",
 		                               help="Custom tick labels for the Y-axis")
 		
@@ -198,7 +206,13 @@ class PlotBase(processor.Processor):
 			plotData.plotdict["labels"] = plotData.plotdict["nicks"]
 		
 		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles", "line_widths"],
-				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]))
+				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]),
+				help="Plotting style options")
+		
+		# defaults for axis ranges
+		if plotData.plotdict["y_rel_lims"] is None:
+			plotData.plotdict["y_rel_lims"] = self.rel_y_lim_default[('log' if plotData.plotdict['y_log'] else 'lin')]
+		
 		# stacks are expanded by appending None's
 		plotData.plotdict["stacks"] = plotData.plotdict["stacks"]+[None]*(len(plotData.plotdict["nicks"])-len(plotData.plotdict["stacks"]))
 		
@@ -239,7 +253,7 @@ class PlotBase(processor.Processor):
 
 		# prepare arguments for text label(s)
 		if plotData.plotdict["texts"] is not None:
-			self.prepare_list_args(plotData, ["texts", "texts_y", "texts_x", "texts_size"])
+			self.prepare_list_args(plotData, ["texts", "texts_y", "texts_x", "texts_size"], help="texts for plotting")
 			if len(plotData.plotdict["texts"]) == 1 and plotData.plotdict["texts"][0] is None:
 				plotData.plotdict["texts"] = []
 				plotData.plotdict["texts_x"] = []

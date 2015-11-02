@@ -61,7 +61,7 @@ class PlotData(object):
 				# set some needed variables
 				user = tools.get_environment_variable("HARRY_REMOTE_USER")
 				html_content = ""
-				overview_filename = 'overview.html'
+				overview_filename = '_overview.html'
 				date = datetime.date.today().strftime('%Y_%m_%d')
 				remote_dir = os.path.expandvars(os.path.join("$HARRY_REMOTE_DIR", date, (self.plotdict["www"] if type(self.plotdict["www"])==str else "")))
 				remote_path = os.path.expandvars(os.path.join("$HARRY_REMOTE_PATH", remote_dir))

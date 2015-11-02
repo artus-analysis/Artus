@@ -7,18 +7,18 @@
 \foreach \y/\ytext in {1/0,2/3, 3/6}
 \draw[KIT_gruen_1,shift={(0,\y)}] (2pt,0pt)  node[left] {$10^\ytext$};
 
-\filldraw[KIT_gruen_1] (0.3,3.11) circle(.05cm) node[black,anchor=south west]{EDM};
-\filldraw[KIT_gruen_1] (3.3,2.269) circle(.05cm) node[black, anchor=west]{Kappa};
+\filldraw[KIT_gruen_1] (0.3,3.11) circle(.05cm) node[black,anchor=south west]{Full event data};
+\filldraw[KIT_gruen_1] (3.3,2.269) circle(.05cm) node[black, anchor=west]{Skim};
 \filldraw[KIT_gruen_1] (6.6,1.03) circle(.05cm) node[black, anchor=south west]{N-Tuple};
 \filldraw[KIT_gruen_1] (9.7,0) circle(.05cm) node[black, anchor=north]{Plot};
 
 
 
-\draw[KIT_rot_1,->] (10,0) -- (10,4) node[anchor=south] {Turnarounds /h};
+\draw[KIT_rot_1,<-] (10,0) -- (10,4) node[anchor=south] {Run time / h};
 \foreach \y/\ytext in {1/-1,2/1, 3/3}
 \draw[left,KIT_rot_1, shift={(0,\y)}, anchor=east] (11cm,0pt)  node[left] {\hfill$10^{\ytext}$};
 
-\filldraw[KIT_rot_1] (1.65,0.66) circle(.05cm) node[black, anchor=west]{Skim};
+\filldraw[KIT_rot_1] (1.65,0.66) circle(.05cm) node[black, anchor=west]{Skimming};
 \filldraw[KIT_rot_1] (5,1.65) circle(.05cm) node[black, anchor=north]{Analysis};
 \filldraw[KIT_rot_1] (8.3,3.08) circle(.05cm) node[black, anchor=south]{Plotting};
 % file size

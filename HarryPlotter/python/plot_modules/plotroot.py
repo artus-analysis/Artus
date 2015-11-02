@@ -65,12 +65,12 @@ class PlotRoot(plotbase.PlotBase):
 		
 		self.axis_options.add_argument("--x-lims", type=float, nargs="+",
 		                               help="Lower and Upper limit for x-axis.")
+		self.axis_options.add_argument("--x-rel-lims", type=float, nargs=2, default=[1.0, 1.0],
+		                               help="Relative lower and upper margin for auto x-lims. [Default: %(default)s]")
 		self.axis_options.add_argument("--sym-x-lims", nargs="?", type="bool", default=False, const=True,
 		                               help="Symmetric x-axis limits of the plot. The parameters of --x-lims are taken as <center> <range/2>")
 		self.axis_options.add_argument("--y-lims", type=float, nargs="+",
 		                               help="Lower and Upper limit for y-axis.")
-		self.axis_options.add_argument("--rel-y-lims", type=float, nargs=2,
-		                               help="Relative lower and upper margin for auto y-lims. [Default: [0.9, 1.1] for lin. y-axis and [0.5, 2.0] for log. y-axis.]")
 		self.axis_options.add_argument("--sym-y-lims", nargs="?", type="bool", default=False, const=True,
 		                               help="Symmetric y-axis limits of the plot. The parameters of --y-lims are taken as <center> <range/2>")
 		self.axis_options.add_argument("--z-lims", type=float, nargs="+",
@@ -88,8 +88,10 @@ class PlotRoot(plotbase.PlotBase):
 		self.axis_options.add_argument("--reverse-z-axis", nargs="?", type="bool", default=False, const=True,
 		                               help="Reverse Z axis labelling. [Default: %(default)s]")
 		
-		self.canvas_options.add_argument("--left-pad-margin", nargs=1, type=float, default=None,
-		                               help="Left margin of pad. [Default: %(default)s]")
+		self.canvas_options.add_argument("--left-pad-margin", type=float, default=None,
+		                               help="Left margin of pad. [Default: automatically determined]")
+		self.canvas_options.add_argument("--right-pad-margin", type=float, default=None,
+		                               help="Right margin of pad. [Default: automatically determined]")
 		
 		self.formatting_options.add_argument("-C", "--colors", type=str, nargs="+",
 		                                     help="Colors for the plots. For each plot up to two colors (whitespace separated) can be specified, the first for lines and markers and the second for filled areas.")
@@ -186,10 +188,6 @@ class PlotRoot(plotbase.PlotBase):
 			plotData.plotdict["fill_styles"][index] = fill_style
 			plotData.plotdict["legend_markers"][index] = legend_marker
 		
-		# defaults for axis ranges
-		if plotData.plotdict["rel_y_lims"] is None:
-			plotData.plotdict["rel_y_lims"] = [0.5, 2.0] if plotData.plotdict["y_log"] else [0.9, 1.1]
-		
 		# defaults for legend position
 		if not plotData.plotdict["legend"] is None:
 			plotData.plotdict["legend"] += [0.6, 0.6, 0.9, 0.9][len(plotData.plotdict["legend"]):]
@@ -255,7 +253,9 @@ class PlotRoot(plotbase.PlotBase):
 		self.plot_pad_right_margin = plot_pad.GetRightMargin()
 		plot_pad.SetRightMargin(0.25)
 		if not plotData.plotdict["left_pad_margin"] is None:
-			plot_pad.SetLeftMargin(plotData.plotdict["left_pad_margin"][0])
+			plot_pad.SetLeftMargin(plotData.plotdict["left_pad_margin"])
+		if not plotData.plotdict["right_pad_margin"] is None:
+			plot_pad.SetRightMargin(plotData.plotdict["right_pad_margin"])
 		if not subplot_pad is None:
 			subplot_pad.SetRightMargin(0.25)
 		
@@ -319,11 +319,17 @@ class PlotRoot(plotbase.PlotBase):
 				self.x_min = plotData.plotdict["x_lims"][0] - plotData.plotdict["x_lims"][1]
 				self.x_max = plotData.plotdict["x_lims"][0] + plotData.plotdict["x_lims"][1]
 			else:
+				tmp_x_min = self.x_min * plotData.plotdict["x_rel_lims"][0]
+				tmp_x_max = self.x_max * plotData.plotdict["x_rel_lims"][1]
+				
 				if not plotData.plotdict["x_lims"] is None:
 					center = plotData.plotdict["x_lims"][0]
-					width = max([abs(x - center) for x in [self.x_min, self.x_max]])
+					width = max([abs(x - center) for x in [tmp_x_min, tmp_x_max]])
 					self.x_min = center - width
 					self.x_max = center + width
+				else:
+					self.x_min = tmp_x_min
+					self.x_max = tmp_x_max
 		else:
 			if plotData.plotdict["sym_x_lims"]:
 				log.warning("Symmetric limits are not yet implemented for logarithmic axes!")
@@ -332,6 +338,11 @@ class PlotRoot(plotbase.PlotBase):
 				self.x_min = plotData.plotdict["x_lims"][0]
 				if len(plotData.plotdict["x_lims"]) > 1:
 					self.x_max = plotData.plotdict["x_lims"][1]
+				else:
+					self.x_max *= plotData.plotdict["x_rel_lims"][1]
+			else:
+				self.x_min *= plotData.plotdict["x_rel_lims"][0]
+				self.x_max *= plotData.plotdict["x_rel_lims"][1]
 		if self.x_min == self.x_max:
 			self.x_min -= 1.0
 			self.x_max += 1.0
@@ -342,8 +353,8 @@ class PlotRoot(plotbase.PlotBase):
 				self.y_min = plotData.plotdict["y_lims"][0] - plotData.plotdict["y_lims"][1]
 				self.y_max = plotData.plotdict["y_lims"][0] + plotData.plotdict["y_lims"][1]
 			else:
-				tmp_y_min = self.y_min * ((plotData.plotdict["rel_y_lims"][0] if self.y_min > 0.0 else plotData.plotdict["rel_y_lims"][1]) if self.max_dim < 3 else 1.0)
-				tmp_y_max = self.y_max * ((plotData.plotdict["rel_y_lims"][1] if self.y_max > 0.0 else plotData.plotdict["rel_y_lims"][0]) if self.max_dim < 3 else 1.0)
+				tmp_y_min = self.y_min * ((plotData.plotdict["y_rel_lims"][0] if self.y_min > 0.0 else plotData.plotdict["y_rel_lims"][1]) if self.max_dim < 3 else 1.0)
+				tmp_y_max = self.y_max * ((plotData.plotdict["y_rel_lims"][1] if self.y_max > 0.0 else plotData.plotdict["y_rel_lims"][0]) if self.max_dim < 3 else 1.0)
 				if not plotData.plotdict["y_lims"] is None:
 					center = plotData.plotdict["y_lims"][0]
 					width = max([abs(y - center) for y in [tmp_y_min, tmp_y_max]])
@@ -359,12 +370,12 @@ class PlotRoot(plotbase.PlotBase):
 			if not plotData.plotdict["y_lims"] is None:
 				self.y_min = plotData.plotdict["y_lims"][0]
 			elif self.max_dim < 3:
-				self.y_min *= (plotData.plotdict["rel_y_lims"][0] if self.y_min > 0.0 else plotData.plotdict["rel_y_lims"][1])
+				self.y_min *= (plotData.plotdict["y_rel_lims"][0] if self.y_min > 0.0 else plotData.plotdict["y_rel_lims"][1])
 		
 			if not plotData.plotdict["y_lims"] is None and len(plotData.plotdict["y_lims"]) > 1:
 				self.y_max = plotData.plotdict["y_lims"][1]
 			elif self.max_dim < 3:
-				self.y_max *= (plotData.plotdict["rel_y_lims"][1] if self.y_max > 0.0 else plotData.plotdict["rel_y_lims"][0])
+				self.y_max *= (plotData.plotdict["y_rel_lims"][1] if self.y_max > 0.0 else plotData.plotdict["y_rel_lims"][0])
 				if plotData.plotdict["cms"]:
 					self.y_max *= 1.2
 
@@ -609,7 +620,7 @@ class PlotRoot(plotbase.PlotBase):
 			self.subplot_axes_histogram.GetYaxis().SetTitleOffset(self.subplot_axes_histogram.GetYaxis().GetTitleOffset() * self.plot_subplot_slider_y)
 			self.subplot_axes_histogram.GetYaxis().SetNdivisions(5, 0, 0)
 		
-		if all([isinstance(root_object, ROOT.TF1) or (root_object.GetListOfFunctions().FindObject("palette") == None) for root_object in plotData.plotdict["root_objects"].values()]):
+		if all([isinstance(root_object, ROOT.TF1) or (root_object.GetListOfFunctions().FindObject("palette") == None) for root_object in plotData.plotdict["root_objects"].values()]) and (plotData.plotdict["right_pad_margin"] is None):
 			plotData.plot.plot_pad.SetRightMargin(0.05)
 			if not plotData.plot.subplot_pad is None:
 				plotData.plot.subplot_pad.SetRightMargin(0.05)
