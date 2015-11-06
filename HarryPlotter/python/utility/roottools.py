@@ -749,7 +749,7 @@ class RootTools(object):
 	def get_dimension(root_object):
 		if isinstance(root_object, ROOT.TH1):
 			return root_object.GetDimension()+1
-		elif isinstance(root_object, ROOT.TGraph):
+		elif (isinstance(root_object, ROOT.TGraph) or isinstance(root_object, ROOT.TGraph2D)):
 			return (3 if isinstance(root_object, ROOT.TGraph2D) else 2)
 		elif isinstance(root_object, ROOT.TF1):
 			if isinstance(root_object, ROOT.TF3):
@@ -776,7 +776,7 @@ class RootTools(object):
 				errors = [root_object.GetBinError(global_bin) for global_bin in RootTools.get_global_bins(root_object)]
 				return RootTools.get_min(values, errors, lower_threshold), RootTools.get_max(values, errors, upper_threshold)
 		
-		elif isinstance(root_object, ROOT.TGraph):
+		elif (isinstance(root_object, ROOT.TGraph) or isinstance(root_object, ROOT.TGraph2D)):
 			values = None
 			errors_low = None
 			errors_high = None
