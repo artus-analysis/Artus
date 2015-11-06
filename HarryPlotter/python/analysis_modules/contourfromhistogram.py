@@ -38,10 +38,14 @@ class ContourFromHistogram(histogrammanipulationbase.HistogramManipulationBase):
 				"--contour-graph-nicks", type=str, nargs="+", default=[None],
 				help="Nick names for the resulting graphs. If more than one threshold is specified, \"_<index>\" is appended to the nick name. The nick is not created in the \"histogram\" mode."
 		)
+		self.contour_options.add_argument(
+				"--contour-minima-nicks", type=str, nargs="+", default=[None],
+				help="Nick names for a graph showing the minimum of the contour. [Default: %(default)s]"
+		)
 
 	def prepare_args(self, parser, plotData):
 		super(ContourFromHistogram, self).prepare_args(parser, plotData)
-		self.prepare_list_args(plotData, ["2d_histogram_nicks", "contour_thresholds", "contour_modes", "contour_graph_nicks"])
+		self.prepare_list_args(plotData, ["2d_histogram_nicks", "contour_thresholds", "contour_modes", "contour_graph_nicks", "contour_minima_nicks"])
 		
 		for index, (histogram_nick, contour_thresholds, contour_graph_nicks) in enumerate(zip(*[plotData.plotdict[k] for k in ["2d_histogram_nicks", "contour_thresholds", "contour_graph_nicks"]])):
 			contour_thresholds = [float(threshold) for threshold in contour_thresholds.split()]
@@ -60,13 +64,23 @@ class ContourFromHistogram(histogrammanipulationbase.HistogramManipulationBase):
 	def run(self, plotData=None):
 		super(ContourFromHistogram, self).run(plotData)
 
-		for index, (histogram_nick, contour_thresholds, contour_mode, contour_graph_nicks) in enumerate(zip(*[plotData.plotdict[k] for k in ["2d_histogram_nicks", "contour_thresholds", "contour_modes", "contour_graph_nicks"]])):
+		for index, (histogram_nick, contour_thresholds, contour_mode, contour_graph_nicks, contour_minima_nick) in enumerate(zip(*[plotData.plotdict[k] for k in ["2d_histogram_nicks", "contour_thresholds", "contour_modes", "contour_graph_nicks", "contour_minima_nicks"]])):
 			
 			histogram = plotData.plotdict["root_objects"][histogram_nick]
 			self._manipulate_boundary_bins(histogram)
 			
 			contours = array.array("d", contour_thresholds)
 			histogram.SetContour(len(contours), contours)
+			
+			if contour_minima_nick is not None:
+				xBinMin, yBinMin, zBinMin = ROOT.Long(), ROOT.Long(), ROOT.Long()
+				histogram.GetBinXYZ(histogram.GetMinimumBin(), xBinMin, yBinMin, zBinMin)
+				xMin = histogram.GetXaxis().GetBinCenter(xBinMin)
+				yMin = histogram.GetYaxis().GetBinCenter(yBinMin)
+				
+				minPoint = ROOT.TGraph(1)
+				minPoint.SetPoint(0, xMin, yMin)
+				plotData.plotdict["root_objects"][contour_minima_nick] = minPoint
 			
 			if contour_mode.lower() == "histogram":
 				log.debug("Set contours %s for histogram \"%s\"." % (str(contour_thresholds), histogram_nick))
