@@ -61,14 +61,9 @@ public:
 				return DefaultValues::UndefinedInt;
 			return static_cast<int>(static_cast<KGenEventInfo*>(event.m_eventInfo)->nPU);
 		});
-		// Stefan: yes this is unecesarry overhead since it it already defined as npu, but 
-		LambdaNtupleConsumer<TTypes>::AddIntQuantity("nPU", [bInpData](event_type const& event, product_type const& product)
-		{
-			if (bInpData)
-				return DefaultValues::UndefinedInt;
-			return static_cast<int>(static_cast<KGenEventInfo*>(event.m_eventInfo)->nPU);
-		});
-
+		// To account for different naming of the variables
+		LambdaNtupleConsumer<TTypes>::AddIntQuantity("nPU", LambdaNtupleConsumer<TTypes>::GetIntQuantities()["npu"]);
+		LambdaNtupleConsumer<TTypes>::AddIntQuantity("nPUMean", LambdaNtupleConsumer<TTypes>::GetIntQuantities()["npuMean"]);
 
 		LambdaNtupleConsumer<TTypes>::AddIntQuantity("ootPU", [](event_type const& event, product_type const& product)
 		{
