@@ -28,3 +28,8 @@ std::map<std::string, std::function<std::vector<float>(EventBase const&, Product
 std::map<std::string, std::function<std::vector<std::string>(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonVStringQuantities
 	= std::map<std::string, std::function<std::vector<std::string>(EventBase const&, ProductBase const& ) >>();
 
+std::map<std::string, std::function<std::vector<int>(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonVIntQuantities
+	= std::map<std::string, std::function<std::vector<int>(EventBase const&, ProductBase const& ) >>();
+
+
+

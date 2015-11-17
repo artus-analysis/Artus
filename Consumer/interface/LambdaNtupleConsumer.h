@@ -37,7 +37,7 @@ public:
 	static std::map<std::string, std::function<std::vector<double>(EventBase const&, ProductBase const& ) >> CommonVDoubleQuantities;
 	static std::map<std::string, std::function<std::vector<float>(EventBase const&, ProductBase const& ) >> CommonVFloatQuantities;
 	static std::map<std::string, std::function<std::vector<std::string>(EventBase const&, ProductBase const& ) >> CommonVStringQuantities;
-
+	static std::map<std::string, std::function<std::vector<int>(EventBase const&, ProductBase const& ) >> CommonVIntQuantities;
 };
 
 template<class TTypes>
@@ -58,6 +58,7 @@ public:
 	typedef std::function<std::vector<double>(EventBase const&, ProductBase const&)> vDouble_extractor_lambda_base;
 	typedef std::function<std::vector<float>(EventBase const&, ProductBase const&)> vFloat_extractor_lambda_base;
 	typedef std::function<std::vector<std::string>(EventBase const&, ProductBase const&)> vString_extractor_lambda_base;
+	typedef std::function<std::vector<int>(EventBase const&, ProductBase const&)> vInt_extractor_lambda_base;
 
 
 	static void AddBoolQuantity(std::string const& name,
@@ -150,6 +151,17 @@ public:
 			return valueExtractor(specEv, specPd);
 		};
 	}
+	static void AddVIntQuantity(std::string const& name,
+	                              std::function<std::vector<int>(event_type const&, product_type const&)> valueExtractor)
+	{
+		LambdaNtupleQuantities::CommonVIntQuantities[name] = [valueExtractor](EventBase const& ev, ProductBase const& pd) -> std::vector<int>
+		{
+			auto const& specEv = static_cast<event_type const&>(ev);
+			auto const& specPd = static_cast<product_type const&>(pd);
+			return valueExtractor(specEv, specPd);
+		};
+	}
+	
 
 	static std::map<std::string, std::function<bool(EventBase const&, ProductBase const& ) >> & GetBoolQuantities () {
 		return LambdaNtupleQuantities::CommonBoolQuantities;
@@ -178,6 +190,9 @@ public:
 	static std::map<std::string, std::function<std::vector<std::string>(EventBase const&, ProductBase const& ) >> & GetVStringQuantities () {
 		return LambdaNtupleQuantities::CommonVStringQuantities;
 	}
+	static std::map<std::string, std::function<std::vector<int>(EventBase const&, ProductBase const& ) >> & GetVIntQuantities () {
+		return LambdaNtupleQuantities::CommonVIntQuantities;
+	}
 
 	virtual void Init(setting_type const& settings) override {
 		ConsumerBase<TTypes>::Init(settings);
@@ -192,6 +207,7 @@ public:
 		m_vDoubleValueExtractors.clear();
 		m_vFloatValueExtractors.clear();
 		m_vStringValueExtractors.clear();
+		m_vIntValueExtractors.clear();
 		
 		m_boolQuantities.clear();
 		m_intQuantities.clear();
@@ -202,6 +218,7 @@ public:
 		m_vDoubleQuantities.clear();
 		m_vFloatQuantities.clear();
 		m_vStringQuantities.clear();
+		m_vIntQuantities.clear();
 		
 		size_t quantityIndex = 0;
 		for (std::vector<std::string>::iterator quantity = settings.GetQuantities().begin();
@@ -249,6 +266,12 @@ public:
 				m_boolValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetBoolQuantities(), *quantity));
 				m_boolQuantities.push_back(*quantity);
 			}
+			else if (LambdaNtupleConsumer<TTypes>::GetVIntQuantities().count(*quantity) > 0)
+			{
+				//LOG(DEBUG) << "Init vBool quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
+				m_vIntValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetVIntQuantities(), *quantity));
+				m_vIntQuantities.push_back(*quantity);
+			}
 			else if (LambdaNtupleConsumer<TTypes>::GetStringQuantities().count(*quantity) > 0)
 			{
 				//LOG(DEBUG) << "Init string quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
@@ -282,6 +305,7 @@ public:
 		m_vDoubleValues.resize(m_vDoubleValueExtractors.size());
 		m_vFloatValues.resize(m_vFloatValueExtractors.size());
 		m_vStringValues.resize(m_vStringValueExtractors.size());
+		m_vIntValues.resize(m_vIntValueExtractors.size());
 
 		size_t boolQuantityIndex = 0;
 		size_t intQuantityIndex = 0;
@@ -292,6 +316,7 @@ public:
 		size_t vDoubleQuantityIndex = 0;
 		size_t vFloatQuantityIndex = 0;
 		size_t vStringQuantityIndex = 0;
+		size_t vIntQuantityIndex = 0;
 		for (std::vector<std::string>::iterator quantity = settings.GetQuantities().begin();
 		     quantity != settings.GetQuantities().end(); ++quantity)
 		{
@@ -339,6 +364,11 @@ public:
 			{
 				m_tree->Branch(quantity->c_str(), &(m_vStringValues[vStringQuantityIndex]));
 				++vStringQuantityIndex;
+			}
+			else if (LambdaNtupleQuantities::CommonVIntQuantities.count(*quantity) > 0)
+			{
+				m_tree->Branch(quantity->c_str(), &(m_vIntValues[vIntQuantityIndex]));
+				++vIntQuantityIndex;
 			}
 		}
 	}
@@ -483,6 +513,21 @@ public:
 			++vStringValueIndex;
 		}
 
+		size_t vIntValueIndex = 0;
+		for(typename std::vector<vInt_extractor_lambda_base>::iterator valueExtractor = m_vIntValueExtractors.begin();
+		    valueExtractor != m_vIntValueExtractors.end(); ++valueExtractor)
+		{
+			try
+			{
+				m_vIntValues[vIntValueIndex] = (*valueExtractor)(event, product);
+			}
+			catch (...)
+			{
+				LOG(FATAL) << "Could not call lambda function for vInt quantity \"" << m_vIntQuantities.at(vIntValueIndex) << "\"!";
+			}
+			++vIntValueIndex;
+		}
+
 		// fill tree
 		this->m_tree->Fill();
 	}
@@ -506,6 +551,7 @@ private:
 	std::vector<vDouble_extractor_lambda_base> m_vDoubleValueExtractors;
 	std::vector<vFloat_extractor_lambda_base> m_vFloatValueExtractors;
 	std::vector<vString_extractor_lambda_base> m_vStringValueExtractors;
+	std::vector<vInt_extractor_lambda_base> m_vIntValueExtractors;
 
 	std::vector<std::string> m_boolQuantities;
 	std::vector<std::string> m_intQuantities;
@@ -516,6 +562,7 @@ private:
 	std::vector<std::string> m_vDoubleQuantities;
 	std::vector<std::string> m_vFloatQuantities;
 	std::vector<std::string> m_vStringQuantities;
+	std::vector<std::string> m_vIntQuantities;
 
 	std::vector<char> m_boolValues; // needs to be char vector because of bitset treatment of bool vector
 	std::vector<int> m_intValues;
@@ -526,6 +573,7 @@ private:
 	std::vector<std::vector<double> > m_vDoubleValues;
 	std::vector<std::vector<float> > m_vFloatValues;
 	std::vector<std::vector<std::string> > m_vStringValues;
+	std::vector<std::vector<int> > m_vIntValues;
 };
 
 

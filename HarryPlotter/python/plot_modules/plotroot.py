@@ -758,12 +758,16 @@ class PlotRoot(plotbase.PlotBase):
 		"""
 		
 		if (max_dim > 2) and (not z_lims is None):
-			root_object.GetZaxis().SetRangeUser(*z_lims)
-			root_object.GetZaxis().SetLimits(*z_lims)
-			#palette = root_object.GetListOfFunctions().FindObject("palette")
-			#if palette != None:
-			#	palette.GetAxis().SetRangeUser(*z_lims)
-			#	palette.GetAxis().SetLimits(*z_lims)
+			try:
+				root_object.GetZaxis().SetRangeUser(*z_lims)
+				root_object.GetZaxis().SetLimits(*z_lims)
+				#palette = root_object.GetListOfFunctions().FindObject("palette")
+				#if palette != None:
+				#	palette.GetAxis().SetRangeUser(*z_lims)
+				#	palette.GetAxis().SetLimits(*z_lims)
+			except:
+				#catch AttributeError for ROOT objects having lower dimensions
+				pass
 		
 		if reverse_x_axis:
 			pad.Update()

@@ -81,7 +81,7 @@ The size of these files ranges from several \SI{10}{GB} to few~TB.
 Finally, the skimmed n-tuples are processed by user code running on local resources.
 This processing step includes further event selections, event categorization or high-level calculations based on the reconstructed physics objects.
 The events are usually processed with different configurations, depending on the specific analysis needs.
-The output is then used for post-processing steps, including plotting of the results and their statistical interpretation.
+The output is then used for post-processing steps, including the graphical representation of the results and their statistical interpretation.
 
 In many cases, the code for the last step is developed without a predefined strategy or structure, following the evolving needs of the analysis which are often physics-driven and not always entirely predictable in the code design phase.
 This leads to convoluted, tangled and unstructured code, which is difficult to understand and to maintain and also difficult to hand over to new people joining the analysis effort.
@@ -188,8 +188,8 @@ Consumers can write results to the output file.}
 Settings specify what has to be done and with which parameters.
 The code performs the selected steps---ideally without requiring the user to be fully aware of implementation details.
 Hence, the JSON file completely defines the analysis.
-It contains information on the input data and settings for the pipelines and processors described in the following.
-Each of the modules described in the following has access to the settings read in from the configuration file.
+It contains information on the input data and settings for the pipelines and processors described below.
+Each of the modules has access to the settings read in from the configuration file.
 The \artus package comes with sophisticated tools written in Python which help in generating this JSON file.
 
 The input is handled by an event provider.
@@ -249,7 +249,7 @@ Furthermore, a factory class defining the creation of analysis-specific processo
 These classes also have to be derived from the \artus base classes.
 
 The most important part of an analysis are the \emph{processors}.
-The abstract processors of the \artus core need to be implemented to realize the physics needs of the analysis in the form of code.
+The abstract processors of the \artus core need to be implemented to realize the physics needs of the analysis.
 After the basic structure of an analysis is set up, most changes and additions are only related to the processors.
 
 Analyses shareing the input file format can easily also share processors which implement basic analysis steps in a general fashion.
@@ -278,20 +278,20 @@ The structure of the framework is illustrated in Figure~\ref{figure_artus_harry_
 It follows the idea of processors in the \artus framework.
 Three kinds of processor modules are executed subsequently:
 \begin{enumerate}
-\item One or, in special cases, more input modules are run to read in data from an input source.
+\item One or, in special cases, more input modules are run to read data from an input source.
 The input format is defined by the input module.
 The most commonly used input module is the one that reads histograms or other objects from ROOT files.
 \item An arbitrary number of analysis modules is appended.
 They can perform calculations based on the inputs or the results of previously run analysis modules.
 \item One or, in special cases, multiple plot modules are executed in the last step.
 Their task is to output the processed data in the specified format.
-In most cases, the output is a plot but it is also possible to store the objects in new ROOT files.
+In most cases, the output is a plot, but it is also possible to store the objects in new ROOT files.
 \end{enumerate}
 All processors share a common plot data object and possible meta-data where they can add new information and read the existing one.
 For example, the input modules add histograms read from input files and the plot modules access these histograms.
 
 The configuration is provided by an argument parser that can handle both arguments from a command line interface and content from JSON configuration files or Python dictionaries.
-This makes it possible to use either the \harryplotter executable configured via the command line or call the main function within another Python script.
+This makes it possible to either use the \harryplotter executable configured via the command line or to call the main function within another Python script.
 The executable can perform one single plot per run.
 For the execution within a script, functions exist to create multiple plots in parallel.
 
@@ -304,7 +304,7 @@ These modules are then initialized and can define additional arguments needed fo
 \label{section_artus_example_htt}
 
 Currently, the \artus framework is used for various user analyses of CMS data, ranging from jet energy calibration and QCD studies to Higgs boson measurements and searches for physics beyond the Standard Model.
-As an example, the technical aspects of the $\PH\to\Pgt\Pgt$ analysis are explained in the following.
+As an example, the technical aspects of the $\PH\to\Pgt\Pgt$ analysis are explained below.
 
 The $\PH\to\Pgt\Pgt$ analysis makes use of skimmed data sets in the \kapa format.
 The \kapa framework~\cite{kappa} is designed for skimming CMS data into small n-tuples that can be analyzed independently of the CMSSW software.
@@ -388,7 +388,7 @@ The post-processing step either outputs plots or writes the histograms to ROOT f
 % - increased data in Run 2
 
 The \artus analysis framework presented in this paper offers a comprehensive and well-integrated solution for event-based data analyses in the HEP domain.
-In conjunction with the post-processing toolkit \harryplotter, all data analysis needs are covered.
+In conjunction with the post-processing toolkit \harryplotter, all typical data analysis needs are covered.
 
 The modular and structured manner, in which the processing required for an analysis, can be expressed within the \artus framework, allowed the involved research groups to share and re-use source code on a scale not possible before.
 The concept underlying the \artus framework also enabled sharing program code between analyses and even across different universities and research centers.

@@ -372,11 +372,13 @@ class PlotBase(processor.Processor):
 			
 			self.x_min, self.x_max = PlotBase.update_lims(self.x_min, self.x_max, plot_x_min, plot_x_max)
 			if subplot == True:
-				self.max_sub_dim = max_dim
+				if (max_dim > self.max_sub_dim):
+					self.max_sub_dim = max_dim
 				self.y_sub_min, self.y_sub_max = PlotBase.update_lims(self.y_sub_min, self.y_sub_max, plot_y_min, plot_y_max)
 				self.z_sub_min, self.z_sub_max = PlotBase.update_lims(self.z_sub_min, self.z_sub_max, plot_z_min, plot_z_max)
 			else:
-				self.max_dim = max_dim
+				if (max_dim > self.max_dim):
+					self.max_dim = max_dim
 				self.y_min, self.y_max = PlotBase.update_lims(self.y_min, self.y_max, plot_y_min, plot_y_max)
 				self.z_min, self.z_max = PlotBase.update_lims(self.z_min, self.z_max, plot_z_min, plot_z_max)
 
