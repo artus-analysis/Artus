@@ -39,7 +39,7 @@ class Processor(object):
 		"""
 		log.debug("Running processor " + self.__class__.__name__ + "...")
 	
-	def prepare_list_args(self, plotData, keys_of_list_args, n_items=None):
+	def prepare_list_args(self, plotData, keys_of_list_args, n_items=None, help=""):
 		"""
 		Prepare list-type entries in plotData. All values for given keys are casted into lists
 		and then the lists are filled up by repeating existing items until all lists have the same size.
@@ -73,7 +73,7 @@ class Processor(object):
 			plotData.plotdict[key] = (plot_list * max_n_inputs)[:max_n_inputs]
 		
 		if log.isEnabledFor(logging.DEBUG):
-			log.debug("Argument list expansion")
+			log.debug("Argument list expansion: " + help)
 			for index in xrange(len(plotData.plotdict[keys_of_list_args[0]])):
 				log.debug("\tItem %d:" % index)
 				for key, value in [(key, plotData.plotdict[key][index]) for key in keys_of_list_args]:

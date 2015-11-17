@@ -78,6 +78,7 @@ class PlotMpl(plotbase.PlotBase):
 		self.set_matplotlib_defaults()
 		self.nicelabels = labels.LabelsDict()
 		self.default_linestyles = ['--', '-.', ':', '-']
+		self.rel_y_lim_default['lin']=[0.9, 1.2]
 
 
 	def modify_argument_parser(self, parser, args):
@@ -107,6 +108,7 @@ class PlotMpl(plotbase.PlotBase):
 
 		self.formatting_options.set_defaults(legend="upper right")
 		self.formatting_options.set_defaults(colormap="afmhot")
+
 
 	def prepare_args(self, parser, plotData):
 		super(PlotMpl, self).prepare_args(parser, plotData)
@@ -138,6 +140,10 @@ class PlotMpl(plotbase.PlotBase):
 					plotData.plotdict["markers"][index] = "."
 				else:
 					plotData.plotdict["markers"][index] = "fill"
+					
+		# defaults for axis ranges
+		if plotData.plotdict["y_rel_lims"] is None:
+			plotData.plotdict["y_rel_lims"] = [0.5, 2.0] if plotData.plotdict["y_log"] else [0.9, 1.2]
 
 		# set default colors depending whether there are markers or bars
 		i_marker, i_bar = 0, 0
@@ -367,12 +373,14 @@ class PlotMpl(plotbase.PlotBase):
 					else:
 						ax.set_ylim(ymin=self.y_min)
 				else:
-					if any("TH" in obj.__class__.__name__ for obj in plotData.plotdict["root_objects"].values()):
+					if any("TH1" in obj.__class__.__name__ for obj in plotData.plotdict["root_objects"].values()):
 						ax.set_ylim(0)
+					elif any("TH2" in obj.__class__.__name__ for obj in plotData.plotdict["root_objects"].values()):
+						ax.set_ylim(self.y_min, self.y_max)
 					else:
 						ax.set_ylim(self.y_min)
 				if all("TH1" in obj.__class__.__name__ for obj in plotData.plotdict["root_objects"].values()):
-					ax.set_ylim(ymax=self.y_max * (2 if plotData.plotdict["y_log"] else 1.2))
+					ax.set_ylim(ymax=self.y_max * (plotData.plotdict["y_rel_lims"][1]))
 
 		# set log scale
 		for axis in ['x', 'y']:
@@ -396,6 +404,8 @@ class PlotMpl(plotbase.PlotBase):
 
 			if plotData.plotdict["y_subplot_lims"] != None:
 				ax2.set_ylim(*plotData.plotdict["y_subplot_lims"])
+			if plotData.plotdict["y_subplot_ticks"] is not None:
+				ax2.set_yticks(plotData.plotdict["y_subplot_ticks"])
 
 			ax2.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]),position=(1., 0.), va='top', ha='right')
 			ax2.set_ylabel(plotData.plotdict["y_subplot_label"])

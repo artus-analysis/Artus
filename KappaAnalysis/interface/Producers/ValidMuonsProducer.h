@@ -92,16 +92,20 @@ public:
 	
 	enum class MuonIso : int
 	{
-		NONE  = -1,
-		TIGHT = 0,
-		LOOSE = 1,
-		FAKEABLE = 2,
+	  NONE  = -1,
+	    TIGHT = 0,
+	    LOOSE = 1,
+	    FAKEABLE = 2,
+	    HTTTIGHT = 3,
+	    HTTLOOSE = 4,
 	};
 	static MuonIso ToMuonIso(std::string const& muonIso)
 	{
 		if (muonIso == "tight") return MuonIso::TIGHT;
 		else if (muonIso == "loose") return MuonIso::LOOSE;
 		else if (muonIso == "fakeable") return MuonIso::FAKEABLE;
+		else if (muonIso == "htttight") return MuonIso::HTTTIGHT;
+		else if (muonIso == "httloose") return MuonIso::HTTLOOSE;
 		else return MuonIso::NONE;
 	}
 
@@ -477,7 +481,11 @@ public:
 				else if (muonIso == MuonIso::LOOSE)
 					validMuon = validMuon && ((((*muon)->pfIso() / (*muon)->p4.Pt()) < 0.20f) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (muonIso == MuonIso::FAKEABLE)
-					validMuon = validMuon && IsFakeableMuonIso(*muon, event, product, settings);
+				        validMuon = validMuon && IsFakeableMuonIso(*muon, event, product, settings);
+				else if (muonIso == MuonIso::HTTTIGHT)
+				        validMuon = validMuon && ((((*muon)->pfIso(0.5) / (*muon)->p4.Pt()) < 0.15f) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
+				else if (muonIso == MuonIso::HTTLOOSE)
+				        validMuon = validMuon && ((((*muon)->pfIso(0.5) / (*muon)->p4.Pt()) < 0.30f) ? settings.GetDirectIso() : (!settings.GetDirectIso()));
 				else if (muonIso != MuonIso::NONE)
 					LOG(FATAL) << "Muon isolation of type " << Utility::ToUnderlyingValue(muonIso) << " not yet implemented!";
 			}

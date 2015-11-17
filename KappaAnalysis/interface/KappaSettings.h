@@ -130,6 +130,8 @@ public:
 	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingTaus, 0.5f);
 	IMPL_SETTING_DEFAULT(float, DeltaRTriggerMatchingJets, 0.5f);
 
+	IMPL_SETTING_DEFAULT(float, TriggerObjectLowerPtCut, -1.0);
+
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonMatchingElectrons, true);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonMatchingMuons, true);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonMatchingTaus, true);
