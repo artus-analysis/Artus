@@ -194,6 +194,9 @@ class CutEfficiency(analysisbase.AnalysisBase):
 					sum_error = math.sqrt((sum_error*sum_error) + (histogram.GetBinError(src_global_bin)*histogram.GetBinError(src_global_bin)))
 					cumulative.SetBinContent(src_global_bin, sum_content)
 					cumulative.SetBinError(src_global_bin, sum_error)
+		global_overflow = histogram.GetBin( cumulative.GetNbinsX()+1, cumulative.GetNbinsY()+1,cumulative.GetNbinsZ()+1)
+		cumulative.SetBinContent(0, 0)
+		cumulative.SetBinContent(global_overflow, 0)
 		return cumulative
 	
 	@staticmethod
