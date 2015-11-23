@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "Artus/Configuration/interface/SettingsBase.h"
@@ -236,18 +235,21 @@ public:
 	IMPL_SETTING(int, NTaus);
 	IMPL_SETTING(int, NJets);
 	IMPL_SETTING(int, NBTaggedJets);
+	IMPL_SETTING(int, NNonBTaggedJets);
 	
 	IMPL_SETTING(int, MinNElectrons);
 	IMPL_SETTING(int, MinNMuons);
 	IMPL_SETTING(int, MinNTaus);
 	IMPL_SETTING(int, MinNJets);
 	IMPL_SETTING(int, MinNBTaggedJets);
+	IMPL_SETTING(int, MinNNonBTaggedJets);
 	
 	IMPL_SETTING(int, MaxNElectrons);
 	IMPL_SETTING(int, MaxNMuons);
 	IMPL_SETTING(int, MaxNTaus);
 	IMPL_SETTING(int, MaxNJets);
 	IMPL_SETTING(int, MaxNBTaggedJets);
+	IMPL_SETTING(int, MaxNNonBTaggedJets);
 	
 	IMPL_SETTING_DEFAULT(size_t, MinNMatchedElectrons, 0);
 	IMPL_SETTING_DEFAULT(size_t, MinNMatchedMuons, 0);
@@ -259,7 +261,8 @@ public:
 	IMPL_SETTING_STRINGLIST_DEFAULT(TauLowerPtCuts, {});
 	// std::vector<std::string> test;
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetLowerPtCuts, {});
-	
+	IMPL_SETTING_STRINGLIST_DEFAULT(NonBTaggedJetLowerPtCuts, {});
+		
 	IMPL_SETTING_STRINGLIST_DEFAULT(ElectronUpperAbsEtaCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(MuonUpperAbsEtaCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(TauUpperAbsEtaCuts, {});

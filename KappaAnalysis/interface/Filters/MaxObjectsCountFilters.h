@@ -69,3 +69,15 @@ public:
 	virtual void Init(KappaSettings const& settings) override;
 };
 
+
+/** Filter checking for the existence of at most the given number of valid b-tagged jets.
+ *  Required config tag: MaxNNonBTaggedJets
+ */
+class MaxNonBTaggedJetsCountFilter: public CutRangeFilterBase<KappaTypes> {
+public:
+	
+	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
+	
+	virtual std::string GetFilterId() const override;
+	virtual void Init(KappaSettings const& settings) override;
+};

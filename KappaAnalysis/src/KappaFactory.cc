@@ -183,6 +183,8 @@ FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
 		return new JetsCountFilter();
 	else if(id == BTaggedJetsCountFilter().GetFilterId())
 		return new BTaggedJetsCountFilter();
+	else if(id == NonBTaggedJetsCountFilter().GetFilterId())
+		return new NonBTaggedJetsCountFilter();
 	else if(id == MinElectronsCountFilter().GetFilterId())
 		return new MinElectronsCountFilter();
 	else if(id == MinMuonsCountFilter().GetFilterId())
@@ -193,6 +195,8 @@ FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
 		return new MinJetsCountFilter();
 	else if(id == MinBTaggedJetsCountFilter().GetFilterId())
 		return new MinBTaggedJetsCountFilter();
+	else if(id == MinNonBTaggedJetsCountFilter().GetFilterId())
+		return new MinNonBTaggedJetsCountFilter();
 	else if(id == MaxElectronsCountFilter().GetFilterId())
 		return new MaxElectronsCountFilter();
 	else if(id == MaxMuonsCountFilter().GetFilterId())
@@ -203,6 +207,8 @@ FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
 		return new MaxJetsCountFilter();
 	else if(id == MaxBTaggedJetsCountFilter().GetFilterId())
 		return new MaxBTaggedJetsCountFilter();
+	else if(id == MaxNonBTaggedJetsCountFilter().GetFilterId())
+		return new MaxNonBTaggedJetsCountFilter();
 	else if(id == ElectronLowerPtCutsFilter().GetFilterId())
 		return new ElectronLowerPtCutsFilter();
 	else if(id == MuonLowerPtCutsFilter().GetFilterId())
@@ -211,6 +217,8 @@ FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
 		return new TauLowerPtCutsFilter();
 	else if(id == JetLowerPtCutsFilter().GetFilterId())
 		return new JetLowerPtCutsFilter();
+	else if(id == NonBTaggedJetLowerPtCutsFilter().GetFilterId())
+		return new NonBTaggedJetLowerPtCutsFilter();
 	else if(id == ElectronUpperAbsEtaCutsFilter().GetFilterId())
 		return new ElectronUpperAbsEtaCutsFilter();
 	else if(id == MuonUpperAbsEtaCutsFilter().GetFilterId())

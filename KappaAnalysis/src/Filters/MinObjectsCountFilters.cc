@@ -97,3 +97,20 @@
 		));
 	}
 
+
+/** Filter checking for the existence of at least the given number of valid b-tagged jets.
+ *  Required config tag: MinNNonBTaggedJets
+ */
+	std::string MinNonBTaggedJetsCountFilter::GetFilterId() const {
+		return "MinNonBTaggedJetsCountFilter";
+	}
+
+	void MinNonBTaggedJetsCountFilter::Init(KappaSettings const& settings) {
+		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
+				[](KappaEvent const& event, KappaProduct const& product) {
+					return product.m_nonBTaggedJets.size();
+				},
+				CutRange::LowerThresholdCut(double(settings.GetMinNNonBTaggedJets()))
+		));
+	}
+
