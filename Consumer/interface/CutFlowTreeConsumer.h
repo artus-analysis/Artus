@@ -77,13 +77,16 @@ public:
 	virtual void Finish(setting_type const& setting) override {
 		CutFlowConsumerBase<TTypes>::Finish(setting);
 		
-		// save histograms
-		RootFileHelper::SafeCd(setting.GetRootOutFile(),
-				setting.GetRootFileFolder());
-		
-		for (std::vector<TTree*>::iterator cutFlowTree = m_cutFlowTrees.begin(); cutFlowTree != m_cutFlowTrees.end(); ++cutFlowTree)
+		if (m_treesInitialised)
 		{
-			(*cutFlowTree)->Write((*cutFlowTree)->GetName());
+			// save histograms
+			RootFileHelper::SafeCd(setting.GetRootOutFile(),
+					setting.GetRootFileFolder());
+		
+			for (std::vector<TTree*>::iterator cutFlowTree = m_cutFlowTrees.begin(); cutFlowTree != m_cutFlowTrees.end(); ++cutFlowTree)
+			{
+				(*cutFlowTree)->Write((*cutFlowTree)->GetName());
+			}
 		}
 	}
 
