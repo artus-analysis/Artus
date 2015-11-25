@@ -152,7 +152,7 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 	else if(id == RecoTauGenTauJetMatchingProducer().GetProducerId())
 		return new RecoTauGenTauJetMatchingProducer();
 	else
-		return FactoryBase::createProducer( id );	
+		return FactoryBase::createProducer( id );
 }
 
 FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
