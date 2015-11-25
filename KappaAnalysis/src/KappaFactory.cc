@@ -33,7 +33,6 @@
 #include "Artus/KappaAnalysis/interface/Producers/NicknameProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenTauMatchingProducers.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenTauJetMatchingProducers.h"
-#include "Artus/KappaAnalysis/interface/Producers/PFCandidatesProducer.h"
 
 // filter
 #include "Artus/KappaAnalysis/interface/Filters/RunLumiEventFilter.h"
@@ -156,10 +155,8 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new RecoMuonGenTauJetMatchingProducer();
 	else if(id == RecoTauGenTauJetMatchingProducer().GetProducerId())
 		return new RecoTauGenTauJetMatchingProducer();
-	else if(id == PFCandidatesProducer().GetProducerId())
-		return new PFCandidatesProducer();
 	else
-		return FactoryBase::createProducer( id );	
+		return FactoryBase::createProducer( id );
 }
 
 FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )

@@ -147,10 +147,7 @@ public:
 	std::map<KElectron*, KGenJet*> m_genTauJetMatchedElectrons;
 	std::map<KMuon*, KGenJet*> m_genTauJetMatchedMuons;
 	std::map<KTau*, KGenJet*> m_genTauJetMatchedTaus;
-	
-	//std::map<KMuon*, KPFCandidates*> m_pfChargedHadronsPileUp;
-	//std::map<KMuon*, std::vector<KPFCandidates*> > m_pfChargedHadronsPileUp;
-	
+
 	// MVA outputs
 	std::vector<double> m_discriminators;
 
