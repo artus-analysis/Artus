@@ -83,15 +83,18 @@ public:
 
 	virtual void Finish(setting_type const& setting) override {
 		CutFlowConsumerBase<TTypes>::Finish(setting);
+		
+		if (m_histogramsInitialised)
+		{
+			// save histograms
+			RootFileHelper::SafeCd(setting.GetRootOutFile(),
+					setting.GetRootFileFolder());
 
-		// save histograms
-		RootFileHelper::SafeCd(setting.GetRootOutFile(),
-				setting.GetRootFileFolder());
+			m_cutFlowUnweightedHist->Write(m_cutFlowUnweightedHist->GetName());
 
-		m_cutFlowUnweightedHist->Write(m_cutFlowUnweightedHist->GetName());
-
-		if(m_addWeightedCutFlow) {
-			m_cutFlowWeightedHist->Write(m_cutFlowWeightedHist->GetName());
+			if(m_addWeightedCutFlow) {
+				m_cutFlowWeightedHist->Write(m_cutFlowWeightedHist->GetName());
+			}
 		}
 	}
 

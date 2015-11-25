@@ -102,16 +102,20 @@ protected:
 	T* SecureFileInterfaceGet(const std::string &name, const bool check = true, const bool def = false)
 	{
 		T* result = this->m_fi.template Get<T>(name, check, def);
-		if(result == nullptr)
+		if ((GetEntries()) > 0 && (result == nullptr))
+		{
 			LOG(FATAL) << "Requested branch (" << name << ") not found!";
+		}
 		return result;
 	}
 
 	template<typename T>
 	T* SecureFileInterfaceGetMeta(const std::string &name, const bool check = true, const bool def = false) 	{
 		T* result = this->m_fi.template GetMeta<T>(name, check, def);
-		if(result == nullptr)
+		if ((GetEntries()) > 0 && (result == nullptr))
+		{
 			LOG(FATAL) << "Requested branch (" << name << ") not found!";
+		}
 		return result;
 	}
 };

@@ -48,3 +48,15 @@ void JetLowerPtCutsFilter::Init(KappaSettings const& settings) {
 	this->Initialise(settings.GetJetLowerPtCuts());
 }
 
+
+std::string NonBTaggedJetLowerPtCutsFilter::GetFilterId() const {
+	return "NonBTaggedJetLowerPtCutsFilter";
+}
+
+void NonBTaggedJetLowerPtCutsFilter::Init(KappaSettings const& settings) {
+
+	FilterBase<KappaTypes>::Init(settings);
+
+	this->Initialise(settings.GetNonBTaggedJetLowerPtCuts());
+}
+

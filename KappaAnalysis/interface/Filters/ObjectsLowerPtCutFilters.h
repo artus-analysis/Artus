@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <limits>
@@ -151,3 +150,15 @@ public:
 	virtual void Init(KappaSettings const& settings) override;
 };
 
+
+/** NonBTaggedJet Pt Filter
+ */
+class NonBTaggedJetLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KJet> {
+public:
+	
+	virtual std::string GetFilterId() const override;
+	
+	NonBTaggedJetLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KJet>(&KappaProduct::m_nonBTaggedJets) {}
+	
+	virtual void Init(KappaSettings const& settings) override;
+};

@@ -96,3 +96,19 @@
 		));
 	}
 
+
+/** Filter checking for the existence of exactly the given number of valid non b-tagged jets.
+ *  Required config tag: NNonBTaggedJets
+ */
+	std::string NonBTaggedJetsCountFilter::GetFilterId() const {
+		return "NonBTaggedJetsCountFilter";
+	}
+
+	void NonBTaggedJetsCountFilter::Init(KappaSettings const& settings) {
+		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
+				[](KappaEvent const& event, KappaProduct const& product) {
+					return product.m_nonBTaggedJets.size();
+				},
+				CutRange::EqualsCut(double(settings.GetNNonBTaggedJets()))
+		));
+	}
