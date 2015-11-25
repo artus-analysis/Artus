@@ -193,7 +193,6 @@ private:
 	KGenJet m_currentGenTauJet;
 	char m_currentGenTauJetMatched;
 	double m_currentGenTauJetMatchedDeltaR;
-
 };
 
 
