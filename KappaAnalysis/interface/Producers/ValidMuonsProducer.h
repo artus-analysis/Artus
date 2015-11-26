@@ -196,6 +196,208 @@ public:
 			}
 			return DefaultValues::UndefinedFloat;
 		});
+		
+		LambdaNtupleConsumer<TTypes>::AddIntQuantity("npv", [](event_type const& event, product_type const& product)
+		{
+			return event.m_vertexSummary->nVertices;
+		});
+		
+		LambdaNtupleConsumer<TTypes>::AddIntQuantity("nPU", [](event_type const& event, product_type const& product)
+		{
+			return static_cast<KGenEventInfo*>(event.m_eventInfo)->nPU;
+		});
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuon_pfPhotonsNoPileUpEtsum_00001", [](event_type const& event, product_type const& product)
+		{
+			float m_pfPhotonsNoPileUpEtsum_00001 = 0;
+        
+			for (std::vector<KPFCandidate>::const_iterator pfCandidate = event.m_pfPhotonsNoPileUp->begin();									
+				pfCandidate != event.m_pfPhotonsNoPileUp->end(); ++pfCandidate)
+			{
+				//double deltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, pfCandidate->p4);
+				double deltaR = ROOT::Math::VectorUtil::DeltaR(product.m_validMuons[0]->p4, pfCandidate->p4);
+				if (deltaR < 0.0001)
+				{
+					m_pfPhotonsNoPileUpEtsum_00001 += pfCandidate->p4.Pt();
+				}
+			}
+			return m_pfPhotonsNoPileUpEtsum_00001;
+		});
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("trailingMuon_pfPhotonsNoPileUpEtsum_00001", [](event_type const& event, product_type const& product)
+		{
+			float m_pfPhotonsNoPileUpEtsum_00001 = 0;
+        
+			for (std::vector<KPFCandidate>::const_iterator pfCandidate = event.m_pfPhotonsNoPileUp->begin();									
+				pfCandidate != event.m_pfPhotonsNoPileUp->end(); ++pfCandidate)
+			{
+				//double deltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, pfCandidate->p4);
+				double deltaR = ROOT::Math::VectorUtil::DeltaR(product.m_validMuons[1]->p4, pfCandidate->p4);
+				if (deltaR < 0.0001)
+				{
+					m_pfPhotonsNoPileUpEtsum_00001 += pfCandidate->p4.Pt();
+				}
+			}
+			return m_pfPhotonsNoPileUpEtsum_00001;
+		});
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuon_pfPhotonsNoPileUpEtsum_0001", [](event_type const& event, product_type const& product)
+		{
+			float m_pfPhotonsNoPileUpEtsum_0001 = 0;
+        
+			for (std::vector<KPFCandidate>::const_iterator pfCandidate = event.m_pfPhotonsNoPileUp->begin();									
+				pfCandidate != event.m_pfPhotonsNoPileUp->end(); ++pfCandidate)
+			{
+				//double deltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, pfCandidate->p4);
+				double deltaR = ROOT::Math::VectorUtil::DeltaR(product.m_validMuons[0]->p4, pfCandidate->p4);
+				if (deltaR < 0.001)
+				{
+					m_pfPhotonsNoPileUpEtsum_0001 += pfCandidate->p4.Pt();
+				}
+			}
+			return m_pfPhotonsNoPileUpEtsum_0001;
+		});
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("trailingMuon_pfPhotonsNoPileUpEtsum_0001", [](event_type const& event, product_type const& product)
+		{
+			float m_pfPhotonsNoPileUpEtsum_0001 = 0;
+        
+			for (std::vector<KPFCandidate>::const_iterator pfCandidate = event.m_pfPhotonsNoPileUp->begin();									
+				pfCandidate != event.m_pfPhotonsNoPileUp->end(); ++pfCandidate)
+			{
+				//double deltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, pfCandidate->p4);
+				double deltaR = ROOT::Math::VectorUtil::DeltaR(product.m_validMuons[1]->p4, pfCandidate->p4);
+				if (deltaR < 0.001)
+				{
+					m_pfPhotonsNoPileUpEtsum_0001 += pfCandidate->p4.Pt();
+				}
+			}
+			return m_pfPhotonsNoPileUpEtsum_0001;
+		});
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuon_pfPhotonsNoPileUpEtsum_001", [](event_type const& event, product_type const& product)
+		{
+			float m_pfPhotonsNoPileUpEtsum_001 = 0;
+        
+			for (std::vector<KPFCandidate>::const_iterator pfCandidate = event.m_pfPhotonsNoPileUp->begin();									
+				pfCandidate != event.m_pfPhotonsNoPileUp->end(); ++pfCandidate)
+			{
+				//double deltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, pfCandidate->p4);
+				double deltaR = ROOT::Math::VectorUtil::DeltaR(product.m_validMuons[0]->p4, pfCandidate->p4);
+				if (deltaR < 0.01)
+				{
+					m_pfPhotonsNoPileUpEtsum_001 += pfCandidate->p4.Pt();
+				}
+			}
+			return m_pfPhotonsNoPileUpEtsum_001;
+		});
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("trailingMuon_pfPhotonsNoPileUpEtsum_001", [](event_type const& event, product_type const& product)
+		{
+			float m_pfPhotonsNoPileUpEtsum_001 = 0;
+        
+			for (std::vector<KPFCandidate>::const_iterator pfCandidate = event.m_pfPhotonsNoPileUp->begin();									
+				pfCandidate != event.m_pfPhotonsNoPileUp->end(); ++pfCandidate)
+			{
+				//double deltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, pfCandidate->p4);
+				double deltaR = ROOT::Math::VectorUtil::DeltaR(product.m_validMuons[1]->p4, pfCandidate->p4);
+				if (deltaR < 0.01)
+				{
+					m_pfPhotonsNoPileUpEtsum_001 += pfCandidate->p4.Pt();
+				}
+			}
+			return m_pfPhotonsNoPileUpEtsum_001;
+		});
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuon_pfPhotonsNoPileUpEtsum_04", [](event_type const& event, product_type const& product)
+		{
+			float m_pfPhotonsNoPileUpEtsum_0025 = 0;
+        
+			for (std::vector<KPFCandidate>::const_iterator pfCandidate = event.m_pfPhotonsNoPileUp->begin();									
+				pfCandidate != event.m_pfPhotonsNoPileUp->end(); ++pfCandidate)
+			{
+				//double deltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, pfCandidate->p4);
+				double deltaR = ROOT::Math::VectorUtil::DeltaR(product.m_validMuons[0]->p4, pfCandidate->p4);
+				if (deltaR < 0.4)
+				{
+					m_pfPhotonsNoPileUpEtsum_0025 += pfCandidate->p4.Pt();
+				}
+			}
+			return m_pfPhotonsNoPileUpEtsum_0025;
+		});
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("trailingMuon_pfPhotonsNoPileUpEtsum_04", [](event_type const& event, product_type const& product)
+		{
+			float m_pfPhotonsNoPileUpEtsum_0025 = 0;
+        
+			for (std::vector<KPFCandidate>::const_iterator pfCandidate = event.m_pfPhotonsNoPileUp->begin();									
+				pfCandidate != event.m_pfPhotonsNoPileUp->end(); ++pfCandidate)
+			{
+				//double deltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, pfCandidate->p4);
+				double deltaR = ROOT::Math::VectorUtil::DeltaR(product.m_validMuons[1]->p4, pfCandidate->p4);
+				if (deltaR < 0.4)
+				{
+					m_pfPhotonsNoPileUpEtsum_0025 += pfCandidate->p4.Pt();
+				}
+			}
+			return m_pfPhotonsNoPileUpEtsum_0025;
+		});
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuon_pfPhotonsNoPileUpEtsum_005", [](event_type const& event, product_type const& product)
+		{
+			float m_pfPhotonsNoPileUpEtsum_005 = 0;
+        
+			for (std::vector<KPFCandidate>::const_iterator pfCandidate = event.m_pfPhotonsNoPileUp->begin();									
+				pfCandidate != event.m_pfPhotonsNoPileUp->end(); ++pfCandidate)
+			{
+				//double deltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, pfCandidate->p4);
+				double deltaR = ROOT::Math::VectorUtil::DeltaR(product.m_validMuons[0]->p4, pfCandidate->p4);
+				if (deltaR < 0.05)
+				{
+					m_pfPhotonsNoPileUpEtsum_005 += pfCandidate->p4.Pt();
+				}
+			}
+			return m_pfPhotonsNoPileUpEtsum_005;
+		});
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("trailingMuon_pfPhotonsNoPileUpEtsum_005", [](event_type const& event, product_type const& product)
+		{
+			float m_pfPhotonsNoPileUpEtsum_005 = 0;
+        
+			for (std::vector<KPFCandidate>::const_iterator pfCandidate = event.m_pfPhotonsNoPileUp->begin();									
+				pfCandidate != event.m_pfPhotonsNoPileUp->end(); ++pfCandidate)
+			{
+				//double deltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, pfCandidate->p4);
+				double deltaR = ROOT::Math::VectorUtil::DeltaR(product.m_validMuons[1]->p4, pfCandidate->p4);
+				if (deltaR < 0.05)
+				{
+					m_pfPhotonsNoPileUpEtsum_005 += pfCandidate->p4.Pt();
+				}
+			}
+			return m_pfPhotonsNoPileUpEtsum_005;
+		});
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuon_pfPhotonsNoPileUpEtsum_01", [](event_type const& event, product_type const& product)
+		{
+			float m_pfPhotonsNoPileUpEtsum_01 = 0;
+        
+			for (std::vector<KPFCandidate>::const_iterator pfCandidate = event.m_pfPhotonsNoPileUp->begin();									
+				pfCandidate != event.m_pfPhotonsNoPileUp->end(); ++pfCandidate)
+			{
+				//double deltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, pfCandidate->p4);
+				double deltaR = ROOT::Math::VectorUtil::DeltaR(product.m_validMuons[0]->p4, pfCandidate->p4);
+				if (deltaR < 0.1)
+				{
+					m_pfPhotonsNoPileUpEtsum_01 += pfCandidate->p4.Pt();
+				}
+			}
+			return m_pfPhotonsNoPileUpEtsum_01;
+		});
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("trailingMuon_pfPhotonsNoPileUpEtsum_01", [](event_type const& event, product_type const& product)
+		{
+			float m_pfPhotonsNoPileUpEtsum_01 = 0;
+        
+			for (std::vector<KPFCandidate>::const_iterator pfCandidate = event.m_pfPhotonsNoPileUp->begin();									
+				pfCandidate != event.m_pfPhotonsNoPileUp->end(); ++pfCandidate)
+			{
+				//double deltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, pfCandidate->p4);
+				double deltaR = ROOT::Math::VectorUtil::DeltaR(product.m_validMuons[1]->p4, pfCandidate->p4);
+				if (deltaR < 0.1)
+				{
+					m_pfPhotonsNoPileUpEtsum_01 += pfCandidate->p4.Pt();
+				}
+			}
+			return m_pfPhotonsNoPileUpEtsum_01;
+		});
 	}
 
 	virtual void Produce(event_type const& event, product_type& product,

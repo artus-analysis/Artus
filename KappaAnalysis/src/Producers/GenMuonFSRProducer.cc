@@ -23,9 +23,9 @@ void GenMuonFSRProducer::Init(KappaSettings const& settings)
 void GenMuonFSRProducer::Produce(KappaEvent const& event, KappaProduct& product,
                      KappaSettings const& settings) const
 {
-	// start with empty vector
+	// start with empty vector	
 	product.m_sumMuonFSRPt.clear();
-
+	
 	//Loop through all valid Muons
 	for (typename std::vector<KMuon*>::const_iterator validMuon = product.m_validMuons.begin();
 	     validMuon != product.m_validMuons.end(); ++validMuon)
@@ -34,6 +34,7 @@ void GenMuonFSRProducer::Produce(KappaEvent const& event, KappaProduct& product,
 		KGenParticle* currentGenParticle = SafeMap::GetWithDefault((product.m_genParticleMatchedMuons), *validMuon, (KGenParticle*)(0));
 		float sumMuonFSRPt = 0;
 		//for ordered readout
+		//double muonPt = (*validMuon)->p4.Pt();
 		if (currentGenParticle != 0)
 		{
 			//if 2 daughters: FSR radiation -> add pt to sumMuonFSRPt
@@ -49,7 +50,14 @@ void GenMuonFSRProducer::Produce(KappaEvent const& event, KappaProduct& product,
 			}
 		}
 		product.m_sumMuonFSRPt.push_back(sumMuonFSRPt);
+		//product.m_MuonPt.push_back(muonPt);
 	}
+
+	//if (product.m_MuonPt.at(0) < product.m_MuonPt.at(1))
+	//	std::cout << "#ojh2o34ij523oi4j";
+
+	
+	
 }
 
 

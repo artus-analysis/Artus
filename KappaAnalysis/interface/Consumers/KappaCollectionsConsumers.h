@@ -7,7 +7,6 @@
 #include "Artus/Utility/interface/SafeMap.h"
 #include "Artus/KappaAnalysis/interface/KappaTypes.h"
 
-
 /**
    \brief KappaCollectionsConsumer, create an TTree with one entry for each valid (Kappa) object.
 
@@ -155,7 +154,6 @@ public:
 					}
 				}
 			}
-			
 			m_tree->Fill();
 		}
 	}

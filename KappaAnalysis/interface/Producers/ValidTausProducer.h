@@ -98,6 +98,50 @@ public:
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingTauEta", [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->p4.Eta() : DefaultValues::UndefinedFloat;
 		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau0_hpsPFTauDiscriminationByRawChargedIsolationDBSumPtCorr", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->getDiscriminator("hpsPFTauDiscriminationByRawChargedIsolationDBSumPtCorr", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau1_hpsPFTauDiscriminationByRawChargedIsolationDBSumPtCorr", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->getDiscriminator("hpsPFTauDiscriminationByRawChargedIsolationDBSumPtCorr", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau0_hpsPFTauDiscriminationByRawCombinedIsolationDBSumPtCorr", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->getDiscriminator("hpsPFTauDiscriminationByRawCombinedIsolationDBSumPtCorr", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau1_hpsPFTauDiscriminationByRawCombinedIsolationDBSumPtCorr", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->getDiscriminator("hpsPFTauDiscriminationByRawCombinedIsolationDBSumPtCorr", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau0_hpsPFTauDiscriminationByRawCombinedIsolationDBSumPtCorr3Hits", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->getDiscriminator("hpsPFTauDiscriminationByRawCombinedIsolationDBSumPtCorr3Hits", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau1_hpsPFTauDiscriminationByRawCombinedIsolationDBSumPtCorr3Hits", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->getDiscriminator("hpsPFTauDiscriminationByRawCombinedIsolationDBSumPtCorr3Hits", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau0_hpsPFTauDiscriminationByRawGammaIsolationDBSumPtCorr", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->getDiscriminator("hpsPFTauDiscriminationByRawGammaIsolationDBSumPtCorr", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau1_hpsPFTauDiscriminationByRawGammaIsolationDBSumPtCorr", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->getDiscriminator("hpsPFTauDiscriminationByRawGammaIsolationDBSumPtCorr", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau0_hpsPFTauMVA3IsolationChargedIsoPtSum", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->getDiscriminator("hpsPFTauMVA3IsolationChargedIsoPtSum", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau1_hpsPFTauMVA3IsolationChargedIsoPtSum", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->getDiscriminator("hpsPFTauMVA3IsolationChargedIsoPtSum", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau0_hpsPFTauMVA3IsolationNeutralIsoPtSum", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->getDiscriminator("hpsPFTauMVA3IsolationNeutralIsoPtSum", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau1_hpsPFTauMVA3IsolationNeutralIsoPtSum", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->getDiscriminator("hpsPFTauMVA3IsolationNeutralIsoPtSum", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau0_hpsPFTauMVA3IsolationPUcorrPtSum", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->getDiscriminator("hpsPFTauMVA3IsolationPUcorrPtSum", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("tau1_hpsPFTauMVA3IsolationPUcorrPtSum", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->getDiscriminator("hpsPFTauMVA3IsolationPUcorrPtSum", event.m_tauMetadata) : DefaultValues::UndefinedDouble;
+		});
+
+
 	}
 
 	virtual void Produce(KappaEvent const& event, KappaProduct& product,
