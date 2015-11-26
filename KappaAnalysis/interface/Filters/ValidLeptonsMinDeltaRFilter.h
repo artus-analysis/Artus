@@ -48,7 +48,7 @@ public:
 						deltaRMatched = ROOT::Math::VectorUtil::DeltaR((*validObject1)->p4, (*validObject2)->p4);
 						if (deltaRMatched < (settings.*GetMinDeltaRValidLeptons)())
 						{
-							//std::cout << "Deleting event with DeltaR of " << deltaRMatched << " between particles with masses " << (*validObject1)->p4.M() << " and " << (*validObject2)->p4.M() << std::endl;
+							//std::cout << "Deleting event with DeltaR between particles of " << deltaRMatched << std::endl;
 							return false;
 						}
 					}

@@ -54,8 +54,6 @@ public:
 	KPFCandidates* m_pfChargedHadronsNoPileUp = nullptr;
 	KPFCandidates* m_pfNeutralHadronsNoPileUp = nullptr;
 	KPFCandidates* m_pfPhotonsNoPileUp = nullptr;
-	KPFCandidates* m_pfAllChargedParticlesNoPileUp = nullptr;
-	KPFCandidates* m_pfAllChargedParticlesPileUp = nullptr;
 
 	/// pointer to beamspot collection
 	KBeamSpot* m_beamSpot = nullptr;
