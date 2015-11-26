@@ -8,12 +8,8 @@ else
 	export ARTUSPATH=$(readlink -f $(dirname $(readlink -f ${BASH_SOURCE[0]}))/../..)
 fi
 
-export KAPPAPATH=$(readlink -f $ARTUSPATH/../Kappa)
-export KAPPATOOLSPATH=$(readlink -f $ARTUSPATH/../KappaTools)
-
-# configurations needed for compilation of C++ code
-#export BOOSTPATH=$(ls /afs/cern.ch/cms/${SCRAM_ARCH}/external/boost/* -d | tail -n 1)/
-export LD_LIBRARY_PATH="$KAPPATOOLSPATH/lib:$KAPPAPATH/lib:$LD_LIBRARY_PATH"
+# setup Kappa
+source $ARTUSPATH/../KappaTools/Toolbox/scripts/ini_KappaTools.sh
 
 # voms proxy path
 export X509_USER_PROXY=$HOME/.globus/x509up

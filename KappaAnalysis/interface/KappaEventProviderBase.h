@@ -12,8 +12,8 @@
 #include "Kappa/DataFormats/interface/KDebug.h"
 
 #include "Artus/Core/interface/PipelineRunner.h"
-#include "KappaTools/RootTools/FileInterface2.h"
-#include "KappaTools/Toolbox/ProgressMonitor.h"
+#include "KappaTools/RootTools/interface/FileInterface2.h"
+#include "KappaTools/Toolbox/interface/ProgressMonitor.h"
 
 /**
    \brief Base class to connect the analysis specific event content to the pipelines.

@@ -14,7 +14,7 @@
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #define USE_JEC
-#include "KappaTools/RootTools/JECTools.h"
+#include "KappaTools/RootTools/interface/JECTools.h"
 
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/Utility/interface/Utility.h"

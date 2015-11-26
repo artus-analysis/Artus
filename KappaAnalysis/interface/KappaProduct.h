@@ -2,7 +2,7 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
-#include "KappaTools/RootTools/HLTTools.h"
+#include "KappaTools/RootTools/interface/HLTTools.h"
 #include "MotherDaughterBundle.h"
 
 #include "Artus/Core/interface/ProductBase.h"

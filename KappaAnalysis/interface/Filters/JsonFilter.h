@@ -2,7 +2,7 @@
 #pragma once
 
 #include "Kappa/DataFormats/interface/Kappa.h"
-#include "KappaTools/RootTools/RunLumiReader.h"
+#include "KappaTools/RootTools/interface/RunLumiReader.h"
 
 #include "Artus/Core/interface/FilterBase.h"
 #include "Artus/KappaAnalysis/interface/KappaTypes.h"
