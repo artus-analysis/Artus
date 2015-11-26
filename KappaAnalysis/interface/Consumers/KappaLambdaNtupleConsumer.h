@@ -47,7 +47,6 @@ public:
 		{
 			return event.m_vertexSummary->nVertices;
 		});
-		
 		bool bInpData = settings.GetInputIsData();
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("npuMean", [bInpData](event_type const& event, product_type const& product)
 		{
@@ -61,6 +60,15 @@ public:
 			if (bInpData)
 				return DefaultValues::UndefinedInt;
 			return static_cast<int>(static_cast<KGenEventInfo*>(event.m_eventInfo)->nPU);
+		});
+		// To account for different naming of the variables
+		LambdaNtupleConsumer<TTypes>::AddIntQuantity("nPU", LambdaNtupleConsumer<TTypes>::GetIntQuantities()["npu"]);
+		LambdaNtupleConsumer<TTypes>::AddIntQuantity("nPUMean", LambdaNtupleConsumer<TTypes>::GetIntQuantities()["npuMean"]);
+
+		LambdaNtupleConsumer<TTypes>::AddIntQuantity("ootPU", [](event_type const& event, product_type const& product)
+		{
+			return static_cast<KGenEventInfo*>(event.m_eventInfo)->nPUm1 +
+				static_cast<KGenEventInfo*>(event.m_eventInfo)->nPUp1;
 		});
 		
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("rho", [](event_type const& event, product_type const& product) {
