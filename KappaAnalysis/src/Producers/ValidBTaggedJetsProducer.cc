@@ -95,7 +95,7 @@ void ValidBTaggedJetsProducer::Produce(KappaEvent const& event, KappaProduct& pr
 				}
 				unsigned int btagSys = BtagSF::kNo;
 				unsigned int bmistagSys = BtagSF::kNo;
-				bool is8TeV = true;
+				//bool is8TeV = true;
 				if (settings.GetBTagShift()<0)
 					btagSys = BtagSF::kDown;
 				if (settings.GetBTagShift()>0)
@@ -104,12 +104,14 @@ void ValidBTaggedJetsProducer::Produce(KappaEvent const& event, KappaProduct& pr
 					bmistagSys = BtagSF::kDown;
 				if (settings.GetBMistagShift()>0)
 					bmistagSys = BtagSF::kUp;
-			
+
+				LOG(DEBUG) << "Btagging shifts tag/mistag : " << settings.GetBTagShift() << " " << settings.GetBMistagShift(); 
+				
 				bool before = validBJet;
 				BtagSF btagSF;
 				validBJet = btagSF.isbtagged(tjet->p4.pt(), tjet->p4.eta(), combinedSecondaryVertex,
 							     jetflavor, settings.GetInputIsData(),
-							     btagSys, bmistagSys, is8TeV);
+							     btagSys, bmistagSys, settings.GetYear());
 				if (before != validBJet) 
 					LOG(DEBUG) << "Promoted/demoted : " << validBJet;
 			}

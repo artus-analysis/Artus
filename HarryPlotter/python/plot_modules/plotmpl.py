@@ -368,7 +368,7 @@ class PlotMpl(plotbase.PlotBase):
 			else:
 				#if ax.dataLim.min[1] >= (-1E-6) and ax.get_ylim()[0] < 0.:
 				if plotData.plotdict["y_log"]:
-					if self.y_max > 1:
+					if self.y_max > 1 and self.y_min < 1:
 						ax.set_ylim(ymin=1)
 					else:
 						ax.set_ylim(ymin=self.y_min)

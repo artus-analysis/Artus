@@ -66,18 +66,20 @@ public:
 			{
 				bool objectMatched = false;
 				float deltaR = 0;
+				float deltaRmin = std::numeric_limits<float>::max();
 				
 				// loop over all genTauJets
 				for (typename std::vector<KGenJet>::iterator genTauJet = event.m_genTauJets->begin();
-					 !objectMatched && genTauJet != event.m_genTauJets->end(); ++genTauJet) 
+					genTauJet != event.m_genTauJets->end(); ++genTauJet) 
 				{
 					// TODO: maybe need to match to visible component of genTauJet
 					// depends on setting for TauGenJetProducer.includeNeutrinos
 					// PhysicsTools/JetMCAlgos/python/TauGenJets_cfi.py
 					deltaR = ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, genTauJet->p4);
-					if(deltaR<(settings.*GetDeltaRMatchingRecoObjectGenTauJet)())
+					if(deltaR<(settings.*GetDeltaRMatchingRecoObjectGenTauJet)() && deltaR<deltaRmin)
 					{
 						(product.*m_genTauJetMatchedObjects)[*validObject] = &(*genTauJet);
+						deltaRmin = deltaR;
 						objectMatched = true;
 						//LOG(INFO) << this->GetProducerId() << " (event " << event.m_eventInfo->nEvent << "): " << (*validObject)->p4 << " --> " << genTauJet->p4;
 					}
