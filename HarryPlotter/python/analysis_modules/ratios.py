@@ -8,6 +8,7 @@ import hashlib
 
 import Artus.HarryPlotter.analysisbase as analysisbase
 import Artus.HarryPlotter.utility.roottools as roottools
+import Artus.HarryPlotter.analysis_modules.removeerrors as removeerrors
 
 
 class Ratio(analysisbase.AnalysisBase):
@@ -19,11 +20,19 @@ class Ratio(analysisbase.AnalysisBase):
 		self.ratio_options = parser.add_argument_group("{} options".format(self.name()))
 		self.ratio_options.add_argument(
 				"--ratio-numerator-nicks", nargs="+",
-				help="Nick names for the numerators of the ratio. Multiple nicks (whitespace separated) will be summed up before calculating the ratio"
+				help="Nick names for the numerators of the ratio. Multiple nicks (whitespace separated) will be summed up before calculating the ratio."
+		)
+		self.ratio_options.add_argument(
+				"--ratio-numerator-no-errors", nargs="+", type="bool", default=[False],
+				help="Remove errors of numerator histograms before calculating the ratio. [Default: %(default)s]"
 		)
 		self.ratio_options.add_argument(
 				"--ratio-denominator-nicks", nargs="+",
-				help="Nick names for the denominator of the ratio. Multiple nicks (whitespace separated) will be summed up before calculating the ratio"
+				help="Nick names for the denominator of the ratio. Multiple nicks (whitespace separated) will be summed up before calculating the ratio."
+		)
+		self.ratio_options.add_argument(
+				"--ratio-denominator-no-errors", nargs="+", type="bool", default=[False],
+				help="Remove errors of denominator histograms before calculating the ratio. [Default: %(default)s]"
 		)
 		self.ratio_options.add_argument(
 				"--ratio-result-nicks", nargs="+",
@@ -32,7 +41,7 @@ class Ratio(analysisbase.AnalysisBase):
 
 	def prepare_args(self, parser, plotData):
 		super(Ratio, self).prepare_args(parser, plotData)
-		self.prepare_list_args(plotData, ["ratio_numerator_nicks", "ratio_denominator_nicks", "ratio_result_nicks"])
+		self.prepare_list_args(plotData, ["ratio_numerator_nicks", "ratio_numerator_no_errors", "ratio_denominator_nicks", "ratio_denominator_no_errors", "ratio_result_nicks"])
 		self.auto_set_arguments(plotData, ["ratio_numerator_nicks", "ratio_denominator_nicks"], "ratio_result_nicks", "ratio")
 		
 		for index, (ratio_numerator_nick, ratio_denominator_nick, ratio_result_nick) in enumerate(zip(
@@ -51,8 +60,8 @@ class Ratio(analysisbase.AnalysisBase):
 	def run(self, plotData=None):
 		super(Ratio, self).run(plotData)
 		
-		for ratio_numerator_nicks, ratio_denominator_nicks, ratio_result_nick in zip(
-				*[plotData.plotdict[k] for k in ["ratio_numerator_nicks", "ratio_denominator_nicks", "ratio_result_nicks"]]
+		for ratio_numerator_nicks, ratio_numerator_no_errors, ratio_denominator_nicks, ratio_denominator_no_errors, ratio_result_nick in zip(
+				*[plotData.plotdict[k] for k in ["ratio_numerator_nicks", "ratio_numerator_no_errors", "ratio_denominator_nicks", "ratio_denominator_no_errors", "ratio_result_nicks"]]
 		):
 			# create nick sum histograms
 			numerator_histogram = None
@@ -67,6 +76,9 @@ class Ratio(analysisbase.AnalysisBase):
 				if hasattr(numerator_histogram, "SetDirectory"):
 					numerator_histogram.SetDirectory(0)
 			
+			if ratio_numerator_no_errors:
+				removeerrors.RemoveErrors.remove_errors(numerator_histogram)
+			
 			denominator_histogram = None
 			for nick in ratio_denominator_nicks:
 				root_object = plotData.plotdict["root_objects"][nick]
@@ -78,6 +90,9 @@ class Ratio(analysisbase.AnalysisBase):
 					denominator_histogram.Add(root_object)
 				if hasattr(denominator_histogram, "SetDirectory"):
 					denominator_histogram.SetDirectory(0)
+			
+			if ratio_denominator_no_errors:
+				removeerrors.RemoveErrors.remove_errors(denominator_histogram)
 			
 			# calculate ratio
 			ratio_histogram = roottools.RootTools.to_histogram(numerator_histogram)
