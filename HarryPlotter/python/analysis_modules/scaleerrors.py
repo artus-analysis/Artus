@@ -50,10 +50,10 @@ class ScaleErrors(analysisbase.AnalysisBase):
 		elif isinstance(root_object, ROOT.TGraph) and (not isinstance(root_object, ROOT.TGraph2D)):
 			for point in xrange(root_object.GetN()):
 				if isinstance(root_object, ROOT.TGraphAsymmErrors):
-					root_object.SetPointError(point, scale_factor*GetErrorXlow(point), scale_factor*GetErrorXhigh(point),
-					                          scale_factor*GetErrorYlow(point), scale_factor*GetErrorYhigh(point))
+					root_object.SetPointError(point, scale_factor*root_object.GetErrorXlow(point), scale_factor*root_object.GetErrorXhigh(point),
+					                          scale_factor*root_object.GetErrorYlow(point), scale_factor*root_object.GetErrorYhigh(point))
 				elif isinstance(root_object, ROOT.TGraphErrors):
-					root_object.SetPointError(point, scale_factor*GetErrorX(point), scale_factor*GetErrorY(point))
+					root_object.SetPointError(point, scale_factor*root_object.GetErrorX(point), scale_factor*root_object.GetErrorY(point))
 		
 		else:
 			log.warning("Module \"{name}\" does not support object of type \"{object_type}\"!".format(

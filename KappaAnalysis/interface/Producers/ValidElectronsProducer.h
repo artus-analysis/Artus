@@ -170,7 +170,7 @@ public:
 		electronIsoType = ToElectronIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetElectronIsoType)())));
 		electronIso = ToElectronIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetElectronIso)())));
 		electronReco = ToElectronReco(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetElectronReco)())));
-		
+
 		if ((boost::algorithm::contains((settings.*GetElectronID)(), "vbft95")) && (electronIso==ElectronIso::NONE))
 		{
 			LOG(WARNING) << "ValidElectronsProducer: using cutbased vbft95 ID, but isolation is not set!";
