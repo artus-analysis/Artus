@@ -76,20 +76,22 @@ public:
 			{
 				bool objectMatched = false;
 				float deltaR = 0;
+				float deltaRmin = std::numeric_limits<float>::max();
 				
 				// loop over all genTaus
-				for (typename std::vector<KGenTau>::iterator genTau = event.m_genTaus->begin();
-					 !objectMatched && genTau != event.m_genTaus->end();++genTau) 
+				for (typename std::vector<KGenTau>::iterator genTau = event.m_genTaus->begin(); 
+					genTau != event.m_genTaus->end(); ++genTau) 
 				{
 					// only use genTaus that will decay into comparable particles
 					if (MatchDecayMode(*genTau,tauDecayMode))
 					{
 						deltaR = static_cast<float>(ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, genTau->visible.p4));
-						if(deltaR<(settings.*GetDeltaRMatchingRecoObjectGenTau)())
+						if(deltaR<(settings.*GetDeltaRMatchingRecoObjectGenTau)() && deltaR<deltaRmin)
 						{
 							(product.*m_genTauMatchedObjects)[*validObject] = &(*genTau);
 							ratioGenTauMatched += 1.0 / (product.*m_validObjects).size();
 							product.m_genTauMatchDeltaR = deltaR;
+							deltaRmin = deltaR;
 							objectMatched = true;
 							//LOG(INFO) << this->GetProducerId() << " (event " << event.m_eventInfo->nEvent << "): " << (*validObject)->p4 << " --> " << genTau->visible.p4;
 						}

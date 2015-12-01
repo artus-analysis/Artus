@@ -38,5 +38,5 @@ class TGraphFromHistograms(analysisbase.AnalysisBase):
 			plotData.plotdict["nicks"].append(new)
 
 			for i in range(1, plotData.plotdict['root_objects'][x].GetNbinsX()+1):
-				plotData.plotdict["root_objects"][new].SetPoint(i, plotData.plotdict['root_objects'][x].GetBinContent(i), plotData.plotdict['root_objects'][y].GetBinContent(i))
-				plotData.plotdict["root_objects"][new].SetPointError(i, plotData.plotdict['root_objects'][x].GetBinError(i), plotData.plotdict['root_objects'][y].GetBinError(i))
+				plotData.plotdict["root_objects"][new].SetPoint(i-1, plotData.plotdict['root_objects'][x].GetBinContent(i), plotData.plotdict['root_objects'][y].GetBinContent(i))
+				plotData.plotdict["root_objects"][new].SetPointError(i-1, plotData.plotdict['root_objects'][x].GetBinError(i), plotData.plotdict['root_objects'][y].GetBinError(i))

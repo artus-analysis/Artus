@@ -406,7 +406,7 @@ class PlotBase(processor.Processor):
 				else:
 					unit = "fb"
 					factor = 1
-				run_periods.append("%s \,\mathrm{%s}^{-1} (%s \,TeV)" % (str(lumi*factor), unit, str(int(energy))))
+				run_periods.append("%s \,\mathrm{%s}^{-1} (%s \,TeV)" % (str(round(lumi*factor, 2)), unit, str(int(energy))))
 		# if only energy is available (MC-plots):
 		elif (not plotData.plotdict["energies"] is None):
 			for energy in plotData.plotdict["energies"]:

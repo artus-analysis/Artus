@@ -232,7 +232,7 @@ class PlotRoot(plotbase.PlotBase):
 				subplot_pad.Draw()
 			
 			plot_pad.SetTopMargin(0.02)
-			plot_pad.SetBottomMargin(0.02)
+			plot_pad.SetBottomMargin(0.026)
 			subplot_pad.SetBottomMargin(0.35)
 			
 			for index, y_line in enumerate(plotData.plotdict["subplot_lines"]):
