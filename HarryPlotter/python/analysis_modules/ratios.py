@@ -8,7 +8,7 @@ import hashlib
 
 import Artus.HarryPlotter.analysisbase as analysisbase
 import Artus.HarryPlotter.utility.roottools as roottools
-import Artus.HarryPlotter.analysis_modules.removeerrors as removeerrors
+import Artus.HarryPlotter.analysis_modules.scaleerrors as scaleerrors
 
 
 class Ratio(analysisbase.AnalysisBase):
@@ -77,7 +77,7 @@ class Ratio(analysisbase.AnalysisBase):
 					numerator_histogram.SetDirectory(0)
 			
 			if ratio_numerator_no_errors:
-				removeerrors.RemoveErrors.remove_errors(numerator_histogram)
+				scaleerrors.ScaleErrors.scale_errors(numerator_histogram)
 			
 			denominator_histogram = None
 			for nick in ratio_denominator_nicks:
@@ -92,7 +92,7 @@ class Ratio(analysisbase.AnalysisBase):
 					denominator_histogram.SetDirectory(0)
 			
 			if ratio_denominator_no_errors:
-				removeerrors.RemoveErrors.remove_errors(denominator_histogram)
+				scaleerrors.ScaleErrors.scale_errors(denominator_histogram)
 			
 			# calculate ratio
 			ratio_histogram = roottools.RootTools.to_histogram(numerator_histogram)
