@@ -60,10 +60,6 @@ public:
 	/// added by ValidMuonsProducer
 	std::vector<KMuon*> m_validMuons;
 	std::vector<KMuon*> m_invalidMuons;
-	
-	/// added by MuonFSRProducer	
-	std::vector<double> m_sumMuonFSRPt;
-	std::vector<double> m_MuonPt;
 
 	/// added by TauEnergyCorrectionProducer
 	// needs to be a shared_ptr in order to be deleted when the product is deleted
@@ -147,7 +143,7 @@ public:
 	std::map<KElectron*, KGenJet*> m_genTauJetMatchedElectrons;
 	std::map<KMuon*, KGenJet*> m_genTauJetMatchedMuons;
 	std::map<KTau*, KGenJet*> m_genTauJetMatchedTaus;
-
+	
 	// MVA outputs
 	std::vector<double> m_discriminators;
 

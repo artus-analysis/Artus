@@ -66,10 +66,6 @@ public:
 			this->m_event.m_pfChargedHadronsPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(settings.GetPFChargedHadronsPileUp());
 		if (! settings.GetPFChargedHadronsNoPileUp().empty())
 			this->m_event.m_pfChargedHadronsNoPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(settings.GetPFChargedHadronsNoPileUp());
-		if (! settings.GetPFAllChargedParticlesNoPileUp().empty())
-			this->m_event.m_pfAllChargedParticlesNoPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(settings.GetPFAllChargedParticlesNoPileUp());
-		if (! settings.GetPFAllChargedParticlesPileUp().empty())
-			this->m_event.m_pfAllChargedParticlesPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(settings.GetPFAllChargedParticlesPileUp());
 		if (! settings.GetPFNeutralHadronsNoPileUp().empty())
 			this->m_event.m_pfNeutralHadronsNoPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(settings.GetPFNeutralHadronsNoPileUp());
 		if (! settings.GetPFPhotonsNoPileUp().empty())

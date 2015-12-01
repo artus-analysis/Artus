@@ -53,8 +53,6 @@ public:
 	IMPL_SETTING_DEFAULT(std::string, PFChargedHadronsNoPileUp, "");
 	IMPL_SETTING_DEFAULT(std::string, PFNeutralHadronsNoPileUp, "");
 	IMPL_SETTING_DEFAULT(std::string, PFPhotonsNoPileUp, "");
-	IMPL_SETTING_DEFAULT(std::string, PFAllChargedParticlesNoPileUp, "");
-	IMPL_SETTING_DEFAULT(std::string, PFAllChargedParticlesPileUp, "");
 
 	/// name of beamspot collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, BeamSpot, "");
@@ -253,9 +251,6 @@ public:
 	IMPL_SETTING(int, MaxNBTaggedJets);
 	IMPL_SETTING(int, MaxNNonBTaggedJets);
 	
-	IMPL_SETTING(int, MinNPU);
-	IMPL_SETTING(int, MaxNPU);
-	
 	IMPL_SETTING_DEFAULT(size_t, MinNMatchedElectrons, 0);
 	IMPL_SETTING_DEFAULT(size_t, MinNMatchedMuons, 0);
 	IMPL_SETTING_DEFAULT(size_t, MinNMatchedTaus, 0);
@@ -317,7 +312,8 @@ public:
 	IMPL_SETTING_DEFAULT(bool, BranchGenMatchedTaus, false);
 	IMPL_SETTING_DEFAULT(bool, BranchGenMatchedJets, false);
 
-	IMPL_SETTING_DEFAULT(bool, AddGenMatchedParticles, true);
-	IMPL_SETTING_DEFAULT(bool, AddGenMatchedTaus, true);
-	IMPL_SETTING_DEFAULT(bool, AddGenMatchedTauJets, true);
+	IMPL_SETTING_DEFAULT(bool, AddGenMatchedParticles, true)
+	IMPL_SETTING_DEFAULT(bool, AddGenMatchedTaus, true)
+	IMPL_SETTING_DEFAULT(bool, AddGenMatchedTauJets, true)
+
 };

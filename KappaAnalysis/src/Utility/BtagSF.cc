@@ -1,19 +1,24 @@
 #include "Artus/KappaAnalysis/interface/Utility/BtagSF.h"
+#include "Artus/KappaAnalysis/interface/Utility/BTagCalibrationStandalone.h"
 
 BtagSF::BtagSF(int seed) { randm = new TRandom3(seed); }
 
 BtagSF::~BtagSF() { delete randm; }
 
 bool BtagSF::isbtagged(double pt, float eta, float csv, Int_t jetflavor, bool isdata,
-                       unsigned int btagsys, unsigned int mistagsys, bool is2012)
+                       unsigned int btagsys, unsigned int mistagsys, int year)
 {
 	randm->SetSeed(static_cast<int>((eta + 5.) * 100000.));
-
-	bool btagged = isdata && (csv > 0.679f);
+	
+	float csv_WP = 0.679;
+	if(year==2015) csv_WP = 0.89;
+	
+	//possible change in 2015??
+	bool btagged = isdata && (csv > csv_WP);
 	double SFb = 0.0;
-	double eff_b = 0.719;
+	double eff_b = 0.719; 
 
-	SFb = getSFb(pt, btagsys, is2012);
+	SFb = getSFb(pt, eta, btagsys, year); //has to be edited for 2015
 
 	double promoteProb_btag = 0; // ~probability to promote to tagged
 	double demoteProb_btag = 0;  // ~probability to demote from tagged
@@ -26,7 +31,7 @@ bool BtagSF::isbtagged(double pt, float eta, float csv, Int_t jetflavor, bool is
 
 	if (std::abs(jetflavor) == 5)
 	{ // real b-jet
-		if (csv > 0.679f) // if tagged
+		if (csv > csv_WP) // if tagged //has to be edited for 2015 
 			btagged = (demoteProb_btag > 0 && randm->Uniform() > demoteProb_btag);
 		else
 			btagged = (promoteProb_btag > 0 && randm->Uniform() < promoteProb_btag); // promote it to tagged
@@ -41,15 +46,15 @@ bool BtagSF::isbtagged(double pt, float eta, float csv, Int_t jetflavor, bool is
 	if (std::abs(jetflavor) == 4)
 	{
 		// SFc = SFb with twice the quoted uncertainty
-		SFl = getSFc(pt, btagsys, is2012);
+	  SFl = getSFc(pt, eta, btagsys, year); //has to be edited for 2015
 		eff_l = 0.192 * SFl; // eff_c in MC for CSVM = (-1.5734604211*x*x*x*x +
 		                     // 1.52798999269*x*x*x +  0.866697059943*x*x +
 		                     // -1.66657942274*x +  0.780639301724), x = 0.679
 	}
 	else
 	{
-		SFl = getSFl(pt, eta, mistagsys, is2012);
-		eff_l = getMistag(pt, eta);
+		SFl = getSFl(pt, eta, mistagsys, year); //has to be edited for 2015
+		eff_l = getMistag(pt, eta); //has to be edited for 2015
 	}
 
 	double promoteProb_mistag = 0; // ~probability to promote to tagged
@@ -60,7 +65,7 @@ bool BtagSF::isbtagged(double pt, float eta, float csv, Int_t jetflavor, bool is
 	else
 		demoteProb_mistag = SFl;
 
-	if (csv > 0.679f) // if tagged
+	if (csv > csv_WP) // if tagged //has to be edited for 2015
 		btagged = !(demoteProb_mistag > 0 && randm->Uniform() > demoteProb_mistag); // demote it to untagged
 	else
 		btagged = (promoteProb_mistag > 0 && randm->Uniform() < promoteProb_mistag); // promote it to tagged
@@ -68,8 +73,43 @@ bool BtagSF::isbtagged(double pt, float eta, float csv, Int_t jetflavor, bool is
 	return btagged;
 }
 
-double BtagSF::getSFb(double pt, unsigned int btagsys, bool is2012)
+double BtagSF::getSFb(double pt, float eta, unsigned int btagsys, int year)
 {
+  if(year==2015){
+        BTagCalibration calib("csvv2", "Artus/KappaAnalysis/data/CSVv2.csv");
+        BTagCalibrationReader reader(//&calib,               // calibration instance
+				     BTagEntry::OP_MEDIUM,  // operating point
+				     // "comb",               // measurement type
+				     "central");           // systematics type
+	reader.load(calib, BTagEntry::FLAV_B, "comb");
+	BTagCalibrationReader reader_up(BTagEntry::OP_MEDIUM, "up");  // sys up
+	reader_up.load(calib, BTagEntry::FLAV_B, "comb");
+	BTagCalibrationReader reader_do(BTagEntry::OP_MEDIUM, "down");  // sys down
+	reader_do.load(calib, BTagEntry::FLAV_B, "comb");
+	
+	float MaxBJetPt = 670.;
+	bool DoubleUncertainty = false;
+	if (pt>MaxBJetPt)  { // use MaxLJetPt for  light jets
+	  pt = MaxBJetPt; 
+	  DoubleUncertainty = true;
+	}  
+	
+	// Note: this is for b jets, for c jets (light jets) use FLAV_C (FLAV_UDSG)
+	double jet_scalefactor = reader.eval(BTagEntry::FLAV_B, eta, pt); 
+	double jet_scalefactor_up =  reader_up.eval(BTagEntry::FLAV_B, eta, pt); 
+	double jet_scalefactor_do =  reader_do.eval(BTagEntry::FLAV_B, eta, pt); 
+	
+	if (DoubleUncertainty) {
+	  jet_scalefactor_up = 2*(jet_scalefactor_up - jet_scalefactor) + jet_scalefactor; 
+	  jet_scalefactor_do = 2*(jet_scalefactor_do - jet_scalefactor) + jet_scalefactor; 
+	}
+
+	if (btagsys == kDown) return jet_scalefactor_do;
+	else if (btagsys == kUp) return jet_scalefactor_up;
+	else return jet_scalefactor;
+  }
+  else{
+	
 	// pT dependent scale factors
 	// Tagger: CSVM within 30 < pt < 670 GeV, abs(eta) < 2.4, x = pt
 	// SFb = 0.6981*((1.+(0.414063*x))/(1.+(0.300155*x))); (2011)
@@ -82,17 +122,17 @@ double BtagSF::getSFb(double pt, unsigned int btagsys, bool is2012)
 	// 0.12/SFb(pt=30) for 2011
 
 	double x = pt;
-	if (!is2012 && pt >= 670.0)
+	if (year==2011 && pt >= 670.0)
 		x = 669.9;
-	if (!is2012 && pt < 30.0)
+	if (year==2011 && pt < 30.0)
 		x = 30.0;
-	if (is2012 && pt >= 800.0)
+	if (year==2012 && pt >= 800.0)
 		x = 799.9;
-	if (is2012 && pt < 20.0)
+	if (year==2012 && pt < 20.0)
 		x = 20.0;
 
 	double SFb = 1.0;
-	if (!is2012)
+	if (year==2011)
 		SFb = 0.6981 * (1.0 + 0.414063 * x) / (1.0 + 0.300155 * x);
 	else
 	{
@@ -111,14 +151,16 @@ double BtagSF::getSFb(double pt, unsigned int btagsys, bool is2012)
 	                           0.0313175, 0.0415417, 0.0740446, 0.0596716};
 	double ptmin_2012[] = {20, 30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500, 600};
 	double ptmax_2012[] = {30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500, 600, 800};
+	
 
 	double SFb_error_x = 0.0;
 
-	unsigned int nbins = is2012 ? 16 : 14;
+	unsigned int nbins = 16;
+	if(year==2011) nbins = 14;
 
 	for (unsigned int ibin = 0; ibin < nbins; ++ibin)
 	{
-		if (!is2012)
+		if (year==2011)
 		{
 			if (x >= ptmin_2011[ibin] && x < ptmax_2011[ibin])
 				SFb_error_x = SFb_error_2011[ibin];
@@ -129,7 +171,7 @@ double BtagSF::getSFb(double pt, unsigned int btagsys, bool is2012)
 				SFb_error_x = SFb_error_2012[ibin];
 		}
 	}
-	if (!is2012)
+	if (year==2011)
 	{
 		if (pt >= 670.0)
 			SFb_error_x = 2.0 * 0.0655432;
@@ -152,25 +194,60 @@ double BtagSF::getSFb(double pt, unsigned int btagsys, bool is2012)
 		scalefactor = (SFb + SFb_error_x);
 
 	return scalefactor;
+  }
 }
 
-double BtagSF::getSFc(double pt, unsigned int btagsys, bool is2012)
+double BtagSF::getSFc(double pt, float eta, unsigned int btagsys, int year)
 {
+  if(year==2015){
+        BTagCalibration calib("csvv2", "Artus/KappaAnalysis/data/CSVv2.csv");
+        BTagCalibrationReader reader(//&calib,               // calibration instance
+				     BTagEntry::OP_MEDIUM,  // operating point
+				     //"comb",               // measurement type
+				     "central");           // systematics type
+	reader.load(calib, BTagEntry::FLAV_C, "comb"); 
+	BTagCalibrationReader reader_up( BTagEntry::OP_MEDIUM, "up");  // sys up
+	reader_up.load(calib, BTagEntry::FLAV_C, "comb"); 
+	BTagCalibrationReader reader_do(BTagEntry::OP_MEDIUM, "down");  // sys down
+	reader_do.load(calib, BTagEntry::FLAV_C, "comb"); 
+	
+	float MaxBJetPt = 670.;
+	bool DoubleUncertainty = false;
+	if (pt>MaxBJetPt)  { // use MaxLJetPt for  light jets
+	  pt = MaxBJetPt; 
+	  DoubleUncertainty = true;
+	}  
+	
+	// Note: this is for b jets, for c jets (light jets) use FLAV_C (FLAV_UDSG)
+	double jet_scalefactor = reader.eval(BTagEntry::FLAV_C, eta, pt); 
+	double jet_scalefactor_up =  reader_up.eval(BTagEntry::FLAV_C, eta, pt); 
+	double jet_scalefactor_do =  reader_do.eval(BTagEntry::FLAV_C, eta, pt); 
+	
+	if (DoubleUncertainty) {
+	  jet_scalefactor_up = 2*(jet_scalefactor_up - jet_scalefactor) + jet_scalefactor; 
+	  jet_scalefactor_do = 2*(jet_scalefactor_do - jet_scalefactor) + jet_scalefactor; 
+	}
+
+	if (btagsys == kDown) return jet_scalefactor_do;
+	else if (btagsys == kUp) return jet_scalefactor_up;
+	else return jet_scalefactor;
+  }
+  else{
 
 	// SFc = SFb with twice the quoted uncertainty
 
 	double x = pt;
-	if (!is2012 && pt >= 670.0)
+	if (year==2011 && pt >= 670.0)
 		x = 669.9;
-	if (!is2012 && pt < 30.0)
+	if (year==2011 && pt < 30.0)
 		x = 30.0;
-	if (is2012 && pt >= 800.0)
+	if (year==2012 && pt >= 800.0)
 		x = 799.9;
-	if (is2012 && pt < 20.0)
+	if (year==2012 && pt < 20.0)
 		x = 20.0;
 
 	double SFc = 1.0;
-	if (!is2012)
+	if (year==2011)
 	{
 		SFc = 0.6981 * (1.0 + 0.414063 * x) / (1.0 + 0.300155 * x);
 	}
@@ -194,11 +271,12 @@ double BtagSF::getSFc(double pt, unsigned int btagsys, bool is2012)
 
 	double SFc_error_x = 0.0;
 
-	unsigned int nbins = is2012 ? 16 : 14;
+	unsigned int nbins = 16;
+	if(year==2011) nbins = 14;
 
 	for (unsigned int ibin = 0; ibin < nbins; ++ibin)
 	{
-		if (!is2012)
+		if (year==2011)
 		{
 			if (x >= ptmin_2011[ibin] && x < ptmax_2011[ibin])
 				SFc_error_x = 2.0 * SFb_error_2011[ibin];
@@ -209,7 +287,7 @@ double BtagSF::getSFc(double pt, unsigned int btagsys, bool is2012)
 				SFc_error_x = 2.0 * SFb_error_2012[ibin];
 		}
 	}
-	if (!is2012)
+	if (year==2011)
 	{
 		if (pt >= 670.0)
 			SFc_error_x = 2.0 * 2.0 * 0.0655432;
@@ -232,16 +310,52 @@ double BtagSF::getSFc(double pt, unsigned int btagsys, bool is2012)
 		scalefactor = (SFc + SFc_error_x);
 
 	return scalefactor;
+  }
 }
 
-double BtagSF::getSFl(double pt, float eta, unsigned int mistagsys, bool is2012)
+double BtagSF::getSFl(double pt, float eta, unsigned int mistagsys, int year)
 {
+  if(year==2015){
+        BTagCalibration calib("csvv2", "Artus/KappaAnalysis/data/CSVv2.csv");
+        BTagCalibrationReader reader(//&calib,               // calibration instance
+				     BTagEntry::OP_MEDIUM,  // operating point
+				     //"comb",               // measurement type
+				     "central");           // systematics type
+	reader.load(calib, BTagEntry::FLAV_UDSG, "comb"); 
+	BTagCalibrationReader reader_up( BTagEntry::OP_MEDIUM, "up");  // sys up
+	reader_up.load(calib, BTagEntry::FLAV_UDSG, "comb"); 
+	BTagCalibrationReader reader_do(BTagEntry::OP_MEDIUM, "down");  // sys down
+	reader_do.load(calib, BTagEntry::FLAV_UDSG, "comb"); 
 
-	double x = std::min(pt, is2012 ? 670.0 : 800.0);
+	float MaxLJetPt = 1000.;
+	bool DoubleUncertainty = false;
+	if (pt>MaxLJetPt)  { // use MaxLJetPt for  light jets
+	  pt = MaxLJetPt; 
+	  DoubleUncertainty = true;
+	}  
+	
+	// Note: this is for b jets, for c jets (light jets) use FLAV_C (FLAV_UDSG)
+	double jet_scalefactor = reader.eval(BTagEntry::FLAV_UDSG, eta, pt); 
+	double jet_scalefactor_up =  reader_up.eval(BTagEntry::FLAV_UDSG, eta, pt); 
+	double jet_scalefactor_do =  reader_do.eval(BTagEntry::FLAV_UDSG, eta, pt); 
+	
+	if (DoubleUncertainty) {
+	  jet_scalefactor_up = 2*(jet_scalefactor_up - jet_scalefactor) + jet_scalefactor; 
+	  jet_scalefactor_do = 2*(jet_scalefactor_do - jet_scalefactor) + jet_scalefactor; 
+	}
+
+	if (mistagsys == kDown) return jet_scalefactor_do;     //orginally btagsys changed to mistagsys 
+	else if (mistagsys == kUp) return jet_scalefactor_up;  //orginally btagsys changed to mistagsys 
+	else return jet_scalefactor;
+
+  }
+  else{
+
+	double x = std::min(pt, year==2011 ? 670.0 : 800.0);
 
 	double SFl = 0;
 
-	if (!is2012)
+	if (year==2011)
 	{
 		if (std::abs(eta) < 0.8f)
 		{
@@ -303,6 +417,7 @@ double BtagSF::getSFl(double pt, float eta, unsigned int mistagsys, bool is2012)
 	}
 
 	return SFl;
+  }
 }
 
 double BtagSF::getMistag(double pt, float eta)

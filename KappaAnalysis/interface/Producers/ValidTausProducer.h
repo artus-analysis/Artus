@@ -105,7 +105,7 @@ public:
 	{
 		assert(event.m_taus);
 		assert(event.m_tauMetadata);
-
+	
 		// select input source
 		std::vector<KTau*> taus;
 		if ((validTausInput == ValidTausInput::AUTO && (product.m_correctedTaus.size() > 0)) || (validTausInput == ValidTausInput::CORRECTED))

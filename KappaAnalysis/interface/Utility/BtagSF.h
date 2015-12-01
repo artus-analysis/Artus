@@ -11,10 +11,10 @@ class BtagSF
 	~BtagSF();
 
 	bool isbtagged(double pt, float eta, float csv, Int_t jetflavor, bool isdata,
-	               unsigned int btagsys, unsigned int mistagsys, bool is2012);
-	double getSFb(double pt, unsigned int btagsys, bool is2012);
-	double getSFc(double pt, unsigned int btagsys, bool is2012);
-	double getSFl(double pt, float eta, unsigned int mistagsys, bool is2012);
+	               unsigned int btagsys, unsigned int mistagsys, int year);
+	double getSFb(double pt, float eta, unsigned int btagsys, int year);
+	double getSFc(double pt, float eta, unsigned int btagsys, int year);
+	double getSFl(double pt, float eta, unsigned int mistagsys, int year);
 	double getMistag(double pt, float eta);
 
 	enum { kNo,	kDown, kUp }; // systematic variations

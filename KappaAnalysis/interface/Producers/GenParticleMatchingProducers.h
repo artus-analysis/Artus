@@ -121,10 +121,11 @@ public:
 			{
 				bool leptonMatched = false;
 				float deltaR = 0.0f;
+				float deltaRmin = std::numeric_limits<float>::max();
 
 				// loop over all genParticles
 				for (typename std::vector<KGenParticle>::iterator genParticle = event.m_genParticles->begin();
-					 !leptonMatched && genParticle != event.m_genParticles->end(); ++genParticle)
+					genParticle != event.m_genParticles->end(); ++genParticle)
 				{
 					// only use genParticles that will decay into comparable particles
 					if ((settings.*GetRecoLeptonMatchingGenParticlePdgIds)().empty() ||
@@ -135,11 +136,12 @@ public:
 						    (settings.*GetRecoLeptonMatchingGenParticleStatus)() == genParticle->status())
 						{
 							deltaR = ROOT::Math::VectorUtil::DeltaR((*validLepton)->p4, genParticle->p4);
-							if(deltaR<(settings.*GetDeltaRMatchingRecoLeptonsGenParticle)())
+							if(deltaR<(settings.*GetDeltaRMatchingRecoLeptonsGenParticle)() && deltaR<deltaRmin)
 							{
 								(product.*m_genParticleMatchedLeptons)[*validLepton] = &(*genParticle);
 								ratioGenParticleMatched += (1.0f / (product.*m_validLeptons).size());
 								product.m_genParticleMatchDeltaR = deltaR;
+								deltaRmin = deltaR;
 								leptonMatched = true;
 								//LOG(INFO) << this->GetProducerId() << " (event " << event.m_eventInfo->nEvent << "): " << (*validLepton)->p4 << " --> " << genParticle->p4 << ", pdg=" << genParticle->pdgId() << ", status=" << genParticle->status();
 							}
