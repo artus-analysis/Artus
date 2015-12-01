@@ -103,7 +103,6 @@ public:
 				} );
 			}
 		}
-
 		// need to be called at last
 		LambdaNtupleConsumer<TTypes>::Init(settings);
 	}
