@@ -6,7 +6,7 @@ BtagSF::BtagSF(int seed) { randm = new TRandom3(seed); }
 BtagSF::~BtagSF() { delete randm; }
 
 bool BtagSF::isbtagged(double pt, float eta, float csv, Int_t jetflavor, bool isdata,
-                       unsigned int btagsys, unsigned int mistagsys, int year)
+                       unsigned int btagsys, unsigned int mistagsys, int year, std::string scalefile)
 {
 	randm->SetSeed(static_cast<int>((eta + 5.) * 100000.));
 	
@@ -18,7 +18,7 @@ bool BtagSF::isbtagged(double pt, float eta, float csv, Int_t jetflavor, bool is
 	double SFb = 0.0;
 	double eff_b = 0.719; 
 
-	SFb = getSFb(pt, eta, btagsys, year); //has to be edited for 2015
+	SFb = getSFb(pt, eta, btagsys, year, scalefile); //has to be edited for 2015
 
 	double promoteProb_btag = 0; // ~probability to promote to tagged
 	double demoteProb_btag = 0;  // ~probability to demote from tagged
@@ -44,18 +44,18 @@ bool BtagSF::isbtagged(double pt, float eta, float csv, Int_t jetflavor, bool is
 
 	// c or light
 	if (std::abs(jetflavor) == 4)
-	  {
-	    // SFc = SFb with twice the quoted uncertainty
-	    SFl = getSFc(pt, eta, btagsys, year); //has to be edited for 2015
-	    eff_l = 0.192 * SFl; // eff_c in MC for CSVM = (-1.5734604211*x*x*x*x +
-	                         // 1.52798999269*x*x*x +  0.866697059943*x*x +
-	                         // -1.66657942274*x +  0.780639301724), x = 0.679
-	  }
+	{
+		// SFc = SFb with twice the quoted uncertainty
+	  SFl = getSFc(pt, eta, btagsys, year, scalefile); //has to be edited for 2015
+		eff_l = 0.192 * SFl; // eff_c in MC for CSVM = (-1.5734604211*x*x*x*x +
+		                     // 1.52798999269*x*x*x +  0.866697059943*x*x +
+		                     // -1.66657942274*x +  0.780639301724), x = 0.679
+	}
 	else
-	  {
-	    SFl = getSFl(pt, eta, mistagsys, year); //has to be edited for 2015
-	    eff_l = getMistag(pt, eta); //has to be edited for 2015
-	  }
+	{
+		SFl = getSFl(pt, eta, mistagsys, year, scalefile); //has to be edited for 2015
+		eff_l = getMistag(pt, eta); //has to be edited for 2015
+	}
 
 	double promoteProb_mistag = 0; // ~probability to promote to tagged
 	double demoteProb_mistag = 0;  // ~probability to demote from tagged
@@ -73,10 +73,10 @@ bool BtagSF::isbtagged(double pt, float eta, float csv, Int_t jetflavor, bool is
 	return btagged;
 }
 
-double BtagSF::getSFb(double pt, float eta, unsigned int btagsys, int year)
+double BtagSF::getSFb(double pt, float eta, unsigned int btagsys, int year, std::string scalefile)
 {
   if(year==2015){
-        BTagCalibration calib("csvv2", "Artus/KappaAnalysis/data/CSVv2.csv");
+        BTagCalibration calib("csvv2", scalefile);
         BTagCalibrationReader reader(//&calib,               // calibration instance
 				     BTagEntry::OP_MEDIUM,  // operating point
 				     // "comb",               // measurement type
@@ -198,10 +198,10 @@ double BtagSF::getSFb(double pt, float eta, unsigned int btagsys, int year)
   }
 }
 
-double BtagSF::getSFc(double pt, float eta, unsigned int btagsys, int year)
+double BtagSF::getSFc(double pt, float eta, unsigned int btagsys, int year, std::string scalefile)
 {
   if(year==2015){
-        BTagCalibration calib("csvv2", "Artus/KappaAnalysis/data/CSVv2.csv");
+        BTagCalibration calib("csvv2", scalefile);
         BTagCalibrationReader reader(//&calib,               // calibration instance
 				     BTagEntry::OP_MEDIUM,  // operating point
 				     //"comb",               // measurement type
@@ -314,10 +314,10 @@ double BtagSF::getSFc(double pt, float eta, unsigned int btagsys, int year)
   }
 }
 
-double BtagSF::getSFl(double pt, float eta, unsigned int mistagsys, int year)
+double BtagSF::getSFl(double pt, float eta, unsigned int mistagsys, int year, std::string scalefile)
 {
   if(year==2015){
-        BTagCalibration calib("csvv2", "Artus/KappaAnalysis/data/CSVv2.csv");
+        BTagCalibration calib("csvv2", scalefile);
         BTagCalibrationReader reader(//&calib,               // calibration instance
 				     BTagEntry::OP_MEDIUM,  // operating point
 				     //"comb",               // measurement type

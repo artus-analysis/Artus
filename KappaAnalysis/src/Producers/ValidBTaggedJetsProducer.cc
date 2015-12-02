@@ -111,7 +111,7 @@ void ValidBTaggedJetsProducer::Produce(KappaEvent const& event, KappaProduct& pr
 				BtagSF btagSF;
 				validBJet = btagSF.isbtagged(tjet->p4.pt(), tjet->p4.eta(), combinedSecondaryVertex,
 							     jetflavor, settings.GetInputIsData(),
-							     btagSys, bmistagSys, settings.GetYear());
+							     btagSys, bmistagSys, settings.GetYear(), settings.GetBTagScaleFactorFile());
 				if (before != validBJet) 
 					LOG(DEBUG) << "Promoted/demoted : " << validBJet;
 			}
