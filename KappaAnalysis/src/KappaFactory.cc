@@ -32,6 +32,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/NicknameProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenTauMatchingProducers.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenTauJetMatchingProducers.h"
+#include "Artus/KappaAnalysis/interface/Producers/GenMuonFSRProducer.h"
 
 // filter
 #include "Artus/KappaAnalysis/interface/Filters/RunLumiEventFilter.h"
@@ -129,6 +130,8 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new CrossSectionWeightProducer();
 	else if(id == NumberGeneratedEventsWeightProducer().GetProducerId())
 		return new NumberGeneratedEventsWeightProducer();
+	else if(id == GenMuonFSRProducer().GetProducerId())
+		return new GenMuonFSRProducer();
 	// todo: uses setting not in KappaSettings
 	else if(id == GeneralTmvaClassificationReader().GetProducerId())
 		return new GeneralTmvaClassificationReader();
