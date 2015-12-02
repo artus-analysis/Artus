@@ -51,6 +51,7 @@
 #include "Artus/KappaAnalysis/interface/Filters/GoodPrimaryVertexFilter.h"
 #include "Artus/KappaAnalysis/interface/Filters/BeamScrapingFilter.h"
 #include "Artus/KappaAnalysis/interface/Filters/HCALNoiseFilter.h"
+#include "Artus/KappaAnalysis/interface/Filters/nPUFilter.h"
 
 // consumer
 #include "Artus/KappaAnalysis/interface/Consumers/KappaCutFlowHistogramConsumer.h"
@@ -265,6 +266,8 @@ FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
 		return new HCALNoiseFilter();
 	else if(id == BeamScrapingFilter().GetFilterId())
 		return new BeamScrapingFilter();
+	else if(id == nPUFilter().GetFilterId())
+		return new nPUFilter();
 	else
 		return FactoryBase::createFilter( id );
 }

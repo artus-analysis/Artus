@@ -252,7 +252,8 @@ public:
 	IMPL_SETTING(int, MaxNJets);
 	IMPL_SETTING(int, MaxNBTaggedJets);
 	IMPL_SETTING(int, MaxNNonBTaggedJets);
-	
+
+	//settings for nPUFilter
 	IMPL_SETTING(int, MinNPU);
 	IMPL_SETTING(int, MaxNPU);
 	
