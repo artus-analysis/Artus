@@ -17,6 +17,7 @@
 #define EASYLOGGINGPP_H
 // Compilers and C++0x/C++11 Evaluation
 #if defined(__GNUC__)
+#pragma GCC system_header
 #   define ELPP_COMPILER_GCC 1
 #   define ELPP_GCC_VERSION (__GNUC__ * 10000 \
                                + __GNUC_MINOR__ * 100 \
