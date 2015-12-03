@@ -312,7 +312,7 @@ public:
 	IMPL_SETTING_STRINGLIST_DEFAULT(TmvaInputQuantities, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(TmvaMethods, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(TmvaWeights, {});
-	
+
 	// KappaCollectionsConsumer settings
 	IMPL_SETTING_DEFAULT(bool, BranchGenMatchedElectrons, false);
 	IMPL_SETTING_DEFAULT(bool, BranchGenMatchedMuons, false);
@@ -322,4 +322,8 @@ public:
 	IMPL_SETTING_DEFAULT(bool, AddGenMatchedParticles, true);
 	IMPL_SETTING_DEFAULT(bool, AddGenMatchedTaus, true);
 	IMPL_SETTING_DEFAULT(bool, AddGenMatchedTauJets, true);
+
+	// ZProducer
+	IMPL_SETTING_DEFAULT(float, ZMass, 91.1876f)
+	IMPL_SETTING(float, ZMassRange)
 };

@@ -147,7 +147,12 @@ public:
 	std::map<KElectron*, KGenJet*> m_genTauJetMatchedElectrons;
 	std::map<KMuon*, KGenJet*> m_genTauJetMatchedMuons;
 	std::map<KTau*, KGenJet*> m_genTauJetMatchedTaus;
-	
+
+	/// added by ZProducer
+	KLV m_z;
+	std::pair<KLepton*, KLepton*> m_zLeptons;
+	bool m_zValid;
+
 	// MVA outputs
 	std::vector<double> m_discriminators;
 
