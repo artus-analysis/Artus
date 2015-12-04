@@ -4,20 +4,17 @@ language: cpp
 services: docker
 notifications:
   email:
-    on_success: change # default: change
-    on_failure: always # default: always
+    on_success: change
+    on_failure: always
 compiler: gcc
 addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
     packages:
-    - gcc-4.8
-    - g++-4.8
     - clang
 before_install:
   - sudo apt-get -y install libboost1.54-all-dev root-system
-  - BASE=$(cd .. && echo $PWD)
   - cd ..
   - git clone https://github.com/KappaAnalysis/Kappa.git
   - make -C Kappa/DataFormats/test
