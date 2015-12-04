@@ -80,7 +80,7 @@ The size of these files ranges from several \SI{10}{GB} to few~TB.
 
 Finally, the skimmed n-tuples are processed by user code running on local resources.
 This processing step includes further event selections, event categorization or high-level calculations based on the reconstructed physics objects.
-The events are usually processed with different configurations, depending on the specific analysis needs.
+The data are usually processed with different configurations, depending on the specific analysis needs.
 The output is then used for post-processing steps, including the graphical representation of the results and their statistical interpretation.
 
 In many cases, the code for the last step is developed without a predefined strategy or structure, following the evolving needs of the analysis which are often physics-driven and not always entirely predictable in the code design phase.
@@ -155,7 +155,7 @@ C++ is chosen for performance reasons and in order to be able to integrate exist
 
 Multi-core techniques are not required since the processing can be trivially parallelized by splitting the input dataset and sending it to different computing instances.
 This is possible because the processed events are known to be independent of each other.
-The framework comes with a built-in possibility to submit analysis jobs with the job submission tool grid-control.
+The framework comes with a built-in possibility to submit analysis jobs with the job submission tool \software{grid-control}.
 
 \section{Structure of the Framework}
 \label{section_artus_structure}

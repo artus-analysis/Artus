@@ -847,13 +847,16 @@ class RootTools(object):
 		y = tgraph.GetY()
 		for i in range(N):
 			y[i] *= scalefactor
-		yerr = tgraph.GetEY()
-		try:
+		if isinstance(tgraph, ROOT.TGraphAsymmErrors):
+			yerrl = tgraph.GetEYlow()
+			yerrh = tgraph.GetEYhigh()
+			for i in range(N):
+				yerrl[i] *= scalefactor
+				yerrh[i] *= scalefactor
+		elif isinstance(tgraph, ROOT.TGraphErrors):
 			yerr = tgraph.GetEY()
 			for i in range(N):
 				yerr[i] *= scalefactor
-		except IndexError:
-			pass
 		tgraph.GetHistogram().Delete()
 		tgraph.SetHistogram(0)
 

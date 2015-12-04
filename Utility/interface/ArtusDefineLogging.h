@@ -11,5 +11,5 @@
 
 #include "Artus/Utility/interface/ArtusEasyLoggingDecl.h"
 
-_SHARE_EASYLOGGINGPP(ArtusEasyLoggingDecl::getEasyloggingStorage())
+SHARE_EASYLOGGINGPP(ArtusEasyLoggingDecl::getEasyloggingStorage())
 

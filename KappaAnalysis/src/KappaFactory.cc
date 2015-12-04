@@ -32,6 +32,8 @@
 #include "Artus/KappaAnalysis/interface/Producers/NicknameProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenTauMatchingProducers.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenTauJetMatchingProducers.h"
+#include "Artus/KappaAnalysis/interface/Producers/GenMuonFSRProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/ZProducer.h"
 
 // filter
 #include "Artus/KappaAnalysis/interface/Filters/RunLumiEventFilter.h"
@@ -51,6 +53,8 @@
 #include "Artus/KappaAnalysis/interface/Filters/GoodPrimaryVertexFilter.h"
 #include "Artus/KappaAnalysis/interface/Filters/BeamScrapingFilter.h"
 #include "Artus/KappaAnalysis/interface/Filters/HCALNoiseFilter.h"
+#include "Artus/KappaAnalysis/interface/Filters/nPUFilter.h"
+#include "Artus/KappaAnalysis/interface/Filters/ZFilter.h"
 
 // consumer
 #include "Artus/KappaAnalysis/interface/Consumers/KappaCutFlowHistogramConsumer.h"
@@ -128,6 +132,8 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new CrossSectionWeightProducer();
 	else if(id == NumberGeneratedEventsWeightProducer().GetProducerId())
 		return new NumberGeneratedEventsWeightProducer();
+	else if(id == GenMuonFSRProducer().GetProducerId())
+		return new GenMuonFSRProducer();
 	// todo: uses setting not in KappaSettings
 	else if(id == GeneralTmvaClassificationReader().GetProducerId())
 		return new GeneralTmvaClassificationReader();
@@ -151,8 +157,14 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new RecoMuonGenTauJetMatchingProducer();
 	else if(id == RecoTauGenTauJetMatchingProducer().GetProducerId())
 		return new RecoTauGenTauJetMatchingProducer();
+	else if(id == ZmmProducer().GetProducerId())
+		return new ZmmProducer();
+	else if(id == ZeeProducer().GetProducerId())
+		return new ZeeProducer();
+	else if(id == ZemProducer().GetProducerId())
+		return new ZemProducer();
 	else
-		return FactoryBase::createProducer( id );	
+		return FactoryBase::createProducer( id );
 }
 
 FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
@@ -265,6 +277,10 @@ FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
 		return new HCALNoiseFilter();
 	else if(id == BeamScrapingFilter().GetFilterId())
 		return new BeamScrapingFilter();
+	else if(id == nPUFilter().GetFilterId())
+		return new nPUFilter();
+	else if(id == ZFilter().GetFilterId())
+		return new ZFilter();
 	else
 		return FactoryBase::createFilter( id );
 }

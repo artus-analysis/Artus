@@ -11,10 +11,10 @@ class BtagSF
 	~BtagSF();
 
 	bool isbtagged(double pt, float eta, float csv, Int_t jetflavor, bool isdata,
-	               unsigned int btagsys, unsigned int mistagsys, int year);
-	double getSFb(double pt, float eta, unsigned int btagsys, int year);
-	double getSFc(double pt, float eta, unsigned int btagsys, int year);
-	double getSFl(double pt, float eta, unsigned int mistagsys, int year);
+	               unsigned int btagsys, unsigned int mistagsys, int year, std::string scalefile);
+	double getSFb(double pt, float eta, unsigned int btagsys, int year, std::string scalefile);
+	double getSFc(double pt, float eta, unsigned int btagsys, int year, std::string scalefile);
+	double getSFl(double pt, float eta, unsigned int mistagsys, int year, std::string scalefile);
 	double getMistag(double pt, float eta);
 
 	enum { kNo,	kDown, kUp }; // systematic variations

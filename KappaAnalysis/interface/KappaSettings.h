@@ -53,6 +53,8 @@ public:
 	IMPL_SETTING_DEFAULT(std::string, PFChargedHadronsNoPileUp, "");
 	IMPL_SETTING_DEFAULT(std::string, PFNeutralHadronsNoPileUp, "");
 	IMPL_SETTING_DEFAULT(std::string, PFPhotonsNoPileUp, "");
+	IMPL_SETTING_DEFAULT(std::string, PFAllChargedParticlesNoPileUp, "");
+	IMPL_SETTING_DEFAULT(std::string, PFAllChargedParticlesPileUp, "");
 
 	/// name of beamspot collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, BeamSpot, "");
@@ -250,6 +252,10 @@ public:
 	IMPL_SETTING(int, MaxNJets);
 	IMPL_SETTING(int, MaxNBTaggedJets);
 	IMPL_SETTING(int, MaxNNonBTaggedJets);
+
+	//settings for nPUFilter
+	IMPL_SETTING(int, MinNPU);
+	IMPL_SETTING(int, MaxNPU);
 	
 	IMPL_SETTING_DEFAULT(size_t, MinNMatchedElectrons, 0);
 	IMPL_SETTING_DEFAULT(size_t, MinNMatchedMuons, 0);
@@ -296,6 +302,7 @@ public:
 	IMPL_SETTING_DEFAULT(int, GenTauStatus, -1);
 
 	IMPL_SETTING(std::string, PileupWeightFile);
+	IMPL_SETTING(std::string, BTagScaleFactorFile);
 	
 	IMPL_SETTING(std::string, EventWeight);
 	IMPL_SETTING_DEFAULT(double, BaseWeight, 1.0);
@@ -305,15 +312,18 @@ public:
 	IMPL_SETTING_STRINGLIST_DEFAULT(TmvaInputQuantities, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(TmvaMethods, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(TmvaWeights, {});
-	
+
 	// KappaCollectionsConsumer settings
 	IMPL_SETTING_DEFAULT(bool, BranchGenMatchedElectrons, false);
 	IMPL_SETTING_DEFAULT(bool, BranchGenMatchedMuons, false);
 	IMPL_SETTING_DEFAULT(bool, BranchGenMatchedTaus, false);
 	IMPL_SETTING_DEFAULT(bool, BranchGenMatchedJets, false);
 
-	IMPL_SETTING_DEFAULT(bool, AddGenMatchedParticles, true)
-	IMPL_SETTING_DEFAULT(bool, AddGenMatchedTaus, true)
-	IMPL_SETTING_DEFAULT(bool, AddGenMatchedTauJets, true)
+	IMPL_SETTING_DEFAULT(bool, AddGenMatchedParticles, true);
+	IMPL_SETTING_DEFAULT(bool, AddGenMatchedTaus, true);
+	IMPL_SETTING_DEFAULT(bool, AddGenMatchedTauJets, true);
 
+	// ZProducer
+	IMPL_SETTING_DEFAULT(float, ZMass, 91.1876f)
+	IMPL_SETTING(float, ZMassRange)
 };

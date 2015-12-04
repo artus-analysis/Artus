@@ -63,10 +63,14 @@ public:
 			{
 				m_inputExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetFloatQuantities(), lambdaQuantity));
 			}
-			else // TODO
+			else if(LambdaNtupleConsumer<TTypes>::GetIntQuantities().count(lambdaQuantity) > 0)
 			{
-				LOG(FATAL) << "The TMVA interface currently only supports float-type input variables!";
+                m_inputExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetIntQuantities(), lambdaQuantity));
 			}
+			else
+            {
+				LOG(FATAL) << "The TMVA interface currently only supports float-type and int-type input variables!";
+            }
 		}
 		
 		// register TMVA input variables
