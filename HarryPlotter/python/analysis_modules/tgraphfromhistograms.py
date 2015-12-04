@@ -12,6 +12,7 @@ import Artus.HarryPlotter.analysisbase as analysisbase
 
 
 class HistogramGroupIterator(object):
+	SKIP_NONE = 0
 	SKIP_ANY = 1
 	SKIP_LEADING = 2
 	SKIP_TRAILING = 4
@@ -105,16 +106,17 @@ class TGraphFromHistograms(analysisbase.AnalysisBase):
 		if plot_dict.get('tgraph_strip_empty'):
 			if plot_dict['tgraph_strip_empty'] == True:
 				plot_dict['tgraph_strip_empty'] = HistogramGroupIterator.SKIP_BORDERING
-			elif plot_dict['tgraph_strip_empty'].lower() == 'any':
-				plot_dict['tgraph_strip_empty'] = HistogramGroupIterator.SKIP_ANY
-			elif plot_dict['tgraph_strip_empty'].lower() == 'left':
-				plot_dict['tgraph_strip_empty'] = HistogramGroupIterator.SKIP_LEADING
-			elif plot_dict['tgraph_strip_empty'].lower() == 'right':
-				plot_dict['tgraph_strip_empty'] = HistogramGroupIterator.SKIP_TRAILING
-			else:
-				raise ValueError("Unrecognized option for 'tgraph_strip_empty': %s" % plotData['tgraph_strip_empty'])
+			elif isinstance(plot_dict['tgraph_strip_empty'], basestring):
+				if plot_dict['tgraph_strip_empty'].lower() == 'any':
+					plot_dict['tgraph_strip_empty'] = HistogramGroupIterator.SKIP_ANY
+				elif plot_dict['tgraph_strip_empty'].lower() == 'left':
+					plot_dict['tgraph_strip_empty'] = HistogramGroupIterator.SKIP_LEADING
+				elif plot_dict['tgraph_strip_empty'].lower() == 'right':
+					plot_dict['tgraph_strip_empty'] = HistogramGroupIterator.SKIP_TRAILING
+				else:
+					raise ValueError("Unrecognized option for 'tgraph_strip_empty': %s" % plotData['tgraph_strip_empty'])
 		else:
-			plot_dict['tgraph_strip_empty'] = 0
+			plot_dict['tgraph_strip_empty'] = HistogramGroupIterator.SKIP_NONE
 		self.prepare_list_args(plotData, ["tgraph_x_nicks", "tgraph_y_nicks", "tgraph_result_nicks"])
 		super(TGraphFromHistograms, self).auto_set_arguments(plotData, ["tgraph_x_nicks", "tgraph_y_nicks"],
 				'tgraph_result_nicks', 'tgraph')
@@ -124,18 +126,14 @@ class TGraphFromHistograms(analysisbase.AnalysisBase):
 
 		for x, y, new in zip(plotData.plotdict["tgraph_x_nicks"], plotData.plotdict["tgraph_y_nicks"], plotData.plotdict["tgraph_result_nicks"]):
 			log.debug("x-values from bin-contents of %s, y-values from bin-contents of %s (new nick: %s)" % (x, y, new))
-			plotData.plotdict["root_objects"][new] = ROOT.TGraphErrors()
+			plotData.plotdict["root_objects"][new] = new_graph = ROOT.TGraphErrors()
 			plotData.plotdict["nicks"].append(new)
 
-			for i in range(1, plotData.plotdict['root_objects'][x].GetNbinsX()+1):
-				plotData.plotdict["root_objects"][new].SetPoint(i-1, plotData.plotdict['root_objects'][x].GetBinContent(i), plotData.plotdict['root_objects'][y].GetBinContent(i))
-				plotData.plotdict["root_objects"][new].SetPointError(i-1, plotData.plotdict['root_objects'][x].GetBinError(i), plotData.plotdict['root_objects'][y].GetBinError(i))
-				print i, [(plotData.plotdict['root_objects'][x].GetBinContent(i), plotData.plotdict['root_objects'][x].GetBinError(i)), (plotData.plotdict['root_objects'][y].GetBinContent(i), plotData.plotdict['root_objects'][y].GetBinError(i))]
 			histo_iter = HistogramGroupIterator(
 					histograms=(plotData.plotdict['root_objects'][x],plotData.plotdict['root_objects'][y]),
 					skip=plotData.plotdict['tgraph_strip_empty']
 			)
-			print histo_iter.skip
 			for i, bin_contents in enumerate(histo_iter):
-				print i, bin_contents
-			sys.exit(1)
+				(x_mean, x_err), (y_mean, y_err) = bin_contents
+				new_graph.SetPoint(i, x_mean, y_mean)
+				new_graph.SetPointError(i, x_err, y_err)
