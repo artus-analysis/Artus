@@ -18,7 +18,7 @@ before_install:
   - cd ..
   - git clone https://github.com/KappaAnalysis/Kappa.git
   - make -C Kappa/DataFormats/test
-  - git clone https://github.com/KappaAnalysis/KappaTools.git
+  - git clone -b scram_cmake https://github.com/KappaAnalysis/KappaTools.git
   - make -C KappaTools
   - wget http://www-ekp.physik.uni-karlsruhe.de/~sieber/CondFormats.tar.gz
   - tar xzf CondFormats.tar.gz
