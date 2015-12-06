@@ -23,7 +23,7 @@ public:
 	// get value from generic associative containers with default value
 	// (const version)
 	template <template<class, class, class...> class Container, typename Key, typename Value, typename... Args>
-	static Value const& GetWithDefault(const Container<Key, Value, Args...>& m, Key const& key, const Value & defaultValue)
+	static Value const GetWithDefault(const Container<Key, Value, Args...>& m, Key const& key, const Value & defaultValue)
 	{
 		typename Container<Key, Value, Args...>::const_iterator it = m.find(key);
 		if (it == m.end())
@@ -33,7 +33,7 @@ public:
 
 	// get value from generic associative containers with default value
 	template <template<class, class, class...> class Container, typename Key, typename Value, typename... Args>
-	static Value & GetWithDefault(Container<Key, Value, Args...>& m, Key const& key, Value & defaultValue)
+	static Value GetWithDefault(Container<Key, Value, Args...>& m, Key const& key, Value & defaultValue)
 	{
 		typename Container<Key, Value, Args...>::iterator it = m.find(key);
 		if (it == m.end())
@@ -44,7 +44,7 @@ public:
 	// get value from generic associative containers with default value
 	// (boost::ptr_map version)
 	template <template<class, class, class...> class Container, typename Key, typename Value, typename... Args>
-	static Value const& GetPtrMapWithDefault(const Container<Key, Value, Args...>& m, Key const& key, const Value & defaultValue)
+	static Value const GetPtrMapWithDefault(const Container<Key, Value, Args...>& m, Key const& key, const Value & defaultValue)
 	{
 		typename Container<Key, Value, Args...>::const_iterator it = m.find(key);
 		if (it == m.end())
