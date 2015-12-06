@@ -26,9 +26,8 @@ BOOST_AUTO_TEST_CASE( test_safemap )
 
         std::string const & rr1 = SafeMap::Get ( myMap, 42 );
         BOOST_CHECK( rr1 == "42" );
-        std::string defaultVal = "42";
-        std::string const & rr2 = SafeMap::GetWithDefault ( myMap, 43, defaultVal );
-        BOOST_CHECK( rr2 == std::string ("42") );
+        std::string const & rr2 = SafeMap::GetWithDefault ( myMap, 43, std::string("42") );
+        BOOST_CHECK( rr2 == std::string("42") );
     }
     {
         // test with boost::ptr_map
