@@ -22,7 +22,7 @@ public:
 	{
 	}
 
-	virtual void WireEvent(setting_type const& settings) override {
+	void WireEvent(setting_type const& settings) override {
 		// Electrons
 		if (! settings.GetElectrons().empty())
 			this->m_event.m_electrons = this->template SecureFileInterfaceGet<KElectrons>(settings.GetElectrons());

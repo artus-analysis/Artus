@@ -20,7 +20,7 @@ public:
 	
 	typedef typename std::function<uint64_t(event_type const&, product_type const&, setting_type const&)> uint64_extractor_lambda;
 
-	virtual std::string GetConsumerId() const override
+	std::string GetConsumerId() const override
 	{
 		return "CutFlowTreeConsumer";
 	}
@@ -31,7 +31,7 @@ public:
 	{
 	}
 
-	virtual void Init( typename TTypes::setting_type const& settings) override
+	void Init(typename TTypes::setting_type const& settings) override
 	{
 		CutFlowConsumerBase<TTypes>::Init(settings);
 		
@@ -42,10 +42,10 @@ public:
 		m_eventExtractor = [](event_type const&, product_type const&, setting_type const&) { return 1.0; };
 	}
 
-	virtual void ProcessEvent(event_type const& event,
-	                          product_type const& product,
-	                          setting_type const& setting,
-	                          FilterResult & filterResult)
+	void ProcessEvent(event_type const& event,
+	                  product_type const& product,
+	                  setting_type const& setting,
+	                  FilterResult & filterResult) override
 	{
 		CutFlowConsumerBase<TTypes>::ProcessEvent(event, product, setting, filterResult);
 		
@@ -74,7 +74,7 @@ public:
 		}
 	}
 
-	virtual void Finish(setting_type const& setting) override {
+	void Finish(setting_type const& setting) override {
 		CutFlowConsumerBase<TTypes>::Finish(setting);
 		
 		if (m_treesInitialised)

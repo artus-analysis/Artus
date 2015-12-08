@@ -14,20 +14,19 @@ public:
 		iProcessFilteredEvent(0), iProcessEvent(0), iProcess(0) {
 	}
 
-	virtual std::string GetConsumerId() const override {
+	std::string GetConsumerId() const override {
 		return "test_consumer";
 	}
 
-	virtual void Init(TestSettings const& setting) override {
-		//m_pipeline = pset;
+	void Init(TestSettings const& setting) override {
 		++iInit;
 	}
 
-	virtual void Finish(TestSettings const& setting) override {
+	void Finish(TestSettings const& setting) override {
 		++iFinish;
 	}
 
-	virtual void ProcessFilteredEvent(TestEvent const& event,
+	void ProcessFilteredEvent(TestEvent const& event,
 			TestProduct const& product,
 			TestSettings const& setting) override
 	{
@@ -35,7 +34,7 @@ public:
 	}
 
 	// this method is called for all events
-	virtual void ProcessEvent(TestEvent const& event,
+	void ProcessEvent(TestEvent const& event,
 			TestProduct const& product,
 			TestSettings const& setting,
 			FilterResult& result) override
@@ -50,7 +49,7 @@ public:
 		fres = result;
 	}
 
-	virtual void Process(TestSettings const& setting) override {
+	void Process(TestSettings const& setting) override {
 		++iProcess;
 	}
 
@@ -78,20 +77,18 @@ public:
 	TestConsumerLocalProduct() : m_iLocalValue (0) {
 	}
 
-	virtual std::string GetConsumerId() const override {
+	std::string GetConsumerId() const override {
 		return "test_consumer_local";
 	}
 
-	virtual void ProcessFilteredEvent(TestEvent const& event,
+	void ProcessFilteredEvent(TestEvent const& event,
 			TestProduct const& product,
 			TestSettings const& setting) override
 	{
 		m_iLocalValue = product.iLocalProduct;
 	}
 
-	virtual void Finish ( TestSettings const& setting ) {
-
-	}
+	void Finish (TestSettings const& setting) override {}
 
 	void CheckValue(int compareTo ) {
 		BOOST_CHECK_EQUAL( m_iLocalValue, compareTo );

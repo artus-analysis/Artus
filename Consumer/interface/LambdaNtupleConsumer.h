@@ -194,7 +194,7 @@ public:
 		return LambdaNtupleQuantities::CommonVIntQuantities;
 	}
 
-	virtual void Init(setting_type const& settings) override {
+	void Init(setting_type const& settings) override {
 		ConsumerBase<TTypes>::Init(settings);
 
 		// construct value extractors
@@ -373,7 +373,7 @@ public:
 		}
 	}
 
-	virtual void ProcessFilteredEvent(event_type const& event, product_type const& product, setting_type const& settings ) override
+	void ProcessFilteredEvent(event_type const& event, product_type const& product, setting_type const& settings ) override
 	{
 		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product, settings);
 
@@ -532,7 +532,7 @@ public:
 		this->m_tree->Fill();
 	}
 
-	virtual void Finish(setting_type const& setting) override
+	void Finish(setting_type const& setting) override
 	{
 		RootFileHelper::SafeCd(setting.GetRootOutFile(), setting.GetRootFileFolder());
 		m_tree->Write(m_tree->GetName());

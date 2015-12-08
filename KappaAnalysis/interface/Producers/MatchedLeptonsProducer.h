@@ -11,10 +11,10 @@ class MatchedLeptonsProducer: public KappaProducerBase
 {
 
 public:
-	virtual std::string GetProducerId() const;
+	std::string GetProducerId() const;
 	
-	virtual void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const override;
+	void Produce(KappaEvent const& event, KappaProduct& product,
+	             KappaSettings const& settings) const override;
 
 };
 

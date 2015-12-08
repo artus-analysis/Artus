@@ -17,7 +17,7 @@ public:
 		lmdRunEventCheck = [](TestProduct const& globalProduct ){};
 	}
 
-	virtual bool RunEvent( TestEvent const& event,
+	bool RunEvent( TestEvent const& event,
                            TestProduct const& globalProduct,
                            FilterResult const& globalFilterResult) override {
 		++iRunEvent;
@@ -29,11 +29,11 @@ public:
 		return bFullyRun;
 	}
 
-	virtual void Run() override {
+	void Run() override {
 		++iRun;
 	}
 
-	virtual void FinishPipeline() override {
+	void FinishPipeline() override {
 		++iFinish;
 	}
 

@@ -82,14 +82,14 @@ public:
 	virtual void Produce(event_type const& event, product_type& product,
 	                     setting_type const& globalSettings) const = 0;
 
-	virtual ProcessNodeType GetProcessNodeType () const override final
+	ProcessNodeType GetProcessNodeType () const final
 	{
 		return ProcessNodeType::Producer;
 	}
 
 protected:
 
-	virtual void baseProduce(EventBase const& evt,
+	void baseProduce(EventBase const& evt,
 			ProductBase & prod,
 			SettingsBase const& setting ) const override
 	{
@@ -100,7 +100,7 @@ protected:
 		Produce( specEvent, specProd, specSetting );
 	}
 
-	virtual void baseInit ( SettingsBase const& settings ) override {
+	void baseInit ( SettingsBase const& settings ) override {
 		auto const& specSettings = static_cast < setting_type const&> ( settings );
 
 		this->Init ( specSettings );

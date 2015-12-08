@@ -63,13 +63,13 @@ public:
 	{
 	}
 
-	virtual void Init(KappaSettings const& settings) override {
+	void Init(KappaSettings const& settings) override {
 		KappaProducerBase::Init(settings);
 		
 		m_objectTriggerFiltersByIndexFromSettings = Utility::ParseMapTypes<size_t, std::string>(Utility::ParseVectorToMap((settings.*GetObjectTriggerFilterNames)()), m_objectTriggerFiltersByHltNameFromSettings);
 	}
 
-	virtual void Produce(KappaEvent const& event, KappaProduct& product,
+	void Produce(KappaEvent const& event, KappaProduct& product,
 	                     KappaSettings const& settings) const override
 	{
 		assert(event.m_triggerObjects);
@@ -245,11 +245,11 @@ class ElectronTriggerMatchingProducer: public TriggerMatchingProducerBase<KElect
 
 public:
 	
-	virtual std::string GetProducerId() const override;
+	std::string GetProducerId() const override;
 	
 	ElectronTriggerMatchingProducer();
 	
-	virtual void Produce(KappaEvent const& event, KappaProduct& product,
+	void Produce(KappaEvent const& event, KappaProduct& product,
 	                     KappaSettings const& settings) const override;
 
 };
@@ -266,11 +266,11 @@ class MuonTriggerMatchingProducer: public TriggerMatchingProducerBase<KMuon>
 
 public:
 	
-	virtual std::string GetProducerId() const override;
+	std::string GetProducerId() const override;
 	
 	MuonTriggerMatchingProducer();
 	
-	virtual void Produce(KappaEvent const& event, KappaProduct& product,
+	void Produce(KappaEvent const& event, KappaProduct& product,
 	                     KappaSettings const& settings) const override;
 
 };
@@ -287,11 +287,11 @@ class TauTriggerMatchingProducer: public TriggerMatchingProducerBase<KTau>
 
 public:
 	
-	virtual std::string GetProducerId() const override;
+	std::string GetProducerId() const override;
 	
 	TauTriggerMatchingProducer();
 	
-	virtual void Produce(KappaEvent const& event, KappaProduct& product,
+	void Produce(KappaEvent const& event, KappaProduct& product,
 	                     KappaSettings const& settings) const override;
 
 };
@@ -308,7 +308,7 @@ class JetTriggerMatchingProducer: public TriggerMatchingProducerBase<KBasicJet>
 
 public:
 	
-	virtual std::string GetProducerId() const override;
+	std::string GetProducerId() const override;
 	
 	JetTriggerMatchingProducer();
 

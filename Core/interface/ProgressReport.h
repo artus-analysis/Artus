@@ -22,9 +22,9 @@ public:
 
 	virtual ~ConsoleProgressReport() {}
 
-	virtual void update(long long currentIndex, long long maxItems) override;
+	void update(long long currentIndex, long long maxItems) override;
 
-	virtual void finish() override;
+	void finish() override;
 
 	// in percent
 	float m_reportIntervall;

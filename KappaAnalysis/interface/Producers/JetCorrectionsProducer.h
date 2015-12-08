@@ -58,7 +58,7 @@ public:
 		delete factorizedJetCorrector;
 	}
 
-	virtual void Init(KappaSettings const& settings) override
+	void Init(KappaSettings const& settings) override
 	{
 		KappaProducerBase::Init(settings);
 		
@@ -100,7 +100,7 @@ public:
 		}
 	}
 
-	virtual void Produce(KappaEvent const& event, KappaProduct& product,
+	void Produce(KappaEvent const& event, KappaProduct& product,
 	                     KappaSettings const& settings) const override
 	{
 		assert((event.*m_basicJetsMember));
@@ -153,7 +153,6 @@ public:
 
 
 protected:
-	
 	// Can be overwritten for analysis-specific use cases
 	virtual void AdditionalCorrections(TJet* jet, KappaEvent const& event,
 	                                   KappaProduct& product, KappaSettings const& settings) const
@@ -164,7 +163,7 @@ protected:
 private:
 	std::vector<TJet>* KappaEvent::*m_basicJetsMember;
 	std::vector<std::shared_ptr<TJet> > KappaProduct::*m_correctedJetsMember;
-	
+
 	FactorizedJetCorrector* factorizedJetCorrector = nullptr;
 	JetCorrectionUncertainty* jetCorrectionUncertainty = nullptr;
 };
@@ -180,8 +179,8 @@ class JetCorrectionsProducer: public JetCorrectionsProducerBase<KBasicJet>
 {
 public:
 	JetCorrectionsProducer();
-	
-	virtual std::string GetProducerId() const override;
+
+	std::string GetProducerId() const override;
 };
 
 
@@ -197,7 +196,7 @@ public:
 
 	TaggedJetCorrectionsProducer();
 	
-	virtual std::string GetProducerId() const override;
+	std::string GetProducerId() const override;
 };
 
 

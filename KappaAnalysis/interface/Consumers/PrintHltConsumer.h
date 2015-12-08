@@ -16,9 +16,9 @@ public:
 	
 	PrintHltConsumer();
 	
-	virtual std::string GetConsumerId() const override;
+	std::string GetConsumerId() const override;
 	
-	virtual void ProcessFilteredEvent(event_type const& event, product_type const& product,
+	void ProcessFilteredEvent(event_type const& event, product_type const& product,
 	                                  setting_type const& settings) override;
 	
 	virtual void Finish(setting_type const& settings);

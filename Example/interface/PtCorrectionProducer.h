@@ -12,17 +12,17 @@ class PtCorrectionProducer: public TraxProducerBase
 {
 public:
 
-	virtual std::string GetProducerId() const override
+	std::string GetProducerId() const override
 	{
 		return "pt_correction";
 	}
 
-	virtual void Init(TraxSettings const& globalSettings) override
+	void Init(TraxSettings const& globalSettings) override
 	{
 		ProducerBase<TraxTypes>::Init(globalSettings);
 	}
 
-	virtual void Produce(TraxEvent const& event, TraxProduct & product,
+	void Produce(TraxEvent const& event, TraxProduct & product,
 			TraxSettings const& globalSettings) const override
 	{
 

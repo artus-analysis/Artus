@@ -104,11 +104,11 @@ private:
 class ElectronUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KElectron> {
 public:
 	
-	virtual std::string GetFilterId() const override;
+	std::string GetFilterId() const override;
 	
 	ElectronUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KElectron>(&KappaProduct::m_validElectrons) {}
 	
-	virtual void Init(KappaSettings const& settings) override;
+	void Init(KappaSettings const& settings) override;
 };
 
 
@@ -117,11 +117,11 @@ public:
 class MuonUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KMuon> {
 public:
 	
-	virtual std::string GetFilterId() const override;
+	std::string GetFilterId() const override;
 	
 	MuonUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KMuon>(&KappaProduct::m_validMuons) {}
 	
-	virtual void Init(KappaSettings const& settings) override;
+	void Init(KappaSettings const& settings) override;
 };
 
 
@@ -130,11 +130,11 @@ public:
 class TauUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KTau> {
 public:
 	
-	virtual std::string GetFilterId() const override;
+	std::string GetFilterId() const override;
 	
 	TauUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KTau>(&KappaProduct::m_validTaus) {}
 	
-	virtual void Init(KappaSettings const& settings) override;
+	void Init(KappaSettings const& settings) override;
 };
 
 
@@ -143,10 +143,10 @@ public:
 class JetUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KBasicJet> {
 public:
 	
-	virtual std::string GetFilterId() const override;
+	std::string GetFilterId() const override;
 	
 	JetUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KBasicJet>(&KappaProduct::m_validJets) {}
 	
-	virtual void Init(KappaSettings const& settings) override;
+	void Init(KappaSettings const& settings) override;
 };
 

@@ -35,7 +35,7 @@ public:
 
 	virtual ~TraxFactory() {}
 
-	virtual ProducerBaseUntemplated* createProducer(std::string const& id) override
+	ProducerBaseUntemplated* createProducer(std::string const& id) override
 	{
 		if ( PtCorrectionProducer().GetProducerId() == id )
 			return new PtCorrectionProducer();
@@ -45,7 +45,7 @@ public:
 			return FactoryBase/*<TraxTypes>*/::createProducer( id );
 	}
 
-	virtual ConsumerBaseUntemplated* createConsumer(std::string const& id) override
+	ConsumerBaseUntemplated* createConsumer(std::string const& id) override
 	{
 		/*if ( MeanPtConsumer().GetConsumerId() == id )
 			return new MeanPtConsumer();
@@ -57,7 +57,7 @@ public:
 			return FactoryBase/*<TraxTypes>*/::createConsumer( id );
 	}
 
-	virtual FilterBaseUntemplated* createFilter(std::string const& id) override
+	FilterBaseUntemplated* createFilter(std::string const& id) override
 	{
 		if ( PtFilter().GetFilterId() == id )
 			return new PtFilter();

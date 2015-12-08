@@ -16,9 +16,9 @@ public:
 	
 	PrintEventsConsumer();
 	
-	virtual std::string GetConsumerId() const override;
+	std::string GetConsumerId() const override;
 	
-	virtual void ProcessEvent(event_type const& event, product_type const& product,
+	void ProcessEvent(event_type const& event, product_type const& product,
 	                          setting_type const& settings, FilterResult& result) override;
 	
 	virtual void Finish(setting_type const& settings);
