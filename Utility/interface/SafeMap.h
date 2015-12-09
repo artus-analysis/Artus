@@ -21,6 +21,8 @@ class SafeMap
 public:
 
 	// get value from generic associative containers with default value
+	// This function returns, unlike a std::map, not by reference but by value,
+	// since returning by reference does not make sense for the default value.
 	// (const version)
 	template <template<class, class, class...> class Container, typename Key, typename Value, typename... Args>
 	static Value const GetWithDefault(const Container<Key, Value, Args...>& m, Key const& key, const Value & defaultValue)
@@ -32,6 +34,8 @@ public:
 	}
 
 	// get value from generic associative containers with default value
+	// This function returns, unlike a std::map, not by reference but by value,
+	// since returning by reference does not make sense for the default value.
 	template <template<class, class, class...> class Container, typename Key, typename Value, typename... Args>
 	static Value GetWithDefault(Container<Key, Value, Args...>& m, Key const& key, Value & defaultValue)
 	{
@@ -42,6 +46,8 @@ public:
 	}
 
 	// get value from generic associative containers with default value
+	// This function returns, unlike a std::map, not by reference but by value,
+	// since returning by reference does not make sense for the default value.
 	// (boost::ptr_map version)
 	template <template<class, class, class...> class Container, typename Key, typename Value, typename... Args>
 	static Value const GetPtrMapWithDefault(const Container<Key, Value, Args...>& m, Key const& key, const Value & defaultValue)
