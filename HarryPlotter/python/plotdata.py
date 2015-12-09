@@ -38,7 +38,7 @@ class PlotData(object):
 			del(root_object)
 
 	@staticmethod
-	def webplotting(www, output_dir, output_filenames, www_text = False, www_title="plots_archive", additional_output_files=False, save_legend=False, export_json = False):
+	def webplotting(www, output_dir, output_filenames=False, www_text = False, www_title="plots_archive", additional_output_files=False, save_legend=False, export_json = False):
 		# set some needed variables
 		user = tools.get_environment_variable("HARRY_REMOTE_USER")
 		html_content = ""
@@ -48,8 +48,10 @@ class PlotData(object):
 		remote_path = os.path.expandvars(os.path.join("$HARRY_REMOTE_PATH", remote_dir))
 		url = os.path.expandvars(os.path.join("$HARRY_URL", remote_dir, overview_filename))
 		plots_for_gallery = [p for p in sorted(os.listdir(output_dir)) if (os.path.isfile(os.path.join(output_dir, p)) and all([not p.endswith("."+ext) for ext in ["json", "html", "root"]]))]
-
 		# get the html templates
+		files_to_copy = []
+		for galleryplot in plots_for_gallery:
+			files_to_copy.append(os.path.join(output_dir, galleryplot))
 		html_texts = {}
 		for var in ['overview', 'description', 'plot']:
 			with open(os.path.expandvars("$ARTUSPATH/HarryPlotter/data/template_webplotting_{}.html".format(var))) as htmlfile:
@@ -85,10 +87,9 @@ class PlotData(object):
 			))
 
 		# find out which files to copy
-		files_to_copy = (
-			output_filenames
-			+ [os.path.join(output_dir, overview_filename)]
-		)
+		if(output_filenames != False):
+			files_to_copy = ( output_filenames )
+		files_to_copy += [os.path.join(output_dir, overview_filename)]
 		if additional_output_files != False:
 			files_to_copy += additional_output_files
 		if export_json != False:
@@ -105,7 +106,7 @@ class PlotData(object):
 		rsync_command = ["rsync", "-u"] + files_to_copy + ["%s@%s:%s" % (user, sshpc, remote_path)]
 		log.debug("\nIssueing rsync command: " + " ".join(rsync_command) + "\n")
 		logger.subprocessCall(rsync_command)
-		log.info("Copied {0}; see {1}".format(" ".join([f.split("/")[-1] for f in output_filenames]), url))
+		log.info("Copied {0}; see {1}".format(" ".join([f.split("/")[-1] for f in files_to_copy]), url))
 
 
 	def save(self):
