@@ -158,3 +158,8 @@ You can also run the example with a different configuration file:
 This will produce the output file sample_output_ntuple.root which uses the NtupleConsumerBase class to produce
 ROOT Ntuples instead of histograms.
 
+
+Code checks and static analysis
+-------------------------------
+
+Information about compiler warnings and static code analysis can be found at [Core/docs/linter.md](Core/docs/linter.md).
