@@ -21,15 +21,15 @@ public:
 
 	}
 
-	virtual std::string GetConsumerId() const override {
+	std::string GetConsumerId() const override {
 		return "mean_pt";
 	}
 
-	virtual void ProcessFilteredEvent(TraxEvent const& event,
+	void ProcessFilteredEvent(TraxEvent const& event,
 			TraxProduct const& product,
 			setting_type const& setting) override;
 
-	virtual void Finish(setting_type const& setting ) override {
+	void Finish(setting_type const& setting ) override {
 		// todo: print pipeline name here
 		LOG(INFO) << "Track mean Pt is " << m_mean << " [GeV].";
 	}

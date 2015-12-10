@@ -27,7 +27,7 @@
 class TraxPipelineInitializer: public PipelineInitilizerBase<TraxTypes > {
 public:
 
-	virtual void InitPipeline(TraxPipeline * pLine,
+	void InitPipeline(TraxPipeline * pLine,
 			TraxSettings const& pset) const override
 			{
 

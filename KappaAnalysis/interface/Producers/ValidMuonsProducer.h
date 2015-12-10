@@ -109,7 +109,7 @@ public:
 		else return MuonIso::NONE;
 	}
 
-	virtual std::string GetProducerId() const override {
+	std::string GetProducerId() const override {
 		return "ValidMuonsProducer";
 	}
 	
@@ -130,7 +130,7 @@ public:
 	{
 	}
 
-	virtual void Init(setting_type const& settings) override {
+	void Init(setting_type const& settings) override {
 		ProducerBase<TTypes>::Init(settings);
 		ValidPhysicsObjectTools<TTypes, KMuon>::Init(settings);
 		
@@ -198,7 +198,7 @@ public:
 		});
 	}
 
-	virtual void Produce(event_type const& event, product_type& product,
+	void Produce(event_type const& event, product_type& product,
 	                     setting_type const& settings) const override
 	{
 		assert(event.m_muons);

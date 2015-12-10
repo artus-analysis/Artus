@@ -34,11 +34,11 @@ public:
 	virtual ~DrawHist1dConsumerBase() {
 	}
 
-	virtual std::string GetConsumerId() const override {
+	std::string GetConsumerId() const override {
 		return "hist1d";
 	}
 
-	virtual void Init(setting_type const& pset) override {
+	void Init(setting_type const& pset) override {
 		DrawConsumerBase<TTypes>::Init(pset);
 
 		// init called
@@ -49,14 +49,14 @@ public:
 		m_hist->Init();
 	}
 
-	virtual void Finish( setting_type const& setting ) override {
+	void Finish( setting_type const& setting ) override {
 		// store hist
 		// + modifiers
 		//LOG(INFO) << "Storing Hist for " << this->GetProductName() << ".";
 		m_hist->Store(setting.GetRootOutFile());
 	}
 
-	virtual void ProcessFilteredEvent(event_type const& event,
+	void ProcessFilteredEvent(event_type const& event,
 			product_type const& product,
 			setting_type const& setting ) override {
 

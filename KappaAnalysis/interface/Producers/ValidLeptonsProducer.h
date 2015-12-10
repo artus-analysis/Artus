@@ -12,9 +12,9 @@ class ValidLeptonsProducer: public KappaProducerBase
 {
 
 public:
-	virtual std::string GetProducerId() const;
-	
-	virtual void Produce(KappaEvent const& event, KappaProduct& product,
+	std::string GetProducerId() const override;
+
+	void Produce(KappaEvent const& event, KappaProduct& product,
 	                     KappaSettings const& settings) const override;
 
 };

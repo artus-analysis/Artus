@@ -14,7 +14,7 @@ public:
 
 	typedef Pipeline<TTypes> pipeline_type;
 
-	virtual void InitPipeline(pipeline_type * pLine, setting_type const& pset) const override
+	void InitPipeline(pipeline_type * pLine, setting_type const& pset) const override
 	{
 		// new implementation of pure PipelineInitilizerBase::InitPipeline
 	}

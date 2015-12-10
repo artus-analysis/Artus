@@ -21,7 +21,7 @@ public:
 	virtual ~TestFactory() {
 	}
 
-	virtual ProducerBaseUntemplated* createProducer(std::string const& id) override
+	ProducerBaseUntemplated* createProducer(std::string const& id) override
 	{
 		if (TestLocalProducer().GetProducerId() == id) {
 			return new TestLocalProducer();
@@ -38,7 +38,7 @@ public:
 		return nullptr;
 	}
 
-	virtual ConsumerBaseUntemplated* createConsumer(std::string const& id) override
+	ConsumerBaseUntemplated* createConsumer(std::string const& id) override
 	{
 		if (TestConsumer().GetConsumerId() == id) {
 			return new TestConsumer();
@@ -51,7 +51,7 @@ public:
 		return nullptr;
 	}
 
-	virtual FilterBaseUntemplated * createFilter(std::string const& id) override
+	FilterBaseUntemplated * createFilter(std::string const& id) override
 	{
 		if (TestFilter().GetFilterId() == id) {
 			return new TestFilter();

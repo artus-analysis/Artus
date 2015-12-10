@@ -14,11 +14,11 @@ public:
 	virtual ~ThetaFilter() {
 	}
 
-	virtual std::string GetFilterId() const override {
+	std::string GetFilterId() const override {
 		return "filter_theta";
 	}
 
-	virtual bool DoesEventPass(TraxEvent const& event,
+	bool DoesEventPass(TraxEvent const& event,
 			TraxProduct const& product,
 			TraxSettings const& globalSettings) const override
 	{

@@ -18,7 +18,7 @@ class DrawConsumerBase: public ConsumerBase<TTypes> {
 public:
 	DrawConsumerBase() : ConsumerBase<TTypes>() {}
 	virtual ~DrawConsumerBase() {}
-	virtual void Init( typename TTypes::setting_type const& settings) override
+	void Init( typename TTypes::setting_type const& settings) override
 	{
 		ConsumerBase<TTypes>::Init(settings);
 	}

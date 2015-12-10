@@ -48,7 +48,7 @@ public:
 	{
 	}
 
-	virtual void Init(setting_type const& settings) override 
+	void Init(setting_type const& settings) override 
 	{
 		ProducerBase<KappaTypes>::Init(settings);
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("ratioGenTauMatched", [](event_type const & event, product_type const & product)
@@ -61,7 +61,7 @@ public:
 		});
 	}
 
-	virtual void Produce(event_type const& event, product_type& product,
+	void Produce(event_type const& event, product_type& product,
 						 setting_type const& settings) const override
 	{
 		double ratioGenTauMatched = 0;
@@ -160,7 +160,7 @@ class RecoElectronGenTauMatchingProducer: public GenTauMatchingProducerBase<KEle
 
 public:
 	
-	virtual std::string GetProducerId() const override;
+	std::string GetProducerId() const override;
 
 	RecoElectronGenTauMatchingProducer();
 
@@ -178,7 +178,7 @@ class RecoMuonGenTauMatchingProducer: public GenTauMatchingProducerBase<KMuon>
 
 public:
 	
-	virtual std::string GetProducerId() const override;
+	std::string GetProducerId() const override;
 	
 	RecoMuonGenTauMatchingProducer();
 
@@ -196,7 +196,7 @@ class RecoTauGenTauMatchingProducer: public GenTauMatchingProducerBase<KTau>
 
 public:
 	
-	virtual std::string GetProducerId() const override;
+	std::string GetProducerId() const override;
 	
 	RecoTauGenTauMatchingProducer();
 

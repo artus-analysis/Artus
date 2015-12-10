@@ -15,9 +15,9 @@
 class CrossSectionWeightProducer : public KappaProducerBase {
 public:
 
-	virtual std::string GetProducerId() const override;
+	std::string GetProducerId() const override;
 
-	virtual void Produce( KappaEvent const& event,
+	void Produce( KappaEvent const& event,
 			KappaProduct & product,
 			KappaSettings const& settings) const override;
 

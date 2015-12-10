@@ -47,11 +47,11 @@ public:
 	virtual ~ValueModifierRange() {
 	}
 
-	virtual void applyHistBeforeCreation(Hist1D * h1, size_t index)	override;
+	void applyHistBeforeCreation(Hist1D * h1, size_t index)	override;
 
-	virtual void applyProfileBeforeCreation(Profile2d * h1, size_t index) override;
+	void applyProfileBeforeCreation(Profile2d * h1, size_t index) override;
 
-	virtual void applyHist2DBeforeCreation(Hist2D * h1, size_t index) override;
+	void applyHist2DBeforeCreation(Hist2D * h1, size_t index) override;
 
 private:
 	const float m_binLower;
@@ -66,11 +66,11 @@ public:
 	virtual ~ValueModifierBinCount() {
 	}
 
-	virtual void applyHistBeforeCreation(Hist1D * h1, size_t index) override;
+	void applyHistBeforeCreation(Hist1D * h1, size_t index) override;
 
-	virtual void applyProfileBeforeCreation(Profile2d * h1, size_t index) override;
+	void applyProfileBeforeCreation(Profile2d * h1, size_t index) override;
 
-	virtual void applyHist2DBeforeCreation(Hist2D * h1, size_t index) override;
+	void applyHist2DBeforeCreation(Hist2D * h1, size_t index) override;
 
 private:
 	const size_t m_binCount;

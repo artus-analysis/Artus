@@ -27,11 +27,11 @@ public:
 	// cases don't have a json file loaded and
 	// the code would fail if a lookup to the json file
 	// would happen
-	virtual stringvector GetFilters () const override
+	stringvector GetFilters () const override
 	{
 		return stringvector();
 	}
-	virtual stringvector & GetTaggingFilters () const override
+	stringvector & GetTaggingFilters () const override
 	{
 		return m_taggingFilters;
 	}

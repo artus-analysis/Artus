@@ -8,18 +8,18 @@
 
 /**
    \brief Producer for muon four momentum corrections.
-   
+
    (No correction implemented yet.)
 */
 class MuonCorrectionsProducer: public KappaProducerBase
 {
 
 public:
-	virtual std::string GetProducerId() const override;
-	
-	virtual void Init(setting_type const& settings)  override;
+	std::string GetProducerId() const override;
 
-	virtual void Produce(KappaEvent const& event, KappaProduct& product,
+	void Init(setting_type const& settings) override;
+
+	void Produce(KappaEvent const& event, KappaProduct& product,
 	                     KappaSettings const& settings) const override;
 
 protected:

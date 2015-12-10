@@ -103,12 +103,12 @@ private:
 class ElectronLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KElectron> {
 public:
 	
-	virtual std::string GetFilterId() const override;
+	std::string GetFilterId() const override;
 	
 	ElectronLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KElectron>(&KappaProduct::m_validElectrons) {}
 	
 	
-	virtual void Init(KappaSettings const& settings) override;
+	void Init(KappaSettings const& settings) override;
 };
 
 
@@ -117,11 +117,11 @@ public:
 class MuonLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KMuon> {
 public:
 	
-	virtual std::string GetFilterId() const override;
+	std::string GetFilterId() const override;
 	
 	MuonLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KMuon>(&KappaProduct::m_validMuons) {}
 	
-	virtual void Init(KappaSettings const& settings) override;
+	void Init(KappaSettings const& settings) override;
 };
 
 
@@ -130,11 +130,11 @@ public:
 class TauLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KTau> {
 public:
 	
-	virtual std::string GetFilterId() const override;
+	std::string GetFilterId() const override;
 	
 	TauLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KTau>(&KappaProduct::m_validTaus) {}
 	
-	virtual void Init(KappaSettings const& settings) override;
+	void Init(KappaSettings const& settings) override;
 };
 
 
@@ -143,11 +143,11 @@ public:
 class JetLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KBasicJet> {
 public:
 	
-	virtual std::string GetFilterId() const override;
+	std::string GetFilterId() const override;
 	
 	JetLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KBasicJet>(&KappaProduct::m_validJets) {}
 	
-	virtual void Init(KappaSettings const& settings) override;
+	void Init(KappaSettings const& settings) override;
 };
 
 
@@ -156,9 +156,9 @@ public:
 class NonBTaggedJetLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KJet> {
 public:
 	
-	virtual std::string GetFilterId() const override;
+	std::string GetFilterId() const override;
 	
 	NonBTaggedJetLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KJet>(&KappaProduct::m_nonBTaggedJets) {}
 	
-	virtual void Init(KappaSettings const& settings) override;
+	void Init(KappaSettings const& settings) override;
 };

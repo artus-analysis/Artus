@@ -14,11 +14,11 @@ typedef ProducerBase<TestTypes> TestProducerBase;
 
 class TestGlobalProducer: public TestProducerBase {
 public:
-	virtual std::string GetProducerId() const override {
+	std::string GetProducerId() const override {
 		return "test_global_producer";
 	}
 	
-	virtual void Produce(TestEvent const& event,
+	void Produce(TestEvent const& event,
 			TestProduct & product,
 			TestSettings const& globalSettings) const override {
 		product.iGlobalProduct = event.iVal + 5 + globalSettings.GetOffset();
@@ -27,11 +27,11 @@ public:
 
 class TestGlobalProducer2: public TestProducerBase {
 public:
-	virtual std::string GetProducerId() const override {
+	std::string GetProducerId() const override {
 		return "test_global_producer2";
 	}
 
-	virtual void Produce(TestEvent const& event,
+	void Produce(TestEvent const& event,
 			TestProduct & product,
 			TestSettings const& globalSettings) const override {
 		product.iGlobalProduct2 = event.iVal + 1;

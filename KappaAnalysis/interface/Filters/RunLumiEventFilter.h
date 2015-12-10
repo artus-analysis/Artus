@@ -24,9 +24,9 @@ class RunLumiEventFilter: public FilterBase<KappaTypes>
 public:
 
 
-	virtual std::string GetFilterId() const override;
+	std::string GetFilterId() const override;
 
-	virtual bool DoesEventPass(KappaEvent const& event, KappaProduct const& product,
+	bool DoesEventPass(KappaEvent const& event, KappaProduct const& product,
 	                           KappaSettings const& settings) const override;
 
 

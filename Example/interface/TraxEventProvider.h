@@ -24,7 +24,7 @@ public:
 	                  "ec") {
 	}
 
-	virtual void WireEvent(TraxSettings const&) override
+	void WireEvent(TraxSettings const&) override
 	{
 		// set up the ROOT pointers to our local memory regions
 		m_rootChain->SetBranchAddress("theSim", &m_event.m_floatTheSim);

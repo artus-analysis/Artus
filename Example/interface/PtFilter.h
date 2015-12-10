@@ -16,17 +16,17 @@ public:
 	{
 	}
 
-	virtual std::string GetFilterId() const override
+	std::string GetFilterId() const override
 	{
 		return "filter_pt";
 	}
 
-	virtual void Init(TraxSettings const& globalSettings) override
+	void Init(TraxSettings const& globalSettings) override
 	{
 		FilterBase<TraxTypes>::Init(globalSettings);
 	}
 
-	virtual bool DoesEventPass(TraxEvent const& event,
+	bool DoesEventPass(TraxEvent const& event,
 			TraxProduct const& product, TraxSettings const& settings) const override
 	{
 

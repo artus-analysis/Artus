@@ -14,7 +14,7 @@
 class TraxNtupleConsumer: public NtupleConsumerBase<TraxTypes> {
 
 public:
-	virtual std::string GetConsumerId() const override
+	std::string GetConsumerId() const override
 	{
 		return "ntuple";
 	}
