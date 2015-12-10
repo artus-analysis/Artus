@@ -1,12 +1,27 @@
 #!/bin/bash
 
-# get path of Artus installation
-if [[ ${BASH_SOURCE[0]} == *"${CMSSW_BASE}/bin/"* || ${BASH_SOURCE[0]} == *"${CMSSW_BASE}/src/Artus/"* ]]; then
-	export ARTUSPATH=$CMSSW_BASE/src/Artus
-else
-	# get Artus dir relative to location of this script
-	export ARTUSPATH=$(readlink -f $(dirname $(readlink -f ${BASH_SOURCE[0]}))/../..)
+if [ -n "$BASH_VERSION" ]; then
+
+	# get path of Artus installation for bash
+	if [[ ${BASH_SOURCE[0]} == *"${CMSSW_BASE}/bin/"* || ${BASH_SOURCE[0]} == *"${CMSSW_BASE}/src/Artus/"* ]]; then
+		export ARTUSPATH=$CMSSW_BASE/src/Artus
+	else
+		# get Artus dir relative to location of this script for bash
+		export ARTUSPATH=$(readlink -f $(dirname $(readlink -f ${BASH_SOURCE[0]}))/../..)
+	fi
+
+elif [ -n "$ZSH_VERSION" ]; then
+
+	# get path of Artus installation for zsh
+	if [[ ${0} == *"${CMSSW_BASE}/bin/"* || ${0} == *"${CMSSW_BASE}/src/Artus/"* ]]; then
+		export ARTUSPATH=$CMSSW_BASE/src/Artus
+	else
+		# get Artus dir relative to location of this script for zsh
+		export ARTUSPATH=$(readlink -f -- $(dirname -- "$(readlink -f -- "${0}")")/../..)
+	fi
+
 fi
+
 
 # setup Kappa
 source $ARTUSPATH/../KappaTools/Toolbox/scripts/ini_KappaTools.sh
