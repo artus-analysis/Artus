@@ -1,12 +1,13 @@
 <Flags CXXFLAGS="-g" />
 <Flags LDFLAGS="-rdynamic" />
-<Flags LDFLAGS="-Lsrc/KappaTools/lib -lKToolbox -lKRootTools" />
 <Flags LDFLAGS="-Lsrc/Kappa/lib -lKappa" />
 
 <use name="boost" />
 <use name="root" />
 <use name="roottmva"/>
 <use name="CondFormats/JetMETObjects" />
+<use name="KappaTools/Toolbox" />
+<use name="KappaTools/RootTools" />
 <use name="Artus/Configuration"/>
 <use name="Artus/Consumer"/>
 <use name="Artus/Utility"/>
