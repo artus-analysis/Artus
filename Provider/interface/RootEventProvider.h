@@ -16,32 +16,30 @@ class RootEventProvider: public EventProviderBase<TTypes> {
 public:
 	typedef typename TTypes::event_type event_type;
 
-	RootEventProvider(stringvector const & fileNames,
+	RootEventProvider(stringvector const& fileNames,
 			std::string const& treeName) {
 		m_rootChain.reset(new TChain(treeName.c_str()));
 
-		for (auto const & fname : fileNames) {
+		for (auto const& fname : fileNames) {
 			m_rootChain->Add(fname.c_str());
 		}
 	}
 
-	virtual bool GetEntry(long long lEvent) {
+	bool GetEntry(long long lEvent) override {
 		return (m_rootChain->GetEntry(lEvent) != 0);
 	}
 
-	virtual event_type const& GetCurrentEvent() const {
+	event_type const& GetCurrentEvent() const override{
 		return m_event;
 	}
 
-	virtual long long GetEntries() const {
+	long long GetEntries() const override {
 		return m_rootChain->GetEntries();
 	}
 
-	virtual void WireEvent( TraxSettings const& ) = 0;
-
+	virtual void WireEvent(TraxSettings const&) = 0;
 
 protected:
-
 	event_type m_event;
 	boost::scoped_ptr<TChain> m_rootChain;
 };

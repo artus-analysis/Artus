@@ -21,7 +21,7 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 
-	virtual std::string GetConsumerId() const override
+	std::string GetConsumerId() const override
 	{
 		return "RunTimeConsumer";
 	}
@@ -31,7 +31,7 @@ public:
 	{
 	}
 
-	virtual void Init(setting_type const& settings) override
+	void Init(setting_type const& settings) override
 	{
 		ConsumerBase<TTypes>::Init(settings);
 		std::vector<std::string> processors = settings.GetAllProcessors();
@@ -54,7 +54,7 @@ public:
 		}
 	}
 
-	virtual void Finish(setting_type const& setting) override
+	void Finish(setting_type const& setting) override
 	{
 		// save file
 		RootFileHelper::SafeCd(setting.GetRootOutFile(),
@@ -63,10 +63,10 @@ public:
 		m_tree->Write("runTime");
 	}
 
-	virtual void ProcessEvent(event_type const& event,
-	                          product_type const& product,
-	                          setting_type const& setting,
-	                          FilterResult & filterResult)
+	void ProcessEvent(event_type const& event,
+	                  product_type const& product,
+	                  setting_type const& setting,
+	                  FilterResult & filterResult) override
 	{
 		ConsumerBase<TTypes>::ProcessEvent(event, product, setting, filterResult);
 

@@ -13,8 +13,8 @@ public:
 	
 	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
 	
-	virtual std::string GetFilterId() const override;
-	virtual void Init(KappaSettings const& settings) override;
+	std::string GetFilterId() const override;
+	void Init(KappaSettings const& settings) override;
 };
 
 
@@ -25,8 +25,8 @@ public:
 	
 	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
 	
-	virtual std::string GetFilterId() const override;
-	virtual void Init(KappaSettings const& settings) override;
+	std::string GetFilterId() const override;
+	void Init(KappaSettings const& settings) override;
 };
 
 
@@ -37,8 +37,8 @@ public:
 	
 	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
 	
-	virtual std::string GetFilterId() const override;
-	virtual void Init(KappaSettings const& settings) override;
+	std::string GetFilterId() const override;
+	void Init(KappaSettings const& settings) override;
 };
 
 
@@ -49,8 +49,8 @@ public:
 	
 	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
 	
-	virtual std::string GetFilterId() const override;
-	virtual void Init(KappaSettings const& settings) override;
+	std::string GetFilterId() const override;
+	void Init(KappaSettings const& settings) override;
 };
 
 
@@ -61,6 +61,6 @@ public:
 	
 	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
 	
-	virtual std::string GetFilterId() const override;
-	virtual void Init(KappaSettings const& settings) override;
+	std::string GetFilterId() const override;
+	void Init(KappaSettings const& settings) override;
 };

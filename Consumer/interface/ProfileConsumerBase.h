@@ -31,11 +31,11 @@ public:
 			m_plotName(plotName), m_xsource(xsource), m_ysource(ysource) {
 	}
 
-	virtual std::string GetConsumerId() const override {
+	std::string GetConsumerId() const override {
 		return "profile";
 	}
 
-	virtual void Init( typename TTypes::setting_type const& settings) override
+	void Init( typename TTypes::setting_type const& settings) override
 	{
 		ConsumerBase<TTypes>::Init(settings);
 
@@ -53,7 +53,7 @@ public:
 		m_profile->Init();
 	}
 
-	virtual void ProcessEvent(typename TTypes::event_type const& event,
+	void ProcessEvent(typename TTypes::event_type const& event,
 			typename TTypes::product_type const& product,
 			typename TTypes::setting_type const& setting,
 			FilterResult& result) override {
@@ -63,7 +63,7 @@ public:
 		// not supported ..
 	}
 
-	virtual void ProcessFilteredEvent(typename TTypes::event_type const& event,
+	void ProcessFilteredEvent(typename TTypes::event_type const& event,
 			typename TTypes::product_type const& product,
 			typename TTypes::setting_type const& setting) override
 	{
@@ -96,7 +96,7 @@ public:
 		}
 	}
 
-	virtual void Finish(setting_type const& setting) override {
+	void Finish(setting_type const& setting) override {
 		m_profile->Store(setting.GetRootOutFile());
 	}
 

@@ -18,11 +18,11 @@ class GenDiLeptonDecayModeFilter: public FilterBase<KappaTypes>
 
 public:
 
-	virtual std::string GetFilterId() const override;
+	std::string GetFilterId() const override;
 
-	virtual void Init(setting_type const& settings) override;
+	void Init(setting_type const& settings) override;
 	
-	virtual bool DoesEventPass(KappaEvent const& event, KappaProduct const& product,
+	bool DoesEventPass(KappaEvent const& event, KappaProduct const& product,
 	                           KappaSettings const& settings) const override;
 
 private:

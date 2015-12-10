@@ -23,7 +23,7 @@ public:
 	{
 	}
 
-	virtual bool DoesEventPass(KappaEvent const& event, KappaProduct const& product,
+	bool DoesEventPass(KappaEvent const& event, KappaProduct const& product,
 	                           KappaSettings const& settings) const override
 	{
 		if ((product.*m_genParticleMatchedObjects).size() == 0) 
@@ -54,7 +54,7 @@ class ElectronGenMatchingFilter: public GenMatchingFilterBase<KElectron>
 public:
 
 	
-	virtual std::string GetFilterId() const override {
+	std::string GetFilterId() const override {
 		return "ElectronGenMatchingFilter";
 	}
 	
@@ -77,7 +77,7 @@ class MuonGenMatchingFilter: public GenMatchingFilterBase<KMuon>
 public:
 
 	
-	virtual std::string GetFilterId() const override {
+	std::string GetFilterId() const override {
 		return "MuonGenMatchingFilter";
 	}
 	
@@ -100,7 +100,7 @@ class TauGenMatchingFilter: public GenMatchingFilterBase<KTau>
 public:
 
 	
-	virtual std::string GetFilterId() const override {
+	std::string GetFilterId() const override {
 		return "TauGenMatchingFilter";
 	}
 	
@@ -123,7 +123,7 @@ class JetGenMatchingFilter: public GenMatchingFilterBase<KBasicJet>
 public:
 
 	
-	virtual std::string GetFilterId() const override {
+	std::string GetFilterId() const override {
 		return "JetGenMatchingFilter";
 	}
 	

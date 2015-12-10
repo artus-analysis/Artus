@@ -86,7 +86,7 @@ public:
 	{
 	}
 
-	virtual void Init(KappaSettings const& settings) override
+	void Init(KappaSettings const& settings) override
 	{
 		KappaProducerBase::Init(settings);
 		ValidPhysicsObjectTools<KappaTypes, TValidJet>::Init(settings);
@@ -161,7 +161,7 @@ public:
 		} );
 	}
 
-	virtual void Produce(KappaEvent const& event, KappaProduct& product,
+	void Produce(KappaEvent const& event, KappaProduct& product,
 	                     KappaSettings const& settings) const override
 	{
 		assert((event.*m_basicJetsMember));
@@ -283,7 +283,7 @@ class ValidJetsProducer: public ValidJetsProducerBase<KBasicJet, KBasicJet>
 public:
 	ValidJetsProducer();
 
-	virtual std::string GetProducerId() const override;
+	std::string GetProducerId() const override;
 };
 
 
@@ -301,8 +301,8 @@ class ValidTaggedJetsProducer: public ValidJetsProducerBase<KJet, KBasicJet>
 {
 public:
 	ValidTaggedJetsProducer();
-	virtual std::string GetProducerId() const override;
-	virtual void Init(KappaSettings const& settings) override;
+	std::string GetProducerId() const override;
+	void Init(KappaSettings const& settings) override;
 
 protected:
 	// Can be overwritten for analysis-specific use cases

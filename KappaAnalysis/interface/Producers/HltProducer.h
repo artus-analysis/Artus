@@ -17,11 +17,11 @@
 class HltProducer: public KappaProducerBase
 {
 public:
-	virtual std::string GetProducerId() const override;
+	std::string GetProducerId() const override;
 
-	virtual void Init(KappaSettings const& settings) override;
+	void Init(KappaSettings const& settings) override;
 
-	virtual void Produce(KappaEvent const& event, KappaProduct& product,
+	void Produce(KappaEvent const& event, KappaProduct& product,
 	                     KappaSettings const& settings) const override;
 
 };

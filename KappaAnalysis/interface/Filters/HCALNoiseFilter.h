@@ -9,9 +9,9 @@
 class HCALNoiseFilter: public FilterBase<KappaTypes>
 {
 public:
-	virtual std::string GetFilterId() const override;
-	virtual void Init(setting_type const& settings) override;
-	virtual bool DoesEventPass(KappaEvent const& event, KappaProduct const& product,
+	std::string GetFilterId() const override;
+	void Init(setting_type const& settings) override;
+	bool DoesEventPass(KappaEvent const& event, KappaProduct const& product,
 	                           KappaSettings const& settings) const override;
 
 private:

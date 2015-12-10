@@ -15,12 +15,12 @@
 class TestLocalProducer: public ProducerBase<TestTypes> {
 public:
 
-	virtual std::string GetProducerId() const override {
+	std::string GetProducerId() const override {
 		return "test_local_producer";
 	}
 
 	// for each pipeline
-	virtual void Produce(TestEvent const& event,
+	void Produce(TestEvent const& event,
 			TestProduct & product,
 			TestSettings const& m_pipelineSettings) const override
 	{
@@ -32,13 +32,13 @@ public:
 class TestLocalProducerFromGlobal: public ProducerBase<TestTypes> {
 public:
 
-	virtual std::string GetProducerId() const override
+	std::string GetProducerId() const override
 	{
 		return "test_local_global_producer";
 	}
 
 	// for each pipeline
-	virtual void Produce(TestEvent const& event,
+	void Produce(TestEvent const& event,
 			TestProduct & product,
 			TestSettings const& m_pipelineSettings) const override
 	{

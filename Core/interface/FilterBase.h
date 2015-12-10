@@ -90,16 +90,16 @@ public:
 		return GetFilterId();
 	}
 
-	virtual ProcessNodeType GetProcessNodeType () const override final
+	ProcessNodeType GetProcessNodeType () const final
 	{
 		return ProcessNodeType::Filter;
 	}
 
 protected:
 
-	virtual bool baseDoesEventPass(EventBase const& evt,
-			ProductBase const& prod,
-			SettingsBase const& settings ) const override {
+	bool baseDoesEventPass(EventBase const& evt,
+	                       ProductBase const& prod,
+	                       SettingsBase const& settings ) const override {
 		auto const& specEvent = static_cast < event_type const&> ( evt );
 		auto const& specProd = static_cast < product_type const&> ( prod );
 		auto const& specSetting = static_cast < setting_type const&> ( settings );
@@ -107,7 +107,7 @@ protected:
 		return DoesEventPass( specEvent, specProd, specSetting );
 	}
 
-	virtual void baseInit (SettingsBase const& settings) override {
+	void baseInit (SettingsBase const& settings) override {
 		auto const& specSettings = static_cast < setting_type const&> ( settings );
 
 		this->Init ( specSettings );
