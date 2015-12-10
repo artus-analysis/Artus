@@ -19,7 +19,7 @@ before_install:
   - cd ..
   - git clone https://github.com/KappaAnalysis/Kappa.git
   - make -C Kappa/DataFormats/test
-  - git clone -b scram_cmake https://github.com/KappaAnalysis/KappaTools.git
+  - git clone https://github.com/KappaAnalysis/KappaTools.git
   - cd KappaTools
   - cmake .
   - make -j2
