@@ -105,19 +105,19 @@ void ArtusConfig::InitConfig( bool configPreLoaded )
 	defaultLoggingConfig.set(el::Level::Error, el::ConfigurationType::Enabled, "true");
 	defaultLoggingConfig.set(el::Level::Fatal, el::ConfigurationType::Enabled, "true");
 	
-	if (minimumLogLevel.second <= el::Level::Info)
+	if (minimumLogLevel.second >= el::Level::Info)
 	{
 		defaultLoggingConfig.set(el::Level::Debug, el::ConfigurationType::Enabled, "false");
 	}
-	if (minimumLogLevel.second <= el::Level::Warning)
+	if (minimumLogLevel.second >= el::Level::Warning)
 	{
 		defaultLoggingConfig.set(el::Level::Info, el::ConfigurationType::Enabled, "false");
 	}
-	if (minimumLogLevel.second <= el::Level::Error)
+	if (minimumLogLevel.second >= el::Level::Error)
 	{
 		defaultLoggingConfig.set(el::Level::Warning, el::ConfigurationType::Enabled, "false");
 	}
-	if (minimumLogLevel.second <= el::Level::Fatal)
+	if (minimumLogLevel.second >= el::Level::Fatal)
 	{
 		defaultLoggingConfig.set(el::Level::Error, el::ConfigurationType::Enabled, "false");
 	}
