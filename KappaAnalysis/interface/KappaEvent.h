@@ -47,7 +47,7 @@ public:
 	KMET* m_met = nullptr;
 
 	/// pointer to GenMET collection
-	KBasicMET* m_genMet = nullptr;
+	KMET* m_genMet = nullptr;
 
 	/// pointers to PF candidates
 	KPFCandidates* m_pfChargedHadronsPileUp = nullptr;
