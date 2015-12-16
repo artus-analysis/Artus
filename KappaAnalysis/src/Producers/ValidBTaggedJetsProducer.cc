@@ -88,9 +88,9 @@ void ValidBTaggedJetsProducer::Produce(KappaEvent const& event, KappaProduct& pr
 				{
 					if ( iterator->first->p4 == tjet->p4 )
 					{
-						jetflavor = std::abs(iterator->second->pdgId());
+						jetflavor = std::abs(iterator->second->pdgId);
 						LOG(DEBUG) << "Jet " << iterator->first->p4 << "  => " << iterator->second->p4;
-						LOG(DEBUG) << "particle ID " << std::abs(iterator->second->pdgId());
+						LOG(DEBUG) << "particle ID " << std::abs(iterator->second->pdgId);
 					}
 				}
 				unsigned int btagSys = BtagSF::kNo;

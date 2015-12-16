@@ -74,15 +74,15 @@ public:
 	{
 		for (unsigned int i=0; i<positiveChargedParticlePdgIds.size(); ++i)
 		{
-			if (this->node->pdgId()==positiveChargedParticlePdgIds[i]) this->charge = 1;
+			if (this->node->pdgId==positiveChargedParticlePdgIds[i]) this->charge = 1;
 		}
 		for (unsigned int i=0; i<negativeChargedParticlePdgIds.size(); ++i)
 		{
-			if (this->node->pdgId()==negativeChargedParticlePdgIds[i]) this->charge = -1;
+			if (this->node->pdgId==negativeChargedParticlePdgIds[i]) this->charge = -1;
 		}
 		for (unsigned int i=0; i<notChargedParticlePdgIds.size(); ++i)
 		{
-			if (this->node->pdgId()==notChargedParticlePdgIds[i]) this->charge = 0;
+			if (this->node->pdgId==notChargedParticlePdgIds[i]) this->charge = 0;
 		}
 	}
 	int getCharge() const
@@ -93,7 +93,7 @@ public:
 	{
 		for (unsigned int i=0; i<detectableParticlePdgIds.size(); ++i)
 		{
-			if (this->node->pdgId()==detectableParticlePdgIds[i]) this->detectable = true;
+			if (this->node->pdgId==detectableParticlePdgIds[i]) this->detectable = true;
 		}
 	}
 	bool isDetectable() const
@@ -113,7 +113,7 @@ public:
 	}
 	void setDecayMode(MotherDaughterBundle* tauDaughters)
 	{
-		int pdgId = std::abs(tauDaughters->node->pdgId());
+		int pdgId = std::abs(tauDaughters->node->pdgId);
 		if (pdgId == DefaultValues::pdgIdTau)
 		{
 			if (this->decayMode == DecayMode::TAU) this->decayMode = DecayMode::TAUTAU;

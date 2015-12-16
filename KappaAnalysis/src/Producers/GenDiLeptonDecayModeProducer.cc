@@ -23,14 +23,14 @@ void GenDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaProduct
 	for (KGenParticles::const_iterator genParticle = event.m_genParticles->begin();
 		 genParticle != event.m_genParticles->end(); ++genParticle)
 	{
-		if ((std::abs(genParticle->pdgId()) == settings.GetBosonPdgId()) && (genParticle->status() == settings.GetBosonStatus()))
+		if ((std::abs(genParticle->pdgId) == settings.GetBosonPdgId()) && (genParticle->status() == settings.GetBosonStatus()))
 		{
 			std::map<int, int> nDecayProductsPerType;
 
 			for (std::vector<unsigned int>::const_iterator decayParticleIndex = genParticle->daughterIndices.begin();
 			     decayParticleIndex != genParticle->daughterIndices.end(); ++decayParticleIndex)
 			{
-				int pdgId = std::abs(event.m_genParticles->at(*decayParticleIndex).pdgId());
+				int pdgId = std::abs(event.m_genParticles->at(*decayParticleIndex).pdgId);
 				nDecayProductsPerType[pdgId] = SafeMap::GetWithDefault(nDecayProductsPerType, pdgId, 0) + 1;
 			}
 

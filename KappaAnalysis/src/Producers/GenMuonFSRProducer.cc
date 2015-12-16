@@ -37,11 +37,11 @@ void GenMuonFSRProducer::Produce(KappaEvent const& event, KappaProduct& product,
 		if (currentGenParticle != 0)
 		{
 			//if 2 daughters: FSR radiation -> add pt to sumMuonFSRPt
-			if (currentGenParticle->nDaughters() == 2 and abs(currentGenParticle->pdgId())==13)
+			if (currentGenParticle->nDaughters() == 2 and abs(currentGenParticle->pdgId)==13)
 			{
 				//first daughter: Muon itself
 				//second daughter: Photon
-				if (event.m_genParticles->at(currentGenParticle->daughterIndex(1)).pdgId() == 22)
+				if (event.m_genParticles->at(currentGenParticle->daughterIndex(1)).pdgId == 22)
 				{
 					sumMuonFSRPt += event.m_genParticles->at(currentGenParticle->daughterIndex(1)).p4.Pt();
 				}
