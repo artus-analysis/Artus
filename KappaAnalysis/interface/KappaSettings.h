@@ -45,6 +45,9 @@ public:
 	/// name of MET collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, Met, "");
 
+	/// name of PUPPI MET collection in kappa tuple
+	IMPL_SETTING_DEFAULT(std::string, PuppiMet, "");
+
 	/// name of GenMET collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, GenMet, "");
 
