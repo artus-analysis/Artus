@@ -53,8 +53,6 @@ class SumOfHistograms(analysisbase.AnalysisBase):
 			new_histogram_name = "histogram_" + hashlib.md5("_".join(sum_nicks)).hexdigest()
 		if(scale_factors == None):
 			scale_factors = [1] * len(histograms)
-			print scale_factors
-			print scale_factors
 
 		new_histogram = None
 		for histogram, scale_factor in zip(histograms, scale_factors):
