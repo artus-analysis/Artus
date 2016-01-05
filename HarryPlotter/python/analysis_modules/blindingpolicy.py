@@ -42,11 +42,13 @@ class BlindingPolicy(analysisbase.AnalysisBase):
 	@staticmethod
 	def get_blinding_expression(name):
 		if (name == "ams"): 
-			return lambda signal, background, parameter:  pow(((2 * (signal + background + parameter) * math.log( 1 + signal/(background+parameter))) - signal), 0.5) if((background + parameter) >0 ) else 0
+			return lambda signal, background, parameter:  pow(2 * ((signal + background + parameter) * math.log1p( signal/(background+parameter)) - signal), 0.5) if((background + parameter) >0 ) else 0
 		elif (name == "soversqrtb"):
 			return lambda signal, background, parameter:  (signal / pow(background, 0.5)) if (background > 0) else 0.0
 		elif (name == "soverb"):
 			return lambda signal, background, parameter: signal / background
+		else:
+			log.fatal("invalid blinding method string selected: " + name)
 	
 	def run(self, plotData=None):
 		super(BlindingPolicy, self).run(plotData)
