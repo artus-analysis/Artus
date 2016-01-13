@@ -33,9 +33,9 @@ public:
 	}
 	
 	TmvaClassificationReaderBase(std::vector<std::string>& (setting_type::*GetTmvaInputQuantities)(void) const,
-	                             std::vector<std::string>& (setting_type::*GetTmvaMethods)(void) const,
-	                             std::vector<std::string>& (setting_type::*GetTmvaWeights)(void) const,
-	                             std::vector<double> product_type::*mvaOutputs) :
+								 std::vector<std::string>& (setting_type::*GetTmvaMethods)(void) const,
+								 std::vector<std::string>& (setting_type::*GetTmvaWeights)(void) const,
+								 std::vector<double> product_type::*mvaOutputs) :
 		ProducerBase<TTypes>(),
 		GetTmvaInputQuantities(GetTmvaInputQuantities),
 		GetTmvaMethods(GetTmvaMethods),
@@ -51,12 +51,12 @@ public:
 		// construct extractors vector
 		m_inputExtractors.clear();
 		for (std::vector<std::string>::const_iterator quantity = (settings.*GetTmvaInputQuantities)().begin();
-		     quantity != (settings.*GetTmvaInputQuantities)().end(); ++quantity)
+			 quantity != (settings.*GetTmvaInputQuantities)().end(); ++quantity)
 		{
 			std::vector<std::string> splitted;
 			boost::algorithm::split(splitted, *quantity, boost::algorithm::is_any_of(":="));
 			transform(splitted.begin(), splitted.end(), splitted.begin(),
-			          [](std::string s) { return boost::algorithm::trim_copy(s); });
+					  [](std::string s) { return boost::algorithm::trim_copy(s); });
 			std::string lambdaQuantity = splitted.front();
 			
 			if (LambdaNtupleConsumer<TTypes>::GetFloatQuantities().count(lambdaQuantity) > 0)
@@ -65,17 +65,17 @@ public:
 			}
 			else if(LambdaNtupleConsumer<TTypes>::GetIntQuantities().count(lambdaQuantity) > 0)
 			{
-                m_inputExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetIntQuantities(), lambdaQuantity));
+				m_inputExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetIntQuantities(), lambdaQuantity));
 			}
 			else
-            {
+			{
 				LOG(FATAL) << "The TMVA interface currently only supports float-type and int-type input variables!";
-            }
+			}
 		}
 		
 		// register TMVA input variables
 		for (std::vector<std::string>::const_iterator quantity = (settings.*GetTmvaInputQuantities)().begin();
-		     quantity != (settings.*GetTmvaInputQuantities)().end(); ++quantity)
+			 quantity != (settings.*GetTmvaInputQuantities)().end(); ++quantity)
 		{
 			tmvaReader.AddVariable(*quantity, static_cast<float*>(nullptr));
 		}
@@ -85,7 +85,7 @@ public:
 		LOG(DEBUG) << "\tLoading TMVA weight files...";
 		for (size_t mvaMethodIndex = 0; mvaMethodIndex < (settings.*GetTmvaMethods)().size(); ++mvaMethodIndex)
 		{
-			std::string tmvaMethod = (settings.*GetTmvaMethods)()[mvaMethodIndex];
+			std::string tmvaMethod = (settings.*GetTmvaMethods)()[mvaMethodIndex]+ boost::lexical_cast<std::string>(mvaMethodIndex);
 			std::string tmvaWeights = (settings.*GetTmvaWeights)()[mvaMethodIndex];
 			LOG(DEBUG) << "\t\tmethod: " << tmvaMethod << ", weight file: " << tmvaWeights;
 			tmvaReader.BookMVA(tmvaMethod, tmvaWeights);
@@ -93,13 +93,13 @@ public:
 	}
 
 	void Produce(event_type const& event, product_type& product,
-	                     setting_type const& settings) const override
+						 setting_type const& settings) const override
 	{
 		// construct and fill input vector
 		std::vector<double> tmvaInputs(m_inputExtractors.size());
 		size_t inputQuantityIndex = 0;
 		for(typename std::vector<float_extractor_lambda>::const_iterator inputExtractor = m_inputExtractors.begin();
-		    inputExtractor != m_inputExtractors.end(); ++inputExtractor)
+			inputExtractor != m_inputExtractors.end(); ++inputExtractor)
 		{
 			tmvaInputs[inputQuantityIndex] = (*inputExtractor)(event, product);
 			++inputQuantityIndex;
@@ -107,12 +107,10 @@ public:
 		
 		// retrieve MVA outputs
 		(product.*m_mvaOutputsMember) = std::vector<double>((settings.*GetTmvaMethods)().size());
-		size_t mvaMethodIndex = 0;
-		for (std::vector<std::string>::const_iterator tmvaMethod = (settings.*GetTmvaMethods)().begin();
-		     tmvaMethod != (settings.*GetTmvaMethods)().end(); ++tmvaMethod)
+		for (size_t mvaMethodIndex = 0; mvaMethodIndex < (settings.*GetTmvaMethods)().size(); ++mvaMethodIndex)
 		{
-			(product.*m_mvaOutputsMember)[mvaMethodIndex] = tmvaReader.EvaluateMVA(tmvaInputs, tmvaMethod->c_str());
-			++mvaMethodIndex;
+			std::string tmvaMethod = (settings.*GetTmvaMethods)()[mvaMethodIndex]+ boost::lexical_cast<std::string>(mvaMethodIndex);
+			(product.*m_mvaOutputsMember)[mvaMethodIndex] = tmvaReader.EvaluateMVA(tmvaInputs, tmvaMethod.c_str());
 		}
 	}
 
