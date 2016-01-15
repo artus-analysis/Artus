@@ -30,21 +30,21 @@ class BlindingPolicy(analysisbase.AnalysisBase):
 				help="Nick names for the resulting histograms.")
 		self.blinding_policy_options.add_argument("--blinding-method", nargs="+", default=["soversqrtb"], choices=["ams", "soversqrtb", "soverb"],
 				help="Desired method to calculate blinding condition.")
-		self.blinding_policy_options.add_argument("--blinding-regularization-parameters", nargs="+", default=[1.0], type=float,
-				help="Regularization parameter for AMS method.")
+		self.blinding_policy_options.add_argument("--blinding-parameters", nargs="+", default=[0.0], type=float,
+				help="Regularization parameter for AMS method or epsilon for soversqrtb an epsilon to account for systematic uncertainties")
 
 	def prepare_args(self, parser, plotData):
 		super(BlindingPolicy, self).prepare_args(parser, plotData)
 
 		
-		self.prepare_list_args(plotData, ["blinding_signal_nicks", "blinding_background_nicks", "blinding_result_nicks", "blinding_method", "blinding_regularization_parameters"])
+		self.prepare_list_args(plotData, ["blinding_signal_nicks", "blinding_background_nicks", "blinding_result_nicks", "blinding_method", "blinding_parameters"])
 		
 	@staticmethod
 	def get_blinding_expression(name):
 		if (name == "ams"): 
 			return lambda signal, background, parameter:  pow(2 * ((signal + background + parameter) * math.log1p( signal/(background+parameter)) - signal), 0.5) if((background + parameter) >0 ) else 0
 		elif (name == "soversqrtb"):
-			return lambda signal, background, parameter:  (signal / pow(background, 0.5)) if (background > 0) else 0.0
+			return lambda signal, background, parameter:  (signal / pow(background + pow(parameter*background, 2), 0.5)) if (background > 0) else 0.0
 		elif (name == "soverb"):
 			return lambda signal, background, parameter: signal / background
 		else:
@@ -58,7 +58,7 @@ class BlindingPolicy(analysisbase.AnalysisBase):
 		                                                         plotData.plotdict["blinding_background_nicks"],
 		                                                         plotData.plotdict["blinding_result_nicks"],
 		                                                         plotData.plotdict["blinding_method"],
-		                                                         plotData.plotdict["blinding_regularization_parameters"] ):
+		                                                         plotData.plotdict["blinding_parameters"] ):
 			
 			signal = SumOfHistograms.return_sum_of_histograms([plotData.plotdict["root_objects"][nick] for nick in signal_nick.split(" ")])
 			new_histogram = signal.Clone(result_nick)
