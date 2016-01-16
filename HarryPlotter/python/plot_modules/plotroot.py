@@ -73,6 +73,8 @@ class PlotRoot(plotbase.PlotBase):
 		                               help="Lower and Upper limit for y-axis.")
 		self.axis_options.add_argument("--sym-y-lims", nargs="?", type="bool", default=False, const=True,
 		                               help="Symmetric y-axis limits of the plot. The parameters of --y-lims are taken as <center> <range/2>")
+		self.axis_options.add_argument("--y-scientific", nargs="?", type="bool", default=False, const=True,
+		                               help="Imposing scientific notation for y-axis. If 'False', usual behaviour is conserved.")
 		self.axis_options.add_argument("--z-lims", type=float, nargs="+",
 		                               help="Lower and Upper limit for z-axis.")
 		self.axis_options.add_argument("--sym-z-lims", nargs="?", type="bool", default=False, const=True,
@@ -501,7 +503,7 @@ class PlotRoot(plotbase.PlotBase):
 			self.axes_histogram.GetXaxis().SetNoExponent(True)
 
 			# avoid scientific notation for y-axis if a title is present
-			if (not plotData.plotdict["title"] is None):
+			if (not plotData.plotdict["title"] is None and not plotData.plotdict["y_scientific"]):
 				self.axes_histogram.GetYaxis().SetNoExponent(True)
 			
 			self.axes_histogram.Draw("AXIS")
@@ -735,7 +737,8 @@ class PlotRoot(plotbase.PlotBase):
 		# normal plot title (e.g., 'own work', name of the channel...): outside plot, top left
 		y_title = 0.95 if self.subplot_axes_histogram is None else 0.96
 		if (not plotData.plotdict["title"] is None) and (plotData.plotdict["title"] != ""):
-			x_title = 0.2
+			# shifts the title, if scientific notation is used for y-axis
+			x_title = 0.2 if self.axes_histogram.GetYaxis().GetNoExponent() else 0.26
 			title = self.text_box.AddText(x_title, y_title, plotData.plotdict["title"])
 			title.SetTextAlign(11)
 
