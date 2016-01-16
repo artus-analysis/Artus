@@ -252,12 +252,16 @@ class PlotRoot(plotbase.PlotBase):
 		
 		self.plot_pad_right_margin = plot_pad.GetRightMargin()
 		plot_pad.SetRightMargin(0.25)
-		if not plotData.plotdict["left_pad_margin"] is None:
-			plot_pad.SetLeftMargin(plotData.plotdict["left_pad_margin"])
-		if not plotData.plotdict["right_pad_margin"] is None:
-			plot_pad.SetRightMargin(plotData.plotdict["right_pad_margin"])
 		if not subplot_pad is None:
 			subplot_pad.SetRightMargin(0.25)
+		if not plotData.plotdict["left_pad_margin"] is None:
+			plot_pad.SetLeftMargin(plotData.plotdict["left_pad_margin"])
+			if not subplot_pad is None:
+				subplot_pad.SetLeftMargin(plotData.plotdict["left_pad_margin"])
+		if not plotData.plotdict["right_pad_margin"] is None:
+			plot_pad.SetRightMargin(plotData.plotdict["right_pad_margin"])
+			if not subplot_pad is None:
+				subplot_pad.SetRightMargin(plotData.plotdict["right_pad_margin"])
 		
 		plotData.plot = RootPlotContainer(canvas, plot_pad, subplot_pad)
 
