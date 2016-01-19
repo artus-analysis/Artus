@@ -225,7 +225,7 @@ class PlotRoot(plotbase.PlotBase):
 		if len(plotData.plotdict["subplot_nicks"]) > 0:
 			canvas.cd()
 			if plot_pad is None:
-				plot_pad = ROOT.TPad("plot_pad", "", 0.0, self.plot_subplot_slider_y, 1.0, 0.95)
+				plot_pad = ROOT.TPad("plot_pad", "", 0.0, self.plot_subplot_slider_y, 1.0, 1.0)
 				plot_pad.SetNumber(1)
 				plot_pad.Draw()
 			if subplot_pad is None:
@@ -233,7 +233,7 @@ class PlotRoot(plotbase.PlotBase):
 				subplot_pad.SetNumber(2)
 				subplot_pad.Draw()
 			
-			plot_pad.SetTopMargin(0.02)
+			plot_pad.SetTopMargin(0.122)
 			plot_pad.SetBottomMargin(0.026)
 			subplot_pad.SetBottomMargin(0.35)
 			
@@ -502,9 +502,13 @@ class PlotRoot(plotbase.PlotBase):
 			# avoid scientific notation for x-axis
 			self.axes_histogram.GetXaxis().SetNoExponent(True)
 
-			# avoid scientific notation for y-axis if a title is present
+			# when not imposed, avoid scientific notation for y-axis if a title is present
 			if (not plotData.plotdict["title"] is None and not plotData.plotdict["y_scientific"]):
 				self.axes_histogram.GetYaxis().SetNoExponent(True)
+			
+			# if scientific notation is imposed for y-axis, then shift the exponent
+			if not self.axes_histogram.GetYaxis().GetNoExponent():
+				ROOT.TGaxis.SetExponentOffset(-0.069,0.015,"y")
 			
 			self.axes_histogram.Draw("AXIS")
 		
@@ -708,19 +712,18 @@ class PlotRoot(plotbase.PlotBase):
 	
 	def add_texts(self, plotData):
 		super(PlotRoot, self).add_texts(plotData)
-		
-		plotData.plot.canvas.cd()
+
 		self.text_box = ROOT.TPaveText(0.0, 0.0, 1.0, 1.0, "NDC")
 		self.text_box.SetFillStyle(0)
 		self.text_box.SetBorderSize(0)
 		self.text_box.SetShadowColor(0)
 		self.text_box.SetTextAlign(22)
-		
+
 		text_size = self.axes_histogram.GetXaxis().GetLabelSize()
 		if not self.subplot_axes_histogram is None:
-			text_size = self.subplot_axes_histogram.GetXaxis().GetLabelSize() * self.plot_subplot_slider_y
+			text_size = self.subplot_axes_histogram.GetXaxis().GetLabelSize() * (1-self.plot_subplot_slider_y-0.12)
 		self.text_box.SetTextSize(text_size)
-		
+
 		for x, y, text, size in zip(plotData.plotdict["texts_x"], plotData.plotdict["texts_y"], plotData.plotdict["texts"], plotData.plotdict["texts_size"]):
 			text_object = self.text_box.AddText(x, y, text)
 			if not size is None:
@@ -735,10 +738,9 @@ class PlotRoot(plotbase.PlotBase):
 				CMS_lumi.lumiTextOffset = 0.4
 
 		# normal plot title (e.g., 'own work', name of the channel...): outside plot, top left
-		y_title = 0.95 if self.subplot_axes_histogram is None else 0.96
+		y_title = 0.95 if self.subplot_axes_histogram is None else 0.923
 		if (not plotData.plotdict["title"] is None) and (plotData.plotdict["title"] != ""):
-			# shifts the title, if scientific notation is used for y-axis
-			x_title = 0.2 if self.axes_histogram.GetYaxis().GetNoExponent() else 0.26
+			x_title = 0.2
 			title = self.text_box.AddText(x_title, y_title, plotData.plotdict["title"])
 			title.SetTextAlign(11)
 
@@ -749,7 +751,9 @@ class PlotRoot(plotbase.PlotBase):
 
 		CMS_lumi.extraText = plotData.plotdict["extra_text"]
 		CMS_lumi.CMS_lumi(plotData.plot.canvas, 0, 11)
-		
+
+		# Draw the text box on the main plot in plot_pad
+		plotData.plot.plot_pad.cd()
 		self.text_box.Draw()
 	
 	@staticmethod
