@@ -7,5 +7,5 @@
 class KappaExampleProduct : public KappaProduct
 {
 public:
-
+	RMDLV m_diMuonSystem;
 };
