@@ -8,6 +8,7 @@
 	<use name="Artus/Configuration"/>
 	<use name="Artus/Consumer"/>
 	<use name="Artus/KappaAnalysis"/>
+	<use name="Artus/KappaAnalysisExample"/>
 	<use name="root"/>
 	<use name="rootmath"/>
 	<use name="roottmva"/>
