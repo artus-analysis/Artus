@@ -18,12 +18,16 @@
 				"producer:ValidMuonsProducer",
 				"filter:MinMuonsCountFilter",
 				"filter:MaxMuonsCountFilter",
+				"filter:ChargeFilter",
+				"producer:DiMuonSystemProducer",
+				"filter:DiMuonMassFilter",
 				"producer:EventWeightProducer"
 			],
 			"Consumers" : [
 				"cutflow_histogram",
 				"KappaLambdaNtupleConsumer",
-				"KappaMuonsConsumer"
+				"KappaMuonsConsumer",
+				"DiMuonSystemConsumer"
 			],
 			
 			"comment2" : "Settings for the ValidMuonsProducer",
@@ -45,18 +49,32 @@
 				"leadingMuonPt",
 				"leadingMuonEta",
 				"trailingMuonPt",
-				"trailingMuonEta"
-			]
+				"trailingMuonEta",
+				"diMuonPt",
+				"diMuonEta",
+				"diMuonPhi",
+				"diMuonMass"
+			],
+			
+			"comment6" : "Settings for custom processors",
+			"OSMuons" : true,
+			"DiMuonMassLowerCut" : 60.0
 		},
 		"loose" : {
 			"Processors" : [
 				"producer:ValidMuonsProducer",
+				"filter:MinMuonsCountFilter",
+				"filter:MaxMuonsCountFilter",
+				"filter:ChargeFilter",
+				"producer:DiMuonSystemProducer",
+				"filter:DiMuonMassFilter",
 				"producer:EventWeightProducer"
 			],
 			"Consumers" : [
 				"cutflow_histogram",
 				"KappaLambdaNtupleConsumer",
-				"KappaMuonsConsumer"
+				"KappaMuonsConsumer",
+				"DiMuonSystemConsumer"
 			],
 			
 			"comment2" : "Settings for the ValidMuonsProducer",
@@ -64,6 +82,10 @@
 			"MuonID" : "loose",
 			"MuonIsoType" : "PF",
 			"MuonIso" : "loose_2015",
+			
+			"comment3" : "Settings for the Min/MaxMuonsCountFilters",
+			"MinNMuons" : 2,
+			"MaxNMuons" : 2,
 			
 			"comment4" : "Settings for the cutflow consumer",
 			"EventWeight" : "eventWeight",
@@ -74,8 +96,16 @@
 				"leadingMuonPt",
 				"leadingMuonEta",
 				"trailingMuonPt",
-				"trailingMuonEta"
-			]
+				"trailingMuonEta",
+				"diMuonPt",
+				"diMuonEta",
+				"diMuonPhi",
+				"diMuonMass"
+			],
+			
+			"comment6" : "Settings for custom processors",
+			"OSMuons" : true,
+			"DiMuonMassLowerCut" : 20.0
 		}
 	}
 }
