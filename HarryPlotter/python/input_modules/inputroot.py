@@ -147,7 +147,8 @@ class InputRoot(inputfile.InputFile):
 						y_bins=y_bins,
 						z_bins=z_bins,
 						name=None)
-				root_histogram.Sumw2()
+				if hasattr(root_histogram, "Sumw2"):
+					root_histogram.Sumw2()
 			elif root_object_type == None:
 				log.critical("Error getting ROOT object from file. Exiting.")
 				sys.exit(1)
