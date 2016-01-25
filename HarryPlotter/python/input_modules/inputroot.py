@@ -114,13 +114,13 @@ class InputRoot(inputfile.InputFile):
 				plotData.plotdict["friend_trees"],
 				plotData.plotdict["tree_draw_options"]
 		), description="Reading ROOT inputs")):
-			# check whether to read from tree or directly from histograms
-			root_object_type = roottools.RootTools.check_type(root_files, folders,
+			# check whether to read from TTree or from TDirectory
+			root_folder_type = roottools.RootTools.check_type(root_files, folders,
 			                                                  print_quantities=plotData.plotdict["quantities"])
 			root_tree_chain = None
 			root_histogram = None
 			
-			if root_object_type == ROOT.TTree:
+			if root_folder_type == ROOT.TTree:
 				variable_expression = "%s%s%s" % (z_expression + ":" if z_expression else "",
 				                                  y_expression + ":" if y_expression else "",
 				                                  x_expression)
@@ -134,7 +134,7 @@ class InputRoot(inputfile.InputFile):
 						friend_trees=friend_trees
 				)
 				
-			elif root_object_type == ROOT.TH1:
+			elif root_folder_type == ROOT.TDirectory:
 				if x_expression is None:
 					log.error('No x_expression provided.')
 					sys.exit(1)
@@ -147,6 +147,8 @@ class InputRoot(inputfile.InputFile):
 						y_bins=y_bins,
 						z_bins=z_bins,
 						name=None)
+				if hasattr(root_histogram, "Sumw2"):
+					root_histogram.Sumw2()
 			elif root_object_type == None:
 				log.critical("Error getting ROOT object from file. Exiting.")
 				sys.exit(1)

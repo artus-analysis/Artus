@@ -59,7 +59,7 @@ class RootTools(object):
 						for key, path in sorted(RootTools.walk_root_directory(root_object), key=lambda element: element[1]):
 							if key.GetClassName().startswith("TH") or key.GetClassName().startswith("TF") or key.GetClassName().startswith("Roo") or "Graph" in key.GetClassName():
 								log.info("\t%s (%s)" % (path, key.GetClassName()))
-					return ROOT.TH1
+					return ROOT.TDirectory
 				else:
 					log.error("Usage of ROOT objects of Type \"" + root_object.ClassName() + "\" is not yet implemented!")
 					return None

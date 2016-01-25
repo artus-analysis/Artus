@@ -46,6 +46,9 @@ public:
 	/// pointer to MET collection
 	KMET* m_met = nullptr;
 
+	/// pointer to Puppi MET collection
+	KMET* m_puppiMet = nullptr;
+
 	/// pointer to GenMET collection
 	KMET* m_genMet = nullptr;
 

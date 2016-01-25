@@ -27,12 +27,16 @@ class MplGraph:
 
 		for i in xrange(rootgraph.GetN()):
 			self.x[i], self.y[i] = roottools.RootTools.tgraph_get_point(rootgraph, i)
-		self.xerr = np.array([rootgraph.GetErrorX(i) for i in xrange(rootgraph.GetN())])
-		self.xerrl = np.array([rootgraph.GetErrorXlow(i) for i in xrange(rootgraph.GetN())])
-		self.xerru = np.array([rootgraph.GetErrorXhigh(i) for i in xrange(rootgraph.GetN())])
-		self.yerr = np.array([rootgraph.GetErrorY(i) for i in xrange(rootgraph.GetN())])
-		self.yerrl = np.array([rootgraph.GetErrorYlow(i) for i in xrange(rootgraph.GetN())])
-		self.yerru = np.array([rootgraph.GetErrorYhigh(i) for i in xrange(rootgraph.GetN())])
+
+		# ROOT TGraph has GetError functions even though it has no errors ?!? (returns -1)
+		# workaround: set errors to zero (we need the errors for plotting)
+		if type(rootgraph) == ROOT.TGraph:
+			for error_member in ["xerr", "xerrl", "xerru", "yerr", "yerrl", "yerru"]:
+				setattr(self, error_member, np.array([0 for i in xrange(rootgraph.GetN())]))
+		else:
+			for error_member, error_function in zip(["xerr", "xerrl", "xerru", "yerr", "yerrl", "yerru"],
+			            ["GetErrorX", "GetErrorXlow", "GetErrorXhigh", "GetErrorY", "GetErrorYlow", "GetErrorYhigh"]):
+				setattr(self, error_member, np.array([getattr(rootgraph, error_function)(i) for i in xrange(rootgraph.GetN())]))
 
 	@property
 	def xbinedges(self):

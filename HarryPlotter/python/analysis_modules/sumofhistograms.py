@@ -43,7 +43,27 @@ class SumOfHistograms(analysisbase.AnalysisBase):
 		for index, nick in enumerate(plotData.plotdict["sum_result_nicks"]):
 			if not nick:
 				plotData.plotdict["sum_result_nicks"][index] = "_".join(plotData.plotdict["sum_nicks"][index])
-	
+
+	@staticmethod
+	def return_sum_of_histograms(histograms, scale_factors=None, new_histogram_name=None):
+		if(new_histogram_name == None):
+			sum_nicks = []
+			for histogram in histograms:
+				sum_nicks.append( histogram.GetName())
+			new_histogram_name = "histogram_" + hashlib.md5("_".join(sum_nicks)).hexdigest()
+		if(scale_factors == None):
+			scale_factors = [1] * len(histograms)
+
+		new_histogram = None
+		for histogram, scale_factor in zip(histograms, scale_factors):
+			if isinstance(histogram, ROOT.TH1):
+				if new_histogram == None:
+					new_histogram = histogram.Clone(new_histogram_name)
+					new_histogram.Scale(scale_factor)
+				else:
+					new_histogram.Add(histogram, scale_factor)
+		return new_histogram
+
 	def run(self, plotData=None):
 		super(SumOfHistograms, self).run(plotData)
 		
@@ -51,18 +71,8 @@ class SumOfHistograms(analysisbase.AnalysisBase):
 		                                                         plotData.plotdict["sum_scale_factors"],
 		                                                         plotData.plotdict["sum_result_nicks"]):
 			
-			new_histogram_name = "histogram_" + hashlib.md5("_".join(sum_nicks)).hexdigest()
-			new_histogram = None
-			
-			for histogram, scale_factor in zip([plotData.plotdict["root_objects"][nick] for nick in sum_nicks], sum_scale_factors):
-				if isinstance(histogram, ROOT.TH1):
-					if new_histogram == None:
-						new_histogram = histogram.Clone(new_histogram_name)
-						new_histogram.Scale(scale_factor)
-					else:
-						new_histogram.Add(histogram, scale_factor)
-			
-			plotData.plotdict["root_objects"][sum_result_nick] = new_histogram
+			plotData.plotdict["root_objects"][sum_result_nick] = self.return_sum_of_histograms( [plotData.plotdict["root_objects"][nick] for nick in sum_nicks],
+			                                                                               sum_scale_factors)
 			
 			# insert new nick between the existing ones
 			if sum_result_nick not in plotData.plotdict["nicks"]:
