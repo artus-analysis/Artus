@@ -50,6 +50,11 @@ class ExportRoot(plotbase.PlotBase):
 				help="Use the nicks to specify the paths of the ROOT objects in the file. [Default: %(default)s]"
 		)
 		
+		self.formatting_options.add_argument(
+				"--custom-rebin", nargs="+", type=float, default=None,
+				help="Rebins before exporting in the file. Provided value is a list of bin edges. [Default: %(default)s]"
+		)
+		
 		self.output_options.set_defaults(formats=["root"])
 	
 	def prepare_args(self, parser, plotData):
@@ -100,6 +105,11 @@ class ExportRoot(plotbase.PlotBase):
 			
 			for nick, path in zip(plotData.plotdict["nicks"], plotData.plotdict["labels"]):
 				root_object = plotData.plotdict["root_objects"][nick]
+				
+				if plotData.plotdict["custom_rebin"] is not None:
+					root_object = roottools.RootTools.rebin_root_histogram(
+						root_object,
+						rebinningX=plotData.plotdict["custom_rebin"])
 				
 				if plotData.plotdict["nicks_instead_labels"]:
 					path = nick
