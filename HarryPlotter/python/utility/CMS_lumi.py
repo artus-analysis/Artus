@@ -107,7 +107,7 @@ def CMS_lumi(pad,  iPeriod,  iPosX ):
         latex.SetTextFont(cmsTextFont)
         latex.SetTextAlign(11) 
         latex.SetTextSize(cmsTextSize*t)    
-    #    latex.DrawLatex(l,1-t+lumiTextOffset*t,cmsText)
+        latex.DrawLatex(l,1-t+lumiTextOffset*t,cmsText)
   
     pad.cd()
 

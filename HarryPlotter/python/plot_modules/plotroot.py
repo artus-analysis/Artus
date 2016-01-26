@@ -120,7 +120,9 @@ class PlotRoot(plotbase.PlotBase):
 		self.formatting_options.add_argument("--extra-text", type=str, nargs="?", default = "",
 		                                     help="Extra text written on plot, e.g. \"Preliminary\" ")
 		self.formatting_options.add_argument("--cms", nargs="?", type="bool", default=False, const=True,
-		                               help="Make a CMS publication plot. See https://ghm.web.cern.ch/ghm/plots/.")
+		                               help="Make a CMS publication plot (CMS inside frame). See https://ghm.web.cern.ch/ghm/plots/.")
+		self.formatting_options.add_argument("--cms-outframe", nargs="?", type="bool", default=False, const=True,
+		                               help="Make a CMS publication plot (CMS outside frame). See https://ghm.web.cern.ch/ghm/plots/.")
 		
 	def prepare_args(self, parser, plotData):
 		super(PlotRoot, self).prepare_args(parser, plotData)
@@ -746,11 +748,15 @@ class PlotRoot(plotbase.PlotBase):
 
 		# CMS text (only if specified): inside plot, top left
 		CMS_lumi.cmsTextSize = 0.5
-		if not plotData.plotdict["cms"]:
+		if not (plotData.plotdict["cms"] or plotData.plotdict["cms_outframe"]):
 			CMS_lumi.cmsText = ""
 
 		CMS_lumi.extraText = plotData.plotdict["extra_text"]
-		CMS_lumi.CMS_lumi(plotData.plot.canvas, 0, 11)
+		if plotData.plotdict["cms_outframe"]:
+			CMS_lumi.relPosX = 0.12
+			CMS_lumi.CMS_lumi(plotData.plot.canvas, 0, 0)
+		else:
+			CMS_lumi.CMS_lumi(plotData.plot.canvas, 0, 11)
 
 		# Draw the text box on the main plot in plot_pad
 		plotData.plot.plot_pad.cd()
