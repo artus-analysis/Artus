@@ -29,7 +29,7 @@ class LabelsDict(object):
     def get_nice_label(self, label):
         if label in self.labels_dict:
             return self.labels_dict.get(label, label)
-        elif label.split(" : ")[0] in self.labels_dict:
-            return label.replace(label.split(" : ")[0], self.labels_dict[label.split(" : ")[0]])
+        elif label.split("+*+")[0] in self.labels_dict:
+            return label.replace(label.split("+*+")[0]+"+*+", self.labels_dict[label.split("+*+")[0]])
         else:
             return self.labels_dict.get(label, label)
