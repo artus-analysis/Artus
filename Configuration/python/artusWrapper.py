@@ -48,6 +48,9 @@ class ArtusWrapper(object):
 		#Expand Config
 		self.expandConfig()
 		self.projectPath = None
+
+		#read in external values
+		self.readInExternals()
 		if self._args.batch:
 			self.projectPath = os.path.join(os.path.expandvars(self._args.work), date_now+"_"+self._args.project_name)
 
@@ -201,6 +204,9 @@ class ArtusWrapper(object):
 		self._config.save(filepath, indent=4)
 		log.info("Saved JSON config \"%s\" for temporary usage." % self._configFilename)
 
+	def readInExternals(self):
+		# to be overwritten by users
+		pass
 
 	def expandConfig(self):
 
