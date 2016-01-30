@@ -24,6 +24,8 @@ import Artus.HarryPlotter.utility.labels as labels
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 import Artus.HarryPlotter.utility.tdrstyle as tdrstyle
 import Artus.HarryPlotter.utility.CMS_lumi as CMS_lumi
+import Artus.HarryPlotter.utility.newrootcolors as newrootcolors
+
 
 class RootPlotContainer(plotdata.PlotContainer):
 	def __init__(self, canvas=None, plot_pad=None, subplot_pad=None):
@@ -148,6 +150,8 @@ class PlotRoot(plotbase.PlotBase):
 						color = eval("ROOT."+color)
 					elif color.startswith("#"):
 						color = ROOT.TColor.GetColor(color.upper())
+					elif color in newrootcolors.newIdx.keys():
+						color = newrootcolors.newIdx[color]
 					else:
 						color = eval(color)
 					colors[sub_index] = color
@@ -179,7 +183,7 @@ class PlotRoot(plotbase.PlotBase):
 					fill_style = 0
 				elif ("E" in marker.upper()) and (not "HIST" in marker.upper()) and (marker.upper() != "E"):
 					marker_style = 0
-					fill_style = 3003
+					fill_style = 3001
 			
 			if legend_marker is None:
 				# TODO: implement defaults here
