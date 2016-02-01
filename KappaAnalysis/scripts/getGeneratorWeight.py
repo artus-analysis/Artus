@@ -15,6 +15,7 @@ ROOT.gROOT.SetBatch(True)
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gErrorIgnoreLevel = ROOT.kError
 
+from Kappa.Skimming.registerDatasetHelper import *
 
 def main():
 	
@@ -33,7 +34,6 @@ def main():
 	sumweight_per_nick = {}
 	n_entries_per_nick = {}
 	for (fileindex, file_name) in enumerate(args.files):
-
 		# retrieve weights
 		# the weights are in the form +/- X
 		root_file = ROOT.TFile(file_name, "READ")
@@ -59,11 +59,18 @@ def main():
 		root_file.Close()
 
 
-	# print results
+	# print results and save to dataset
+	cmssw_base = os.environ.get("CMSSW_BASE")
+	dataset = os.path.join(cmssw_base, "src/Kappa/Skimming/data/datasets.json")
+	dict = load_database(dataset)
 	log.info("{\n\t\"GeneratorWeight\" : {\n\t\t\"nick\" : {")
 	for index, (nick, sumweight) in enumerate(sumweight_per_nick.items()):
+		sample_name = get_sample_by_nick(nick)
 		log.info("\t\t\t\"" + nick + "\" : " + str(sumweight/n_entries_per_nick[nick]) + ("," if index < len(sumweight_per_nick)-1 else ""))
+		dict[sample_name]["generatorWeight"] = sumweight/n_entries_per_nick[nick]
 	log.info("\t\t}\n\t}\n}")
+	save_database(dict, dataset)
+
 
 
 if __name__ == "__main__":
