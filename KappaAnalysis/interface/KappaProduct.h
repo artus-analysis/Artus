@@ -94,6 +94,9 @@ public:
 	std::vector<KGenParticle*> m_genElectrons;
 	std::vector<KGenParticle*> m_genMuons;
 	std::vector<KGenParticle*> m_genTaus;
+
+	/// added by GenTauJetProducer
+	std::vector<KGenJet*> m_genTauJets;
 	
 	/// added by GenDiLeptonDecayModeProducer
 	KappaEnumTypes::DiLeptonDecayMode m_genDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::NONE;

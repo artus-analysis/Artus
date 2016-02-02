@@ -6,6 +6,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/GenTauDecayProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenTauDecayModeProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenParticleProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/GenTauJetProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ElectronCorrectionsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/MuonCorrectionsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/TauCorrectionsProducer.h"
@@ -76,6 +77,8 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
   		return new GenTauDecayModeProducer();
 	else if(id == GenParticleProducer().GetProducerId())
   		return new GenParticleProducer();
+	else if(id == GenTauJetProducer().GetProducerId())
+  		return new GenTauJetProducer();
 	else if(id == HltProducer().GetProducerId())
 		return new HltProducer();
 	else if(id == ElectronCorrectionsProducer().GetProducerId())
