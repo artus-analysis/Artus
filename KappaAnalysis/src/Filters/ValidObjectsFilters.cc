@@ -73,3 +73,48 @@ void ValidBTaggedJetsFilter::Init(KappaSettings const& settings) {
 			CutRange::LowerThresholdCut(1.0)
 	));
 }
+
+
+std::string ValidGenElectronsFilter::GetFilterId() const {
+	return "ValidGenElectronsFilter";
+}
+
+void ValidGenElectronsFilter::Init(KappaSettings const& settings) {
+	CutRangeFilterBase::Init(settings);
+	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
+			[](KappaEvent const& event, KappaProduct const& product) {
+				return product.m_genElectrons.size();
+			},
+			CutRange::LowerThresholdCut(1.0)
+	));
+}
+
+
+std::string ValidGenMuonsFilter::GetFilterId() const {
+	return "ValidGenMuonsFilter";
+}
+
+void ValidGenMuonsFilter::Init(KappaSettings const& settings) {
+	CutRangeFilterBase::Init(settings);
+	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
+			[](KappaEvent const& event, KappaProduct const& product) {
+				return product.m_genMuons.size();
+			},
+			CutRange::LowerThresholdCut(1.0)
+	));
+}
+
+
+std::string ValidGenTauJetsFilter::GetFilterId() const {
+	return "ValidGenTauJetsFilter";
+}
+
+void ValidGenTauJetsFilter::Init(KappaSettings const& settings) {
+	CutRangeFilterBase::Init(settings);
+	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
+			[](KappaEvent const& event, KappaProduct const& product) {
+				return product.m_genTauJets.size();
+			},
+			CutRange::LowerThresholdCut(1.0)
+	));
+}

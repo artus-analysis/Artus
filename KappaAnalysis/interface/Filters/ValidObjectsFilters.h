@@ -64,3 +64,36 @@ public:
 	std::string GetFilterId() const override;
 	void Init(KappaSettings const& settings) override;
 };
+
+/** Filter checking for the existance of at least one valid gen-level electron.
+ */
+class ValidGenElectronsFilter: public CutRangeFilterBase<KappaTypes> {
+public:
+	
+	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
+	
+	std::string GetFilterId() const override;
+	void Init(KappaSettings const& settings) override;
+};
+
+/** Filter checking for the existance of at least one valid gen-level muon.
+ */
+class ValidGenMuonsFilter: public CutRangeFilterBase<KappaTypes> {
+public:
+	
+	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
+	
+	std::string GetFilterId() const override;
+	void Init(KappaSettings const& settings) override;
+};
+
+/** Filter checking for the existance of at least one valid gen-level tau jet.
+ */
+class ValidGenTauJetsFilter: public CutRangeFilterBase<KappaTypes> {
+public:
+	
+	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
+	
+	std::string GetFilterId() const override;
+	void Init(KappaSettings const& settings) override;
+};
