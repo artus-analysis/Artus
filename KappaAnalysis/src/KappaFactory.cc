@@ -188,12 +188,14 @@ FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
 		return new ValidJetsFilter();
 	else if(id == ValidBTaggedJetsFilter().GetFilterId())
 		return new ValidBTaggedJetsFilter();
-	else if(id == ValidGenElectronsFilter().GetFilterId())
-		return new ValidGenElectronsFilter();
-	else if(id == ValidGenMuonsFilter().GetFilterId())
-		return new ValidGenMuonsFilter();
-	else if(id == ValidGenTauJetsFilter().GetFilterId())
-		return new ValidGenTauJetsFilter();
+	else if(id == GenElectronsFilter().GetFilterId())
+		return new GenElectronsFilter();
+	else if(id == GenMuonsFilter().GetFilterId())
+		return new GenMuonsFilter();
+	else if(id == GenTausFilter().GetFilterId())
+		return new GenTausFilter();
+	else if(id == GenTauJetsFilter().GetFilterId())
+		return new GenTauJetsFilter();
 	else if(id == ElectronsCountFilter().GetFilterId())
 		return new ElectronsCountFilter();
 	else if(id == MuonsCountFilter().GetFilterId())

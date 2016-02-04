@@ -75,11 +75,11 @@ void ValidBTaggedJetsFilter::Init(KappaSettings const& settings) {
 }
 
 
-std::string ValidGenElectronsFilter::GetFilterId() const {
-	return "ValidGenElectronsFilter";
+std::string GenElectronsFilter::GetFilterId() const {
+	return "GenElectronsFilter";
 }
 
-void ValidGenElectronsFilter::Init(KappaSettings const& settings) {
+void GenElectronsFilter::Init(KappaSettings const& settings) {
 	CutRangeFilterBase::Init(settings);
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 			[](KappaEvent const& event, KappaProduct const& product) {
@@ -90,11 +90,11 @@ void ValidGenElectronsFilter::Init(KappaSettings const& settings) {
 }
 
 
-std::string ValidGenMuonsFilter::GetFilterId() const {
-	return "ValidGenMuonsFilter";
+std::string GenMuonsFilter::GetFilterId() const {
+	return "GenMuonsFilter";
 }
 
-void ValidGenMuonsFilter::Init(KappaSettings const& settings) {
+void GenMuonsFilter::Init(KappaSettings const& settings) {
 	CutRangeFilterBase::Init(settings);
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 			[](KappaEvent const& event, KappaProduct const& product) {
@@ -105,11 +105,26 @@ void ValidGenMuonsFilter::Init(KappaSettings const& settings) {
 }
 
 
-std::string ValidGenTauJetsFilter::GetFilterId() const {
-	return "ValidGenTauJetsFilter";
+std::string GenTausFilter::GetFilterId() const {
+	return "GenTausFilter";
 }
 
-void ValidGenTauJetsFilter::Init(KappaSettings const& settings) {
+void GenTausFilter::Init(KappaSettings const& settings) {
+	CutRangeFilterBase::Init(settings);
+	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
+			[](KappaEvent const& event, KappaProduct const& product) {
+				return product.m_genTaus.size();
+			},
+			CutRange::LowerThresholdCut(1.0)
+	));
+}
+
+
+std::string GenTauJetsFilter::GetFilterId() const {
+	return "GenTauJetsFilter";
+}
+
+void GenTauJetsFilter::Init(KappaSettings const& settings) {
 	CutRangeFilterBase::Init(settings);
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 			[](KappaEvent const& event, KappaProduct const& product) {
