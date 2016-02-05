@@ -50,7 +50,8 @@ class ArtusWrapper(object):
 		self.projectPath = None
 
 		#read in external values
-		self.readInExternals()
+		if not self._args.batch:
+			self.readInExternals()
 		if self._args.batch:
 			self.projectPath = os.path.join(os.path.expandvars(self._args.work), date_now+"_"+self._args.project_name)
 
