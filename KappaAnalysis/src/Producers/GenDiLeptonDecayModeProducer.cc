@@ -13,6 +13,12 @@ std::string GenDiLeptonDecayModeProducer::GetProducerId() const {
 void GenDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
 {
 	ProducerBase<KappaTypes>::Init(settings);
+
+	// add possible quantities for the lambda ntuples consumers
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genDiLeptonBosonMass", [](KappaEvent const & event, KappaProduct const & product)
+	{
+		return product.m_genDiLeptonBoson.p4.mass();
+	});
 }
 
 void GenDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& product,
@@ -26,6 +32,7 @@ void GenDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaProduct
 		if ((std::abs(genParticle->pdgId()) == settings.GetBosonPdgId()) && (genParticle->status() == settings.GetBosonStatus()))
 		{
 			std::map<int, int> nDecayProductsPerType;
+			product.m_genDiLeptonBoson = (*genParticle);
 
 			for (std::vector<unsigned int>::const_iterator decayParticleIndex = genParticle->daughterIndices.begin();
 			     decayParticleIndex != genParticle->daughterIndices.end(); ++decayParticleIndex)
