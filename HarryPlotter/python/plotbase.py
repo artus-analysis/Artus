@@ -331,7 +331,7 @@ class PlotBase(processor.Processor):
 
 			# some debug infos
 			if log.isEnabledFor(logging.DEBUG):
-				log.debug("\nContents of nick %s, stack %s:" % (nick1, stack1))
+				log.debug("\nContents of nick {0} (type {2}, stack {1}):".format(nick1, stack1, type(plotData.plotdict["root_objects"][nick1])))
 				plotData.plotdict["root_objects"][nick1].Print("range")
 		
 		# remove underflow/overflow bin contents
