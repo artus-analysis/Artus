@@ -41,8 +41,8 @@ class ExpressionsDict(object):
 		old_expr, new_expr = "", expression
 		while new_expr != old_expr:
 			old_expr = new_expr
-			for key, value in self.expressions_dict.iteritems():
-				new_expr = new_expr.replace(key, value)
+			for key in sorted(self.expressions_dict,key=len, reverse=True):
+				new_expr = new_expr.replace(key, self.expressions_dict[key])
 			for pattern, repl in self.expressions_regex:
 				new_expr = re.sub(pattern, repl, new_expr)
 		log.debug("expression expansion: %r => %r", expression, new_expr)
