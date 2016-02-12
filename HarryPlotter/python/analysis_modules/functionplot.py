@@ -114,7 +114,9 @@ class FunctionPlot(analysisbase.AnalysisBase):
 		formula_name = ("function_" + nick).format(hashlib.md5("_".join([str(function), str(x_min), str(x_max),
 		                                                                str(start_parameters), str(nick), 
 		                                                                str(root_histogram.GetName() if root_histogram != None else "")])).hexdigest())
-		return ROOT.TF1(formula_name, function, x_min, x_max)
+		ret_tf1 = ROOT.TF1(formula_name, function, x_min, x_max)
+		ret_tf1.SetParameters(*start_parameters)
+		return ret_tf1
 
 	@staticmethod
 	def do_rootfit(function, x_min, x_max, start_parameters, nick="", root_histogram=None):

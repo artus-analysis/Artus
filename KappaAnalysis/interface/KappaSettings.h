@@ -295,6 +295,7 @@ public:
 	
 	/// Needed by the GenDiLeptonDecayModeFilter
 	IMPL_SETTING(std::string, GenDiLeptonDecayMode);
+	IMPL_SETTING_DEFAULT(bool, GenDiLeptonDecayModeFilterLoose, false);
 	IMPL_SETTING_DEFAULT(bool, InvertGenDiLeptonDecayMode, false);
 
 	IMPL_SETTING_STRINGLIST_DEFAULT(GenParticleTypes, {});

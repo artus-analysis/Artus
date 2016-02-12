@@ -593,11 +593,11 @@ class PlotMpl(plotbase.PlotBase):
 		# http://stackoverflow.com/a/18499120/3243729
 		if line_style:
 			if step:
-				ax.step(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(y), fillstyle=fillstyle, linestyle=line_style, **kwargs)
+				ax.step(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(y), fillstyle=fillstyle, linestyle=line_style, label=label, **kwargs)
 			else:
-				ax.plot(x, y, linestyle=line_style, fillstyle=fillstyle, **kwargs)
-		artist = ax.errorbar(x, y, fillstyle=fillstyle, xerr=xerr, yerr=yerr, label=label, capsize=capsize, fmt=fmt, linestyle='None', **kwargs)
-		return artist
+				ax.plot(x, y, linestyle=line_style, fillstyle=fillstyle, label=label, **kwargs)
+		ax.errorbar(x, y, fillstyle=fillstyle, xerr=xerr, yerr=yerr, capsize=capsize, fmt=fmt, label=label, linestyle='None', **kwargs)
+
 
 	def plot_hist1d(self, hist, style='fill', ax=None, show_xerr=False, show_yerr=False, alpha=1.0, **kwargs):
 		""" Plot a one-dimensional histogram.
@@ -620,12 +620,12 @@ class PlotMpl(plotbase.PlotBase):
 
 		if style == 'fill':
 			ax.fill_between(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(hist.bincontents), 
-			                y2=bottom, color=color, edgecolor=edgecolor, alpha=alpha, zorder=1)
+			                y2=bottom, color=color, edgecolor=edgecolor, alpha=alpha, zorder=1, label=label)
 			# draw the legend proxy
 			artist = plt.Rectangle((0, 0), 0, 0, label=label, facecolor=color, edgecolor=edgecolor, alpha=alpha)
 			ax.add_patch(artist)
 		elif style == 'bar':
-			artist = ax.bar(hist.xl, hist.bincontents, hist.xbinwidth, bottom=bottom,
+			ax.bar(hist.xl, hist.bincontents, hist.xbinwidth, bottom=bottom,
 			                label=label, fill=True, facecolor=color, edgecolor=edgecolor, ecolor=color, alpha=alpha)
 
 		if show_xerr:
@@ -641,9 +641,8 @@ class PlotMpl(plotbase.PlotBase):
 			yerr = None
 
 		if show_xerr or show_yerr:
-			ax.errorbar(hist.x, hist.bincontents, yerr=yerr, xerr=xerr, color=color, fmt='', capsize=0, zorder=1, linestyle='')
+			ax.errorbar(hist.x, hist.bincontents, yerr=yerr, xerr=xerr, color=color, fmt='', capsize=0, zorder=1, linestyle='', label=label)
 
-		return artist
 
 	def plot_contour1d(self, hist, ax=None, z_log=False, vmin=None, vmax=None, cmap='afmhot'):
 		"""One dimensional contour plot.
@@ -677,8 +676,8 @@ class PlotMpl(plotbase.PlotBase):
 					mask_color = 'red'
 			cmap.set_bad(mask_color, alpha=None)
 
-		artist = ax.pcolormesh(hist.xbinedges, hist.ybinedges, hist.bincontents, cmap=cmap, norm=norm)
-		return artist
+		return ax.pcolormesh(hist.xbinedges, hist.ybinedges, hist.bincontents, cmap=cmap, norm=norm)
+
 
 	def plot_3d(self, hist, ax, cmap='afmhot', angle=0):
 		""" Three-dimensional plot. 
@@ -689,9 +688,9 @@ class PlotMpl(plotbase.PlotBase):
 		x = np.linspace(hist.x[0], hist.x[-1], len(hist.x))
 		X, Y = np.meshgrid(x, y)
 
-		artist = ax.plot_surface(X, Y, hist.bincontents, rstride=1, cstride=1,
+		ax.plot_surface(X, Y, hist.bincontents, rstride=1, cstride=1,
 			cmap=cmap, linewidth=0, antialiased=True, shade=False)
-		return artist
+
 
 	def plot_tgrapherrors_envelope(self, mplhist, ax, label, color, line_style, line_width, step, zorder, alpha):
 		""" Plot the envelope given by y-errors around a TGraphErrors"""
@@ -705,13 +704,14 @@ class PlotMpl(plotbase.PlotBase):
 				self.steppify_bin([(y_val+error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)]),
 				y2=self.steppify_bin([(y_val-error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)]),
 				color=color,
+				label=label,
 				alpha=alpha,
 				zorder=zorder
 			)
 		else:
 			# draw a smooth curve with error band around
 			ax.plot(self.mplhist.x, self.mplhist.y,
-				color=color, linestyle=line_style, linewidth=line_width, zorder=zorder)
+				color=color, linestyle=line_style, linewidth=line_width, zorder=zorder,label=label,)
 			ax.fill_between(self.mplhist.x,
 				[(y_val-error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerrl)],
 				[(y_val+error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerru)],
@@ -719,7 +719,8 @@ class PlotMpl(plotbase.PlotBase):
 				edgecolor=color,
 				interpolate=False,
 				alpha=alpha,
-				zorder=zorder
+				zorder=zorder,
+				label=label,
 			)
 			patch_for_label = plt.Rectangle((0, 0), 0, 0, label=label, color=color)
 			ax.add_patch(patch_for_label)
@@ -743,9 +744,22 @@ class PlotMpl(plotbase.PlotBase):
 
 	@staticmethod
 	def get_legend_handles_labels_ordered(ax, labellist):
-		# sort both labels and handles by order of 'labels' in plotdict
 		handles, labels = ax.get_legend_handles_labels()
 		if len(handles) > 0 and len(labels) > 0:
-			labels, handles = zip(*sorted(zip(labels, handles), key=lambda t: labellist.index(t[0])))
+		# iterate over labels and combine handles if labels appears several times
+		# this is necessary if we have multiple handles for one nick, e.g. if errorbar and plot/step is drawn separately
+			new_labels = []
+			new_handles = []
+			for index, (label, handle) in enumerate(zip(labels, handles)):
+				if label not in new_labels:  # if label not in new list, simply add
+					new_labels.append(label)
+					new_handles.append(handle)
+				else:  # if label already in new list, combine handles to tuple
+					if type(new_handles[new_labels.index(label)]) == tuple:
+						new_handles[new_labels.index(label)] = (handles[index],) + new_handles[new_labels.index(label)]
+					else:
+						new_handles[new_labels.index(label)] = (new_handles[new_labels.index(label)], handles[index])
+			# sort both labels and handles by order of 'labels' in plotdict
+			labels, handles = zip(*sorted(zip(tuple(new_labels), tuple(new_handles)), key=lambda t: labellist.index(t[0])))
 		return handles, labels
 

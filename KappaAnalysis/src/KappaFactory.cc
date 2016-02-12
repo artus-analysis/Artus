@@ -6,6 +6,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/GenTauDecayProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenTauDecayModeProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenParticleProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/GenTauJetProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ElectronCorrectionsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/MuonCorrectionsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/TauCorrectionsProducer.h"
@@ -76,6 +77,8 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
   		return new GenTauDecayModeProducer();
 	else if(id == GenParticleProducer().GetProducerId())
   		return new GenParticleProducer();
+	else if(id == GenTauJetProducer().GetProducerId())
+  		return new GenTauJetProducer();
 	else if(id == HltProducer().GetProducerId())
 		return new HltProducer();
 	else if(id == ElectronCorrectionsProducer().GetProducerId())
@@ -185,6 +188,14 @@ FilterBaseUntemplated * KappaFactory::createFilter ( std::string const& id )
 		return new ValidJetsFilter();
 	else if(id == ValidBTaggedJetsFilter().GetFilterId())
 		return new ValidBTaggedJetsFilter();
+	else if(id == GenElectronsFilter().GetFilterId())
+		return new GenElectronsFilter();
+	else if(id == GenMuonsFilter().GetFilterId())
+		return new GenMuonsFilter();
+	else if(id == GenTausFilter().GetFilterId())
+		return new GenTausFilter();
+	else if(id == GenTauJetsFilter().GetFilterId())
+		return new GenTauJetsFilter();
 	else if(id == ElectronsCountFilter().GetFilterId())
 		return new ElectronsCountFilter();
 	else if(id == MuonsCountFilter().GetFilterId())

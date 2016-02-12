@@ -149,7 +149,7 @@ class InputRoot(inputfile.InputFile):
 						name=None)
 				if hasattr(root_histogram, "Sumw2"):
 					root_histogram.Sumw2()
-			elif root_object_type == None:
+			elif root_folder_type == None:
 				log.critical("Error getting ROOT object from file. Exiting.")
 				sys.exit(1)
 			
