@@ -358,7 +358,9 @@ class PlotMpl(plotbase.PlotBase):
 						min_x_values.append(ROOT.TMath.MinElement(plotData.plotdict['root_objects'][nick].GetN(), plotData.plotdict['root_objects'][nick].GetX()))
 						max_x_values.append(ROOT.TMath.MaxElement(plotData.plotdict['root_objects'][nick].GetN(), plotData.plotdict['root_objects'][nick].GetX()))
 					else:
-						log.warning("PlotMpl: modify_axes(): Could not determine x-limits for nick '{0}'".format(nick))
+						# warn, but not for functions (from fitting)
+						if not (all([len(vals)>0 for vals in [max_x_values, min_x_values]]) and isinstance(plotData.plotdict['root_objects'][nick], ROOT.TF1)):
+							log.warning("PlotMpl: modify_axes(): Could not determine x-limits for nick '{0}'".format(nick))
 				if min_x_values != [] and max_x_values != []:
 					ax.set_xlim(min(min_x_values), max(max_x_values))
 				else:
