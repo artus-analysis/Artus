@@ -17,7 +17,7 @@ void GenDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
 	// add possible quantities for the lambda ntuples consumers
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genDiLeptonBosonMass", [](KappaEvent const & event, KappaProduct const & product)
 	{
-		return product.m_genDiLeptonBoson.p4.mass();
+		return product.m_genDiLeptonBoson.mass();
 	});
 }
 
@@ -29,10 +29,11 @@ void GenDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaProduct
 	for (KGenParticles::const_iterator genParticle = event.m_genParticles->begin();
 		 genParticle != event.m_genParticles->end(); ++genParticle)
 	{
+		
 		if ((std::abs(genParticle->pdgId()) == settings.GetBosonPdgId()) && (genParticle->status() == settings.GetBosonStatus()))
 		{
 			std::map<int, int> nDecayProductsPerType;
-			product.m_genDiLeptonBoson = (*genParticle);
+			product.m_genDiLeptonBoson = (*genParticle).p4;
 
 			for (std::vector<unsigned int>::const_iterator decayParticleIndex = genParticle->daughterIndices.begin();
 			     decayParticleIndex != genParticle->daughterIndices.end(); ++decayParticleIndex)
@@ -65,5 +66,24 @@ void GenDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaProduct
 			}
 		}
 	}
+	
+	// If no boson has been found in the event, try to reconstruct it from the first two decay
+	// products available in the list of gen. particles
+	if (product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::NONE)
+	{
+		size_t iDaughter = 0;
+		RMFLV genDiLeptonBoson;
+		
+		for (KGenParticles::const_iterator genParticle = event.m_genParticles->begin();
+		 genParticle != event.m_genParticles->end() && (iDaughter < 2); ++genParticle)
+		{
+			if (genParticle->isPrompt() && genParticle->isPromptDecayed())
+			{
+				genDiLeptonBoson += (*genParticle).p4;
+				iDaughter++;
+			}
+		}
+		
+		product.m_genDiLeptonBoson = genDiLeptonBoson;
+	}
 }
-

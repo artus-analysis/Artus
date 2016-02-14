@@ -100,7 +100,7 @@ public:
 	
 	/// added by GenDiLeptonDecayModeProducer
 	KappaEnumTypes::DiLeptonDecayMode m_genDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::NONE;
-	KGenParticle m_genDiLeptonBoson;
+	RMFLV m_genDiLeptonBoson;
 
 	/// added by ValidBTaggedJetsProducer
 	std::vector<KJet*> m_bTaggedJets;
