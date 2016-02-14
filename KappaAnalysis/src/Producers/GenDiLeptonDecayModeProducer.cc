@@ -69,21 +69,21 @@ void GenDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaProduct
 	
 	// If no boson has been found in the event, try to reconstruct it from the first two decay
 	// products available in the list of gen. particles
-	if (product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::NONE)
-	{
-		size_t iDaughter = 0;
-		RMFLV genDiLeptonBoson;
-		
-		for (KGenParticles::const_iterator genParticle = event.m_genParticles->begin();
-		 genParticle != event.m_genParticles->end() && (iDaughter < 2); ++genParticle)
-		{
-			if (genParticle->isPrompt() && genParticle->isPromptDecayed())
-			{
-				genDiLeptonBoson += (*genParticle).p4;
-				iDaughter++;
-			}
-		}
-		
-		product.m_genDiLeptonBoson = genDiLeptonBoson;
-	}
+// 	if (product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::NONE)
+// 	{
+// 		size_t iDaughter = 0;
+// 		RMFLV genDiLeptonBoson;
+// 		
+// 		for (KGenParticles::const_iterator genParticle = event.m_genParticles->begin();
+// 		 genParticle != event.m_genParticles->end() && (iDaughter < 2); ++genParticle)
+// 		{
+// 			if (genParticle->isPrompt() && genParticle->isPromptDecayed())
+// 			{
+// 				genDiLeptonBoson += (*genParticle).p4;
+// 				iDaughter++;
+// 			}
+// 		}
+// 		
+// 		product.m_genDiLeptonBoson = genDiLeptonBoson;
+// 	}
 }
