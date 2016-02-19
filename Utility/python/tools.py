@@ -62,6 +62,14 @@ def matching_sublist(input_list, whitelist=[], blacklist=[]):
 			if keep:
 				output_list.append(item)
 	
+	# warn if black/whitelisting changes the order of nicks
+	indices = [input_list.index(out_nick) for out_nick in output_list]
+	if not all(x<y for x, y in zip(indices, indices[1:])):
+		log.warn("White-/blacklisting changed order of nicks!")
+		original_order = [i for i in input_list if i in output_list]
+		log.warn("Original order: "+", ".join(original_order))
+		log.warn("New order     : "+", ".join(output_list))
+	
 	return output_list
 
 # http://codereview.stackexchange.com/questions/21532/python-3-finding-common-patterns-in-pairs-of-strings
