@@ -105,6 +105,8 @@ class PlotMpl(plotbase.PlotBase):
 		                                     help="Location of the subplot legend. Use 'None' to not set any legend")
 		self.formatting_options.add_argument("--alphas", type=float, nargs="+", default=[1.0],
 		                                     help="Alpha (opacity) values for bands, shaded areas etc. 0.0 -> fully transparent. [Default: %(default)s]")
+		self.formatting_options.add_argument("--rasterized", default=False, action='store_true',
+		                                     help="Rasterize color mesh and bar in 2D plots.")
 
 		self.formatting_options.set_defaults(legend="upper right")
 		self.formatting_options.set_defaults(colormap="afmhot")
@@ -273,7 +275,7 @@ class PlotMpl(plotbase.PlotBase):
 				if plotData.plotdict["3d"] is not False:
 					self.image = self.plot_3d(self.mplhist, ax=ax, cmap=cmap, angle=plotData.plotdict["3d"])
 				else:
-					self.image = self.plot_contour1d(self.mplhist, ax=ax, vmin=vmin, vmax=vmax, z_log=plotData.plotdict["z_log"], cmap=cmap)
+					self.image = self.plot_contour1d(self.mplhist, ax=ax, vmin=vmin, vmax=vmax, z_log=plotData.plotdict["z_log"], cmap=cmap, rasterized=plotData.plotdict["rasterized"])
 
 			elif isinstance(root_object, ROOT.TH1):
 				self.mplhist = MplHisto(root_object)
@@ -434,6 +436,8 @@ class PlotMpl(plotbase.PlotBase):
 		if self.plot_dimension == 2:
 			if not plotData.plotdict["subplot_nicks"]:
 				cb = plotData.plot.fig.colorbar(self.image, ax=ax)
+				if plotData.plotdict["rasterized"]:
+					cb.solids.set_rasterized(True)
 			if plotData.plotdict["z_label"]:
 				cb.set_label(self.nicelabels.get_nice_label(plotData.plotdict["z_label"]))
 		elif self.plot_dimension == 3:
@@ -648,7 +652,7 @@ class PlotMpl(plotbase.PlotBase):
 			ax.errorbar(hist.x, hist.bincontents, yerr=yerr, xerr=xerr, color=color, fmt='', capsize=0, zorder=1, linestyle='', label=label)
 
 
-	def plot_contour1d(self, hist, ax=None, z_log=False, vmin=None, vmax=None, cmap='afmhot'):
+	def plot_contour1d(self, hist, ax=None, z_log=False, vmin=None, vmax=None, cmap='afmhot', rasterized=False):
 		"""One dimensional contour plot.
 
 		Args:
@@ -679,8 +683,7 @@ class PlotMpl(plotbase.PlotBase):
 				if any([all([i<0.05 for i in color]) for color in [min_color, max_color]]):  # check if black is min or max color
 					mask_color = 'red'
 			cmap.set_bad(mask_color, alpha=None)
-
-		return ax.pcolormesh(hist.xbinedges, hist.ybinedges, hist.bincontents, cmap=cmap, norm=norm)
+		return ax.pcolormesh(hist.xbinedges, hist.ybinedges, hist.bincontents, cmap=cmap, norm=norm, rasterized=rasterized)
 
 
 	def plot_3d(self, hist, ax, cmap='afmhot', angle=0):
