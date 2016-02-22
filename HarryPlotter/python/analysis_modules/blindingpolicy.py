@@ -68,8 +68,9 @@ class BlindingPolicy(analysisbase.AnalysisBase):
 			if(signal.GetNbinsX() != background.GetNbinsX()):
 				log.fatal("Signal histogram " + signal + " has a different binning than " + background )
 
-			for x_bin in xrange(1, signal.GetNbinsX()):
+			for x_bin in xrange(1, signal.GetNbinsX()+1):
 				new_histogram.SetBinContent(x_bin, expression( signal.GetBinContent(x_bin), background.GetBinContent(x_bin), regularization_parameter) )
+				log.debug("bin: {bin}\tsig: {sig}\tbkg:{bkg}".format(bin=x_bin, sig=signal.GetBinContent(x_bin), bkg=background.GetBinContent(x_bin)))
 
 			plotData.plotdict["root_objects"][result_nick] = new_histogram
 			plotData.plotdict["nicks"].append(result_nick)
