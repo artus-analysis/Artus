@@ -51,7 +51,17 @@ void GenParticleProducer::Produce(KappaEvent const& event, KappaProduct& product
 			{
 				if ((settings.GetGenElectronStatus() == -1) || ( settings.GetGenElectronStatus() == part->status()))
 				{
-					product.m_genElectrons.push_back(&(*part));
+					if (settings.GetGenElectronFromTauDecay())
+					{
+						if (part->isDirectPromptTauDecayProduct())
+						{
+							product.m_genElectrons.push_back(&(*part));
+						}
+					}
+					else
+					{
+						product.m_genElectrons.push_back(&(*part));
+					}
 				}
 			}
 		}
@@ -68,7 +78,17 @@ void GenParticleProducer::Produce(KappaEvent const& event, KappaProduct& product
 			{
 				if ((settings.GetGenMuonStatus() == -1) || ( settings.GetGenMuonStatus() == part->status()))
 				{
-					product.m_genMuons.push_back(&(*part));
+					if (settings.GetGenMuonFromTauDecay())
+					{
+						if (part->isDirectPromptTauDecayProduct())
+						{
+							product.m_genMuons.push_back(&(*part));
+						}
+					}
+					else
+					{
+						product.m_genMuons.push_back(&(*part));
+					}
 				}
 			}
 		}
@@ -92,11 +112,11 @@ void GenParticleProducer::Produce(KappaEvent const& event, KappaProduct& product
 	}
 }
 
-GenParticleProducer::GenParticleType GenParticleProducer::ToGenParticleType(std::string const& genParcticleName)
+GenParticleProducer::GenParticleType GenParticleProducer::ToGenParticleType(std::string const& genParticleName)
 {
-	if (genParcticleName == "genParticle") return GenParticleType::GENPARTICLE;
-	else if (genParcticleName == "genElectron") return GenParticleType::GENELECTRON;
-	else if (genParcticleName == "genMuon") return GenParticleType::GENMUON;
-	else if (genParcticleName == "genTau") return GenParticleType::GENTAU;
+	if (genParticleName == "genParticle") return GenParticleType::GENPARTICLE;
+	else if (genParticleName == "genElectron") return GenParticleType::GENELECTRON;
+	else if (genParticleName == "genMuon") return GenParticleType::GENMUON;
+	else if (genParticleName == "genTau") return GenParticleType::GENTAU;
 	else return GenParticleType::NONE;
 }

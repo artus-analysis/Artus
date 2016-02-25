@@ -304,6 +304,8 @@ public:
 	IMPL_SETTING_DEFAULT(int, GenElectronStatus, -1);
 	IMPL_SETTING_DEFAULT(int, GenMuonStatus, -1);
 	IMPL_SETTING_DEFAULT(int, GenTauStatus, -1);
+	IMPL_SETTING_DEFAULT(bool, GenElectronFromTauDecay, false);
+	IMPL_SETTING_DEFAULT(bool, GenMuonFromTauDecay, false);
 
 	IMPL_SETTING(std::string, PileupWeightFile);
 	IMPL_SETTING(std::string, BTagScaleFactorFile);
