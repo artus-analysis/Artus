@@ -26,6 +26,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/LuminosityWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/CrossSectionWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/NumberGeneratedEventsWeightProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/SampleStitchingWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/TmvaClassificationReaderBase.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenDiLeptonDecayModeProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenPartonCounterProducer.h"
@@ -135,6 +136,8 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new CrossSectionWeightProducer();
 	else if(id == NumberGeneratedEventsWeightProducer().GetProducerId())
 		return new NumberGeneratedEventsWeightProducer();
+	else if(id == SampleStitchingWeightProducer().GetProducerId())
+		return new SampleStitchingWeightProducer();
 	else if(id == GenMuonFSRProducer().GetProducerId())
 		return new GenMuonFSRProducer();
 	// todo: uses setting not in KappaSettings
