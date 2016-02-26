@@ -486,8 +486,8 @@ class PlotMpl(plotbase.PlotBase):
 		
 		if plotData.plotdict["texts"] != [None]:
 			for ax in [plotData.plot.axes[0]]:
-				for x, y, text in zip(plotData.plotdict['texts_x'], plotData.plotdict['texts_y'], plotData.plotdict['texts']):
-					ax.text(x, y, text, transform=ax.transAxes, fontsize=18, ha="left", va="top", zorder=100)
+				for x, y, text, size in zip(plotData.plotdict['texts_x'], plotData.plotdict['texts_y'], plotData.plotdict['texts'], plotData.plotdict["texts_size"]):
+					ax.text(x, y, text, transform=ax.transAxes, fontsize=size, ha="left", va="top", zorder=100)
 
 	def set_matplotlib_defaults(self):
 		# Set matplotlib rc settings
