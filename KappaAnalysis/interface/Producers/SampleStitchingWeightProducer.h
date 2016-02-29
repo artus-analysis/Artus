@@ -2,6 +2,8 @@
 
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 
+#include <boost/regex.hpp>
+
 /**
    \brief SampleStitchingWeightProducer
    Config tags:
