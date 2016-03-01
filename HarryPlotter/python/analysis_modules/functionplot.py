@@ -5,6 +5,7 @@ log = logging.getLogger(__name__)
 import ROOT
 import Artus.HarryPlotter.analysisbase as analysisbase
 import hashlib
+import array
 
 class FunctionPlot(analysisbase.AnalysisBase):
 	def __init__(self):
@@ -115,7 +116,7 @@ class FunctionPlot(analysisbase.AnalysisBase):
 		                                                                str(start_parameters), str(nick), 
 		                                                                str(root_histogram.GetName() if root_histogram != None else "")])).hexdigest())
 		ret_tf1 = ROOT.TF1(formula_name, function, x_min, x_max)
-		ret_tf1.SetParameters(*start_parameters)
+		ret_tf1.SetParameters(array.array('d', start_parameters))
 		return ret_tf1
 
 	@staticmethod
