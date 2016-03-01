@@ -509,6 +509,8 @@ class PlotMpl(plotbase.PlotBase):
 		# axes
 		matplotlib.rcParams['axes.linewidth'] = 1
 		matplotlib.rcParams['axes.labelsize'] = 20
+		matplotlib.rcParams['xtick.major.pad'] = 7
+		matplotlib.rcParams['ytick.major.pad'] = 7
 		matplotlib.rcParams['xtick.labelsize'] = 16
 		matplotlib.rcParams['xtick.major.size'] = 8
 		if self.mpl_version >= 121:
