@@ -79,6 +79,7 @@ class PlotMpl(plotbase.PlotBase):
 		self.nicelabels = labels.LabelsDict()
 		self.default_linestyles = ['--', '-.', ':', '-']
 		self.rel_y_lim_default['lin']=[0.9, 1.2]
+		self.plot_dimension = 0
 
 
 	def modify_argument_parser(self, parser, args):
@@ -244,7 +245,7 @@ class PlotMpl(plotbase.PlotBase):
 			root_object = plotData.plotdict["root_objects"][nick]
 
 			if isinstance(root_object, ROOT.TGraph):
-				self.plot_dimension = 1
+				self.plot_dimension = max([1, self.plot_dimension])
 				self.mplhist = MplGraph(root_object)
 
 				if marker=='fill':
@@ -258,9 +259,9 @@ class PlotMpl(plotbase.PlotBase):
 			elif isinstance(root_object, ROOT.TH2):
 				self.mplhist = MplHisto(root_object)
 				if plotData.plotdict['3d'] is not False:
-					self.plot_dimension = 3
+					self.plot_dimension = max([3, self.plot_dimension])
 				else:
-					self.plot_dimension = self.mplhist.dimension
+					self.plot_dimension = max([self.mplhist.dimension, self.plot_dimension])
 				if plotData.plotdict["z_lims"]:
 					vmin = plotData.plotdict["z_lims"][0]
 					vmax = plotData.plotdict["z_lims"][1]
@@ -279,12 +280,10 @@ class PlotMpl(plotbase.PlotBase):
 
 			elif isinstance(root_object, ROOT.TH1):
 				self.mplhist = MplHisto(root_object)
-				self.plot_dimension = self.mplhist.dimension
+				self.plot_dimension = max([self.plot_dimension, self.mplhist.dimension])
 
-				if marker=="bar":
-					self.plot_hist1d(self.mplhist, style='bar', ax=ax, show_yerr=y_error, label=label, color=color, edgecolor=edgecolor, alpha=alpha, zorder=zorder)
-				elif marker=='fill':
-					self.plot_hist1d(self.mplhist, style='fill', ax=ax, show_yerr=y_error, label=label, color=color, edgecolor=edgecolor, alpha=alpha, zorder=zorder)
+				if marker in ["bar", "fill"]:
+					self.plot_hist1d(self.mplhist, style=marker, ax=ax, show_yerr=y_error, label=label, color=color, edgecolor=edgecolor, alpha=alpha, zorder=zorder)
 				else:
 					self.plot_errorbar(self.mplhist, ax=ax,
 					                   show_xerr=x_error, show_yerr=y_error,
@@ -371,19 +370,20 @@ class PlotMpl(plotbase.PlotBase):
 				ax.set_ylim(plotData.plotdict["y_lims"][0],plotData.plotdict["y_lims"][1])
 			else:
 				#if ax.dataLim.min[1] >= (-1E-6) and ax.get_ylim()[0] < 0.:
+				main_root_objects = [plotData.plotdict["root_objects"][nick] for nick in plotData.plotdict["nicks"] if nick not in plotData.plotdict["subplot_nicks"]]
 				if plotData.plotdict["y_log"]:
 					if self.y_max > 1 and self.y_min < 1:
 						ax.set_ylim(ymin=1)
 					else:
 						ax.set_ylim(ymin=self.y_min)
 				else:
-					if any("TH1" in obj.__class__.__name__ for obj in plotData.plotdict["root_objects"].values()):
+					if any("TH1" in obj.__class__.__name__ for obj in main_root_objects):
 						ax.set_ylim(0)
-					elif any("TH2" in obj.__class__.__name__ for obj in plotData.plotdict["root_objects"].values()):
+					elif any("TH2" in obj.__class__.__name__ for obj in main_root_objects):
 						ax.set_ylim(self.y_min, self.y_max)
 					else:
 						ax.set_ylim(self.y_min)
-				if all("TH1" in obj.__class__.__name__ for obj in plotData.plotdict["root_objects"].values()):
+				if all("TH1" in obj.__class__.__name__ for obj in main_root_objects):
 					ax.set_ylim(ymax=self.y_max * (plotData.plotdict["y_rel_lims"][1]))
 
 		# set log scale
@@ -413,7 +413,9 @@ class PlotMpl(plotbase.PlotBase):
 
 			ax2.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]),position=(1., 0.), va='top', ha='right')
 			ax2.set_ylabel(plotData.plotdict["y_subplot_label"])
-			ax2.grid(plotData.plotdict["subplot_grid"])
+			if plotData.plotdict["subplot_grid"]:
+				{'horizontal': ax2.yaxis, 'vertical':ax2.xaxis}.get(plotData.plotdict["subplot_grid"], ax2).grid(True)
+
 			# Don't show ticklabels on main plot
 			ax.xaxis.set_ticklabels([])
 			if plotData.plotdict["x_tick_labels"] is not None:
@@ -719,8 +721,8 @@ class PlotMpl(plotbase.PlotBase):
 			)
 		else:
 			# draw a smooth curve with error band around
-			ax.plot(self.mplhist.x, self.mplhist.y,
-				color=color, linestyle=line_style, linewidth=line_width, zorder=zorder,label=label,)
+			ax.plot(self.mplhist.x, self.mplhist.y, color=color, linestyle=line_style,
+			        linewidth=line_width, zorder=zorder,label=label)
 			ax.fill_between(self.mplhist.x,
 				[(y_val-error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerrl)],
 				[(y_val+error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerru)],
@@ -731,7 +733,7 @@ class PlotMpl(plotbase.PlotBase):
 				zorder=zorder,
 				label=label,
 			)
-			patch_for_label = plt.Rectangle((0, 0), 0, 0, label=label, color=color)
+			patch_for_label = plt.Rectangle((0, 0), 0, 0, label=label, color=color, alpha=alpha)
 			ax.add_patch(patch_for_label)
 
 
