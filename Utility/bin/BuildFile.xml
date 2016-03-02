@@ -1,0 +1,11 @@
+<bin name="shrink" file="shrink.C">
+        <use name="root"/>
+        <use name="rootmath"/>
+        <use name="rootcore"/>
+        <use name="rootrflx"/>
+        <use name="rootgraphics"/>
+<flags ADD_SUBDIR="1"/>
+<flags   GENREFLEX_ARGS="--"/>
+<flags   CXXFLAGS="-O3 -ftree-loop-linear -floop-interchange -mmmx  -msse  -msse2 -msse3 -mssse3 -msse4.1 -msse4.2 -msse4  -march=corei7"/>
+</bin>
+
