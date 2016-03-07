@@ -18,9 +18,6 @@ before_install:
   - export KAPPAPATH=../Kappa
   - cd ..
   - git clone https://github.com/KappaAnalysis/Kappa.git
-  - cd Kappa
-  - git checkout zjet_2015-12-08
-  - cd ..
   - make -C Kappa/DataFormats/test
   - git clone https://github.com/KappaAnalysis/KappaTools.git
   - cd KappaTools
