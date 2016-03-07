@@ -341,9 +341,12 @@ class PlotMpl(plotbase.PlotBase):
 			ax.set_yticks(plotData.plotdict["y_ticks"])
 		axis = 'both' if (not hasattr(self.mplhist, "xlabels") or self.mplhist.xlabels == None) else 'y'
 		ax.ticklabel_format(style='sci',scilimits=(-3,4),axis=axis)
+		# ticklabels
 		for axis, axisname in zip([ax.xaxis, ax.yaxis], ['x', 'y']):
 			if plotData.plotdict[axisname+"_tick_labels"] is not None:
-				axis.set_ticklabels(plotData.plotdict[axisname+"_tick_labels"])
+				axis.set_ticklabels(plotData.plotdict[axisname+"_tick_labels"], va=("baseline" if axisname=='x' else "center"))
+		if (not plotData.plotdict["subplot_nicks"]) and plotData.plotdict["x_tick_labels"] and (not all([s.isdigit() for s in plotData.plotdict["x_tick_labels"]])):
+			ax.get_xaxis().set_tick_params(pad=16)  # extra padding if ticklabels arent numbers
 
 		# set axis limits
 		if self.plot_dimension != 3:
@@ -429,11 +432,13 @@ class PlotMpl(plotbase.PlotBase):
 				ax2.set_xticks(plotData.plotdict["x_ticks"])
 				if plotData.plotdict["x_log"]:
 					ax2.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
-			# for 2D plots with subplot, we need this in order to right-align the axes:
-			if self.plot_dimension == 2:
-				plotData.plot.fig.subplots_adjust(right=0.8)
-				cbar_ax = plotData.plot.fig.add_axes([0.82, 0.35, 0.05, 0.5])
-				cb = plotData.plot.fig.colorbar(self.image, cax=cbar_ax)
+			#ticklabels
+			if plotData.plotdict["x_tick_labels"] is not None:
+				if (not all([s.isdigit() for s in plotData.plotdict["x_tick_labels"]])):
+					ax2.set_xticklabels(plotData.plotdict["x_tick_labels"], va="baseline")
+					ax2.get_xaxis().set_tick_params(pad=16) # extra padding if ticklabels arent numbers
+				else:
+					ax2.set_xticklabels(plotData.plotdict["x_tick_labels"])
 
 		# do special things for 2D Plots
 		if self.plot_dimension == 2:
