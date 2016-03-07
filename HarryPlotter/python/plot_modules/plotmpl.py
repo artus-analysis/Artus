@@ -212,16 +212,15 @@ class PlotMpl(plotbase.PlotBase):
 	
 	def create_canvas(self, plotData):
 		super(PlotMpl, self).create_canvas(plotData)
-		
-		# fig = plt.figure(figsize = [
-			# plotData.plotdict['axes_layout'][0] * matplotlib.rcParams['figure.figsize'][0],
-			# plotData.plotdict['axes_layout'][1] * matplotlib.rcParams['figure.figsize'][1]
-			# ])
 		fig = plt.figure()
-		axes = []
-		if plotData.plotdict["subplot_nicks"]:
-			axes = [plt.subplot2grid((100,1), (0, 0), rowspan=(100-plotData.plotdict["subplot_fraction"])),
-			        plt.subplot2grid((100,1), ((100-plotData.plotdict["subplot_fraction"]+4), 0), rowspan=plotData.plotdict["subplot_fraction"])]
+		if plotData.plotdict["subplot_nicks"]:  # axis grid for subplots
+			width = 10  # 10 because we want the colorbar to occupy 1/10 of the plot
+			cbar_width = (1 if any("TH2" in obj.__class__.__name__ for obj in plotData.plotdict["root_objects"].values()) else 0)
+			axes = [plt.subplot2grid((100, width), (0, 0), rowspan=(100-plotData.plotdict["subplot_fraction"]), colspan=width-cbar_width),
+			        plt.subplot2grid((100, width), ((100-plotData.plotdict["subplot_fraction"]+4), 0), rowspan=plotData.plotdict["subplot_fraction"], colspan=width-cbar_width),
+				]
+			if cbar_width > 0:  # in case of a 2D plot with subplot, we need an additional axis-object for the colorbar
+				axes += [plt.subplot2grid((100, width), (0, width-cbar_width), rowspan=(100-plotData.plotdict["subplot_fraction"]), colspan=cbar_width)]
 		else:
 			kwargs = {'projection':'3d'} if (plotData.plotdict['3d'] is not False) else {}
 			axes = [fig.add_subplot(1,1,1, **kwargs)]
@@ -442,10 +441,9 @@ class PlotMpl(plotbase.PlotBase):
 
 		# do special things for 2D Plots
 		if self.plot_dimension == 2:
-			if not plotData.plotdict["subplot_nicks"]:
-				cb = plotData.plot.fig.colorbar(self.image, ax=ax)
-				if plotData.plotdict["rasterized"]:
-					cb.solids.set_rasterized(True)
+			cb = plotData.plot.fig.colorbar(self.image, ax=ax, **({'cax': plotData.plot.axes[2]} if plotData.plotdict["subplot_nicks"] else {}))
+			if plotData.plotdict["rasterized"]:
+				cb.solids.set_rasterized(True)
 			if plotData.plotdict["z_label"]:
 				cb.set_label(self.nicelabels.get_nice_label(plotData.plotdict["z_label"]))
 		elif self.plot_dimension == 3:
@@ -481,6 +479,8 @@ class PlotMpl(plotbase.PlotBase):
 			# Decrease vertical distance between subplots
 			if self.plot_dimension < 2:
 				plotData.plot.fig.subplots_adjust(hspace=0.2)
+			elif (self.plot_dimension == 2) and plotData.plotdict["subplot_nicks"]:
+				plotData.plot.fig.subplots_adjust(hspace=0)
 
 		if len(plotData.plot.axes) > 1:
 			for ax in [plotData.plot.axes[1]]:
