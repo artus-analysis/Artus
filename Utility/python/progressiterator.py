@@ -1,10 +1,9 @@
-
 # -*- coding: utf-8 -*-
 
 import Artus.Utility.tools as tools
 
 import math
-import subprocess
+import multiprocessing
 import sys
 
 
@@ -17,35 +16,37 @@ class ProgressIterator(object):
 		self.current_index = 0
 		self.ratio = -1.0
 		self.tty_width = tools.get_tty_size()[1]
+		self.multiprocessing = ("PoolWorker" in multiprocessing.current_process().name)
 
 	def __iter__(self):
 		return self
-	
+
 	def next(self):
-		ratio = float(self.current_index) / self.len
-		
-		if int(ratio*100) > int(self.ratio*100):
-			self.ratio = ratio
-			current_progress = min(int(math.ceil(float(self.tty_width) * self.current_index / self.len)),
-		                       self.tty_width)
+		if not self.multiprocessing:
+			ratio = float(self.current_index) / self.len
 			
-			line = "%s%.1f %s" % (self.description, ratio*100, "%")
-			#line += (" " * (self.tty_width - len(line)))
-			line = line.center(self.tty_width)
-			line = "\r\033[0;42m%s\033[0;41m%s\033[0m" % (line[:current_progress], line[current_progress:])
+			if int(ratio*100) > int(self.ratio*100):
+				self.ratio = ratio
+				current_progress = min(int(math.ceil(float(self.tty_width) * self.current_index / self.len)),
+				                   self.tty_width)
+				
+				line = "%s%.1f %s" % (self.description, ratio*100, "%")
+				#line += (" " * (self.tty_width - len(line)))
+				line = line.center(self.tty_width)
+				line = "\r\033[0;42m%s\033[0;41m%s\033[0m" % (line[:current_progress], line[current_progress:])
+				
+				sys.stdout.write(line)
+				sys.stdout.flush()
 			
-			sys.stdout.write(line)
-			sys.stdout.flush()
-		
-		if self.current_index == self.len:
-			sys.stdout.write("\r\033[J")
-			sys.stdout.flush()
-		
-		self.current_index += 1
+			if self.current_index == self.len:
+				sys.stdout.write("\r\033[J")
+				sys.stdout.flush()
+			
+			self.current_index += 1
 		try:
 			return self.iterator.next()
 		except StopIteration, e:
-			sys.stdout.write("\r\033[J")
-			sys.stdout.flush()
+			if not self.multiprocessing:
+				sys.stdout.write("\r\033[J")
+				sys.stdout.flush()
 			raise StopIteration(e)
-
