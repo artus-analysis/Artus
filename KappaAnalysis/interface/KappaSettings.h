@@ -330,6 +330,7 @@ public:
 	IMPL_SETTING_DEFAULT(bool, AddGenMatchedTauJets, true);
 
 	// ZProducer
-	IMPL_SETTING_DEFAULT(float, ZMass, 91.1876f)
-	IMPL_SETTING(float, ZMassRange)
+	IMPL_SETTING_DEFAULT(float, ZMass, 91.1876f);
+	IMPL_SETTING(float, ZMassRange);
+	IMPL_SETTING_DEFAULT(bool, VetoMultipleZs, true);
 };

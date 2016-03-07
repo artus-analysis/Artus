@@ -16,13 +16,26 @@ class ZProducerBase : public KappaProducerBase
   public:
 	ZProducerBase(std::vector<TLepton1*> KappaProduct::*validLeptons1,
 				  std::vector<TLepton2*> KappaProduct::*validLeptons2,
-				  bool same_ll_collection)
+				  bool check_same_collection=true, 
+				  bool check_cross_collection=false)
 		: KappaProducerBase(),
 		  m_validLeptonsMember1(validLeptons1),
 		  m_validLeptonsMember2(validLeptons2),
-		  m_same_ll_collection(same_ll_collection)
+		  check_first_ll_collection(check_same_collection),
+		  check_second_ll_collection(check_same_collection),
+		  check_cross_ll_collection(check_cross_collection)
 	{
 	}
+	ZProducerBase(std::vector<TLepton1*> KappaProduct::*validLeptons1)
+		: KappaProducerBase(),
+		  m_validLeptonsMember1(validLeptons1),
+		  m_validLeptonsMember2(validLeptons1),
+		  check_first_ll_collection(true),
+		  check_second_ll_collection(false),
+		  check_cross_ll_collection(false)
+	{
+	}
+ 
 
 	void Produce(KappaEvent const& event,
                  KappaProduct& product,
@@ -36,51 +49,97 @@ class ZProducerBase : public KappaProducerBase
 	deemed ambigious, not having *a* valid Z.
 	*/
 	int found_zs = 0;
-	KLV zCandidate;
-	std::pair<KLepton*, KLepton*> zLeptons;
-
-	// do not double count when matching leptons from the same collection
-	for (unsigned int i = 0; i < (product.*m_validLeptonsMember1).size(); ++i) {
-		for (unsigned int j = (m_same_ll_collection ? i + 1 : 0);
-		     j < (product.*m_validLeptonsMember2).size(); ++j) {
-			KLepton* const m1 = (product.*m_validLeptonsMember1).at(i);
-			KLepton* const m2 = (product.*m_validLeptonsMember2).at(j);
-			// valid Z is neutral and close to Z mass
-			if (m1->charge() + m2->charge() == 0) {
-				KLV z;
-				z.p4 = m1->p4 + m2->p4;
-				if (z.p4.mass() > settings.GetZMass() - settings.GetZMassRange() &&
-					z.p4.mass() < settings.GetZMass() + settings.GetZMassRange()) {
-					// allow only 1 Z per event
-					if (++found_zs > 1)
-						break;
-					zCandidate = z;
-					if (m1->p4.Pt() > m2->p4.Pt())
-						zLeptons = std::make_pair(m1, m2);
-					else
-						zLeptons = std::make_pair(m2, m1);
-				}
-			}
+        resetZ(product);
+        
+	if (check_first_ll_collection){
+	  for (unsigned int i = 0; i < (product.*m_validLeptonsMember1).size(); ++i) {	
+	    for (unsigned int j = 0; j < i; ++j){
+		KLepton* const lep1 = (product.*m_validLeptonsMember1).at(i);
+		KLepton* const lep2 = (product.*m_validLeptonsMember1).at(j);
+		if (lepton_pair_onZ(lep1,lep2,settings)){
+		   found_zs++;
+		   if (is_closer_to_Z((lep1->p4+lep2->p4).M(),product,settings))
+		     setZ(product,lep1,lep2);
 		}
-		if (found_zs > 1)
-			break;
+	    }
+	  }
 	}
-	if (found_zs == 1) {
-		product.m_z = zCandidate;
-		product.m_zLeptons = zLeptons;
-		product.m_zValid = true;
-	} else {
-		product.m_z = KLV();
-		product.m_z.p4.SetPt(0.0f);  // just to be sure
-		product.m_zLeptons = std::make_pair(nullptr, nullptr);
-		product.m_zValid = false;
+	
+	// OK not the most elegant way, but at least it is understandable. 
+	// If you have time you can also bring this double loop into a function which takes carre of differnt types of m_validLeptonsMember1/2
+	if (check_second_ll_collection){
+	  for (unsigned int i = 0; i < (product.*m_validLeptonsMember2).size(); ++i) {	
+	    for (unsigned int j = 0; j < i; ++j){
+		KLepton* const lep1 = (product.*m_validLeptonsMember2).at(i);
+		KLepton* const lep2 = (product.*m_validLeptonsMember2).at(j);
+		if (lepton_pair_onZ(lep1,lep2,settings)){
+		   found_zs++;
+		   if (is_closer_to_Z((lep1->p4+lep2->p4).M(),product,settings))
+		     setZ(product,lep1,lep2);
+		}
+	    }
+	  }
+	}	
+	
+	if (check_cross_ll_collection){
+	  for (unsigned int i = 0; i < (product.*m_validLeptonsMember1).size(); ++i) {	
+	    for (unsigned int j = 0; j < (product.*m_validLeptonsMember2).size(); ++j){
+		KLepton* const lep1 = (product.*m_validLeptonsMember1).at(i);
+		KLepton* const lep2 = (product.*m_validLeptonsMember2).at(j);
+		if (lepton_pair_onZ(lep1,lep2,settings)){
+		   found_zs++;
+		   if (is_closer_to_Z((lep1->p4+lep2->p4).M(),product,settings))
+		     setZ(product,lep1,lep2);
+		}
+	    }
+	  }
 	}
+	
+	if (found_zs >1 && settings.GetVetoMultipleZs()) resetZ(product);
+	
+	
 	return;
 }
   private:
 	std::vector<TLepton1*> KappaProduct::*m_validLeptonsMember1;
 	std::vector<TLepton2*> KappaProduct::*m_validLeptonsMember2;
-	bool m_same_ll_collection;
+	bool check_first_ll_collection;
+	bool check_second_ll_collection;
+	bool check_cross_ll_collection;
+        bool lepton_pair_onZ(KLepton* const lep1, KLepton* const lep2, KappaSettings const& settings) const
+	{
+	     if (lep1->charge() + lep2->charge() != 0) return false; // if charge not 0 can't be from Z 
+	     KLV z_test;
+	     z_test.p4 = lep1->p4 + lep2->p4;
+	     double test_mass_diff = fabs(z_test.p4.M() - settings.GetZMass());
+             return (test_mass_diff < settings.GetZMassRange()); // test if invM is in Z Range
+        }
+        bool is_closer_to_Z(double zCandidate_mass, KappaProduct& product, KappaSettings const& settings) const{
+            if (!product.m_zValid) return true;
+            return (fabs(zCandidate_mass-settings.GetZMass()) < fabs(product.m_z.p4.M()-settings.GetZMass()));
+        }
+        void resetZ(KappaProduct& product) const{
+            product.m_z = KLV();
+            product.m_z.p4.SetPt(0.0f);  // just to be sure
+            product.m_zLeptons = std::make_pair(nullptr, nullptr);
+            product.m_zValid = false;
+        }
+        void setZ(KappaProduct& product, KLepton* const lep1, KLepton* const lep2) const 
+        {
+            KLV zCandidate;
+            zCandidate.p4 = lep1->p4 + lep2->p4;
+            product.m_z = zCandidate;
+            std::pair<KLepton*, KLepton*> zLeptons;
+            if (lep1->p4.Pt() > lep2->p4.Pt())
+               zLeptons = std::make_pair(lep1, lep2);
+            else
+               zLeptons = std::make_pair(lep2, lep1);
+            product.m_zLeptons = zLeptons;
+            product.m_zValid = true;
+        }
+        
+        
+        
 };
 
 class ZmmProducer : public ZProducerBase<KMuon, KMuon>
@@ -88,7 +147,7 @@ class ZmmProducer : public ZProducerBase<KMuon, KMuon>
   public:
 	std::string GetProducerId() const override { return "ZmmProducer"; };
 	ZmmProducer()
-		: ZProducerBase<KMuon, KMuon>(&KappaProduct::m_validMuons, &KappaProduct::m_validMuons, true)
+		: ZProducerBase<KMuon, KMuon>(&KappaProduct::m_validMuons)
 	{
 	}
 };
@@ -98,9 +157,7 @@ class ZeeProducer : public ZProducerBase<KElectron, KElectron>
   public:
 	std::string GetProducerId() const override { return "ZeeProducer"; };
 	ZeeProducer()
-		: ZProducerBase<KElectron, KElectron>(&KappaProduct::m_validElectrons,
-											  &KappaProduct::m_validElectrons,
-											  true)
+		: ZProducerBase<KElectron, KElectron>(&KappaProduct::m_validElectrons)
 	{
 	}
 };
@@ -110,9 +167,19 @@ class ZemProducer : public ZProducerBase<KElectron, KMuon>
   public:
 	std::string GetProducerId() const override { return "ZemProducer"; };
 	ZemProducer()
-		: ZProducerBase<KElectron, KMuon>(&KappaProduct::m_validElectrons,
-										  &KappaProduct::m_validMuons,
-										  false)
+		: ZProducerBase<KElectron, KMuon>(&KappaProduct::m_validElectrons, &KappaProduct::m_validMuons,false,true)
 	{
 	}
 };
+
+
+class ZeemmProducer : public ZProducerBase<KElectron, KMuon>
+{
+  public:
+	std::string GetProducerId() const override { return "ZeemmProducer"; };
+	ZeemmProducer()
+		: ZProducerBase<KElectron, KMuon>(&KappaProduct::m_validElectrons, &KappaProduct::m_validMuons,true,false)
+	{
+	}
+};
+
