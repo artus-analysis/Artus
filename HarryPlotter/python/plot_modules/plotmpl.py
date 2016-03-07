@@ -321,7 +321,8 @@ class PlotMpl(plotbase.PlotBase):
 
 		# Main axis
 		ax = plotData.plot.axes[0]
-		ax.grid(plotData.plotdict["grid"])
+		if plotData.plotdict["grid"]:
+			{'horizontal': ax.yaxis, 'vertical':ax.xaxis}.get(plotData.plotdict["grid"], ax).grid(True)
 		# set axis labels
 		if plotData.plotdict['subplot_nicks'] == []:
 			ax.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]), position=(1., 0.), va='top', ha='right')
