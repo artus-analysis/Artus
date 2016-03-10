@@ -95,7 +95,7 @@ class PlotData(object):
 		if export_json != False:
 			files_to_copy += [export_json]
 		if save_legend:
-			files_to_copy += [os.path.join(output_dir, ".".join([save_legend, _format])) for _format in formats]
+			files_to_copy += [os.path.join(output_dir, save_legend + _format) for _format in formats]
 
 		# create remote dir, copy files
 		mkdir_command = os.path.expandvars("$WEB_PLOTTING_MKDIR_COMMAND").format(subdir=remote_subdir)
