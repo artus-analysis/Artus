@@ -75,8 +75,6 @@ class PlotRoot(plotbase.PlotBase):
 		                               help="Lower and Upper limit for y-axis.")
 		self.axis_options.add_argument("--sym-y-lims", nargs="?", type="bool", default=False, const=True,
 		                               help="Symmetric y-axis limits of the plot. The parameters of --y-lims are taken as <center> <range/2>")
-		self.axis_options.add_argument("--y-scientific", nargs="?", type="bool", default=False, const=True,
-		                               help="Imposing scientific notation for y-axis. If 'False', usual behaviour is conserved.")
 		self.axis_options.add_argument("--z-lims", type=float, nargs="+",
 		                               help="Lower and Upper limit for z-axis.")
 		self.axis_options.add_argument("--sym-z-lims", nargs="?", type="bool", default=False, const=True,
@@ -507,14 +505,9 @@ class PlotRoot(plotbase.PlotBase):
 			
 			# avoid scientific notation for x-axis
 			self.axes_histogram.GetXaxis().SetNoExponent(True)
-
-			# when not imposed, avoid scientific notation for y-axis if a title is present
-			if (not plotData.plotdict["title"] is None and not plotData.plotdict["y_scientific"]):
-				self.axes_histogram.GetYaxis().SetNoExponent(True)
 			
-			# if scientific notation is imposed for y-axis, then shift the exponent
-			if not self.axes_histogram.GetYaxis().GetNoExponent():
-				ROOT.TGaxis.SetExponentOffset(-0.069,0.015,"y")
+			# shift the exponent for y-axis to avoid overlapping with title
+			ROOT.TGaxis.SetExponentOffset(-0.069,0.015,"y")
 			
 			self.axes_histogram.Draw("AXIS")
 		
