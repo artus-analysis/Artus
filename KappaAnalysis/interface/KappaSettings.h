@@ -287,7 +287,7 @@ public:
 	IMPL_SETTING_DEFAULT(float, BMistagShift, 0.0f);
 	
 	//Reading Boson PdgId and Status code for GenTauDecayProducer studies.
-	IMPL_SETTING(int, BosonPdgId);
+	IMPL_SETTING_DEFAULT(int, BosonPdgId, 23);
 	IMPL_SETTING_DEFAULT(int, BosonStatus, 3);  //keep pythia6 status as default for back-compatibility
 
 	/// Needed by the GenPartonCounterProducer

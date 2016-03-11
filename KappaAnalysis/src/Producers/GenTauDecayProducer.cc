@@ -8,10 +8,11 @@ std::string GenTauDecayProducer::GetProducerId() const {
 void GenTauDecayProducer::Init(KappaSettings const& settings)
 {
 	KappaProducerBase::Init(settings);
-	
+	BosonPdgId = settings.GetBosonPdgId();
+
 	// add possible quantities for the lambda ntuples consumers
 	
-	//Boson
+/*	//Boson
 	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity( "genBosonSize",[](KappaEvent const & event, KappaProduct const & product)
 	{
 		return product.m_genBoson.size() > 0 ? product.m_genBoson.size() : DefaultValues::UndefinedInt;
@@ -466,62 +467,29 @@ void GenTauDecayProducer::Init(KappaSettings const& settings)
 	{
 		return (product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 0) && (product.m_genBoson[0].Daughters[0].Daughters.size() > 1) && (product.m_genBoson[0].Daughters[0].Daughters[1].Daughters.size() >5)? product.m_genBoson[0].Daughters[0].Daughters[1].Daughters[5].node->status() : DefaultValues::UndefinedInt;
 	} );
+*/
 }
+
 
 void GenTauDecayProducer::Produce(KappaEvent const& event, KappaProduct& product,
                                   KappaSettings const& settings) const
 {
 	assert(event.m_genParticles);
-	
-	// Reading Boson PdgId and Status code
-	int bosonPdgId = settings.GetBosonPdgId();
-	int bosonStatus = settings.GetBosonStatus();
-
 	for (KGenParticles::iterator part = event.m_genParticles->begin();
 		 part != event.m_genParticles->end(); ++part)
 	{
-		// Filling Higgs, its daughter & granddaughter particles 
-		if ((std::abs(part->pdgId()) == bosonPdgId) && (part->status() == bosonStatus))
+		unsigned int partIndex = part - event.m_genParticles->begin();
+		// Filling Higgs, its daughter & granddaughter particles in recursive way.
+		if ((std::abs(part->pdgId) == BosonPdgId))
 		{
-			
 			product.m_genBoson.push_back( MotherDaughterBundle(&(*part)) );
 			MotherDaughterBundle & lastBosonRef = product.m_genBoson.back();
-			//std::cout << &(lastBosonRef) << std::endl;
 			lastBosonRef.setCharge();
 			lastBosonRef.setDetectable();
 			if (part->daughterIndices.size() == 0) lastBosonRef.finalState = true;
-			for (unsigned int i=0; i<part->daughterIndices.size() && part->daughterIndices.size() != 0; ++i) 
-			{
-				// Higgs with Status 2 is also considered as Higgs status 3 daughter, what leads to the condition, 
-				// that we search only for Higgs daughters with PdgId != 25.
-				unsigned int indDaughter = part->daughterIndex(i);
-				if ( indDaughter < event.m_genParticles->size() )
-				{
-					// Taus with status 2 are the only daughters of Taus with status 3. We are not interested in status 2 Taus and thats the reason, why we should  
-					// skip them and consider the formal granddaughters of status 3 Taus as real daughters of status 3 Taus. This means, we must skip one generation,
-					// what's done in the following lines.
-					lastBosonRef.Daughters.push_back(MotherDaughterBundle( &(event.m_genParticles->at(indDaughter)) ));
-					MotherDaughterBundle & lastBosonDaughterRef = lastBosonRef.Daughters.back();
-					//std::cout << &(lastBosonDaughterRef) << std::endl;
-					lastBosonDaughterRef.setCharge();
-					lastBosonDaughterRef.setDetectable();
-					if ( (event.m_genParticles->at(indDaughter)).daughterIndices.size() != 0)
-					{
-						unsigned int indDaughterStat2 = (event.m_genParticles->at(indDaughter)).daughterIndex(0);
-						BuildDecayTree(lastBosonDaughterRef, indDaughterStat2, event);
-					}
-					else lastBosonDaughterRef.finalState = true;
-				}
-				else if (!(indDaughter < event.m_genParticles->size()))
-				{
-				LOG(ERROR) << "Index larger than size of gen particle vector:" << indDaughter << ">" << event.m_genParticles->size() << ".";
-				}
-			}
+			else BuildDecayTree(lastBosonRef, partIndex, event);
 		}
 	}
-//std::cout << "Tau1: " << &(product.m_genBoson[0].Daughters[0]) << std::endl;
-//std::cout << "parent ueber Daughter: " << product.m_genBoson[0].Daughters[0].Daughters[0].parent << std::endl;
-//std::cout << std::endl;
 }
 	
 void GenTauDecayProducer::BuildDecayTree(MotherDaughterBundle & lastProductParentRef, unsigned int lastEventParentIndex, event_type const& event) const
@@ -533,8 +501,6 @@ void GenTauDecayProducer::BuildDecayTree(MotherDaughterBundle & lastProductParen
 		{
 			lastProductParentRef.Daughters.push_back(MotherDaughterBundle( &(event.m_genParticles->at(DaughterIndex)) ));
 			MotherDaughterBundle & lastDaughterRef = lastProductParentRef.Daughters.back();
-			//std::cout << "parent selbst im product: " << &lastProductParentRef << std::endl;
-			//std::cout << "parent über Daughter im product: " << lastDaughterRef.parent << std::endl;
 			lastDaughterRef.setCharge();
 			lastDaughterRef.setDetectable();
 			if ( (event.m_genParticles->at(DaughterIndex)).daughterIndices.size() == 0) lastDaughterRef.finalState = true;
@@ -546,5 +512,3 @@ void GenTauDecayProducer::BuildDecayTree(MotherDaughterBundle & lastProductParen
 		}
 	}
 }
-
-
