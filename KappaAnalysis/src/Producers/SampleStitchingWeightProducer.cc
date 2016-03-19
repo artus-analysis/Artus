@@ -18,52 +18,63 @@ void SampleStitchingWeightProducer::Produce( KappaEvent const& event,
 	product.m_weights["numberGeneratedEventsWeight"] = 1.0;
 	
 	int nPartons = event.m_genEventInfo->lheNOutPartons;
-	if (boost::regex_search(product.m_nickname, boost::regex("DYJetsToLL", boost::regex::icase | boost::regex::extended)))
+	if (boost::regex_search(product.m_nickname, boost::regex("DY.?JetsToLLM(50|150)", boost::regex::icase | boost::regex::extended)))
 	{
 		if (product.m_genDiLeptonBoson.mass() < 150.0)
 		{
 			if ((nPartons == 0) || (nPartons >= 5))
 			{
-				product.m_weights["stitchWeight"] = 0.0006691449;
+				product.m_optionalWeights["stitchWeightZLL"] = 2.43669e-5;
+				product.m_optionalWeights["stitchWeightZTT"] = 2.43669e-5;
 			}
 			else if (nPartons == 1)
 			{
-				product.m_weights["stitchWeight"] = 0.00001833676;
+				product.m_optionalWeights["stitchWeightZLL"] = 1.06292e-5;
+				product.m_optionalWeights["stitchWeightZTT"] = 1.06292e-5;
 			}
 			else if (nPartons == 2)
 			{
-				product.m_weights["stitchWeight"] = 0.00001962736;
+				product.m_optionalWeights["stitchWeightZLL"] = 1.10505e-5;
+				product.m_optionalWeights["stitchWeightZTT"] = 1.10505e-5;
 			}
 			else if (nPartons == 3)
 			{
-				product.m_weights["stitchWeight"] = 0.00002102429;
+				product.m_optionalWeights["stitchWeightZLL"] = 1.14799e-5;
+				product.m_optionalWeights["stitchWeightZTT"] = 1.14799e-5;
 			}
 			else
 			{
-				product.m_weights["stitchWeight"] = 0.00001553018;
+				product.m_optionalWeights["stitchWeightZLL"] = 9.62135e-6;
+				product.m_optionalWeights["stitchWeightZTT"] = 9.62135e-6;
 			}
 		}
 		else
 		{
 			if ((nPartons == 0) || (nPartons >= 5))
 			{
-				product.m_weights["stitchWeight"] = 0.00000132913;
+				product.m_optionalWeights["stitchWeightZLL"] = 2.43669e-5;
+				product.m_optionalWeights["stitchWeightZTT"] = 1.26276e-6;
 			}
 			else if (nPartons == 1)
 			{
-				product.m_weights["stitchWeight"] = 0.00000124160;
+				product.m_optionalWeights["stitchWeightZLL"] = 1.06292e-5;
+				product.m_optionalWeights["stitchWeightZTT"] = 1.18349e-6;
 			}
 			else if (nPartons == 2)
 			{
-				product.m_weights["stitchWeight"] = 0.00000124716;
+				product.m_optionalWeights["stitchWeightZLL"] = 1.10505e-5;
+				product.m_optionalWeights["stitchWeightZTT"] = 1.18854e-6;
 			}
 			else if (nPartons == 3)
 			{
-				product.m_weights["stitchWeight"] = 0.00000125244;
+				product.m_optionalWeights["stitchWeightZLL"] = 1.14799e-5;
+				product.m_optionalWeights["stitchWeightZTT"] = 1.19334e-6;
 			}
 			else
 			{
-				product.m_weights["stitchWeight"] = 0.00000122659;
+				product.m_optionalWeights["stitchWeightZLL"] = 9.62135e-6;
+				product.m_optionalWeights["stitchWeightZTT"] = 1.16985e-6;
+
 			}
 		}
 	}
