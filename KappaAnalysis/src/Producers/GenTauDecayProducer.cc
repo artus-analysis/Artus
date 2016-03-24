@@ -9,19 +9,20 @@ void GenTauDecayProducer::Init(KappaSettings const& settings)
 {
 	KappaProducerBase::Init(settings);
 	BosonPdgId = settings.GetBosonPdgId();
+	BosonStatus = settings.GetBosonStatus();
 
 	// add possible quantities for the lambda ntuples consumers
 	
-/*	//Boson
+//Boson
 	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity( "genBosonSize",[](KappaEvent const & event, KappaProduct const & product)
 	{
 		return product.m_genBoson.size() > 0 ? product.m_genBoson.size() : DefaultValues::UndefinedInt;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBosonPt",[](KappaEvent const & event, KappaProduct const & product)
-	{
+{
 		return product.m_genBoson.size() > 0 ? product.m_genBoson[0].node->p4.Pt() : DefaultValues::UndefinedFloat;
 	} );
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBosonPz",[](KappaEvent const & event, KappaProduct const & product)
+/*	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity( "1genBosonPz",[](KappaEvent const & event, KappaProduct const & product)
 	{
 		return product.m_genBoson.size() > 0 ? product.m_genBoson[0].node->p4.Pz() : DefaultValues::UndefinedFloat;
 	} );
@@ -478,9 +479,11 @@ void GenTauDecayProducer::Produce(KappaEvent const& event, KappaProduct& product
 	for (KGenParticles::iterator part = event.m_genParticles->begin();
 		 part != event.m_genParticles->end(); ++part)
 	{
+		// If negative BosonStatus is set, then the status of the particle is ignored
+		bool checkBosonStatus = (BosonStatus < 0) ? true : (part->status() == BosonStatus);
 		unsigned int partIndex = part - event.m_genParticles->begin();
-		// Filling Higgs, its daughter & granddaughter particles in recursive way.
-		if ((std::abs(part->pdgId) == BosonPdgId))
+		// Filling Boson (e.g. Higgs, Z, ...), its daughter & granddaughter particles in recursive way.
+		if ((std::abs(part->pdgId) == BosonPdgId) && checkBosonStatus)
 		{
 			product.m_genBoson.push_back( MotherDaughterBundle(&(*part)) );
 			MotherDaughterBundle & lastBosonRef = product.m_genBoson.back();

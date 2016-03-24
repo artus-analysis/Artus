@@ -34,5 +34,6 @@ public:
 private:
 	void BuildDecayTree(MotherDaughterBundle & lastProductParentRef, unsigned int lastEventParentIndex, event_type const& event) const;
 	int BosonPdgId;
+	int BosonStatus;
 };
 
