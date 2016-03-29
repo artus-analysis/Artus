@@ -56,7 +56,7 @@ public:
 			//tmvaReader.emplace_back(new TMVA::Reader());
 			tmvaReader.push_back(std::make_shared<TMVA::Reader>());
 			m_inputExtractors.push_back(std::vector<float_extractor_lambda>());
-			LOG(WARNING) << "Parse QuantitiyString " << std::endl << *quantity_str;
+			LOG(DEBUG) << "Parse QuantitiyString " << std::endl << *quantity_str;
 			
 			std::vector<std::string> quantity_number;
 			boost::algorithm::split(quantity_number, *quantity_str, boost::algorithm::is_any_of(";"));
@@ -79,7 +79,7 @@ public:
 				transform(splitted.begin(), splitted.end(), splitted.begin(),
 						[](std::string s) { return boost::algorithm::trim_copy(s); });
 				std::string lambdaQuantity = splitted.front();
-				LOG(WARNING) << "Find lambdaQuantity: " << lambdaQuantity;
+				LOG(DEBUG) << "Find lambdaQuantity: " << lambdaQuantity;
 				if (LambdaNtupleConsumer<TTypes>::GetFloatQuantities().count(lambdaQuantity) > 0)
 				{
 					m_inputExtractors[input_index].push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetFloatQuantities(), lambdaQuantity));
