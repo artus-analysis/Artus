@@ -472,7 +472,7 @@ class PlotMpl(plotbase.PlotBase):
 				legend = ax.legend(*self.get_legend_handles_labels_ordered(ax, plotData.plotdict['labels']), loc=plotData.plotdict["legend"], ncol=plotData.plotdict["legend_cols"], columnspacing=0.5, handletextpad=0.3)
 				legend.set_zorder(100)
 				if legend_workaround:
-					legend.get_frame().set_edgecolor('#FFFFFF')
+					legend.get_frame().set_alpha(0)
 
 			if self.mpl_version >= 121:
 				plt.tight_layout()
@@ -487,7 +487,7 @@ class PlotMpl(plotbase.PlotBase):
 				if len(ax.get_legend_handles_labels()[0]) > 1 and plotData.plotdict["subplot_legend"] is not None:
 					legend = ax.legend(*self.get_legend_handles_labels_ordered(ax, plotData.plotdict['labels']), loc=plotData.plotdict["subplot_legend"], ncol=1, columnspacing=0.5, handletextpad=0.3)
 					if legend_workaround:
-						legend.get_frame().set_edgecolor('#FFFFFF')
+						legend.get_frame().set_alpha(0)
 
 
 	def add_texts(self, plotData):
