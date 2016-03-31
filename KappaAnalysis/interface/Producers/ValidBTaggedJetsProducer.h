@@ -9,7 +9,7 @@
 
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/KappaAnalysis/interface/Consumers/KappaLambdaNtupleConsumer.h"
-#include "Artus/KappaAnalysis/interface/Utility/BtagSF.h"
+#include "Artus/KappaAnalysis/interface/Utility/BTagSF.h"
 
 
 /**
@@ -50,5 +50,6 @@ protected:
 private:
 
 	BTagScaleFactorMethod bTagSFMethod;
+	BTagSF* btagSF;
 
 };

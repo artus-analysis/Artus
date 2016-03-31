@@ -1,110 +1,149 @@
-#include "Artus/KappaAnalysis/interface/Utility/BtagSF.h"
-#include "Artus/KappaAnalysis/interface/Utility/BTagCalibrationStandalone.h"
+#include "Artus/KappaAnalysis/interface/Utility/BTagSF.h"
 
-BtagSF::BtagSF(int seed) { randm = new TRandom3(seed); }
 
-BtagSF::~BtagSF() { delete randm; }
+BTagSF::BTagSF(std::string csvfile, std::string efficiencyfile)
+{
+	randm = new TRandom3(0);
+	calib = new BTagCalibration("csvv2", csvfile);
+	
+	effFile = new TFile(TString(efficiencyfile));
+	if (effFile->IsZombie()) {
+		std::cout << "BTagSF: file " << efficiencyfile << " is not found...   quitting " << std::endl;
+		exit(-1);
+	}
+	
+	reader_mujets = new BTagCalibrationReader(calib,                // calibration instance
+						  BTagEntry::OP_MEDIUM, // operating point
+						  "mujets",             // measurement type
+						  "central"             // systematics type
+						 );
+	
+	reader_mujets_up = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM, "mujets", "up");    // sys up
+	reader_mujets_do = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM, "mujets", "down");  // sys down
+	
+	reader_incl = new BTagCalibrationReader(calib,                // calibration instance
+						BTagEntry::OP_MEDIUM, // operating point
+						"incl",               // measurement type
+						"central"             // systematics type
+					       );
+	
+	reader_incl_up = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM, "incl", "up");    // sys up
+	reader_incl_do = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM, "incl", "down");  // sys down
+}
 
-bool BtagSF::isbtagged(double pt, float eta, float csv, Int_t jetflavor, bool isdata,
-                       unsigned int btagsys, unsigned int mistagsys, int year, std::string scalefile)
+BTagSF::~BTagSF()
+{
+	delete randm;
+	delete calib;
+	delete effFile;
+	delete reader_mujets;
+	delete reader_mujets_up;
+	delete reader_mujets_do;
+	delete reader_incl;
+	delete reader_incl_up;
+	delete reader_incl_do;
+}
+
+bool BTagSF::isbtagged(double pt, float eta, float csv, Int_t jetflavor,
+                       unsigned int btagsys, unsigned int mistagsys, int year)
 {
 	randm->SetSeed(static_cast<int>((eta + 5.) * 100000.));
 	
 	float csv_WP = 0.679;
-	if(year==2015) csv_WP = 0.89;
+	if(year==2015) csv_WP = 0.8;
 
-	//possible change in 2015??
-	bool btagged = isdata && (csv > csv_WP);
+	bool btagged = false;
 	double SFb = 0.0;
-	double eff_b = 0.719; 
+	double eff_b = 0.719;
 
-	SFb = getSFb(pt, eta, btagsys, year, scalefile); //has to be edited for 2015
+	SFb = getSFb(pt, eta, btagsys, year);
 
 	double promoteProb_btag = 0; // ~probability to promote to tagged
 	double demoteProb_btag = 0;  // ~probability to demote from tagged
 
 	if (SFb < 1)
+	{
 		demoteProb_btag = std::abs(1.0 - SFb);
+	}
 	else
+	{
+		if(year==2015)
+			eff_b = getEfficiencyFromFile(jetflavor, pt, eta);
 		promoteProb_btag = std::abs(SFb - 1.0) / ((SFb / eff_b) - 1.0);
+	}
 
-
+	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideBTagMCTools#Hadron_parton_based_jet_flavour
+	// real b-jet
 	if (std::abs(jetflavor) == 5)
-	  { // real b-jet
-	    if (csv > csv_WP) // if tagged //has to be edited for 2015 
-	      btagged = (demoteProb_btag > 0 && randm->Uniform() > demoteProb_btag);
-	    else
-	      btagged = (promoteProb_btag > 0 && randm->Uniform() < promoteProb_btag); // promote it to tagged
-	    return btagged;
-	  }
+	{
+		if (csv > csv_WP) // if tagged
+			btagged = (demoteProb_btag > 0 && randm->Uniform() > demoteProb_btag);
+		else
+			btagged = (promoteProb_btag > 0 && randm->Uniform() < promoteProb_btag); // promote it to tagged
+		return btagged;
+	}
 
 	// not a real b-jet, apply mistag
+	double SFl = 0.0, eff_l = 0.0;
 
-	double SFl = 0, eff_l = 0;
-
-	// c or light
+	// c-jet
 	if (std::abs(jetflavor) == 4)
 	{
 		// SFc = SFb with twice the quoted uncertainty
-	  SFl = getSFc(pt, eta, btagsys, year, scalefile); //has to be edited for 2015
+		SFl = getSFc(pt, eta, btagsys, year);
 		eff_l = 0.192 * SFl; // eff_c in MC for CSVM = (-1.5734604211*x*x*x*x +
 		                     // 1.52798999269*x*x*x +  0.866697059943*x*x +
 		                     // -1.66657942274*x +  0.780639301724), x = 0.679
 	}
+	// light-flavour jet
 	else
 	{
-		SFl = getSFl(pt, eta, mistagsys, year, scalefile); //has to be edited for 2015
-		eff_l = getMistag(pt, eta); //has to be edited for 2015
+		SFl = getSFl(pt, eta, mistagsys, year);
+		eff_l = getMistag(pt, eta);
 	}
 
 	double promoteProb_mistag = 0; // ~probability to promote to tagged
 	double demoteProb_mistag = 0;  // ~probability to demote from tagged
 
 	if (SFl > 1)
+	{
+		if(year==2015)
+			eff_l = getEfficiencyFromFile(jetflavor, pt, eta);
 		promoteProb_mistag = std::abs(SFl - 1.0) / ((SFl / eff_l) - 1.0);
+	}
 	else
+	{
 		demoteProb_mistag = SFl;
+	}
 
 	if (csv > csv_WP) // if tagged //has to be edited for 2015
-		btagged = !(demoteProb_mistag > 0 && randm->Uniform() > demoteProb_mistag); // demote it to untagged
+		btagged = !(demoteProb_mistag > 0 && randm->Uniform() > demoteProb_mistag);  // demote it to untagged
 	else
 		btagged = (promoteProb_mistag > 0 && randm->Uniform() < promoteProb_mistag); // promote it to tagged
 
 	return btagged;
 }
 
-double BtagSF::getSFb(double pt, float eta, unsigned int btagsys, int year, std::string scalefile)
+double BTagSF::getSFb(double pt, float eta, unsigned int btagsys, int year)
 {
-  if(year==2015){
-        BTagCalibration calib("csvv2", scalefile);
-        BTagCalibrationReader reader(//&calib,               // calibration instance
-				     BTagEntry::OP_MEDIUM,  // operating point
-				     // "comb",               // measurement type
-				     "central");           // systematics type
-	reader.load(calib, BTagEntry::FLAV_B, "mujets");
-	BTagCalibrationReader reader_up(BTagEntry::OP_MEDIUM, "up");  // sys up
-	reader_up.load(calib, BTagEntry::FLAV_B, "mujets");
-	BTagCalibrationReader reader_do(BTagEntry::OP_MEDIUM, "down");  // sys down
-	reader_do.load(calib, BTagEntry::FLAV_B, "mujets");
+  if(year == 2015){
 	
 	float MaxBJetPt = 670.;
 	bool DoubleUncertainty = false;
-	if (pt>MaxBJetPt)  { // use MaxLJetPt for  light jets
+	if (pt>MaxBJetPt){
 	  pt = MaxBJetPt; 
 	  DoubleUncertainty = true;
 	}  
 
-	// Note: this is for b jets, for c jets (light jets) use FLAV_C (FLAV_UDSG)
-	double jet_scalefactor = reader.eval(BTagEntry::FLAV_B, eta, pt); 
-	double jet_scalefactor_up =  reader_up.eval(BTagEntry::FLAV_B, eta, pt); 
-	double jet_scalefactor_do =  reader_do.eval(BTagEntry::FLAV_B, eta, pt); 
+	double jet_scalefactor = reader_mujets->eval(BTagEntry::FLAV_B, eta, pt);
+	double jet_scalefactor_up = reader_mujets_up->eval(BTagEntry::FLAV_B, eta, pt);
+	double jet_scalefactor_do = reader_mujets_do->eval(BTagEntry::FLAV_B, eta, pt);
 	
 	if (DoubleUncertainty) {
 	  jet_scalefactor_up = 2*(jet_scalefactor_up - jet_scalefactor) + jet_scalefactor; 
 	  jet_scalefactor_do = 2*(jet_scalefactor_do - jet_scalefactor) + jet_scalefactor; 
 	}
-	//std::cout << "pt " << pt << "   eta " << eta << "    btagsys " << btagsys << std::cout; 
-	//std::cout << "year " << year << "   DoubleUncertainty " << DoubleUncertainty << "   jet SF " << jet_scalefactor << std::cout;
+	
 	if (btagsys == kDown) return jet_scalefactor_do;
 	else if (btagsys == kUp) return jet_scalefactor_up;
 	else return jet_scalefactor;
@@ -198,37 +237,26 @@ double BtagSF::getSFb(double pt, float eta, unsigned int btagsys, int year, std:
   }
 }
 
-double BtagSF::getSFc(double pt, float eta, unsigned int btagsys, int year, std::string scalefile)
+double BTagSF::getSFc(double pt, float eta, unsigned int btagsys, int year)
 {
-  if(year==2015){
-        BTagCalibration calib("csvv2", scalefile);
-        BTagCalibrationReader reader(//&calib,               // calibration instance
-				     BTagEntry::OP_MEDIUM,  // operating point
-				     //"comb",               // measurement type
-				     "central");           // systematics type
-	reader.load(calib, BTagEntry::FLAV_C, "mujets"); 
-	BTagCalibrationReader reader_up( BTagEntry::OP_MEDIUM, "up");  // sys up
-	reader_up.load(calib, BTagEntry::FLAV_C, "mujets"); 
-	BTagCalibrationReader reader_do(BTagEntry::OP_MEDIUM, "down");  // sys down
-	reader_do.load(calib, BTagEntry::FLAV_C, "mujets"); 
+  if(year == 2015){
 	
 	float MaxBJetPt = 670.;
 	bool DoubleUncertainty = false;
-	if (pt>MaxBJetPt)  { // use MaxLJetPt for  light jets
+	if (pt>MaxBJetPt){
 	  pt = MaxBJetPt; 
 	  DoubleUncertainty = true;
 	}  
 	
-	// Note: this is for b jets, for c jets (light jets) use FLAV_C (FLAV_UDSG)
-	double jet_scalefactor = reader.eval(BTagEntry::FLAV_C, eta, pt); 
-	double jet_scalefactor_up =  reader_up.eval(BTagEntry::FLAV_C, eta, pt); 
-	double jet_scalefactor_do =  reader_do.eval(BTagEntry::FLAV_C, eta, pt); 
+	double jet_scalefactor = reader_mujets->eval(BTagEntry::FLAV_C, eta, pt); 
+	double jet_scalefactor_up = reader_mujets_up->eval(BTagEntry::FLAV_C, eta, pt); 
+	double jet_scalefactor_do = reader_mujets_do->eval(BTagEntry::FLAV_C, eta, pt); 
 	
 	if (DoubleUncertainty) {
 	  jet_scalefactor_up = 2*(jet_scalefactor_up - jet_scalefactor) + jet_scalefactor; 
 	  jet_scalefactor_do = 2*(jet_scalefactor_do - jet_scalefactor) + jet_scalefactor; 
 	}
-
+	
 	if (btagsys == kDown) return jet_scalefactor_do;
 	else if (btagsys == kUp) return jet_scalefactor_up;
 	else return jet_scalefactor;
@@ -314,41 +342,29 @@ double BtagSF::getSFc(double pt, float eta, unsigned int btagsys, int year, std:
   }
 }
 
-double BtagSF::getSFl(double pt, float eta, unsigned int mistagsys, int year, std::string scalefile)
+double BTagSF::getSFl(double pt, float eta, unsigned int mistagsys, int year)
 {
-  if(year==2015){
-        BTagCalibration calib("csvv2", scalefile);
-        BTagCalibrationReader reader(//&calib,               // calibration instance
-				     BTagEntry::OP_MEDIUM,  // operating point
-				     //"comb",               // measurement type
-				     "central");           // systematics type
-	reader.load(calib, BTagEntry::FLAV_UDSG, "comb"); 
-	BTagCalibrationReader reader_up( BTagEntry::OP_MEDIUM, "up");  // sys up
-	reader_up.load(calib, BTagEntry::FLAV_UDSG, "comb"); 
-	BTagCalibrationReader reader_do(BTagEntry::OP_MEDIUM, "down");  // sys down
-	reader_do.load(calib, BTagEntry::FLAV_UDSG, "comb"); 
-
+  if(year == 2015){
+	
 	float MaxLJetPt = 1000.;
 	bool DoubleUncertainty = false;
-	if (pt>MaxLJetPt)  { // use MaxLJetPt for  light jets
+	if (pt>MaxLJetPt){
 	  pt = MaxLJetPt; 
 	  DoubleUncertainty = true;
 	}  
 	
-	// Note: this is for b jets, for c jets (light jets) use FLAV_C (FLAV_UDSG)
-	double jet_scalefactor = reader.eval(BTagEntry::FLAV_UDSG, eta, pt); 
-	double jet_scalefactor_up =  reader_up.eval(BTagEntry::FLAV_UDSG, eta, pt); 
-	double jet_scalefactor_do =  reader_do.eval(BTagEntry::FLAV_UDSG, eta, pt); 
+	double jet_scalefactor = reader_incl->eval(BTagEntry::FLAV_UDSG, eta, pt); 
+	double jet_scalefactor_up = reader_incl_up->eval(BTagEntry::FLAV_UDSG, eta, pt); 
+	double jet_scalefactor_do = reader_incl_do->eval(BTagEntry::FLAV_UDSG, eta, pt); 
 	
 	if (DoubleUncertainty) {
 	  jet_scalefactor_up = 2*(jet_scalefactor_up - jet_scalefactor) + jet_scalefactor; 
 	  jet_scalefactor_do = 2*(jet_scalefactor_do - jet_scalefactor) + jet_scalefactor; 
 	}
-
-	if (mistagsys == kDown) return jet_scalefactor_do;     //orginally btagsys changed to mistagsys 
-	else if (mistagsys == kUp) return jet_scalefactor_up;  //orginally btagsys changed to mistagsys 
+	
+	if (mistagsys == kDown) return jet_scalefactor_do;     //originally btagsys changed to mistagsys 
+	else if (mistagsys == kUp) return jet_scalefactor_up;  //originally btagsys changed to mistagsys 
 	else return jet_scalefactor;
-
   }
   else{
 
@@ -421,7 +437,7 @@ double BtagSF::getSFl(double pt, float eta, unsigned int mistagsys, int year, st
   }
 }
 
-double BtagSF::getMistag(double pt, float eta)
+double BTagSF::getMistag(double pt, float eta)
 {
 	double x = std::min(pt, 670.0);
 
@@ -432,4 +448,27 @@ double BtagSF::getMistag(double pt, float eta)
 	if (std::abs(eta) < 2.4f)
 		return 0.013595 + 0.000104538 * x - 1.36087e-08 * x * x;
 	return 0.0;
+}
+
+double BTagSF::getEfficiencyFromFile(int flavour, double pt, float eta)
+{
+	TH2D * effHisto;
+	
+	if (flavour == 5)
+	{
+		effHisto = (TH2D*) effFile->Get("btag_eff_b");
+	}
+	else if (flavour == 4)
+	{
+		effHisto = (TH2D*) effFile->Get("btag_eff_c");
+	}
+	else
+	{
+		effHisto = (TH2D*) effFile->Get("btag_eff_oth");
+	}
+	
+	int binX = effHisto->GetXaxis()->FindBin(pt);
+	int binY = effHisto->GetYaxis()->FindBin(std::abs(eta));
+	
+	return effHisto->GetBinContent(binX, binY);
 }

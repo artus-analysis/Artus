@@ -19,8 +19,6 @@
 #include <TF1.h>
 #include <TH1.h>
 
-std::string th1ToFormulaLin(const TH1*);
-std::string th1ToFormulaBinTree(const TH1*, int, int);
 
 class BTagEntry
 {
@@ -147,37 +145,43 @@ protected:
  *
  ************************************************************/
 
-#include <memory>
+#include <map>
 #include <string>
-
+#include <vector>
+#include <TF1.h>
 
 
 class BTagCalibrationReader
 {
 public:
   BTagCalibrationReader() {}
-  BTagCalibrationReader(BTagEntry::OperatingPoint op,
+  BTagCalibrationReader(const BTagCalibration* c,
+                        BTagEntry::OperatingPoint op,
+                        std::string measurementType="comb",
                         std::string sysType="central");
-
-  void load(const BTagCalibration & c,
-            BTagEntry::JetFlavor jf,
-            std::string measurementType="comb");
+  ~BTagCalibrationReader() {}
 
   double eval(BTagEntry::JetFlavor jf,
               float eta,
               float pt,
               float discr=0.) const;
 
-  std::pair<float, float> min_max_pt(BTagEntry::JetFlavor jf, 
-                                     float eta, 
-                                     float discr=0.) const;
-
 protected:
-  class BTagCalibrationReaderImpl;
-  std::auto_ptr<BTagCalibrationReaderImpl> pimpl;
+  struct TmpEntry {
+    float etaMin;
+    float etaMax;
+    float ptMin;
+    float ptMax;
+    float discrMin;
+    float discrMax;
+    TF1 func;
+  };
+  void setupTmpData(const BTagCalibration* c);
+
+  BTagEntry::Parameters params;
+  std::map<BTagEntry::JetFlavor, std::vector<TmpEntry> > tmpData_;
+  std::vector<bool> useAbsEta;
 };
 
-
 #endif  // BTagCalibrationReader_H
-
 

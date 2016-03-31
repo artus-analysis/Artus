@@ -309,6 +309,7 @@ public:
 
 	IMPL_SETTING(std::string, PileupWeightFile);
 	IMPL_SETTING(std::string, BTagScaleFactorFile);
+	IMPL_SETTING_DEFAULT(std::string, BTagEfficiencyFile, "");
 	
 	IMPL_SETTING(std::string, EventWeight);
 	IMPL_SETTING_DEFAULT(double, BaseWeight, 1.0);
