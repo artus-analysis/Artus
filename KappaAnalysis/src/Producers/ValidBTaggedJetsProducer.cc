@@ -103,11 +103,11 @@ void ValidBTaggedJetsProducer::Produce(KappaEvent const& event, KappaProduct& pr
 
 				LOG(DEBUG) << "Btagging shifts tag/mistag : " << settings.GetBTagShift() << " " << settings.GetBMistagShift(); 
 				
-				bool before = validBJet;
+				bool taggedBefore = validBJet;
 				validBJet = btagSF->isbtagged(tjet->p4.pt(), tjet->p4.eta(), combinedSecondaryVertex,
 							     jetflavor, btagSys, bmistagSys, settings.GetYear()); 
 				
-				if (before != validBJet) 
+				if (taggedBefore != validBJet)
 					LOG(DEBUG) << "Promoted/demoted : " << validBJet;
 			}
 			

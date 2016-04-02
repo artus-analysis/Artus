@@ -47,80 +47,73 @@ BTagSF::~BTagSF()
 bool BTagSF::isbtagged(double pt, float eta, float csv, Int_t jetflavor,
                        unsigned int btagsys, unsigned int mistagsys, int year)
 {
-	randm->SetSeed(static_cast<int>((eta + 5.) * 100000.));
+	randm->SetSeed(static_cast<int>((eta + 5) * 100000.));
+	double randval = randm->Uniform();
 	
 	float csv_WP = 0.679;
-	if(year==2015) csv_WP = 0.8;
+	if(year == 2015)
+		csv_WP = 0.8;
 
 	bool btagged = false;
-	double SFb = 0.0;
-	double eff_b = 0.719;
-
-	SFb = getSFb(pt, eta, btagsys, year);
-
-	double promoteProb_btag = 0; // ~probability to promote to tagged
-	double demoteProb_btag = 0;  // ~probability to demote from tagged
-
-	if (SFb < 1)
-	{
-		demoteProb_btag = std::abs(1.0 - SFb);
-	}
-	else
-	{
-		if(year==2015)
-			eff_b = getEfficiencyFromFile(jetflavor, pt, eta);
-		promoteProb_btag = std::abs(SFb - 1.0) / ((SFb / eff_b) - 1.0);
-	}
-
+	double sf  = 0.0;
+	double eff = 0.0;
+	
+	double promoteProb_btag = 0.0;  // ~probability to promote to tagged
+	double demoteProb_btag  = 0.0;  // ~probability to demote from tagged
+	
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideBTagMCTools#Hadron_parton_based_jet_flavour
 	// real b-jet
 	if (std::abs(jetflavor) == 5)
-	{
-		if (csv > csv_WP) // if tagged
-			btagged = (demoteProb_btag > 0 && randm->Uniform() > demoteProb_btag);
-		else
-			btagged = (promoteProb_btag > 0 && randm->Uniform() < promoteProb_btag); // promote it to tagged
-		return btagged;
-	}
-
-	// not a real b-jet, apply mistag
-	double SFl = 0.0, eff_l = 0.0;
-
+		sf = getSFb(pt, eta, btagsys, year);
+	
 	// c-jet
-	if (std::abs(jetflavor) == 4)
-	{
-		// SFc = SFb with twice the quoted uncertainty
-		SFl = getSFc(pt, eta, btagsys, year);
-		eff_l = 0.192 * SFl; // eff_c in MC for CSVM = (-1.5734604211*x*x*x*x +
-		                     // 1.52798999269*x*x*x +  0.866697059943*x*x +
-		                     // -1.66657942274*x +  0.780639301724), x = 0.679
-	}
+	else if (std::abs(jetflavor) == 4)
+		sf = getSFc(pt, eta, btagsys, year);
+	
 	// light-flavour jet
 	else
+		sf = getSFl(pt, eta, mistagsys, year);
+	
+	
+	if (sf < 1)
 	{
-		SFl = getSFl(pt, eta, mistagsys, year);
-		eff_l = getMistag(pt, eta);
-	}
-
-	double promoteProb_mistag = 0; // ~probability to promote to tagged
-	double demoteProb_mistag = 0;  // ~probability to demote from tagged
-
-	if (SFl > 1)
-	{
-		if(year==2015)
-			eff_l = getEfficiencyFromFile(jetflavor, pt, eta);
-		promoteProb_mistag = std::abs(SFl - 1.0) / ((SFl / eff_l) - 1.0);
+		demoteProb_btag = std::abs(1.0 - sf);
 	}
 	else
 	{
-		demoteProb_mistag = SFl;
+		if (year == 2015)
+		{
+			eff = getEfficiencyFromFile(jetflavor, pt, eta);
+		}
+		else
+		{
+			if (std::abs(jetflavor) == 5)
+				eff = 0.719;
+			else if (std::abs(jetflavor) == 4)
+				eff = 0.192 * sf; // eff_c in MC for CSVM = (-1.5734604211*x*x*x*x +
+		                     // 1.52798999269*x*x*x +  0.866697059943*x*x +
+		                     // -1.66657942274*x +  0.780639301724), x = 0.679
+			else
+				eff = getMistag(pt, eta);
+		}
+		promoteProb_btag = std::abs(sf - 1.0) / ((1.0 / eff) - 1.0);
 	}
-
-	if (csv > csv_WP) // if tagged //has to be edited for 2015
-		btagged = !(demoteProb_mistag > 0 && randm->Uniform() > demoteProb_mistag);  // demote it to untagged
+	
+	if (csv > csv_WP) // if tagged
+	{
+		if (demoteProb_btag > 0. && randval < demoteProb_btag)
+			btagged = false;  // demote jet
+		else
+			btagged = true;   // remains tagged
+	}
 	else
-		btagged = (promoteProb_mistag > 0 && randm->Uniform() < promoteProb_mistag); // promote it to tagged
-
+	{
+		if (promoteProb_btag > 0. && randval < promoteProb_btag)
+			btagged = true;   // promote jet
+		else
+			btagged = false;  // remains untagged
+	}
+	
 	return btagged;
 }
 
@@ -129,15 +122,21 @@ double BTagSF::getSFb(double pt, float eta, unsigned int btagsys, int year)
   if(year == 2015){
 	
 	float MaxBJetPt = 670.;
+	float MinBJetPt = 30.;
 	bool DoubleUncertainty = false;
-	if (pt>MaxBJetPt){
-	  pt = MaxBJetPt; 
+	
+	if ((pt > MaxBJetPt) || (pt < MinBJetPt))
+	{
 	  DoubleUncertainty = true;
-	}  
+	  if (pt > MaxBJetPt)
+            pt = MaxBJetPt;
+	  else
+            pt = MinBJetPt;
+	}
 
-	double jet_scalefactor = reader_mujets->eval(BTagEntry::FLAV_B, eta, pt);
-	double jet_scalefactor_up = reader_mujets_up->eval(BTagEntry::FLAV_B, eta, pt);
-	double jet_scalefactor_do = reader_mujets_do->eval(BTagEntry::FLAV_B, eta, pt);
+	double jet_scalefactor = reader_mujets->eval(BTagEntry::FLAV_B, std::abs(eta), pt);
+	double jet_scalefactor_up = reader_mujets_up->eval(BTagEntry::FLAV_B, std::abs(eta), pt);
+	double jet_scalefactor_do = reader_mujets_do->eval(BTagEntry::FLAV_B, std::abs(eta), pt);
 	
 	if (DoubleUncertainty) {
 	  jet_scalefactor_up = 2*(jet_scalefactor_up - jet_scalefactor) + jet_scalefactor; 
@@ -242,15 +241,21 @@ double BTagSF::getSFc(double pt, float eta, unsigned int btagsys, int year)
   if(year == 2015){
 	
 	float MaxBJetPt = 670.;
+	float MinBJetPt = 30.;
 	bool DoubleUncertainty = false;
-	if (pt>MaxBJetPt){
-	  pt = MaxBJetPt; 
-	  DoubleUncertainty = true;
-	}  
 	
-	double jet_scalefactor = reader_mujets->eval(BTagEntry::FLAV_C, eta, pt); 
-	double jet_scalefactor_up = reader_mujets_up->eval(BTagEntry::FLAV_C, eta, pt); 
-	double jet_scalefactor_do = reader_mujets_do->eval(BTagEntry::FLAV_C, eta, pt); 
+	if ((pt > MaxBJetPt) || (pt < MinBJetPt))
+	{
+	  DoubleUncertainty = true;
+	  if (pt > MaxBJetPt)
+            pt = MaxBJetPt;
+	  else
+            pt = MinBJetPt;
+	}
+	
+	double jet_scalefactor = reader_mujets->eval(BTagEntry::FLAV_C, std::abs(eta), pt); 
+	double jet_scalefactor_up = reader_mujets_up->eval(BTagEntry::FLAV_C, std::abs(eta), pt); 
+	double jet_scalefactor_do = reader_mujets_do->eval(BTagEntry::FLAV_C, std::abs(eta), pt); 
 	
 	if (DoubleUncertainty) {
 	  jet_scalefactor_up = 2*(jet_scalefactor_up - jet_scalefactor) + jet_scalefactor; 
@@ -348,22 +353,24 @@ double BTagSF::getSFl(double pt, float eta, unsigned int mistagsys, int year)
 	
 	float MaxLJetPt = 1000.;
 	bool DoubleUncertainty = false;
-	if (pt>MaxLJetPt){
-	  pt = MaxLJetPt; 
-	  DoubleUncertainty = true;
-	}  
 	
-	double jet_scalefactor = reader_incl->eval(BTagEntry::FLAV_UDSG, eta, pt); 
-	double jet_scalefactor_up = reader_incl_up->eval(BTagEntry::FLAV_UDSG, eta, pt); 
-	double jet_scalefactor_do = reader_incl_do->eval(BTagEntry::FLAV_UDSG, eta, pt); 
+	if (pt>MaxLJetPt)
+	{
+	  DoubleUncertainty = true;
+	  pt = MaxLJetPt; 
+	}
+	
+	double jet_scalefactor = reader_incl->eval(BTagEntry::FLAV_UDSG, std::abs(eta), pt); 
+	double jet_scalefactor_up = reader_incl_up->eval(BTagEntry::FLAV_UDSG, std::abs(eta), pt); 
+	double jet_scalefactor_do = reader_incl_do->eval(BTagEntry::FLAV_UDSG, std::abs(eta), pt); 
 	
 	if (DoubleUncertainty) {
 	  jet_scalefactor_up = 2*(jet_scalefactor_up - jet_scalefactor) + jet_scalefactor; 
 	  jet_scalefactor_do = 2*(jet_scalefactor_do - jet_scalefactor) + jet_scalefactor; 
 	}
 	
-	if (mistagsys == kDown) return jet_scalefactor_do;     //originally btagsys changed to mistagsys 
-	else if (mistagsys == kUp) return jet_scalefactor_up;  //originally btagsys changed to mistagsys 
+	if (mistagsys == kDown) return jet_scalefactor_do;
+	else if (mistagsys == kUp) return jet_scalefactor_up;
 	else return jet_scalefactor;
   }
   else{
@@ -453,6 +460,7 @@ double BTagSF::getMistag(double pt, float eta)
 double BTagSF::getEfficiencyFromFile(int flavour, double pt, float eta)
 {
 	TH2D * effHisto;
+	double eff = 0.0;
 	
 	if (flavour == 5)
 	{
@@ -467,8 +475,10 @@ double BTagSF::getEfficiencyFromFile(int flavour, double pt, float eta)
 		effHisto = (TH2D*) effFile->Get("btag_eff_oth");
 	}
 	
-	int binX = effHisto->GetXaxis()->FindBin(pt);
-	int binY = effHisto->GetYaxis()->FindBin(std::abs(eta));
+	if (pt > effHisto->GetXaxis()->GetBinLowEdge(effHisto->GetNbinsX()+1))
+		eff = effHisto->GetBinContent(effHisto->GetNbinsX(), effHisto->GetYaxis()->FindBin(std::abs(eta)));
+	else
+		eff = effHisto->GetBinContent(effHisto->GetXaxis()->FindBin(pt), effHisto->GetYaxis()->FindBin(std::abs(eta)));
 	
-	return effHisto->GetBinContent(binX, binY);
+	return eff;
 }
