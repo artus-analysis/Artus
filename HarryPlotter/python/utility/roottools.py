@@ -662,10 +662,11 @@ class RootTools(object):
 				assert all([x_low < x_high for x_low, x_high in zip(x_values[:-1], x_values[1:])])
 				
 				# determining the bin edges for the histogram
-				# TODO: determining the bin edges currently only work properly for equidistant x-values
 				bin_edges = [(x_low+x_high)/2.0 for x_low, x_high in zip(x_values[:-1], x_values[1:])]
 				bin_edges.insert(0, x_values[0] - ((bin_edges[0]-x_values[0]) / 2.0))
 				bin_edges.append(x_values[-1] + ((x_values[-1]-bin_edges[-1]) / 2.0))
+				if isinstance(root_object, ROOT.TGraphAsymmErrors) or isinstance(root_object, ROOT.TGraphErrors):
+					bin_edges = RootTools.tgrapherr_get_binedges(root_object)
 				
 				y_values = root_object.GetY()
 				y_values = [y_values[index] for index in xrange(root_object.GetN())]
@@ -866,3 +867,13 @@ class RootTools(object):
 		tgraph.GetPoint(i, tmpX, tmpY)
 		return float(tmpX), float(tmpY)
 
+	@staticmethod
+	def tgrapherr_get_binedges(tgraph):
+		bin_edges = []
+		for i in range(tgraph.GetN()):
+			lowedge  = RootTools.tgraph_get_point(tgraph, i)[0] - tgraph.GetErrorXlow(i)
+			highedge = RootTools.tgraph_get_point(tgraph, i)[0] + tgraph.GetErrorXhigh(i)
+			if i == 0:
+				bin_edges.append(lowedge)
+			bin_edges.append(highedge)
+		return bin_edges
