@@ -415,7 +415,7 @@ class PlotMpl(plotbase.PlotBase):
 				ax2.set_yticks(plotData.plotdict["y_subplot_ticks"])
 
 			ax2.set_xlabel(self.nicelabels.get_nice_label(plotData.plotdict["x_label"]),position=(1., 0.), va='top', ha='right')
-			ax2.set_ylabel(plotData.plotdict["y_subplot_label"])
+			ax2.set_ylabel(self.nicelabels.get_nice_label(plotData.plotdict["y_subplot_label"]))
 			if plotData.plotdict["subplot_grid"]:
 				{'horizontal': ax2.yaxis, 'vertical':ax2.xaxis}.get(plotData.plotdict["subplot_grid"], ax2).grid(True)
 
@@ -611,7 +611,8 @@ class PlotMpl(plotbase.PlotBase):
 		# http://stackoverflow.com/a/18499120/3243729
 		if line_style:
 			if step:
-				ax.step(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(y), fillstyle=fillstyle, linestyle=line_style, label=label, **kwargs)
+				# use ax.plot and not ax.step because of a bug in MPL
+				ax.plot(self.steppify_bin(hist.xbinedges, isx=True), self.steppify_bin(y), drawstyle='steps', fillstyle=fillstyle, linestyle=line_style, label=label, **kwargs)
 			else:
 				ax.plot(x, y, linestyle=line_style, fillstyle=fillstyle, label=label, **kwargs)
 		ax.errorbar(x, y, fillstyle=fillstyle, xerr=xerr, yerr=yerr, capsize=capsize, fmt=fmt, label=label, linestyle='None', **kwargs)
@@ -739,8 +740,8 @@ class PlotMpl(plotbase.PlotBase):
 				zorder=zorder,
 				label=label,
 			)
-			patch_for_label = plt.Rectangle((0, 0), 0, 0, label=label, color=color, alpha=alpha)
-			ax.add_patch(patch_for_label)
+		patch_for_label = plt.Rectangle((0, 0), 0, 0, label=label, color=color, alpha=alpha, hatch=hatch)
+		ax.add_patch(patch_for_label)
 
 
 	def get_zip_arguments(self, plotData):
