@@ -47,15 +47,17 @@ class ArtusWrapper(object):
 
 		#Expand Config
 		self.expandConfig()
-		self.defaultProjectPath = None
 		self.projectPath = None
+		self.localProjectPath = None
 
 		#read in external values
 		if not self._args.batch:
 			self.readInExternals()
 		if self._args.batch:
-			self.defaultProjectPath = os.path.join(os.path.expandvars(self._parser.get_default("work")), date_now+"_"+self._args.project_name)
 			self.projectPath = os.path.join(os.path.expandvars(self._args.work), date_now+"_"+self._args.project_name)
+			self.localProjectPath = self.projectPath
+			if self.projectPath.startswith("srm://"):
+				self.localProjectPath = os.path.join(os.path.expandvars(self._parser.get_default("work")), date_now+"_"+self._args.project_name)
 
 	def run(self):
 	
@@ -66,10 +68,10 @@ class ArtusWrapper(object):
 			self.saveConfig(self._args.save_config)
 		elif self._args.batch:
 			basename = "artus_{0}.json".format(hashlib.md5(str(self._config)).hexdigest())
-			filepath = os.path.join(self.projectPath, basename)
-			if not os.path.exists(self.projectPath):
-				os.makedirs(self.projectPath)
-				os.makedirs(os.path.join(self.projectPath, "output"))
+			filepath = os.path.join(self.localProjectPath, basename)
+			if not os.path.exists(self.localProjectPath):
+				os.makedirs(self.localProjectPath)
+				os.makedirs(os.path.join(self.localProjectPath, "output"))
 			self.saveConfig(filepath)
 		else:
 			self.saveConfig()
@@ -394,14 +396,14 @@ class ArtusWrapper(object):
 				dbsFileContent += inputEntry + "\n"
 		
 		dbsFileBasename = "datasets_{0}.dbs".format(hashlib.md5(str(self._config)).hexdigest())
-		dbsFileBasepath = os.path.join(self.projectPath, dbsFileBasename)
+		dbsFileBasepath = os.path.join(self.localProjectPath, dbsFileBasename)
 		with open(dbsFileBasepath, "w") as dbsFile:
 			dbsFile.write(dbsFileContent)
 		
 		gcConfigFilePath = os.path.expandvars(self._args.gc_config)
 		gcConfigFile = open(gcConfigFilePath,"r")
 		tmpGcConfigFileBasename = "grid-control_base_config_{0}.conf".format(hashlib.md5(str(self._config)).hexdigest())
-		tmpGcConfigFileBasepath = os.path.join(self.projectPath, tmpGcConfigFileBasename)
+		tmpGcConfigFileBasepath = os.path.join(self.localProjectPath, tmpGcConfigFileBasename)
 
 		# open base file and save it to a list
 		tmpGcConfigFile = open(tmpGcConfigFileBasepath,"w")
@@ -425,7 +427,7 @@ class ArtusWrapper(object):
 			epilogArguments += ("--ld-library-paths %s" % " ".join(self._args.ld_library_paths))
 		
 		sepath = "se path = " + (self._args.se_path if self._args.se_path else sepathRaw)
-		workdir = "workdir = " + os.path.join(self.defaultProjectPath if self.projectPath.startswith("srm://") else self.projectPath, "workdir")
+		workdir = "workdir = " + os.path.join(self.localProjectPath, "workdir")
 		backend = open(os.path.expandvars("$CMSSW_BASE/src/Artus/Configuration/data/grid-control_backend_" + self._args.batch + ".conf"), 'r').read()
 		self.replacingDict = dict(
 				include = ("include = " + " ".join(self._args.gc_config_includes) if self._args.gc_config_includes else ""),
