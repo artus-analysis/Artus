@@ -47,12 +47,14 @@ class ArtusWrapper(object):
 
 		#Expand Config
 		self.expandConfig()
+		self.defaultProjectPath = None
 		self.projectPath = None
 
 		#read in external values
 		if not self._args.batch:
 			self.readInExternals()
 		if self._args.batch:
+			self.defaultProjectPath = os.path.join(os.path.expandvars(self._parser.get_default("work")), date_now+"_"+self._args.project_name)
 			self.projectPath = os.path.join(os.path.expandvars(self._args.work), date_now+"_"+self._args.project_name)
 
 	def run(self):
@@ -423,7 +425,7 @@ class ArtusWrapper(object):
 			epilogArguments += ("--ld-library-paths %s" % " ".join(self._args.ld_library_paths))
 		
 		sepath = "se path = " + (self._args.se_path if self._args.se_path else sepathRaw)
-		workdir = "workdir = " + os.path.join(self.projectPath, "workdir")
+		workdir = "workdir = " + os.path.join(self.defaultProjectPath if self.projectPath.startswith("srm://") else self.projectPath, "workdir")
 		backend = open(os.path.expandvars("$CMSSW_BASE/src/Artus/Configuration/data/grid-control_backend_" + self._args.batch + ".conf"), 'r').read()
 		self.replacingDict = dict(
 				include = ("include = " + " ".join(self._args.gc_config_includes) if self._args.gc_config_includes else ""),
