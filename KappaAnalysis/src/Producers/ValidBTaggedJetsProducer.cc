@@ -17,6 +17,9 @@ void ValidBTaggedJetsProducer::Init(KappaSettings const& settings)
 	}
 	
 	// add possible quantities for the lambda ntuples consumers
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nLooseBJets", [](KappaEvent const& event, KappaProduct const& product) {
+		return product.m_looseBTaggedJets.size();
+	});
 	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nBJets", [](KappaEvent const& event, KappaProduct const& product) {
 		return product.m_bTaggedJets.size();
 	});
@@ -120,6 +123,19 @@ void ValidBTaggedJetsProducer::Produce(KappaEvent const& event, KappaProduct& pr
 			product.m_bTaggedJets.push_back(tjet);
 		else
 			product.m_nonBTaggedJets.push_back(tjet);
+
+		// also check for a looser WP if given
+		if (settings.GetBTaggedJetCombinedSecondaryVertexLooseWP() > 0.0)
+		{
+			bool validLooseBJet = true;
+			if (combinedSecondaryVertex < settings.GetBTaggedJetCombinedSecondaryVertexLooseWP() ||
+				std::abs(tjet->p4.eta()) > settings.GetBTaggedJetAbsEtaCut()) {
+				validLooseBJet = false;
+			}
+			validLooseBJet = validLooseBJet && AdditionalCriteria(tjet, event, product, settings);
+            if (validLooseBJet)
+                product.m_looseBTaggedJets.push_back(tjet);
+		}
 	}
 }
 

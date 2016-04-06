@@ -105,6 +105,7 @@ public:
 	/// added by ValidBTaggedJetsProducer
 	std::vector<KJet*> m_bTaggedJets;
 	std::vector<KJet*> m_nonBTaggedJets;
+	std::vector<KJet*> m_looseBTaggedJets;
 	
 	mutable HLTTools m_hltInfo = HLTTools();
 	// selected means fired (and unprescaled if requested)
