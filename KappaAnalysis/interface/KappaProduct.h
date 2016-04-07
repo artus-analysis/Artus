@@ -3,11 +3,10 @@
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "KappaTools/RootTools/interface/HLTTools.h"
-#include "MotherDaughterBundle.h"
 
 #include "Artus/Core/interface/ProductBase.h"
 #include "Artus/KappaAnalysis/interface/KappaEnumTypes.h"
-#include "Artus/KappaAnalysis/interface/MotherDaughterBundle.h"
+#include "Artus/KappaAnalysis/interface/Utility/MotherDaughterBundle.h"
 
 /**
    \brief Container class for everything that can be produced in pipeline.

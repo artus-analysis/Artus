@@ -49,42 +49,42 @@ void GenTauDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& pro
 	MotherDaughterBundle::DecayMode tau1DecayMode = MotherDaughterBundle::DecayMode::NONE;
 	MotherDaughterBundle::DecayMode tau2DecayMode = MotherDaughterBundle::DecayMode::NONE;
 
-	if ((product.m_genBoson.size() > 0) && (product.m_genBoson[0].Daughters.size() > 1))
+	if ((product.m_genBoson.size() > 0) && (product.m_genBoson[0].m_daughters.size() > 1))
 	{
-		selectedTau1 = &(product.m_genBoson[0].Daughters[0]);
-		selectedTau2 = &(product.m_genBoson[0].Daughters[1]);
+		selectedTau1 = &(product.m_genBoson[0].m_daughters[0]);
+		selectedTau2 = &(product.m_genBoson[0].m_daughters[1]);
 
-		selectedTau1->determineDecayMode(selectedTau1);
-		selectedTau2->determineDecayMode(selectedTau2);
+		selectedTau1->DetermineDecayMode(selectedTau1);
+		selectedTau2->DetermineDecayMode(selectedTau2);
 
-		tau1DecayMode = selectedTau1->decayMode;
-		tau2DecayMode = selectedTau2->decayMode;
+		tau1DecayMode = selectedTau1->m_decayMode;
+		tau2DecayMode = selectedTau2->m_decayMode;
 
-		selectedTau1->createFinalStateProngs(selectedTau1);
-		selectedTau2->createFinalStateProngs(selectedTau2);
+		selectedTau1->CreateFinalStateProngs(selectedTau1);
+		selectedTau2->CreateFinalStateProngs(selectedTau2);
 
-		if ((selectedTau1->finalStateOneProngs.size()) > 0)
+		if ((selectedTau1->m_finalStateOneProngs.size()) > 0)
 		{
 			tau1ProngSize = 1;
 		}
-		else if ((selectedTau1->finalStateThreeProngs.size()) > 0)
+		else if ((selectedTau1->m_finalStateThreeProngs.size()) > 0)
 		{
 			tau1ProngSize = 3;
 		}
-		else if ((selectedTau1->finalStateFiveProngs.size()) > 0)
+		else if ((selectedTau1->m_finalStateFiveProngs.size()) > 0)
 		{
 			tau1ProngSize = 5;
 		}
 
-		if (selectedTau2->finalStateOneProngs.size() > 0)
+		if (selectedTau2->m_finalStateOneProngs.size() > 0)
 		{
 			tau2ProngSize = 1;
 		}
-		else if (selectedTau2->finalStateThreeProngs.size() > 0)
+		else if (selectedTau2->m_finalStateThreeProngs.size() > 0)
 		{
 			tau2ProngSize = 3;
 		}
-		else if (selectedTau2->finalStateFiveProngs.size() > 0)
+		else if (selectedTau2->m_finalStateFiveProngs.size() > 0)
 		{
 			tau2ProngSize = 5;
 		}
@@ -99,12 +99,12 @@ void GenTauDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& pro
 	for(typename std::vector<KGenTau>::const_iterator genTau = event.m_genTaus->begin();
 	    genTau != event.m_genTaus->end(); ++genTau)
 	{
-		if (selectedTau1->node->p4 == genTau->p4)
+		if (selectedTau1->m_node->p4 == genTau->p4)
 		{
 			product.m_genMatchedDecayMode[&(*genTau)] = tau1DecayMode;
 			product.m_genMatchedProngSize[&(*genTau)] = tau1ProngSize;
 		}
-		if (selectedTau2->node->p4 == genTau->p4)
+		if (selectedTau2->m_node->p4 == genTau->p4)
 		{
 			product.m_genMatchedDecayMode[&(*genTau)] = tau2DecayMode;
 			product.m_genMatchedProngSize[&(*genTau)] = tau2ProngSize;
