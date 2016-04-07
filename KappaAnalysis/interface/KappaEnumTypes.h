@@ -19,6 +19,17 @@ public:
 		GENTAU = 3
 	};
 	static GenParticleType ToGenParticleType(std::string const& genParticleName);
+	
+	enum class TauTauDecayMode : int
+	{
+		NONE = -1,
+		TT   = 1,
+		MT   = 2,
+		ET   = 3,
+		MM   = 4,
+		EM   = 5,
+		EE   = 6
+	};
 
 	enum class DiLeptonDecayMode : int
 	{

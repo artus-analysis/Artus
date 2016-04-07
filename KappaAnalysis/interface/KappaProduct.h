@@ -7,6 +7,7 @@
 
 #include "Artus/Core/interface/ProductBase.h"
 #include "Artus/KappaAnalysis/interface/KappaEnumTypes.h"
+#include "Artus/KappaAnalysis/interface/MotherDaughterBundle.h"
 
 /**
    \brief Container class for everything that can be produced in pipeline.
@@ -162,13 +163,13 @@ public:
 	std::vector<double> m_discriminators;
 
 	// GenTauDecayModeProducer
-	std::map<const KGenTau*, int> m_genMatchedDecayMode;
+	std::map<const KGenTau*, MotherDaughterBundle::DecayMode> m_genMatchedDecayMode;
 	std::map<const KGenTau*, int> m_genMatchedProngSize;
-	int m_tau1DecayMode;
-	int m_tau2DecayMode;
+	MotherDaughterBundle::DecayMode m_tau1DecayMode;
+	MotherDaughterBundle::DecayMode m_tau2DecayMode;
 	int m_tau1ProngSize;
 	int m_tau2ProngSize;
-	int m_genTauDecayMode;
+	KappaEnumTypes::TauTauDecayMode m_genTauTauDecayMode;
 
 	// GenPartonCounterProducer
 	int m_genNPartons = -1;
