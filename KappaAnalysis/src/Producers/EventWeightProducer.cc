@@ -11,7 +11,7 @@ std::string EventWeightProducer::GetProducerId() const {
 
 EventWeightProducer::~EventWeightProducer()
 {
-	LOG(DEBUG) << "Constructed event weight from indidual weights ("
+	LOG(INFO) << "Constructed event weight from indidual weights ("
 	           << boost::algorithm::join(m_weightNames, ", ")
 	           << ") in the pipeline \"" << pipelineName << "\".";
 }

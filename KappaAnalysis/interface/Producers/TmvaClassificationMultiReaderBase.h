@@ -56,7 +56,7 @@ public:
 			//tmvaReader.emplace_back(new TMVA::Reader());
 			tmvaReader.push_back(std::make_shared<TMVA::Reader>());
 			m_inputExtractors.push_back(std::vector<float_extractor_lambda>());
-			LOG(DEBUG) << "Parse QuantitiyString " << std::endl << *quantity_str;
+			LOG(INFO) << "Parse QuantitiyString " << std::endl << *quantity_str;
 			
 			std::vector<std::string> quantity_number;
 			boost::algorithm::split(quantity_number, *quantity_str, boost::algorithm::is_any_of(";"));
@@ -79,7 +79,7 @@ public:
 				transform(splitted.begin(), splitted.end(), splitted.begin(),
 						[](std::string s) { return boost::algorithm::trim_copy(s); });
 				std::string lambdaQuantity = splitted.front();
-				LOG(DEBUG) << "Find lambdaQuantity: " << lambdaQuantity;
+				LOG(INFO) << "Find lambdaQuantity: " << lambdaQuantity;
 				if (LambdaNtupleConsumer<TTypes>::GetFloatQuantities().count(lambdaQuantity) > 0)
 				{
 					m_inputExtractors[input_index].push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetFloatQuantities(), lambdaQuantity));
@@ -106,7 +106,7 @@ public:
 		
 		// loading TMVA weight files
 		assert((settings.*GetTmvaMethods)().size() == (settings.*GetTmvaWeights)().size());
-		LOG(DEBUG) << "\tLoading TMVA weight files...";
+		LOG(INFO) << "\tLoading TMVA weight files...";
 		int mvaMethodIndex = 0;
 		for(std::vector<std::string>::const_iterator method_str = (settings.*GetTmvaMethods)().begin();
 			 method_str != (settings.*GetTmvaMethods)().end(); ++method_str)
@@ -119,7 +119,7 @@ public:
 			
 			std::string tmvaMethod = boost::lexical_cast<std::string>(input_index) + method_splits.back() + boost::lexical_cast<std::string>(mvaMethodIndex);
 			std::string tmvaWeights = (settings.*GetTmvaWeights)()[mvaMethodIndex];
-			LOG(DEBUG) << "\t\tmethod: " << tmvaMethod << ", weight file: " << tmvaWeights;
+			LOG(INFO) << "\t\tmethod: " << tmvaMethod << ", weight file: " << tmvaWeights;
 			tmvaReader[input_index]->BookMVA(tmvaMethod, tmvaWeights);
 			mvaMethodIndex += 1;
 		}

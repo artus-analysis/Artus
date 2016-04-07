@@ -82,12 +82,12 @@ public:
 		
 		// loading TMVA weight files
 		assert((settings.*GetTmvaMethods)().size() == (settings.*GetTmvaWeights)().size());
-		LOG(DEBUG) << "\tLoading TMVA weight files...";
+		LOG(INFO) << "\tLoading TMVA weight files...";
 		for (size_t mvaMethodIndex = 0; mvaMethodIndex < (settings.*GetTmvaMethods)().size(); ++mvaMethodIndex)
 		{
 			std::string tmvaMethod = (settings.*GetTmvaMethods)()[mvaMethodIndex]+ boost::lexical_cast<std::string>(mvaMethodIndex);
 			std::string tmvaWeights = (settings.*GetTmvaWeights)()[mvaMethodIndex];
-			LOG(DEBUG) << "\t\tmethod: " << tmvaMethod << ", weight file: " << tmvaWeights;
+			LOG(INFO) << "\t\tmethod: " << tmvaMethod << ", weight file: " << tmvaWeights;
 			tmvaReader.BookMVA(tmvaMethod, tmvaWeights);
 		}
 	}
