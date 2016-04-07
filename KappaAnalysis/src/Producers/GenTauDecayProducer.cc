@@ -490,29 +490,43 @@ void GenTauDecayProducer::Produce(KappaEvent const& event, KappaProduct& product
 			MotherDaughterBundle & lastBosonRef = product.m_genBoson.back();
 			lastBosonRef.SetCharge();
 			lastBosonRef.SetDetectable();
-			if (part->daughterIndices.size() == 0) lastBosonRef.m_finalState = true;
-			else BuildDecayTree(lastBosonRef, partIndex, event);
+			if (part->daughterIndices.size() == 0)
+			{
+				lastBosonRef.m_finalState = true;
+			}
+			else
+			{
+				BuildDecayTree(lastBosonRef, partIndex, event);
+			}
 		}
 	}
 }
 	
 void GenTauDecayProducer::BuildDecayTree(MotherDaughterBundle & lastProductParentRef, unsigned int lastEventParentIndex, event_type const& event) const
 {
-	for (unsigned int j=0; j<(event.m_genParticles->at(lastEventParentIndex)).daughterIndices.size() && (event.m_genParticles->at(lastEventParentIndex)).daughterIndices.size() != 0; ++j)
+	for (unsigned int j = 0;
+	     (j < (event.m_genParticles->at(lastEventParentIndex)).daughterIndices.size()) && ((event.m_genParticles->at(lastEventParentIndex)).daughterIndices.size() != 0);
+	     ++j)
 	{
-		unsigned int DaughterIndex = (event.m_genParticles->at(lastEventParentIndex)).daughterIndex(j);
-		if (DaughterIndex < event.m_genParticles->size())
+		unsigned int daughterIndex = (event.m_genParticles->at(lastEventParentIndex)).daughterIndex(j);
+		if (daughterIndex < event.m_genParticles->size())
 		{
-			lastProductParentRef.m_daughters.push_back(MotherDaughterBundle( &(event.m_genParticles->at(DaughterIndex)) ));
+			lastProductParentRef.m_daughters.push_back(MotherDaughterBundle( &(event.m_genParticles->at(daughterIndex)) ));
 			MotherDaughterBundle & lastDaughterRef = lastProductParentRef.m_daughters.back();
 			lastDaughterRef.SetCharge();
 			lastDaughterRef.SetDetectable();
-			if ( (event.m_genParticles->at(DaughterIndex)).daughterIndices.size() == 0) lastDaughterRef.m_finalState = true;
-			else BuildDecayTree(lastDaughterRef, DaughterIndex, event);
+			if ((event.m_genParticles->at(daughterIndex)).daughterIndices.size() == 0)
+			{
+				lastDaughterRef.m_finalState = true;
+			}
+			else
+			{
+				BuildDecayTree(lastDaughterRef, daughterIndex, event);
+			}
 		}
 		else
 		{
-			LOG(ERROR) << "Index larger than size of gen particle vector:" << DaughterIndex << ">" << event.m_genParticles->size() << ".";
+			LOG(ERROR) << "Index larger than size of gen particle vector:" << daughterIndex << ">" << event.m_genParticles->size() << ".";
 		}
 	}
 }
