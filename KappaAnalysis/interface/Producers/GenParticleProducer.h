@@ -5,6 +5,7 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
+#include "Artus/KappaAnalysis/interface/KappaEnumTypes.h"
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 
 /**
@@ -37,18 +38,8 @@ public:
 
 
 private:
-
-	enum class GenParticleType : int
-	{
-		NONE = -1,
-		GENPARTICLE  = 0,
-		GENELECTRON = 1,
-		GENMUON = 2,
-		GENTAU = 3
-	};
-	static GenParticleType ToGenParticleType(std::string const& genParcticleName);
 	
-	std::vector<GenParticleType> genParticleTypes;
+	std::vector<KappaEnumTypes::GenParticleType> m_genParticleTypes;
 
 };
 

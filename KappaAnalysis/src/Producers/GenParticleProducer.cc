@@ -1,5 +1,6 @@
 
 #include "Artus/KappaAnalysis/interface/Producers/GenParticleProducer.h"
+#include "Artus/Utility/interface/Utility.h"
 
 std::string GenParticleProducer::GetProducerId() const{
 	return "GenParticleProducer";
@@ -9,11 +10,11 @@ void GenParticleProducer::Init(KappaSettings const& settings)
 {
 	KappaProducerBase::Init(settings);
 	
-	genParticleTypes.clear();
+	m_genParticleTypes.clear();
 	for (std::vector<std::string>::const_iterator genParticleType = settings.GetGenParticleTypes().begin();
 	     genParticleType != settings.GetGenParticleTypes().end(); ++genParticleType)
 	{
-		genParticleTypes.push_back(ToGenParticleType(*genParticleType));
+		m_genParticleTypes.push_back(KappaEnumTypes::ToGenParticleType(*genParticleType));
 	}
 }
 
@@ -23,8 +24,7 @@ void GenParticleProducer::Produce(KappaEvent const& event, KappaProduct& product
 	assert(event.m_genParticles);
 
 	// gen particles (can be used for quarks, W, Z, .., but also for leptons if needed)
-	if (std::find(genParticleTypes.begin(), genParticleTypes.end(), GenParticleType::GENPARTICLE)
-	    != genParticleTypes.end())
+	if (Utility::Contains(m_genParticleTypes, KappaEnumTypes::GenParticleType::GENPARTICLE))
 	{
 		for (KGenParticles::iterator part = event.m_genParticles->begin();
 		     part != event.m_genParticles->end(); ++part)
@@ -41,8 +41,7 @@ void GenParticleProducer::Produce(KappaEvent const& event, KappaProduct& product
 	}
 
 	// gen electrons
-	if (std::find(genParticleTypes.begin(), genParticleTypes.end(), GenParticleType::GENELECTRON)
-	    != genParticleTypes.end())
+	if (Utility::Contains(m_genParticleTypes, KappaEnumTypes::GenParticleType::GENELECTRON))
 	{
 		for (KGenParticles::iterator part = event.m_genParticles->begin();
 		     part != event.m_genParticles->end(); ++part)
@@ -68,8 +67,7 @@ void GenParticleProducer::Produce(KappaEvent const& event, KappaProduct& product
 	}
 
 	// gen muons
-	if (std::find(genParticleTypes.begin(), genParticleTypes.end(), GenParticleType::GENMUON)
-	    != genParticleTypes.end())
+	if (Utility::Contains(m_genParticleTypes, KappaEnumTypes::GenParticleType::GENMUON))
 	{
 		for (KGenParticles::iterator part = event.m_genParticles->begin();
 		     part != event.m_genParticles->end(); ++part)
@@ -95,8 +93,7 @@ void GenParticleProducer::Produce(KappaEvent const& event, KappaProduct& product
 	}
 
 	// gen taus
-	if (std::find(genParticleTypes.begin(), genParticleTypes.end(), GenParticleType::GENTAU)
-	    != genParticleTypes.end())
+	if (Utility::Contains(m_genParticleTypes, KappaEnumTypes::GenParticleType::GENTAU))
 	{
 		for (KGenParticles::iterator part = event.m_genParticles->begin();
 		     part != event.m_genParticles->end(); ++part)
@@ -112,11 +109,3 @@ void GenParticleProducer::Produce(KappaEvent const& event, KappaProduct& product
 	}
 }
 
-GenParticleProducer::GenParticleType GenParticleProducer::ToGenParticleType(std::string const& genParticleName)
-{
-	if (genParticleName == "genParticle") return GenParticleType::GENPARTICLE;
-	else if (genParticleName == "genElectron") return GenParticleType::GENELECTRON;
-	else if (genParticleName == "genMuon") return GenParticleType::GENMUON;
-	else if (genParticleName == "genTau") return GenParticleType::GENTAU;
-	else return GenParticleType::NONE;
-}

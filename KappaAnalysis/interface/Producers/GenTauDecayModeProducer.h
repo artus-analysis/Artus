@@ -5,6 +5,7 @@
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
+#include "Artus/KappaAnalysis/interface/KappaEnumTypes.h"
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
 #include "Artus/Utility/interface/Utility.h"
 
@@ -30,18 +31,7 @@ public:
 	void Init(KappaSettings const& settings) override;
 
 	void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const override;
-
-	enum class GenTauDecayMode : int
-	{
-		NONE = -1,
-		TT   = 1,
-		MT   = 2,
-		ET   = 3,
-		MM   = 4,
-		EM   = 5,
-		EE   = 6
-	};
+	             KappaSettings const& settings) const override;
 
 private:
 	int NeutralParticles(std::vector<MotherDaughterBundle*> finalStateProngs) const;
