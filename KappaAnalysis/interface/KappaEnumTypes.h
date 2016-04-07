@@ -10,6 +10,16 @@ class KappaEnumTypes {
 
 public:
 
+	enum class GenParticleType : int
+	{
+		NONE = -1,
+		GENPARTICLE  = 0,
+		GENELECTRON = 1,
+		GENMUON = 2,
+		GENTAU = 3
+	};
+	static GenParticleType ToGenParticleType(std::string const& genParticleName);
+
 	enum class DiLeptonDecayMode : int
 	{
 		NONE = -1,
@@ -18,14 +28,7 @@ public:
 		TT = 2,
 		LL = 3,
 	};
-	static DiLeptonDecayMode ToDiLeptonDecayMode(std::string const& diLeptonDecayMode)
-	{
-		if (diLeptonDecayMode == "ee") return DiLeptonDecayMode::EE;
-		else if (diLeptonDecayMode == "mm") return DiLeptonDecayMode::MM;
-		else if (diLeptonDecayMode == "tt") return DiLeptonDecayMode::TT;
-		else if (diLeptonDecayMode == "ll") return DiLeptonDecayMode::LL;
-		return DiLeptonDecayMode::NONE;
-	}
+	static DiLeptonDecayMode ToDiLeptonDecayMode(std::string const& diLeptonDecayMode);
 
 };
 
