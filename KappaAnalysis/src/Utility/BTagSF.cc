@@ -3,6 +3,10 @@
 
 BTagSF::BTagSF(std::string csvfile, std::string efficiencyfile)
 {
+  
+  	TDirectory *savedir(gDirectory);
+	TFile *savefile(gFile);
+  
 	randm = new TRandom3(0);
 	calib = new BTagCalibration("csvv2", csvfile);
 	
@@ -29,6 +33,9 @@ BTagSF::BTagSF(std::string csvfile, std::string efficiencyfile)
 	
 	reader_incl_up = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM, "incl", "up");    // sys up
 	reader_incl_do = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM, "incl", "down");  // sys down
+	gDirectory = savedir;
+	gFile = savefile;
+	
 }
 
 BTagSF::~BTagSF()
