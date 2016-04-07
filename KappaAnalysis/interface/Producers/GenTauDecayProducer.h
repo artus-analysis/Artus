@@ -30,10 +30,12 @@ public:
 	void Init(KappaSettings const& settings) override;
 
 	void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const override;
+	             KappaSettings const& settings) const override;
+
 private:
 	void BuildDecayTree(MotherDaughterBundle & lastProductParentRef, unsigned int lastEventParentIndex, event_type const& event) const;
-	int BosonPdgId;
-	int BosonStatus;
+	
+	int m_bosonPdgId;
+	int m_bosonStatus;
 };
 
