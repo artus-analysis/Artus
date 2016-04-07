@@ -410,7 +410,7 @@ class ArtusWrapper(object):
 		
 		epilogArguments  = r"epilog arguments = "
 		epilogArguments += r"--disable-repo-versions "
-		#epilogArguments += r"--log-level debug "
+		epilogArguments += r"--log-level info "
 		if self._args.no_log_to_se:
 			epilogArguments += r"--log-files log.txt "
 		else:
