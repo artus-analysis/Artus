@@ -1,5 +1,6 @@
 
 #include "Artus/KappaAnalysis/interface/Producers/GenPartonCounterProducer.h"
+#include "Artus/Utility/interface/Utility.h"
 
 
 std::string GenPartonCounterProducer::GetProducerId() const {
@@ -39,8 +40,10 @@ void GenPartonCounterProducer::Produce(KappaEvent const& event, KappaProduct& pr
 		}
 
 		// start counting partons after finding a boson (for example W or Z)
-		if (std::abs(genParticle->pdgId) == settings.GetBosonPdgId())
+		if (Utility::Contains(settings.GetBosonPdgIds(), std::abs(genParticle->pdgId)))
+		{
 			countPartons = true;
+		}
 	}
 
 	product.m_genNPartons = nPartons;

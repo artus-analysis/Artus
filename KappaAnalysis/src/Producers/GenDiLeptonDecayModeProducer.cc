@@ -4,6 +4,7 @@
 
 #include "Artus/KappaAnalysis/interface/Producers/GenDiLeptonDecayModeProducer.h"
 #include "Artus/KappaAnalysis/interface/KappaEnumTypes.h"
+#include "Artus/Utility/interface/Utility.h"
 
 
 std::string GenDiLeptonDecayModeProducer::GetProducerId() const {
@@ -29,7 +30,7 @@ void GenDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaProduct
 	for (KGenParticles::const_iterator genParticle = event.m_genParticles->begin();
 		 genParticle != event.m_genParticles->end(); ++genParticle)
 	{
-		if ((std::abs(genParticle->pdgId) == settings.GetBosonPdgId()) && (genParticle->status() == settings.GetBosonStatus()))
+		if (Utility::Contains(settings.GetBosonPdgIds(), std::abs(genParticle->pdgId)) && Utility::Contains(settings.GetBosonStatuses(), genParticle->status()))
 		{
 			std::map<int, int> nDecayProductsPerType;
 			product.m_genDiLeptonBoson = (*genParticle).p4;

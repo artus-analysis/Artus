@@ -1,5 +1,7 @@
 
 #include "Artus/KappaAnalysis/interface/Producers/GenTauDecayProducer.h"
+#include "Artus/Utility/interface/Utility.h"
+
 
 std::string GenTauDecayProducer::GetProducerId() const {
 	return "GenTauDecayProducer";
@@ -8,8 +10,6 @@ std::string GenTauDecayProducer::GetProducerId() const {
 void GenTauDecayProducer::Init(KappaSettings const& settings)
 {
 	KappaProducerBase::Init(settings);
-	m_bosonPdgId = settings.GetBosonPdgId();
-	m_bosonStatus = settings.GetBosonStatus();
 
 	// add possible quantities for the lambda ntuples consumers
 	
@@ -481,10 +481,10 @@ void GenTauDecayProducer::Produce(KappaEvent const& event, KappaProduct& product
 		 part != event.m_genParticles->end(); ++part)
 	{
 		// If negative m_bosonStatus is set, then the status of the particle is ignored
-		bool checkBosonStatus = (m_bosonStatus < 0) ? true : (part->status() == m_bosonStatus);
+		bool checkBosonStatus = (settings.GetBosonStatuses().empty() || Utility::Contains(settings.GetBosonStatuses(), part->status()));
 		unsigned int partIndex = part - event.m_genParticles->begin();
 		// Filling Boson (e.g. Higgs, Z, ...), its daughter & granddaughter particles in recursive way.
-		if ((std::abs(part->pdgId) == m_bosonPdgId) && checkBosonStatus)
+		if (Utility::Contains(settings.GetBosonPdgIds(), std::abs(part->pdgId)) && checkBosonStatus)
 		{
 			product.m_genBoson.push_back( MotherDaughterBundle(&(*part)) );
 			MotherDaughterBundle & lastBosonRef = product.m_genBoson.back();
