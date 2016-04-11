@@ -41,6 +41,13 @@ public:
 
 	// events in this map can be written out automatically by the KappaLambdaNtupleConsumer
 	std::map<std::string, double> m_optionalWeights;
+	
+	// filled by GenBosonProducers
+	const KGenParticle* m_genBosonParticle = nullptr;
+	RMFLV m_genBosonLV;
+	bool m_genBosonLVFound = false;
+	
+	std::vector<const KGenParticle*> m_genLeptonsFromBosonDecay;
 
 	// filled by GenTauDecayProducer
 	std::vector<MotherDaughterBundle> m_genBoson;

@@ -36,6 +36,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/GenTauJetMatchingProducers.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenMuonFSRProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ZProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/GenBosonProducers.h"
 
 // filter
 #include "Artus/KappaAnalysis/interface/Filters/RunLumiEventFilter.h"
@@ -169,6 +170,10 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new ZeeProducer();
 	else if(id == ZemProducer().GetProducerId())
 		return new ZemProducer();
+	else if(id == GenBosonFromGenParticlesProducer().GetProducerId())
+		return new GenBosonFromGenParticlesProducer();
+	else if(id == GenBosonDiLeptonDecayModeProducer().GetProducerId())
+		return new GenBosonDiLeptonDecayModeProducer();
 	else
 		return FactoryBase::createProducer( id );
 }
