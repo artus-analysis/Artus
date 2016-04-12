@@ -52,7 +52,7 @@ void GenBosonFromGenParticlesProducer::Produce(KappaEvent const& event, KappaPro
 	{
 		if (Utility::Contains(settings.GetBosonPdgIds(), std::abs(genParticle->pdgId)) && Utility::Contains(settings.GetBosonStatuses(), genParticle->status()))
 		{
-			product.m_genBosonParticle = &(*genParticle);
+			product.m_genBosonParticle = const_cast<KGenParticle*>(&(*genParticle));
 			product.m_genBosonLV = (*genParticle).p4;
 			product.m_genBosonLVFound = true;
 		}
@@ -81,7 +81,7 @@ void GenBosonDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaPr
 		size_t iDaughter = 0;
 		RMFLV genBosonLV;
 		
-		for (KGenParticles::const_iterator genParticle = event.m_genParticles->begin();
+		for (KGenParticles::iterator genParticle = event.m_genParticles->begin();
 		     genParticle != event.m_genParticles->end() && (iDaughter < 2); ++genParticle)
 		{
 			if ((std::abs(genParticle->pdgId) == DefaultValues::pdgIdElectron) ||
