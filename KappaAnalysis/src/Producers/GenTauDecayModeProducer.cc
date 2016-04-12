@@ -39,9 +39,11 @@ void GenTauDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& pro
                                       KappaSettings const& settings) const
 {
 	assert(event.m_genTaus);
-
-	MotherDaughterBundle* selectedTau1 = nullptr;
-	MotherDaughterBundle* selectedTau2 = nullptr;
+	
+	// A generator level boson and its decay products must exist
+	// The boson is searched for by a GenBosonProducer
+	// and the decay tree is built by the GenTauDecayProducer
+	assert(product.m_genBosonTree.m_daughters.size() > 1);
 
 	int tau1ProngSize = -1;
 	int tau2ProngSize = -1;
@@ -49,45 +51,42 @@ void GenTauDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& pro
 	MotherDaughterBundle::DecayMode tau1DecayMode = MotherDaughterBundle::DecayMode::NONE;
 	MotherDaughterBundle::DecayMode tau2DecayMode = MotherDaughterBundle::DecayMode::NONE;
 
-	if ((product.m_genBoson.size() > 0) && (product.m_genBoson[0].m_daughters.size() > 1))
+	MotherDaughterBundle* selectedTau1 = &(product.m_genBosonTree.m_daughters[0]);
+	MotherDaughterBundle* selectedTau2 = &(product.m_genBosonTree.m_daughters[1]);
+
+	selectedTau1->DetermineDecayMode(selectedTau1);
+	selectedTau2->DetermineDecayMode(selectedTau2);
+
+	tau1DecayMode = selectedTau1->m_decayMode;
+	tau2DecayMode = selectedTau2->m_decayMode;
+
+	selectedTau1->CreateFinalStateProngs(selectedTau1);
+	selectedTau2->CreateFinalStateProngs(selectedTau2);
+
+	if ((selectedTau1->m_finalStateOneProngs.size()) > 0)
 	{
-		selectedTau1 = &(product.m_genBoson[0].m_daughters[0]);
-		selectedTau2 = &(product.m_genBoson[0].m_daughters[1]);
+		tau1ProngSize = 1;
+	}
+	else if ((selectedTau1->m_finalStateThreeProngs.size()) > 0)
+	{
+		tau1ProngSize = 3;
+	}
+	else if ((selectedTau1->m_finalStateFiveProngs.size()) > 0)
+	{
+		tau1ProngSize = 5;
+	}
 
-		selectedTau1->DetermineDecayMode(selectedTau1);
-		selectedTau2->DetermineDecayMode(selectedTau2);
-
-		tau1DecayMode = selectedTau1->m_decayMode;
-		tau2DecayMode = selectedTau2->m_decayMode;
-
-		selectedTau1->CreateFinalStateProngs(selectedTau1);
-		selectedTau2->CreateFinalStateProngs(selectedTau2);
-
-		if ((selectedTau1->m_finalStateOneProngs.size()) > 0)
-		{
-			tau1ProngSize = 1;
-		}
-		else if ((selectedTau1->m_finalStateThreeProngs.size()) > 0)
-		{
-			tau1ProngSize = 3;
-		}
-		else if ((selectedTau1->m_finalStateFiveProngs.size()) > 0)
-		{
-			tau1ProngSize = 5;
-		}
-
-		if (selectedTau2->m_finalStateOneProngs.size() > 0)
-		{
-			tau2ProngSize = 1;
-		}
-		else if (selectedTau2->m_finalStateThreeProngs.size() > 0)
-		{
-			tau2ProngSize = 3;
-		}
-		else if (selectedTau2->m_finalStateFiveProngs.size() > 0)
-		{
-			tau2ProngSize = 5;
-		}
+	if (selectedTau2->m_finalStateOneProngs.size() > 0)
+	{
+		tau2ProngSize = 1;
+	}
+	else if (selectedTau2->m_finalStateThreeProngs.size() > 0)
+	{
+		tau2ProngSize = 3;
+	}
+	else if (selectedTau2->m_finalStateFiveProngs.size() > 0)
+	{
+		tau2ProngSize = 5;
 	}
 
 	product.m_tau1DecayMode = tau1DecayMode;

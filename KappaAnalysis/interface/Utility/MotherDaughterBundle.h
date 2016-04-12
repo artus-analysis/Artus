@@ -13,7 +13,7 @@
 */
 class MotherDaughterBundle {
 public:
-	explicit MotherDaughterBundle(KGenParticle* newNode);
+	MotherDaughterBundle(KGenParticle* newNode = nullptr);
 	~MotherDaughterBundle();
 	
 	bool m_finalState = false;

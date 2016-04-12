@@ -50,7 +50,7 @@ public:
 	std::vector<KGenParticle*> m_genLeptonsFromBosonDecay;
 
 	// filled by GenTauDecayProducer
-	std::vector<MotherDaughterBundle> m_genBoson;
+	MotherDaughterBundle m_genBosonTree;
 
 	/// added by ElectronCorrectionProducer
 	// needs to be a shared_ptr in order to be deleted when the product is deleted
