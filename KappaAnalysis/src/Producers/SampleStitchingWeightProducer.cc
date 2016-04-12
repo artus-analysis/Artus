@@ -78,30 +78,29 @@ void SampleStitchingWeightProducer::Produce( KappaEvent const& event,
 			}
 		}
 	}
-    else if (boost::regex_search(product.m_nickname, boost::regex("W.?JetsToLNu", boost::regex::icase | boost::regex::extended)))
-    {
+	else if (boost::regex_search(product.m_nickname, boost::regex("W.?JetsToLNu", boost::regex::icase | boost::regex::extended)))
+	{
 		if ((nPartons == 0) || (nPartons >= 5))
 		{
-            product.m_optionalWeights["stitchWeightWJ"] = 1.3046006677e-3;
+			product.m_optionalWeights["stitchWeightWJ"] = 1.3046006677e-3;
 		}
 		else if (nPartons == 1)
 		{
-            product.m_optionalWeights["stitchWeightWJ"] = 2.162338159e-4;
+			product.m_optionalWeights["stitchWeightWJ"] = 2.162338159e-4;
 		}
-        // not available yet
 		else if (nPartons == 2)
 		{
-            product.m_optionalWeights["stitchWeightWJ"] = 1.159006627e-4;
+			product.m_optionalWeights["stitchWeightWJ"] = 1.159006627e-4;
 		}
 		else if (nPartons == 3)
 		{
-            product.m_optionalWeights["stitchWeightWJ"] = 5.82002641e-5;
+			product.m_optionalWeights["stitchWeightWJ"] = 5.82002641e-5;
 		}
 		else
 		{
-            product.m_optionalWeights["stitchWeightWJ"] = 6.27558901e-05;
+			product.m_optionalWeights["stitchWeightWJ"] = 6.27558901e-05;
 		}
-    }
+	}
 	else
 	{
 		LOG(FATAL) << "Stitching weights not implemented for nickname " << product.m_nickname << ": check config settings!";
