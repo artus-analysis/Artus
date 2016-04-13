@@ -31,7 +31,7 @@ class Ratio(analysisbase.AnalysisBase):
 				help="Nick names for the denominator of the ratio. Multiple nicks (whitespace separated) will be summed up before calculating the ratio."
 		)
 		self.ratio_options.add_argument(
-				"--ratio-denominator-no-errors", nargs="+", type="bool", default=[False],
+				"--ratio-denominator-no-errors", nargs="+", type="bool", default=[True],
 				help="Remove errors of denominator histograms before calculating the ratio. [Default: %(default)s]"
 		)
 		self.ratio_options.add_argument(
