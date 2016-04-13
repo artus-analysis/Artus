@@ -1,4 +1,3 @@
-<Flags CXXFLAGS="-g" />
 <Flags LDFLAGS="-rdynamic" />
 
 <use name="KappaTools/Toolbox" />
