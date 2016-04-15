@@ -30,9 +30,10 @@ class SignalOverBackgroundIntegral(analysisbase.AnalysisBase):
 				help="Nick names for the resulting histograms.")
 		self.sig_over_bkg_integral.add_argument("--sob-integral-method", nargs="+", default=["righttoleft"], choices=["righttoleft", "rcombination"],
 				help="Desired method to calculate sob_integral condition.")
-		self.sig_over_bkg_integral.add_argument("--sob_integral_outputs", nargs="+", default=[None],
+		self.sig_over_bkg_integral.add_argument("--sob-integral-outputs", nargs="+", default=[None],
 				help="Desired outputfile to save calculated min/max, None is no output written .")
-
+		self.sig_over_bkg_integral.add_argument("--sob-frontname", default = "",
+				help="this string is written in front of the output string [Default: %(default)s]")
 	def prepare_args(self, parser, plotData):
 		super(SignalOverBackgroundIntegral, self).prepare_args(parser, plotData)
 
@@ -45,6 +46,7 @@ class SignalOverBackgroundIntegral(analysisbase.AnalysisBase):
 		rtl_yvalues = []
 		ltr_marks = []
 		ltr_yvalues = []
+		front_name = plotData.plotdict["sob_frontname"]
 		for signal_nick, background_nick, result_nick, method, outpath in  zip(
 																	plotData.plotdict["sob_integral_signal_nicks"],
 																	plotData.plotdict["sob_integral_background_nicks"],
@@ -128,9 +130,9 @@ class SignalOverBackgroundIntegral(analysisbase.AnalysisBase):
 					os.makedirs(dirpath)
 				if not os.path.exists(outpath):
 					with open(outpath, "w") as outfile:
-						outfile.write("%s : %s\n"%(plotData.plotdict["x_expressions"][0], " ".join(["%s"%(signal.GetBinLowEdge(x)) for x in rtl_marks])))
+						outfile.write(front_name+"%s : %s\n"%(plotData.plotdict["x_expressions"][0], " ".join(["%s"%(signal.GetBinLowEdge(x)) for x in rtl_marks])))
 				else:
 					with open(outpath, "a") as outfile:
-						outfile.write("%s : %s\n"%(plotData.plotdict["x_expressions"][0], " ".join(["%s"%(signal.GetBinLowEdge(x)) for x in rtl_marks])))
+						outfile.write(front_name+"%s : %s\n"%(plotData.plotdict["x_expressions"][0], " ".join(["%s"%(signal.GetBinLowEdge(x)) for x in rtl_marks])))
 			plotData.plotdict["root_objects"][result_nick] = output_histogram
 			plotData.plotdict["nicks"].append(result_nick)
