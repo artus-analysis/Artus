@@ -24,7 +24,7 @@ class JsonDict(dict):
 	"""
 	Class that stores python dicts and offers some additional JSON functionality
 	"""
-	
+
 	# static members as global settings
 	PATH_TO_ROOT_CONFIG = "config"
 	ALWAYS_DO_COMMENTS = True
@@ -40,13 +40,14 @@ class JsonDict(dict):
 		If jsonDict is of type list, the list is converted into a JsonDictList
 		and all items are merged into one single JsonDict
 		"""
-	
+
 		if isinstance(jsonDict, dict):
 			dict.__init__(self, jsonDict)
 		elif isinstance(jsonDict, basestring):
 			if os.path.exists(os.path.expandvars(jsonDict)):
 				dict.__init__(self, JsonDict.readJsonDict(jsonDict))
 			else:
+				log.info("try to decode " + jsonDict)
 				dict.__init__(self, json.loads(jsonDict.replace("'", "\"")))
 		elif isinstance(jsonDict, collections.Iterable):
 			dict.__init__(self, JsonDict.mergeAll(*jsonDict))
@@ -54,18 +55,18 @@ class JsonDict(dict):
 			raise TypeError("Unsupported type \"%s\" in JsonDict constructor", type(jsonDict))
 		if JsonDict.ALWAYS_DO_COMMENTS:
 			JsonDict.deepuncomment(self)
-	
+
 	def __add__(self, jsonDict2):
 		""" merges two JSON dicts and returns a new object """
-		
+
 		jsonDict1 = JsonDict(self)
 		JsonDict.deepmerge(jsonDict1, jsonDict2)
 		return jsonDict1
-	
+
 	def merge(self, jsonDict2):
 		""" merges two JSON dicts and returns a new object """
 		return (self + jsonDict2)
-	
+
 	@staticmethod
 	def mergeAll(*jsonDicts):
 		""" merge all given parameters into one JSON dict """
@@ -73,21 +74,21 @@ class JsonDict(dict):
 			return JsonDict(jsonDicts[0])
 		else:
 			return reduce(lambda jsonDict1, jsonDict2: JsonDict(jsonDict1) + JsonDict(jsonDict2), jsonDicts)
-	
+
 	def __sub__(self, jsonDict2):
 		""" compares two JSON dicts and returns two diff dicts """
 		return JsonDict.deepdiff(self, jsonDict2)
-	
+
 	def diff(self, jsonDict2):
 		""" compares two JSON dicts and returns two diff dicts """
 		return (self - jsonDict2)
-	
+
 	def __mul__(self, jsonDict2):
 		"""
 		expands all possible combinations of second-layer dictionaries
 		returns new JsonDict { keyA1_keyB1 : valueA1+valueB1, ... }
 		"""
-		
+
 		jsonDict = JsonDict()
 		for key1, value1 in self.items():
 			for key2, value2 in jsonDict2.items():
@@ -97,14 +98,14 @@ class JsonDict(dict):
 				key = str(key1) + "_" + str(key2)
 				jsonDict[key] = JsonDict(value1) + JsonDict(value2)
 		return jsonDict
-	
+
 	def expand(self, jsonDict2):
 		"""
 		expands all possible combinations of second-layer dictionaries
 		returns new JsonDict { keyA1_keyB1 : valueA1+valueB1, ... }
 		"""
 		return (self * jsonDict2)
-	
+
 	@staticmethod
 	def expandAll(*jsonDicts):
 		""" expand all given parameters into one JSON dict """
@@ -112,27 +113,27 @@ class JsonDict(dict):
 			return JsonDict(jsonDicts[0])
 		else:
 			return reduce(lambda jsonDict1, jsonDict2: JsonDict(jsonDict1) * JsonDict(jsonDict2), jsonDicts)
-	
+
 	def doIncludes(self):
 		""" resolves the includes and returns a new object """
 		return JsonDict(JsonDict.deepinclude(self))
-	
+
 	def doNicks(self, nick="default"):
 		""" resolves the nicks and returns a new object """
 		return JsonDict(JsonDict.deepresolvenicks(self, nick))
-	
+
 	def doComments(self):
 		""" resolves the comments and returns a new object """
 		return JsonDict.deepuncomment(JsonDict(copy.deepcopy(self)))
-	
+
 	def doExpandvars(self):
 		""" expands environment variables in dictionary values """
 		return JsonDict(JsonDict.deepexpandvars(self))
-	
+
 	def __str__(self):
 		""" converts JSON dict to a string """
 		return self.toString()
-	
+
 	def toString(self, indent=4, sort_keys=True, **kwargs):
 		""" converts JSON dict to a string """
 		return json.dumps(self, indent=indent, sort_keys=sort_keys, **kwargs)
@@ -148,7 +149,7 @@ class JsonDict(dict):
 		fileName can point to a JSON text file or to a ROOT file containing
 		a TObjString object named as specified by PATH_TO_ROOT_CONFIG
 		"""
-		
+
 		fileName = os.path.expandvars(fileName)
 		if not os.path.exists(fileName):
 			log.critical("File \"%s\" does not exist!" % fileName)
@@ -170,7 +171,7 @@ class JsonDict(dict):
 		else:
 			with open(fileName, "r") as jsonFile:
 				jsonStrings.append(jsonFile.read())
-	
+
 		jsonDict = JsonDict()
 		try:
 			for jsonString in [jsonStrings[-1]]: #jsonStrings[::-1]: # TODO need cmore careful merging of lists
@@ -188,7 +189,7 @@ class JsonDict(dict):
 		Entries from dictWithLowerPriority are recursively merged into
 		dictWithHigherPriority in case, nothing has to be overwritten.
 		"""
-		
+
 		for key, value in dictWithLowerPriority.items():
 			if isinstance(value, dict):
 				newTarget = dictWithHigherPriority.setdefault(key, {})
@@ -206,7 +207,7 @@ class JsonDict(dict):
 		deepdiff of two dictionaries.
 		returns one dictionary for each given dictionary, that contains differences to other dictionary
 		"""
-		
+
 		diffDictA = {}
 		diffDictB = {}
 		for key in set(dictA.keys() + dictB.keys()):
@@ -231,7 +232,7 @@ class JsonDict(dict):
 		protected property names are "include" which is followed by a list of files to include
 		and "property" which is used as a property name in the included file to include just one property
 		"""
-		
+
 		result = None
 		if isinstance(jsonDict, dict):
 			result = JsonDict()
@@ -272,7 +273,7 @@ class JsonDict(dict):
 		"nick" is a protected property name which is followed by a dict with nick name regexs as keys
 		if no matching nick name is found, it is looked for "default".
 		"""
-		
+
 		result = None
 		if isinstance(jsonDict, dict):
 			result = JsonDict()
@@ -288,7 +289,7 @@ class JsonDict(dict):
 		else:
 			result = copy.deepcopy(jsonDict)
 		return result
-	
+
 	@staticmethod
 	def deepuncomment(jsonDict):
 		"""
@@ -322,7 +323,7 @@ class JsonDict(dict):
 		"""
 		call os.path.expandvars recursively for each string-type value in this dictionary
 		"""
-		
+
 		result = None
 		if isinstance(jsonDict, dict):
 			result = JsonDict()
