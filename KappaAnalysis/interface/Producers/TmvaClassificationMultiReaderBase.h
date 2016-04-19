@@ -131,13 +131,9 @@ public:
 						 setting_type const& settings) const override
 	{
 		// construct and fill input vector + retrieve outputs
-		int mvaMethodIndex = 0;
 		(product.*m_mvaOutputsMember) = std::vector<double>((settings.*GetTmvaMethods)().size());
-		for(std::vector<std::string>::const_iterator method_str = (settings.*GetTmvaMethods)().begin();
-			 method_str != (settings.*GetTmvaMethods)().end(); ++method_str)
+		for(size_t input_index = 0; input_index < tmvaInputs.size(); input_index++)
 		{	
-			int input_index = input_indices[mvaMethodIndex]; 
-			
 			std::vector<float_extractor_lambda> Extractor_vec = m_inputExtractors[input_index]; 
 			size_t inputQuantityIndex = 0;
 			for(typename std::vector<float_extractor_lambda>::const_iterator inputExtractor = Extractor_vec.begin();
@@ -146,8 +142,13 @@ public:
 				*(tmvaInputs[input_index][inputQuantityIndex]) = (*inputExtractor)(event, product);
 				++inputQuantityIndex;
 			}
+		}	
 			
-			
+		int mvaMethodIndex = 0;
+		for(std::vector<std::string>::const_iterator method_str = (settings.*GetTmvaMethods)().begin();
+			 method_str != (settings.*GetTmvaMethods)().end(); ++method_str)
+		{	
+			int input_index = input_indices[mvaMethodIndex]; 
 			std::string tmvaMethod = boost::lexical_cast<std::string>(input_index) + boost::lexical_cast<std::string>(method_splits[mvaMethodIndex].back()) + boost::lexical_cast<std::string>(mvaMethodIndex);
 			const TString const_Method = TString(tmvaMethod.c_str());
 			//const std::vector<double> const_tmvaInputs = tmvaInputs;
