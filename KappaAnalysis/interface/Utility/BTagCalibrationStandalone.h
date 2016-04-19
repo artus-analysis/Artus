@@ -19,6 +19,8 @@
 #include <TF1.h>
 #include <TH1.h>
 
+std::string th1ToFormulaLin(const TH1*);
+std::string th1ToFormulaBinTree(const TH1*, int, int);
 
 class BTagEntry
 {
