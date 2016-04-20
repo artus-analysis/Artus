@@ -416,7 +416,7 @@ class ArtusWrapper(object):
 		epilogArguments += r"--disable-repo-versions "
 		epilogArguments += r"--log-level info "
 		if self._args.no_log_to_se:
-			epilogArguments += r"--log-files log.txt "
+			epilogArguments += r"--log-files log.txt --log-stream stdout "
 		else:
 			epilogArguments += r"--log-files " + os.path.join(sepathRaw, "${DATASETNICK}", "${DATASETNICK}_job_${MY_JOBID}_log.txt") + " "
 		epilogArguments += r"--print-envvars ROOTSYS CMSSW_BASE DATASETNICK FILE_NAMES LD_LIBRARY_PATH "
