@@ -431,11 +431,11 @@ class ArtusWrapper(object):
 		backend = open(os.path.expandvars("$CMSSW_BASE/src/Artus/Configuration/data/grid-control_backend_" + self._args.batch + ".conf"), 'r').read()
 		self.replacingDict = dict(
 				include = ("include = " + " ".join(self._args.gc_config_includes) if self._args.gc_config_includes else ""),
-				epilogexecutable = "epilog executable = $CMSSW_BASE/bin/" + os.path.join(os.path.expandvars("$SCRAM_ARCH"), os.path.basename(sys.argv[0])),
+				epilogexecutable = "epilog executable = " + os.path.basename(sys.argv[0]),
 				sepath = sepath,
 				workdir = workdir,
 				jobs = "" if self._args.fast is None else "jobs = " + str(self._args.fast),
-				inputfiles = "input files = \n\t" + self._configFilename,
+				inputfiles = "input files = \n\t" + self._configFilename + "\n\t" + os.path.expandvars(os.path.join("$CMSSW_BASE/bin/$SCRAM_ARCH", os.path.basename(sys.argv[0]))),
 				filesperjob = "files per job = " + str(self._args.files_per_job),
 				areafiles = self._args.area_files if (self._args.area_files != None) else "",
 				walltime = "wall time = " + self._args.wall_time,
