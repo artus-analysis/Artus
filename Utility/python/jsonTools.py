@@ -47,8 +47,11 @@ class JsonDict(dict):
 			if os.path.exists(os.path.expandvars(jsonDict)):
 				dict.__init__(self, JsonDict.readJsonDict(jsonDict))
 			else:
-				log.info("try to decode " + jsonDict)
-				dict.__init__(self, json.loads(jsonDict.replace("'", "\"")))
+				try:
+					dict.__init__(self, json.loads(jsonDict.replace("'", "\"")))
+				except ValueError:
+					log.fatal("Error while decoding: \n" + jsonDict)
+					sys.exit()
 		elif isinstance(jsonDict, collections.Iterable):
 			dict.__init__(self, JsonDict.mergeAll(*jsonDict))
 		else:
