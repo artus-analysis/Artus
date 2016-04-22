@@ -415,7 +415,7 @@ class ArtusWrapper(object):
 		
 		epilogArguments  = r"epilog arguments = "
 		epilogArguments += r"--disable-repo-versions "
-		epilogArguments += r"--log-level info "
+		epilogArguments += r"--log-level " + self._args.log_level + " "
 		if self._args.no_log_to_se:
 			epilogArguments += r"--log-files log.txt --log-stream stdout "
 		else:
