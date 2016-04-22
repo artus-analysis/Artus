@@ -58,6 +58,7 @@ class ArtusWrapper(object):
 			self.localProjectPath = self.projectPath
 			if self.projectPath.startswith("srm://"):
 				self.localProjectPath = os.path.join(os.path.expandvars(self._parser.get_default("work")), date_now+"_"+self._args.project_name)
+				self._args.no_log_to_se = True
 
 	def run(self):
 	
