@@ -42,7 +42,7 @@ class RootTools(object):
 			path_to_objects = [path_to_objects]
 		
 		with TFileContextManager(root_file_names[0], "READ") as root_file: 
-			root_object = root_file.Get(path_to_objects[0]) if path_to_objects[0] != "" else root_file
+			root_object = root_file.Get(str(path_to_objects[0])) if str(path_to_objects[0]) != "" else root_file
 			if root_object:
 				if isinstance(root_object, ROOT.TTree):
 					if print_quantities:
