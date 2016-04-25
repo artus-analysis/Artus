@@ -6,14 +6,9 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import argparse
-import glob
 import os
 import string
-
-import ROOT
-ROOT.gROOT.SetBatch(True)
-ROOT.PyConfig.IgnoreCommandLineOptions = True
-ROOT.gErrorIgnoreLevel = ROOT.kError
+import subprocess
 
 
 def main():
@@ -25,18 +20,17 @@ def main():
 	args = parser.parse_args()
 	logger.initLogger(args)
 	
-	output_dirs = glob.glob(os.path.join(args.project_dir, "output/*"))
-	nick_names = [nick for nick in [output_dir[output_dir.rfind("/")+1:] for output_dir in output_dirs] if not ".tar.gz" in nick]
-	
 	gc_config_base_filename = os.path.expandvars("$CMSSW_BASE/src/Artus/Configuration/data/gc_merge_artus_outputs_base.conf")
 	gc_config_base = ""
 	with open(gc_config_base_filename) as gc_config_base_file:
 		gc_config_base = gc_config_base_file.read().rstrip()
 	
+	hadd_path = subprocess.Popen(["which", "hadd"], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0]
 	gc_config = string.Template(gc_config_base).safe_substitute(
 			PROJECT_DIR=args.project_dir,
-			SAMPLE_NICKS=" ".join(nick_names),
-			CMSSW_BASE=os.path.expandvars("$CMSSW_BASE")
+			CMSSW_BASE=os.path.expandvars("$CMSSW_BASE"),
+			SCRAM_ARCH=os.path.expandvars("$SCRAM_ARCH"),
+			HADD_PATH=hadd_path,
 	)
 	
 	gc_config_filename = os.path.join(args.project_dir, "gc_merge_artus_outputs.conf")
@@ -46,7 +40,7 @@ def main():
 	with open(gc_config_filename, "w") as gc_config_file:
 		gc_config_file.write(gc_config)
 	
-	command = "go.py -Gcm 1 " + gc_config_filename
+	command = "go.py " + gc_config_filename
 	log.info(command)
 	logger.subprocessCall(command.split())
 	
