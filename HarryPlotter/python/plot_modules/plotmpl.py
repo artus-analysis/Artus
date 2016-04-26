@@ -719,8 +719,8 @@ class PlotMpl(plotbase.PlotBase):
 			# plot errors as shaded area:
 			ax.fill_between(
 				self.steppify_bin(mplhist.xbinedges, isx=True),
-				self.steppify_bin([(y_val+error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)]),
-				y2=self.steppify_bin([(y_val-error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerr)]),
+				self.steppify_bin([(y_val-error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerrl)]),
+				y2=self.steppify_bin([(y_val+error) for y_val, error in zip(self.mplhist.y, self.mplhist.yerru)]),
 				color=color,
 				label=label,
 				alpha=alpha,

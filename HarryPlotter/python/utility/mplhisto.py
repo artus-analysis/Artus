@@ -34,8 +34,8 @@ class MplGraph:
 			for error_member in ["xerr", "xerrl", "xerru", "yerr", "yerrl", "yerru"]:
 				setattr(self, error_member, np.array([0 for i in xrange(rootgraph.GetN())]))
 		else:
-			for error_member, error_function in zip(["xerr", "xerrl", "xerru", "yerr", "yerrl", "yerru"],
-			            ["GetErrorX", "GetErrorXlow", "GetErrorXhigh", "GetErrorY", "GetErrorYlow", "GetErrorYhigh"]):
+			for error_member, error_function in zip(["xerrl", "xerru",  "yerrl", "yerru"],
+			            ["GetErrorXlow", "GetErrorXhigh", "GetErrorYlow", "GetErrorYhigh"]):
 				setattr(self, error_member, np.array([getattr(rootgraph, error_function)(i) for i in xrange(rootgraph.GetN())]))
 
 	@property
