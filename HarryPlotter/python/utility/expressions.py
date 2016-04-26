@@ -18,12 +18,12 @@ class ExpressionsDict(object):
 		self.expressions_regex = []
 		# list[tuple] signature => formula; example:
 		# self.expressions_regex.append(r"delta_phi\((\w+),(\w+)\)", r'(abs(abs(abs(\1phi-\2phi)-TMath::Pi())-TMath::Pi()))')
-		
+
 		if not additional_expressions is None:
 			self.expressions_dict.update(additional_expressions)
 
 	def get_expression(self, expression):
-		return self.expressions_dict.get(expressions.lower(), expression)
+		return self.expressions_dict.get(expression.lower(), expression)
 
 	def replace_expressions(self, expression):
 		"""Replace any known expressions"""

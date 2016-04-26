@@ -28,8 +28,10 @@ class SignalOverBackgroundIntegral(analysisbase.AnalysisBase):
 				help="Nick names of the signal histograms to sum up, whitespace separated")
 		self.sig_over_bkg_integral.add_argument("--sob-integral-result-nicks", nargs="+", default=["sob_integral_ratio"],
 				help="Nick names for the resulting histograms.")
-		self.sig_over_bkg_integral.add_argument("--sob-integral-method", nargs="+", default=["righttoleft"], choices=["righttoleft", "rcombination"],
-				help="Desired method to calculate sob_integral condition.")
+		self.sig_over_bkg_integral.add_argument("--sob-integral-direction", nargs="+", default=["righttoleft"], choices=["righttoleft", "rcombination"],
+				help="Desired direction to calculate sob_integral condition.")
+		self.sig_over_bkg_integral.add_argument("--sob-integral-method", nargs="+", default=["soversqrtb"], choices=["soversqrtb", "soversplusb"],
+				help="Desired direction to calculate sob_integral condition.")
 		self.sig_over_bkg_integral.add_argument("--sob-integral-outputs", nargs="+", default=[None],
 				help="Desired outputfile to save calculated min/max, None is no output written .")
 		self.sig_over_bkg_integral.add_argument("--sob-frontname", default = "",
@@ -38,8 +40,16 @@ class SignalOverBackgroundIntegral(analysisbase.AnalysisBase):
 		super(SignalOverBackgroundIntegral, self).prepare_args(parser, plotData)
 
 
-		self.prepare_list_args(plotData, ["sob_integral_background_nicks", "sob_integral_signal_nicks", "sob_integral_result_nicks", "sob_integral_method", "sob_integral_outputs"])
-
+		self.prepare_list_args(plotData, ["sob_integral_background_nicks", "sob_integral_signal_nicks", "sob_integral_result_nicks", "sob_integral_direction","sob_integral_direction", "sob_integral_outputs"])
+	def get_function(self, name):
+		if name=="soversqrtb":
+			return lambda s,b : s/(b)**0.5
+		elif name=="soversqrtsplusb":
+			return lambda s,b : s/(b+s)**0.5
+		elif name=="soversplusb":
+			return lambda s,b : s/(b+s)**0.5
+		else:
+			log.fatal("invalid integration method string selected: " + name)
 	def run(self, plotData=None):
 		super(SignalOverBackgroundIntegral, self).run(plotData)
 		rtl_marks = []
@@ -47,17 +57,18 @@ class SignalOverBackgroundIntegral(analysisbase.AnalysisBase):
 		ltr_marks = []
 		ltr_yvalues = []
 		front_name = plotData.plotdict["sob_frontname"]
-		for signal_nick, background_nick, result_nick, method, outpath in  zip(
+		for signal_nick, background_nick, result_nick, direction, method, outpath in  zip(
 																	plotData.plotdict["sob_integral_signal_nicks"],
 																	plotData.plotdict["sob_integral_background_nicks"],
 																	plotData.plotdict["sob_integral_result_nicks"],
+																	plotData.plotdict["sob_integral_direction"],
 																	plotData.plotdict["sob_integral_method"],
 																	plotData.plotdict["sob_integral_outputs"]):
 
 			signal = SumOfHistograms.return_sum_of_histograms([plotData.plotdict["root_objects"][nick] for nick in signal_nick.split(" ")])
 			#new_histogram = signal.Clone("storage_histogram")
 			background = SumOfHistograms.return_sum_of_histograms([plotData.plotdict["root_objects"][nick] for nick in background_nick.split(" ")])
-
+			calculation_function = self.get_function(method)
 			if(signal.GetNbinsX() != background.GetNbinsX()):
 				log.fatal("Signal histogram " + signal + " has a different binning than " + background )
 			#for x_bin in xrange(1, signal.GetNbinsX()+1):
@@ -81,7 +92,7 @@ class SignalOverBackgroundIntegral(analysisbase.AnalysisBase):
 			sig_events = 0.0
 			bkg_events = 0.0
 
-			if method == "righttoleft":
+			if direction == "righttoleft":
 				y_values = [0,]
 				x_values = [1,]
 				#iterate over full range histogram
@@ -94,8 +105,8 @@ class SignalOverBackgroundIntegral(analysisbase.AnalysisBase):
 					sig_events += signal.GetBinContent(x_bin)
 					bkg_events += background.GetBinContent(x_bin)
 					value = 0
-					if bkg_events > 0:
-						value = sig_events/bkg_events**0.5
+					if bkg_events > 1 and sig_events > 1:
+						value = calculation_function(sig_events, bkg_events)
 						output_histogram.SetBinContent(x_bin, value)
 					else:
 						output_histogram.SetBinContent(x_bin, 0)
@@ -106,7 +117,7 @@ class SignalOverBackgroundIntegral(analysisbase.AnalysisBase):
 				x_bin = x_values[y_values.index(y_max)]
 				rtl_marks.append(x_bin)
 				rtl_yvalues.append(y_max)
-			elif method == "rcombination":
+			elif direction == "rcombination":
 				rtl_marks.pop(-1)
 				rtl_yvalues.pop(-1)
 				sig_evt = 0
@@ -114,8 +125,8 @@ class SignalOverBackgroundIntegral(analysisbase.AnalysisBase):
 				for x_bin in range(1, rtl_marks[-1]):
 					sig_events += signal.GetBinContent(x_bin)
 					bkg_events += background.GetBinContent(x_bin)
-				if bkg_events > 0:
-					rtl_yvalues.append(sig_events/bkg_events**0.5)
+				if bkg_events > 1 and sig_events > 1:
+					rtl_yvalues.append(calculation_function(sig_events, bkg_events))
 				else:
 					rtl_yvalues.append(0)
 				rtl_marks.append(1)
