@@ -49,6 +49,7 @@ class ArtusWrapper(object):
 		self.expandConfig()
 		self.projectPath = None
 		self.localProjectPath = None
+		self.remote_se = False
 
 		#read in external values
 		if not self._args.batch:
@@ -57,6 +58,7 @@ class ArtusWrapper(object):
 			self.projectPath = os.path.join(os.path.expandvars(self._args.work), date_now+"_"+self._args.project_name)
 			self.localProjectPath = self.projectPath
 			if self.projectPath.startswith("srm://"):
+				self.remote_se = True
 				self.localProjectPath = os.path.join(os.path.expandvars(self._parser.get_default("work")), date_now+"_"+self._args.project_name)
 				self._args.no_log_to_se = True
 
@@ -467,8 +469,9 @@ class ArtusWrapper(object):
 		
 		log.info("Output is written to directory \"%s\"" % sepathRaw)
 		log.info("\nMerge outputs in one file per nick using")
-		log.info("artusMergeOutputs.py %s" % self.projectPath)
-		log.info("artusMergeOutputsWithGC.py %s" % self.projectPath)
+		if not self.remote_se:
+			log.info("artusMergeOutputs.py %s" % self.projectPath)
+		log.info("artusMergeOutputsWithGC.py %s" % (self.localProjectPath if self.remote_se else self.projectPath))
 
 		if exitCode != 0:
 			log.error("Exit with code %s.\n\n" % exitCode)
