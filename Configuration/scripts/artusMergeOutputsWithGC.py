@@ -16,6 +16,7 @@ def main():
 	parser = argparse.ArgumentParser(description="Merge Artus outputs per nick name.", parents=[logger.loggingParser])
 
 	parser.add_argument("project_dir", help="Artus Project directory containing the files \"output/*/*.root\" to merge")
+	parser.add_argument("-b", "--batch", default=False, const="naf", nargs="?", help="Select backend. [Default: %(default)s]")
 
 	args = parser.parse_args()
 	logger.initLogger(args)
@@ -25,8 +26,10 @@ def main():
 	with open(gc_config_base_filename) as gc_config_base_file:
 		gc_config_base = gc_config_base_file.read().rstrip()
 	
+	backend = open(os.path.expandvars("$CMSSW_BASE/src/Artus/Configuration/data/grid-control_backend_" + args.batch + ".conf"), 'r').read()
 	hadd_path = subprocess.Popen(["which", "hadd"], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0]
 	gc_config = string.Template(gc_config_base).safe_substitute(
+			BACKEND = backend,
 			PROJECT_DIR=args.project_dir,
 			CMSSW_BASE=os.path.expandvars("$CMSSW_BASE"),
 			SCRAM_ARCH=os.path.expandvars("$SCRAM_ARCH"),
