@@ -70,7 +70,7 @@ class ArtusWrapper(object):
 		if self._args.save_config:
 			self.saveConfig(self._args.save_config)
 		elif self._args.batch:
-			basename = "artus_{0}.json".format(hashlib.md5(str(self._config)).hexdigest())
+			basename = "artus_config.json"
 			filepath = os.path.join(self.localProjectPath, basename)
 			if not os.path.exists(self.localProjectPath):
 				os.makedirs(self.localProjectPath)
@@ -398,14 +398,14 @@ class ArtusWrapper(object):
 			for inputEntry in filelist:
 				dbsFileContent += inputEntry + "\n"
 		
-		dbsFileBasename = "datasets_{0}.dbs".format(hashlib.md5(str(self._config)).hexdigest())
+		dbsFileBasename = "datasets.dbs"
 		dbsFileBasepath = os.path.join(self.localProjectPath, dbsFileBasename)
 		with open(dbsFileBasepath, "w") as dbsFile:
 			dbsFile.write(dbsFileContent)
 		
 		gcConfigFilePath = os.path.expandvars(self._args.gc_config)
 		gcConfigFile = open(gcConfigFilePath,"r")
-		tmpGcConfigFileBasename = "grid-control_base_config_{0}.conf".format(hashlib.md5(str(self._config)).hexdigest())
+		tmpGcConfigFileBasename = "grid-control_config.conf"
 		tmpGcConfigFileBasepath = os.path.join(self.localProjectPath, tmpGcConfigFileBasename)
 
 		# open base file and save it to a list

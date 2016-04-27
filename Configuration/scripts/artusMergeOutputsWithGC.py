@@ -33,7 +33,7 @@ def main():
 			HADD_PATH=hadd_path,
 	)
 	
-	gc_config_filename = os.path.join(args.project_dir, "gc_merge_artus_outputs.conf")
+	gc_config_filename = os.path.join(args.project_dir, "grid-control_merge_artus_outputs.conf")
 	if os.path.exists(gc_config_filename):
 		os.remove(gc_config_filename)
 		logger.subprocessCall(("rm -rf " + os.path.join(args.project_dir, "workdir_merge")).split())
