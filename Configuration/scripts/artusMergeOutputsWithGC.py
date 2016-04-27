@@ -20,7 +20,7 @@ def main():
 	args = parser.parse_args()
 	logger.initLogger(args)
 	
-	gc_config_base_filename = os.path.expandvars("$CMSSW_BASE/src/Artus/Configuration/data/gc_merge_artus_outputs_base.conf")
+	gc_config_base_filename = os.path.expandvars("$CMSSW_BASE/src/Artus/Configuration/data/grid-control_merge_artus_outputs_base.conf")
 	gc_config_base = ""
 	with open(gc_config_base_filename) as gc_config_base_file:
 		gc_config_base = gc_config_base_file.read().rstrip()
