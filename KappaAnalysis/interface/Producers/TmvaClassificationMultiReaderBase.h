@@ -49,8 +49,13 @@ public:
 	void Init(setting_type const& settings) override
 	{
 		ProducerBase<TTypes>::Init(settings);
+    #if ROOT_VERSION_CODE > ROOT_VERSION(6,0,0)
 		gPluginMgr->AddHandler("TMVA@@MethodBase", ".*_FastBDT.*", "TMVA::MethodFastBDT", "TMVAFastBDT", "MethodFastBDT(TMVA::DataSetInfo&,TString)");
 		gPluginMgr->AddHandler("TMVA@@MethodBase", ".*FastBDT.*", "TMVA::MethodFastBDT", "TMVAFastBDT", "MethodFastBDT(TString&,TString&,TMVA::DataSetInfo&,TString&)");
+    #else
+		gPluginMgr->AddHandler("TMVA@@MethodBase", ".*_FastBDT.*", "TMVA::MethodFastBDT", "TMVAFastBDT", "MethodFastBDT(DataSetInfo&,TString)");
+		gPluginMgr->AddHandler("TMVA@@MethodBase", ".*FastBDT.*", "TMVA::MethodFastBDT", "TMVAFastBDT", "MethodFastBDT(TString&,TString&,DataSetInfo&,TString&)");
+    #endif
 		std::vector<float*> tmvaInput;
 		// construct extractors vector
 		for (std::vector<std::string>::const_iterator quantity_str = (settings.*GetTmvaInputQuantities)().begin();
