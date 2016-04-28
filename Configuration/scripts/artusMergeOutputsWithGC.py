@@ -8,7 +8,6 @@ log = logging.getLogger(__name__)
 import argparse
 import os
 import string
-import subprocess
 
 
 def main():
@@ -27,13 +26,11 @@ def main():
 		gc_config_base = gc_config_base_file.read().rstrip()
 	
 	backend = open(os.path.expandvars("$CMSSW_BASE/src/Artus/Configuration/data/grid-control_backend_" + args.batch + ".conf"), 'r').read()
-	hadd_path = subprocess.Popen(["which", "hadd"], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0]
 	gc_config = string.Template(gc_config_base).safe_substitute(
 			BACKEND = backend,
 			PROJECT_DIR=args.project_dir,
 			CMSSW_BASE=os.path.expandvars("$CMSSW_BASE"),
 			SCRAM_ARCH=os.path.expandvars("$SCRAM_ARCH"),
-			HADD_PATH=hadd_path,
 	)
 	
 	gc_config_filename = os.path.join(args.project_dir, "grid-control_merge_artus_outputs.conf")
