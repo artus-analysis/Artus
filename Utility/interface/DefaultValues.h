@@ -20,6 +20,7 @@ public:
     static const int pdgIdPiPlus;
     static const int pdgIdRhoPlus770;
     static const int pdgIdEta;
+    static const int pdgIdProton;
 
     static const int pdgIdKPlus;
     static const int pdgIdKStar;
