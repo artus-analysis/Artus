@@ -15,7 +15,7 @@ def main():
 	parser = argparse.ArgumentParser(description="Merge Artus outputs per nick name.", parents=[logger.loggingParser])
 
 	parser.add_argument("project_dir", help="Artus Project directory containing the files \"output/*/*.root\" to merge")
-	parser.add_argument("-b", "--batch", default=False, const="naf", nargs="?", help="Select backend. [Default: %(default)s]")
+	parser.add_argument("-b", "--batch", default=False, const="host", nargs="?", help="Select backend. [Default: %(default)s]")
 
 	args = parser.parse_args()
 	logger.initLogger(args)
