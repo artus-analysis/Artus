@@ -33,7 +33,7 @@ fi
 if [[ $HARRY_SSHPC == *"rwth"* ]]; then
 	export HARRY_URL=http://${HARRY_REMOTE_USER}.web.cern.ch/${HARRY_REMOTE_USER}/plots_archive
 else
-	export HARRY_URL=http://www.ekp.kit.edu/~${HARRY_REMOTE_USER}
+	export HARRY_URL=http://www.ekp.kit.edu/~${HARRY_REMOTE_USER}/plots_archive
 fi
 
 if [[ -z ${WEB_PLOTTING_MKDIR_COMMAND} ]]; then
