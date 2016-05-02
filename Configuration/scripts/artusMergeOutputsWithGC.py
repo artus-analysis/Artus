@@ -20,6 +20,16 @@ def main():
 	args = parser.parse_args()
 	logger.initLogger(args)
 	
+	gc_work_directory = os.path.join(args.project_dir, "workdir_merge")
+	merged_directory = os.path.join(args.project_dir, "merged")
+	
+	#remove directories that will be overwritten
+	directories_to_remove = []
+	for directory in [gc_work_directory, merged_directory]:
+		if os.path.exists(directory):
+			directories_to_remove.append(directory)
+	logger.subprocessCall(("rm -rf" + (" ".join(directories_to_remove))).split())
+	
 	gc_config_base_filename = os.path.expandvars("$CMSSW_BASE/src/Artus/Configuration/data/grid-control_merge_artus_outputs_base.conf")
 	gc_config_base = ""
 	with open(gc_config_base_filename) as gc_config_base_file:
@@ -36,7 +46,6 @@ def main():
 	gc_config_filename = os.path.join(args.project_dir, "grid-control_merge_artus_outputs.conf")
 	if os.path.exists(gc_config_filename):
 		os.remove(gc_config_filename)
-		logger.subprocessCall(("rm -rf " + os.path.join(args.project_dir, "workdir_merge")).split())
 	with open(gc_config_filename, "w") as gc_config_file:
 		gc_config_file.write(gc_config)
 	
@@ -44,7 +53,7 @@ def main():
 	log.info(command)
 	logger.subprocessCall(command.split())
 	
-	log.info("Output is written to directory \"%s\"" % os.path.join(args.project_dir, "merged"))
+	log.info("Output is written to directory \"%s\"" % merged_directory)
 
 
 if __name__ == "__main__":
