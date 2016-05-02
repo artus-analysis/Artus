@@ -28,7 +28,7 @@ def main():
 	for directory in [gc_work_directory, merged_directory]:
 		if os.path.exists(directory):
 			directories_to_remove.append(directory)
-	logger.subprocessCall(("rm -rf" + (" ".join(directories_to_remove))).split())
+	logger.subprocessCall(("rm -rf " + (" ".join(directories_to_remove))).split())
 	
 	gc_config_base_filename = os.path.expandvars("$CMSSW_BASE/src/Artus/Configuration/data/grid-control_merge_artus_outputs_base.conf")
 	gc_config_base = ""
