@@ -170,6 +170,10 @@ class PlotBase(processor.Processor):
 		                                 help="Title for the web gallery. [Default: %(default)s]")
 		self.other_options.add_argument("--www-text", type=str, default=None,
 		                                 help="Text for the web gallery. [Default: download-link]")
+		self.other_options.add_argument("--www-mkdir-command", type=str, default="$WEB_PLOTTING_MKDIR_COMMAND",
+		                                 help="Command for creating the directory for the gallery. This command must contain {subdir} as placeholder for the gallery sub-directory to be created. [Default: %(default)s]")
+		self.other_options.add_argument("--www-copy-command", type=str, default="$WEB_PLOTTING_COPY_COMMAND",
+		                                 help="Command for copying the gallery. This command must contain {source} as placeholder for the files to be copied and {subdir} as placeholder for the gallery sub-directory. [Default: %(default)s]")
 	
 	def prepare_args(self, parser, plotData):
 		super(PlotBase, self).prepare_args(parser, plotData)

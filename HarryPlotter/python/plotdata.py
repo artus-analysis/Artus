@@ -44,9 +44,8 @@ class PlotData(object):
 		html_content = ""
 		overview_filename = '_overview.html'
 		date = datetime.date.today().strftime('%Y_%m_%d')
-		remote_dir = os.path.expandvars(os.path.join("$HARRY_REMOTE_DIR", date, (www if type(www)==str else "")))
-		remote_path = os.path.expandvars(os.path.join("$HARRY_REMOTE_PATH", remote_dir))
-		url = os.path.expandvars(os.path.join("$HARRY_URL", remote_dir, overview_filename))
+		remote_subdir = os.path.expandvars(os.path.join(date, (www if type(www)==str else "")))
+		url = os.path.expandvars(os.path.join("$HARRY_URL", remote_subdir, overview_filename))
 		plots_for_gallery = [p for p in sorted(os.listdir(output_dir)) if (os.path.isfile(os.path.join(output_dir, p)) and all([not p.endswith("."+ext) for ext in ["json", "html", "root"]]))]
 		# get the html templates
 		files_to_copy = []
@@ -98,14 +97,14 @@ class PlotData(object):
 			files_to_copy += [os.path.join(output_dir, ".".join([save_legend, _format])) for _format in formats]
 
 		# create remote dir, copy files
+		mkdir_command = os.path.expandvars("$WEB_PLOTTING_MKDIR_COMMAND").format(subdir=remote_subdir)
+		copy_command = os.path.expandvars("$WEB_PLOTTING_COPY_COMMAND").format(source=" ".join(files_to_copy), subdir=remote_subdir)
+		
 		log.info("Copying plots to webspace...")
-		sshpc = tools.get_environment_variable("HARRY_SSHPC")
-		create_dir_command = ["ssh", user+"@"+sshpc, "mkdir -p", remote_path]
-		log.debug("\nIssueing mkdir command: " + " ".join(create_dir_command))
-		logger.subprocessCall(create_dir_command)
-		rsync_command = ["rsync", "-u"] + files_to_copy + ["%s@%s:%s" % (user, sshpc, remote_path)]
-		log.debug("\nIssueing rsync command: " + " ".join(rsync_command) + "\n")
-		logger.subprocessCall(rsync_command)
+		log.debug("\nIssueing mkdir command: " + mkdir_command)
+		logger.subprocessCall(mkdir_command.split())
+		log.debug("\nIssueing rsync command: " + copy_command)
+		logger.subprocessCall(copy_command.split())
 		log.info("Copied {0}; see {1}".format(" ".join([f.split("/")[-1] for f in files_to_copy]), url))
 
 
