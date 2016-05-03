@@ -98,6 +98,7 @@ void ArtusConfig::InitConfig( bool configPreLoaded )
 	
 	el::Configurations defaultLoggingConfig;
 	defaultLoggingConfig.setToDefault();
+	defaultLoggingConfig.set(el::Level::Global, el::ConfigurationType::ToFile, "false");
 
 	defaultLoggingConfig.set(el::Level::Debug, el::ConfigurationType::Enabled, "true");
 	defaultLoggingConfig.set(el::Level::Info, el::ConfigurationType::Enabled, "true");

@@ -15,6 +15,7 @@ ROOT.gROOT.SetBatch(True)
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gErrorIgnoreLevel = ROOT.kError
 
+from Kappa.Skimming.registerDatasetHelper import *
 
 def main():
 	
@@ -33,37 +34,45 @@ def main():
 	sumweight_per_nick = {}
 	n_entries_per_nick = {}
 	for (fileindex, file_name) in enumerate(args.files):
-
-		# retrieve weights
-		# the weights are in the form +/- X
+		
+		# retrieve weights and total number of events
 		root_file = ROOT.TFile(file_name, "READ")
-		eventsTree = root_file.Get("Events")
-		n_entries = eventsTree.GetEntries()
-
-		weightHisto = ROOT.TH1F("weightHisto", "histo of weights", 1000, 0.5, 1.5)
-		eventsTree.Draw("1>>weightHisto", "eventInfo.weight/fabs(eventInfo.weight)", "goff")
-
+		lumiTree = root_file.Get("Lumis")
+		n_entries = lumiTree.GetEntries()
+		
 		# nickname matching and sum of weights
 		nick = re.match(args.nick, os.path.basename(file_name)).groupdict().values()[0]
-		sumweight_per_nick[nick] = sumweight_per_nick.get(nick, 0.0) + weightHisto.GetSumOfWeights()
-		n_entries_per_nick[nick] = n_entries_per_nick.get(nick, 0.0) + n_entries
+		
+		for entry in xrange(n_entries):
+			lumiTree.GetEntry(entry)
+			n_entries_per_nick[nick] = n_entries_per_nick.get(nick, 0.0) + lumiTree.filterMetadata.nEventsTotal
+			sumweight_per_nick[nick] = sumweight_per_nick.get(nick, 0.0) + (lumiTree.filterMetadata.nEventsTotal - 2 * lumiTree.filterMetadata.nNegEventsTotal)
 
-		# counter
-		if (fileindex % 200 == 0):
+		#counter
+		if (fileindex % 100 == 0):
 			print "...processing file %d (nickname: %s)" % (fileindex, nick)
 			print "\tweighted entries = ", sumweight_per_nick[nick]
 			print "\tentries = ", n_entries_per_nick[nick]
 
-		# delete histogram and close rootfile
-		weightHisto.Delete()
+		#close rootfile
 		root_file.Close()
 
-
-	# print results
-	log.info("{\n\t\"GeneratorWeight\" : {\n\t\t\"nick\" : {")
+	# print results and save to dataset
+	cmssw_base = os.environ.get("CMSSW_BASE")
+	dataset = os.path.join(cmssw_base, "src/Kappa/Skimming/data/datasets.json")
+	dictionary = load_database(dataset)
 	for index, (nick, sumweight) in enumerate(sumweight_per_nick.items()):
-		log.info("\t\t\t\"" + nick + "\" : " + str(sumweight/n_entries_per_nick[nick]) + ("," if index < len(sumweight_per_nick)-1 else ""))
-	log.info("\t\t}\n\t}\n}")
+		sample_name = get_sample_by_nick(nick)
+		dictionary[sample_name]["n_events_generated"] = str(int(n_entries_per_nick[nick]))
+		dictionary[sample_name]["generatorWeight"] = sumweight/n_entries_per_nick[nick]
+		
+		log.info("\n\n\"" + sample_name + "\"" + ": {")
+		log.info("\tn_events_generated: " + str(int(n_entries_per_nick[nick])))
+		log.info("\tgeneratorWeight: " + str(sumweight/n_entries_per_nick[nick]))
+	
+	log.info("}")
+	save_database(dictionary, dataset)
+
 
 
 if __name__ == "__main__":

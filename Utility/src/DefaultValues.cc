@@ -15,6 +15,7 @@ const int DefaultValues::pdgIdPiZero = 111;
 const int DefaultValues::pdgIdPiPlus = 211;
 const int DefaultValues::pdgIdRhoPlus770 = 213;
 const int DefaultValues::pdgIdEta = 221;
+const int DefaultValues::pdgIdProton= 2212;
 
 const int DefaultValues::pdgIdKPlus = 321;
 const int DefaultValues::pdgIdKStar = 323;

@@ -281,14 +281,15 @@ public:
 	IMPL_SETTING_DEFAULT(std::string, BTaggedJetTrackCountingHighEffName, "TrackCountingHighEffBJetTags");
 	IMPL_SETTING_DEFAULT(std::string, BTaggedJetCombinedSecondaryVertexName, "CombinedSecondaryVertexBJetTags");
 	IMPL_SETTING_DEFAULT(float, BTaggedJetCombinedSecondaryVertexMediumWP, 0.0f);
+	IMPL_SETTING_DEFAULT(float, BTaggedJetCombinedSecondaryVertexLooseWP, 0.0f);
 	IMPL_SETTING_DEFAULT(bool, ApplyBTagSF, false);
 	IMPL_SETTING(std::string, BTagSFMethod);
 	IMPL_SETTING_DEFAULT(float, BTagShift, 0.0f);
 	IMPL_SETTING_DEFAULT(float, BMistagShift, 0.0f);
 	
 	//Reading Boson PdgId and Status code for GenTauDecayProducer studies.
-	IMPL_SETTING_DEFAULT(int, BosonPdgId, 23);
-	IMPL_SETTING_DEFAULT(int, BosonStatus, 3);  //keep pythia6 status as default for back-compatibility
+	IMPL_SETTING_INTLIST_DEFAULT(BosonPdgIds, {23});
+	IMPL_SETTING_INTLIST_DEFAULT(BosonStatuses, {3});  //keep pythia6 status as default for back-compatibility
 
 	/// Needed by the GenPartonCounterProducer
 	IMPL_SETTING_DEFAULT(int, PartonStatus, 3);  //keep pythia6 status as default for back-compatibility
@@ -304,9 +305,12 @@ public:
 	IMPL_SETTING_DEFAULT(int, GenElectronStatus, -1);
 	IMPL_SETTING_DEFAULT(int, GenMuonStatus, -1);
 	IMPL_SETTING_DEFAULT(int, GenTauStatus, -1);
+	IMPL_SETTING_DEFAULT(bool, GenElectronFromTauDecay, false);
+	IMPL_SETTING_DEFAULT(bool, GenMuonFromTauDecay, false);
 
 	IMPL_SETTING(std::string, PileupWeightFile);
 	IMPL_SETTING(std::string, BTagScaleFactorFile);
+	IMPL_SETTING_DEFAULT(std::string, BTagEfficiencyFile, "");
 	
 	IMPL_SETTING(std::string, EventWeight);
 	IMPL_SETTING_DEFAULT(double, BaseWeight, 1.0);
@@ -328,6 +332,7 @@ public:
 	IMPL_SETTING_DEFAULT(bool, AddGenMatchedTauJets, true);
 
 	// ZProducer
-	IMPL_SETTING_DEFAULT(float, ZMass, 91.1876f)
-	IMPL_SETTING(float, ZMassRange)
+	IMPL_SETTING_DEFAULT(float, ZMass, 91.1876f);
+	IMPL_SETTING(float, ZMassRange);
+	IMPL_SETTING_DEFAULT(bool, VetoMultipleZs, true);
 };

@@ -3,10 +3,10 @@
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "KappaTools/RootTools/interface/HLTTools.h"
-#include "MotherDaughterBundle.h"
 
 #include "Artus/Core/interface/ProductBase.h"
 #include "Artus/KappaAnalysis/interface/KappaEnumTypes.h"
+#include "Artus/KappaAnalysis/interface/Utility/MotherDaughterBundle.h"
 
 /**
    \brief Container class for everything that can be produced in pipeline.
@@ -41,9 +41,16 @@ public:
 
 	// events in this map can be written out automatically by the KappaLambdaNtupleConsumer
 	std::map<std::string, double> m_optionalWeights;
+	
+	// filled by GenBosonProducers
+	KGenParticle* m_genBosonParticle = nullptr;
+	RMFLV m_genBosonLV;
+	bool m_genBosonLVFound = false;
+	
+	std::vector<KGenParticle*> m_genLeptonsFromBosonDecay;
 
 	// filled by GenTauDecayProducer
-	std::vector<MotherDaughterBundle> m_genBoson;
+	MotherDaughterBundle m_genBosonTree;
 
 	/// added by ElectronCorrectionProducer
 	// needs to be a shared_ptr in order to be deleted when the product is deleted
@@ -105,6 +112,7 @@ public:
 	/// added by ValidBTaggedJetsProducer
 	std::vector<KJet*> m_bTaggedJets;
 	std::vector<KJet*> m_nonBTaggedJets;
+	std::vector<KJet*> m_looseBTaggedJets;
 	
 	mutable HLTTools m_hltInfo = HLTTools();
 	// selected means fired (and unprescaled if requested)
@@ -161,13 +169,13 @@ public:
 	std::vector<double> m_discriminators;
 
 	// GenTauDecayModeProducer
-	std::map<const KGenTau*, int> m_genMatchedDecayMode;
+	std::map<const KGenTau*, MotherDaughterBundle::DecayMode> m_genMatchedDecayMode;
 	std::map<const KGenTau*, int> m_genMatchedProngSize;
-	int m_tau1DecayMode;
-	int m_tau2DecayMode;
+	MotherDaughterBundle::DecayMode m_tau1DecayMode;
+	MotherDaughterBundle::DecayMode m_tau2DecayMode;
 	int m_tau1ProngSize;
 	int m_tau2ProngSize;
-	int m_genTauDecayMode;
+	KappaEnumTypes::TauTauDecayMode m_genTauTauDecayMode;
 
 	// GenPartonCounterProducer
 	int m_genNPartons = -1;

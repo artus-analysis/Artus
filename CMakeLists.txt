@@ -121,7 +121,7 @@ endif()
 
 if(EXISTS "../Kappa")
 	message(STATUS "Looking for Kappa: found ../Kappa")
-	FILE(GLOB KappaAnalysisFiles KappaAnalysis/src/KappaFactory.cc KappaAnalysis/src/*/*.cc)
+	FILE(GLOB KappaAnalysisFiles KappaAnalysis/src/*/*.cc KappaAnalysis/src/*.cc)
 	add_library(artus_kappaanalysis SHARED ${KappaAnalysisFiles})
 else()
 	message(STATUS "Looking for Kappa: not found and not compiled")

@@ -36,6 +36,9 @@ def main():
 	output_dirs = glob.glob(os.path.join(args.project_dir, "output/*"))
 	nick_names = [nick for nick in [output_dir[output_dir.rfind("/")+1:] for output_dir in output_dirs] if not ".tar.gz" in nick]
 	outputs_per_nick = {nick : glob.glob(os.path.join(args.project_dir, "output", nick, "*.root")) for nick in nick_names}
+	# drop potentially existing SvfitCaches from the filelist
+	for nick, files in outputs_per_nick.iteritems():
+		outputs_per_nick[nick] = [file for file in files if ("SvfitCache" not in file)]
 	outputs_per_nick = {nick : files for nick, files in outputs_per_nick.iteritems() if len(files) > 0}
 	
 	commands = []

@@ -1,5 +1,6 @@
 
 #include "Artus/KappaAnalysis/interface/Producers/GenPartonCounterProducer.h"
+#include "Artus/Utility/interface/Utility.h"
 
 
 std::string GenPartonCounterProducer::GetProducerId() const {
@@ -27,20 +28,22 @@ void GenPartonCounterProducer::Produce(KappaEvent const& event, KappaProduct& pr
 
 		if (countPartons) {
 			// quarks and gluons
-			if (std::abs(genParticle->pdgId()) == 1 ||
-			    std::abs(genParticle->pdgId()) == 2 ||
-			    std::abs(genParticle->pdgId()) == 3 ||
-			    std::abs(genParticle->pdgId()) == 4 ||
-			    std::abs(genParticle->pdgId()) == 5 ||
-			    std::abs(genParticle->pdgId()) == 6 ||
-			    std::abs(genParticle->pdgId()) == 21)
+			if (std::abs(genParticle->pdgId) == 1 ||
+			    std::abs(genParticle->pdgId) == 2 ||
+			    std::abs(genParticle->pdgId) == 3 ||
+			    std::abs(genParticle->pdgId) == 4 ||
+			    std::abs(genParticle->pdgId) == 5 ||
+			    std::abs(genParticle->pdgId) == 6 ||
+			    std::abs(genParticle->pdgId) == 21)
 
 				++nPartons;
 		}
 
 		// start counting partons after finding a boson (for example W or Z)
-		if (std::abs(genParticle->pdgId()) == settings.GetBosonPdgId())
+		if (Utility::Contains(settings.GetBosonPdgIds(), std::abs(genParticle->pdgId)))
+		{
 			countPartons = true;
+		}
 	}
 
 	product.m_genNPartons = nPartons;

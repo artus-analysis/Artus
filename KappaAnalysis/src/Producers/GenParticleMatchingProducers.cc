@@ -72,12 +72,12 @@ KGenParticle* RecoJetGenParticleMatchingProducer::Match(event_type const& event,
 	     genParticle != event.m_genParticles->end(); ++genParticle)
 	{
 		// only use genParticles with id 21, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5
-		if ((std::abs(genParticle->pdgId()) == 1) ||
-		    (std::abs(genParticle->pdgId()) == 2) ||
-		    (std::abs(genParticle->pdgId()) == 3) ||
-		    (std::abs(genParticle->pdgId()) == 4) ||
-		    (std::abs(genParticle->pdgId()) == 5) ||
-		    (genParticle->pdgId()) == 21)
+		if ((std::abs(genParticle->pdgId) == 1) ||
+		    (std::abs(genParticle->pdgId) == 2) ||
+		    (std::abs(genParticle->pdgId) == 3) ||
+		    (std::abs(genParticle->pdgId) == 4) ||
+		    (std::abs(genParticle->pdgId) == 5) ||
+		    (genParticle->pdgId) == 21)
 		{
 			deltaR = ROOT::Math::VectorUtil::DeltaR((recoJet)->p4, genParticle->p4);
 			if (deltaR < m_DeltaRMatchingRecoJetGenParticle)
@@ -86,7 +86,7 @@ KGenParticle* RecoJetGenParticleMatchingProducer::Match(event_type const& event,
 				if (genParticle->status() != settings.GetRecoJetMatchingGenParticleStatus())
 				{
 					++nMatchingAlgoPartons;
-					if (std::abs(genParticle->pdgId()) == 5)
+					if (std::abs(genParticle->pdgId) == 5)
 					{ 
 						if (hardestBQuark == nullptr)
 						{
@@ -97,7 +97,7 @@ KGenParticle* RecoJetGenParticleMatchingProducer::Match(event_type const& event,
 							hardestBQuark = &(*genParticle);
 						}
 					}
-					else if (std::abs(genParticle->pdgId()) == 4)
+					else if (std::abs(genParticle->pdgId) == 4)
 					{ 
 						if (hardestCQuark == nullptr)
 						{

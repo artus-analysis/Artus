@@ -343,23 +343,38 @@ public:
 	{
 		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
 		{
-			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Barrel_Cuts_eta_supercluster_1_4
-			return (std::abs(electron->dEtaIn) < 0.007f) &&
-			       (std::abs(electron->dPhiIn) < 0.8f) &&
-			       (electron->sigmaIetaIeta < 0.01f) &&
-			       (electron->hadronicOverEm < 0.15f) &&
-			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.04f) &&
-			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2f);
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Barrel_Cuts_eta_supercluster_1_4
+//			return (std::abs(electron->dEtaIn) < 0.007f) &&
+//			       (std::abs(electron->dPhiIn) < 0.8f) &&
+//			       (electron->sigmaIetaIeta < 0.01f) &&
+//			       (electron->hadronicOverEm < 0.15f) &&
+//			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.04f) &&
+//			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2f);
+//			       // no isolation
+// https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Spring15_selection_25ns
+			return (std::abs(electron->dEtaIn) < 0.0152f) &&
+			       (std::abs(electron->dPhiIn) < 0.216f) &&
+			       (electron->sigmaIetaIeta < 0.0114f) &&
+			       (electron->hadronicOverEm < 0.181f) &&
+			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.0564f) &&
+			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.472f);
 			       // no isolation
 		}
 		else
 		{
-			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
-			return (std::abs(electron->dEtaIn) < 0.01f) &&
-			       (std::abs(electron->dPhiIn) < 0.7f) &&
-			       (electron->sigmaIetaIeta < 0.03f) &&
-			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.04f) &&
-			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2f);
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
+//			return (std::abs(electron->dEtaIn) < 0.01f) &&
+//			       (std::abs(electron->dPhiIn) < 0.7f) &&
+//			       (electron->sigmaIetaIeta < 0.03f) &&
+//			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.04f) &&
+//			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.2f);
+//			       // no isolation
+// https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Spring15_selection_25ns
+			return (std::abs(electron->dEtaIn) < 0.0113f) &&
+			       (std::abs(electron->dPhiIn) < 0.237f) &&
+			       (electron->sigmaIetaIeta < 0.0352f) &&
+			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.222f) &&
+			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.921f);
 			       // no isolation
 		}
 		return false;
@@ -369,11 +384,17 @@ public:
 	{
 		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
 		{
-			return CutBasedID(electron, event, 0.007f, 0.15f, 0.01f, 0.12f, 0.02f, 0.2f, 0.05f, 0.15f, 1);
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
+//			return CutBasedID(electron, event, 0.007f, 0.15f, 0.01f, 0.12f, 0.02f, 0.2f, 0.05f, 0.15f, 1);
+// https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Spring15_selection_25ns
+			return CutBasedID(electron, event, 0.0105f, 0.115f, 0.0103f, 0.104f, 0.0261f, 0.41f, 0.102f, 0.0893f, 2);
 		}
 		else
 		{
-			return CutBasedID(electron, event, 0.009f, 0.1f, 0.03f, 0.1f, 0.02f, 0.2f, 0.05f, 0.15f, 1);
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
+//			return CutBasedID(electron, event, 0.009f, 0.1f, 0.03f, 0.1f, 0.02f, 0.2f, 0.05f, 0.15f, 1);
+// https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Spring15_selection_25ns
+			return CutBasedID(electron, event, 0.00814f, 0.182f, 0.0301f, 0.0897f, 0.118f, 0.822f, 0.126f, 0.121f, 1);
 		}
 		return false;
 	}
@@ -382,11 +403,17 @@ public:
 	{
 		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
 		{
-			return CutBasedID(electron, event, 0.004f, 0.06f, 0.01f, 0.12f, 0.02f, 0.1f, 0.05f, 0.15f, 1);
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
+//			return CutBasedID(electron, event, 0.004f, 0.06f, 0.01f, 0.12f, 0.02f, 0.1f, 0.05f, 0.15f, 1);
+// https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Spring15_selection_25ns
+			return CutBasedID(electron, event, 0.0103f, 0.0336f, 0.0101f, 0.0876f, 0.0118f, 0.373f, 0.0174f, 0.0766f, 2);
 		}
 		else
 		{
-			return CutBasedID(electron, event, 0.007f, 0.03f, 0.03f, 0.1f, 0.02f, 0.1f, 0.05f, 0.15f, 1);
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
+//			return CutBasedID(electron, event, 0.007f, 0.03f, 0.03f, 0.1f, 0.02f, 0.1f, 0.05f, 0.15f, 1);
+// https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Spring15_selection_25ns
+			return CutBasedID(electron, event, 0.00733f, 0.114f, 0.0283f, 0.0678f, 0.0739f, 0.602f, 0.0898f, 0.0678f, 1);
 		}
 		return false;
 	}
@@ -395,11 +422,17 @@ public:
 	{
 		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
 		{
-			return CutBasedID(electron, event, 0.004f, 0.03f, 0.01f, 0.12f, 0.02f, 0.1f, 0.05f, 0.18f, 0);
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
+//			return CutBasedID(electron, event, 0.004f, 0.03f, 0.01f, 0.12f, 0.02f, 0.1f, 0.05f, 0.18f, 0);
+// https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Spring15_selection_25ns
+			return CutBasedID(electron, event, 0.00926f, 0.0336f, 0.0101f, 0.0597f, 0.0111f, 0.0466f, 0.012f, 0.0354f, 2);
 		}
 		else
 		{
-			return CutBasedID(electron, event, 0.005f, 0.02f, 0.03f, 0.1f, 0.02f, 0.1f, 0.05f, 0.18f, 0);
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
+//			return CutBasedID(electron, event, 0.005f, 0.02f, 0.03f, 0.1f, 0.02f, 0.1f, 0.05f, 0.18f, 0);
+// https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Spring15_selection_25ns
+			return CutBasedID(electron, event, 0.00724f, 0.0918f, 0.0279f, 0.0615f, 0.0351f, 0.417f, 0.0615f, 0.0646f, 1);
 		}
 		return false;
 	}
@@ -410,15 +443,15 @@ public:
 	                        float pfiso, int missingHits)
 	{
 		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
-		return (std::abs(electron->dEtaIn) < dEtaIn) &&
-		       (std::abs(electron->dPhiIn) < dPhiIn) &&
-		       (electron->sigmaIetaIeta < sigmaIetaIeta) &&
-		       (electron->hadronicOverEm < hadronicOverEm) &&
-		       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < Dxy) &&
-		       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < Dz) &&
-		       (std::abs(1.0f/(electron->ecalEnergy) - 1.0f/(electron->ecalEnergy/electron->eSuperClusterOverP)) < EP) &&
-		       (electron->track.nInnerHits <= missingHits);
-		       // no isolation
+		return (std::abs(electron->dEtaIn) < dEtaIn) &&		//abs(dEtaIn)
+		       (std::abs(electron->dPhiIn) < dPhiIn) &&		//abs(dPhiIn)
+		       (electron->sigmaIetaIeta < sigmaIetaIeta) &&		//full5x5_sigmaIetaIeta
+		       (electron->hadronicOverEm < hadronicOverEm) &&		//hOverE
+		       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < Dxy) &&		//abs(d0)
+		       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < Dz) &&		//abs(dz)
+		       (std::abs(1.0f/(electron->ecalEnergy) - 1.0f/(electron->ecalEnergy/electron->eSuperClusterOverP)) < EP) &&	//ooEmooP
+		       (electron->track.nInnerHits <= missingHits);		//expectedMissingInnerHits
+		       // no isolation		//relIsoWithEA
 		       // no conversion rejection
 	}
 

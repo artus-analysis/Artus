@@ -52,6 +52,9 @@ public:
 
 	IMPL_SETTING_DEFAULT( std::string , LogLevel, "unknown" )
 
+	/// Input file names
+	IMPL_SETTING_STRINGLIST(InputFiles);
+
 	/// the folder name in the output root file where plots or ntuples of this pipeline will end 
 	/// up, if you want it not to be the pipeline name, override it
 	virtual std::string GetRootFileFolder() const {

@@ -48,8 +48,19 @@ class ArtusWrapper(object):
 		#Expand Config
 		self.expandConfig()
 		self.projectPath = None
+		self.localProjectPath = None
+		self.remote_se = False
+
+		#read in external values
+		if not self._args.batch:
+			self.readInExternals()
 		if self._args.batch:
 			self.projectPath = os.path.join(os.path.expandvars(self._args.work), date_now+"_"+self._args.project_name)
+			self.localProjectPath = self.projectPath
+			if self.projectPath.startswith("srm://"):
+				self.remote_se = True
+				self.localProjectPath = os.path.join(os.path.expandvars(self._parser.get_default("work")), date_now+"_"+self._args.project_name)
+				self._args.no_log_to_se = True
 
 	def run(self):
 	
@@ -59,11 +70,11 @@ class ArtusWrapper(object):
 		if self._args.save_config:
 			self.saveConfig(self._args.save_config)
 		elif self._args.batch:
-			basename = "artus_{0}.json".format(hashlib.md5(str(self._config)).hexdigest())
-			filepath = os.path.join(self.projectPath, basename)
-			if not os.path.exists(self.projectPath):
-				os.makedirs(self.projectPath)
-				os.makedirs(os.path.join(self.projectPath, "output"))
+			basename = "artus_config.json"
+			filepath = os.path.join(self.localProjectPath, basename)
+			if not os.path.exists(self.localProjectPath):
+				os.makedirs(self.localProjectPath)
+				os.makedirs(os.path.join(self.localProjectPath, "output"))
 			self.saveConfig(filepath)
 		else:
 			self.saveConfig()
@@ -201,6 +212,9 @@ class ArtusWrapper(object):
 		self._config.save(filepath, indent=4)
 		log.info("Saved JSON config \"%s\" for temporary usage." % self._configFilename)
 
+	def readInExternals(self):
+		# to be overwritten by users
+		pass
 
 	def expandConfig(self):
 
@@ -384,15 +398,15 @@ class ArtusWrapper(object):
 			for inputEntry in filelist:
 				dbsFileContent += inputEntry + "\n"
 		
-		dbsFileBasename = "datasets_{0}.dbs".format(hashlib.md5(str(self._config)).hexdigest())
-		dbsFileBasepath = os.path.join(self.projectPath, dbsFileBasename)
+		dbsFileBasename = "datasets.dbs"
+		dbsFileBasepath = os.path.join(self.localProjectPath, dbsFileBasename)
 		with open(dbsFileBasepath, "w") as dbsFile:
 			dbsFile.write(dbsFileContent)
 		
 		gcConfigFilePath = os.path.expandvars(self._args.gc_config)
 		gcConfigFile = open(gcConfigFilePath,"r")
-		tmpGcConfigFileBasename = "grid-control_base_config_{0}.conf".format(hashlib.md5(str(self._config)).hexdigest())
-		tmpGcConfigFileBasepath = os.path.join(self.projectPath, tmpGcConfigFileBasename)
+		tmpGcConfigFileBasename = "grid-control_config.conf"
+		tmpGcConfigFileBasepath = os.path.join(self.localProjectPath, tmpGcConfigFileBasename)
 
 		# open base file and save it to a list
 		tmpGcConfigFile = open(tmpGcConfigFileBasepath,"w")
@@ -403,9 +417,9 @@ class ArtusWrapper(object):
 		
 		epilogArguments  = r"epilog arguments = "
 		epilogArguments += r"--disable-repo-versions "
-		epilogArguments += r"--log-level debug "
+		epilogArguments += r"--log-level " + self._args.log_level + " "
 		if self._args.no_log_to_se:
-			epilogArguments += r"--log-files log.txt "
+			epilogArguments += r"--log-files log.txt --log-stream stdout "
 		else:
 			epilogArguments += r"--log-files " + os.path.join(sepathRaw, "${DATASETNICK}", "${DATASETNICK}_job_${MY_JOBID}_log.txt") + " "
 		epilogArguments += r"--print-envvars ROOTSYS CMSSW_BASE DATASETNICK FILE_NAMES LD_LIBRARY_PATH "
@@ -416,15 +430,15 @@ class ArtusWrapper(object):
 			epilogArguments += ("--ld-library-paths %s" % " ".join(self._args.ld_library_paths))
 		
 		sepath = "se path = " + (self._args.se_path if self._args.se_path else sepathRaw)
-		workdir = "workdir = " + os.path.join(self.projectPath, "workdir")
+		workdir = "workdir = " + os.path.join(self.localProjectPath, "workdir")
 		backend = open(os.path.expandvars("$CMSSW_BASE/src/Artus/Configuration/data/grid-control_backend_" + self._args.batch + ".conf"), 'r').read()
 		self.replacingDict = dict(
 				include = ("include = " + " ".join(self._args.gc_config_includes) if self._args.gc_config_includes else ""),
-				epilogexecutable = "epilog executable = $CMSSW_BASE/bin/" + os.path.join(os.path.expandvars("$SCRAM_ARCH"), os.path.basename(sys.argv[0])),
+				epilogexecutable = "epilog executable = " + os.path.basename(sys.argv[0]),
 				sepath = sepath,
 				workdir = workdir,
 				jobs = "" if self._args.fast is None else "jobs = " + str(self._args.fast),
-				inputfiles = "input files = \n\t" + self._configFilename,
+				inputfiles = "input files = \n\t" + self._configFilename + "\n\t" + os.path.expandvars(os.path.join("$CMSSW_BASE/bin/$SCRAM_ARCH", os.path.basename(sys.argv[0]))),
 				filesperjob = "files per job = " + str(self._args.files_per_job),
 				areafiles = self._args.area_files if (self._args.area_files != None) else "",
 				walltime = "wall time = " + self._args.wall_time,
@@ -455,8 +469,9 @@ class ArtusWrapper(object):
 		
 		log.info("Output is written to directory \"%s\"" % sepathRaw)
 		log.info("\nMerge outputs in one file per nick using")
-		log.info("artusMergeOutputs.py %s" % self.projectPath)
-		log.info("artusMergeOutputsWithGC.py %s" % self.projectPath)
+		if not self.remote_se:
+			log.info("artusMergeOutputs.py %s" % self.projectPath)
+		log.info("artusMergeOutputsWithGC.py %s" % (self.localProjectPath if self.remote_se else self.projectPath))
 
 		if exitCode != 0:
 			log.error("Exit with code %s.\n\n" % exitCode)

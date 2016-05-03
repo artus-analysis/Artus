@@ -36,6 +36,8 @@ if [[ `hostname` == *naf* ]]; then
 	export ARTUS_WORK_BASE="/nfs/dust/cms/user/${USER}/artus/"
 elif [[ `hostname` == *ekp* ]]; then
 	export ARTUS_WORK_BASE="/storage/a/${USER}/artus/"
+elif [[ `hostname` == *rwth* ]]; then
+	export ARTUS_WORK_BASE="/net/scratch_cms/institut_3b/${USER}/artus/"
 elif [[ `hostname` == *cern* ]]; then
 	export ARTUS_WORK_BASE="/afs/cern.ch/work/${USER:0:1}/${USER}/artus/"
 fi

@@ -26,6 +26,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/LuminosityWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/CrossSectionWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/NumberGeneratedEventsWeightProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/SampleStitchingWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/TmvaClassificationReaderBase.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenDiLeptonDecayModeProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenPartonCounterProducer.h"
@@ -35,6 +36,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/GenTauJetMatchingProducers.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenMuonFSRProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ZProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/GenBosonProducers.h"
 
 // filter
 #include "Artus/KappaAnalysis/interface/Filters/RunLumiEventFilter.h"
@@ -64,6 +66,7 @@
 #include "Artus/KappaAnalysis/interface/Consumers/KappaCollectionsConsumers.h"
 #include "Artus/KappaAnalysis/interface/Consumers/PrintHltConsumer.h"
 #include "Artus/KappaAnalysis/interface/Consumers/PrintEventsConsumer.h"
+#include "Artus/KappaAnalysis/interface/Consumers/PrintGenParticleDecayTreeConsumer.h"
 #include "Artus/Consumer/interface/RunTimeConsumer.h"
 #include "Artus/Consumer/interface/RunTimeConsumer.h"
 
@@ -135,6 +138,8 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new CrossSectionWeightProducer();
 	else if(id == NumberGeneratedEventsWeightProducer().GetProducerId())
 		return new NumberGeneratedEventsWeightProducer();
+	else if(id == SampleStitchingWeightProducer().GetProducerId())
+		return new SampleStitchingWeightProducer();
 	else if(id == GenMuonFSRProducer().GetProducerId())
 		return new GenMuonFSRProducer();
 	// todo: uses setting not in KappaSettings
@@ -166,6 +171,10 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new ZeeProducer();
 	else if(id == ZemProducer().GetProducerId())
 		return new ZemProducer();
+	else if(id == GenBosonFromGenParticlesProducer().GetProducerId())
+		return new GenBosonFromGenParticlesProducer();
+	else if(id == GenBosonDiLeptonDecayModeProducer().GetProducerId())
+		return new GenBosonDiLeptonDecayModeProducer();
 	else
 		return FactoryBase::createProducer( id );
 }
@@ -316,6 +325,8 @@ ConsumerBaseUntemplated * KappaFactory::createConsumer ( std::string const& id )
 		return new KappaTaggedJetsConsumer();
 	else if(id == PrintHltConsumer().GetConsumerId())
 		return new PrintHltConsumer();
+	else if(id == PrintGenParticleDecayTreeConsumer().GetConsumerId())
+		return new PrintGenParticleDecayTreeConsumer();
 	else if(id == PrintEventsConsumer().GetConsumerId())
 		return new PrintEventsConsumer();
 	else if(id == RunTimeConsumer<KappaTypes>().GetConsumerId())

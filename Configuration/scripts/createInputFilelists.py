@@ -29,7 +29,7 @@ def main():
 	                    help="Date string.")
 	parser.add_argument("-o", "--output-dir", default="$CMSSW_BASE/src/HiggsAnalysis/KITHiggsToTauTau/data/Samples/",
 	                    help="Output directory for the filelists. [Default: %(default)s]")
-	parser.add_argument("-r", "--create-recent-symlinks", default=False, action="store_true",
+	parser.add_argument("-r", "--create-recent-symlinks", default=True, action="store_true",
 	                    help="Create symlinks to filelists as recent ones. [Default: %(default)s]")
 	parser.add_argument("-c", "--crab", default=False, action="store_true",
 	                    help="Skimming output directory was created by Crab (it has a different structure). [Default: %(default)s]")
@@ -62,9 +62,9 @@ def main():
 		filelists = os.path.join(args.output_dir, "%s_sample_%s_%s.txt" % ("%s", nick, "%s"))
 		
 		dcache_settings = {
-			"NAF" : ["", None],
+			#"NAF" : ["", None],
 			"DCAP" : ["dcap://dcache-cms-dcap.desy.de/", None],
-			"XROOTD" : ["root://cms-xrd-global.cern.ch/", "/pnfs/desy.de/cms/tier2"],
+			#"XROOTD" : ["root://cms-xrd-global.cern.ch/", "/pnfs/desy.de/cms/tier2"],
 		}
 		for name, settings in dcache_settings.items():
 			create_filelist([(settings[0] + (root_file.replace(settings[1], "") if settings[1] else root_file)) for root_file in files],
