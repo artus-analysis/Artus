@@ -88,7 +88,7 @@ void GenDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaProduct
 		RMFLV genDiLeptonBoson;
 		
 		for (KGenParticles::const_iterator genParticle = event.m_genParticles->begin();
-		 genParticle != event.m_genParticles->end() && (iDaughter < 2); ++genParticle)
+		     genParticle != event.m_genParticles->end() && (iDaughter < 2); ++genParticle)
 		{
 			if (std::abs(genParticle->pdgId) == DefaultValues::pdgIdElectron ||
 			    std::abs(genParticle->pdgId) == DefaultValues::pdgIdMuon ||
