@@ -20,6 +20,19 @@ void GenDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
 	{
 		return product.m_genDiLeptonBoson.mass();
 	});
+	
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("isZEE", [](KappaEvent const& event, KappaProduct const& product)
+	{
+		return (product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::EE);
+	});
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("isZMM", [](KappaEvent const& event, KappaProduct const& product)
+	{
+		return (product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::MM);
+	});
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("isZLL", [](KappaEvent const& event, KappaProduct const& product)
+	{
+		return ((product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::MM) || (product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::EE));
+	});
 }
 
 void GenDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& product,

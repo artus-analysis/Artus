@@ -33,6 +33,31 @@ void GenTauDecayModeProducer::Init(KappaSettings const& settings)
 	{
 		return Utility::ToUnderlyingValue(product.m_genTauTauDecayMode);
 	});
+	
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("isZtt", [](KappaEvent const& event, KappaProduct const& product)
+	{
+		return (product.m_genTauTauDecayMode == KappaEnumTypes::TauTauDecayMode::TT);
+	});
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("isZmt", [](KappaEvent const& event, KappaProduct const& product)
+	{
+		return (product.m_genTauTauDecayMode == KappaEnumTypes::TauTauDecayMode::MT);
+	});
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("isZet", [](KappaEvent const& event, KappaProduct const& product)
+	{
+		return (product.m_genTauTauDecayMode == KappaEnumTypes::TauTauDecayMode::ET);
+	});
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("isZee", [](KappaEvent const& event, KappaProduct const& product)
+	{
+		return (product.m_genTauTauDecayMode == KappaEnumTypes::TauTauDecayMode::EE);
+	});
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("isZmm", [](KappaEvent const& event, KappaProduct const& product)
+	{
+		return (product.m_genTauTauDecayMode == KappaEnumTypes::TauTauDecayMode::MM);
+	});
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("isZem", [](KappaEvent const& event, KappaProduct const& product)
+	{
+		return (product.m_genTauTauDecayMode == KappaEnumTypes::TauTauDecayMode::EM);
+	});
 }
 
 void GenTauDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& product,
