@@ -25,16 +25,20 @@ class InputInteractive(inputbase.InputBase):
 		super(InputInteractive, self).modify_argument_parser(parser, args)
 		
 		self.input_options.add_argument("--x-errors", type=str, nargs="+",
-		                                help="x-error(s)")
+		                                help="x-error(s). If --x-errors-up is also specified, this corresponds to the x-errors low")
 		self.input_options.add_argument("--y-errors", type=str, nargs="+",
-		                                help="y-error(s)")
+		                                help="y-error(s). If --y-errors-up is also specified, this corresponds to the y-errors low")
 		self.input_options.add_argument("--z-errors", type=str, nargs="+",
 		                                help="z-error(s)")
+		self.input_options.add_argument("--x-errors-up", type=str, nargs="+",
+										help="x-error(s) high")
+		self.input_options.add_argument("--y-errors-up", type=str, nargs="+",
+										help="y-error(s) high")
 	
 	def prepare_args(self, parser, plotData):
 		super(InputInteractive, self).prepare_args(parser, plotData)
 		
-		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "x_errors", "y_errors", "z_errors"])
+		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "x_errors", "y_errors", "z_errors","x_errors_up","y_errors_up"])
 		
 		def secure_float_conversion(input_string):
 			try:
@@ -50,20 +54,40 @@ class InputInteractive(inputbase.InputBase):
 		# parse values/errors to plot
 		values_keys = ["x_expressions", "y_expressions", "z_expressions"]
 		errors_keys = ["x_errors", "y_errors", "z_errors"]
-		for key in values_keys + errors_keys:
+		errors_up_keys = ["x_errors_up","y_errors_up"]
+		for key in values_keys + errors_keys + errors_up_keys:
 			if plotData.plotdict[key] != None:
 				plotData.plotdict[key] = [[secure_float_conversion(value) for value in (values.split() if values != None else [])] for values in plotData.plotdict[key]]
 		
-		# set default errors to 0.0
+		# set default errors to 0.0					
 		for index in xrange(len(plotData.plotdict["nicks"])):
 			for values_key, errors_key in zip(values_keys, errors_keys):
 				if len(plotData.plotdict[errors_key][index]) == 0:
 					plotData.plotdict[errors_key][index] = len(plotData.plotdict[values_key][index]) * [0.0]
 		
+		x_errors_up_given = []
+		y_errors_up_given = []
+		for index in xrange(len(plotData.plotdict["nicks"])):
+			for errors_up_key in errors_up_keys:
+				if errors_up_key == "x_errors_up":
+					if len(plotData.plotdict[errors_up_key][index]) == 0:
+						x_errors_up_given.append(False)
+					else:
+						x_errors_up_given.append(True)
+				elif errors_up_key == "y_errors_up":
+					if len(plotData.plotdict[errors_up_key][index]) == 0:
+						y_errors_up_given.append(False)
+					else:
+						y_errors_up_given.append(True)
+		for index in xrange(len(plotData.plotdict["nicks"])):
+			for values_key, errors_up_key in zip(values_keys, errors_up_keys):
+				if len(plotData.plotdict[errors_up_key][index]) == 0 and ((errors_up_key == "x_errors_up" and x_errors_up_given[index] == False and y_errors_up_given[index] == True) or (errors_up_key == "y_errors_up" and y_errors_up_given[index] == False and x_errors_up_given[index] == True)):
+					plotData.plotdict[errors_up_key][index] = len(plotData.plotdict[values_key][index]) * [0.0]
+		
 		# check that x/y/z values/errors for one plot have the same size
 		for index in xrange(len(plotData.plotdict["nicks"])):
 			n_values_per_plot = []
-			for key in values_keys + errors_keys:
+			for key in values_keys + errors_keys + errors_up_keys:
 				if len(plotData.plotdict[key][index]) > 0:
 					n_values_per_plot.append(len(plotData.plotdict[key][index]))
 			assert(len(set(n_values_per_plot)) == 1)
@@ -74,18 +98,18 @@ class InputInteractive(inputbase.InputBase):
 		
 		for index, (
 				nick,
-				x_bins, x_values, x_errors,
-				y_bins, y_values, y_errors,
+				x_bins, x_values, x_errors, x_errors_up,
+				y_bins, y_values, y_errors, y_errors_up,
 				z_bins, z_values, z_errors,
 		) in enumerate(pi.ProgressIterator(zip(*[plotData.plotdict[key] for key in [
 				"nicks",
-				"x_bins", "x_expressions", "x_errors",
-				"y_bins", "y_expressions", "y_errors",
+				"x_bins", "x_expressions", "x_errors", "x_errors_up",
+				"y_bins", "y_expressions", "y_errors", "y_errors_up",
 				"z_bins", "z_expressions", "z_errors",
 		]]), description="Reading inputs")):
 			
 			# prepare unique name
-			name_hash = hashlib.md5("_".join([str(item) for item in [nick, x_bins, x_values, x_errors, y_bins, y_values, y_errors, z_bins, z_values, z_errors]])).hexdigest()
+			name_hash = hashlib.md5("_".join([str(item) for item in [nick, x_bins, x_values, x_errors, y_bins, y_values, y_errors, z_bins, z_values, z_errors, x_errors_up, y_errors_up]])).hexdigest()
 			
 			if x_bins is None:
 				
@@ -105,11 +129,19 @@ class InputInteractive(inputbase.InputBase):
 				# Graphs
 				else:
 					if len(z_values) == 0:
-						plotData.plotdict.setdefault("root_objects", {})[nick] = ROOT.TGraphErrors(
-								len(x_values),
-								array.array("d", x_values), array.array("d", y_values),
-								array.array("d", x_errors), array.array("d", y_errors)
-						)
+						if len(x_errors_up) == 0 and len(y_errors_up) == 0:
+							plotData.plotdict.setdefault("root_objects", {})[nick] = ROOT.TGraphErrors(
+									len(x_values),
+									array.array("d", x_values), array.array("d", y_values),
+									array.array("d", x_errors), array.array("d", y_errors)
+							)
+						else:
+							plotData.plotdict.setdefault("root_objects", {})[nick] = ROOT.TGraphAsymmErrors(
+									len(x_values),
+									array.array("d", x_values), array.array("d", y_values),
+									array.array("d", x_errors), array.array("d", x_errors_up),
+									array.array("d", y_errors), array.array("d", y_errors_up)
+							)
 					else:
 						plotData.plotdict.setdefault("root_objects", {})[nick] = ROOT.TGraph2DErrors(
 								len(x_values),
