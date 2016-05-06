@@ -56,6 +56,7 @@ public:
 
 	// filled by GenTauDecayProducer
 	MotherDaughterBundle m_genBosonTree;
+	std::map<KGenParticle*, MotherDaughterBundle*> m_genTauDecayTrees;
 
 	/// added by ElectronCorrectionProducer
 	// needs to be a shared_ptr in order to be deleted when the product is deleted

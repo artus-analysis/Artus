@@ -447,6 +447,8 @@ void GenTauDecayProducer::Produce(KappaEvent const& event, KappaProduct& product
 	if (product.m_genBosonParticle != nullptr)
 	{
 		product.m_genBosonTree = MotherDaughterBundle(product.m_genBosonParticle);
+		product.m_genTauDecayTrees[product.m_genBosonParticle] = &product.m_genBosonTree;
+		
 		if (product.m_genBosonParticle->daughterIndices.empty())
 		{
 			product.m_genBosonTree.m_finalState = true;
@@ -481,6 +483,12 @@ void GenTauDecayProducer::Produce(KappaEvent const& event, KappaProduct& product
 			}
 			++genLeptonIndex;
 		}
+	}
+	
+	for (std::vector<MotherDaughterBundle>::iterator bosonDecayProduct = product.m_genBosonTree.m_daughters.begin();
+	     bosonDecayProduct != product.m_genBosonTree.m_daughters.end(); ++bosonDecayProduct)
+	{
+		product.m_genTauDecayTrees[bosonDecayProduct->m_node] = &(*bosonDecayProduct);
 	}
 }
 	
