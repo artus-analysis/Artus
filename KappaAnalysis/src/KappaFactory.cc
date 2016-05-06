@@ -37,6 +37,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/GenMuonFSRProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ZProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenBosonProducers.h"
+#include "Artus/KappaAnalysis/interface/Producers/ValidGenParticlesProducers.h"
 
 // filter
 #include "Artus/KappaAnalysis/interface/Filters/RunLumiEventFilter.h"
@@ -106,6 +107,12 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new ValidTaggedJetsProducer();
 	else if(id == ValidBTaggedJetsProducer().GetProducerId())
 		return new ValidBTaggedJetsProducer();
+	else if(id == ValidGenElectronsProducer().GetProducerId())
+		return new ValidGenElectronsProducer();
+	else if(id == ValidGenMuonsProducer().GetProducerId())
+		return new ValidGenMuonsProducer();
+	else if(id == ValidGenTausProducer().GetProducerId())
+		return new ValidGenTausProducer();
 	else if(id == ElectronTriggerMatchingProducer().GetProducerId())
 		return new ElectronTriggerMatchingProducer();
 	else if(id == MuonTriggerMatchingProducer().GetProducerId())

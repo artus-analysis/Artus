@@ -268,7 +268,6 @@ public:
 	IMPL_SETTING_STRINGLIST_DEFAULT(ElectronLowerPtCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(MuonLowerPtCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(TauLowerPtCuts, {});
-	// std::vector<std::string> test;
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetLowerPtCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(NonBTaggedJetLowerPtCuts, {});
 		
@@ -287,9 +286,18 @@ public:
 	IMPL_SETTING_DEFAULT(float, BTagShift, 0.0f);
 	IMPL_SETTING_DEFAULT(float, BMistagShift, 0.0f);
 	
-	//Reading Boson PdgId and Status code for GenTauDecayProducer studies.
+	// Needed by the GenBosonProducers
 	IMPL_SETTING_INTLIST_DEFAULT(BosonPdgIds, {23});
 	IMPL_SETTING_INTLIST_DEFAULT(BosonStatuses, {3});  //keep pythia6 status as default for back-compatibility
+	
+	// Needed by the ValidGenParticleProducers
+	IMPL_SETTING_STRINGLIST_DEFAULT(GenElectronLowerPtCuts, {});
+	IMPL_SETTING_STRINGLIST_DEFAULT(GenMuonLowerPtCuts, {});
+	IMPL_SETTING_STRINGLIST_DEFAULT(GenTauLowerPtCuts, {});
+	
+	IMPL_SETTING_STRINGLIST_DEFAULT(GenElectronUpperAbsEtaCuts, {});
+	IMPL_SETTING_STRINGLIST_DEFAULT(GenMuonUpperAbsEtaCuts, {});
+	IMPL_SETTING_STRINGLIST_DEFAULT(GenTauUpperAbsEtaCuts, {});
 
 	/// Needed by the GenPartonCounterProducer
 	IMPL_SETTING_DEFAULT(int, PartonStatus, 3);  //keep pythia6 status as default for back-compatibility

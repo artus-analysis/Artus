@@ -48,6 +48,11 @@ public:
 	bool m_genBosonLVFound = false;
 	
 	std::vector<KGenParticle*> m_genLeptonsFromBosonDecay;
+	
+	// filled by the ValidGenParticleProducers
+	std::vector<KGenParticle*> m_validGenElectrons;
+	std::vector<KGenParticle*> m_validGenMuons;
+	std::vector<KGenParticle*> m_validGenTaus;
 
 	// filled by GenTauDecayProducer
 	MotherDaughterBundle m_genBosonTree;
