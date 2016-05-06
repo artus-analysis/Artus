@@ -32,6 +32,5 @@ public:
 private:
 	std::string pipelineName;
 	mutable std::vector<std::string> m_weightNames;
-	double m_baseWeight;
 };
 

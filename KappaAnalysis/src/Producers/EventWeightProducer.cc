@@ -11,22 +11,24 @@ std::string EventWeightProducer::GetProducerId() const {
 
 EventWeightProducer::~EventWeightProducer()
 {
-	LOG(INFO) << "Constructed event weight from indidual weights ("
-	           << boost::algorithm::join(m_weightNames, ", ")
-	           << ") in the pipeline \"" << pipelineName << "\".";
+	if (! m_weightNames.empty())
+	{
+		LOG(INFO) << "Constructed event weight from indidual weights ("
+		          << boost::algorithm::join(m_weightNames, ", ")
+		          << ") in the pipeline \"" << pipelineName << "\".";
+	}
 }
 
 void EventWeightProducer::Init(KappaSettings const& settings)
 {
 	ProducerBase<KappaTypes>::Init(settings);
 	pipelineName = settings.GetName();
-	m_baseWeight = settings.GetBaseWeight();
 }
 
 void EventWeightProducer::Produce(KappaEvent const& event, KappaProduct& product,
                                   KappaSettings const& settings) const
 {
-	double eventWeight = m_baseWeight;
+	double eventWeight = settings.GetBaseWeight();
 	bool firstRun = m_weightNames.empty();
 
 	// loop over all previously calculated weights and multiply them
