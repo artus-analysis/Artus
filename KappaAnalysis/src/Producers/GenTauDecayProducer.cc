@@ -455,20 +455,12 @@ void GenTauDecayProducer::Produce(KappaEvent const& event, KappaProduct& product
 		}
 		else
 		{
-			size_t genBosonIndex = std::find_if(
-					event.m_genParticles->begin(),
-					event.m_genParticles->end(),
-					[product](KGenParticle const& genParticle) -> bool {
-						return product.m_genBosonParticle == &genParticle;
-					}
-			) - event.m_genParticles->begin();
-			BuildDecayTree(product.m_genBosonTree, genBosonIndex, event);
+			BuildDecayTree(product.m_genBosonTree, product.m_genBosonParticle, event);
 		}
 	}
 	else
 	{
 		product.m_genBosonTree = MotherDaughterBundle(nullptr);
-		size_t genLeptonIndex = 0;
 		for (std::vector<KGenParticle*>::const_iterator genLepton = product.m_genLeptonsFromBosonDecay.begin();
 		     genLepton != product.m_genLeptonsFromBosonDecay.end(); ++genLepton)
 		{
@@ -479,9 +471,8 @@ void GenTauDecayProducer::Produce(KappaEvent const& event, KappaProduct& product
 			}
 			else
 			{
-				BuildDecayTree(product.m_genBosonTree.m_daughters.back(), genLeptonIndex, event);
+				BuildDecayTree(product.m_genBosonTree.m_daughters.back(), *genLepton, event);
 			}
-			++genLeptonIndex;
 		}
 	}
 	
@@ -492,31 +483,23 @@ void GenTauDecayProducer::Produce(KappaEvent const& event, KappaProduct& product
 	}
 }
 	
-void GenTauDecayProducer::BuildDecayTree(MotherDaughterBundle & lastProductParentRef, unsigned int lastEventParentIndex, event_type const& event) const
+void GenTauDecayProducer::BuildDecayTree(MotherDaughterBundle& currentDecayTree, KGenParticle* currentGenParticle, event_type const& event) const
 {
-	for (unsigned int j = 0;
-	     (j < (event.m_genParticles->at(lastEventParentIndex)).daughterIndices.size()) && ((event.m_genParticles->at(lastEventParentIndex)).daughterIndices.size() != 0);
-	     ++j)
+	for (std::vector<unsigned int>::iterator daughterIndex = currentGenParticle->daughterIndices.begin();
+	     daughterIndex != currentGenParticle->daughterIndices.end(); ++daughterIndex)
 	{
-		unsigned int daughterIndex = (event.m_genParticles->at(lastEventParentIndex)).daughterIndex(j);
-		if ((daughterIndex < event.m_genParticles->size()) && (true))
+		KGenParticle* daughterGenParticle = &(event.m_genParticles->at(*daughterIndex));
+		currentDecayTree.m_daughters.push_back(MotherDaughterBundle(daughterGenParticle));
+		MotherDaughterBundle & daughterDecayTree = currentDecayTree.m_daughters.back();
+		daughterDecayTree.SetCharge();
+		daughterDecayTree.SetDetectable();
+		if (daughterGenParticle->daughterIndices.size() == 0)
 		{
-			lastProductParentRef.m_daughters.push_back(MotherDaughterBundle( &(event.m_genParticles->at(daughterIndex)) ));
-			MotherDaughterBundle & lastDaughterRef = lastProductParentRef.m_daughters.back();
-			lastDaughterRef.SetCharge();
-			lastDaughterRef.SetDetectable();
-			if ((event.m_genParticles->at(daughterIndex)).daughterIndices.size() == 0)
-			{
-				lastDaughterRef.m_finalState = true;
-			}
-			else
-			{
-				BuildDecayTree(lastDaughterRef, daughterIndex, event);
-			}
+			daughterDecayTree.m_finalState = true;
 		}
 		else
 		{
-			LOG(ERROR) << "Index larger than size of gen particle vector:" << daughterIndex << ">" << event.m_genParticles->size() << ".";
+			BuildDecayTree(daughterDecayTree, daughterGenParticle, event);
 		}
 	}
 }
