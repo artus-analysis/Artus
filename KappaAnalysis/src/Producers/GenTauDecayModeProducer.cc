@@ -123,12 +123,12 @@ void GenTauDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& pro
 	for(typename std::vector<KGenTau>::const_iterator genTau = event.m_genTaus->begin();
 	    genTau != event.m_genTaus->end(); ++genTau)
 	{
-		if (selectedTau1->m_node->p4 == genTau->p4)
+		if (selectedTau1->m_genParticle->p4 == genTau->p4)
 		{
 			product.m_genMatchedDecayMode[&(*genTau)] = tau1DecayMode;
 			product.m_genMatchedProngSize[&(*genTau)] = tau1ProngSize;
 		}
-		if (selectedTau2->m_node->p4 == genTau->p4)
+		if (selectedTau2->m_genParticle->p4 == genTau->p4)
 		{
 			product.m_genMatchedDecayMode[&(*genTau)] = tau2DecayMode;
 			product.m_genMatchedProngSize[&(*genTau)] = tau2ProngSize;

@@ -13,7 +13,7 @@
 */
 class GenParticleDecayTree {
 public:
-	GenParticleDecayTree(KGenParticle* newNode = nullptr);
+	GenParticleDecayTree(KGenParticle* genParticle = nullptr);
 	~GenParticleDecayTree();
 	
 	bool m_finalState = false;
@@ -21,8 +21,8 @@ public:
 	std::vector<GenParticleDecayTree*> m_finalStateOneProngs;
 	std::vector<GenParticleDecayTree*> m_finalStateThreeProngs;
 	std::vector<GenParticleDecayTree*> m_finalStateFiveProngs;
-	// must be != null;
-	KGenParticle* m_node;
+	
+	KGenParticle* m_genParticle;
 	// will have 0 entries, if there are no daughters
 	std::vector<GenParticleDecayTree> m_daughters;
 
@@ -51,7 +51,7 @@ public:
 	void SetDetectable();
 	bool IsDetectable() const;
 	void DetermineDecayMode(GenParticleDecayTree* root);
-	void SetDecayMode(GenParticleDecayTree* tauDaughters);
+	void SetDecayMode(GenParticleDecayTree* tauDaughter);
 	
 private:
 	int m_charge = 5;
@@ -82,7 +82,7 @@ private:
 		-DefaultValues::pdgIdAOnePlus1260
 	};
 	
-	std::vector<int> m_nonChargedParticlePdgIds =
+	std::vector<int> m_neutralParticlePdgIds =
 	{
 		DefaultValues::pdgIdNuE,
 		-DefaultValues::pdgIdNuE,
