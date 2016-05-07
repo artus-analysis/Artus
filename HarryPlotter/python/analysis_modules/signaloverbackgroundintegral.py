@@ -105,7 +105,7 @@ class SignalOverBackgroundIntegral(analysisbase.AnalysisBase):
 					sig_events += signal.GetBinContent(x_bin)
 					bkg_events += background.GetBinContent(x_bin)
 					value = 0
-					if bkg_events > 1 and sig_events > 1:
+					if bkg_events > 1 and sig_events > 0:
 						value = calculation_function(sig_events, bkg_events)
 						output_histogram.SetBinContent(x_bin, value)
 					else:
@@ -125,7 +125,7 @@ class SignalOverBackgroundIntegral(analysisbase.AnalysisBase):
 				for x_bin in range(1, rtl_marks[-1]):
 					sig_events += signal.GetBinContent(x_bin)
 					bkg_events += background.GetBinContent(x_bin)
-				if bkg_events > 1 and sig_events > 1:
+				if bkg_events > 1 and sig_events > 0:
 					rtl_yvalues.append(calculation_function(sig_events, bkg_events))
 				else:
 					rtl_yvalues.append(0)
