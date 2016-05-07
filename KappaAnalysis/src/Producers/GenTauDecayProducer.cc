@@ -446,7 +446,7 @@ void GenTauDecayProducer::Produce(KappaEvent const& event, KappaProduct& product
 	
 	if (product.m_genBosonParticle != nullptr)
 	{
-		product.m_genBosonTree = MotherDaughterBundle(product.m_genBosonParticle);
+		product.m_genBosonTree = GenParticleDecayTree(product.m_genBosonParticle);
 		product.m_genTauDecayTrees[product.m_genBosonParticle] = &product.m_genBosonTree;
 		
 		if (product.m_genBosonParticle->daughterIndices.empty())
@@ -460,11 +460,11 @@ void GenTauDecayProducer::Produce(KappaEvent const& event, KappaProduct& product
 	}
 	else
 	{
-		product.m_genBosonTree = MotherDaughterBundle(nullptr);
+		product.m_genBosonTree = GenParticleDecayTree(nullptr);
 		for (std::vector<KGenParticle*>::const_iterator genLepton = product.m_genLeptonsFromBosonDecay.begin();
 		     genLepton != product.m_genLeptonsFromBosonDecay.end(); ++genLepton)
 		{
-			product.m_genBosonTree.m_daughters.push_back(MotherDaughterBundle(*genLepton));
+			product.m_genBosonTree.m_daughters.push_back(GenParticleDecayTree(*genLepton));
 			if ((*genLepton)->daughterIndices.empty())
 			{
 				product.m_genBosonTree.m_daughters.back().m_finalState = true;
@@ -476,21 +476,21 @@ void GenTauDecayProducer::Produce(KappaEvent const& event, KappaProduct& product
 		}
 	}
 	
-	for (std::vector<MotherDaughterBundle>::iterator bosonDecayProduct = product.m_genBosonTree.m_daughters.begin();
+	for (std::vector<GenParticleDecayTree>::iterator bosonDecayProduct = product.m_genBosonTree.m_daughters.begin();
 	     bosonDecayProduct != product.m_genBosonTree.m_daughters.end(); ++bosonDecayProduct)
 	{
 		product.m_genTauDecayTrees[bosonDecayProduct->m_node] = &(*bosonDecayProduct);
 	}
 }
 	
-void GenTauDecayProducer::BuildDecayTree(MotherDaughterBundle& currentDecayTree, KGenParticle* currentGenParticle, event_type const& event) const
+void GenTauDecayProducer::BuildDecayTree(GenParticleDecayTree& currentDecayTree, KGenParticle* currentGenParticle, event_type const& event) const
 {
 	for (std::vector<unsigned int>::iterator daughterIndex = currentGenParticle->daughterIndices.begin();
 	     daughterIndex != currentGenParticle->daughterIndices.end(); ++daughterIndex)
 	{
 		KGenParticle* daughterGenParticle = &(event.m_genParticles->at(*daughterIndex));
-		currentDecayTree.m_daughters.push_back(MotherDaughterBundle(daughterGenParticle));
-		MotherDaughterBundle & daughterDecayTree = currentDecayTree.m_daughters.back();
+		currentDecayTree.m_daughters.push_back(GenParticleDecayTree(daughterGenParticle));
+		GenParticleDecayTree & daughterDecayTree = currentDecayTree.m_daughters.back();
 		daughterDecayTree.SetCharge();
 		daughterDecayTree.SetDetectable();
 		if (daughterGenParticle->daughterIndices.size() == 0)

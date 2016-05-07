@@ -11,20 +11,20 @@
    subtree of considered particles. The final states can be devided into one, three and five prongs.
   
 */
-class MotherDaughterBundle {
+class GenParticleDecayTree {
 public:
-	MotherDaughterBundle(KGenParticle* newNode = nullptr);
-	~MotherDaughterBundle();
+	GenParticleDecayTree(KGenParticle* newNode = nullptr);
+	~GenParticleDecayTree();
 	
 	bool m_finalState = false;
-	std::vector<MotherDaughterBundle*> m_finalStates;
-	std::vector<MotherDaughterBundle*> m_finalStateOneProngs;
-	std::vector<MotherDaughterBundle*> m_finalStateThreeProngs;
-	std::vector<MotherDaughterBundle*> m_finalStateFiveProngs;
+	std::vector<GenParticleDecayTree*> m_finalStates;
+	std::vector<GenParticleDecayTree*> m_finalStateOneProngs;
+	std::vector<GenParticleDecayTree*> m_finalStateThreeProngs;
+	std::vector<GenParticleDecayTree*> m_finalStateFiveProngs;
 	// must be != null;
 	KGenParticle* m_node;
 	// will have 0 entries, if there are no daughters
-	std::vector<MotherDaughterBundle> m_daughters;
+	std::vector<GenParticleDecayTree> m_daughters;
 
 	enum class DecayMode : int
 	{
@@ -44,14 +44,14 @@ public:
 
 	DecayMode m_decayMode = DecayMode::NONE;
 
-	void CreateFinalStates(MotherDaughterBundle* root);
-	void CreateFinalStateProngs(MotherDaughterBundle* root);
+	void CreateFinalStates(GenParticleDecayTree* root);
+	void CreateFinalStateProngs(GenParticleDecayTree* root);
 	void SetCharge();
 	int GetCharge() const;
 	void SetDetectable();
 	bool IsDetectable() const;
-	void DetermineDecayMode(MotherDaughterBundle* root);
-	void SetDecayMode(MotherDaughterBundle* tauDaughters);
+	void DetermineDecayMode(GenParticleDecayTree* root);
+	void SetDecayMode(GenParticleDecayTree* tauDaughters);
 	
 private:
 	int m_charge = 5;

@@ -1,15 +1,15 @@
 
-#include "Artus/KappaAnalysis/interface/Utility/MotherDaughterBundle.h"
+#include "Artus/KappaAnalysis/interface/Utility/GenParticleDecayTree.h"
 
-MotherDaughterBundle::MotherDaughterBundle(KGenParticle* newNode) :
+GenParticleDecayTree::GenParticleDecayTree(KGenParticle* newNode) :
 	m_node(newNode)
 {
 }
 
-MotherDaughterBundle::~MotherDaughterBundle() {
+GenParticleDecayTree::~GenParticleDecayTree() {
 }
 
-void MotherDaughterBundle::CreateFinalStates(MotherDaughterBundle* root)
+void GenParticleDecayTree::CreateFinalStates(GenParticleDecayTree* root)
 {
 	if (this->m_finalState)
 		root->m_finalStates.push_back(this);
@@ -22,7 +22,7 @@ void MotherDaughterBundle::CreateFinalStates(MotherDaughterBundle* root)
 	}
 }
 
-void MotherDaughterBundle::CreateFinalStateProngs(MotherDaughterBundle* root)
+void GenParticleDecayTree::CreateFinalStateProngs(GenParticleDecayTree* root)
 {
 	int chargedParticles = 0;
 	this->CreateFinalStates(root);
@@ -38,7 +38,7 @@ void MotherDaughterBundle::CreateFinalStateProngs(MotherDaughterBundle* root)
 	else if(chargedParticles==5) this->m_finalStateFiveProngs = this->m_finalStates;
 }
 
-void MotherDaughterBundle::SetCharge()
+void GenParticleDecayTree::SetCharge()
 {
 	for (unsigned int i=0; i<m_positiveChargedParticlePdgIds.size(); ++i)
 	{
@@ -54,12 +54,12 @@ void MotherDaughterBundle::SetCharge()
 	}
 }
 
-int MotherDaughterBundle::GetCharge() const
+int GenParticleDecayTree::GetCharge() const
 {
 	return this->m_charge;
 }
 
-void MotherDaughterBundle::SetDetectable()
+void GenParticleDecayTree::SetDetectable()
 {
 	for (unsigned int i=0; i<m_detectableParticlePdgIds.size(); ++i)
 	{
@@ -67,12 +67,12 @@ void MotherDaughterBundle::SetDetectable()
 	}
 }
 
-bool MotherDaughterBundle::IsDetectable() const
+bool GenParticleDecayTree::IsDetectable() const
 {
 	return this->m_detectable;
 }
 
-void MotherDaughterBundle::DetermineDecayMode(MotherDaughterBundle* root)
+void GenParticleDecayTree::DetermineDecayMode(GenParticleDecayTree* root)
 {
 	for (auto tauDaughter = root->m_daughters.begin(); tauDaughter != root->m_daughters.end();++tauDaughter)
 	{
@@ -84,7 +84,7 @@ void MotherDaughterBundle::DetermineDecayMode(MotherDaughterBundle* root)
 	}
 }
 
-void MotherDaughterBundle::SetDecayMode(MotherDaughterBundle* tauDaughters)
+void GenParticleDecayTree::SetDecayMode(GenParticleDecayTree* tauDaughters)
 {
 	int pdgId = std::abs(tauDaughters->m_node->pdgId);
 	if (pdgId == DefaultValues::pdgIdTau)

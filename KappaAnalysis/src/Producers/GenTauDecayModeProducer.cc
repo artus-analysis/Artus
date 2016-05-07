@@ -73,11 +73,11 @@ void GenTauDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& pro
 	int tau1ProngSize = -1;
 	int tau2ProngSize = -1;
 
-	MotherDaughterBundle::DecayMode tau1DecayMode = MotherDaughterBundle::DecayMode::NONE;
-	MotherDaughterBundle::DecayMode tau2DecayMode = MotherDaughterBundle::DecayMode::NONE;
+	GenParticleDecayTree::DecayMode tau1DecayMode = GenParticleDecayTree::DecayMode::NONE;
+	GenParticleDecayTree::DecayMode tau2DecayMode = GenParticleDecayTree::DecayMode::NONE;
 
-	MotherDaughterBundle* selectedTau1 = &(product.m_genBosonTree.m_daughters[0]);
-	MotherDaughterBundle* selectedTau2 = &(product.m_genBosonTree.m_daughters[1]);
+	GenParticleDecayTree* selectedTau1 = &(product.m_genBosonTree.m_daughters[0]);
+	GenParticleDecayTree* selectedTau2 = &(product.m_genBosonTree.m_daughters[1]);
 
 	selectedTau1->DetermineDecayMode(selectedTau1);
 	selectedTau2->DetermineDecayMode(selectedTau2);
@@ -136,19 +136,19 @@ void GenTauDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& pro
 	}
 
 
-	std::map<MotherDaughterBundle::DecayMode, int> finalStateLeptons;
+	std::map<GenParticleDecayTree::DecayMode, int> finalStateLeptons;
 
 	finalStateLeptons[product.m_tau1DecayMode]++;
 	finalStateLeptons[product.m_tau2DecayMode]++;
 
-	std::map<MotherDaughterBundle::DecayMode, int>::iterator tau1 = finalStateLeptons.begin();
+	std::map<GenParticleDecayTree::DecayMode, int>::iterator tau1 = finalStateLeptons.begin();
 	if (tau1->second == 2)
 	{
-		if (tau1->first == MotherDaughterBundle::DecayMode::E)
+		if (tau1->first == GenParticleDecayTree::DecayMode::E)
 		{
 			product.m_genTauTauDecayMode = KappaEnumTypes::TauTauDecayMode::EE;
 		}
-		else if (tau1->first == MotherDaughterBundle::DecayMode::M)
+		else if (tau1->first == GenParticleDecayTree::DecayMode::M)
 		{
 			product.m_genTauTauDecayMode = KappaEnumTypes::TauTauDecayMode::MM;
 		}
@@ -159,11 +159,11 @@ void GenTauDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& pro
 	}
 	else
 	{
-		std::map<MotherDaughterBundle::DecayMode, int>::iterator tau2 = finalStateLeptons.begin();
+		std::map<GenParticleDecayTree::DecayMode, int>::iterator tau2 = finalStateLeptons.begin();
 		++tau2;
-		if (tau1->first == MotherDaughterBundle::DecayMode::E)
+		if (tau1->first == GenParticleDecayTree::DecayMode::E)
 		{
-			if (tau2->first == MotherDaughterBundle::DecayMode::M)
+			if (tau2->first == GenParticleDecayTree::DecayMode::M)
 			{
 				product.m_genTauTauDecayMode = KappaEnumTypes::TauTauDecayMode::EM;
 			}
@@ -172,7 +172,7 @@ void GenTauDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& pro
 				product.m_genTauTauDecayMode = KappaEnumTypes::TauTauDecayMode::ET;
 			}
 		}
-		else if (tau1->first == MotherDaughterBundle::DecayMode::M)
+		else if (tau1->first == GenParticleDecayTree::DecayMode::M)
 		{
 			product.m_genTauTauDecayMode = KappaEnumTypes::TauTauDecayMode::MT;
 		}

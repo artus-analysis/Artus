@@ -34,6 +34,6 @@ public:
 	                     KappaSettings const& settings) const override;
 
 private:
-	int NeutralParticles(std::vector<MotherDaughterBundle*> finalStateProngs) const;
+	int NeutralParticles(std::vector<GenParticleDecayTree*> finalStateProngs) const;
 };
 

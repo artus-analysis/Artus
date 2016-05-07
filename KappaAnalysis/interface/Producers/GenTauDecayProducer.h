@@ -33,7 +33,7 @@ public:
 	             KappaSettings const& settings) const override;
 
 private:
-	void BuildDecayTree(MotherDaughterBundle& currentDecayTree, KGenParticle* currentGenParticle, event_type const& event) const;
+	void BuildDecayTree(GenParticleDecayTree& currentDecayTree, KGenParticle* currentGenParticle, event_type const& event) const;
 	int BosonPdgId;
 	int BosonStatus;
 };

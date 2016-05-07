@@ -6,7 +6,7 @@
 
 #include "Artus/Core/interface/ProductBase.h"
 #include "Artus/KappaAnalysis/interface/KappaEnumTypes.h"
-#include "Artus/KappaAnalysis/interface/Utility/MotherDaughterBundle.h"
+#include "Artus/KappaAnalysis/interface/Utility/GenParticleDecayTree.h"
 
 /**
    \brief Container class for everything that can be produced in pipeline.
@@ -54,9 +54,9 @@ public:
 	std::vector<KGenParticle*> m_validGenMuons;
 	std::vector<KGenParticle*> m_validGenTaus;
 
-	// filled by GenTauDecayProducer
-	MotherDaughterBundle m_genBosonTree;
-	std::map<KGenParticle*, MotherDaughterBundle*> m_genTauDecayTrees;
+	// filled by the GenTauDecayProducer
+	GenParticleDecayTree m_genBosonTree;
+	std::map<KGenParticle*, GenParticleDecayTree*> m_genTauDecayTrees;
 
 	/// added by ElectronCorrectionProducer
 	// needs to be a shared_ptr in order to be deleted when the product is deleted
@@ -173,12 +173,11 @@ public:
 
 	// MVA outputs
 	std::vector<double> m_discriminators;
-
-	// GenTauDecayModeProducer
-	std::map<const KGenTau*, MotherDaughterBundle::DecayMode> m_genMatchedDecayMode;
+	
+	std::map<const KGenTau*, GenParticleDecayTree::DecayMode> m_genMatchedDecayMode;
 	std::map<const KGenTau*, int> m_genMatchedProngSize;
-	MotherDaughterBundle::DecayMode m_tau1DecayMode;
-	MotherDaughterBundle::DecayMode m_tau2DecayMode;
+	GenParticleDecayTree::DecayMode m_tau1DecayMode;
+	GenParticleDecayTree::DecayMode m_tau2DecayMode;
 	int m_tau1ProngSize;
 	int m_tau2ProngSize;
 	KappaEnumTypes::TauTauDecayMode m_genTauTauDecayMode;
