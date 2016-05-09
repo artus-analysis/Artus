@@ -21,4 +21,7 @@ public:
 	virtual bool GetEntry(long long lEventNumber) = 0;
 
 	virtual long long GetEntries() const = 0;
+	virtual bool NewLumisection() const { return false; }
+	virtual bool NewRun() const { return false; }
+
 };

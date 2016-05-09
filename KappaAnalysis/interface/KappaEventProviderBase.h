@@ -64,12 +64,12 @@ public:
 			LOG(INFO) << "\nProcessing " << m_fi.eventdata.GetFile()->GetName() << " ...";
 		}
 
-		if (m_prevRun != m_event.m_eventInfo->nRun) {
+		if ( NewLumisection()) {
 			m_prevRun = m_event.m_eventInfo->nRun;
 			m_prevLumi = -1;
 		}
 
-		if (m_prevLumi != m_event.m_eventInfo->nLumi) {
+		if (NewRun()) {
 			m_prevLumi = m_event.m_eventInfo->nLumi;
 			m_fi.GetMetaEntry();
 		}
@@ -80,6 +80,9 @@ public:
 	event_type const& GetCurrentEvent() const override {
 		return m_event;
 	}
+
+	virtual bool NewLumisection() const override { return m_prevLumi != m_event.m_eventInfo->nLumi; }
+	virtual bool NewRun() const override {return m_prevRun != m_event.m_eventInfo->nRun; }
 
 	long long GetEntries() const override {
 		return (m_batchMode ? m_fi.eventdata.GetEntriesFast() : m_fi.eventdata.GetEntries());
