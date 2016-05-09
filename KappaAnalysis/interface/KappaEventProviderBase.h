@@ -64,12 +64,12 @@ public:
 			LOG(INFO) << "\nProcessing " << m_fi.eventdata.GetFile()->GetName() << " ...";
 		}
 
-		if ( NewLumisection()) {
+		if ( NewRun()) {
 			m_prevRun = m_event.m_eventInfo->nRun;
 			m_prevLumi = -1;
 		}
 
-		if (NewRun()) {
+		if (NewLumisection()) {
 			m_prevLumi = m_event.m_eventInfo->nLumi;
 			m_fi.GetMetaEntry();
 		}
