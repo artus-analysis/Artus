@@ -64,15 +64,21 @@ public:
 			LOG(INFO) << "\nProcessing " << m_fi.eventdata.GetFile()->GetName() << " ...";
 		}
 
-		if ( NewRun()) {
+		if (  m_prevRun != m_event.m_eventInfo->nRun ) {
 			m_prevRun = m_event.m_eventInfo->nRun;
 			m_prevLumi = -1;
+			m_newRun = true;
 		}
+		else
+			m_newRun = false;
 
-		if (NewLumisection()) {
+		if ( m_prevLumi != m_event.m_eventInfo->nLumi ) {
 			m_prevLumi = m_event.m_eventInfo->nLumi;
 			m_fi.GetMetaEntry();
+			m_newLumisection = true;
 		}
+		else
+			m_newLumisection = false;
 
 		return (resultGetEntry != 0);
 	}
@@ -81,8 +87,8 @@ public:
 		return m_event;
 	}
 
-	virtual bool NewLumisection() const override { return m_prevLumi != m_event.m_eventInfo->nLumi; }
-	virtual bool NewRun() const override {return m_prevRun != m_event.m_eventInfo->nRun; }
+	virtual bool NewLumisection() const override { if(m_newLumisection) LOG(DEBUG) << "new Lumisection" << std::endl; return m_newLumisection; }
+	virtual bool NewRun() const override { if(m_newRun)  LOG(DEBUG) << "new RUN" << std::endl; return m_newRun; }
 
 	long long GetEntries() const override {
 		return (m_batchMode ? m_fi.eventdata.GetEntriesFast() : m_fi.eventdata.GetEntries());
@@ -90,7 +96,7 @@ public:
 
 
 protected:
-
+	bool m_newLumisection, m_newRun;
 	long m_prevRun, m_prevLumi;
 	int m_prevTree;
 	event_type m_event;
