@@ -43,9 +43,9 @@ protected:
 
 	virtual void baseProduce(EventBase const& event, ProductBase& product,
 	                     SettingsBase const& settings) const = 0;
-	virtual void baseOnRun(EventBase const& event, ProductBase& product,
+	virtual void baseOnRun(EventBase const& event,
 	                     SettingsBase const& settings) = 0;
-	virtual void baseOnLumi(EventBase const& event, ProductBase& product,
+	virtual void baseOnLumi(EventBase const& event,
 	                     SettingsBase const& settings) = 0;
 };
 
@@ -62,13 +62,13 @@ public:
 	                     SettingsBase const& settings){
 		m_cb.baseProduce ( event, product, settings);
 	}
-	void OnRun(EventBase const& event, ProductBase& product,
+	void OnRun(EventBase const& event,
 	                     SettingsBase const& settings){
-		m_cb.baseOnRun ( event, product, settings);
+		m_cb.baseOnRun ( event, settings);
 	}
-	void OnLumi(EventBase const& event, ProductBase& product,
+	void OnLumi(EventBase const& event,
 	                     SettingsBase const& settings){
-		m_cb.baseOnLumi ( event, product, settings);
+		m_cb.baseOnLumi ( event, settings);
 	}
 
 private:
@@ -93,9 +93,9 @@ public:
 
 	virtual void Produce(event_type const& event, product_type& product,
 	                     setting_type const& globalSettings) const = 0;
-	virtual void OnLumi(event_type const& event, product_type& product,
+	virtual void OnLumi(event_type const& event,
 	                     setting_type const& globalSettings) {}
-	virtual void OnRun(event_type const& event, product_type& product,
+	virtual void OnRun(event_type const& event,
 	                     setting_type const& globalSettings) {}
 
 	ProcessNodeType GetProcessNodeType () const final
@@ -117,24 +117,20 @@ protected:
 	}
 
 	void baseOnRun(EventBase const& evt,
-			ProductBase & prod,
 			SettingsBase const& setting ) override
 	{
 		auto const& specEvent = static_cast < event_type const&> ( evt );
-		auto & specProd = static_cast < product_type &> ( prod );
 		auto const& specSetting = static_cast < setting_type const&> ( setting );
 
-		OnRun( specEvent, specProd, specSetting );
+		OnRun( specEvent, specSetting );
 	}
 	void baseOnLumi(EventBase const& evt,
-			ProductBase & prod,
 			SettingsBase const& setting ) override
 	{
 		auto const& specEvent = static_cast < event_type const&> ( evt );
-		auto & specProd = static_cast < product_type &> ( prod );
 		auto const& specSetting = static_cast < setting_type const&> ( setting );
 
-		OnLumi( specEvent, specProd, specSetting );
+		OnLumi( specEvent, specSetting );
 	}
 
 	void baseInit ( SettingsBase const& settings ) override {
