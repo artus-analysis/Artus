@@ -88,8 +88,8 @@ public:
 		return m_event;
 	}
 
-	virtual bool NewLumisection() const override { if(m_newLumisection) LOG(DEBUG) << "new Lumisection" << std::endl; return m_newLumisection; }
-	virtual bool NewRun() const override { if(m_newRun)  LOG(DEBUG) << "new RUN" << std::endl; return m_newRun; }
+	virtual bool NewLumisection() const override { return m_newLumisection; }
+	virtual bool NewRun() const override { return m_newRun; }
 
 	long long GetEntries() const override {
 		return (m_batchMode ? m_fi.eventdata.GetEntriesFast() : m_fi.eventdata.GetEntries());

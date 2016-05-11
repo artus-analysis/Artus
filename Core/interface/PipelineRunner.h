@@ -186,12 +186,12 @@ public:
 					producer_base_type& prod = static_cast<producer_base_type&>(*it);
 					LOG(DEBUG) << prod.GetProducerId() << "::Produce";
 					gettimeofday(&tStart, nullptr);
-//					auto currentEvent = evtProvider.GetCurrentEvent();
-//					if(evtProvider.NewRun())
-//						ProducerBaseAccess(prod).OnRun(currentEvent, settings);
-//					if(evtProvider.NewLumisection())
-//						ProducerBaseAccess(prod).OnLumi(currentEvent, settings);
-					ProducerBaseAccess(prod).Produce(evtProvider.GetCurrentEvent(),
+					auto currentEvent = evtProvider.GetCurrentEvent();
+					if(evtProvider.NewRun())
+						ProducerBaseAccess(prod).OnRun(currentEvent, settings);
+					if(evtProvider.NewLumisection())
+						ProducerBaseAccess(prod).OnLumi(currentEvent, settings);
+					ProducerBaseAccess(prod).Produce(currentEvent,
 							productGlobal, settings);
 					gettimeofday(&tEnd, nullptr);
 					runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);
