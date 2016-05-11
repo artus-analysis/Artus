@@ -36,7 +36,8 @@ public:
 		m_fi.SpeedupTree(128*1024*1024); // in units of bytes
 
 		// auto-delete objects when moving to a new object. Not default root behaviour
-		m_fi.eventdata.SetAutoDelete(true);
+		// RF: Deactivated since it caused trouble when running on multiple files
+		//m_fi.eventdata.SetAutoDelete(true);
 
 		m_mon.reset(new ProgressMonitor(GetEntries()));
 	}
