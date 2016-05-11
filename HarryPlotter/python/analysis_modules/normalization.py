@@ -76,21 +76,52 @@ class NormalizeRowsToUnity(analysisbase.AnalysisBase):
 						root_histogram.SetBinContent(iBinX, iBinY, binContent/sumBinContentRow)
 					sumBinContentRow = 0
 
-class NormalizeToFirstHisto(analysisbase.AnalysisBase):
-	"""Normalize histograms to first histogram."""
+
+class NormalizeHistogram(analysisbase.AnalysisBase):
+	"""Normalize specified histograms to another specified histogram."""
 	def __init__(self):
-		super(NormalizeToFirstHisto, self).__init__()
+		super(NormalizeHistogram, self).__init__()
+
+	def modify_argument_parser(self, parser, args):
+		super(NormalizeHistogram, self).modify_argument_parser(parser, args)
+
+		self.normalize_histogram_options = parser.add_argument_group("{} options".format(self.name()))
+		self.normalize_histogram_options.add_argument("--normalization-base-histo", type=str, nargs="+",
+				help="Nick names of the histogram to normalize to.")
+		self.normalize_histogram_options.add_argument("--histograms-to-normalize", type=str, nargs="+",
+				help="Nick names of the histogram to normalize to be normalized")
+
+	def prepare_args(self, parser, plotData):
+		super(NormalizeHistogram, self).prepare_args(parser, plotData)
+		self.prepare_list_args(plotData, ["normalization_base_histo", "histograms_to_normalize"])
+
+
+	def normalize_histogram(self, refhisto_nicks, nicks_to_normalize, plotData=None ):
+		for refhisto, histos_to_normalize in zip(refhisto_nicks, nicks_to_normalize):
+			refhisto_int = plotData.plotdict["root_objects"][refhisto].Integral()
+
+			for histo_to_normalize in histos_to_normalize.split(" "):
+				root_histogram = plotData.plotdict["root_objects"][histo_to_normalize]
+				if isinstance(root_histogram, ROOT.TH1):
+					root_histogram.Sumw2()
+					if root_histogram.Integral() != 0.0:
+						log.debug("{0}: Scaling histogram {1} by {2}".format(self.name(), histo_to_normalize, (refhisto_int / root_histogram.Integral())))
+						root_histogram.Scale(refhisto_int / root_histogram.Integral())
 
 	def run(self, plotData=None):
-		super(NormalizeToFirstHisto, self).run(plotData)
-		refhisto_int = plotData.plotdict["root_objects"][plotData.plotdict["nicks"][0]].Integral()
+		super(NormalizeHistogram, self).run(plotData)
+		self.normalize_histogram(
+		                    refhisto_nicks = plotData.plotdict["normalization_base_histo"],
+		                    nicks_to_normalize = plotData.plotdict["histograms_to_normalize"],
+		                    plotData = plotData)
 
-		for nick, root_histogram in plotData.plotdict["root_objects"].iteritems():
-			if isinstance(root_histogram, ROOT.TH1):
-				root_histogram.Sumw2()
-				if root_histogram.Integral() != 0.0:
-					log.debug("{0}: Scaling histogram {1} by {2}".format(self.name(), nick, (refhisto_int / root_histogram.Integral())))
-					root_histogram.Scale(refhisto_int / root_histogram.Integral())
+class NormalizeToFirstHisto(NormalizeHistogram):
+	"""Normalize histograms to first histogram."""
+	def run(self, plotData=None):
+		normalize_histogram(
+		                    refhisto_nick = plotData.plotdict["nicks"][0], # take nickname at first position
+		                    nicks_to_normalize = " ".join(plotData.plotdict["nicks"][1:]), # all other nicknames apart from the first one. Join them to one string to be consistent with parser
+		                    plotData=plotData)
 
 class NormalizeStackToFirstHisto(analysisbase.AnalysisBase):
 	"""Normalize stacked histograms to first histogram."""
