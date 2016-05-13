@@ -28,21 +28,31 @@ class ScaleByIntegral(analysisbase.AnalysisBase):
 				"--scale-by-inverse-integrals", type="bool", nargs="+", default=[True],
 				help="Scale histogram by inverse integrals. [Default: %(default)s]"
 		)
+		self.scale_by_integral_options.add_argument(
+				"--scale-result-nicks", type=str, nargs="+", default=[None],
+				help="Resulting nick name. Default is to overwrite input."
+		)
 
 	def prepare_args(self, parser, plotData):
 		super(ScaleByIntegral, self).prepare_args(parser, plotData)
-		self.prepare_list_args(plotData, ["histogram_to_scale_nicks", "integral_histogram_nicks", "scale_by_inverse_integrals"])
+		self.prepare_list_args(plotData, ["histogram_to_scale_nicks", "integral_histogram_nicks", "scale_by_inverse_integrals", "scale_result_nicks"])
 
 	def run(self, plotData=None):
 		super(ScaleByIntegral, self).run(plotData)
 
-		for histogram_to_scale_nick, integral_histogram_nick, scale_by_inverse_integrals in zip(
-				*[plotData.plotdict[k] for k in ["histogram_to_scale_nicks", "integral_histogram_nicks", "scale_by_inverse_integrals"]]
+		for histogram_to_scale_nick, integral_histogram_nick, scale_by_inverse_integrals, scale_result_nick in zip(
+				*[plotData.plotdict[k] for k in ["histogram_to_scale_nicks", "integral_histogram_nicks", "scale_by_inverse_integrals", "scale_result_nicks"]]
 		):
 			histogram_to_scale = plotData.plotdict["root_objects"][histogram_to_scale_nick]
 			integral_histogram = plotData.plotdict["root_objects"][integral_histogram_nick]
 			assert(isinstance(histogram_to_scale, ROOT.TH1))
 			assert(isinstance(integral_histogram, ROOT.TH1))
-			histogram_to_scale.Scale((1.0 / integral_histogram.Integral()) if scale_by_inverse_integrals else integral_histogram.Integral())
-			plotData.plotdict["root_objects"][histogram_to_scale_nick] = histogram_to_scale
+			if(scale_result_nick == None):
+				histogram_to_scale.Scale((1.0 / integral_histogram.Integral()) if scale_by_inverse_integrals else integral_histogram.Integral())
+				plotData.plotdict["root_objects"][histogram_to_scale_nick] = histogram_to_scale
+			else:
+				new_histogram = histogram_to_scale.Clone(scale_result_nick)
+				new_histogram.Scale((1.0 / integral_histogram.Integral()) if scale_by_inverse_integrals else integral_histogram.Integral())
+				plotData.plotdict["root_objects"][scale_result_nick] = new_histogram
+				plotData.plotdict["nicks"].append(scale_result_nick)
 
