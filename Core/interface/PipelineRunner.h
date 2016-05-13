@@ -184,7 +184,7 @@ public:
 				if ( it->GetProcessNodeType () == ProcessNodeType::Producer )
 				{
 					producer_base_type& prod = static_cast<producer_base_type&>(*it);
-					LOG(DEBUG) << prod.GetProducerId() << "::Produce";
+					//LOG(DEBUG) << prod.GetProducerId() << "::Produce";
 					gettimeofday(&tStart, nullptr);
 					auto currentEvent = evtProvider.GetCurrentEvent();
 					if(evtProvider.NewRun())
