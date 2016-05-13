@@ -202,6 +202,11 @@ public:
 					filter_base_type& flt = static_cast<filter_base_type&>(*it);
 					//LOG(DEBUG) << flt.GetFilterId() << "::DoesEventPass";
 					gettimeofday(&tStart, nullptr);
+					auto currentEvent = evtProvider.GetCurrentEvent();
+					if(evtProvider.NewRun())
+						FilterBaseAccess(flt).OnRun(currentEvent, settings);
+					if(evtProvider.NewLumisection())
+						FilterBaseAccess(flt).OnLumi(currentEvent, settings);
 					const bool filterResult = FilterBaseAccess(flt).DoesEventPass(evtProvider.GetCurrentEvent(),
 							productGlobal, settings);
 					globalFilterResult.SetFilterDecision(flt.GetFilterId(), filterResult);

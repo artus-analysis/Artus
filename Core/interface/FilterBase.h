@@ -38,6 +38,8 @@ protected:
 
 	virtual bool baseDoesEventPass(EventBase const& event,
 			ProductBase const& product, SettingsBase const& settings) const = 0;
+	virtual void baseOnRun(EventBase const& event, SettingsBase const& settings) = 0;
+	virtual void baseOnLumi(EventBase const& event, SettingsBase const& settings) = 0;
 	virtual void baseInit ( SettingsBase const& settings ) = 0;
 
 };
@@ -55,6 +57,16 @@ public:
 	void Init ( SettingsBase const& settings )
 	{
 		m_cb.baseInit( settings );
+	}
+
+	void OnLumi(EventBase const& event, SettingsBase const& settings) const
+	{
+		m_cb.baseOnLumi( event, settings);
+	}
+
+	void OnRun(EventBase const& event, SettingsBase const& settings) const
+	{
+		m_cb.baseOnRun( event, settings);
 	}
 
 private:
@@ -85,6 +97,8 @@ public:
 		LOG(FATAL) << "DoesEventPassGlobal function for filter \"" << this->GetFilterId() << "\" is not implemented!";
 		return false;
 	}
+	virtual void OnLumi(event_type const& event, setting_type const& settings){ return; }
+	virtual void OnRun(event_type const& event, setting_type const& settings){ return; }
 
 	virtual std::string ToString(bool bVerbose = false) {
 		return GetFilterId();
@@ -112,4 +126,19 @@ protected:
 
 		this->Init ( specSettings );
 	}
+
+	void baseOnLumi(EventBase const& evt, SettingsBase const& settings ) override {
+		auto const& specEvent = static_cast < event_type const&> ( evt );
+		auto const& specSetting = static_cast < setting_type const&> ( settings );
+
+		OnLumi( specEvent, specSetting );
+	}
+
+	void baseOnRun(EventBase const& evt, SettingsBase const& settings ) override {
+		auto const& specEvent = static_cast < event_type const&> ( evt );
+		auto const& specSetting = static_cast < setting_type const&> ( settings );
+
+		OnRun( specEvent, specSetting );
+	}
+
 };
