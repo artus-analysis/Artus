@@ -187,6 +187,8 @@ public:
 					//LOG(DEBUG) << prod.GetProducerId() << "::Produce";
 					gettimeofday(&tStart, nullptr);
 					auto currentEvent = evtProvider.GetCurrentEvent();
+					productGlobal.newRun = evtProvider.NewRun();
+					productGlobal.newLumisection = evtProvider.NewLumisection();
 					if(evtProvider.NewRun())
 						ProducerBaseAccess(prod).OnRun(currentEvent, settings);
 					if(evtProvider.NewLumisection())

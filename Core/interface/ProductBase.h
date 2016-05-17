@@ -9,5 +9,7 @@ struct ProductBase
 	FilterResult PreviousPipelinesResult;
 	FilterResult fres;
 	std::map<std::string, int> processorRunTime;
+	bool newLumisection;
+	bool newRun;
 };
 

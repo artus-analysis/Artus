@@ -195,6 +195,10 @@ public:
 				ProducerForThisPipeline& prod = static_cast<ProducerForThisPipeline&>(*it);
 				//LOG(DEBUG) << prod.GetProducerId() << "::Produce (pipeline: " << m_pipelineSettings.GetName() << ")";
 				gettimeofday(&tStart, nullptr);
+				if(globalProduct.newRun)
+						ProducerBaseAccess(prod).OnRun(evt, m_pipelineSettings);
+				if(globalProduct.newLumisection)
+						ProducerBaseAccess(prod).OnLumi(evt, m_pipelineSettings);
 				ProducerBaseAccess(prod).Produce(evt, localProduct, m_pipelineSettings);
 				gettimeofday(&tEnd, nullptr);
 				runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);  // a long int might be needed here but SafeMaps for long ints are not yet working
@@ -204,6 +208,10 @@ public:
 				FilterForThisPipeline & flt = static_cast<FilterForThisPipeline&>(*it);
 				//LOG(DEBUG) << flt.GetFilterId() << "::DoesEventPass (pipeline: " << m_pipelineSettings.GetName() << ")";
 				gettimeofday(&tStart, nullptr);
+				if(globalProduct.newRun)
+					FilterBaseAccess(flt).OnRun(evt, m_pipelineSettings);
+				if(globalProduct.newLumisection)
+					FilterBaseAccess(flt).OnLumi(evt, m_pipelineSettings);
 				const bool filterResult = FilterBaseAccess(flt).DoesEventPass(evt, localProduct, m_pipelineSettings);
 				localFilterResult.SetFilterDecision(flt.GetFilterId(), filterResult);
 				gettimeofday(&tEnd, nullptr);
@@ -219,6 +227,10 @@ public:
 		// run Consumers
 		for (ConsumerVectorIterator itcons = m_consumer.begin(); itcons != m_consumer.end(); ++itcons) {
 			//LOG(DEBUG) << itcons->GetConsumerId() << "::ProcessFilteredEvent/ProcessEvent (pipeline: " << m_pipelineSettings.GetName() << ")";
+			if(globalProduct.newRun)
+				ConsumerBaseAccess(*itcons).OnRun(evt, GetSettings());
+			if(globalProduct.newLumisection)
+				ConsumerBaseAccess(*itcons).OnLumi(evt, GetSettings());
 			if (localFilterResult.HasPassed()) {
 				ConsumerBaseAccess(*itcons).ProcessFilteredEvent(evt, localProduct, GetSettings());
 			}
