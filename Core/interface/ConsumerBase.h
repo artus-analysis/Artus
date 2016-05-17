@@ -52,6 +52,8 @@ protected:
 	virtual void baseProcessFilteredEvent(EventBase const& evt, ProductBase const& prod,
 	                                      SettingsBase const& setting) = 0;
 	virtual void baseInit ( SettingsBase const& settings ) = 0;
+	virtual void baseOnRun(EventBase const& evt, SettingsBase const& setting) = 0;
+	virtual void baseOnLumi(EventBase const& evt, SettingsBase const& setting) = 0;
 	virtual void baseFinish ( SettingsBase const& settings ) = 0;
 };
 
@@ -73,6 +75,14 @@ public:
 
 	void Init ( SettingsBase const& settings ){
 		m_cb.baseInit( settings );
+	}
+
+	void OnLumi( EventBase const& evt, SettingsBase const& settings){
+		m_cb.baseOnLumi( evt, settings);
+	}
+
+	void OnRun( EventBase const& evt, SettingsBase const& settings){
+		m_cb.baseOnRun( evt, settings);
 	}
 
 	void Finish ( SettingsBase const& settings ) {
@@ -97,6 +107,13 @@ public:
 
 	virtual void Init ( setting_type const& settings ) {
 		LOG(DEBUG) << "Initialize consumer \"" << this->GetConsumerId() << "\".";
+	}
+
+	virtual void OnRun(event_type const& event,
+			setting_type const& settings) {
+	}
+	virtual void OnLumi(event_type const& event,
+			setting_type const& settings) {
 	}
 
 	/* this method is only called for events which have passed the filter imposed on the
@@ -178,6 +195,25 @@ protected:
 
 		this->Init ( specSettings );
 	}
+
+	void baseOnLumi(EventBase const& evt,
+			SettingsBase const& setting) override {
+
+		auto const& specEvent = static_cast < event_type const&> ( evt );
+		auto const& specSetting = static_cast < setting_type const&> ( setting );
+
+		this->OnLumi(specEvent, specSetting);
+	}
+
+	void baseOnRun(EventBase const& evt,
+			SettingsBase const& setting) override {
+
+		auto const& specEvent = static_cast < event_type const&> ( evt );
+		auto const& specSetting = static_cast < setting_type const&> ( setting );
+
+		this->OnRun(specEvent, specSetting);
+	}
+
 
 	void baseFinish (SettingsBase const& settings) override {
 		auto const& specSettings = static_cast < setting_type const&> ( settings );
