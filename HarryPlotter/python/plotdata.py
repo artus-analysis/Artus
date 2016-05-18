@@ -19,7 +19,7 @@ import Artus.HarryPlotter.utility.extrafunctions as extrafunctions
 class PlotData(object):
 	"""
 	Up to now, this is just a wrapper of the plotdict.
-	
+
 	One could think about structuring the memebers a bit more. Ideas are
 	- one container for one plots (including files, histograms, plotting settings, ...)
 	- Formatter classes
@@ -32,13 +32,13 @@ class PlotData(object):
 		self.metadata = {} # key: nick to which the value belongs
 		self.input_json_dicts = []
 		self.fit_results = {}
-	
+
 	def __del__(self):
 		for root_object in self.plotdict.get("root_objects", []):
 			del(root_object)
 
 	@staticmethod
-	def webplotting(www, output_dir, output_filenames=False, www_text = False, www_title="plots_archive", additional_output_files=False, save_legend=False, export_json = False):
+	def webplotting(www, output_dir, output_filenames=False, www_text = False, www_title="plots_archive", additional_output_files=False, save_legend=False, export_json = False, no_publish=False):
 		# set some needed variables
 		user = tools.get_environment_variable("HARRY_REMOTE_USER")
 		html_content = ""
@@ -84,7 +84,8 @@ class PlotData(object):
 				title=www_title,
 				text=html_texts['description']
 			))
-
+		if no_publish:
+			return  0
 		# find out which files to copy
 		if(output_filenames != False):
 			files_to_copy = ( output_filenames )
@@ -99,7 +100,7 @@ class PlotData(object):
 		# create remote dir, copy files
 		mkdir_command = os.path.expandvars("$WEB_PLOTTING_MKDIR_COMMAND").format(subdir=remote_subdir)
 		copy_command = os.path.expandvars("$WEB_PLOTTING_COPY_COMMAND").format(source=" ".join(files_to_copy), subdir=remote_subdir)
-		
+
 		log.info("Copying plots to webspace...")
 		log.debug("\nIssueing mkdir command: " + mkdir_command)
 		logger.subprocessCall(mkdir_command.split())
@@ -129,12 +130,12 @@ class PlotData(object):
 			# web plotting
 			# TODO: make this more configurable if users want to user other webspaces etc.
 			if self.plotdict["www"] != None:
-				self.webplotting( 
-				             www = self.plotdict["www"],  
-				             output_dir = self.plotdict["output_dir"],  
-				             output_filenames = self.plotdict["output_filenames"],  
-				             www_text= self.plotdict["www_text"],  
-				             www_title = self.plotdict["www_title"],  
+				self.webplotting(
+				             www = self.plotdict["www"],
+				             output_dir = self.plotdict["output_dir"],
+				             output_filenames = self.plotdict["output_filenames"],
+				             www_text= self.plotdict["www_text"],
+				             www_title = self.plotdict["www_title"],
 				             additional_output_files = self.plotdict["additional_output_files"] if "additional_output_files" in self.plotdict else False,
 				             save_legend = self.plotdict.get("save_legend", False),
 				             export_json = self.plotdict["export_json"]
@@ -145,11 +146,11 @@ class PlotData(object):
 
 class PlotContainer(object):
 	""" Abstract container for plots """
-	
+
 	def finish(self):
 		""" Overwrite this function to define how a plot is finished. """
 		pass
-	
+
 	@abc.abstractmethod
 	def save(self, filename):
 		""" Overwrite this function to define how a plot is saved. """
