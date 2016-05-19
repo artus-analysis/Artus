@@ -13,7 +13,7 @@ void GenTauDecayProducer::Init(KappaSettings const& settings)
 
 	// add possible quantities for the lambda ntuples consumers
 	
-	/*
+	///*
 	// Boson daughters
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("1genBosonDaughterSize", [](KappaEvent const & event, KappaProduct const & product)
 	{
@@ -431,7 +431,7 @@ void GenTauDecayProducer::Init(KappaSettings const& settings)
 	{
 		return (product.m_genBosonTree.m_daughters.size() > 0) && (product.m_genBosonTree.m_daughters[0].m_daughters.size() > 1) && (product.m_genBosonTree.m_daughters[0].m_daughters[1].m_daughters.size() >5)? product.m_genBosonTree.m_daughters[0].m_daughters[1].m_daughters[5].m_genParticle->status() : DefaultValues::UndefinedInt;
 	});
-	*/
+	//*/
 }
 
 
