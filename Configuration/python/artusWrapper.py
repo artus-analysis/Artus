@@ -51,9 +51,6 @@ class ArtusWrapper(object):
 		self.localProjectPath = None
 		self.remote_se = False
 
-		#read in external values
-		if not self._args.batch:
-			self.readInExternals()
 		if self._args.batch:
 			self.projectPath = os.path.join(os.path.expandvars(self._args.work), date_now+"_"+self._args.project_name)
 			self.localProjectPath = self.projectPath
@@ -273,6 +270,9 @@ class ArtusWrapper(object):
 			nickname = self.determineNickname(self._args.nick)
 			self._config = self._config.doIncludes().doNicks(nickname).doComments()
 			self._config["Nickname"] = nickname
+			
+			#read in external values
+			self.readInExternals()
 		
 		# remove all but one of similar pipeline copies
 		self.remove_pipeline_copies()
