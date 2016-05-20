@@ -14,12 +14,7 @@ std::string PrintGenParticleDecayTreeConsumer::GetConsumerId() const
 void PrintGenParticleDecayTreeConsumer::ProcessFilteredEvent(event_type const& event, product_type const& product,
                                             setting_type const& settings)
 {
-	// set LumiInfo, needs to be done here for the case running over multiple files
-	product.m_hltInfo.setLumiInfo(event.m_lumiInfo);
-
-	LOG(INFO) << "Run: " << event.m_eventInfo->nRun << ", Lumi: " << event.m_eventInfo->nLumi << ", Event: " << event.m_eventInfo->nEvent;
-
-
+	LOG(INFO) << "Processed event: run = " << event.m_eventInfo->nRun << ", lumi = " << event.m_eventInfo->nLumi << ", event = " << event.m_eventInfo->nEvent << ", pipeline = " << settings.GetName();
 
 	for (unsigned int j = 0; j < event.m_genParticles->size(); ++j)
 	{
@@ -47,10 +42,10 @@ void PrintGenParticleDecayTreeConsumer::PrintDecayTree(KGenParticle const& genPa
 
 	LOG(INFO) << indent << genParticle.pdgId <<";\tp4:" << genParticle.p4;
 
-	for (unsigned int k=0; k < genParticle.daughterIndices.size(); ++k)
+	for (std::vector<unsigned int>::const_iterator daughterIndex = genParticle.daughterIndices.begin();
+	     daughterIndex != genParticle.daughterIndices.end(); ++daughterIndex)
 	{
-		long daughterIndex = genParticle.daughterIndex(k);
-		KGenParticle daughterGenParticle = event.m_genParticles->at(daughterIndex);
+		KGenParticle daughterGenParticle = event.m_genParticles->at(*daughterIndex);
 		PrintDecayTree(daughterGenParticle, event, level+1);
 	}
 }
