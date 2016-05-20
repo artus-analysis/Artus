@@ -40,7 +40,7 @@ class ScaleErrors(analysisbase.AnalysisBase):
 	
 	@staticmethod
 	def scale_errors(root_object, scale_factor=0.0):
-		if isinstance(root_object, ROOT.TH1) and not isinstance(root_object, ROOT.TProfile):
+		if isinstance(root_object, ROOT.TH1): # and not isinstance(root_object, ROOT.TProfile):
 			for x_bin in xrange(1, root_object.GetNbinsX()+1):
 				for y_bin in xrange(1, root_object.GetNbinsY()+1):
 					for z_bin in xrange(1, root_object.GetNbinsZ()+1):
