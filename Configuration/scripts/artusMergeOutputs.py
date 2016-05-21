@@ -49,7 +49,7 @@ def main():
 		if not os.path.exists(merged_dir):
 			os.makedirs(merged_dir)
 	
-		commands.append("hadd -f %s %s" % (os.path.join(merged_dir, nick_name+".root"), " ".join(output_files)))
+		commands.append("hadd.py -a \" -f\" -t %s \"%s\"" % (os.path.join(merged_dir, nick_name+".root"), " ".join(output_files)))
 	
 	tools.parallelize(_call_command, commands, n_processes=args.n_processes)
 
