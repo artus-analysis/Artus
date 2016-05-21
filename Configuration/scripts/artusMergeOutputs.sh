@@ -5,5 +5,5 @@ export FILE_NAMES=`echo ${FILE_NAMES} | sed -e "s@srm://grid-srm.physik.rwth-aac
 #export FILE_NAMES=`echo ${FILE_NAMES} | sed -e "s@srm://dgridsrm-fzk.gridka.de:8443/srm/managerv2?SFN=@...@g"`
 
 mkdir -p ${PROJECT_DIR}/merged/${DATASETNICK}
-hadd.py -a " -f" -t  ${PROJECT_DIR}/merged/${DATASETNICK}/${DATASETNICK}.root "${FILE_NAMES}" && echo "success" > success
+hadd.py -a " -f" -t  ${PROJECT_DIR}/merged/${DATASETNICK}/${DATASETNICK}.root "${FILE_NAMES}" --log-level debug && echo "success" > success
 
