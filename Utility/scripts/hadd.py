@@ -26,7 +26,7 @@ def hadd(target_file, source_files, hadd_args="", max_files=500):
 		
 		last_target_file = ""
 		if chunk_index > 0:
-			last_target_file = "%s.hadd1000_%d.root" % (target_file, chunk_index-1)
+			last_target_file = "%s.hadd_%d.root" % (target_file, chunk_index-1)
 		
 		command = "hadd %s %s %s %s" % (hadd_args, tmp_target_file, " ".join(tmp_source_files), last_target_file)
 		logger.subprocessCall(shlex.split(command))
