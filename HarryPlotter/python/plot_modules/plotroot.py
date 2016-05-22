@@ -20,6 +20,7 @@ import Artus.Utility.tools as tools
 import Artus.HarryPlotter.plotbase as plotbase
 import Artus.HarryPlotter.plotdata as plotdata
 import Artus.HarryPlotter.utility.labels as labels
+import Artus.HarryPlotter.utility.roottools as roottools
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 import Artus.HarryPlotter.utility.tdrstyle as tdrstyle
@@ -215,8 +216,9 @@ class PlotRoot(plotbase.PlotBase):
 	def set_style(self, plotData):
 		super(PlotRoot, self).set_style(plotData)
 		tdrstyle.setTDRStyle()
+		
 		# load custom painter (fixes for horizontal histograms)
-		ROOT.gROOT.LoadMacro(os.path.expandvars("$ARTUSPATH/HarryPlotter/python/utility/customhistogrampainter.C+"))
+		roottools.RootTools.load_compile_macro(os.path.expandvars("$ARTUSPATH/HarryPlotter/python/utility/customhistogrampainter.C"))
 
 	def create_canvas(self, plotData):
 		super(PlotRoot, self).create_canvas(plotData)
