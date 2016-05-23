@@ -8,6 +8,7 @@ log = logging.getLogger(__name__)
 import argparse
 import glob
 import os
+import shlex
 
 import ROOT
 ROOT.gROOT.SetBatch(True)
@@ -20,7 +21,7 @@ import Artus.Utility.progressiterator as pi
 
 def _call_command(command):
 	log.debug(command)
-	logger.subprocessCall(command.split())
+	logger.subprocessCall(shlex.split(command))
 
 
 def main():
