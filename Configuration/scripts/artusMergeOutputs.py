@@ -8,6 +8,7 @@ log = logging.getLogger(__name__)
 import argparse
 import glob
 import os
+import shlex
 
 import ROOT
 ROOT.gROOT.SetBatch(True)
@@ -20,7 +21,7 @@ import Artus.Utility.progressiterator as pi
 
 def _call_command(command):
 	log.debug(command)
-	logger.subprocessCall(command.split())
+	logger.subprocessCall(shlex.split(command))
 
 
 def main():
@@ -49,7 +50,7 @@ def main():
 		if not os.path.exists(merged_dir):
 			os.makedirs(merged_dir)
 	
-		commands.append("hadd -f %s %s" % (os.path.join(merged_dir, nick_name+".root"), " ".join(output_files)))
+		commands.append("hadd.py -a \" -f\" -t %s \"%s\"" % (os.path.join(merged_dir, nick_name+".root"), " ".join(output_files)))
 	
 	tools.parallelize(_call_command, commands, n_processes=args.n_processes)
 

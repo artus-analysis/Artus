@@ -877,3 +877,17 @@ class RootTools(object):
 				bin_edges.append(lowedge)
 			bin_edges.append(highedge)
 		return bin_edges
+
+	@staticmethod
+	def load_compile_macro(macro):
+		exit_code = ROOT.gROOT.LoadMacro(macro+"+")
+		if exit_code != 0:
+			macro_splitext = os.path.splitext(macro)
+			macro_base = macro_splitext[0]+(macro_splitext[1].replace(".", "_"))
+			tmp_files_to_remove = [macro_base+"."+ext for ext in ["d", "so"]]
+			for tmp_file_to_remove in tmp_files_to_remove:
+				if os.path.exists(tmp_file_to_remove):
+					os.remove(tmp_file_to_remove)
+			exit_code = ROOT.gROOT.LoadMacro(macro+"+")
+		return exit_code
+
