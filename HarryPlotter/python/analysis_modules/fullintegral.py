@@ -11,7 +11,7 @@ import sys
 import hashlib
 import ROOT
 import math
-
+import Artus.Utility.jsonTools as jsonTools
 import Artus.HarryPlotter.analysisbase as analysisbase
 from Artus.HarryPlotter.analysis_modules.sumofhistograms import SumOfHistograms
 
@@ -60,6 +60,7 @@ class FullIntegral(analysisbase.AnalysisBase):
 		else:
 			integral_values = []
 			integral_nicks = []
+			#print plotData.plotdict.get("root_objects", {})
 			for nick, histogram in plotData.plotdict.get("root_objects", {}).iteritems():
 				integral = 0
 				for x_bin in xrange(1, histogram.GetNbinsX()+1):
@@ -68,9 +69,9 @@ class FullIntegral(analysisbase.AnalysisBase):
 				integral_values.append(integral)
 				integral_nicks.append(nick)
 				#delete and reassign to get rid of those nasty root objects without disturbing pythons iterator
-				del plotData.plotdict["root_objects"][nick]
-				plotData.plotdict["root_objects"][nick] = None
-			histogram = ROOT.TH1F("FullIntegralHistogram", "FullIntegralHistogram", *map(int,plotData.plotdict.get("full_integral_binning", "25,0,100").split(",")))
+				#del plotData.plotdict["root_objects"][nick]
+				#plotData.plotdict["root_objects"][nick] = None
+			#histogram = ROOT.TH1F("FullIntegralHistogram", "FullIntegralHistogram", *map(int,plotData.plotdict.get("full_integral_binning", "25,0,100").split(",")))
 			#print outpath
 			#sys.exit()
 			dirpath, filename = os.path.split(outpath)
@@ -79,12 +80,18 @@ class FullIntegral(analysisbase.AnalysisBase):
 			with open(outpath, "w") as outfile:
 				for nick, integral in zip(integral_nicks, integral_values):
 					outfile.write("%s: %f\n"%(nick, integral))
-					histogram.Fill(integral)
-			plotData.plotdict["root_objects"] = [histogram]
-			plotData.plotdict["nicks"] = ["FullIntegral"]
-			plotData.plotdict["x_bins"] = [plotData.plotdict["full_integral_binning"]]
-			#Might have to overwrite all other plot specific variables...:-/
-			#plotData.plotdict["markers"] = [plotData.plotdict["full_integral_binning"]]
-			#plotData.plotdict["labels"] = [plotData.plotdict["full_integral_binning"]]
-			#plotData.plotdict["legend"] = [plotData.plotdict["full_integral_binning"]]
+					#histogram.Fill(integral)
+			##plotData.plotdict["root_objects"] = {"FullIntegral":histogram}
+			#plotData.plotdict["root_objects"] = {"FullIntegral":None}
+			#plotData.plotdict["nicks"] = ["FullIntegral"]
+			#plotData.plotdict["x_bins"] = [plotData.plotdict["full_integral_binning"]]
+			#plotData.plotdict["scale_factors"] = [1.0]
+			##print plotData.plotdict
+			#plotData.plotdict["markers"] = ["HIST"]
+			#plotData.plotdict["colors"] = ["ztt"]
+			#plotData.plotdict["labels"] = ["Integrals"]
+			#plotData.plotdict["legend_markers"] = ["F"]
+			##return plotData.plotdict
 
+			#jsonTools.JsonDict(plotData.metadata).save("metadata.json", indent=4)
+			#jsonTools.JsonDict(plotData.plotdict).save("plotdict.json", indent=4)
