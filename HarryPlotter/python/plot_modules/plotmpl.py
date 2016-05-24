@@ -414,6 +414,8 @@ class PlotMpl(plotbase.PlotBase):
 			ax2.grid(plotData.plotdict["subplot_grid"])
 			# Don't show ticklabels on main plot
 			ax.xaxis.set_ticklabels([])
+			if plotData.plotdict["x_tick_labels"] is not None:
+				ax2.xaxis.set_ticklabels(plotData.plotdict["x_tick_labels"])
 			# Ratio plot shares xlims of main plot
 			ax2.set_xlim(ax.get_xlim())
 			if plotData.plotdict["x_log"]:
