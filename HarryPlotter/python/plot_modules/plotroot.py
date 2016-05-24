@@ -131,12 +131,14 @@ class PlotRoot(plotbase.PlotBase):
 		
 	def prepare_args(self, parser, plotData):
 		super(PlotRoot, self).prepare_args(parser, plotData)
-		
+		print plotData.plotdict
 		self.prepare_list_args(
 				plotData,
 				["nicks", "colors", "labels", "markers", "line_styles", "line_widths", "marker_styles", "marker_sizes", "legend_markers", "fill_styles"],
 				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]
 		))
+		print "\n\n================================================================\n\n"
+		print plotData.plotdict
 		
 		# defaults for colors
 		# per plot (up to) two colors are possible: first for lines and markers and second for filled areas
