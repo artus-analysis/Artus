@@ -16,6 +16,9 @@ std::map<std::string, std::function<float(EventBase const&, ProductBase const& )
 std::map<std::string, std::function<double(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonDoubleQuantities
 	= std::map<std::string, std::function<double(EventBase const&, ProductBase const& ) >>();
 
+std::map<std::string, std::function<RMFLV(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonRMFLVQuantities
+	= std::map<std::string, std::function<RMFLV(EventBase const&, ProductBase const& ) >>();
+
 std::map<std::string, std::function<std::string(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonStringQuantities
 	= std::map<std::string, std::function<std::string(EventBase const&, ProductBase const& ) >>();
 
@@ -24,6 +27,9 @@ std::map<std::string, std::function<std::vector<double>(EventBase const&, Produc
 
 std::map<std::string, std::function<std::vector<float>(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonVFloatQuantities
 	= std::map<std::string, std::function<std::vector<float>(EventBase const&, ProductBase const& ) >>();
+
+std::map<std::string, std::function<std::vector<RMFLV>(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonVRMFLVQuantities
+	= std::map<std::string, std::function<std::vector<RMFLV>(EventBase const&, ProductBase const& ) >>();
 
 std::map<std::string, std::function<std::vector<std::string>(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonVStringQuantities
 	= std::map<std::string, std::function<std::vector<std::string>(EventBase const&, ProductBase const& ) >>();

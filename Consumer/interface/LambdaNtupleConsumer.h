@@ -28,14 +28,18 @@
 class LambdaNtupleQuantities {
 
 public:
+	typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > RMFLV;
+	
 	static std::map<std::string, std::function<bool(EventBase const&, ProductBase const& ) >> CommonBoolQuantities;
 	static std::map<std::string, std::function<int(EventBase const&, ProductBase const& ) >> CommonIntQuantities;
 	static std::map<std::string, std::function<uint64_t(EventBase const&, ProductBase const& ) >> CommonUInt64Quantities;
 	static std::map<std::string, std::function<float(EventBase const&, ProductBase const& ) >> CommonFloatQuantities;
 	static std::map<std::string, std::function<double(EventBase const&, ProductBase const& ) >> CommonDoubleQuantities;
+	static std::map<std::string, std::function<RMFLV(EventBase const&, ProductBase const& ) >> CommonRMFLVQuantities;
 	static std::map<std::string, std::function<std::string(EventBase const&, ProductBase const& ) >> CommonStringQuantities;
 	static std::map<std::string, std::function<std::vector<double>(EventBase const&, ProductBase const& ) >> CommonVDoubleQuantities;
 	static std::map<std::string, std::function<std::vector<float>(EventBase const&, ProductBase const& ) >> CommonVFloatQuantities;
+	static std::map<std::string, std::function<std::vector<RMFLV>(EventBase const&, ProductBase const& ) >> CommonVRMFLVQuantities;
 	static std::map<std::string, std::function<std::vector<std::string>(EventBase const&, ProductBase const& ) >> CommonVStringQuantities;
 	static std::map<std::string, std::function<std::vector<int>(EventBase const&, ProductBase const& ) >> CommonVIntQuantities;
 };
@@ -44,6 +48,7 @@ template<class TTypes>
 class LambdaNtupleConsumer: public ConsumerBase<TTypes> {
 
 public:
+	typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > RMFLV;
 
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
@@ -54,9 +59,11 @@ public:
 	typedef std::function<uint64_t(EventBase const&, ProductBase const&)> uint64_extractor_lambda_base;
 	typedef std::function<float(EventBase const&, ProductBase const&)> float_extractor_lambda_base;
 	typedef std::function<double(EventBase const&, ProductBase const&)> double_extractor_lambda_base;
+	typedef std::function<RMFLV(EventBase const&, ProductBase const&)> rmflv_extractor_lambda_base;
 	typedef std::function<std::string(EventBase const&, ProductBase const&)> string_extractor_lambda_base;
 	typedef std::function<std::vector<double>(EventBase const&, ProductBase const&)> vDouble_extractor_lambda_base;
 	typedef std::function<std::vector<float>(EventBase const&, ProductBase const&)> vFloat_extractor_lambda_base;
+	typedef std::function<std::vector<RMFLV>(EventBase const&, ProductBase const&)> vRMFLV_extractor_lambda_base;
 	typedef std::function<std::vector<std::string>(EventBase const&, ProductBase const&)> vString_extractor_lambda_base;
 	typedef std::function<std::vector<int>(EventBase const&, ProductBase const&)> vInt_extractor_lambda_base;
 
@@ -111,6 +118,16 @@ public:
 			return valueExtractor(specEv, specPd);
 		};
 	}
+	static void AddRMFLVQuantity(std::string const& name,
+	                              std::function<RMFLV(event_type const&, product_type const&)> valueExtractor)
+	{
+		LambdaNtupleQuantities::CommonRMFLVQuantities[name] = [valueExtractor](EventBase const& ev, ProductBase const& pd) -> RMFLV
+		{
+			auto const& specEv = static_cast<event_type const&>(ev);
+			auto const& specPd = static_cast<product_type const&>(pd);
+			return valueExtractor(specEv, specPd);
+		};
+	}
 	static void AddStringQuantity(std::string const& name,
 	                              std::function<std::string(event_type const&, product_type const&)> valueExtractor)
 	{
@@ -135,6 +152,16 @@ public:
 	                              std::function<std::vector<float>(event_type const&, product_type const&)> valueExtractor)
 	{
 		LambdaNtupleQuantities::CommonVFloatQuantities[name] = [valueExtractor](EventBase const& ev, ProductBase const& pd) -> std::vector<float>
+		{
+			auto const& specEv = static_cast<event_type const&>(ev);
+			auto const& specPd = static_cast<product_type const&>(pd);
+			return valueExtractor(specEv, specPd);
+		};
+	}
+	static void AddVRMFLVQuantity(std::string const& name,
+	                              std::function<std::vector<RMFLV>(event_type const&, product_type const&)> valueExtractor)
+	{
+		LambdaNtupleQuantities::CommonVRMFLVQuantities[name] = [valueExtractor](EventBase const& ev, ProductBase const& pd) -> std::vector<RMFLV>
 		{
 			auto const& specEv = static_cast<event_type const&>(ev);
 			auto const& specPd = static_cast<product_type const&>(pd);
@@ -181,11 +208,17 @@ public:
 	static std::map<std::string, std::function<std::string(EventBase const&, ProductBase const& ) >> & GetStringQuantities () {
 		return LambdaNtupleQuantities::CommonStringQuantities;
 	}
+	static std::map<std::string, std::function<RMFLV(EventBase const&, ProductBase const& ) >> & GetRMFLVQuantities () {
+		return LambdaNtupleQuantities::CommonRMFLVQuantities;
+	}
 	static std::map<std::string, std::function<std::vector<double>(EventBase const&, ProductBase const& ) >> & GetVDoubleQuantities () {
 		return LambdaNtupleQuantities::CommonVDoubleQuantities;
 	}
 	static std::map<std::string, std::function<std::vector<float>(EventBase const&, ProductBase const& ) >> & GetVFloatQuantities () {
 		return LambdaNtupleQuantities::CommonVFloatQuantities;
+	}
+	static std::map<std::string, std::function<std::vector<RMFLV>(EventBase const&, ProductBase const& ) >> & GetVRMFLVQuantities () {
+		return LambdaNtupleQuantities::CommonVRMFLVQuantities;
 	}
 	static std::map<std::string, std::function<std::vector<std::string>(EventBase const&, ProductBase const& ) >> & GetVStringQuantities () {
 		return LambdaNtupleQuantities::CommonVStringQuantities;
@@ -203,9 +236,11 @@ public:
 		m_intValueExtractors.clear();
 		m_uint64ValueExtractors.clear();
 		m_doubleValueExtractors.clear();
+		m_rmflvValueExtractors.clear();
 		m_stringValueExtractors.clear();
 		m_vDoubleValueExtractors.clear();
 		m_vFloatValueExtractors.clear();
+		m_vRMFLVValueExtractors.clear();
 		m_vStringValueExtractors.clear();
 		m_vIntValueExtractors.clear();
 		
@@ -214,9 +249,11 @@ public:
 		m_uint64Quantities.clear();
 		m_floatQuantities.clear();
 		m_doubleQuantities.clear();
+		m_rmflvQuantities.clear();
 		m_stringQuantities.clear();
 		m_vDoubleQuantities.clear();
 		m_vFloatQuantities.clear();
+		m_vRMFLVQuantities.clear();
 		m_vStringQuantities.clear();
 		m_vIntQuantities.clear();
 		
@@ -272,6 +309,18 @@ public:
 				m_vIntValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetVIntQuantities(), *quantity));
 				m_vIntQuantities.push_back(*quantity);
 			}
+			else if (LambdaNtupleConsumer<TTypes>::GetRMFLVQuantities().count(*quantity) > 0)
+			{
+				//LOG(DEBUG) << "Init RMFLV quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
+				m_rmflvValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetRMFLVQuantities(), *quantity));
+				m_rmflvQuantities.push_back(*quantity);
+			}
+			else if (LambdaNtupleConsumer<TTypes>::GetVRMFLVQuantities().count(*quantity) > 0)
+			{
+				//LOG(DEBUG) << "Init vRMFLV quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
+				m_vRMFLVValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetVRMFLVQuantities(), *quantity));
+				m_vRMFLVQuantities.push_back(*quantity);
+			}
 			else if (LambdaNtupleConsumer<TTypes>::GetStringQuantities().count(*quantity) > 0)
 			{
 				//LOG(DEBUG) << "Init string quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
@@ -301,9 +350,11 @@ public:
 		m_uint64Values.resize(m_uint64ValueExtractors.size());
 		m_floatValues.resize(m_floatValueExtractors.size());
 		m_doubleValues.resize(m_doubleValueExtractors.size());
+		m_rmflvValues.resize(m_rmflvValueExtractors.size());
 		m_stringValues.resize(m_stringValueExtractors.size());
 		m_vDoubleValues.resize(m_vDoubleValueExtractors.size());
 		m_vFloatValues.resize(m_vFloatValueExtractors.size());
+		m_vRMFLVValues.resize(m_vRMFLVValueExtractors.size());
 		m_vStringValues.resize(m_vStringValueExtractors.size());
 		m_vIntValues.resize(m_vIntValueExtractors.size());
 
@@ -312,9 +363,11 @@ public:
 		size_t uint64QuantityIndex = 0;
 		size_t floatQuantityIndex = 0;
 		size_t doubleQuantityIndex = 0;
+		size_t rmflvQuantityIndex = 0;
 		size_t stringQuantityIndex = 0;
 		size_t vDoubleQuantityIndex = 0;
 		size_t vFloatQuantityIndex = 0;
+		size_t vRMFLVQuantityIndex = 0;
 		size_t vStringQuantityIndex = 0;
 		size_t vIntQuantityIndex = 0;
 		for (std::vector<std::string>::iterator quantity = settings.GetQuantities().begin();
@@ -354,6 +407,16 @@ public:
 			{
 				m_tree->Branch(quantity->c_str(), &(m_boolValues[boolQuantityIndex]), (*quantity + "/O").c_str());
 				++boolQuantityIndex;
+			}
+			else if (LambdaNtupleQuantities::CommonRMFLVQuantities.count(*quantity) > 0)
+			{
+				m_tree->Branch(quantity->c_str(), &(m_rmflvValues[rmflvQuantityIndex]));
+				++rmflvQuantityIndex;
+			}
+			else if (LambdaNtupleQuantities::CommonVRMFLVQuantities.count(*quantity) > 0)
+			{
+				m_tree->Branch(quantity->c_str(), &(m_vRMFLVValues[vRMFLVQuantityIndex]));
+				++vRMFLVQuantityIndex;
 			}
 			else if (LambdaNtupleQuantities::CommonStringQuantities.count(*quantity) > 0)
 			{
@@ -453,6 +516,21 @@ public:
 			++doubleValueIndex;
 		}
 		
+		size_t rmflvValueIndex = 0;
+		for(typename std::vector<rmflv_extractor_lambda_base>::iterator valueExtractor = m_rmflvValueExtractors.begin();
+		    valueExtractor != m_rmflvValueExtractors.end(); ++valueExtractor)
+		{
+			try
+			{
+				m_rmflvValues[rmflvValueIndex] = (*valueExtractor)(event, product);
+			}
+			catch (...)
+			{
+				LOG(FATAL) << "Could not call lambda function for RMFLV quantity \"" << m_rmflvQuantities.at(rmflvValueIndex) << "\"!";
+			}
+			++rmflvValueIndex;
+		}
+		
 		size_t stringValueIndex = 0;
 		for(typename std::vector<string_extractor_lambda_base>::iterator valueExtractor = m_stringValueExtractors.begin();
 		    valueExtractor != m_stringValueExtractors.end(); ++valueExtractor)
@@ -496,6 +574,21 @@ public:
 				LOG(FATAL) << "Could not call lambda function for vFloat quantity \"" << m_vFloatQuantities.at(vFloatValueIndex) << "\"!";
 			}
 			++vFloatValueIndex;
+		}
+		
+		size_t vRMFLVValueIndex = 0;
+		for(typename std::vector<vRMFLV_extractor_lambda_base>::iterator valueExtractor = m_vRMFLVValueExtractors.begin();
+		    valueExtractor != m_vRMFLVValueExtractors.end(); ++valueExtractor)
+		{
+			try
+			{
+				m_vRMFLVValues[vRMFLVValueIndex] = (*valueExtractor)(event, product);
+			}
+			catch (...)
+			{
+				LOG(FATAL) << "Could not call lambda function for vRMFLV quantity \"" << m_vRMFLVQuantities.at(vRMFLVValueIndex) << "\"!";
+			}
+			++vRMFLVValueIndex;
 		}
 		
 		size_t vStringValueIndex = 0;
@@ -547,9 +640,11 @@ private:
 	std::vector<uint64_extractor_lambda_base> m_uint64ValueExtractors;
 	std::vector<float_extractor_lambda_base> m_floatValueExtractors;
 	std::vector<double_extractor_lambda_base> m_doubleValueExtractors;
+	std::vector<rmflv_extractor_lambda_base> m_rmflvValueExtractors;
 	std::vector<string_extractor_lambda_base> m_stringValueExtractors;
 	std::vector<vDouble_extractor_lambda_base> m_vDoubleValueExtractors;
 	std::vector<vFloat_extractor_lambda_base> m_vFloatValueExtractors;
+	std::vector<vRMFLV_extractor_lambda_base> m_vRMFLVValueExtractors;
 	std::vector<vString_extractor_lambda_base> m_vStringValueExtractors;
 	std::vector<vInt_extractor_lambda_base> m_vIntValueExtractors;
 
@@ -558,9 +653,11 @@ private:
 	std::vector<std::string> m_uint64Quantities;
 	std::vector<std::string> m_floatQuantities;
 	std::vector<std::string> m_doubleQuantities;
+	std::vector<std::string> m_rmflvQuantities;
 	std::vector<std::string> m_stringQuantities;
 	std::vector<std::string> m_vDoubleQuantities;
 	std::vector<std::string> m_vFloatQuantities;
+	std::vector<std::string> m_vRMFLVQuantities;
 	std::vector<std::string> m_vStringQuantities;
 	std::vector<std::string> m_vIntQuantities;
 
@@ -569,9 +666,11 @@ private:
 	std::vector<uint64_t> m_uint64Values;
 	std::vector<float> m_floatValues;
 	std::vector<double> m_doubleValues;
+	std::vector<RMFLV> m_rmflvValues;
 	std::vector<std::string> m_stringValues;
 	std::vector<std::vector<double> > m_vDoubleValues;
 	std::vector<std::vector<float> > m_vFloatValues;
+	std::vector<std::vector<RMFLV> > m_vRMFLVValues;
 	std::vector<std::vector<std::string> > m_vStringValues;
 	std::vector<std::vector<int> > m_vIntValues;
 };
