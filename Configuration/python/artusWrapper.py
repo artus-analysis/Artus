@@ -455,6 +455,7 @@ class ArtusWrapper(object):
 		self.replaceLines(gcConfigFileContent, self.replacingDict)
 		for index, line in enumerate(gcConfigFileContent):
 			gcConfigFileContent[index] = line.replace("$CMSSW_BASE", os.environ.get("CMSSW_BASE", ""))
+			gcConfigFileContent[index] = line.replace("$X509_USER_PROXY", os.environ.get("X509_USER_PROXY", ""))
 
 		# save it
 		for line in gcConfigFileContent:
