@@ -376,6 +376,12 @@ class RootTools(object):
 					root_histogram = ROOT.TGraph(tree.GetSelectedRows(), tree.GetV2(), tree.GetV1())
 				else:
 					root_histogram = ROOT.gDirectory.Get(name)
+					
+					# histograms are sometimes empty, although the contain entries after the TH1::Print function is called
+					# this is considered as a hack solving this problem.
+					# https://root.cern.ch/doc/master/TH1_8cxx_source.html#l06558
+					if isinstance(root_histogram, ROOT.TH1):
+						root_histogram.GetSumOfWeights()
 		else:
 			if ("proxy" in option) and (not proxy_call is None):
 				log.debug("TTree::Process(\"" + proxy_call + "\")")
