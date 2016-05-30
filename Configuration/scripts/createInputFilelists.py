@@ -29,10 +29,12 @@ def main():
 	                    help="Date string.")
 	parser.add_argument("-o", "--output-dir", default="$CMSSW_BASE/src/HiggsAnalysis/KITHiggsToTauTau/data/Samples/",
 	                    help="Output directory for the filelists. [Default: %(default)s]")
-	parser.add_argument("-r", "--create-recent-symlinks", default=True, action="store_true",
+	parser.add_argument("-r", "--create-recent-symlinks", default=False, action="store_true",
 	                    help="Create symlinks to filelists as recent ones. [Default: %(default)s]")
-	parser.add_argument("-c", "--crab", default=False, action="store_true",
+	parser.add_argument("-c", "--crab", dest="crab", default=True, action="store_true",
 	                    help="Skimming output directory was created by Crab (it has a different structure). [Default: %(default)s]")
+	parser.add_argument("--gc", dest="crab", default=True, action="store_false",
+	                    help="Skimming output directory was created by Grid-Control (it has a different structure). [Default: %(default)s]")
 
 	args = parser.parse_args()
 	logger.initLogger(args)
