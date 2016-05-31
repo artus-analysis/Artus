@@ -32,4 +32,7 @@ if __name__ == "__main__":
 			if key.GetClassName().startswith("TTree") or key.GetClassName().startswith("TNtuple"):
 				tree = root_file.Get(path)
 				log.info("%s: %d entries" % (path, tree.GetEntries()))
+			elif key.GetClassName().startswith("TH") or key.GetClassName().startswith("TProfile"):
+				histogram = root_file.Get(path)
+				log.info("%s: %d entries, integral %f" % (path, histogram.GetEntries(), histogram.Integral()))
 
