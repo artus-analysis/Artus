@@ -25,6 +25,12 @@ class ExpressionsDict(object):
 	def get_expression(self, expression):
 		return self.expressions_dict.get(expression.lower(), expression)
 
+	def invert(self, expression):
+		return "(!" + expression + ")"
+
+	def combine(self, strings_to_combine):
+		return "(" + "*".join(strings_to_combine) + ")"
+
 	def replace_expressions(self, expression):
 		"""Replace any known expressions"""
 		# old-style behaviour
