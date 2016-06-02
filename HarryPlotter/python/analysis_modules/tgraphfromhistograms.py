@@ -67,7 +67,7 @@ class HistogramGroupIterator(object):
 				if any(any(histo_content) for histo_content in bin_contents):
 					leading = False
 					yield bin_contents
-			if not leading:
+			else:
 				yield bin_contents
 
 	@staticmethod
