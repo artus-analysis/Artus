@@ -18,7 +18,7 @@ import Artus.HarryPlotter.input_modules.inputfile as inputfile
 import Artus.HarryPlotter.utility.roottools as roottools
 import Artus.Utility.progressiterator as pi
 import Artus.Utility.jsonTools as jsonTools
-from Artus.HarryPlotter.utility.tfilecontextmanager import TFileContextManager
+from Artus.Utility.tfilecontextmanager import TFileContextManager
 
 
 class InputRoot(inputfile.InputFile):

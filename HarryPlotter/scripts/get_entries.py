@@ -14,7 +14,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gErrorIgnoreLevel = ROOT.kError
 
 import Artus.HarryPlotter.utility.roottools as roottools
-from Artus.HarryPlotter.utility.tfilecontextmanager import TFileContextManager
+from Artus.Utility.tfilecontextmanager import TFileContextManager
 
 if __name__ == "__main__":
 	
