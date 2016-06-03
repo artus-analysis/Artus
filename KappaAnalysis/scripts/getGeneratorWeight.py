@@ -19,7 +19,7 @@ from Kappa.Skimming.registerDatasetHelper import *
 
 def main():
 	
-	ROOT.gSystem.Load(os.path.expandvars("$CMSSW_BASE/src/Kappa/lib/libKappa"))
+	ROOT.gSystem.Load(os.path.expandvars("$ARTUSPATH/../Kappa/lib/libKappa"))
 	
 	parser = argparse.ArgumentParser(description="Print out the generator weight.",
 	                                 parents=[logger.loggingParser])
@@ -58,8 +58,8 @@ def main():
 		root_file.Close()
 
 	# print results and save to dataset
-	cmssw_base = os.environ.get("CMSSW_BASE")
-	dataset = os.path.join(cmssw_base, "src/Kappa/Skimming/data/datasets.json")
+	artus_base = os.environ.get("$ARTUSPATH/..")
+	dataset = os.path.join(artus_base, "Kappa/Skimming/data/datasets.json")
 	dictionary = load_database(dataset)
 	for index, (nick, sumweight) in enumerate(sumweight_per_nick.items()):
 		sample_name = get_sample_by_nick(nick)

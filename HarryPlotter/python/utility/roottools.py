@@ -846,7 +846,7 @@ class RootTools(object):
 		combined_values = [v+e for v, e in zip(values, errors)]
 		if not upper_threshold is None:
 			combined_values = [v for v in combined_values if v < upper_threshold]
-		return max(combined_values)
+		return (max(combined_values) if len(combined_values) > 0 else 1.)
 	
 	@staticmethod
 	def scale_tgraph(tgraph, scalefactor):
