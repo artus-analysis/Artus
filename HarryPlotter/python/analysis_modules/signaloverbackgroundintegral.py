@@ -32,7 +32,7 @@ class SignalOverBackgroundIntegral(analysisbase.AnalysisBase):
 				help="Desired direction to calculate sob_integral condition.")
 		self.sig_over_bkg_integral.add_argument("--sob-integral-method", nargs="+", default=["soversqrtb"], choices=["soversqrtb", "soversplusb"],
 				help="Desired direction to calculate sob_integral condition.")
-		self.sig_over_bkg_integral.add_argument("--sob-integral-outputs", nargs="+", default=[None],
+		self.sig_over_bkg_integral.add_argument("--sob-integral-outputs", default=None,
 				help="Desired outputfile to save calculated min/max, None is no output written .")
 		self.sig_over_bkg_integral.add_argument("--sob-frontname", default = "",
 				help="this string is written in front of the output string [Default: %(default)s]")
@@ -57,13 +57,13 @@ class SignalOverBackgroundIntegral(analysisbase.AnalysisBase):
 		ltr_marks = []
 		ltr_yvalues = []
 		front_name = plotData.plotdict["sob_frontname"]
-		for signal_nick, background_nick, result_nick, direction, method, outpath in  zip(
+		outpath = plotData.plotdict["sob_integral_outputs"][0] if isinstance(plotData.plotdict["sob_integral_outputs"], list) else plotData.plotdict["sob_integral_outputs"]
+		for signal_nick, background_nick, result_nick, direction, method in  zip(
 																	plotData.plotdict["sob_integral_signal_nicks"],
 																	plotData.plotdict["sob_integral_background_nicks"],
 																	plotData.plotdict["sob_integral_result_nicks"],
 																	plotData.plotdict["sob_integral_direction"],
-																	plotData.plotdict["sob_integral_method"],
-																	plotData.plotdict["sob_integral_outputs"]):
+																	plotData.plotdict["sob_integral_method"]):
 
 			signal = SumOfHistograms.return_sum_of_histograms([plotData.plotdict["root_objects"][nick] for nick in signal_nick.split(" ")])
 			#new_histogram = signal.Clone("storage_histogram")
@@ -136,14 +136,17 @@ class SignalOverBackgroundIntegral(analysisbase.AnalysisBase):
 					for left, right, value in zip(rtl_marks[:-1], rtl_marks[1:], rtl_yvalues):
 						if left <= x_bin and x_bin < right:
 							output_histogram.SetBinContent(x_bin, value)
-				dirpath, filename = os.path.split(outpath)
-				if not os.path.isdir(dirpath):
-					os.makedirs(dirpath)
-				if not os.path.exists(outpath):
-					with open(outpath, "w") as outfile:
-						outfile.write(front_name+"%s : %s\n"%(plotData.plotdict["x_expressions"][0], " ".join(["%s"%(signal.GetBinLowEdge(x)) for x in rtl_marks])))
-				else:
-					with open(outpath, "a") as outfile:
-						outfile.write(front_name+"%s : %s\n"%(plotData.plotdict["x_expressions"][0], " ".join(["%s"%(signal.GetBinLowEdge(x)) for x in rtl_marks])))
+				if outpath is not None:
+					dirpath, filename = os.path.split(outpath)
+					if (not os.path.isdir(dirpath)) and (dirpath != ''):
+						os.makedirs(dirpath)
+					if not os.path.exists(outpath):
+						with open(outpath, "w") as outfile:
+							outfile.write(front_name+"%s : %s\n"%(plotData.plotdict["x_expressions"][0], " ".join(["%s"%(signal.GetBinLowEdge(x)) for x in rtl_marks])))
+					else:
+						with open(outpath, "a") as outfile:
+							outfile.write(front_name+"%s : %s\n"%(plotData.plotdict["x_expressions"][0], " ".join(["%s"%(signal.GetBinLowEdge(x)) for x in rtl_marks])))
+				if plotData.plotdict["y_subplot_lims"] is None:
+					plotData.plotdict["y_subplot_lims"] = [0, 1.2*max(rtl_yvalues)]
 			plotData.plotdict["root_objects"][result_nick] = output_histogram
 			plotData.plotdict["nicks"].append(result_nick)
