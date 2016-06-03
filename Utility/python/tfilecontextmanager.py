@@ -39,6 +39,10 @@ class TFileContextManager(object):
 			self._file = None
 			# TFile::TFile "In case the file does not exist or is not a valid ROOT file, it is made a Zombie."
 			raise IOError("No valid ROOT file: %r" % self._filename)
+		# Plain ``TFile(...)`` makes the file managed by Python, as expected
+		# Using ``TFile.Open(...)`` makes the file owned by ROOT, because of reasons
+		# See http://comments.gmane.org/gmane.comp.lang.c%2B%2B.root/15431
+		ROOT.SetOwnership(self._file, True) 
 
 	def __enter__(self):
 		"""Provide ROOT file safely"""
@@ -48,6 +52,18 @@ class TFileContextManager(object):
 
 	def __exit__(self, error_type, error_value, error_traceback):
 		"""Close file on leaving context"""
+		self.close()
+
+	def close(self):
+		"""Close ROOT file"""
 		if self._file is not None:
 			self._file.Close()
 			self._file = None
+
+	def __del__(self):
+		# This class doesn't hold circular references, so __del__ is safe
+		# See also:
+		# - https://docs.python.org/3/reference/datamodel.html#object.__del__
+		# - https://docs.python.org/3/library/io.html#io.IOBase.__del__
+		if hasattr(self, '_file'):
+			self.close()
