@@ -48,8 +48,7 @@ class TFileContextManager(object):
 		return self._file
 
 	def __exit__(self, error_type, error_value, error_traceback):
-		"""Exit the context management"""
-
-		if not error_type and self._file:
+		"""Close file on exit"""
+		if self._file is not None:
 			self._file.Close()
 			self._file = None
