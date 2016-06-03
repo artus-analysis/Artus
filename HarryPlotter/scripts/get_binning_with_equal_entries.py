@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 import argparse
 
 import Artus.HarryPlotter.analysis_modules.eventselectionoverlap as eventselectionoverlap
-from Artus.HarryPlotter.utility.tfilecontextmanager import TFileContextManager
+from Artus.Utility.tfilecontextmanager import TFileContextManager
 
 
 def get_binning_with_equal_entries():

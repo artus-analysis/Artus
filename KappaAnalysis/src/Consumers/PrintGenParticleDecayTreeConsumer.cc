@@ -40,7 +40,7 @@ void PrintGenParticleDecayTreeConsumer::PrintDecayTree(KGenParticle const& genPa
 		indent += "\t";
 	}
 
-	LOG(INFO) << indent << genParticle.pdgId <<";\tp4:" << genParticle.p4;
+	LOG(INFO) << indent << genParticle.pdgId <<";\tp4: " << genParticle.p4;
 
 	for (std::vector<unsigned int>::const_iterator daughterIndex = genParticle.daughterIndices.begin();
 	     daughterIndex != genParticle.daughterIndices.end(); ++daughterIndex)

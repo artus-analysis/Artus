@@ -12,6 +12,7 @@
 #include "Artus/Core/interface/ProductBase.h"
 #include "Artus/Core/interface/ConsumerBase.h"
 #include "Artus/Configuration/interface/SettingsBase.h"
+#include "Artus/Utility/interface/Utility.h"
 #include "Artus/Utility/interface/DefaultValues.h"
 #include "Artus/Utility/interface/SafeMap.h"
 #include "Artus/Utility/interface/RootFileHelper.h"
@@ -28,8 +29,6 @@
 class LambdaNtupleQuantities {
 
 public:
-	typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > RMFLV;
-	
 	static std::map<std::string, std::function<bool(EventBase const&, ProductBase const& ) >> CommonBoolQuantities;
 	static std::map<std::string, std::function<int(EventBase const&, ProductBase const& ) >> CommonIntQuantities;
 	static std::map<std::string, std::function<uint64_t(EventBase const&, ProductBase const& ) >> CommonUInt64Quantities;

@@ -14,7 +14,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gErrorIgnoreLevel = ROOT.kError
 
 import Artus.HarryPlotter.utility.roottools as roottools
-import Artus.HarryPlotter.utility.tfilecontextmanager as tfilecontextmanager
+import Artus.Utility.tfilecontextmanager as tfilecontextmanager
 
 
 class PlotConfigs(object):

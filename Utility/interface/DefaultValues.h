@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Artus/Utility/interface/Utility.h"
+
 // a set of default values that can be used in your physics analysis
 // be aware. Comparing 2 floating point values like ( a == b ) is 
 // never a good idea and the outcome can depend of compile and platform
@@ -9,6 +11,7 @@ public:
     static const int UndefinedInt;
     static const float UndefinedFloat;
     static const double UndefinedDouble;
+    static const RMFLV UndefinedRMFLV;
     
     static const float EtaBorderEB;
 

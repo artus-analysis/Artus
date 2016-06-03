@@ -23,7 +23,7 @@ ROOT.gEnv.SetValue("TFile.AsyncPrefetching", 1)
 
 import Artus.Utility.geometry as geometry
 import Artus.Utility.tools as tools
-from Artus.HarryPlotter.utility.tfilecontextmanager import TFileContextManager
+from Artus.Utility.tfilecontextmanager import TFileContextManager
 
 
 class RootTools(object):

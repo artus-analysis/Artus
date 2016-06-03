@@ -16,7 +16,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gErrorIgnoreLevel = ROOT.kError
 
 import Artus.Utility.progressiterator as progressiterator
-import Artus.HarryPlotter.utility.tfilecontextmanager as tfilecontextmanager
+import Artus.Utility.tfilecontextmanager as tfilecontextmanager
 
 
 def main():

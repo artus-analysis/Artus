@@ -39,7 +39,8 @@ class InputFile(inputbase.InputBase):
 		for index, (file_args, directories) in enumerate(zip(plotData.plotdict["files"], plotData.plotdict["directories"])):
 			paths_before_globbing = []
 			files = []
-			if file_args.startswith("root:/"):
+			# treat inputs separately, for which globbing does not work
+			if any([file_args.startswith(protocol+"://") for protocol in ["root", "dcap"]]):
 				files.append(file_args)
 			else:
 				for file_arg in file_args.split():

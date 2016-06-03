@@ -67,7 +67,7 @@ class HistogramGroupIterator(object):
 				if any(any(histo_content) for histo_content in bin_contents):
 					leading = False
 					yield bin_contents
-			if not leading:
+			else:
 				yield bin_contents
 
 	@staticmethod
@@ -77,8 +77,8 @@ class HistogramGroupIterator(object):
 		for bin_contents in iterable:
 			# buffer any empty ranges for later yield if sequence resumes
 			if any(any(histo_content) for histo_content in bin_contents):
-				for elem in trail_buffer:
-					yield elem
+				while trail_buffer:
+					yield trail_buffer.popleft()
 				yield bin_contents
 			else:
 				trail_buffer.append(bin_contents)
