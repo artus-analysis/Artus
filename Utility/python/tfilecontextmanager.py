@@ -28,23 +28,20 @@ class TFileContextManager(object):
 			plot = input_.Get("hello")
 			input_.Close()
 	"""
-
 	def __init__(self, filename, mode = "readonly"):
 		self._filename = filename
 		self._file = None
 		self._mode = mode
 
 	def __enter__(self):
-		"""Context management entry point"""
-
+		"""Return actual ROOT file"""
 		if self._file is None:
 			self._file = ROOT.TFile.Open(self._filename, self._mode)
+			# ROOT may have silently failed opening the file
 			if (not self._file) or self._file.IsZombie():
 				self._file = None
-				log.critical("Failed to open ROOT file {0!r}!".format(self._filename))
-				sys.exit(1)
-				#raise RuntimeError("failed to open file {0!r}".format(self._filename))
-
+				# TFile::TFile "In case the file does not exist or is not a valid ROOT file, it is made a Zombie."
+				raise IOError("No such ROOT file: %r" % self._filename)
 		return self._file
 
 	def __exit__(self, error_type, error_value, error_traceback):
