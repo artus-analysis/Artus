@@ -62,7 +62,7 @@ def main():
 	
 	source_files = []
 	for arg in args.source_files:
-		for item in arg.split():
+		for item in shlex.split(arg.replace("\"", "")):
 			matching_files = glob.glob(item)
 			if len(matching_files) > 0:
 				source_files.extend(matching_files)
