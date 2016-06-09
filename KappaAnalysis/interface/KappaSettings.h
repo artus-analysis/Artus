@@ -58,6 +58,7 @@ public:
 	IMPL_SETTING_DEFAULT(std::string, PFPhotonsNoPileUp, "");
 	IMPL_SETTING_DEFAULT(std::string, PFAllChargedParticlesNoPileUp, "");
 	IMPL_SETTING_DEFAULT(std::string, PFAllChargedParticlesPileUp, "");
+	IMPL_SETTING_DEFAULT(std::string, PackedPFCandidates, "");
 
 	/// name of beamspot collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, BeamSpot, "");

@@ -77,6 +77,8 @@ public:
 			this->m_event.m_pfAllChargedParticlesNoPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(settings.GetPFAllChargedParticlesNoPileUp());
 		if (! settings.GetPFAllChargedParticlesPileUp().empty())
 			this->m_event.m_pfAllChargedParticlesPileUp = this->template SecureFileInterfaceGet<KPFCandidates>(settings.GetPFAllChargedParticlesPileUp());
+		if (! settings.GetPackedPFCandidates().empty())
+			this->m_event.m_packedPFCandidates = this->template SecureFileInterfaceGet<KPFCandidates>(settings.GetPackedPFCandidates());
 		
 		// triggers
 		if (! settings.GetTriggerInfos().empty())
