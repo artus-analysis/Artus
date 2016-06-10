@@ -297,6 +297,9 @@ class ArtusWrapper(object):
 	def extractNickname(self, string):
 		filename = os.path.basename(string)
 		nickname = filename[filename.find("_")+1:filename.rfind("_")]
+		# in case nickname extraction above failes, use the one imposed by --nick; default: "auto"
+		if nickname == "":
+			nickname = self._args.nick
 		return nickname
 
 
