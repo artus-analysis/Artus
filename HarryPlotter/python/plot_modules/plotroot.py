@@ -173,7 +173,9 @@ class PlotRoot(plotbase.PlotBase):
 					marker = "E" if len(plotData.plotdict["markers"]) > 1 else "HIST"
 				else:
 					marker = "LINE" if plotData.plotdict["stacks"].count(stack) == 1 else "HIST"
-				# TODO: defaults for 2D/3D histograms
+				
+				if any([y_expression is not None for y_expression in plotData.plotdict.get("y_expressions", [])]):
+					marker = "COLZ"
 			
 			if fill_style is None:
 				fill_style = 0
