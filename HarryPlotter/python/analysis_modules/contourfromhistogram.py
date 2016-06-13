@@ -85,6 +85,9 @@ class ContourFromHistogram(histogrammanipulationbase.HistogramManipulationBase):
 			if contour_mode.lower() == "histogram":
 				log.debug("Set contours %s for histogram \"%s\"." % (str(contour_thresholds), histogram_nick))
 			else:
+				# remove the stat. box drawn in this function
+				ROOT.gStyle.SetOptStat(0)
+				
 				# without this canvas, no contours can be retrieved
 				# https://root.cern.ch/root/html/tutorials/hist/ContourList.C.html#71
 				tmp_canvas = ROOT.TCanvas("tmp_canvas", "");
