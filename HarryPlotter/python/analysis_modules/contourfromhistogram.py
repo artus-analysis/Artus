@@ -91,7 +91,7 @@ class ContourFromHistogram(histogrammanipulationbase.HistogramManipulationBase):
 				# without this canvas, no contours can be retrieved
 				# https://root.cern.ch/root/html/tutorials/hist/ContourList.C.html#71
 				tmp_canvas = ROOT.TCanvas("tmp_canvas", "");
-				histogram.Draw("CONT Z LIST")
+				histogram.Draw("CONT LIST")
 				tmp_canvas.Update()
 				contours_list = ROOT.gROOT.GetListOfSpecials().FindObject("contours")
 			
