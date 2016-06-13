@@ -62,6 +62,18 @@ public:
 				return DefaultValues::UndefinedInt;
 			return static_cast<int>(static_cast<KGenEventInfo*>(event.m_eventInfo)->nPU);
 		});
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("x1", [bInpData](event_type const& event, product_type const& product)
+		{
+			return (bInpData) ? DefaultValues::UndefinedFloat : float(static_cast<KGenEventInfo*>(event.m_eventInfo)->x1);
+		});
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("x2", [bInpData](event_type const& event, product_type const& product)
+		{
+			return (bInpData) ? DefaultValues::UndefinedFloat : float(static_cast<KGenEventInfo*>(event.m_eventInfo)->x2);
+		});
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("qScale", [bInpData](event_type const& event, product_type const& product)
+		{
+			return (bInpData) ? DefaultValues::UndefinedFloat : float(static_cast<KGenEventInfo*>(event.m_eventInfo)->qScale);
+		});
 
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("rho", [](event_type const& event, product_type const& product) {
 			return event.m_pileupDensity->rho;
