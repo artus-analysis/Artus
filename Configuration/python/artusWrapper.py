@@ -57,7 +57,6 @@ class ArtusWrapper(object):
 			if self.projectPath.startswith("srm://"):
 				self.remote_se = True
 				self.localProjectPath = os.path.join(os.path.expandvars(self._parser.get_default("work")), date_now+"_"+self._args.project_name)
-				self._args.no_log_to_se = True
 
 	def run(self):
 	
@@ -372,8 +371,6 @@ class ArtusWrapper(object):
 		                                 help="Open output file in ROOT TBrowser after completion.")
 		runningOptionsGroup.add_argument("-b", "--batch", default=False, const="naf", nargs="?",
 		                                 help="Run with grid-control. Optionally select backend. [Default: %(default)s]")
-		runningOptionsGroup.add_argument("--no-log-to-se", default=False, action="store_true",
-		                                 help="Do not write logfile in batch mode directly to SE.")
 		runningOptionsGroup.add_argument("--files-per-job", type=int, default=15,
 		                                 help="Files per batch job. [Default: %(default)s]")
 		runningOptionsGroup.add_argument("--area-files", default=None,
@@ -421,10 +418,7 @@ class ArtusWrapper(object):
 		epilogArguments  = r"epilog arguments = "
 		epilogArguments += r"--disable-repo-versions "
 		epilogArguments += r"--log-level " + self._args.log_level + " "
-		if self._args.no_log_to_se:
-			epilogArguments += r"--log-files log.txt --log-stream stdout "
-		else:
-			epilogArguments += r"--log-files " + os.path.join(sepathRaw, "${DATASETNICK}", "${DATASETNICK}_job_${MY_JOBID}_log.txt") + " "
+		epilogArguments += r"--log-files log.log "
 		epilogArguments += r"--print-envvars ROOTSYS CMSSW_BASE DATASETNICK FILE_NAMES LD_LIBRARY_PATH "
 		epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
 		epilogArguments += "--nick $DATASETNICK "
@@ -449,7 +443,7 @@ class ArtusWrapper(object):
 				cmdargs = "cmdargs = " + self._args.cmdargs,
 				dataset = "dataset = \n\t:ListProvider:" + dbsFileBasepath,
 				epilogarguments = epilogArguments,
-				seoutputfiles = "se output files = *.txt *.root" if self._args.no_log_to_se else "se output files = *.root",
+				seoutputfiles = "se output files = *.log *.root",
 				backend = backend
 		)
 
