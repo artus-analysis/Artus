@@ -383,6 +383,8 @@ class ArtusWrapper(object):
 		                                 help="Command line arguments for go.py. [Default: %(default)s]")
 		runningOptionsGroup.add_argument("--se-path",
 		                                 help="Custom SE path, if it should different from the work directory.")
+		runningOptionsGroup.add_argument("--log-to-se", default=False, action="store_true",
+		                                 help="Write logfile in batch mode directly to SE. Does not work with remote batch system")
 
 		if self._executable:
 			self._parser.add_argument("-x", "--executable", help="Artus executable. [Default: %(default)s]", default=self._executable)
@@ -418,7 +420,10 @@ class ArtusWrapper(object):
 		epilogArguments  = r"epilog arguments = "
 		epilogArguments += r"--disable-repo-versions "
 		epilogArguments += r"--log-level " + self._args.log_level + " "
-		epilogArguments += r"--log-files log.log "
+		if self._args.log_to_se:
+			epilogArguments += r"--log-files " + os.path.join(sepathRaw, "${DATASETNICK}", "${DATASETNICK}_job_${MY_JOBID}_log.log") + " "
+		else:
+			epilogArguments += r"--log-files log.log "
 		epilogArguments += r"--print-envvars ROOTSYS CMSSW_BASE DATASETNICK FILE_NAMES LD_LIBRARY_PATH "
 		epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
 		epilogArguments += "--nick $DATASETNICK "
@@ -443,7 +448,7 @@ class ArtusWrapper(object):
 				cmdargs = "cmdargs = " + self._args.cmdargs,
 				dataset = "dataset = \n\t:ListProvider:" + dbsFileBasepath,
 				epilogarguments = epilogArguments,
-				seoutputfiles = "se output files = *.log *.root",
+				seoutputfiles = "se output files = *.root" if self._args.log_to_se else "se output files = *.log *.root",
 				backend = backend
 		)
 
