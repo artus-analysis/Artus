@@ -47,11 +47,11 @@ class  Errorband(analysisbase.AnalysisBase):
 			shift_down  = plotData.plotdict["root_objects"][triple[2]]
 
 			root_object = ROOT.TGraphAsymmErrors(central.GetNbinsX())
-			for bin_i in range(central.GetNbinsX()):
-				root_object.SetPoint(bin_i, central.GetBinCenter(bin_i), central.GetBin(bin_i))
-				root_object.SetPointEYhigh(bin_i, central.GetBin(bin_i)-shift_up.GetBin(bin_i))
-				root_object.SetPointEYlow(bin_i, central.GetBin(bin_i)-shift_down.GetBin(bin_i))
-				#root_object.SetPointEXlow(bin_i, x_center-x_binning[i])
-				#root_object.SetPointEXhigh(bin_i, x_binning[i+1]-x_center)
+			for bin_i in range(1,central.GetNbinsX()+1):
+				root_object.SetPoint(bin_i, central.GetBinCenter(bin_i), central.GetBinContent(bin_i))
+				root_object.SetPointEYhigh(bin_i, central.GetBinContent(bin_i) - shift_up.GetBinContent(bin_i))
+				root_object.SetPointEYlow(bin_i, central.GetBinContent(bin_i) - shift_down.GetBinContent(bin_i))
+				root_object.SetPointEXlow(bin_i, central.GetBinWidth(bin_i) / 2.0)
+				root_object.SetPointEXhigh(bin_i, central.GetBinWidth(bin_i) / 2.0)
 			plotData.plotdict["root_objects"][result_nick] = root_object
 			plotData.plotdict["nicks"].append(result_nick)
