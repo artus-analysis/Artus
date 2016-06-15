@@ -14,6 +14,8 @@ ROOT.gErrorIgnoreLevel = ROOT.kError
 
 import sys
 
+import Artus.HarryPlotter.utility.roottools as roottools
+
 opt_all = False
 
 relative_differences_per_leaf = {}
@@ -267,8 +269,10 @@ def compareNtuple(directory1, directory2, ntupleID):
 			return False
 		result = False
 	for i in range(nleaves1):
-		if leaves1.UncheckedAt(i).GetName() != leaves2.UncheckedAt(i).GetName():
-			log.critical("different leaf name: " + leaves1.UncheckedAt(i).GetName() + ", " + leaves2.UncheckedAt(i).GetName())
+		leaf_name_1 = roottools.RootTools.full_leaf_name(leaves1.UncheckedAt(i))
+		leaf_name_2 = roottools.RootTools.full_leaf_name(leaves2.UncheckedAt(i))
+		if leaf_name_1 != leaf_name_2:
+			log.critical("different leaf name: " + leaf_name_1 + ", " + leaf_name_2)
 			if not opt_all:
 				return False
 			result = False
@@ -286,12 +290,12 @@ def compareNtuple(directory1, directory2, ntupleID):
 		for i in range(nleaves1):
 			value2 = leaves2.UncheckedAt(i).GetValue() or 1e-9
 			if (leaves1.UncheckedAt(i).GetValue() - leaves2.UncheckedAt(i).GetValue()) / value2 > 1e-6:
-				log.critical("different leaf value: " + str(leaves1.UncheckedAt(i).GetValue()) + ", " + str(leaves2.UncheckedAt(i).GetValue()) + " for name " + leaves1.UncheckedAt(i).GetName())
+				log.critical("different leaf value: " + str(leaves1.UncheckedAt(i).GetValue()) + ", " + str(leaves2.UncheckedAt(i).GetValue()) + " for name " + roottools.RootTools.full_leaf_name(leaves1.UncheckedAt(i)))
 				if leaves1.UncheckedAt(i).GetValue() != 0:
 					# save relative difference between the two leaves
-					if leaves1.UncheckedAt(i).GetName() not in relative_differences_per_leaf:
-						relative_differences_per_leaf[leaves1.UncheckedAt(i).GetName()] = []
-					relative_differences_per_leaf[leaves1.UncheckedAt(i).GetName()].append(abs(leaves1.UncheckedAt(i).GetValue() - leaves2.UncheckedAt(i).GetValue()) / leaves1.UncheckedAt(i).GetValue())
+					if roottools.RootTools.full_leaf_name(leaves1.UncheckedAt(i)) not in relative_differences_per_leaf:
+						relative_differences_per_leaf[roottools.RootTools.full_leaf_name(leaves1.UncheckedAt(i))] = []
+					relative_differences_per_leaf[roottools.RootTools.full_leaf_name(leaves1.UncheckedAt(i))].append(abs(leaves1.UncheckedAt(i).GetValue() - leaves2.UncheckedAt(i).GetValue()) / leaves1.UncheckedAt(i).GetValue())
 				if not opt_all:
 					return False
 				result = False

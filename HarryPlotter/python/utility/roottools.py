@@ -35,6 +35,13 @@ class RootTools(object):
 		self.z_bin_edges = {}
 
 	@staticmethod
+	def full_leaf_name(leaf):
+		name = leaf.GetName()
+		if leaf.GetBranch().GetMother().GetName() != leaf.GetName():
+			name = leaf.GetBranch().GetMother().GetName()+"."+name
+		return name
+
+	@staticmethod
 	def check_type(root_file_names, path_to_objects, print_quantities=False):
 		if isinstance(root_file_names, basestring):
 			root_file_names = [root_file_names]
@@ -48,10 +55,7 @@ class RootTools(object):
 					if print_quantities:
 						log.info("List of all tree quantities (in the first file):")
 						for leaf in sorted(root_object.GetListOfLeaves(), key=lambda leaf: leaf.GetName()):
-							quantity = leaf.GetName()
-							if leaf.GetBranch().GetMother().GetName() != leaf.GetName():
-								quantity = leaf.GetBranch().GetMother().GetName()+"."+quantity
-							log.info("\t%s (%s)" % (quantity, leaf.GetTypeName()))
+							log.info("\t%s (%s)" % (RootTools.full_leaf_name(leaf), leaf.GetTypeName()))
 					return ROOT.TTree
 				elif isinstance(root_object, ROOT.TDirectory):
 					if print_quantities:
