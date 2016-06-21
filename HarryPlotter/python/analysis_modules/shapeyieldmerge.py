@@ -21,9 +21,9 @@ class ShapeYieldMerge(analysisbase.AnalysisBase):
 		super(ShapeYieldMerge, self).modify_argument_parser(parser, args)
 		
 		self.shape_yield_options = parser.add_argument_group("Shape and yield merging options")
-		self.shape_yield_options.add_argument("--shape-nicks", nargs="+", required=True,
+		self.shape_yield_options.add_argument("--shape-nicks", nargs="+",
 				help="Nick names for the shape extraction.")
-		self.shape_yield_options.add_argument("--yield-nicks", nargs="+", required=True,
+		self.shape_yield_options.add_argument("--yield-nicks", nargs="+",
 				help="Nick names for the yield extraction.")
 		self.shape_yield_options.add_argument("--shape-yield-nicks", nargs="+", default=[None],
 				help="Nick names for the resulting histograms.")
