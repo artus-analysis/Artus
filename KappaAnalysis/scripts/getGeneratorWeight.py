@@ -42,7 +42,7 @@ def main():
 		
 		# nickname matching and sum of weights
 		no_regex_match = True if args.nick=='NONE' else False
-		nick = ( re.match(args.nick, os.path.basename(file_name)).groupdict().values()[0] if not no_regex_match else os.path.basename(file_name))
+		nick = ( re.match(args.nick, os.path.basename(file_name)).groupdict().values()[0] if not no_regex_match else '*')
 		
 		for entry in xrange(n_entries):
 			lumiTree.GetEntry(entry)
