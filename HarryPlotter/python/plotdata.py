@@ -34,7 +34,7 @@ class PlotData(object):
 		self.fit_results = {}
 
 	def __del__(self):
-		for nick, root_object in self.plotdict.get("root_objects", []).iteritems():
+		for nick, root_object in self.plotdict.get("root_objects", {}).iteritems():
 			del(root_object)
 		
 		for root_tree in self.plotdict.get("root_trees", []):
