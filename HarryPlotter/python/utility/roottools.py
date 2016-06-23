@@ -214,10 +214,10 @@ class RootTools(object):
 	
 		This will build up a TChain to read out all trees from all files
 	
-		variable_expression: Used as varexp parameter of TTree::Draw
+		variable_expression: Used as varexp parameter of ROOT.TTree.Draw
 		binning: string, can be empty, "<nbins>", "<nbins>, <low>, <up>", ...
-		weight_selection: Used as cut parameter of TTree::Draw
-		option: Used as option parameter of TTree::Draw, "GOFF" is added
+		weight_selection: Used as cut parameter of ROOT.TTree.Draw
+		option: Used as option parameter of ROOT.TTree.Draw, "GOFF" is added
 	
 		The name (string) of the resulting histogram can be passed as a parameter
 		"""
@@ -237,7 +237,7 @@ class RootTools(object):
 				                                                str(weight_selection)])).hexdigest())
 		
 		
-		# prepare binning TTree::Draw/Project
+		# prepare binning ROOT.TTree.Draw/Project
 		x_binning_string, y_binning_string, z_binning_string = ("",)*3
 
 		if not binning_identifier in self.binning_determined:
@@ -340,7 +340,7 @@ class RootTools(object):
 			proxy_call = proxy_class_filename+"+"
 			
 			# fix histogram name used in the proxy class
-			# TODO: only do this when TTree::Project is called afterwards, not for TTree::Draw, when the histogram cannot be renamed before the plotting?
+			# TODO: only do this when ROOT.TTree.Project is called afterwards, not for ROOT.TTree.Draw, when the histogram cannot be renamed before the plotting?
 			proxy_class_content = None
 			with open(proxy_class_filename) as proxy_class_file:
 				proxy_class_content = proxy_class_file.read().rstrip("\n")
@@ -362,7 +362,7 @@ class RootTools(object):
 			else:
 				draw_option = option.replace("TGraphAsymmErrorsX", "").replace("TGraphAsymmErrorsY", "").replace("TGraphErrors", "").replace("TGraph", "")
 			
-				log.debug("TTree::Draw(\"" + variable_expression + ">>" + name + binning + "\", \"" + str(weight_selection) + "\", \"" + draw_option + " GOFF\")")
+				log.debug("ROOT.TTree.Draw(\"" + variable_expression + ">>" + name + binning + "\", \"" + str(weight_selection) + "\", \"" + draw_option + " GOFF\")")
 				tree.Draw(variable_expression + ">>" + name + binning, str(weight_selection), draw_option + " GOFF")
 			
 				if "TGraphAsymmErrors" in option:
@@ -381,17 +381,17 @@ class RootTools(object):
 				else:
 					root_histogram = ROOT.gDirectory.Get(name)
 					
-					# histograms are sometimes empty, although the contain entries after the TH1::Print function is called
+					# histograms are sometimes empty, although the contain entries after the ROOT.TH1.Print function is called
 					# this is considered as a hack solving this problem.
 					# https://root.cern.ch/doc/master/TH1_8cxx_source.html#l06558
 					if isinstance(root_histogram, ROOT.TH1):
 						root_histogram.GetSumOfWeights()
 		else:
 			if ("proxy" in option) and (not proxy_call is None):
-				log.debug("TTree::Process(\"" + proxy_call + "\")")
+				log.debug("ROOT.TTree.Process(\"" + proxy_call + "\")")
 				tree.Process(proxy_call)
 			else:
-				log.debug("TTree::Project(\"" + name + "\", \"" + variable_expression + "\", \"" + str(weight_selection) + "\", \"" + option + "\" GOFF\")")
+				log.debug("ROOT.TTree.Project(\"" + name + "\", \"" + variable_expression + "\", \"" + str(weight_selection) + "\", \"" + option + "\" GOFF\")")
 				tree.Project(name, variable_expression, str(weight_selection), option + " GOFF")
 			root_histogram = ROOT.gDirectory.Get(name)
 		if root_histogram == None:
