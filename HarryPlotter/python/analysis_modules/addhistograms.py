@@ -60,6 +60,7 @@ class AddHistograms(analysisbase.AnalysisBase):
 				*[plotData.plotdict[k] for k in ["histogram_nicks", "sum_result_nicks","sum_scale_factors"]]
 		):
 			sum_histogram = None
+			log.debug("AddHistograms: "+sum_result_nick+" = "+(" + ".join([str(scale)+"*"+nick for nick, scale in zip(histogram_nicks, sum_scale_factors)])))
 			for nick, sum_scale_factor in zip(histogram_nicks, sum_scale_factors):
 				root_object = plotData.plotdict["root_objects"][nick]
 				assert(isinstance(root_object, ROOT.TH1))
