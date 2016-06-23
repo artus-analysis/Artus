@@ -119,7 +119,7 @@ class InputInteractive(inputbase.InputBase):
 					formula = ROOT.TFormula("formula_"+name_hash, expression)
 					function_class = None
 					function_class_name = ""
-					lim_args = [-1e6, 1e6]
+					lim_args = [-1e3, 1e3]
 					if formula.GetNdim() == 1:
 						function_class = ROOT.TF1
 						function_class_name = "ROOT.TF1"
