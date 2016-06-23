@@ -64,7 +64,7 @@ start_ssh_agent() {
 web_plotting_no_passwd() {
 	if [[ $HARRY_USERPC == *"rwth"* ]]; then
 		kinit ${HARRY_REMOTE_USER}@CERN.CH
-		aklog
+		aklog -c cern.ch
 	else
 		# startup ssh-agent
 		unset SSH_ASKPASS
