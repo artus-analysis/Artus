@@ -281,6 +281,8 @@ class PlotRoot(plotbase.PlotBase):
 	def prepare_histograms(self, plotData):
 		super(PlotRoot, self).prepare_histograms(plotData)
 		
+		first_plot_labels_set = False
+		first_subplot_labels_set = False
 		for nick, subplot, colors, marker, marker_style, marker_size, fill_style, line_style, line_width in zip(
 				plotData.plotdict["nicks"],
 				plotData.plotdict["subplots"],
@@ -307,26 +309,31 @@ class PlotRoot(plotbase.PlotBase):
 			
 			# axis labels
 			if subplot:
-				if (not plotData.plotdict["x_label"] is None) and (plotData.plotdict["x_label"] != ""):
-					root_object.GetXaxis().SetTitle(plotData.plotdict["x_label"])
-				if (not plotData.plotdict["y_subplot_label"] is None) and (plotData.plotdict["y_subplot_label"] != ""):
-					root_object.GetYaxis().SetTitle(plotData.plotdict["y_subplot_label"])
-				#if (not plotData.plotdict["z_subplot_label"] is None) and (plotData.plotdict["z_subplot_label"] != ""):
-				#	root_object.GetZaxis().SetTitle(plotData.plotdict["z_subplot_label"])
+				if (not first_subplot_labels_set) or (not isinstance(root_object, ROOT.TF1)):
+					if (not plotData.plotdict["x_label"] is None) and (plotData.plotdict["x_label"] != ""):
+						root_object.GetXaxis().SetTitle(plotData.plotdict["x_label"])
+					if (not plotData.plotdict["y_subplot_label"] is None) and (plotData.plotdict["y_subplot_label"] != ""):
+						root_object.GetYaxis().SetTitle(plotData.plotdict["y_subplot_label"])
+					#if (not plotData.plotdict["z_subplot_label"] is None) and (plotData.plotdict["z_subplot_label"] != ""):
+					#	root_object.GetZaxis().SetTitle(plotData.plotdict["z_subplot_label"])
+				first_subplot_labels_set = True
 			else:
-				if (not plotData.plotdict["x_label"] is None) and (plotData.plotdict["x_label"] != ""):
-					root_object.GetXaxis().SetTitle(plotData.plotdict["x_label"])
-				if (not plotData.plotdict["y_label"] is None) and (plotData.plotdict["y_label"] != ""):
-					root_object.GetYaxis().SetTitle(plotData.plotdict["y_label"])
-				if (not plotData.plotdict["z_label"] is None) and (plotData.plotdict["z_label"] != "" and hasattr(root_object, "GetZaxis")):
-					root_object.GetZaxis().SetTitle(plotData.plotdict["z_label"])
+				if (not first_plot_labels_set) or (not isinstance(root_object, ROOT.TF1)):
+					if (not plotData.plotdict["x_label"] is None) and (plotData.plotdict["x_label"] != ""):
+						root_object.GetXaxis().SetTitle(plotData.plotdict["x_label"])
+					if (not plotData.plotdict["y_label"] is None) and (plotData.plotdict["y_label"] != ""):
+						root_object.GetYaxis().SetTitle(plotData.plotdict["y_label"])
+					if (not plotData.plotdict["z_label"] is None) and (plotData.plotdict["z_label"] != "" and hasattr(root_object, "GetZaxis")):
+						root_object.GetZaxis().SetTitle(plotData.plotdict["z_label"])
+				first_plot_labels_set = True
 			
 			# tick labels (z-axis) TODO: unify this with the x and y bin labels mechanism?
 			if plotData.plotdict["z_tick_labels"] and len(plotData.plotdict["z_tick_labels"]) > 0:
 				for z_bin in range(min(root_object.GetNbinsZ(), len(plotData.plotdict["z_tick_labels"]))):
 					root_object.GetZaxis().SetBinLabel(z_bin+1, plotData.plotdict["z_tick_labels"][z_bin])
-	
+			
 			ROOT.TGaxis.SetMaxDigits(3)
+
 	def determine_plot_lims(self, plotData):
 		super(PlotRoot, self).determine_plot_lims(plotData)
 		
