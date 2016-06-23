@@ -115,7 +115,7 @@ class InputInteractive(inputbase.InputBase):
 				
 				# Functions
 				if len(y_values) == 0:
-					expression = " ".join(x_values)
+					expression = " ".join([str(x_value) for x_value in x_values])
 					formula = ROOT.TFormula("formula_"+name_hash, expression)
 					function_class = None
 					if formula.GetNdim() == 1:
