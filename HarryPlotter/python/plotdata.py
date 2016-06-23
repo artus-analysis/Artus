@@ -34,11 +34,9 @@ class PlotData(object):
 		self.fit_results = {}
 
 	def __del__(self):
-		for nick, root_object in self.plotdict.get("root_objects", {}).iteritems():
-			del(root_object)
-		
-		for root_tree in self.plotdict.get("root_trees", []):
-			del(root_tree)
+		for key in ["root_objects", "root_trees"]:
+			if key in self.plotdict:
+				del self.plotdict[key]
 
 	@staticmethod
 	def webplotting(www, output_dir, output_filenames=False, www_text = False, www_title="plots_archive", additional_output_files=False, save_legend=False, export_json = False, no_publish=False):
