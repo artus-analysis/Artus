@@ -118,24 +118,40 @@ class InputInteractive(inputbase.InputBase):
 					expression = " ".join([str(x_value) for x_value in x_values])
 					formula = ROOT.TFormula("formula_"+name_hash, expression)
 					function_class = None
+					function_class_name = ""
 					if formula.GetNdim() == 1:
 						function_class = ROOT.TF1
+						function_class_name = "ROOT.TF1"
 					elif formula.GetNdim() == 2:
 						function_class = ROOT.TF2
+						function_class_name = "ROOT.TF2"
 					else:
 						function_class = ROOT.TF3
+						function_class_name = "ROOT.TF3"
+					log.debug(function_class_name+"(function_"+name_hash+", "+expression+")")
 					plotData.plotdict.setdefault("root_objects", {})[nick] = function_class("function_"+name_hash, expression)
 				
 				# Graphs
 				else:
 					if len(z_values) == 0:
 						if len(x_errors_up) == 0 and len(y_errors_up) == 0:
+							log.debug("ROOT.TGraphErrors("+
+									str(len(x_values))+", "+
+									str(array.array("d", x_values))+", "+str(array.array("d", y_values))+", "+
+									str(array.array("d", x_errors))+", "+str(array.array("d", y_errors))+")"
+							)
 							plotData.plotdict.setdefault("root_objects", {})[nick] = ROOT.TGraphErrors(
 									len(x_values),
 									array.array("d", x_values), array.array("d", y_values),
 									array.array("d", x_errors), array.array("d", y_errors)
 							)
 						else:
+							log.debug("ROOT.TGraphAsymmErrors("+
+									str(len(x_values))+", "+
+									str(array.array("d", x_values))+", "+str(array.array("d", y_values))+", "+
+									str(array.array("d", x_errors))+", "+str(array.array("d", x_errors_up))+", "+
+									str(array.array("d", y_errors))+", "+str(array.array("d", y_errors_up))+")"
+							)
 							plotData.plotdict.setdefault("root_objects", {})[nick] = ROOT.TGraphAsymmErrors(
 									len(x_values),
 									array.array("d", x_values), array.array("d", y_values),
@@ -143,6 +159,11 @@ class InputInteractive(inputbase.InputBase):
 									array.array("d", y_errors), array.array("d", y_errors_up)
 							)
 					else:
+						log.debug("ROOT.TGraph2DErrors("+
+								str(len(x_values))+", "+
+								str(array.array("d", x_values))+", "+str(array.array("d", y_values))+", "+str(array.array("d", z_values))+", "+
+								str(array.array("d", x_errors))+", "+str(array.array("d", y_errors))+", "+str(array.array("d", z_errors))+")"
+						)
 						plotData.plotdict.setdefault("root_objects", {})[nick] = ROOT.TGraph2DErrors(
 								len(x_values),
 								array.array("d", x_values), array.array("d", y_values), array.array("d", z_values),
@@ -164,9 +185,11 @@ class InputInteractive(inputbase.InputBase):
 				weights = array.array("d", [1.0]*len(x_values))
 				if root_histogram.GetDimension() == 1:
 					if len(y_values) == 0:
+						log.debug("ROOT.TH1.FillN("+str(len(x_values))+", "+str(array.array("d", x_values))+", "+str(weights)+")")
 						root_histogram.FillN(len(x_values), array.array("d", x_values), weights)
 					else:
 						set_bin_errors = any([bin_error != 0.0 for bin_error in y_errors])
+						log.debug("ROOT.TH1.SetBinContent/SetBinError(<"+str(x_values)+", "+str(y_values)+", "+str(y_errors)+">)")
 						for x_value, y_value, bin_error in zip(x_values, y_values, y_errors):
 							global_bin = root_histogram.FindBin(x_value)
 							root_histogram.SetBinContent(global_bin, y_value)
@@ -175,9 +198,11 @@ class InputInteractive(inputbase.InputBase):
 				
 				elif root_histogram.GetDimension() == 2:
 					if len(z_values) == 0:
+						log.debug("ROOT.TH1.FillN("+str(len(x_values))+", "+str(array.array("d", x_values))+", "+str(array.array("d", y_values))+", "+str(weights)+")")
 						root_histogram.FillN(len(x_values), array.array("d", x_values), array.array("d", y_values), weights)
 					else:
 						set_bin_errors = any([bin_error != 0.0 for bin_error in z_errors])
+						log.debug("ROOT.TH1.SetBinContent/SetBinError(<"+str(x_values)+", "+str(y_values)+", "+str(z_values)+", "+str(z_errors)+">)")
 						for x_value, y_value, z_value, bin_error in zip(x_values, y_values, z_values, z_errors):
 							global_bin = root_histogram.FindBin(x_value, y_value)
 							root_histogram.SetBinContent(global_bin, z_value)
@@ -185,6 +210,7 @@ class InputInteractive(inputbase.InputBase):
 								root_histogram.SetBinError(global_bin, bin_error)
 				
 				elif root_histogram.GetDimension() == 3:
+					log.debug("ROOT.TH1.FillN("+str(len(x_values))+", "+str(array.array("d", x_values))+", "+str(array.array("d", y_values))+", "+str(array.array("d", z_values))+", "+str(weights)+")")
 					root_histogram.FillN(len(x_values), array.array("d", x_values), array.array("d", y_values), array.array("d", z_values), weights)
 				
 				plotData.plotdict.setdefault("root_objects", {})[nick] = root_histogram
