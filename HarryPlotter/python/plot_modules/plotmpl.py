@@ -118,7 +118,7 @@ class PlotMpl(plotbase.PlotBase):
 
 		self.prepare_list_args(
 				plotData,
-				["nicks", "colors", "labels", "markers", "marker_fill_styles", "line_styles", "line_widths", "x_errors", "y_errors", "step", "zorder", "edgecolors", "alphas"],
+				["nicks", "stacks", "colors", "labels", "markers", "marker_fill_styles", "line_styles", "line_widths", "x_errors", "y_errors", "step", "zorder", "edgecolors", "alphas"],
 				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]
 		))
 

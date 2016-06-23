@@ -133,7 +133,7 @@ class PlotRoot(plotbase.PlotBase):
 		super(PlotRoot, self).prepare_args(parser, plotData)
 		self.prepare_list_args(
 				plotData,
-				["nicks", "colors", "labels", "markers", "line_styles", "line_widths", "marker_styles", "marker_sizes", "legend_markers", "fill_styles"],
+				["nicks", "stacks", "colors", "labels", "markers", "line_styles", "line_widths", "marker_styles", "marker_sizes", "legend_markers", "fill_styles"],
 				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]
 		))
 		
