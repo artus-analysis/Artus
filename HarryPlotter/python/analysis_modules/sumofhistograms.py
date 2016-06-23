@@ -71,6 +71,7 @@ class SumOfHistograms(analysisbase.AnalysisBase):
 		                                                         plotData.plotdict["sum_scale_factors"],
 		                                                         plotData.plotdict["sum_result_nicks"]):
 			
+			log.debug("SumOfHistograms: "+sum_result_nick+" = "+(" + ".join([str(scale)+"*"+nick for nick, scale in zip(sum_nicks, sum_scale_factors)])))
 			plotData.plotdict["root_objects"][sum_result_nick] = self.return_sum_of_histograms( [plotData.plotdict["root_objects"][nick] for nick in sum_nicks],
 			                                                                               sum_scale_factors)
 			
