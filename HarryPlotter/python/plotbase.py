@@ -209,7 +209,7 @@ class PlotBase(processor.Processor):
 		if plotData.plotdict["labels"] == None or all([i == None for i in plotData.plotdict["labels"]]):
 			plotData.plotdict["labels"] = plotData.plotdict["nicks"]
 		
-		self.prepare_list_args(plotData, ["nicks", "colors", "labels", "markers", "line_styles", "line_widths"],
+		self.prepare_list_args(plotData, ["nicks", "stacks", "colors", "labels", "markers", "line_styles", "line_widths"],
 				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]),
 				help="Plotting style options")
 		
