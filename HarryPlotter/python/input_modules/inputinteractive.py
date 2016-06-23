@@ -119,17 +119,20 @@ class InputInteractive(inputbase.InputBase):
 					formula = ROOT.TFormula("formula_"+name_hash, expression)
 					function_class = None
 					function_class_name = ""
+					lim_args = [-1e6, 1e6]
 					if formula.GetNdim() == 1:
 						function_class = ROOT.TF1
 						function_class_name = "ROOT.TF1"
 					elif formula.GetNdim() == 2:
 						function_class = ROOT.TF2
 						function_class_name = "ROOT.TF2"
+						lim_args = lim_args*2
 					else:
 						function_class = ROOT.TF3
 						function_class_name = "ROOT.TF3"
-					log.debug(function_class_name+"(function_"+name_hash+", "+expression+")")
-					plotData.plotdict.setdefault("root_objects", {})[nick] = function_class("function_"+name_hash, expression)
+						lim_args = lim_args*3
+					log.debug(function_class_name+"(function_"+name_hash+", "+expression+", "+(", ".join([str(lim) for lim in lim_args]))+")")
+					plotData.plotdict.setdefault("root_objects", {})[nick] = function_class("function_"+name_hash, expression, *lim_args)
 				
 				# Graphs
 				else:
