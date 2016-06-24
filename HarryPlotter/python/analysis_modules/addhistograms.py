@@ -4,15 +4,12 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
-import hashlib
-
-import ROOT
-
 import Artus.HarryPlotter.analysisbase as analysisbase
+import Artus.HarryPlotter.utility.roottools as roottools
 
 
 class AddHistograms(analysisbase.AnalysisBase):
-	"""Add sum of histograms"""
+	"""Create sum of histograms. This module does exactly the same as SumOfHistograms, but is can enable different addition steps together with this module."""
 
 	def modify_argument_parser(self, parser, args):
 		super(AddHistograms, self).modify_argument_parser(parser, args)
@@ -56,23 +53,13 @@ class AddHistograms(analysisbase.AnalysisBase):
 	def run(self, plotData=None):
 		super(AddHistograms, self).run(plotData)
 		
-		for add_nicks, add_result_nick, add_scale_factors in zip(
-				*[plotData.plotdict[k] for k in ["add_nicks", "add_result_nicks","add_scale_factors"]]
+		for add_nicks, add_scale_factors, add_result_nick in zip(
+				*[plotData.plotdict[k] for k in ["add_nicks", "add_scale_factors", "add_result_nicks"]]
 		):
-			add_histogram = None
+			
 			log.debug("AddHistograms: "+add_result_nick+" = "+(" + ".join([str(scale)+"*"+nick for nick, scale in zip(add_nicks, add_scale_factors)])))
-			for nick, add_scale_factor in zip(add_nicks, add_scale_factors):
-				root_object = plotData.plotdict["root_objects"][nick]
-				assert(isinstance(root_object, ROOT.TH1))
-				if add_histogram is None:
-					add_histogram = root_object.Clone(
-							"add_" + hashlib.md5("_".join([str(add_nicks), add_result_nick])).hexdigest()
-					)
-					add_histogram.Scale(add_scale_factor)
-					add_histogram.SetDirectory(0)
-				else:
-					add_histogram.Add(root_object, add_scale_factor)
-					add_histogram.SetDirectory(0)
-
-			plotData.plotdict["root_objects"][add_result_nick] = add_histogram
+			plotData.plotdict["root_objects"][add_result_nick] = roottools.RootTools.add_root_histograms(
+					*[plotData.plotdict["root_objects"][nick] for nick in add_nicks],
+					scale_factors=add_scale_factors
+			)
 
