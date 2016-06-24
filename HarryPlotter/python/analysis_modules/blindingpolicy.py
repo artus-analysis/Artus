@@ -12,7 +12,7 @@ import ROOT
 import math
 
 import Artus.HarryPlotter.analysisbase as analysisbase
-from Artus.HarryPlotter.analysis_modules.sumofhistograms import SumOfHistograms
+import Artus.HarryPlotter.utility.roottools as roottools
 
 class BlindingPolicy(analysisbase.AnalysisBase):
 	def __init__(self):
@@ -60,9 +60,9 @@ class BlindingPolicy(analysisbase.AnalysisBase):
 		                                                         plotData.plotdict["blinding_method"],
 		                                                         plotData.plotdict["blinding_parameters"] ):
 			
-			signal = SumOfHistograms.return_sum_of_histograms([plotData.plotdict["root_objects"][nick] for nick in signal_nick.split(" ")])
+			signal = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_objects"][nick] for nick in signal_nick.split(" ")])
 			new_histogram = signal.Clone(result_nick)
-			background = SumOfHistograms.return_sum_of_histograms([plotData.plotdict["root_objects"][nick] for nick in background_nick.split(" ")])
+			background = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_objects"][nick] for nick in background_nick.split(" ")])
 			expression = self.get_blinding_expression(method)
 
 			if(signal.GetNbinsX() != background.GetNbinsX()):

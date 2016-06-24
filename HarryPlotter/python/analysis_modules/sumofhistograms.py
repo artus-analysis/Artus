@@ -56,26 +56,6 @@ class SumOfHistograms(analysisbase.AnalysisBase):
 						plotData.plotdict["sum_result_nicks"][index]
 				)
 
-	@staticmethod
-	def return_sum_of_histograms(histograms, scale_factors=None, new_histogram_name=None):
-		if(new_histogram_name == None):
-			sum_nicks = []
-			for histogram in histograms:
-				sum_nicks.append( histogram.GetName())
-			new_histogram_name = "histogram_" + hashlib.md5("_".join(sum_nicks)).hexdigest()
-		if(scale_factors == None):
-			scale_factors = [1] * len(histograms)
-
-		new_histogram = None
-		for histogram, scale_factor in zip(histograms, scale_factors):
-			if isinstance(histogram, ROOT.TH1):
-				if new_histogram == None:
-					new_histogram = histogram.Clone(new_histogram_name)
-					new_histogram.Scale(scale_factor)
-				else:
-					new_histogram.Add(histogram, scale_factor)
-		return new_histogram
-
 	def run(self, plotData=None):
 		super(SumOfHistograms, self).run(plotData)
 		
