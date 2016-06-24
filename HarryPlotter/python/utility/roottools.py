@@ -639,15 +639,23 @@ class RootTools(object):
 	def add_root_histograms(*root_histograms, **kwargs):
 		"""
 		Sums up all histograms in the list of args.
-		The returned histogram will have the name kwargs.get("name", args[0].GetName()+"_sum")
+		The returned histogram will have the name kwargs.get("name", "histogram_sum_"+hashlib.md5("_".join([histogram.GetName() for histogram in root_histograms])).hexdigest())
 		"""
-	
+		
+		histogram_name = kwargs.get("name", "histogram_sum_"+hashlib.md5("_".join([histogram.GetName() for histogram in root_histograms])).hexdigest())
+		scale_factors = kwargs.get("scale_factors")
+		if scale_factors is None:
+			scale_factors = [1.0]*len(root_histograms)
+		else:
+			assert(len(scale_factors) == len(root_histograms))
+		
 		histogram_sum = None
-		for histogram in root_histograms:
+		for histogram, scale_factor in zip(root_histograms, scale_factors):
 			if histogram_sum == None:
-				histogram_sum = histogram.Clone(kwargs.get("name", root_histograms[0].GetName()+"_sum"))
+				histogram_sum = histogram.Clone(histogram_name)
+				histogram_sum.Scale(scale_factor)
 			else:
-				histogram_sum.Add(histogram)
+				histogram_sum.Add(histogram, scale_factor)
 		return histogram_sum
 
 
