@@ -52,7 +52,8 @@ class ShapeYieldMerge(analysisbase.AnalysisBase):
 			                                                          plotData.plotdict["root_objects"][yield_nick].GetName()])).hexdigest()
 			
 			new_histogram = plotData.plotdict["root_objects"][shape_nick].Clone(new_histogram_name)
-			new_histogram.Scale(plotData.plotdict["root_objects"][yield_nick].Integral() / plotData.plotdict["root_objects"][shape_nick].Integral())
+			if new_histogram.Integral() != 0.0:
+				new_histogram.Scale(plotData.plotdict["root_objects"][yield_nick].Integral() / new_histogram.Integral())
 			
 			plotData.plotdict["root_objects"][shape_yield_nick] = new_histogram
 			
