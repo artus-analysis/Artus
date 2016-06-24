@@ -234,7 +234,7 @@ public:
 
 			// Muon ID according to Muon POG definitions
 			if (muonID == MuonID::TIGHT) {
-				if (settings.GetYear() == 2015)
+				if (settings.GetYear() == 2015 || settings.GetYear() == 2016)
 					validMuon = validMuon && IsTightMuon2015(*muon, event, product);
 				else if (settings.GetYear() == 2012)
 					validMuon = validMuon && IsTightMuon2012(*muon, event, product);
@@ -244,13 +244,13 @@ public:
 					LOG(FATAL) << "Tight muon ID for year " << settings.GetYear() << " not yet implemented!";
 			}
 			else if (muonID == MuonID::MEDIUM) {
-				if (settings.GetYear() == 2015)
+				if (settings.GetYear() == 2015|| settings.GetYear() == 2016)
 					validMuon = validMuon && IsMediumMuon2015(*muon, event, product);
 				else
 					LOG(FATAL) << "Medium muon ID for year " << settings.GetYear() << " not yet implemented!";
 			}
 			else if (muonID == MuonID::LOOSE) {
-				if (settings.GetYear() == 2015)
+				if (settings.GetYear() == 2015|| settings.GetYear() == 2016)
 					validMuon = validMuon && IsLooseMuon2015(*muon, event, product);
 				else if (settings.GetYear() == 2012)
 					validMuon = validMuon && IsLooseMuon2012(*muon, event, product);
