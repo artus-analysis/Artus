@@ -100,12 +100,16 @@ class PlotMpl(plotbase.PlotBase):
 		                                     help="If set, the legend is saved as a separate file. Argument is the filename. Default: %(default)s")
 		self.formatting_options.add_argument("--marker-fill-styles", type=str, nargs="+",
 		                                     help="Fill style of the markers in the plot")
+		self.formatting_options.add_argument("--aspect-ratio", type=float, nargs="?", default=1,
+											 help="Aspect ratio of the plot. Default is quadratic, ")
 		self.formatting_options.add_argument("--subplot-fraction", type=int, nargs="?", default=25,
 											 help="Hight fraction of the subplot in percent")
 		self.formatting_options.add_argument("--subplot-legend", type=str, nargs="?", default=None,
 		                                     help="Location of the subplot legend. Use 'None' to not set any legend")
 		self.formatting_options.add_argument("--alphas", type=float, nargs="+", default=[1.0],
 		                                     help="Alpha (opacity) values for bands, shaded areas etc. 0.0 -> fully transparent. [Default: %(default)s]")
+		self.formatting_options.add_argument("--y-label-rotation", type=int, nargs="?", default=0,
+											 help="Rotation of the y-axis label, e.g. if there is not enough space when using x-tick-labels")
 		self.formatting_options.add_argument("--rasterized", default=False, action='store_true',
 		                                     help="Rasterize color mesh and bar in 2D plots.")
 
@@ -208,6 +212,9 @@ class PlotMpl(plotbase.PlotBase):
 		super(PlotMpl, self).run(plotData)
 
 	def set_style(self, plotData):
+		# modify if custom aspect ratio is necessary
+		if(plotData.plotdict['aspect_ratio'] != 1.):
+			matplotlib.rcParams['figure.figsize'] = 7. * plotData.plotdict['aspect_ratio'], 7. / plotData.plotdict['aspect_ratio']
 		super(PlotMpl, self).set_style(plotData)
 	
 	def create_canvas(self, plotData):
@@ -343,7 +350,7 @@ class PlotMpl(plotbase.PlotBase):
 		# ticklabels
 		for axis, axisname in zip([ax.xaxis, ax.yaxis], ['x', 'y']):
 			if plotData.plotdict[axisname+"_tick_labels"] is not None:
-				axis.set_ticklabels(plotData.plotdict[axisname+"_tick_labels"], va=("baseline" if axisname=='x' else "center"))
+				axis.set_ticklabels(plotData.plotdict[axisname+"_tick_labels"], va=("baseline" if axisname=='x' else "center"), rotation = plotData.plotdict["y_label_rotation"])
 		if (not plotData.plotdict["subplot_nicks"]) and plotData.plotdict["x_tick_labels"] and (not all([s.isdigit() for s in plotData.plotdict["x_tick_labels"]])):
 			ax.get_xaxis().set_tick_params(pad=16)  # extra padding if ticklabels arent numbers
 

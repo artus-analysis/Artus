@@ -113,7 +113,9 @@ public:
 			}
 			else
 			{
-				this->m_event.m_genEventInfo = this->template SecureFileInterfaceGet<KGenEventInfo>(settings.GetEventMetadata());
+				this->m_event.m_genEventInfo = this->template SecureFileInterfaceGet<KGenEventInfo>(settings.GetEventMetadata()); // "EventMetadata" is misleading and does not follow Kappa naming convention -> TODO: rename to EventInfo
+				if (! settings.GetGenEventInfoMetadata().empty())
+					this->m_event.m_genEventInfoMetadata = this->template SecureFileInterfaceGetMeta<KGenEventInfoMetadata>(settings.GetGenEventInfoMetadata());
 				this->m_event.m_eventInfo = this->m_event.m_genEventInfo;
 			}
 		}

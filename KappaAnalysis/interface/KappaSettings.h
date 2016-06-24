@@ -81,6 +81,7 @@ public:
 
 	/// name of eventMetaData in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, EventMetadata, "");
+	IMPL_SETTING_DEFAULT(std::string, GenEventInfoMetadata, "");
 
 	/// name of lumiMetaData in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, LumiMetadata, "");
