@@ -12,7 +12,7 @@ import ROOT
 import math
 
 import Artus.HarryPlotter.analysisbase as analysisbase
-from Artus.HarryPlotter.analysis_modules.sumofhistograms import SumOfHistograms
+import Artus.HarryPlotter.utility.roottools as roottools
 
 class SignalOverBackgroundIntegral(analysisbase.AnalysisBase):
 	def __init__(self):
@@ -65,9 +65,9 @@ class SignalOverBackgroundIntegral(analysisbase.AnalysisBase):
 																	plotData.plotdict["sob_integral_direction"],
 																	plotData.plotdict["sob_integral_method"]):
 
-			signal = SumOfHistograms.return_sum_of_histograms([plotData.plotdict["root_objects"][nick] for nick in signal_nick.split(" ")])
+			signal = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_objects"][nick] for nick in signal_nick.split(" ")])
 			#new_histogram = signal.Clone("storage_histogram")
-			background = SumOfHistograms.return_sum_of_histograms([plotData.plotdict["root_objects"][nick] for nick in background_nick.split(" ")])
+			background = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_objects"][nick] for nick in background_nick.split(" ")])
 			calculation_function = self.get_function(method)
 			if(signal.GetNbinsX() != background.GetNbinsX()):
 				log.fatal("Signal histogram " + signal + " has a different binning than " + background )
