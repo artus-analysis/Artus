@@ -14,5 +14,6 @@
 	bool HltFilter::DoesEventPass(KappaEvent const& event, KappaProduct const& product,
 	                           KappaSettings const& settings) const
 	{
+		if (settings.GetNoHltFiltering()) return true;
 		return (! product.m_selectedHltNames.empty());
 	}

@@ -123,6 +123,8 @@ public:
 
 	IMPL_SETTING_STRINGLIST_DEFAULT(HltPaths, {});
 	IMPL_SETTING_DEFAULT(bool, AllowPrescaledTrigger, true);
+	
+	IMPL_SETTING_DEFAULT(bool, NoHltFiltering, false);
 
 	IMPL_SETTING_STRINGLIST_DEFAULT(ElectronTriggerFilterNames, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(MuonTriggerFilterNames, {});
