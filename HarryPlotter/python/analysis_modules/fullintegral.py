@@ -13,7 +13,7 @@ import ROOT
 import math
 import Artus.Utility.jsonTools as jsonTools
 import Artus.HarryPlotter.analysisbase as analysisbase
-from Artus.HarryPlotter.analysis_modules.sumofhistograms import SumOfHistograms
+import Artus.HarryPlotter.utility.roottools as roottools
 
 class FullIntegral(analysisbase.AnalysisBase):
 	
@@ -52,7 +52,7 @@ class FullIntegral(analysisbase.AnalysisBase):
 		category = plotData.plotdict.get("category", "NoCategory")
 		if plotData.plotdict.get("full_integral_task", "standard") == "standard":
 			for integral_nicks in plotData.plotdict["full_integral_nicks"]:
-				signal = SumOfHistograms.return_sum_of_histograms([plotData.plotdict["root_objects"][nick] for nick in integral_nicks.split(" ")])
+				signal = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_objects"][nick] for nick in integral_nicks.split(" ")])
 				integral = 0
 				for x_bin in xrange(1, signal.GetNbinsX()+1):
 					#log.info("access bin %i"%x_bin)

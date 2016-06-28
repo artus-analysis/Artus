@@ -18,6 +18,8 @@ public:
     static const int pdgIdGamma;
     static const int pdgIdW;
     static const int pdgIdH;
+    static const int pdgIdHCPOdd;
+    static const int pdgIdACPOdd;
 
     static const int pdgIdPiZero;
     static const int pdgIdPiPlus;

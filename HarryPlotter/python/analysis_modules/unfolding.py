@@ -37,6 +37,10 @@ class Unfolding(analysisbase.AnalysisBase):
             'unfolding_method': 'dagostini',
             'unfolding_iterations': 4,
             'libRooUnfold': '~/home/RooUnfold/libRooUnfold.so',
+	    #Settings for plotting 1D and 2D in one histo:
+	    'y_expressions' : [None, None,None,'genzpt'],
+	    'x_expressions': ['zpt', 'zpt', 'genzpt', 'zpt'],
+	    'y_bins' : [None, None, None, '30 40 50 60 80 100 120 140 170 200 1000'],
         }
 	"""
 

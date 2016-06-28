@@ -11,6 +11,8 @@ const float DefaultValues::EtaBorderEB = 1.479f;
 const int DefaultValues::pdgIdGamma = 22;
 const int DefaultValues::pdgIdW = 24;
 const int DefaultValues::pdgIdH = 25;
+const int DefaultValues::pdgIdHCPOdd = 35;
+const int DefaultValues::pdgIdACPOdd = 36;
 
 const int DefaultValues::pdgIdPiZero = 111;
 const int DefaultValues::pdgIdPiPlus = 211;
