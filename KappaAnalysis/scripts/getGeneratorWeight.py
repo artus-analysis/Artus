@@ -26,7 +26,7 @@ def main():
 
 	parser.add_argument("files", nargs="+", help="Input files.")
 	parser.add_argument("-n", "--nick", default="kappa_(?P<nick>.*)_\d+.root",
-	                    help="Regular expression to extract nickname from file names. Use 'NONE' to disable nick name matching [Default: %(default)s]")
+	                    help="Regular expression to extract nickname from file names. Use 'NONE' to disable nick name matching. [Default: %(default)s]")
 
 	args = parser.parse_args()
 	logger.initLogger(args)

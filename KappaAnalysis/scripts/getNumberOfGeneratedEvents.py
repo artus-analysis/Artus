@@ -17,14 +17,14 @@ ROOT.gErrorIgnoreLevel = ROOT.kError
 
 def main():
 	
-	ROOT.gSystem.Load(os.path.expandvars("$CMSSW_BASE/src/Kappa/lib/libKappa"))
+	ROOT.gSystem.Load(os.path.expandvars("$ARTUSPATH/../Kappa/lib/libKappa"))
 	
 	parser = argparse.ArgumentParser(description="Print out the sum of entries in the Event trees of all inputs sorted by nick names.",
 	                                 parents=[logger.loggingParser])
 
 	parser.add_argument("files", nargs="+", help="Input files.")
 	parser.add_argument("-n", "--nick", default="kappa_(?P<nick>.*)_\d+.root",
-	                    help="Regular expression to extract nickname from file names. [Default: %(default)s]")
+	                    help="Regular expression to extract nickname from file names. Use 'NONE' to disable nick name matching. [Default: %(default)s]")
 
 	args = parser.parse_args()
 	logger.initLogger(args)
@@ -39,7 +39,8 @@ def main():
 		root_file.Close()
 		
 		# nickname matching and sum of entries
-		nick = re.match(args.nick, os.path.basename(file_name)).groupdict().values()[0]
+		no_regex_match = True if args.nick=='NONE' else False
+		nick = ( re.match(args.nick, os.path.basename(file_name)).groupdict().values()[0] if not no_regex_match else '*')
 		n_entries_per_nick[nick] = n_entries_per_nick.get(nick, 0.0) + n_entries
 	
 	# print results
