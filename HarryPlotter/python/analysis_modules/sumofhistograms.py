@@ -50,11 +50,6 @@ class SumOfHistograms(analysisbase.AnalysisBase):
 				plotData.plotdict["sum_result_nicks"][index] = "sum_{}".format(
 						"_".join(plotData.plotdict["sum_nicks"][index]),
 				)
-			if not plotData.plotdict["sum_result_nicks"][index] in plotData.plotdict["nicks"]:
-				plotData.plotdict["nicks"].insert(
-						plotData.plotdict["nicks"].index(plotData.plotdict["sum_nicks"][index][0]),
-						plotData.plotdict["sum_result_nicks"][index]
-				)
 
 	def run(self, plotData=None):
 		super(SumOfHistograms, self).run(plotData)
@@ -68,4 +63,8 @@ class SumOfHistograms(analysisbase.AnalysisBase):
 					*[plotData.plotdict["root_objects"][nick] for nick in sum_nicks],
 					scale_factors=sum_scale_factors
 			)
+			
+			if sum_result_nick not in plotData.plotdict["nicks"]:
+				plotData.plotdict["nicks"].insert(max([plotData.plotdict["nicks"].index(nick) for nick in sum_nicks]),
+												sum_result_nick)
 
