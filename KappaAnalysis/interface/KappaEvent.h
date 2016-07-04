@@ -88,6 +88,7 @@ public:
 	KFilterMetadata* m_filterMetadata = nullptr;
 	KFilterSummary* m_filterSummary = nullptr;
 	KJetMetadata* m_jetMetadata = nullptr;
+	KGenEventInfoMetadata *m_genEventInfoMetadata = nullptr;
 };
 
 
