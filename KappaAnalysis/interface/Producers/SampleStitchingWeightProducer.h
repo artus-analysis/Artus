@@ -26,8 +26,6 @@ public:
 
 private:
 
-	std::vector<std::string>& (KappaSettings::*GetStitchingWeights)(void) const;
-
 	std::map<size_t, std::vector<float> > stitchingWeightsByIndex;
 	std::map<std::string, std::vector<float> > stitchingWeightsByName;
 

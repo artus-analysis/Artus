@@ -349,5 +349,5 @@ public:
 	IMPL_SETTING_DEFAULT(bool, VetoMultipleZs, true);
 
 	// Needed by SampleStitchingWeightProducer
-	IMPL_SETTING_STRINGLIST_DEFAULT(StitchingWeights, {});
+	IMPL_SETTING_STRINGLIST(StitchingWeights);
 };
