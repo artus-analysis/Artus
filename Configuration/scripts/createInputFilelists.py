@@ -51,27 +51,29 @@ def main():
 	
 	for skimming_dir in skimming_dirs:
 		nick = os.path.basename(skimming_dir)
-		files = sorted(glob.glob(os.path.join(skimming_dir, "*.root")))
-
+		
+		search_path = os.path.join(skimming_dir, "*.root")
 		if args.crab:
 			nick = nick.strip("crab_")
-			files = sorted(glob.glob(os.path.join(skimming_dir, "*/*/*.root")))
-
-		if (len(files) == 0):
-			log.critical("Input file list empty. If the skims have been produced with Crab, switch on the --crab option")
-			sys.exit(1)
-
-		filelists = os.path.join(args.output_dir, "%s_sample_%s_%s.txt" % ("%s", nick, "%s"))
+			search_path = os.path.join(skimming_dir, "*/*/*.root")
 		
-		dcache_settings = {
-			#"NAF" : ["", None],
-			"DCAP" : ["dcap://dcache-cms-dcap.desy.de/", None],
-			#"XROOTD" : ["root://cms-xrd-global.cern.ch/", "/pnfs/desy.de/cms/tier2"],
-		}
-		for name, settings in dcache_settings.items():
-			create_filelist([(settings[0] + (root_file.replace(settings[1], "") if settings[1] else root_file)) for root_file in files],
-			                filelists % (name, args.date),
-			                filelists % (name, "recent") if args.create_recent_symlinks else None)
+		files = sorted(glob.glob(search_path))
+		if (len(files) == 0):
+			log.warning("Cannot find any files matching \"%s\"." % search_path)
+		else:
+			filelists = os.path.join(args.output_dir, "%s_sample_%s_%s.txt" % ("%s", nick, "%s"))
+			
+			dcache_settings = {
+				#"NAF" : ["", None],
+				"DCAP" : ["dcap://dcache-cms-dcap.desy.de/", None],
+				#"XROOTD" : ["root://cms-xrd-global.cern.ch/", "/pnfs/desy.de/cms/tier2"],
+			}
+			for name, settings in dcache_settings.items():
+				create_filelist(
+						[(settings[0] + (root_file.replace(settings[1], "") if settings[1] else root_file)) for root_file in files],
+						filelists % (name, args.date),
+						filelists % (name, "recent") if args.create_recent_symlinks else None
+				)
 
 
 if __name__ == "__main__":
