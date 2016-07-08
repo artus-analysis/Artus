@@ -50,17 +50,16 @@ def main():
 		skimming_dirs = glob.glob(os.path.join(args.skimming_dir, "*/crab_*"))
 	
 	for skimming_dir in skimming_dirs:
-		nick = os.path.basename(skimming_dir)
-		
 		search_path = os.path.join(skimming_dir, "*.root")
 		if args.crab:
-			nick = nick.strip("crab_")
 			search_path = os.path.join(skimming_dir, "*/*/*.root")
 		
 		files = sorted(glob.glob(search_path))
 		if (len(files) == 0):
 			log.warning("Cannot find any files matching \"%s\"." % search_path)
 		else:
+			nick = os.path.basename(files[0]).replace("kappa_", "")
+			nick[:nick.rfind("_")]
 			filelists = os.path.join(args.output_dir, "%s_sample_%s_%s.txt" % ("%s", nick, "%s"))
 			
 			dcache_settings = {
