@@ -25,27 +25,8 @@ void SampleStitchingWeightProducer::Produce( KappaEvent const& event,
 	product.m_weights["crossSectionPerEventWeight"] = 1.0;
 	product.m_weights["numberGeneratedEventsWeight"] = 1.0;
 	
-	/// size_t(0): DY.?JetsToLLM50
-	/// size_t(1): DY.?JetsToLLM150
-	/// size_t(2): W.?JetsToLNu
 	int nPartons = event.m_genEventInfo->lheNOutPartons >= 5 ? 0 : event.m_genEventInfo->lheNOutPartons;
-	if (boost::regex_search(product.m_nickname, boost::regex("DY.?JetsToLLM(50|150)", boost::regex::icase | boost::regex::extended)))
-	{
-		if (product.m_genDiLeptonBoson.mass() < 150.0)
-		{
-			product.m_optionalWeights["stitchWeightZLL"] = SafeMap::Get(stitchingWeightsByIndex, size_t(0)).at(nPartons);
-			product.m_optionalWeights["stitchWeightZTT"] = SafeMap::Get(stitchingWeightsByIndex, size_t(0)).at(nPartons);
-		}
-		else
-		{
-			product.m_optionalWeights["stitchWeightZLL"] = SafeMap::Get(stitchingWeightsByIndex, size_t(0)).at(nPartons);
-			product.m_optionalWeights["stitchWeightZTT"] = SafeMap::Get(stitchingWeightsByIndex, size_t(1)).at(nPartons);
-		}
-	}
-	else if (boost::regex_search(product.m_nickname, boost::regex("W.?JetsToLNu", boost::regex::icase | boost::regex::extended)))
-	{
-		product.m_optionalWeights["stitchWeightWJ"] = SafeMap::Get(stitchingWeightsByIndex, size_t(2)).at(nPartons);
-	}
+	product.m_optionalWeights["stitchWeight"] = SafeMap::Get(stitchingWeightsByIndex, size_t(nPartons)).at(0);
 	/*if (boost::regex_search(product.m_nickname, boost::regex("DY.?JetsToLLM(50|150)_RunIIFall15", boost::regex::icase | boost::regex::extended)))
 	{
 		if (product.m_genDiLeptonBoson.mass() < 150.0)
@@ -211,9 +192,9 @@ void SampleStitchingWeightProducer::Produce( KappaEvent const& event,
 		{
 			product.m_optionalWeights["stitchWeightWJ"] = 6.27887343e-5;
 		}
-	}*/
+	}
 	else
 	{
 		LOG(FATAL) << "Stitching weights not implemented for nickname " << product.m_nickname << ": check config settings!";
-	}
+	}*/
 }
