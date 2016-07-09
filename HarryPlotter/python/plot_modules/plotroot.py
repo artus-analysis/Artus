@@ -645,7 +645,7 @@ class PlotRoot(plotbase.PlotBase):
 			self.subplot_axes_histogram.GetYaxis().SetTitleOffset(self.subplot_axes_histogram.GetYaxis().GetTitleOffset() * self.plot_subplot_slider_y)
 			self.subplot_axes_histogram.GetYaxis().SetNdivisions(5, 0, 0)
 		
-		if all([isinstance(root_object, ROOT.TF1) or (root_object.GetListOfFunctions().FindObject("palette") == None) for root_object in plotData.plotdict["root_objects"].values()]) and (plotData.plotdict["right_pad_margin"] is None):
+		if (self.max_dim < 3) and (plotData.plotdict["right_pad_margin"] is None):
 			plotData.plot.plot_pad.SetRightMargin(0.05)
 			if not plotData.plot.subplot_pad is None:
 				plotData.plot.subplot_pad.SetRightMargin(0.05)

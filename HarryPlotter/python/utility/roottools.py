@@ -778,7 +778,7 @@ class RootTools(object):
 			else:
 				return 2
 		else:
-			log.warning("Retrieving the plot dimension is not yet implemented for objects of type %s!." % str(type(root_object)))
+			log.warning("Retrieving the plot dimension is not yet implemented for objects of type %s!" % str(type(root_object)))
 			return 2
 
 	@staticmethod
