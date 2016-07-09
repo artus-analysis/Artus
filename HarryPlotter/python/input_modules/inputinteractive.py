@@ -146,26 +146,27 @@ class InputInteractive(inputbase.InputBase):
 				function_class = None
 				function_class_name = ""
 				lim_args = []
-				if formula.GetNdim() == 1:
+				if formula.GetNdim() >= 1:
 					function_class = ROOT.TF1
 					function_class_name = "ROOT.TF1"
 					lim_args.extend(x_bins[1:])
-				elif formula.GetNdim() == 2:
+				if formula.GetNdim() >= 2:
 					function_class = ROOT.TF2
 					function_class_name = "ROOT.TF2"
 					lim_args.extend(y_bins[1:])
-				else:
+				if formula.GetNdim() >= 3:
 					function_class = ROOT.TF3
 					function_class_name = "ROOT.TF3"
-					lim_args.extend(x_bins[1:])
+					lim_args.extend(z_bins[1:])
+				
 				log.debug(function_class_name+"(function_"+name_hash+", "+expression+", "+(", ".join([str(lim) for lim in lim_args]))+")")
 				root_function = function_class("function_"+name_hash, expression, *lim_args)
 				
-				if formula.GetNdim() == 1:
+				if formula.GetNdim() >= 1:
 					root_function.SetNpx(int(x_bins[0]))
-				if formula.GetNdim() == 2:
+				if formula.GetNdim() >= 2:
 					root_function.SetNpy(int(y_bins[0]))
-				if formula.GetNdim() == 3:
+				if formula.GetNdim() >= 3:
 					root_function.SetNpz(int(z_bins[0]))
 				
 				plotData.plotdict.setdefault("root_objects", {})[nick] = root_function
