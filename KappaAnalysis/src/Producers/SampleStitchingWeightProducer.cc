@@ -10,8 +10,10 @@ std::string SampleStitchingWeightProducer::GetProducerId() const
 
 void SampleStitchingWeightProducer::Init(KappaSettings const& settings)
 {
-	stitchingWeightsByIndex = Utility::ParseMapTypes<size_t, float>(Utility::ParseVectorToMap(settings.GetStitchingWeights()),
+	stitchingWeightsByIndex = Utility::ParseMapTypes<size_t, double>(Utility::ParseVectorToMap(settings.GetStitchingWeights()),
 																	stitchingWeightsByName);
+	stitchingWeightsHighMassByIndex = Utility::ParseMapTypes<size_t, double>(Utility::ParseVectorToMap(settings.GetStitchingWeightsHighMass()),
+																	stitchingWeightsHighMassByName);
 }
 
 void SampleStitchingWeightProducer::Produce( KappaEvent const& event,
@@ -19,7 +21,7 @@ void SampleStitchingWeightProducer::Produce( KappaEvent const& event,
 			KappaSettings const& settings) const
 {
 	assert(event.m_genEventInfo != nullptr);
-	
+
 	if(SafeMap::GetWithDefault(product.m_weights, std::string("crossSectionPerEventWeight"), -1.) <= 0.)
 	{
 		LOG(FATAL) << "Cross section not available or 0. Make sure that CrossSectionWeightProducer is run before SampleStitchingWeightProducer!";
@@ -31,6 +33,10 @@ void SampleStitchingWeightProducer::Produce( KappaEvent const& event,
 	else
 	{
 		int nPartons = event.m_genEventInfo->lheNOutPartons >= 5 ? 0 : event.m_genEventInfo->lheNOutPartons;
-		product.m_weights["sampleStitchingWeight"] = SafeMap::Get(stitchingWeightsByIndex, size_t(nPartons)).at(0) / product.m_weights["numberGeneratedEventsWeight"] / product.m_weights["crossSectionPerEventWeight"];
+		// take overlap of phase space into account for DY samples with M50 & M150
+		if (product.m_genDiLeptonBoson.mass() >= 150.0 && stitchingWeightsHighMassByIndex.size() > 0)
+			product.m_weights["sampleStitchingWeight"] = SafeMap::Get(stitchingWeightsHighMassByIndex, size_t(nPartons)).at(0) / product.m_weights["numberGeneratedEventsWeight"] / product.m_weights["crossSectionPerEventWeight"];
+		else
+			product.m_weights["sampleStitchingWeight"] = SafeMap::Get(stitchingWeightsByIndex, size_t(nPartons)).at(0) / product.m_weights["numberGeneratedEventsWeight"] / product.m_weights["crossSectionPerEventWeight"];
 	}
 }

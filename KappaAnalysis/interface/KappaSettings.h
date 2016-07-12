@@ -350,4 +350,5 @@ public:
 
 	// Needed by SampleStitchingWeightProducer
 	IMPL_SETTING_STRINGLIST(StitchingWeights);
+	IMPL_SETTING_STRINGLIST_DEFAULT(StitchingWeightsHighMass, {});
 };

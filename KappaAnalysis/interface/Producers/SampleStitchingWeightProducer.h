@@ -26,7 +26,9 @@ public:
 
 private:
 
-	std::map<size_t, std::vector<float> > stitchingWeightsByIndex;
-	std::map<std::string, std::vector<float> > stitchingWeightsByName;
+	std::map<size_t, std::vector<double> > stitchingWeightsByIndex;
+	std::map<size_t, std::vector<double> > stitchingWeightsHighMassByIndex;
+	std::map<std::string, std::vector<double> > stitchingWeightsByName;
+	std::map<std::string, std::vector<double> > stitchingWeightsHighMassByName;
 
 };
