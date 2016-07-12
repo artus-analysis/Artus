@@ -568,18 +568,21 @@ class PlotRoot(plotbase.PlotBase):
 			pad.cd()
 			
 			# set color map
-			if plotData.plotdict["colormap"] and len(set(colors)) > 1:
-				reds = [ROOT.gROOT.GetColor(color).GetRed() for color in colors]
-				greens = [ROOT.gROOT.GetColor(color).GetGreen() for color in colors]
-				blues = [ROOT.gROOT.GetColor(color).GetBlue() for color in colors]
-				ROOT.TColor.CreateGradientColorTable(
-						len(colors),
-						array.array("d", [float(index) / (len(colors)-1) for index in xrange(len(colors))]),
-						array.array("d", reds),
-						array.array("d", greens),
-						array.array("d", blues),
-						ROOT.gStyle.GetNdivisions("Z")
-				)
+			if plotData.plotdict["colormap"]:
+				if len(set(colors)) == 1:
+					ROOT.gStyle.SetPalette(colors[0])
+				else:
+					reds = [ROOT.gROOT.GetColor(color).GetRed() for color in colors]
+					greens = [ROOT.gROOT.GetColor(color).GetGreen() for color in colors]
+					blues = [ROOT.gROOT.GetColor(color).GetBlue() for color in colors]
+					ROOT.TColor.CreateGradientColorTable(
+							len(colors),
+							array.array("d", [float(index) / (len(colors)-1) for index in xrange(len(colors))]),
+							array.array("d", reds),
+							array.array("d", greens),
+							array.array("d", blues),
+							ROOT.gStyle.GetNdivisions("Z")
+					)
 			
 			# draw
 			root_object = plotData.plotdict["root_objects"][nick]
