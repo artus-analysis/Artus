@@ -240,12 +240,14 @@ class PlotRoot(plotbase.PlotBase):
 			if subplot_pad is None:
 				canvas.cd()
 				plot_pad = ROOT.TPad("plot_pad", "", 0.0, self.plot_subplot_slider_y, 1.0, 1.0)
+				ROOT.SetOwnership(plot_pad, False) # https://root.cern.ch/phpBB3/viewtopic.php?t=13547#p58247
 				plot_pad.SetNumber(1)
 				plot_pad.Draw()
 				defaultrootstyle.init_sub_pad(plot_pad)
 			if subplot_pad is None:
 				canvas.cd()
 				subplot_pad = ROOT.TPad("subplot_pad", "", 0.0, 0.0, 1.0, self.plot_subplot_slider_y)
+				ROOT.SetOwnership(subplot_pad, False) # https://root.cern.ch/phpBB3/viewtopic.php?t=13547#p58247
 				subplot_pad.SetNumber(2)
 				subplot_pad.Draw()
 				defaultrootstyle.init_sub_pad(subplot_pad)
