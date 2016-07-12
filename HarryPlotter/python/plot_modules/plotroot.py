@@ -81,11 +81,11 @@ class PlotRoot(plotbase.PlotBase):
 		self.axis_options.add_argument("--sym-z-lims", nargs="?", type="bool", default=False, const=True,
 		                               help="Symmetric z-axis limits of the plot. The parameters of --z-lims are taken as <center> <range/2>")
 		self.axis_options.add_argument("--y-subplot-lims", type=float, nargs=2,
-                                               help="Lower and Upper limit for y-axis of a possible subplot.")
-                self.axis_options.add_argument("--y-subplot-log", nargs="?", type="bool", default=False, const=True,
-                                               help="Logarithmic y axis for subplot..")
-                self.axis_options.add_argument("--z-subplot-log", nargs="?", type="bool", default=False, const=True,
-                                               help="Logarithmic z axis for subplot.")
+		                               help="Lower and Upper limit for y-axis of a possible subplot.")
+		self.axis_options.add_argument("--y-subplot-log", nargs="?", type="bool", default=False, const=True,
+		                               help="Logarithmic y axis for subplot..")
+		self.axis_options.add_argument("--z-subplot-log", nargs="?", type="bool", default=False, const=True,
+		                               help="Logarithmic z axis for subplot.")
 		self.axis_options.add_argument("--sym-y-subplot-lims", nargs="?", type="bool", default=False, const=True,
 		                               help="Symmetric y-axis limits of a possible subplot. The parameters of --y-subplot-lims are taken as <center> <range/2>")
 		self.axis_options.add_argument("--reverse-x-axis", nargs="?", type="bool", default=False, const=True,
@@ -608,13 +608,20 @@ class PlotRoot(plotbase.PlotBase):
 				palette.SetTitleSize(root_object.GetYaxis().GetTitleSize())
 		
 		# logaritmic axis
-		if plotData.plotdict["x_log"]: plotData.plot.plot_pad.SetLogx()
-		if plotData.plotdict["y_log"]: plotData.plot.plot_pad.SetLogy()
-		if plotData.plotdict["z_log"]: plotData.plot.plot_pad.SetLogz()
+		if plotData.plotdict["x_log"]:
+			plotData.plot.plot_pad.SetLogx()
+		if plotData.plotdict["y_log"]:
+			plotData.plot.plot_pad.SetLogy()
+		if plotData.plotdict["z_log"]:
+			plotData.plot.plot_pad.SetLogz()
+		
 		if not plotData.plot.subplot_pad is None:
-			if plotData.plotdict["x_log"]: plotData.plot.subplot_pad.SetLogx()
-                if plotData.plotdict["y_subplot_log"]: plotData.plot.subplot_pad.SetLogy()
-                if plotData.plotdict["z_subplot_log"]: plotData.plot.subplot_pad.SetLogz()
+			if plotData.plotdict["x_log"]:
+				plotData.plot.subplot_pad.SetLogx()
+			if plotData.plotdict["y_subplot_log"]:
+				plotData.plot.subplot_pad.SetLogy()
+			if plotData.plotdict["z_subplot_log"]:
+				plotData.plot.subplot_pad.SetLogz()
 		
 		if not self.axes_histogram is None:
 			self.reversed_axes = PlotRoot._set_axis_limits(plotData.plot.plot_pad, self.axes_histogram, self.max_dim, [self.x_min, self.x_max], [self.y_min, self.y_max], [self.z_min, self.z_max], reverse_x_axis=plotData.plotdict["reverse_x_axis"], reverse_y_axis=plotData.plotdict["reverse_y_axis"], reverse_z_axis=plotData.plotdict["reverse_z_axis"])
