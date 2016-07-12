@@ -606,6 +606,7 @@ class PlotRoot(plotbase.PlotBase):
 			if palette != None:
 				palette.SetTitleOffset(1.5)
 				palette.SetTitleSize(root_object.GetYaxis().GetTitleSize())
+				root_object.SetContour(50) # number of divisions
 		
 		# logaritmic axis
 		if plotData.plotdict["x_log"]:
@@ -638,8 +639,6 @@ class PlotRoot(plotbase.PlotBase):
 				PlotRoot._set_axis_limits(plotData.plot.subplot_pad, root_object, self.max_dim, [self.x_min, self.x_max], [self.y_sub_min, self.y_sub_max], [self.z_sub_min, self.z_sub_max], reverse_x_axis=plotData.plotdict["reverse_x_axis"], reverse_y_axis=False, reverse_z_axis=False)
 			else:
 				PlotRoot._set_axis_limits(plotData.plot.plot_pad, root_object, self.max_dim, [self.x_min, self.x_max], [self.y_min, self.y_max], [self.z_min, self.z_max], reverse_x_axis=plotData.plotdict["reverse_x_axis"], reverse_y_axis=plotData.plotdict["reverse_y_axis"], reverse_z_axis=plotData.plotdict["reverse_z_axis"])
-			if isinstance(root_object, ROOT.TH1) and "Z" in marker.upper():
-				root_object.SetContour(50)
 		
 		if not self.subplot_axes_histogram is None:
 			self.axes_histogram.GetXaxis().SetLabelSize(0)
