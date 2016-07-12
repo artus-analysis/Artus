@@ -168,6 +168,12 @@ namespace Utility {
 		typename Container<Item, Args...>::const_iterator it = std::find(container.begin(), container.end(), item);
 		return (it != container.end());
 	}
+	template <typename Item, typename... Args>
+	static bool Contains(std::map<Item, Args...> const& container, Item const& item)
+	{
+		typename std::map<Item, Args...>::const_iterator it = container.find(item);
+		return (it != container.end());
+	}
 	
 	template<class TNumber>
 	bool ApproxEqual(TNumber value1, TNumber value2, double maxDelta=1e-5)
