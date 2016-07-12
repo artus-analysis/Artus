@@ -142,3 +142,24 @@ class NormalizeStackToFirstHisto(analysisbase.AnalysisBase):
 				root_histogram.Sumw2()
 				if stack_int != 0.0:
 					root_histogram.Scale(refhisto_int / stack_int)
+
+class NormalizeStacksToUnity(analysisbase.AnalysisBase):
+	"""Normalize Stacks to Unity."""
+	def __init__(self):
+		super(NormalizeStacksToUnity, self).__init__()
+
+	def run(self, plotData=None):
+		super(NormalizeStacksToUnity, self).run(plotData)
+		plot_nicks = []
+		plot_stacks = plotData.plotdict["stacks"]
+		stack_values = {}
+		for nick in plotData.plotdict["nicks"]:
+			if not max([black in nick for black in plotData.plotdict.get("nicks_blacklist", [])]+[False]):
+				plot_nicks.append(nick)
+		for stack, nick in zip(plot_stacks, plot_nicks):
+			if not stack in stack_values.keys():
+				stack_values[stack] = plotData.plotdict["root_objects"][nick].Integral(0, plotData.plotdict["root_objects"][nick].GetNbinsX())
+			else:
+				stack_values[stack] += plotData.plotdict["root_objects"][nick].Integral()
+		for stack, nick in zip(plot_stacks, plot_nicks):
+			plotData.plotdict["root_objects"][nick].Scale(1./stack_values[stack])
