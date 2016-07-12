@@ -23,6 +23,7 @@ import Artus.HarryPlotter.utility.labels as labels
 import Artus.HarryPlotter.utility.roottools as roottools
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
+import Artus.HarryPlotter.utility.defaultrootstyle as defaultrootstyle
 import Artus.HarryPlotter.utility.tdrstyle as tdrstyle
 import Artus.HarryPlotter.utility.CMS_lumi as CMS_lumi
 import Artus.HarryPlotter.utility.newrootcolors as newrootcolors
@@ -216,7 +217,9 @@ class PlotRoot(plotbase.PlotBase):
 
 	def set_style(self, plotData):
 		super(PlotRoot, self).set_style(plotData)
+		
 		tdrstyle.setTDRStyle()
+		defaultrootstyle.set_default_root_style()
 		
 		# load custom painter (fixes for horizontal histograms)
 		roottools.RootTools.load_compile_macro(os.path.expandvars("$ARTUSPATH/HarryPlotter/python/utility/customhistogrampainter.C"))
@@ -230,19 +233,22 @@ class PlotRoot(plotbase.PlotBase):
 		
 		if canvas is None:
 			# TODO: Creating the canvas like this leads to segmentation faults
-			canvas = ROOT.TCanvas("canvas", "")
+			canvas = defaultrootstyle.make_canvas("canvas", "")
 			canvas.Draw()
-
+		
 		if len(plotData.plotdict["subplot_nicks"]) > 0:
-			canvas.cd()
-			if plot_pad is None:
+			if subplot_pad is None:
+				canvas.cd()
 				plot_pad = ROOT.TPad("plot_pad", "", 0.0, self.plot_subplot_slider_y, 1.0, 1.0)
 				plot_pad.SetNumber(1)
 				plot_pad.Draw()
+				defaultrootstyle.init_sub_pad(plot_pad)
 			if subplot_pad is None:
+				canvas.cd()
 				subplot_pad = ROOT.TPad("subplot_pad", "", 0.0, 0.0, 1.0, self.plot_subplot_slider_y)
 				subplot_pad.SetNumber(2)
 				subplot_pad.Draw()
+				defaultrootstyle.init_sub_pad(subplot_pad)
 			
 			plot_pad.SetTopMargin(0.122)
 			plot_pad.SetBottomMargin(0.031)
@@ -262,6 +268,7 @@ class PlotRoot(plotbase.PlotBase):
 				self.subplot_line_graphs.append(line_graph)
 		else:
 			plot_pad = canvas
+			plot_pad.Draw()
 		
 		self.plot_pad_right_margin = plot_pad.GetRightMargin()
 		plot_pad.SetRightMargin(0.25)
@@ -564,7 +571,7 @@ class PlotRoot(plotbase.PlotBase):
 				plotData.plotdict["colors"]
 		):
 			# select pad to plot on
-			pad = plotData.plot.subplot_pad if subplot == True else plotData.plot.plot_pad
+			pad = plotData.plot.subplot_pad if subplot else plotData.plot.plot_pad
 			pad.cd()
 			
 			# set color map
@@ -720,6 +727,7 @@ class PlotRoot(plotbase.PlotBase):
 			self.legend = ROOT.TLegend(*transformed_legend_pos)
 			self.legend.SetNColumns(plotData.plotdict["legend_cols"])
 			self.legend.SetColumnSeparation(0.1)
+			
 			for subplot, nick, label, legend_marker in zip(
 					plotData.plotdict["subplots"],
 					plotData.plotdict["nicks"],
@@ -741,6 +749,8 @@ class PlotRoot(plotbase.PlotBase):
 						legend_marker = "L"
 				if (not label is None) and (label != ""):
 					self.legend.AddEntry(root_object, label, legend_marker)
+			
+			defaultrootstyle.set_legend_style(self.legend)
 			self.legend.Draw()
 	
 	def add_texts(self, plotData):
