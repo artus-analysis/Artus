@@ -595,11 +595,14 @@ class PlotRoot(plotbase.PlotBase):
 		
 		# setting for Z axis
 		for root_object in plotData.plotdict["root_objects"].values():
-			if not isinstance(root_object, ROOT.TF1):
+			if isinstance(root_object, ROOT.TH1):
 				palette = root_object.GetListOfFunctions().FindObject("palette")
-				if palette != None:
-					palette.SetTitleOffset(1.5)
-					palette.SetTitleSize(root_object.GetYaxis().GetTitleSize())
+			else:
+				palette = root_object.GetHistogram().GetListOfFunctions().FindObject("palette")
+			
+			if palette != None:
+				palette.SetTitleOffset(1.5)
+				palette.SetTitleSize(root_object.GetYaxis().GetTitleSize())
 		
 		# logaritmic axis
 		if plotData.plotdict["x_log"]: plotData.plot.plot_pad.SetLogx()
@@ -645,6 +648,12 @@ class PlotRoot(plotbase.PlotBase):
 			self.subplot_axes_histogram.GetYaxis().SetTitleOffset(self.subplot_axes_histogram.GetYaxis().GetTitleOffset() * self.plot_subplot_slider_y)
 			self.subplot_axes_histogram.GetYaxis().SetNdivisions(5, 0, 0)
 		
+		palettes = [(root_object if isinstance(root_object, ROOT.TH1) else root_object.GetHistogram()).GetListOfFunctions().FindObject("palette") for root_object in plotData.plotdict["root_objects"].values()]
+		if all([palette == None for palette in palettes]) and (plotData.plotdict["right_pad_margin"] is None):
+			plotData.plot.plot_pad.SetRightMargin(0.05)
+			if not plotData.plot.subplot_pad is None:
+				plotData.plot.subplot_pad.SetRightMargin(0.05)
+
 		if (self.max_dim < 3) and (plotData.plotdict["right_pad_margin"] is None):
 			plotData.plot.plot_pad.SetRightMargin(0.05)
 			if not plotData.plot.subplot_pad is None:
