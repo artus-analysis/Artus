@@ -1,193 +1,55 @@
 
 #include "Artus/KappaAnalysis/interface/Producers/SampleStitchingWeightProducer.h"
 
+#include "Artus/Utility/interface/SafeMap.h"
+#include "Artus/Utility/interface/Utility.h"
+
+
 std::string SampleStitchingWeightProducer::GetProducerId() const
 {
 	return "SampleStitchingWeightProducer";
 }
 
-void SampleStitchingWeightProducer::Produce( KappaEvent const& event,
-			KappaProduct & product,
-			KappaSettings const& settings) const
+void SampleStitchingWeightProducer::Init(KappaSettings const& settings)
+{
+	stitchingWeightsByIndex = Utility::ParseMapTypes<size_t, double>(
+			Utility::ParseVectorToMap(settings.GetStitchingWeights()),
+			stitchingWeightsByName
+	);
+	stitchingWeightsHighMassByIndex = Utility::ParseMapTypes<size_t, double>(
+			Utility::ParseVectorToMap(settings.GetStitchingWeightsHighMass()),
+			stitchingWeightsHighMassByName
+	);
+}
+
+void SampleStitchingWeightProducer::Produce(
+		KappaEvent const& event,
+		KappaProduct & product,
+		KappaSettings const& settings
+) const
 {
 	assert(event.m_genEventInfo != nullptr);
 	
-	// reset the values of crossSectionPerEventWeight and numberGeneratedEventsWeight to default, since the stitching weight is
-	// computed taking into account those numbers
-	product.m_weights["crossSectionPerEventWeight"] = 1.0;
-	product.m_weights["numberGeneratedEventsWeight"] = 1.0;
+	if (! Utility::Contains(product.m_weights, std::string("crossSectionPerEventWeight")))
+	{
+		LOG(FATAL) << "Cross section not available or 0. Make sure that CrossSectionWeightProducer is run before SampleStitchingWeightProducer!";
+	}
+	if (! Utility::Contains(product.m_weights, std::string("numberGeneratedEventsWeight")))
+	{
+		LOG(FATAL) << "Number of generated events not available or 0. Make sure that NumberGeneratedEventsWeightProducer is run before SampleStitchingWeightProducer!";
+	}
 	
-	//TODO: implement something similar to trigger settings:
-	//      size_t:{number_inclusive, number_1jet, ...} -> stitchweight(ztt/zll/wj(size_t),njets) = number.
-	int nPartons = event.m_genEventInfo->lheNOutPartons;
-	if (boost::regex_search(product.m_nickname, boost::regex("DY.?JetsToLLM(50|150)_RunIIFall15", boost::regex::icase | boost::regex::extended)))
+	size_t nPartons = event.m_genEventInfo->lheNOutPartons >= 5 ? 0 : event.m_genEventInfo->lheNOutPartons;
+	
+	// take overlap of phase space into account for DY samples with M50 & M150
+	if ((product.m_genDiLeptonBoson.mass() >= 150.0) && (stitchingWeightsHighMassByIndex.size() > 0))
 	{
-		if (product.m_genDiLeptonBoson.mass() < 150.0)
-		{
-			if ((nPartons == 0) || (nPartons >= 5))
-			{
-				product.m_optionalWeights["stitchWeightZLL"] = 2.43669e-5;
-				product.m_optionalWeights["stitchWeightZTT"] = 2.43669e-5;
-			}
-			else if (nPartons == 1)
-			{
-				product.m_optionalWeights["stitchWeightZLL"] = 1.06292e-5;
-				product.m_optionalWeights["stitchWeightZTT"] = 1.06292e-5;
-			}
-			else if (nPartons == 2)
-			{
-				product.m_optionalWeights["stitchWeightZLL"] = 1.10505e-5;
-				product.m_optionalWeights["stitchWeightZTT"] = 1.10505e-5;
-			}
-			else if (nPartons == 3)
-			{
-				product.m_optionalWeights["stitchWeightZLL"] = 1.14799e-5;
-				product.m_optionalWeights["stitchWeightZTT"] = 1.14799e-5;
-			}
-			else
-			{
-				product.m_optionalWeights["stitchWeightZLL"] = 9.62135e-6;
-				product.m_optionalWeights["stitchWeightZTT"] = 9.62135e-6;
-			}
-		}
-		else
-		{
-			if ((nPartons == 0) || (nPartons >= 5))
-			{
-				product.m_optionalWeights["stitchWeightZLL"] = 2.43669e-5;
-				product.m_optionalWeights["stitchWeightZTT"] = 1.26276e-6;
-			}
-			else if (nPartons == 1)
-			{
-				product.m_optionalWeights["stitchWeightZLL"] = 1.06292e-5;
-				product.m_optionalWeights["stitchWeightZTT"] = 1.18349e-6;
-			}
-			else if (nPartons == 2)
-			{
-				product.m_optionalWeights["stitchWeightZLL"] = 1.10505e-5;
-				product.m_optionalWeights["stitchWeightZTT"] = 1.18854e-6;
-			}
-			else if (nPartons == 3)
-			{
-				product.m_optionalWeights["stitchWeightZLL"] = 1.14799e-5;
-				product.m_optionalWeights["stitchWeightZTT"] = 1.19334e-6;
-			}
-			else
-			{
-				product.m_optionalWeights["stitchWeightZLL"] = 9.62135e-6;
-				product.m_optionalWeights["stitchWeightZTT"] = 1.16985e-6;
-
-			}
-		}
-	}
-	else if (boost::regex_search(product.m_nickname, boost::regex("DY.?JetsToLLM(50|150)_RunIISpring16", boost::regex::icase | boost::regex::extended)))
-	{
-		if (product.m_genDiLeptonBoson.mass() < 150.0)
-		{
-			if ((nPartons == 0) || (nPartons >= 5))
-			{
-				product.m_optionalWeights["stitchWeightZLL"] = 1.208008366e-4;
-				product.m_optionalWeights["stitchWeightZTT"] = 1.208008366e-4;
-			}
-			else if (nPartons == 1)
-			{
-				product.m_optionalWeights["stitchWeightZLL"] = 1.62772301e-5;
-				product.m_optionalWeights["stitchWeightZTT"] = 1.62772301e-5;
-			}
-			else if (nPartons == 2)
-			{
-				product.m_optionalWeights["stitchWeightZLL"] = 1.75930713e-5;
-				product.m_optionalWeights["stitchWeightZTT"] = 1.75930713e-5;
-			}
-			else if (nPartons == 3)
-			{
-				product.m_optionalWeights["stitchWeightZLL"] = 1.83929231e-5;
-				product.m_optionalWeights["stitchWeightZTT"] = 1.83929231e-5;
-			}
-			else
-			{
-				product.m_optionalWeights["stitchWeightZLL"] = 1.41810906e-5;
-				product.m_optionalWeights["stitchWeightZTT"] = 1.41810906e-5;
-			}
-		}
-		else
-		{
-			if ((nPartons == 0) || (nPartons >= 5))
-			{
-				product.m_optionalWeights["stitchWeightZLL"] = 1.208008366e-4;
-				product.m_optionalWeights["stitchWeightZTT"] = 1.3134972e-6;
-			}
-			else if (nPartons == 1)
-			{
-				product.m_optionalWeights["stitchWeightZLL"] = 1.62772301e-5;
-				product.m_optionalWeights["stitchWeightZTT"] = 1.2277715e-6;
-			}
-			else if (nPartons == 2)
-			{
-				product.m_optionalWeights["stitchWeightZLL"] = 1.75930713e-5;
-				product.m_optionalWeights["stitchWeightZTT"] = 1.2347374e-6;
-			}
-			else if (nPartons == 3)
-			{
-				product.m_optionalWeights["stitchWeightZLL"] = 1.83929231e-5;
-				product.m_optionalWeights["stitchWeightZTT"] = 1.2385174e-6;
-			}
-			else
-			{
-				product.m_optionalWeights["stitchWeightZLL"] = 1.41810906e-5;
-				product.m_optionalWeights["stitchWeightZTT"] = 1.2142337e-6;
-
-			}
-		}
-	}
-	else if (boost::regex_search(product.m_nickname, boost::regex("W.?JetsToLNu_RunIIFall15", boost::regex::icase | boost::regex::extended)))
-	{
-		if ((nPartons == 0) || (nPartons >= 5))
-		{
-			product.m_optionalWeights["stitchWeightWJ"] = 1.3046006677e-3;
-		}
-		else if (nPartons == 1)
-		{
-			product.m_optionalWeights["stitchWeightWJ"] = 2.162338159e-4;
-		}
-		else if (nPartons == 2)
-		{
-			product.m_optionalWeights["stitchWeightWJ"] = 1.159006627e-4;
-		}
-		else if (nPartons == 3)
-		{
-			product.m_optionalWeights["stitchWeightWJ"] = 5.82002641e-5;
-		}
-		else
-		{
-			product.m_optionalWeights["stitchWeightWJ"] = 6.27558901e-05;
-		}
-	}
-	else if (boost::regex_search(product.m_nickname, boost::regex("W.?JetsToLNu_RunIISpring16", boost::regex::icase | boost::regex::extended)))
-	{
-		if ((nPartons == 0) || (nPartons >= 5))
-		{
-			product.m_optionalWeights["stitchWeightWJ"] = 2.192495462e-3;
-		}
-		else if (nPartons == 1)
-		{
-			product.m_optionalWeights["stitchWeightWJ"] = 2.475489115e-4;
-		}
-		else if (nPartons == 2)
-		{
-			product.m_optionalWeights["stitchWeightWJ"] = 1.213458342e-4;
-		}
-		else if (nPartons == 3)
-		{
-			product.m_optionalWeights["stitchWeightWJ"] = 5.716934e-5;
-		}
-		else
-		{
-			product.m_optionalWeights["stitchWeightWJ"] = 6.27887343e-5;
-		}
+		product.m_weights["sampleStitchingWeight"] = SafeMap::Get(stitchingWeightsHighMassByIndex, nPartons).at(0);
 	}
 	else
 	{
-		LOG(FATAL) << "Stitching weights not implemented for nickname " << product.m_nickname << ": check config settings!";
+		product.m_weights["sampleStitchingWeight"] = SafeMap::Get(stitchingWeightsByIndex, nPartons).at(0);
 	}
+	
+	product.m_weights["sampleStitchingWeight"] /= (product.m_weights["numberGeneratedEventsWeight"] * product.m_weights["crossSectionPerEventWeight"]);
 }

@@ -347,4 +347,8 @@ public:
 	IMPL_SETTING_DEFAULT(float, ZMass, 91.1876f);
 	IMPL_SETTING(float, ZMassRange);
 	IMPL_SETTING_DEFAULT(bool, VetoMultipleZs, true);
+
+	// Needed by SampleStitchingWeightProducer
+	IMPL_SETTING_STRINGLIST(StitchingWeights);
+	IMPL_SETTING_STRINGLIST_DEFAULT(StitchingWeightsHighMass, {});
 };
