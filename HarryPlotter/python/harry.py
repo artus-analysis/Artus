@@ -116,7 +116,10 @@ class HarryPlotter(object):
 				log.info("\n"+tools.get_colored_string("Failed plot:", color='red'))
 				log.info("\t%s" % failed_plot[0])
 				if failed_plot[1] is not None:
-					log.info(tools.get_indented_text("    ", tools.get_colored_string("Traceback for this plot:", color='red')+"\n" + failed_plot[1]))
+					try:
+						log.info(tools.get_indented_text("    ", tools.get_colored_string("Traceback for this plot:", color='red')+"\n" + failed_plot[1]))
+					except:
+						log.info("\t Traceback for this plot: \n" + failed_plot[1])
 		
 		return output_filenames
 

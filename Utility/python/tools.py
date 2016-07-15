@@ -106,8 +106,11 @@ def find_common_string(s1, s2):
 
 def get_tty_size():
 	size = array.array("B", [0, 0, 0, 0])
-	fcntl.ioctl(0, termios.TIOCGWINSZ, size, True)
-	return (size[0], size[2])
+	try:
+		fcntl.ioctl(0, termios.TIOCGWINSZ, size, True)
+		return (size[0], size[2])
+	except:
+		return size
 
 def get_environment_variable(variable_name, fail_if_not_existing=True):
 	"""get variable from os, throw error if not set"""
