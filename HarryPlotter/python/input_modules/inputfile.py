@@ -23,7 +23,7 @@ class InputFile(inputbase.InputBase):
 		
 		self.input_options.add_argument("-i", "--files", type=str, nargs="+",
 		                                help="Input (root) file(s).")
-		self.input_options.add_argument("-d", "--directories", type=str, nargs="+",
+		self.input_options.add_argument("-d", "--directories", type=str, nargs="+", default=[None],
 		                                help="Input directories, that are put before the values of the -i/--files option.")
 	
 	def prepare_args(self, parser, plotData):
