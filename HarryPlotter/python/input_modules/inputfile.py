@@ -32,8 +32,6 @@ class InputFile(inputbase.InputBase):
 		if plotData.plotdict["files"] is None:
 			log.critical(self.name() + ": No input files given!")
 			sys.exit(1)
-
-		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "files", "directories"], help="Input file options")
 		
 		# prepare files
 		for index, (file_args, directories) in enumerate(zip(plotData.plotdict["files"], plotData.plotdict["directories"])):
@@ -51,6 +49,8 @@ class InputFile(inputbase.InputBase):
 					log.error("Input argument %d (%s) does not contain any existing files!" % (index, ", ".join(paths_before_globbing)))
 					sys.exit(1)
 			plotData.plotdict["files"][index] = files
+
+		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "files", "directories"], help="Input file options")
 	
 	def run(self, plotData):
 		super(InputFile, self).run(plotData)

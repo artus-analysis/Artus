@@ -63,6 +63,8 @@ class InputRoot(inputfile.InputFile):
 
 	def prepare_args(self, parser, plotData):
 		super(InputRoot, self).prepare_args(parser, plotData)
+		
+		plotData.plotdict["folders"] = [folders.split() if folders else [""] for folders in plotData.plotdict["folders"]]
 
 		if (plotData.plotdict["friend_treenames"] is not None) and (plotData.plotdict["friend_filenames"] is not None):
 			plotData.plotdict["friend_trees"] = []
@@ -78,8 +80,6 @@ class InputRoot(inputfile.InputFile):
 
 		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "files", "directories", "folders", "weights", "friend_trees", "tree_draw_options"], help="InputRoot options")
 		inputbase.InputBase.prepare_nicks(plotData)
-		
-		plotData.plotdict["folders"] = [folders.split() if folders else [""] for folders in plotData.plotdict["folders"]]
 		
 		if plotData.plotdict["read_config"]:
 			self.read_input_json_dicts(plotData)
