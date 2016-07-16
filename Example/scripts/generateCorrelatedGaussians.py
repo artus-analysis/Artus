@@ -25,6 +25,8 @@ if __name__ == "__main__":
 	                    help="Number of variables. [Default: %(default)s]")
 	parser.add_argument("--n-events", type=int, default=10000,
 	                    help="Number of events to generate. [Default: %(default)s]")
+	parser.add_argument("-t", "--tree-names", nargs="+", default=["gaussians"],
+	                    help="Tree names. [Default: %(default)s]")
 	parser.add_argument("-o", "--output", default="gaussians.root",
 	                    help="Output filename. [Default: %(default)s]")
 	
@@ -69,9 +71,9 @@ if __name__ == "__main__":
 	)
 	
 	ROOT.RooDataSet.setDefaultStorageType(ROOT.RooAbsData.Tree)
-	mc_dataset = multidim_gaussian.generate(ROOT.RooArgSet(*variables), args.n_events)
-	
 	with tfilecontextmanager.TFileContextManager(args.output, "RECREATE") as root_file:
-		mc_dataset.store().tree().Write("gaussians")
-	log.info("Created tree \"%s\" in output file \"%s\"." % ("gaussians", args.output))
+		for tree_name in args.tree_names:
+			mc_dataset = multidim_gaussian.generate(ROOT.RooArgSet(*variables), args.n_events)
+			mc_dataset.store().tree().Write(tree_name)
+	log.info("Created tree(s) \"%s\" in output file \"%s\"." % ("\", \"".join(args.tree_names), args.output))
 
