@@ -116,9 +116,10 @@ public:
 	RMFLV m_genDiLeptonBoson;
 
 	/// added by ValidBTaggedJetsProducer
+	std::map<std::string,std::vector<KJet*>> m_bTaggedJetsByWp;
+	std::map<std::string,std::vector<KJet*>> m_nonBTaggedJetsByWp;
 	std::vector<KJet*> m_bTaggedJets;
 	std::vector<KJet*> m_nonBTaggedJets;
-	std::vector<KJet*> m_looseBTaggedJets;
 	
 	mutable HLTTools m_hltInfo = HLTTools();
 	// selected means fired (and unprescaled if requested)

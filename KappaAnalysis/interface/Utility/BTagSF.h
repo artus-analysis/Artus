@@ -12,11 +12,11 @@
 class BTagSF
 {
   public:
-	explicit BTagSF(std::string csvfile, std::string efficiencyfile);
+	explicit BTagSF(std::string csvfile, std::string efficiencyfile, std::string btagwp);
 	~BTagSF();
 
 	bool isbtagged(double pt, float eta, float csv, Int_t jetflavor,
-	               unsigned int btagsys, unsigned int mistagsys, int year);
+	               unsigned int btagsys, unsigned int mistagsys, int year, float btagWP);
 	double getSFb(double pt, float eta, unsigned int btagsys, int year);
 	double getSFc(double pt, float eta, unsigned int btagsys, int year);
 	double getSFl(double pt, float eta, unsigned int mistagsys, int year);

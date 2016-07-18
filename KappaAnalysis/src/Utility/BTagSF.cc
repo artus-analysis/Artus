@@ -1,7 +1,7 @@
 #include "Artus/KappaAnalysis/interface/Utility/BTagSF.h"
 
 
-BTagSF::BTagSF(std::string csvfile, std::string efficiencyfile)
+BTagSF::BTagSF(std::string csvfile, std::string efficiencyfile, std::string btagwp)
 {
   
   	TDirectory *savedir(gDirectory);
@@ -15,24 +15,71 @@ BTagSF::BTagSF(std::string csvfile, std::string efficiencyfile)
 		std::cout << "BTagSF: file " << efficiencyfile << " is not found...   quitting " << std::endl;
 		exit(-1);
 	}
-	
-	reader_mujets = new BTagCalibrationReader(calib,                // calibration instance
-						  BTagEntry::OP_MEDIUM, // operating point
-						  "mujets",             // measurement type
-						  "central"             // systematics type
-						 );
-	
-	reader_mujets_up = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM, "mujets", "up");    // sys up
-	reader_mujets_do = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM, "mujets", "down");  // sys down
-	
-	reader_incl = new BTagCalibrationReader(calib,                // calibration instance
-						BTagEntry::OP_MEDIUM, // operating point
-						"incl",               // measurement type
-						"central"             // systematics type
-					       );
-	
-	reader_incl_up = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM, "incl", "up");    // sys up
-	reader_incl_do = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM, "incl", "down");  // sys down
+
+	if (btagwp == std::string("medium"))
+	{
+		reader_mujets = new BTagCalibrationReader(calib,				// calibration instance
+							BTagEntry::OP_MEDIUM, // operating point
+							"mujets",			  // measurement type
+							"central"			  // systematics type
+							);
+		
+		reader_mujets_up = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM, "mujets", "up");	  // sys up
+		reader_mujets_do = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM, "mujets", "down");  // sys down
+		
+		reader_incl = new BTagCalibrationReader(calib,				  // calibration instance
+							BTagEntry::OP_MEDIUM, // operating point
+							"incl",				  // measurement type
+							"central"			  // systematics type
+							);
+		
+		reader_incl_up = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM, "incl", "up");	  // sys up
+		reader_incl_do = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM, "incl", "down");  // sys down
+	}
+	else if (btagwp == std::string("loose"))
+	{
+		reader_mujets = new BTagCalibrationReader(calib,				// calibration instance
+							BTagEntry::OP_LOOSE, // operating point
+							"mujets",			  // measurement type
+							"central"			  // systematics type
+							);
+		
+		reader_mujets_up = new BTagCalibrationReader(calib, BTagEntry::OP_LOOSE, "mujets", "up");	 // sys up
+		reader_mujets_do = new BTagCalibrationReader(calib, BTagEntry::OP_LOOSE, "mujets", "down");  // sys down
+		
+		reader_incl = new BTagCalibrationReader(calib,				  // calibration instance
+							BTagEntry::OP_LOOSE, // operating point
+							"incl",				  // measurement type
+							"central"			  // systematics type
+							);
+		
+		reader_incl_up = new BTagCalibrationReader(calib, BTagEntry::OP_LOOSE, "incl", "up");	 // sys up
+		reader_incl_do = new BTagCalibrationReader(calib, BTagEntry::OP_LOOSE, "incl", "down");  // sys down
+	}
+	else if (btagwp == std::string("tight"))
+	{
+		reader_mujets = new BTagCalibrationReader(calib,				// calibration instance
+							BTagEntry::OP_TIGHT, // operating point
+							"mujets",			  // measurement type
+							"central"			  // systematics type
+							);
+		
+		reader_mujets_up = new BTagCalibrationReader(calib, BTagEntry::OP_TIGHT, "mujets", "up");	 // sys up
+		reader_mujets_do = new BTagCalibrationReader(calib, BTagEntry::OP_TIGHT, "mujets", "down");  // sys down
+		
+		reader_incl = new BTagCalibrationReader(calib,				  // calibration instance
+							BTagEntry::OP_TIGHT, // operating point
+							"incl",				  // measurement type
+							"central"			  // systematics type
+							);
+		
+		reader_incl_up = new BTagCalibrationReader(calib, BTagEntry::OP_TIGHT, "incl", "up");	 // sys up
+		reader_incl_do = new BTagCalibrationReader(calib, BTagEntry::OP_TIGHT, "incl", "down");  // sys down
+	}
+	else
+	{
+		std::cout << "No valid btag-workingpoint specified" << std::endl;
+	}
 	gDirectory = savedir;
 	gFile = savefile;
 	
@@ -52,14 +99,14 @@ BTagSF::~BTagSF()
 }
 
 bool BTagSF::isbtagged(double pt, float eta, float csv, Int_t jetflavor,
-                       unsigned int btagsys, unsigned int mistagsys, int year)
+                       unsigned int btagsys, unsigned int mistagsys, int year, float btagWP)
 {
 	randm->SetSeed(static_cast<int>((eta + 5) * 100000.));
 	double randval = randm->Uniform();
 	
 	float csv_WP = 0.679;
 	if(year == 2015)
-		csv_WP = 0.8;
+		csv_WP = btagWP;
 
 	bool btagged = false;
 	double sf  = 0.0;
