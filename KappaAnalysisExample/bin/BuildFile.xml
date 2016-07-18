@@ -1,0 +1,17 @@
+<bin name="KappaAnalysisExample" file="KappaAnalysisExample.cc">
+	<Flags CXXFLAGS="-g" />
+	<Flags LDFLAGS="-rdynamic" />
+	<Flags LDFLAGS="-Lsrc/Kappa/lib -lKappa" />
+	<use name="KappaTools/RootTools"/>
+	<use name="Artus/Core"/>
+	<use name="Artus/Provider"/>
+	<use name="Artus/Configuration"/>
+	<use name="Artus/Consumer"/>
+	<use name="Artus/KappaAnalysis"/>
+	<use name="Artus/KappaAnalysisExample"/>
+	<use name="root"/>
+	<use name="rootmath"/>
+	<use name="roottmva"/>
+	<use name="boost"/>
+	<use name="boost_regex"/>
+</bin>
