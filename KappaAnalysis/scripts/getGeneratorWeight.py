@@ -59,9 +59,8 @@ def main():
 		root_file.Close()
 
 	# print results and save to dataset
-	artus_base = os.environ.get("$ARTUSPATH/..")
 	if not no_regex_match: 
-		dataset = os.path.join(artus_base, "Kappa/Skimming/data/datasets.json")
+		dataset = os.path.expandvars("$ARTUSPATH/../Kappa/Skimming/data/datasets.json")
 		dictionary = load_database(dataset)
 	for index, (nick, sumweight) in enumerate(sumweight_per_nick.items()):
 		if not no_regex_match: 
