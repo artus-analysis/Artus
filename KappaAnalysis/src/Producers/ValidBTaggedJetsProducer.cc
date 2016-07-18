@@ -22,15 +22,12 @@ void ValidBTaggedJetsProducer::Init(KappaSettings const& settings)
 		}
 		// define lambda expression for nbtag per working point
 		std::string btagQuantity = std::string("n")+bTagWorkingPoint.first+std::string("btag");
-		std::cout << btagQuantity << std::endl;
 		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(btagQuantity, [bTagWorkingPoint](KappaEvent const& event, KappaProduct const& product) {
-			return product.m_bTaggedJetsByWp.at(bTagWorkingPoint.first).size();
+			auto it = product.m_bTaggedJetsByWp.find(bTagWorkingPoint.first);
+			return it != product.m_bTaggedJetsByWp.end() ? product.m_bTaggedJetsByWp.at(bTagWorkingPoint.first).size() : 0;
 		});
 	}
 	
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nloosebtag", [](KappaEvent const& event, KappaProduct const& product) {
-		return product.m_bTaggedJetsByWp.at("loose").size();
-	});
 	// add possible quantities for the lambda ntuples consumers
 	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nBJets", [](KappaEvent const& event, KappaProduct const& product) {
 		return product.m_bTaggedJets.size();
