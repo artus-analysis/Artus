@@ -9,6 +9,7 @@ const RMFLV DefaultValues::UndefinedRMFLV = RMFLV(0.0, 0.0, 0.0, -999.0);
 const float DefaultValues::EtaBorderEB = 1.479f;
 
 const int DefaultValues::pdgIdGamma = 22;
+const int DefaultValues::pdgIdZ = 23;
 const int DefaultValues::pdgIdW = 24;
 const int DefaultValues::pdgIdH = 25;
 const int DefaultValues::pdgIdHCPOdd = 35;

@@ -16,6 +16,7 @@ public:
     static const float EtaBorderEB;
 
     static const int pdgIdGamma;
+    static const int pdgIdZ;
     static const int pdgIdW;
     static const int pdgIdH;
     static const int pdgIdHCPOdd;
