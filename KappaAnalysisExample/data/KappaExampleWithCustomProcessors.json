@@ -1,6 +1,6 @@
 {
 	"InputFiles": [
-		"dcap://dcache-cms-dcap.desy.de//pnfs/desy.de/cms/tier2/store/user/rfriese/higgs-kit/skimming/2016-01-18/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLLM50_RunIISpring15MiniAODv2_74X_13TeV_MINIAOD_madgraph-pythia8/160118_211528/0000/kappa_DYJetsToLLM50_RunIISpring15MiniAODv2_74X_13TeV_MINIAOD_madgraph-pythia8_94.root"
+		"dcap://dcache-cms-dcap.desy.de//pnfs/desy.de/cms/tier2/store/user/anehrkor/higgs-kit/skimming/76X_2016-06-23/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLLM50_RunIIFall15MiniAODv2_PU25nsData2015v1_13TeV_MINIAOD_madgraph-pythia8/160623_082622/0000/kappa_DYJetsToLLM50_RunIIFall15MiniAODv2_PU25nsData2015v1_13TeV_MINIAOD_madgraph-pythia8_1.root"
 	],
 	"InputIsData" : "false",
 	
