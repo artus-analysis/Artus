@@ -781,7 +781,7 @@ class PlotRoot(plotbase.PlotBase):
 			self.dataset_title = re.sub(r"\\mathrm{(fb|pb)}", re.search(r"\\mathrm{(fb|pb)}", self.dataset_title).group(1), self.dataset_title)
 			year = "("
 			if plotData.plotdict["year"] != "":
-				year = plotData.plotdict["year"] + ", "
+				year += plotData.plotdict["year"] + ", "
 			CMS_lumi.lumi_sqrtS = self.dataset_title.replace("$", "").replace("\,", "").split("(")[0] + year + self.dataset_title.replace("$", "").replace("\,", "").split("(")[1]
 			CMS_lumi.lumiTextSize = 0.5
 			if not self.subplot_axes_histogram is None:
