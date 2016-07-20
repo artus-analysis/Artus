@@ -129,6 +129,8 @@ class PlotRoot(plotbase.PlotBase):
 		                               help="Make a CMS publication plot (CMS inside frame). See https://ghm.web.cern.ch/ghm/plots/.")
 		self.formatting_options.add_argument("--cms-outframe", nargs="?", type="bool", default=False, const=True,
 		                               help="Make a CMS publication plot (CMS outside frame). See https://ghm.web.cern.ch/ghm/plots/.")
+		self.formatting_options.add_argument("--year", type=str, nargs="?", default="",
+											help="Year of data taking is written in front of integrated luminosity.")
 		
 	def prepare_args(self, parser, plotData):
 		super(PlotRoot, self).prepare_args(parser, plotData)
@@ -777,7 +779,10 @@ class PlotRoot(plotbase.PlotBase):
 		# lumi and energy: outside plot, top right, with best possible offset
 		if self.dataset_title != "":
 			self.dataset_title = re.sub(r"\\mathrm{(fb|pb)}", re.search(r"\\mathrm{(fb|pb)}", self.dataset_title).group(1), self.dataset_title)
-			CMS_lumi.lumi_sqrtS = self.dataset_title.replace("$", "").replace("\,", "")
+			year = "("
+			if plotData.plotdict["year"] != "":
+				year = plotData.plotdict["year"] + ", "
+			CMS_lumi.lumi_sqrtS = self.dataset_title.replace("$", "").replace("\,", "").split("(")[0] + year + self.dataset_title.replace("$", "").replace("\,", "").split("(")[1]
 			CMS_lumi.lumiTextSize = 0.5
 			if not self.subplot_axes_histogram is None:
 				CMS_lumi.lumiTextOffset = 0.4
