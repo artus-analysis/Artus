@@ -33,7 +33,7 @@ class ArtusWrapper(object):
 		#Parse command line arguments and return dict
 		self._args = self._parser.parse_args()
 		logger.initLogger(self._args)
-		
+
 		# expand the environment variables only at the batch node
 		if self._args.batch:
 			self._args.envvar_expansion = False
@@ -59,9 +59,9 @@ class ArtusWrapper(object):
 				self.localProjectPath = os.path.join(os.path.expandvars(self._parser.get_default("work")), date_now+"_"+self._args.project_name)
 
 	def run(self):
-	
+
 		exitCode = 0
-		
+
 		# save final config
 		if self._args.save_config:
 			self.saveConfig(self._args.save_config)
@@ -77,13 +77,13 @@ class ArtusWrapper(object):
 
 		if self._args.print_config:
 			log.info(self._config)
-		
+
 		# set LD_LIBRARY_PATH
 		if not self._args.ld_library_paths is None:
 			for path in self._args.ld_library_paths:
 				if path not in os.environ.get("LD_LIBRARY_PATH", ""):
 					os.environ["LD_LIBRARY_PATH"] = path+":"+os.environ.get("LD_LIBRARY_PATH", "")
-		
+
 		# print environment variables
 		if self._args.print_envvars:
 			for envvar in self._args.print_envvars:
@@ -102,6 +102,64 @@ class ArtusWrapper(object):
 		else:
 			return 1 # Artus sometimes returns exit codes >255 that are not supported
 
+	def readDbsFile(self, path):
+		dbsInput = {}
+		with open(path, "r") as dbsfile:
+			key = ""
+			for line in dbsfile:
+				if "[" in line:
+					key = line.strip().replace("[", "").replace("]", "")
+					dbsInput[key] = []
+				elif "=" in line:
+					first, second = line.split("=")
+					try:
+						float(second)
+					except ValueError:
+						continue
+					dbsInput[key].append(first.strip())
+		return dbsInput
+
+	def removeProcessedFiles(self, dbs, path):
+		#import pdb
+		base_path, trash = os.path.split(path)
+		base_path = os.path.join(base_path, "workdir")
+		job_list = glob.glob(os.path.join(base_path, "jobs/job_*.txt"))
+		for job in job_list:
+			with open(job, "r") as jobinfo:
+				parse_files = False
+				for line in jobinfo:
+					var, status = line.strip().split("=")
+					status = status.replace('"', '')
+					if "status" in line and "SUCCESS" in line:
+						parse_files = True
+						break
+			if parse_files:
+				job_gc = job.replace("/jobs/", "/output/").replace(".txt", "/gc.stdout")
+				files = ""
+				with open(job_gc, "r") as gcfile:
+					for line in gcfile:
+						if "export FILE_NAMES" in line:
+							var, files = line.split("=")
+							files = files.strip().replace('\\', '').replace('"', '')
+							files = files.split(", ")
+							break
+				main_key = ""
+				for key in dbs.keys():
+					#pdb.set_trace()
+					if key in files[0]:
+						main_key = key
+						break
+				for sfile in files:
+					try:
+						ind = dbs[main_key].index(sfile)
+						dbs[main_key].pop(ind)
+					except ValueError:
+						continue
+		length = 0
+		for key, item in dbs.iteritems():
+			length += len(item)
+		log.info("Final dbs consists of %i files" %length)
+		return dbs
 	def setInputFilenames(self, filelist, alreadyInGridControl = False):
 		if (not (isinstance(self._config["InputFiles"], list)) and not isinstance(self._config["InputFiles"], basestring)):
 			self._config["InputFiles"] = []
@@ -114,6 +172,13 @@ class ArtusWrapper(object):
 					self._config["InputFiles"].append(entry)
 					if not alreadyInGridControl:
 						self._gridControlInputFiles.setdefault(self.extractNickname(entry), []).append(entry + " = 1")
+			elif os.path.splitext(entry)[1] == ".dbs":
+				tmpDBS = self.readDbsFile(entry)
+				tmpDBS = self.removeProcessedFiles(tmpDBS, entry)
+				filelist = []
+				for key,item in tmpDBS.iteritems():
+					filelist += item
+				self.setInputFilenames(filelist, alreadyInGridControl)
 			elif os.path.isdir(entry):
 				self.setInputFilenames([os.path.join(entry, "*.root")])
 			elif (os.path.splitext(entry))[1] == ".txt":
@@ -128,22 +193,22 @@ class ArtusWrapper(object):
 
 	def setOutputFilename(self, output_filename):
 		self._config["OutputPath"] = output_filename
-	
+
 	# write repository revisions to the config
 	def setRepositoryRevisions(self):
 		# expand possible environment variables in paths
 		if isinstance(self._args.repo_scan_base_dirs, basestring):
 			self._args.repo_scan_base_dirs = [self._args.repo_scan_base_dirs]
 		self._args.repo_scan_base_dirs = [os.path.expandvars(repoScanBaseDir) for repoScanBaseDir in self._args.repo_scan_base_dirs]
-		
+
 		# construct possible scan paths
 		subDirWildcards = ["*/" * level for level in range(self._args.repo_scan_depth+1)]
 		scanDirWildcards = [os.path.join(repoScanBaseDir, subDirWildcard) for repoScanBaseDir in self._args.repo_scan_base_dirs for subDirWildcard in subDirWildcards]
-		
+
 		# globbing and filter for directories
 		scanDirs = tools.flattenList([glob.glob(scanDirWildcard) for scanDirWildcard in scanDirWildcards])
 		scanDirs = [scanDir for scanDir in scanDirs if os.path.isdir(scanDir)]
-		
+
 		# key: directory to check type of repository
 		# value: command to extract the revision
 		repoVersionCommands = {
@@ -156,7 +221,7 @@ class ArtusWrapper(object):
 			repoScanDirs = [glob.glob(os.path.join(scanDir, repoDir)) for scanDir in scanDirs]
 			repoScanDirs = tools.flattenList([glob.glob(os.path.join(scanDir, repoDir)) for scanDir in scanDirs])
 			repoScanDirs = [os.path.abspath(os.path.join(repoScanDir, "..")) for repoScanDir in repoScanDirs]
-			
+
 			for repoScanDir in repoScanDirs:
 				popenCout, popenCerr = subprocess.Popen(currentRevisionCommand.split(), stdout=subprocess.PIPE, cwd=repoScanDir).communicate()
 				self._config[repoScanDir] = popenCout.replace("\n", "")
@@ -172,7 +237,7 @@ class ArtusWrapper(object):
 			self._config["InputFiles"] = [""]
 		elif not self._args.fast is None:
 			self._config["InputFiles"] = self._config["InputFiles"][:min(len(self._config["InputFiles"]), self._args.fast)]
-	
+
 	def remove_pipeline_copies(self):
 		pipelines = self._config.get("Pipelines", {}).keys()
 		pipelines_to_remove = []
@@ -180,11 +245,11 @@ class ArtusWrapper(object):
 		for index1, pipeline1 in enumerate(pipelines):
 			if pipeline1 in pipelines_to_remove:
 				continue
-			
+
 			for pipeline2 in pipelines[index1+1:]:
 				if pipeline2 in pipelines_to_remove:
 					continue
-				
+
 				difference = jsonTools.JsonDict.deepdiff(self._config["Pipelines"][pipeline1],
 				                                         self._config["Pipelines"][pipeline2])
 				if len(difference[0]) == 0 and len(difference[1]) == 0:
@@ -192,10 +257,10 @@ class ArtusWrapper(object):
 					new_name = tools.find_common_string(pipeline_renamings.get(pipeline1, pipeline1),
 					                                    pipeline_renamings.get(pipeline2, pipeline2))
 					pipeline_renamings[pipeline1] = new_name.strip("_").replace("__", "_")
-		
+
 		for pipeline in pipelines_to_remove:
 			self._config["Pipelines"].pop(pipeline)
-		
+
 		for old_name, new_name in pipeline_renamings.iteritems():
 			self._config["Pipelines"][new_name] = self._config["Pipelines"].pop(old_name)
 
@@ -229,7 +294,7 @@ class ArtusWrapper(object):
 			tmpInputFiles = self._config["InputFiles"]
 			self._config["InputFiles"] = []
 			self.setInputFilenames(tmpInputFiles)
-		
+
 		if not self._args.n_events is None:
 			self._config["ProcessNEvents"] = self._args.n_events
 
@@ -245,7 +310,7 @@ class ArtusWrapper(object):
 			pipelineJsonDict = jsonTools.JsonDict.mergeAll(*pipelineJsonDict)
 			pipelineJsonDict = jsonTools.JsonDict({"Pipelines": pipelineJsonDict})
 		pipelineJsonDict = jsonTools.JsonDict(pipelineJsonDict)
-		
+
 		# treat pipeline base configs
 		pipelineBaseJsonDict = jsonTools.JsonDict()
 		if self._args.pipeline_base_configs and len(self._args.pipeline_base_configs) > 0:
@@ -254,13 +319,13 @@ class ArtusWrapper(object):
 					pipeline : jsonTools.JsonDict(*self._args.pipeline_base_configs) for pipeline in pipelineJsonDict["Pipelines"].keys()
 				}
 			})
-		
+
 		# merge resulting pipeline config into the main config
 		self._config += (pipelineBaseJsonDict + pipelineJsonDict)
 
 		# shrink Input Files to requested Number
 		self.removeUnwantedInputFiles()
-		
+
 		# treat includes, nicks and comments
 		if self._args.batch:
 			self._config = self._config.doIncludes().doComments()
@@ -269,17 +334,17 @@ class ArtusWrapper(object):
 			nickname = self.determineNickname(self._args.nick)
 			self._config = self._config.doIncludes().doNicks(nickname).doComments()
 			self._config["Nickname"] = nickname
-			
+
 			#read in external values
 			self.readInExternals()
-		
+
 		# remove all but one of similar pipeline copies
 		self.remove_pipeline_copies()
-		
+
 		# treat environment variables
 		if self._args.envvar_expansion:
 			self._config = self._config.doExpandvars()
-		
+
 		# set log level
 		self._config["LogLevel"] = self._args.log_level
 
@@ -334,7 +399,7 @@ class ArtusWrapper(object):
 		                                help="JSON pipeline configurations. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")
 		configOptionsGroup.add_argument("--nick", default="auto",
 		                                help="Kappa nickname name that can be used for switch between sample-dependent settings.")
-		
+
 		configOptionsGroup.add_argument("--disable-repo-versions", default=False, action="store_true",
 		                                help="Add repository versions to the JSON config.")
 		configOptionsGroup.add_argument("--repo-scan-base-dirs", nargs="+", required=False, default="$CMSSW_BASE/src/",
@@ -359,7 +424,7 @@ class ArtusWrapper(object):
 		                                help="Path to grid-control base config that is replace by the wrapper. [Default: %(default)s]")
 		configOptionsGroup.add_argument("--gc-config-includes", nargs="+",
 		                                help="Path to grid-control configs to include in the base config.")
-		
+
 		runningOptionsGroup = self._parser.add_argument_group("Running options")
 		runningOptionsGroup.add_argument("--no-run", default=False, action="store_true",
 		                                 help="Exit before running Artus to only check the configs.")
@@ -392,19 +457,19 @@ class ArtusWrapper(object):
 			self._parser.add_argument("-x", "--executable", help="Artus executable. [Default: %(default)s]", required=True)
 
 	def sendToBatchSystem(self):
-		
+
 		# write dbs file
 		dbsFileContent = ""
 		for nickname, filelist in self._gridControlInputFiles.iteritems():
 			dbsFileContent += "\n[" + nickname + "]\nnickname = " + nickname + "\n"
 			for inputEntry in filelist:
 				dbsFileContent += inputEntry + "\n"
-		
+
 		dbsFileBasename = "datasets.dbs"
 		dbsFileBasepath = os.path.join(self.localProjectPath, dbsFileBasename)
 		with open(dbsFileBasepath, "w") as dbsFile:
 			dbsFile.write(dbsFileContent)
-		
+
 		gcConfigFilePath = os.path.expandvars(self._args.gc_config)
 		gcConfigFile = open(gcConfigFilePath,"r")
 		tmpGcConfigFileBasename = "grid-control_config.conf"
@@ -414,9 +479,9 @@ class ArtusWrapper(object):
 		tmpGcConfigFile = open(tmpGcConfigFileBasepath,"w")
 		gcConfigFileContent = gcConfigFile.readlines()
 		gcConfigFile.close()
-		
+
 		sepathRaw = os.path.join(self.projectPath, "output")
-		
+
 		epilogArguments  = r"epilog arguments = "
 		epilogArguments += r"--disable-repo-versions "
 		epilogArguments += r"--log-level " + self._args.log_level + " "
@@ -430,7 +495,7 @@ class ArtusWrapper(object):
 		epilogArguments += "-i $FILE_NAMES "
 		if not self._args.ld_library_paths is None:
 			epilogArguments += ("--ld-library-paths %s" % " ".join(self._args.ld_library_paths))
-		
+
 		sepath = "se path = " + (self._args.se_path if self._args.se_path else sepathRaw)
 		workdir = "workdir = " + os.path.join(self.localProjectPath, "workdir")
 		backend = open(os.path.expandvars("$CMSSW_BASE/src/Artus/Configuration/data/grid-control_backend_" + self._args.batch + ".conf"), 'r').read()
@@ -469,7 +534,7 @@ class ArtusWrapper(object):
 		log.info("Execute \"%s\"." % command)
 		if not self._args.no_run:
 			exitCode = logger.subprocessCall(command.split())
-		
+
 		log.info("Output is written to directory \"%s\"" % sepathRaw)
 		log.info("\nMerge outputs in one file per nick using")
 		if not self.remote_se:
@@ -542,7 +607,7 @@ class ArtusWrapper(object):
 		command = self._executable + " " + self._configFilename
 		log.info("Execute \"%s\"." % command)
 		exitCode = logger.subprocessCall(command.split())
-	
+
 		if exitCode != 0:
 			log.error("Exit with code %s.\n\n" % exitCode)
 			log.info("Dump configuration:\n")
