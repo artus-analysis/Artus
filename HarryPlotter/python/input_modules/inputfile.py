@@ -46,9 +46,12 @@ class InputFile(inputbase.InputBase):
 				for file_arg in file_args.split():
 					for directory in directories.split() if directories else [None]:
 						paths_before_globbing.append(os.path.expandvars(os.path.join(directory, file_arg) if directory else file_arg))
-						files.extend(glob.glob(paths_before_globbing[-1]))
+						new_files = glob.glob(paths_before_globbing[-1])
+						if len(new_files) == 0:
+							log.error("Input argument %d (%s) does not contain any existing files!" % (index, paths_before_globbing[-1]))
+						files.extend(new_files)
 				if len(files) == 0:
-					log.error("Input argument %d (%s) does not contain any existing files!" % (index, ", ".join(paths_before_globbing)))
+					log.fatal("No inputs forund for argument %d!" % index)
 					sys.exit(1)
 			plotData.plotdict["files"][index] = files
 	

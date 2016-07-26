@@ -287,8 +287,10 @@ class RootTools(object):
 		for root_file_name in root_file_names:
 			for path_to_tree in path_to_trees:
 				complete_path_to_tree = os.path.join(root_file_name, path_to_tree)
-				tree.Add(complete_path_to_tree)
 				log.debug("Reading from ntuple %s ..." % complete_path_to_tree)
+				n_trees_added = tree.Add(complete_path_to_tree, -1)
+				if n_trees_added == 0:
+					log.error("Input %s does not contain any trees!" % complete_path_to_tree)
 		
 		#Add Friends
 		if friend_trees is not None:
