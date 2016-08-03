@@ -55,6 +55,7 @@ void GenBosonFromGenParticlesProducer::Produce(KappaEvent const& event, KappaPro
 			product.m_genBosonParticle = const_cast<KGenParticle*>(&(*genParticle));
 			product.m_genBosonLV = (*genParticle).p4;
 			product.m_genBosonLVFound = true;
+			break;
 		}
 	}
 }
