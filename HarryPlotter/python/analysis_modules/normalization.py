@@ -118,9 +118,9 @@ class NormalizeHistogram(analysisbase.AnalysisBase):
 class NormalizeToFirstHisto(NormalizeHistogram):
 	"""Normalize histograms to first histogram."""
 	def run(self, plotData=None):
-		normalize_histogram(
-		                    refhisto_nick = plotData.plotdict["nicks"][0], # take nickname at first position
-		                    nicks_to_normalize = " ".join(plotData.plotdict["nicks"][1:]), # all other nicknames apart from the first one. Join them to one string to be consistent with parser
+		self.normalize_histogram(
+		                    refhisto_nicks = [plotData.plotdict["nicks"][0]], # take nickname at first position
+		                    nicks_to_normalize = [" ".join(plotData.plotdict["nicks"][1:])], # all other nicknames apart from the first one. Join them to one string to be consistent with parser
 		                    plotData=plotData)
 
 class NormalizeStackToFirstHisto(analysisbase.AnalysisBase):
