@@ -14,34 +14,7 @@ import glob
 import os
 import shlex
 import sys
-
-
-
-def hadd(target_file, source_files, hadd_args="", max_files=500):
-	if len(source_files) == 0:
-		log.critical("No source files specified to be merged!")
-		sys.exit(1)
-	
-	source_files_chunks = [source_files[start_chunk_index:start_chunk_index+max_files] for start_chunk_index in xrange(0, len(source_files), max_files)]
-	
-	exit_code = 0
-	for chunk_index, tmp_source_files in enumerate(source_files_chunks):
-		tmp_target_file = "%s.hadd_%d.root" % (target_file, chunk_index)
-		if chunk_index == len(source_files_chunks)-1:
-			tmp_target_file = target_file
-		
-		last_target_file = ""
-		if chunk_index > 0:
-			last_target_file = "%s.hadd_%d.root" % (target_file, chunk_index-1)
-		
-		command = "hadd %s %s %s %s" % (hadd_args, tmp_target_file, " ".join(tmp_source_files), last_target_file)
-		log.debug(command)
-		exit_code = max(exit_code, logger.subprocessCall(shlex.split(command)))
-		
-		# remove last temp. merge result
-		if len(last_target_file) > 0:
-			os.remove(last_target_file)
-	return exit_code
+from Artus.Utility.tools import hadd
 
 
 def main():

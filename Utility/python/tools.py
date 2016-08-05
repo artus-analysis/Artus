@@ -14,6 +14,7 @@ import re
 import sys
 import termios
 import textwrap
+import shlex
 
 
 def flattenList(listOfLists):
@@ -159,10 +160,38 @@ def parallelize(function, arguments_list, n_processes=1):
 	if n_processes <= 1:
 		results = []
 		for arguments in arguments_list:
-			results.append(function(arguments))
+			results.append(function(**arguments))
 		return results
 	else:
 		pool = multiprocessing.Pool(processes=max(1, min(n_processes, len(arguments_list))))
 		results = pool.map_async(function, arguments_list)
 		return results.get(9999999) # 9999999 is needed for KeyboardInterrupt to work: http://stackoverflow.com/questions/1408356/keyboard-interrupts-with-pythons-multiprocessing-pool
 
+
+def hadd2(arguments):
+	hadd(**arguments)
+
+def hadd(target_file, source_files, hadd_args="", max_files=500):
+	if len(source_files) == 0:
+		log.critical("No source files specified to be merged!")
+		sys.exit(1)
+	source_files_chunks = [source_files[start_chunk_index:start_chunk_index+max_files] for start_chunk_index in xrange(0, len(source_files), max_files)]
+	
+	exit_code = 0
+	for chunk_index, tmp_source_files in enumerate(source_files_chunks):
+		tmp_target_file = "%s.hadd_%d.root" % (target_file, chunk_index)
+		if chunk_index == len(source_files_chunks)-1:
+			tmp_target_file = target_file
+		
+		last_target_file = ""
+		if chunk_index > 0:
+			last_target_file = "%s.hadd_%d.root" % (target_file, chunk_index-1)
+		
+		command = "hadd %s %s %s %s" % (hadd_args, tmp_target_file, " ".join(tmp_source_files), last_target_file)
+		log.debug(command)
+		exit_code = max(exit_code, logger.subprocessCall(shlex.split(command)))
+		
+		# remove last temp. merge result
+		if len(last_target_file) > 0:
+			os.remove(last_target_file)
+	return exit_code

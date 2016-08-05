@@ -17,11 +17,7 @@ ROOT.gErrorIgnoreLevel = ROOT.kError
 
 import Artus.Utility.tools as tools
 import Artus.Utility.progressiterator as pi
-
-
-def _call_command(command):
-	log.debug(command)
-	logger.subprocessCall(shlex.split(command))
+from Artus.Utility.tools import hadd2
 
 
 def main():
@@ -48,17 +44,17 @@ def main():
 		outputs_per_nick[nick] = [file for file in files if ("SvfitCache" not in file)]
 	outputs_per_nick = {nick : files for nick, files in outputs_per_nick.iteritems() if len(files) > 0}
 	
-	commands = []
+	hadd_arguments = []
 	for nick_name, output_files in pi.ProgressIterator(outputs_per_nick.iteritems(),
 	                                                   length=len(outputs_per_nick),
 	                                                   description="Merging Artus outputs"):
 		merged_dir = os.path.join(args.project_dir[0] if(args.output_dir == None) else args.output_dir, "merged", nick_name)
 		if not os.path.exists(merged_dir):
 			os.makedirs(merged_dir)
+		hadd_arguments.append({"target_file": os.path.join(merged_dir, nick_name+".root"), "source_files": output_files, "hadd_args" : " -f ", "max_files" : 500})
+		#commands.append("hadd.py -a \" -f\" -t %s \"%s\"" % (os.path.join(merged_dir, nick_name+".root"), " ".join(output_files)))
 	
-		commands.append("hadd.py -a \" -f\" -t %s \"%s\"" % (os.path.join(merged_dir, nick_name+".root"), " ".join(output_files)))
-	
-	tools.parallelize(_call_command, commands, n_processes=args.n_processes)
+	tools.parallelize(hadd2, hadd_arguments, n_processes=args.n_processes)
 
 if __name__ == "__main__":
 	main()
