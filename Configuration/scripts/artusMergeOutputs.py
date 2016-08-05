@@ -43,7 +43,6 @@ def main():
 			if not (nick in outputs_per_nick):
 				outputs_per_nick[nick] = []
 			outputs_per_nick[nick] = outputs_per_nick[nick] + glob.glob(os.path.join(project_dir, extra_path, nick, "*.root"))
-	print outputs_per_nick
 	# drop potentially existing SvfitCaches from the filelist
 	for nick, files in outputs_per_nick.iteritems():
 		outputs_per_nick[nick] = [file for file in files if ("SvfitCache" not in file)]
