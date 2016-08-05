@@ -45,6 +45,9 @@ class ArtusWrapper(object):
 			self.setRepositoryRevisions()
 			self._config["Date"] = date_now
 
+		# write username to the config
+		self._config["User"] = os.environ["USER"] 
+
 		#Expand Config
 		self.expandConfig()
 		self.projectPath = None
