@@ -66,6 +66,8 @@ public:
 
 	/// pointer to primary vertex summary
 	KVertexSummary* m_vertexSummary = nullptr;
+	KVertexSummary* m_refitVertexSummary = nullptr;
+	KVertexSummary* m_refitVertexBSSummary = nullptr;
 
 	/// pointer to track summary
 	KTrackSummary* m_trackSummary = nullptr;

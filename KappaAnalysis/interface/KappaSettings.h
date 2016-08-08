@@ -65,6 +65,8 @@ public:
 
 	/// name of vertexSummary collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, VertexSummary, "");
+	IMPL_SETTING_DEFAULT(std::string, RefitVertexSummary, "");
+	IMPL_SETTING_DEFAULT(std::string, RefitVertexBSSummary, "");
 
 	/// name of track summary collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, TrackSummary, "");
