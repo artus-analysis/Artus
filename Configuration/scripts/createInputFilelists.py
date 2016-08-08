@@ -9,7 +9,7 @@ import argparse
 import glob
 import os
 import sys
-
+from Kappa.Skimming.registerDatasetHelper import get_n_files_from_nick
 
 def create_filelist(files, filename, symlink=None):
 	with open(filename, "w") as filelist:
@@ -35,6 +35,8 @@ def main():
 	                    help="Skimming output directory was created by Crab (it has a different structure). [Default: %(default)s]")
 	parser.add_argument("--gc", dest="crab", default=True, action="store_false",
 	                    help="Skimming output directory was created by Grid-Control (it has a different structure). [Default: not %(default)s]")
+	parser.add_argument("--no-strict-checking", default=False, action="store_true",
+	                    help="Disable check, if number of files in DBS is the same as Kappa files to be added to the file list. [Default: not %(default)s]")
 
 	args = parser.parse_args()
 	logger.initLogger(args)
@@ -55,13 +57,19 @@ def main():
 			search_path = os.path.join(skimming_dir, "*/*/*.root")
 		
 		files = sorted(glob.glob(search_path))
+
 		if (len(files) == 0):
 			log.warning("Cannot find any files matching \"%s\"." % search_path)
+			continue
+		nick = os.path.basename(files[0]).replace("kappa_", "")
+		nick = nick[:nick.rfind("_")]
+		print nick
+		print get_n_files_from_nick(nick)
+		if ((len(files) != int(get_n_files_from_nick(nick))) and (not args.no_strict_checking)):
+			log.critical("Found %s files, but expected %s from nick %s. Aborting. Disable this check with --no-strict-checking" % (len(files), get_n_files_from_nick(nick), nick))
+			#sys.exit()
 		else:
-			nick = os.path.basename(files[0]).replace("kappa_", "")
-			nick = nick[:nick.rfind("_")]
 			filelists = os.path.join(args.output_dir, "%s_sample_%s_%s.txt" % ("%s", nick, "%s"))
-			
 			dcache_settings = {
 				#"NAF" : ["", None],
 				"DCAP" : ["dcap://dcache-cms-dcap.desy.de/", None],
