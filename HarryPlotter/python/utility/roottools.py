@@ -284,6 +284,7 @@ class RootTools(object):
 			path_to_trees = [path_to_trees]
 	
 		tree = ROOT.TChain()
+		friend_tree = ROOT.TChain()
 		for root_file_name in root_file_names:
 			for path_to_tree in path_to_trees:
 				complete_path_to_tree = os.path.join(root_file_name, path_to_tree)
@@ -295,7 +296,8 @@ class RootTools(object):
 		#Add Friends
 		if friend_trees is not None:
 			for friend in friend_trees:
-				tree.AddFriend(friend[0], friend[1])
+				friend_tree.Add(friend[1] + "/" + friend[0])
+		tree.AddFriend(friend_tree)
 		
 		# ROOT optimisations
 		tree.SetCacheSize(256*1024*1024) # 256 MB
