@@ -148,7 +148,7 @@ public:
 		}
 		// apparently evtProvider.GetEntries() is not reliable. Therefore, if 'ProcessNEvents' is not set (=-1), the loop condition
 		// always evaluates to true (processNEvents<0) = (-1<0) and is terminated via the 'if (!evtProvider.GetEntry(i)) break' statement
-		for (long long i = firstEvent; ( (processNEvents<0) || (i<(firstEvent + nEvents)) ); ++i)
+		for (long long iEvent = firstEvent; ((processNEvents < 0) && (iEvent < (firstEvent + nEvents))); ++iEvent)
 		{
 
 			// quit here according to OS
@@ -158,12 +158,12 @@ public:
 				break;
 			}
 
-			if (!evtProvider.GetEntry(i))
+			if (!evtProvider.GetEntry(iEvent))
 			break;
 			for (ProgressReportIterator it = m_progressReport.begin();
 					it != m_progressReport.end(); ++it)
 			{
-				it->update(i-firstEvent, nEvents);
+				it->update(iEvent-firstEvent, nEvents);
 			}
 
 			product_type productGlobal;
