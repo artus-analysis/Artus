@@ -297,7 +297,7 @@ class RootTools(object):
 		if friend_trees is not None:
 			for friend in friend_trees:
 				friend_tree.Add(friend[1] + "/" + friend[0])
-		tree.AddFriend(friend_tree)
+			tree.AddFriend(friend_tree)
 		
 		# ROOT optimisations
 		tree.SetCacheSize(256*1024*1024) # 256 MB
