@@ -46,7 +46,12 @@ class ArtusWrapper(object):
 			self._config["Date"] = date_now
 
 		# write username to the config
-		self._config["User"] = os.environ["USER"] 
+		try:
+			self._config["User"] = os.environ["USER"] 
+		except:
+			import random
+			import string
+			self._config["User"] = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
 
 		#Expand Config
 		self.expandConfig()
