@@ -195,3 +195,12 @@ def hadd(target_file, source_files, hadd_args="", max_files=500):
 		if len(last_target_file) > 0:
 			os.remove(last_target_file)
 	return exit_code
+
+def write_dbsfile(input_files):
+	dbsFileContent = ""
+	for nickname, filelist in input_files.iteritems():
+		dbsFileContent += "\n[" + nickname + "]\nnickname = " + nickname + "\n"
+		for inputEntry in filelist:
+			dbsFileContent += inputEntry + "\n"
+
+	return dbsFileContent

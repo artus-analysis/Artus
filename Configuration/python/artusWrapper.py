@@ -467,11 +467,7 @@ class ArtusWrapper(object):
 	def sendToBatchSystem(self):
 
 		# write dbs file
-		dbsFileContent = ""
-		for nickname, filelist in self._gridControlInputFiles.iteritems():
-			dbsFileContent += "\n[" + nickname + "]\nnickname = " + nickname + "\n"
-			for inputEntry in filelist:
-				dbsFileContent += inputEntry + "\n"
+		dbsFileContent = tools.write_dbsfile(self._gridControlInputFiles)
 
 		dbsFileBasename = "datasets.dbs"
 		dbsFileBasepath = os.path.join(self.localProjectPath, dbsFileBasename)
