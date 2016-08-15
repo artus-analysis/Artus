@@ -48,3 +48,5 @@ if [[ -e ${CMSSW_BASE}/config/toolbox/${SCRAM_ARCH}/tools/selected/gcc-cxxcompil
 	sed -i -e "s@-fipa-pta@@g" ${CMSSW_BASE}/config/toolbox/${SCRAM_ARCH}/tools/selected/gcc-cxxcompiler.xml
 fi
 
+# grid-control import
+export PYTHONPATH=${CMSSW_BASE}/src/grid-control/packages:${PYTHONPATH}
