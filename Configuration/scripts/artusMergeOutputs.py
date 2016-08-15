@@ -75,9 +75,8 @@ def merge_batch(args):
 	project_dirs = "-i " + " ".join(args.project_dir)
 	outputs_per_nick = folders_to_merge(args)
 	# extract nicks that should be ran on
-	nicks = outputs_per_nick.keys()
 	cfg.parameters.parameters = ["NICK"]
-	cfg.parameters.NICK =  nicks
+	cfg.parameters.NICK =  outputs_per_nick.keys()
 
 
 	arguments = " " .join([executable])
@@ -90,8 +89,7 @@ def merge_batch(args):
 	cfg.storage.se_output_files = "merged.root"
 	cfg.storage.se_output_pattern = "@NICK@/@NICK@.root"
 	getattr(cfg, 'global').set('workdir', os.path.join(args.project_dir[0], "workdir_merge"))
-	#getattr(cfg, 'global').set('cmdargs', "-G -c")
-
+	
 	from grid_control.utils.activity import Activity
 	Activity.root = Activity('Running grid-control', name = 'root')
 	from gcTool import gc_create_workflow, createConfig
