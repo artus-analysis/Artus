@@ -78,8 +78,8 @@ def merge_batch(args):
 	cfg.parameters.parameters = ["NICK"]
 	cfg.parameters.NICK =  outputs_per_nick.keys()
 
-
-	arguments = " " .join([executable])
+	arguments = cmssw_base
+	arguments = arguments + " " + executable
 	arguments = arguments + " " .join(args.project_dir)
 	arguments = arguments + " --project-subdir @NICK@ "
 
@@ -88,7 +88,7 @@ def merge_batch(args):
 	cfg.storage.se_path = merged_directory 
 	cfg.storage.se_output_files = "merged.root"
 	cfg.storage.se_output_pattern = "@NICK@/@NICK@.root"
-	getattr(cfg, 'global').set('workdir', os.path.join(args.project_dir[0], "workdir_merge"))
+	cfg.GLOBAL.workdir = os.path.join(args.project_dir[0], "workdir_merge")
 	
 	from grid_control.utils.activity import Activity
 	Activity.root = Activity('Running grid-control', name = 'root')
