@@ -47,8 +47,13 @@ def merge_local(args):
 		merged_dir = os.path.join(args.project_dir[0] if(args.output_dir == None) else args.output_dir, "merged", nick_name)
 		if not os.path.exists(merged_dir):
 			os.makedirs(merged_dir)
-		hadd_arguments.append({"target_file": os.path.join(merged_dir, nick_name+".root"), "source_files": output_files, "hadd_args" : " -f ", "max_files" : 500})
-	
+
+		target_filename = os.path.join(merged_dir, nick_name+".root") 
+		if(args.project_subdir != None):
+			target_filename = "merged.root"
+
+		hadd_arguments.append({"target_file": target_filename, "source_files": output_files, "hadd_args" : " -f ", "max_files" : 500})
+
 	tools.parallelize(hadd2, hadd_arguments, n_processes=args.n_processes)
 
 def merge_batch(args):
@@ -57,58 +62,50 @@ def merge_batch(args):
 	cfg = Settings()
 	cfg.workflow.task = 'UserTask'
 	cfg.workflow.backend = 'local'
+	cfg.workflow.duration = '-1'
 
-	cfg.jobs.wall_time = '12:00:00'
-	cfg.jobs.set("memory", "6000")
+	cfg.jobs.wall_time = '3:00:00'
+	cfg.jobs.memory = "6000"
 
 	cfg.usertask.executable = 'Artus/Utility/scripts/userjob_epilog.sh'
 	cmssw_base = os.getenv("CMSSW_BASE") + "/src/"
 	executable = 'artusMergeOutputs.py '
-	cfg.usertask.set("input files", [cmssw_base + "Artus/Configuration/scripts/artusMergeOutputs.py"] )
+	cfg.usertask.input_files= [cmssw_base + "Artus/Configuration/scripts/artusMergeOutputs.py"] 
 
 	project_dirs = "-i " + " ".join(args.project_dir)
-	print project_dirs
 	outputs_per_nick = folders_to_merge(args)
+	# extract nicks that should be ran on
 	nicks = outputs_per_nick.keys()
-	print nicks
-	cfg.parameters.set("parameters", ["NICK"])
-	cfg.parameters.set("NICK", nicks)
+	cfg.parameters.parameters = ["NICK"]
+	cfg.parameters.NICK =  nicks
 
 
 	arguments = " " .join([executable])
 	arguments = arguments + " " .join(args.project_dir)
 	arguments = arguments + " --project-subdir @NICK@ "
 
-	cfg.usertask.set('arguments', "%s"%arguments)
+	cfg.usertask.arguments = "%s"%arguments
 	merged_directory = os.path.join(args.project_dir[0], "merged")
-	cfg.storage.set('se path', merged_directory )
-	cfg.storage.set('se output files', "")
-	cfg.storage.set('se output pattern', "@NICK@/@NICK@")
+	cfg.storage.se_path = merged_directory 
+	cfg.storage.se_output_files = "merged.root"
+	cfg.storage.se_output_pattern = "@NICK@/@NICK@.root"
 	getattr(cfg, 'global').set('workdir', os.path.join(args.project_dir[0], "workdir_merge"))
+	#getattr(cfg, 'global').set('cmdargs', "-G -c")
 
-	# writing config to file, there's probably a better way
-	import StringIO
-	stdout = sys.stdout
-	gc_config_name = os.path.join(args.project_dir[0], 'artus_merge_outputsWithGC_config.cfg')
-	sys.stdout = open( gc_config_name, 'w')
-	print(cfg)
-	sys.stdout = stdout
-	command = "go.py -Gc "  +  gc_config_name
+	from grid_control.utils.activity import Activity
+	Activity.root = Activity('Running grid-control', name = 'root')
+	from gcTool import gc_create_workflow, createConfig
+	config = createConfig( configDict = Settings.getConfigDict())
 
-	print "Executing ' " + command + "'"
-	logger.subprocessCall(command.split())
-
-	log.info("Output is written to directory \"%s\"" % merged_directory)
-
-	#print stdout
-	#print('=' * 20)
+	workflow = gc_create_workflow(config)
+	workflow.run()
 
 def main():
 	
 	parser = argparse.ArgumentParser(description="Merge Artus outputs per nick name.", parents=[logger.loggingParser])
 
 	parser.add_argument("project_dir", help="Artus Project directory containing the files \"output/*/*.root\" to merge in case there is an output dir, */*.root else", nargs="*")
-	parser.add_argument("--project-subdir", help="Artus Project sub-directory in case the script only handles a part", default=None)
+	parser.add_argument("--project-subdir", help="Artus Project sub-directory in case the script only handles a part. The output then is written to the current directory.", default=None)
 	parser.add_argument("-n", "--n-processes", type=int, default=1,
 	                    help="Number of (parallel) processes. [Default: %(default)s]")
 	parser.add_argument("--output-dir", help="Directory to store merged files. Default: Same as first project_dir.")
