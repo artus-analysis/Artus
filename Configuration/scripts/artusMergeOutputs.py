@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import logging
-import Artus.Utility.logger as logger
-log = logging.getLogger(__name__)
+#import logging
 
 import argparse
 import glob
@@ -66,6 +64,8 @@ def merge_batch(args):
 
 	cfg.jobs.wall_time = '3:00:00'
 	cfg.jobs.memory = "6000"
+	cfg.jobs.max_retry = 1
+	cfg.backend.submit_options = "-l h_fsize=50G"
 
 	cfg.usertask.executable = 'Artus/Utility/scripts/artus_userjob_epilog.sh'
 	cmssw_base = os.getenv("CMSSW_BASE") + "/src/"
@@ -86,22 +86,23 @@ def merge_batch(args):
 	cfg.usertask.arguments = "%s"%arguments
 	merged_directory = os.path.join(args.project_dir[0] if(args.output_dir == None) else args.output_dir, "merged")
 	cfg.storage.se_path = merged_directory 
-	cfg.storage.scratch_space_used = 15000
+	cfg.storage.scratch_space_used = 50000
 	cfg.storage.se_output_files = "merged.root"
 	cfg.storage.se_output_pattern = "@NICK@/@NICK@.root"
 	cfg.GLOBAL.workdir = os.path.join(args.project_dir[0] if(args.output_dir == None) else args.output_dir, "workdir_merge")
-	
 	from grid_control.utils.activity import Activity
 	Activity.root = Activity('Running grid-control', name = 'root')
 	from gcTool import gc_create_workflow, createConfig
 	config = createConfig( configDict = Settings.getConfigDict())
 
 	workflow = gc_create_workflow(config)
+	#activate for large verbosity
+	#logging.getLogger('process').setLevel(logging.DEBUG1) 
 	workflow.run()
 
 def main():
 	
-	parser = argparse.ArgumentParser(description="Merge Artus outputs per nick name.", parents=[logger.loggingParser])
+	parser = argparse.ArgumentParser(description="Merge Artus outputs per nick name.")
 
 	parser.add_argument("project_dir", help="Artus Project directory containing the files \"output/*/*.root\" to merge in case there is an output dir, */*.root else", nargs="*")
 	parser.add_argument("--project-subdir", help="Artus Project sub-directory in case the script only handles a part. The output then is written to the current directory.", default=None)
@@ -112,7 +113,6 @@ def main():
 	                     help="Run with grid-control. Optionally select backend. [Default: %(default)s]")
 
 	args = parser.parse_args()
-	logger.initLogger(args)
 
 	if(args.batch == False):
 		merge_local(args)
