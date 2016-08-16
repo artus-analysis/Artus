@@ -67,7 +67,7 @@ def merge_batch(args):
 	cfg.jobs.wall_time = '3:00:00'
 	cfg.jobs.memory = "6000"
 
-	cfg.usertask.executable = 'Artus/Utility/scripts/userjob_epilog.sh'
+	cfg.usertask.executable = 'Artus/Utility/scripts/artus_userjob_epilog.sh'
 	cmssw_base = os.getenv("CMSSW_BASE") + "/src/"
 	executable = 'artusMergeOutputs.py '
 	cfg.usertask.input_files= [cmssw_base + "Artus/Configuration/scripts/artusMergeOutputs.py"] 
@@ -86,6 +86,7 @@ def merge_batch(args):
 	cfg.usertask.arguments = "%s"%arguments
 	merged_directory = os.path.join(args.project_dir[0], "merged")
 	cfg.storage.se_path = merged_directory 
+	cfg.storage.scratch_space_used = 15000
 	cfg.storage.se_output_files = "merged.root"
 	cfg.storage.se_output_pattern = "@NICK@/@NICK@.root"
 	cfg.GLOBAL.workdir = os.path.join(args.project_dir[0], "workdir_merge")
