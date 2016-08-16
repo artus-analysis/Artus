@@ -84,12 +84,12 @@ def merge_batch(args):
 	arguments = arguments + " --project-subdir @NICK@ "
 
 	cfg.usertask.arguments = "%s"%arguments
-	merged_directory = os.path.join(args.project_dir[0], "merged")
+	merged_directory = os.path.join(args.project_dir[0] if(args.output_dir == None) else args.output_dir, "merged")
 	cfg.storage.se_path = merged_directory 
 	cfg.storage.scratch_space_used = 15000
 	cfg.storage.se_output_files = "merged.root"
 	cfg.storage.se_output_pattern = "@NICK@/@NICK@.root"
-	cfg.GLOBAL.workdir = os.path.join(args.project_dir[0], "workdir_merge")
+	cfg.GLOBAL.workdir = os.path.join(args.project_dir[0] if(args.output_dir == None) else args.output_dir, "workdir_merge")
 	
 	from grid_control.utils.activity import Activity
 	Activity.root = Activity('Running grid-control', name = 'root')
