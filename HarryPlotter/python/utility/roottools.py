@@ -844,7 +844,7 @@ class RootTools(object):
 			elif (axis == 1) and isinstance(root_object, ROOT.TF2):
 				return root_object.GetYmin(), root_object.GetYmax()
 			else:
-				return root_object.GetMinimum(), root_object.GetMaximum()
+				return root_object.GetMinimum(array.array("d", [0.0])), root_object.GetMaximum(array.array("d", [0.0]))
 		
 		else:
 			log.warning("Retrieving the plot limits is not yet implemented for objects of type %s!." % str(type(root_object)))

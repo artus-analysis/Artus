@@ -615,6 +615,7 @@ class PlotRoot(plotbase.PlotBase):
 				palette = root_object.GetHistogram().GetListOfFunctions().FindObject("palette")
 			
 			if palette != None:
+				root_object.GetZaxis().SetTitleOffset(1.5)
 				palette.SetTitleOffset(1.5)
 				palette.SetTitleSize(root_object.GetYaxis().GetTitleSize())
 				root_object.SetContour(50) # number of divisions
