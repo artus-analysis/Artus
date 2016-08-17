@@ -102,7 +102,7 @@ def main():
 	parser.add_argument("-a", "--args", default="-v", help="Arguments. Default: -v.")
 	parser.add_argument("-s", "--src", help="Source.", required=True)
 	parser.add_argument("--src-prefix", default="",
-	                    help="Source prefix. \"gridka\" and \"desy\" are replaced by their dCache locations. \"\" means local path.")
+	                    help="Source prefix. \"gridka\", \"rwth\" and \"desy\" are replaced by their dCache locations. \"\" means local path.")
 	parser.add_argument("-d", "--dst", help="Destination. Can be left empty.")
 	parser.add_argument("--dst-prefix", default="",
 	                     help="Destination prefix. \"gridka\" and \"desy\" are replaced by their dCache locations. \"\" means local path.")
@@ -114,6 +114,7 @@ def main():
 	prefix_replacements = {
 		"gridka" : "srm://dgridsrm-fzk.gridka.de:8443/srm/managerv2?SFN=",
 		"desy" : "srm://dcache-se-cms.desy.de:8443/srm/managerv2?SFN=",
+		"rwth" : "srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN=",
 	}
 	for replacement_from, replacement_to in prefix_replacements.items():
 		if args.src_prefix == replacement_from:
