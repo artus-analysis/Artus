@@ -15,7 +15,7 @@ ROOT.gErrorIgnoreLevel = ROOT.kError
 
 import Artus.Utility.tools as tools
 import Artus.Utility.progressiterator as pi
-from Artus.Utility.tools import hadd2
+from Artus.Utility.tools import hadd2, get_folder_size
 
 def folders_to_merge(args):
 	outputs_per_nick = {}
@@ -65,7 +65,6 @@ def merge_batch(args):
 	cfg.jobs.wall_time = '3:00:00'
 	cfg.jobs.memory = "6000"
 	cfg.jobs.max_retry = 1
-	cfg.backend.submit_options = "-l h_fsize=50G"
 
 	cfg.usertask.executable = 'Artus/Utility/scripts/artus_userjob_epilog.sh'
 	cmssw_base = os.getenv("CMSSW_BASE") + "/src/"
@@ -76,7 +75,17 @@ def merge_batch(args):
 	outputs_per_nick = folders_to_merge(args)
 	# extract nicks that should be ran on
 	cfg.parameters.parameters = ["NICK"]
-	cfg.parameters.NICK =  outputs_per_nick.keys()
+	nicks_to_process = outputs_per_nick.keys() if(args.project_subdir == None) else [args.project_subdir] # keep only single path
+	input_dirs  = []
+	for project_dir in args.project_dir:
+		for nick in nicks_to_process:
+			input_dir = os.path.join(project_dir, nick)
+			if os.path.exists(input_dir):
+				input_dirs.append(input_dir)
+	required_scratch_space = max(map(get_folder_size, input_dirs)) * 2 + 100 * 1024 * 1024
+	cfg.backend.submit_options = "-l h_fsize=" + str(required_scratch_space / 1024 / 1024 / 1024)+"G"
+	cfg.parameters.NICK = nicks_to_process 
+	cfg.jobs.jobs = len(nicks_to_process)
 
 	arguments = cmssw_base
 	arguments = arguments + " " + executable
@@ -86,7 +95,7 @@ def merge_batch(args):
 	cfg.usertask.arguments = "%s"%arguments
 	merged_directory = os.path.join(args.project_dir[0] if(args.output_dir == None) else args.output_dir, "merged")
 	cfg.storage.se_path = merged_directory 
-	cfg.storage.scratch_space_used = 50000
+	cfg.storage.scratch_space_used = required_scratch_space / 1024 / 1024
 	cfg.storage.se_output_files = "merged.root"
 	cfg.storage.se_output_pattern = "@NICK@/@NICK@.root"
 	cfg.GLOBAL.workdir = os.path.join(args.project_dir[0] if(args.output_dir == None) else args.output_dir, "workdir_merge")
