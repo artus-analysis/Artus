@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#import logging
+import logging
+import Artus.Utility.logger as logger
+log = logging.getLogger(__name__)
 
 import argparse
 import glob
@@ -111,7 +113,7 @@ def merge_batch(args):
 
 def main():
 	
-	parser = argparse.ArgumentParser(description="Merge Artus outputs per nick name.")
+	parser = argparse.ArgumentParser(description="Merge Artus outputs per nick name.", parents=[logger.loggingParser])
 
 	parser.add_argument("project_dir", help="Artus Project directory containing the files \"output/*/*.root\" to merge in case there is an output dir, */*.root else", nargs="*")
 	parser.add_argument("--project-subdir", help="Artus Project sub-directory in case the script only handles a part. The output then is written to the current directory.", default=None)
@@ -122,6 +124,7 @@ def main():
 	                     help="Run with grid-control. Optionally select backend. [Default: %(default)s]")
 
 	args = parser.parse_args()
+	logger.initLogger(args)
 
 	if(args.batch == False):
 		merge_local(args)
