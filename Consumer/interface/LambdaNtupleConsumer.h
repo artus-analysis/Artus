@@ -341,6 +341,7 @@ public:
 		}
 
 		// create tree
+		RootFileHelper::SafeCd(settings.GetRootOutFile(), settings.GetRootFileFolder());
 		m_tree = new TTree("ntuple", ("Tree for Pipeline \"" + settings.GetName() + "\"").c_str());
 
 		// create branches
@@ -624,9 +625,9 @@ public:
 		this->m_tree->Fill();
 	}
 
-	void Finish(setting_type const& setting) override
+	void Finish(setting_type const& settings) override
 	{
-		RootFileHelper::SafeCd(setting.GetRootOutFile(), setting.GetRootFileFolder());
+		RootFileHelper::SafeCd(settings.GetRootOutFile(), settings.GetRootFileFolder());
 		m_tree->Write(m_tree->GetName());
 	}
 
