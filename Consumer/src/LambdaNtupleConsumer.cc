@@ -16,6 +16,9 @@ std::map<std::string, std::function<float(EventBase const&, ProductBase const& )
 std::map<std::string, std::function<double(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonDoubleQuantities
 	= std::map<std::string, std::function<double(EventBase const&, ProductBase const& ) >>();
 
+std::map<std::string, std::function<ROOT::Math::PtEtaPhiMVector(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonPtEtaPhiMVectorQuantities
+	= std::map<std::string, std::function<ROOT::Math::PtEtaPhiMVector(EventBase const&, ProductBase const& ) >>();
+
 std::map<std::string, std::function<RMFLV(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonRMFLVQuantities
 	= std::map<std::string, std::function<RMFLV(EventBase const&, ProductBase const& ) >>();
 
