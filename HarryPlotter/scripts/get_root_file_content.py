@@ -34,7 +34,7 @@ if __name__ == "__main__":
 			if log.isEnabledFor(logging.DEBUG):
 				root_object = root_file.Get(path)
 				log.debug("")
-				root_object.Print()
+				root_object.Print("")
 				if index < len(elements)-1:
 					log.debug("\n" + (100*"=") + "\n")
 				"""
