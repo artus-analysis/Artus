@@ -84,6 +84,10 @@ def merge_batch(args):
 			input_dir = os.path.join(project_dir, nick)
 			if os.path.exists(input_dir):
 				input_dirs.append(input_dir)
+			input_dir = os.path.join(project_dir, "output", nick)
+			if os.path.exists(input_dir):
+				input_dirs.append(input_dir)
+	
 	required_scratch_space = max(map(get_folder_size, input_dirs)) * 2 + 100 * 1024 * 1024
 	cfg.backend.submit_options = "-l h_fsize=" + str(required_scratch_space / 1024 / 1024 / 1024)+"G"
 	cfg.parameters.NICK = nicks_to_process 
