@@ -94,7 +94,7 @@ void GenBosonDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaPr
 			if ((std::abs(genParticle->pdgId) == DefaultValues::pdgIdElectron) ||
 			    (std::abs(genParticle->pdgId) == DefaultValues::pdgIdMuon) ||
 			    (std::abs(genParticle->pdgId) == DefaultValues::pdgIdTau))
-// 			if (genParticle->isPrompt() && genParticle->isPromptDecayed())
+			// if (genParticle->isPrompt() && genParticle->isPromptDecayed())
 			{
 				genBosonLV += (*genParticle).p4;
 				product.m_genLeptonsFromBosonDecay.push_back(&(*genParticle));
