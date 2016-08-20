@@ -42,7 +42,7 @@ public:
 	// events in this map can be written out automatically by the KappaLambdaNtupleConsumer
 	std::map<std::string, double> m_optionalWeights;
 	
-	// filled by GenBosonProducers
+	// filled by the GenBosonProducers
 	KGenParticle* m_genBosonParticle = nullptr;
 	RMFLV m_genBosonLV;
 	bool m_genBosonLVFound = false;

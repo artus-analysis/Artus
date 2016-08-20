@@ -68,6 +68,12 @@ std::string GenBosonDiLeptonDecayModeProducer::GetProducerId() const {
 void GenBosonDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
 {
 	GenBosonFromGenParticlesProducer::Init(settings);
+
+	// add possible quantities for the lambda ntuples consumers
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genDiLeptonBosonMass", [](KappaEvent const & event, KappaProduct const & product)
+	{
+		return (product.m_genBosonLVFound ? product.m_genBosonLV.mass() : DefaultValues::UndefinedFloat);
+	});
 }
 
 void GenBosonDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& product,

@@ -16,11 +16,6 @@ void GenDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
 	ProducerBase<KappaTypes>::Init(settings);
 
 	// add possible quantities for the lambda ntuples consumers
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genDiLeptonBosonMass", [](KappaEvent const & event, KappaProduct const & product)
-	{
-		return product.m_genDiLeptonBoson.mass();
-	});
-	
 	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("isZEE", [](KappaEvent const& event, KappaProduct const& product)
 	{
 		return (product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::EE);
