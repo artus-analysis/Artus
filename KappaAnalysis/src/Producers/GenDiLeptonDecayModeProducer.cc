@@ -24,6 +24,11 @@ void GenDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
 	{
 		return (product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::MM);
 	});
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("isZTT", [](KappaEvent const& event, KappaProduct const& product)
+	{
+		return (product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::TT);
+	});
+	
 	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("isZLL", [](KappaEvent const& event, KappaProduct const& product)
 	{
 		return ((product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::MM) || (product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::EE));
