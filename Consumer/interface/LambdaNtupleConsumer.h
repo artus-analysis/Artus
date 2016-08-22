@@ -359,7 +359,7 @@ public:
 			}
 			else
 			{
-				LOG(FATAL) << "No lambda expression available for quantity \"" << *quantity << "\"! If you want it to be handled automatically and are using the KappaLambdaNTupleConsumer, adjust the expression name accordingly by adding substrings like \"weight\", \"cut\" or \"filter\" to the quantity's name.";
+				LOG(FATAL) << "No lambda expression available for quantity \"" << *quantity << "\"!";
 			}
 
 			++quantityIndex;
