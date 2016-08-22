@@ -83,6 +83,7 @@ void GenBosonDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaPr
 	
 	// If no boson has been found in the event, try to reconstruct it from the first two decay
 	// products available in the list of gen. particles
+	// https://hypernews.cern.ch/HyperNews/CMS/get/generators/2802/1.html
 	if (product.m_genBosonParticle == nullptr)
 	{
 		size_t iDaughter = 0;
