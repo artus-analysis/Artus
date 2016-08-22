@@ -51,6 +51,8 @@
 		"loose" : {
 			"Processors" : [
 				"producer:ValidMuonsProducer",
+				"filter:MinMuonsCountFilter",
+				"filter:MaxMuonsCountFilter",
 				"producer:EventWeightProducer"
 			],
 			"Consumers" : [
@@ -64,6 +66,10 @@
 			"MuonID" : "loose",
 			"MuonIsoType" : "PF",
 			"MuonIso" : "loose_2015",
+			
+			"comment3" : "Settings for the Min/MaxMuonsCountFilters",
+			"MinNMuons" : 2,
+			"MaxNMuons" : 2,
 			
 			"comment4" : "Settings for the cutflow consumer",
 			"EventWeight" : "eventWeight",
