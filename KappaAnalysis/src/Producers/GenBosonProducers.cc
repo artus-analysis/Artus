@@ -68,6 +68,12 @@ std::string GenBosonDiLeptonDecayModeProducer::GetProducerId() const {
 void GenBosonDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
 {
 	GenBosonFromGenParticlesProducer::Init(settings);
+
+	// add possible quantities for the lambda ntuples consumers
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genDiLeptonBosonMass", [](KappaEvent const & event, KappaProduct const & product)
+	{
+		return (product.m_genBosonLVFound ? product.m_genBosonLV.mass() : DefaultValues::UndefinedFloat);
+	});
 }
 
 void GenBosonDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& product,
@@ -77,6 +83,7 @@ void GenBosonDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaPr
 	
 	// If no boson has been found in the event, try to reconstruct it from the first two decay
 	// products available in the list of gen. particles
+	// https://hypernews.cern.ch/HyperNews/CMS/get/generators/2802/1.html
 	if (product.m_genBosonParticle == nullptr)
 	{
 		size_t iDaughter = 0;
@@ -88,7 +95,7 @@ void GenBosonDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaPr
 			if ((std::abs(genParticle->pdgId) == DefaultValues::pdgIdElectron) ||
 			    (std::abs(genParticle->pdgId) == DefaultValues::pdgIdMuon) ||
 			    (std::abs(genParticle->pdgId) == DefaultValues::pdgIdTau))
-// 			if (genParticle->isPrompt() && genParticle->isPromptDecayed())
+			// if (genParticle->isPrompt() && genParticle->isPromptDecayed())
 			{
 				genBosonLV += (*genParticle).p4;
 				product.m_genLeptonsFromBosonDecay.push_back(&(*genParticle));

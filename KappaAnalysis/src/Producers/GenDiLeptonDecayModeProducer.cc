@@ -16,11 +16,6 @@ void GenDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
 	ProducerBase<KappaTypes>::Init(settings);
 
 	// add possible quantities for the lambda ntuples consumers
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genDiLeptonBosonMass", [](KappaEvent const & event, KappaProduct const & product)
-	{
-		return product.m_genDiLeptonBoson.mass();
-	});
-	
 	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("isZEE", [](KappaEvent const& event, KappaProduct const& product)
 	{
 		return (product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::EE);
@@ -29,6 +24,11 @@ void GenDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
 	{
 		return (product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::MM);
 	});
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("isZTT", [](KappaEvent const& event, KappaProduct const& product)
+	{
+		return (product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::TT);
+	});
+	
 	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("isZLL", [](KappaEvent const& event, KappaProduct const& product)
 	{
 		return ((product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::MM) || (product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::EE));
@@ -38,68 +38,30 @@ void GenDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
 void GenDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& product,
                                            KappaSettings const& settings) const
 {
-	assert(event.m_genParticles);
-
-	for (KGenParticles::const_iterator genParticle = event.m_genParticles->begin();
-		 genParticle != event.m_genParticles->end(); ++genParticle)
+	std::map<int, int> nDecayProductsPerType;
+	size_t iDaughter = 0;
+	for (std::vector<KGenParticle*>::iterator genParticle = product.m_genLeptonsFromBosonDecay.begin();
+	     genParticle != product.m_genLeptonsFromBosonDecay.end() && (iDaughter < 2); ++genParticle)
 	{
-		if (Utility::Contains(settings.GetBosonPdgIds(), std::abs(genParticle->pdgId)) && Utility::Contains(settings.GetBosonStatuses(), genParticle->status()))
-		{
-			std::map<int, int> nDecayProductsPerType;
-			product.m_genDiLeptonBoson = (*genParticle).p4;
-
-			for (std::vector<unsigned int>::const_iterator decayParticleIndex = genParticle->daughterIndices.begin();
-			     decayParticleIndex != genParticle->daughterIndices.end(); ++decayParticleIndex)
-			{
-				int pdgId = std::abs(event.m_genParticles->at(*decayParticleIndex).pdgId);
-				nDecayProductsPerType[pdgId] = SafeMap::GetWithDefault(nDecayProductsPerType, pdgId, 0) + 1;
-			}
-
-			if (SafeMap::GetWithDefault(nDecayProductsPerType, DefaultValues::pdgIdElectron, 0) >= 2)
-			{
-				product.m_genDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::EE;
-			}
-			else if (SafeMap::GetWithDefault(nDecayProductsPerType, DefaultValues::pdgIdMuon, 0) >= 2)
-			{
-				product.m_genDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::MM;
-			}
-			else if (SafeMap::GetWithDefault(nDecayProductsPerType, DefaultValues::pdgIdTau, 0) >= 2)
-			{
-				product.m_genDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::TT;
-			}
-			else
-			{
-				product.m_genDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::NONE;
-			}
-
-			// exit loop after one boson is found
-			if (product.m_genDiLeptonDecayMode != KappaEnumTypes::DiLeptonDecayMode::NONE)
-			{
-				break;
-			}
-		}
+		int pdgId = std::abs((*genParticle)->pdgId);
+		nDecayProductsPerType[pdgId] = SafeMap::GetWithDefault(nDecayProductsPerType, pdgId, 0) + 1;
+		++iDaughter;
 	}
 	
-	// If no boson has been found in the event, try to reconstruct it from the first two decay
-	// products available in the list of gen. particles
-	if (product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::NONE)
+	if (SafeMap::GetWithDefault(nDecayProductsPerType, DefaultValues::pdgIdElectron, 0) >= 2)
 	{
-		size_t iDaughter = 0;
-		RMFLV genDiLeptonBoson;
-		
-		for (KGenParticles::const_iterator genParticle = event.m_genParticles->begin();
-		     genParticle != event.m_genParticles->end() && (iDaughter < 2); ++genParticle)
-		{
-			if (std::abs(genParticle->pdgId) == DefaultValues::pdgIdElectron ||
-			    std::abs(genParticle->pdgId) == DefaultValues::pdgIdMuon ||
-			    std::abs(genParticle->pdgId) == DefaultValues::pdgIdTau)
-// 			if (genParticle->isPrompt() && genParticle->isPromptDecayed())
-			{
-				genDiLeptonBoson += (*genParticle).p4;
-				iDaughter++;
-			}
-		}
-		
-		product.m_genDiLeptonBoson = genDiLeptonBoson;
+		product.m_genDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::EE;
+	}
+	else if (SafeMap::GetWithDefault(nDecayProductsPerType, DefaultValues::pdgIdMuon, 0) >= 2)
+	{
+		product.m_genDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::MM;
+	}
+	else if (SafeMap::GetWithDefault(nDecayProductsPerType, DefaultValues::pdgIdTau, 0) >= 2)
+	{
+		product.m_genDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::TT;
+	}
+	else
+	{
+		product.m_genDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::NONE;
 	}
 }
