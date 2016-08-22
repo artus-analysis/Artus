@@ -72,7 +72,7 @@ void ValidGenElectronsProducer::Init(KappaSettings const& settings)
 ValidGenMuonsProducer::ValidGenMuonsProducer() :
 	ValidGenParticlesProducer(&product_type::m_genLeptonsFromBosonDecay,
 	                          DefaultValues::pdgIdMuon,
-	                          &product_type::m_validGenTaus,
+	                          &product_type::m_validGenMuons,
 	                          &setting_type::GetGenMuonLowerPtCuts,
 	                          &setting_type::GetGenMuonUpperAbsEtaCuts)
 {
