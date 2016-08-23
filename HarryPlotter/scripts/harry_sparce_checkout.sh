@@ -1,0 +1,13 @@
+#!/bin/bash
+
+git clone https://github.com/artus-analysis/Artus.git -n
+cd Artus
+git remote add -f Artus https://github.com/artus-analysis/Artus.git
+git config core.sparsecheckout true
+echo "/HarryPlotter/" >> .git/info/sparse-checkout
+echo "/Utility/python/" >> .git/info/sparse-checkout
+echo "/Utility/scripts/" >> .git/info/sparse-checkout
+git pull
+git read-tree --empty
+git read-tree -mu HEAD
+cd -
