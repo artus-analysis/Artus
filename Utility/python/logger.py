@@ -91,8 +91,8 @@ def configurePrints(argParserArgs=None, **kwargs):
 	# re-create the printer logging imprints
 	outLvl = ( kwargs.get('verbose',False) and 1 ) or getattr(logging, kwargs.get('out_level','info').upper())
 	errLvl = ( kwargs.get('verbose',False) and 1 ) or getattr(logging, kwargs.get('err_level','info').upper())
-	logInit(level = outLvl, Handler = logging.StreamHandler(stream=sys.stdout))(vprint)
-	logInit(level = errLvl, Handler = logging.StreamHandler(stream=sys.stderr))(eprint)
+	logInit(level = outLvl, Handler = logging.StreamHandler(sys.stdout))(vprint)
+	logInit(level = errLvl, Handler = logging.StreamHandler(sys.stderr))(eprint)
 
 def configureModule(argParserArgs=None, printKWArgs=None, logKWArgs=None):
 	"""
@@ -132,7 +132,7 @@ def logInit(level = logging.DEBUG, name = None, formatter = None, formatStr = '%
 	                Handler to use for logging
 	"""
 	def logInitDecorator(func):
-		funcHandler = Handler or logging.StreamHandler(stream=sys.stdout)
+		funcHandler = Handler or logging.StreamHandler(sys.stdout)
 		funcHandler.setFormatter((formatter or logging.Formatter(formatStr, dateFmt)))
 		func.logger = logging.getLogger((name or func.__name__))
 		func.logger.setLevel(level)
@@ -147,7 +147,7 @@ def logInit(level = logging.DEBUG, name = None, formatter = None, formatStr = '%
 		return func
 	return logInitDecorator
 # default print_function'y
-@logInit(Handler = logging.StreamHandler(stream=sys.stdout))
+@logInit(Handler = logging.StreamHandler(sys.stdout))
 def vprint(msg, sep = ' ', level = logging.CRITICAL):
 	"""
 	Write to STDOUT logger
@@ -160,7 +160,7 @@ def vprint(msg, sep = ' ', level = logging.CRITICAL):
 	                verbosity level of the message
 	"""
 	vprint.logMsg(msg, sep, level)
-@logInit(Handler = logging.StreamHandler(stream=sys.stderr))
+@logInit(Handler = logging.StreamHandler(sys.stderr))
 def eprint(msg, sep = ' ', level = logging.CRITICAL):
 	"""
 	Write to STDERR logger
