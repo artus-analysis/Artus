@@ -844,7 +844,10 @@ class RootTools(object):
 			elif (axis == 1) and isinstance(root_object, ROOT.TF2):
 				return root_object.GetYmin(), root_object.GetYmax()
 			else:
-				return root_object.GetMinimum(array.array("d", [0.0])), root_object.GetMaximum(array.array("d", [0.0]))
+				if RootTools.get_root_version()[0] > 5:
+					return root_object.GetMinimum(array.array("d", [0.0])), root_object.GetMaximum(array.array("d", [0.0]))
+				else:
+					return root_object.GetMinimum(), root_object.GetMaximum()
 		
 		else:
 			log.warning("Retrieving the plot limits is not yet implemented for objects of type %s!." % str(type(root_object)))
@@ -912,4 +915,8 @@ class RootTools(object):
 					os.remove(tmp_file_to_remove)
 			exit_code = ROOT.gROOT.LoadMacro(macro+"+")
 		return exit_code
+
+	@staticmethod
+	def get_root_version():
+		return [int(version) for version in re.findall("\d+", ROOT.gROOT.GetVersion())]
 
