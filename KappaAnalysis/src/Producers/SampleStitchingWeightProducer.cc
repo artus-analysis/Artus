@@ -42,7 +42,7 @@ void SampleStitchingWeightProducer::Produce(
 	size_t nPartons = event.m_genEventInfo->lheNOutPartons >= 5 ? 0 : event.m_genEventInfo->lheNOutPartons;
 	
 	// take overlap of phase space into account for DY samples with M50 & M150
-	if ((product.m_genDiLeptonBoson.mass() >= 150.0) && (stitchingWeightsHighMassByIndex.size() > 0))
+	if ((product.m_genBosonLV.mass() >= 150.0) && (stitchingWeightsHighMassByIndex.size() > 0))
 	{
 		product.m_weights["sampleStitchingWeight"] = SafeMap::Get(stitchingWeightsHighMassByIndex, nPartons).at(0);
 	}
