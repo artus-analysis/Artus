@@ -148,9 +148,8 @@ public:
 		}
 		// apparently evtProvider.GetEntries() is not reliable. Therefore, if 'ProcessNEvents' is not set (=-1), the loop condition
 		// always evaluates to true (processNEvents<0) = (-1<0) and is terminated via the 'if (!evtProvider.GetEntry(i)) break' statement
-		for (long long iEvent = firstEvent; ((processNEvents < 0) && (iEvent < (firstEvent + nEvents))); ++iEvent)
+		for (long long iEvent = firstEvent; (iEvent < (firstEvent + nEvents)); ++iEvent)
 		{
-
 			// quit here according to OS
 			if (osHasSIGINT())
 			{
