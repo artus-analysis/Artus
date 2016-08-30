@@ -40,11 +40,19 @@ void SampleStitchingWeightProducer::Produce(
 	}
 	
 	size_t nPartons = event.m_genEventInfo->lheNOutPartons >= 5 ? 0 : event.m_genEventInfo->lheNOutPartons;
-	
+
 	// take overlap of phase space into account for DY samples with M50 & M150
 	if ((product.m_genBosonLV.mass() >= 150.0) && (stitchingWeightsHighMassByIndex.size() > 0))
 	{
-		product.m_weights["sampleStitchingWeight"] = SafeMap::Get(stitchingWeightsHighMassByIndex, nPartons).at(0);
+		// DYJetsToLL_M150 currently only simulated with Z->tautau
+		if (fabs(product.m_genLeptonsFromBosonDecay.at(0)->pdgId) == 15 && fabs(product.m_genLeptonsFromBosonDecay.at(1)->pdgId) == 15)
+		{
+			product.m_weights["sampleStitchingWeight"] = SafeMap::Get(stitchingWeightsHighMassByIndex, nPartons).at(0);
+		}
+		else
+		{
+			product.m_weights["sampleStitchingWeight"] = SafeMap::Get(stitchingWeightsByIndex, nPartons).at(0);
+		}
 	}
 	else
 	{
