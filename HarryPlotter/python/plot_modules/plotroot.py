@@ -10,6 +10,7 @@ log = logging.getLogger(__name__)
 import array
 import collections
 import copy
+import math
 import os
 import ROOT
 import sys
@@ -623,18 +624,24 @@ class PlotRoot(plotbase.PlotBase):
 		# logaritmic axis
 		if plotData.plotdict["x_log"]:
 			plotData.plot.plot_pad.SetLogx()
+			self.axes_histogram.GetXaxis().SetMoreLogLabels((math.log10(self.x_max) - math.log10(self.x_min)) < 3.0)
 		if plotData.plotdict["y_log"]:
 			plotData.plot.plot_pad.SetLogy()
+			self.axes_histogram.GetYaxis().SetMoreLogLabels((math.log10(self.y_max) - math.log10(self.y_min)) < 3.0)
 		if plotData.plotdict["z_log"]:
 			plotData.plot.plot_pad.SetLogz()
+			self.axes_histogram.GetZaxis().SetMoreLogLabels((math.log10(self.z_max) - math.log10(self.z_min)) < 3.0)
 		
 		if not plotData.plot.subplot_pad is None:
 			if plotData.plotdict["x_log"]:
 				plotData.plot.subplot_pad.SetLogx()
+				self.subplot_axes_histogram.GetXaxis().SetMoreLogLabels((math.log10(self.x_max) - math.log10(self.x_min)) < 3.0)
 			if plotData.plotdict["y_subplot_log"]:
 				plotData.plot.subplot_pad.SetLogy()
+				self.subplot_axes_histogram.GetYaxis().SetMoreLogLabels((math.log10(self.y_sub_max) - math.log10(self.y_sub_min)) < 3.0)
 			if plotData.plotdict["z_subplot_log"]:
 				plotData.plot.subplot_pad.SetLogz()
+				self.subplot_axes_histogram.GetZaxis().SetMoreLogLabels((math.log10(self.z_sub_max) - math.log10(self.z_sub_min)) < 3.0)
 		
 		if not self.axes_histogram is None:
 			self.reversed_axes = PlotRoot._set_axis_limits(plotData.plot.plot_pad, self.axes_histogram, self.max_dim, [self.x_min, self.x_max], [self.y_min, self.y_max], [self.z_min, self.z_max], reverse_x_axis=plotData.plotdict["reverse_x_axis"], reverse_y_axis=plotData.plotdict["reverse_y_axis"], reverse_z_axis=plotData.plotdict["reverse_z_axis"])
