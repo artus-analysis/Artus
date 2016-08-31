@@ -105,22 +105,30 @@ void ArtusConfig::InitConfig( bool configPreLoaded )
 	defaultLoggingConfig.set(el::Level::Warning, el::ConfigurationType::Enabled, "true");
 	defaultLoggingConfig.set(el::Level::Error, el::ConfigurationType::Enabled, "true");
 	defaultLoggingConfig.set(el::Level::Fatal, el::ConfigurationType::Enabled, "true");
-	
+	gErrorIgnoreLevel = kInfo;
+
 	if (minimumLogLevel.second >= el::Level::Info)
 	{
 		defaultLoggingConfig.set(el::Level::Debug, el::ConfigurationType::Enabled, "false");
+		RooMsgService::instance().setGlobalKillBelow(RooFit::INFO) ;
+		gErrorIgnoreLevel = kInfo;
 	}
 	if (minimumLogLevel.second >= el::Level::Warning)
 	{
 		defaultLoggingConfig.set(el::Level::Info, el::ConfigurationType::Enabled, "false");
+		RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING) ;
+		gErrorIgnoreLevel = kWarning;
 	}
 	if (minimumLogLevel.second >= el::Level::Error)
 	{
 		defaultLoggingConfig.set(el::Level::Warning, el::ConfigurationType::Enabled, "false");
+		RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR) ;
+		gErrorIgnoreLevel = kError;
 	}
 	if (minimumLogLevel.second >= el::Level::Fatal)
 	{
 		defaultLoggingConfig.set(el::Level::Error, el::ConfigurationType::Enabled, "false");
+		gErrorIgnoreLevel = kFatal;
 	}
 
 	defaultLoggingConfig.set(el::Level::Debug, el::ConfigurationType::Format, "%msg");

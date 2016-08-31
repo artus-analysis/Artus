@@ -23,6 +23,10 @@
 #include "Artus/Utility/interface/Collections.h"
 #include "Artus/Utility/interface/ArtusLogging.h"
 
+#include "RooFitResult.h"
+#include "RooMsgService.h"
+
+#include "TError.h"
 class ArtusConfig {
 public:
 	// loads the json config file as given in the command line parameters

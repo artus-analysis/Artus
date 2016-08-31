@@ -1,5 +1,6 @@
 <Flags LDFLAGS="-rdynamic" />
 <use name="root"/>
+<use name="roofit"/>
 <use name="boost"/>
 <use name="boost_program_options"/>
 <use name="Artus/Core"/>
