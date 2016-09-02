@@ -3,6 +3,7 @@
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
+#include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
 
 /** Producer class for Z boson reconstruction from muons/electrons.
  *
@@ -16,7 +17,7 @@ class ZProducerBase : public KappaProducerBase
   public:
 	ZProducerBase(std::vector<TLepton1*> KappaProduct::*validLeptons1,
 				  std::vector<TLepton2*> KappaProduct::*validLeptons2,
-				  bool check_same_collection=true, 
+				  bool check_same_collection=true,
 				  bool check_cross_collection=false)
 		: KappaProducerBase(),
 		  m_validLeptonsMember1(validLeptons1),
@@ -35,7 +36,17 @@ class ZProducerBase : public KappaProducerBase
 		  check_cross_ll_collection(false)
 	{
 	}
- 
+
+        void Init(KappaSettings const& settings) override
+        {
+                KappaProducerBase::Init(settings);
+
+                LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("ZMass", [](KappaEvent const & event, KappaProduct const & product)
+                {
+                        return product.m_z.p4.M();
+                });
+        }
+
 
 	void Produce(KappaEvent const& event,
                  KappaProduct& product,
@@ -50,9 +61,9 @@ class ZProducerBase : public KappaProducerBase
 	*/
 	int found_zs = 0;
         resetZ(product);
-        
+
 	if (check_first_ll_collection){
-	  for (unsigned int i = 0; i < (product.*m_validLeptonsMember1).size(); ++i) {	
+	  for (unsigned int i = 0; i < (product.*m_validLeptonsMember1).size(); ++i) {
 	    for (unsigned int j = 0; j < i; ++j){
 		KLepton* const lep1 = (product.*m_validLeptonsMember1).at(i);
 		KLepton* const lep2 = (product.*m_validLeptonsMember1).at(j);
@@ -64,11 +75,11 @@ class ZProducerBase : public KappaProducerBase
 	    }
 	  }
 	}
-	
-	// OK not the most elegant way, but at least it is understandable. 
+
+	// OK not the most elegant way, but at least it is understandable.
 	// If you have time you can also bring this double loop into a function which takes carre of differnt types of m_validLeptonsMember1/2
 	if (check_second_ll_collection){
-	  for (unsigned int i = 0; i < (product.*m_validLeptonsMember2).size(); ++i) {	
+	  for (unsigned int i = 0; i < (product.*m_validLeptonsMember2).size(); ++i) {
 	    for (unsigned int j = 0; j < i; ++j){
 		KLepton* const lep1 = (product.*m_validLeptonsMember2).at(i);
 		KLepton* const lep2 = (product.*m_validLeptonsMember2).at(j);
@@ -79,10 +90,10 @@ class ZProducerBase : public KappaProducerBase
 		}
 	    }
 	  }
-	}	
-	
+	}
+
 	if (check_cross_ll_collection){
-	  for (unsigned int i = 0; i < (product.*m_validLeptonsMember1).size(); ++i) {	
+	  for (unsigned int i = 0; i < (product.*m_validLeptonsMember1).size(); ++i) {
 	    for (unsigned int j = 0; j < (product.*m_validLeptonsMember2).size(); ++j){
 		KLepton* const lep1 = (product.*m_validLeptonsMember1).at(i);
 		KLepton* const lep2 = (product.*m_validLeptonsMember2).at(j);
@@ -94,10 +105,10 @@ class ZProducerBase : public KappaProducerBase
 	    }
 	  }
 	}
-	
+
 	if (found_zs >1 && settings.GetVetoMultipleZs()) resetZ(product);
-	
-	
+
+
 	return;
 }
   private:
@@ -108,7 +119,7 @@ class ZProducerBase : public KappaProducerBase
 	bool check_cross_ll_collection;
         bool lepton_pair_onZ(KLepton* const lep1, KLepton* const lep2, KappaSettings const& settings) const
 	{
-	     if (lep1->charge() + lep2->charge() != 0) return false; // if charge not 0 can't be from Z 
+	     if (lep1->charge() + lep2->charge() != 0) return false; // if charge not 0 can't be from Z
 	     KLV z_test;
 	     z_test.p4 = lep1->p4 + lep2->p4;
 	     double test_mass_diff = fabs(z_test.p4.M() - settings.GetZMass());
@@ -124,7 +135,7 @@ class ZProducerBase : public KappaProducerBase
             product.m_zLeptons = std::make_pair(nullptr, nullptr);
             product.m_zValid = false;
         }
-        void setZ(KappaProduct& product, KLepton* const lep1, KLepton* const lep2) const 
+        void setZ(KappaProduct& product, KLepton* const lep1, KLepton* const lep2) const
         {
             KLV zCandidate;
             zCandidate.p4 = lep1->p4 + lep2->p4;
@@ -137,9 +148,9 @@ class ZProducerBase : public KappaProducerBase
             product.m_zLeptons = zLeptons;
             product.m_zValid = true;
         }
-        
-        
-        
+
+
+
 };
 
 class ZmmProducer : public ZProducerBase<KMuon, KMuon>
