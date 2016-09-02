@@ -48,6 +48,21 @@ public:
 			return event.m_vertexSummary->nVertices;
 		});
 
+                LambdaNtupleConsumer<TTypes>::AddFloatQuantity("firstPV_X", [](event_type const& event, product_type const& product)
+		{
+			return event.m_vertexSummary->pv.position.X();
+		});
+
+                LambdaNtupleConsumer<TTypes>::AddFloatQuantity("firstPV_Y", [](event_type const& event, product_type const& product)
+		{
+			return event.m_vertexSummary->pv.position.Y();
+		});
+
+                LambdaNtupleConsumer<TTypes>::AddFloatQuantity("firstPV_Z", [](event_type const& event, product_type const& product)
+		{
+			return event.m_vertexSummary->pv.position.Z();
+		});
+
 		bool bInpData = settings.GetInputIsData();
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("npuMean", [bInpData](event_type const& event, product_type const& product)
 		{
@@ -78,15 +93,15 @@ public:
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("rho", [](event_type const& event, product_type const& product) {
 			return event.m_pileupDensity->rho;
 		});
-		
+
 		LambdaNtupleConsumer<TTypes>::AddIntQuantity("genDiLeptonDecayMode", [](event_type const& event, product_type const& product) {
 			return Utility::ToUnderlyingValue(product.m_genDiLeptonDecayMode);
 		});
-		
+
 		LambdaNtupleConsumer<TTypes>::AddIntQuantity("genNPartons", [](event_type const& event, product_type const& product) {
 			return product.m_genNPartons;
 		});
-		
+
 		// loop over all quantities containing "weight" (case-insensitive)
 		// and try to find them in the weights map to write them out
 		for (auto const & quantity : settings.GetQuantities())
