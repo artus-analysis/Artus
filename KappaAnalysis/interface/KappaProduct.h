@@ -11,28 +11,28 @@
 /**
    \brief Container class for everything that can be produced in pipeline.
 
-   Defines any outcome that could be produced by a KappaProducer during a common analysis chain in a 
-   given KappaPipeline. Via the PipelineRunner the KappaProduct all extra products in the analysis 
+   Defines any outcome that could be produced by a KappaProducer during a common analysis chain in a
+   given KappaPipeline. Via the PipelineRunner the KappaProduct all extra products in the analysis
    chain will be passed on to subsequent Producers, Filters and Consumers.
 */
 class KappaProduct : public ProductBase {
 public:
 	KappaProduct() {};
 	~KappaProduct() {};
-	
+
 	// settings to be modified (e.g. in the case of run-dependent settings)
 	std::vector<std::string> m_settingsHltPaths;
-	
+
 	std::map<size_t, std::vector<std::string> > m_settingsElectronTriggerFiltersByIndex;
 	std::map<size_t, std::vector<std::string> > m_settingsMuonTriggerFiltersByIndex;
 	std::map<size_t, std::vector<std::string> > m_settingsTauTriggerFiltersByIndex;
 	std::map<size_t, std::vector<std::string> > m_settingsJetTriggerFiltersByIndex;
-	
+
 	std::map<std::string, std::vector<std::string> > m_settingsElectronTriggerFiltersByHltName;
 	std::map<std::string, std::vector<std::string> > m_settingsMuonTriggerFiltersByHltName;
 	std::map<std::string, std::vector<std::string> > m_settingsTauTriggerFiltersByHltName;
 	std::map<std::string, std::vector<std::string> > m_settingsJetTriggerFiltersByHltName;
-	
+
 	std::string m_nickname = "";
 
 	// all weights in this map are multiplied into one "eventWeight" by the EventWeightProducer
@@ -41,14 +41,14 @@ public:
 
 	// events in this map can be written out automatically by the KappaLambdaNtupleConsumer
 	std::map<std::string, double> m_optionalWeights;
-	
+
 	// filled by the GenBosonProducers
 	KGenParticle* m_genBosonParticle = nullptr;
 	RMFLV m_genBosonLV;
 	bool m_genBosonLVFound = false;
-	
+
 	std::vector<KGenParticle*> m_genLeptonsFromBosonDecay;
-	
+
 	// filled by the ValidGenParticleProducers
 	std::vector<KGenParticle*> m_validGenElectrons;
 	std::vector<KGenParticle*> m_validGenMuons;
@@ -73,22 +73,22 @@ public:
 	/// added by ValidMuonsProducer
 	std::vector<KMuon*> m_validMuons;
 	std::vector<KMuon*> m_invalidMuons;
-	
-	/// added by MuonFSRProducer	
+
+	/// added by MuonFSRProducer
 	std::vector<double> m_sumMuonFSRPt;
 	std::vector<double> m_MuonPt;
 
 	/// added by TauEnergyCorrectionProducer
 	// needs to be a shared_ptr in order to be deleted when the product is deleted
 	std::vector<std::shared_ptr<KTau> > m_correctedTaus;
-	
+
 	/// added by <Lepton>CorrectionProducers
 	std::map<const KLepton*, const KLepton*> m_originalLeptons; // key: corrected, value: original
-	
+
 	/// added by ValidTausProducer
 	std::vector<KTau*> m_validTaus;
 	std::vector<KTau*> m_invalidTaus;
-	
+
 	// added by ValidElectronsProducer, ValidMuonsProducer, ValidTausProducer
 	std::vector<KLepton*> m_validLeptons;
 	std::vector<KLepton*> m_invalidLeptons;
@@ -97,7 +97,7 @@ public:
 	std::vector<std::shared_ptr<KBasicJet> > m_correctedJets;
 	std::vector<std::shared_ptr<KJet> > m_correctedTaggedJets;
 	std::map<const KBasicJet*, const KBasicJet*> m_originalJets; // key: corrected, value: original
-	
+
 	/// added by ValidJetsProducer
 	std::vector<KBasicJet*> m_validJets;
 	std::vector<KBasicJet*> m_invalidJets;
@@ -110,7 +110,7 @@ public:
 
 	/// added by GenTauJetProducer
 	std::vector<KGenJet*> m_genTauJets;
-	
+
 	/// added by GenDiLeptonDecayModeProducer
 	KappaEnumTypes::DiLeptonDecayMode m_genDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::NONE;
 
@@ -119,7 +119,7 @@ public:
 	std::map<std::string,std::vector<KJet*>> m_nonBTaggedJetsByWp;
 	std::vector<KJet*> m_bTaggedJets;
 	std::vector<KJet*> m_nonBTaggedJets;
-	
+
 	mutable HLTTools m_hltInfo = HLTTools();
 	// selected means fired (and unprescaled if requested)
 	std::vector<std::string> m_selectedHltNames;
@@ -132,9 +132,9 @@ public:
 	std::map<KTau*, KLV*> m_triggerMatchedTaus;
 	std::map<KBasicJet*, KLV*> m_triggerMatchedJets;
 	std::map<KJet*, KLV*> m_triggerMatchedTaggedJets;
-	
+
 	std::map<KLepton*, KLV*> m_triggerMatchedLeptons;
-	
+
 	/// added by TriggerMatchingProducer
 	// m_detailedTriggerMatchedElectrons[reco lepton][HLT name][filter name] = {trigger objects}
 	std::map<KElectron*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > > m_detailedTriggerMatchedElectrons;
@@ -142,7 +142,7 @@ public:
 	std::map<KTau*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > > m_detailedTriggerMatchedTaus;
 	std::map<KBasicJet*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > > m_detailedTriggerMatchedJets;
 	std::map<KJet*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > > m_detailedTriggerMatchedTaggedJets;
-	
+
 	std::map<KLepton*, std::map<std::string, std::map<std::string, std::vector<KLV*> > >* > m_detailedTriggerMatchedLeptons;
 
 	/// added by GenMatchingProducer
@@ -171,9 +171,21 @@ public:
 	std::pair<KLepton*, KLepton*> m_zLeptons;
 	bool m_zValid;
 
+        /// added by PFCandidatesProducer
+        std::vector<const KPFCandidate*> m_pfChargedHadrons;
+        std::vector<const KPFCandidate*> m_pfNeutralHadrons;
+        std::vector<const KPFCandidate*> m_pfPhotons;
+        std::vector<const KPFCandidate*> m_pfElectrons;
+        std::vector<const KPFCandidate*> m_pfMuons;
+        std::vector<const KPFCandidate*> m_pfHadronicHF;
+        std::vector<const KPFCandidate*> m_pfElectromagneticHF;
+
+        double m_pfSumHt = 0.;
+        RMFLV m_pfSumP4;
+
 	// MVA outputs
 	std::vector<double> m_discriminators;
-	
+
 	std::map<const KGenTau*, GenParticleDecayTree::DecayMode> m_genMatchedDecayMode;
 	std::map<const KGenTau*, int> m_genMatchedProngSize;
 	GenParticleDecayTree::DecayMode m_tau1DecayMode;
@@ -193,7 +205,7 @@ public:
 		for (; lastJetPos != jets.end() && (*lastJetPos)->p4.Pt() > lowerPtThreshold; ++lastJetPos) {}
 		return lastJetPos;
 	}
-	
+
 	template<class TJet>
 	static size_t GetNJetsAbovePtThreshold(std::vector<TJet*> const& jets, float lowerPtThreshold)
 	{

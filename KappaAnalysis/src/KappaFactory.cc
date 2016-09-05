@@ -38,6 +38,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/ZProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenBosonProducers.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidGenParticlesProducers.h"
+#include "Artus/KappaAnalysis/interface/Producers/PFCandidatesProducer.h"
 
 // filter
 #include "Artus/KappaAnalysis/interface/Filters/RunLumiEventFilter.h"
@@ -182,6 +183,8 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new GenBosonFromGenParticlesProducer();
 	else if(id == GenBosonDiLeptonDecayModeProducer().GetProducerId())
 		return new GenBosonDiLeptonDecayModeProducer();
+        else if(id == PFCandidatesProducer().GetProducerId())
+                return new PFCandidatesProducer();
 	else
 		return FactoryBase::createProducer( id );
 }
