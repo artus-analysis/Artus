@@ -11,6 +11,8 @@
 <use name="Artus/Consumer"/>
 <use name="Artus/Utility"/>
 
+<lib name="EG" />
+
 <flags ADD_SUBDIR="1"/>
 
 <export>

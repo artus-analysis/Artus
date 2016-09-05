@@ -3,6 +3,8 @@
 #include "Artus/Core/interface/ConsumerBase.h"
 #include "Artus/KappaAnalysis/interface/KappaTypes.h"
 
+#include "TDatabasePDG.h"
+
 
 class PrintGenParticleDecayTreeConsumer: public ConsumerBase<KappaTypes>
 {
@@ -16,6 +18,8 @@ public:
 	PrintGenParticleDecayTreeConsumer();
 
 	std::string GetConsumerId() const override;
+	
+	virtual void Init(setting_type const& settings);
 
 	void ProcessFilteredEvent(event_type const& event, product_type const& product,
 	                          setting_type const& settings) override;
@@ -25,5 +29,6 @@ public:
 private:
 	void PrintDecayTree(KGenParticle const& genParticle, event_type const& event, int level) const;
 
+	TDatabasePDG m_databasePDG;
 };
 

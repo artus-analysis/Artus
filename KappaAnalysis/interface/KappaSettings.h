@@ -353,4 +353,6 @@ public:
 	// Needed by SampleStitchingWeightProducer
 	IMPL_SETTING_STRINGLIST(StitchingWeights);
 	IMPL_SETTING_STRINGLIST_DEFAULT(StitchingWeightsHighMass, {});
+	
+	IMPL_SETTING_DEFAULT(std::string, DatabasePDG, "$ROOTSYS/etc/pdg_table.txt");
 };
