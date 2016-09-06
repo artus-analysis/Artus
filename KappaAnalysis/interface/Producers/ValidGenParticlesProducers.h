@@ -29,10 +29,12 @@ public:
 	void Produce(event_type const& event, product_type& product,
 	             setting_type const& settings) const override;
 
+protected:
+	std::vector<KGenParticle*> product_type::*m_validLeptonsMember;
+
 private:
 	std::vector<KGenParticle*> product_type::*m_genParticlesMember;
 	int m_pdgId;
-	std::vector<KGenParticle*> product_type::*m_validLeptonsMember;
 	
 	// Can be overwritten for analysis-specific use cases
 	virtual bool AdditionalCriteria(KGenParticle* genParticle, event_type const& event,
@@ -85,5 +87,8 @@ public:
 	std::string GetProducerId() const override;
 
 	void Init(setting_type const& settings) override;
+	
+	void Produce(event_type const& event, product_type& product,
+	             setting_type const& settings) const override;
 };
 

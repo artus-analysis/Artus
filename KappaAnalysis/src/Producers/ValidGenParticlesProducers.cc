@@ -3,6 +3,10 @@
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
 #include "Artus/Utility/interface/DefaultValues.h"
 
+#include <limits>
+
+#include <Math/VectorUtil.h>
+
 
 ValidGenParticlesProducer::ValidGenParticlesProducer(std::vector<KGenParticle*> product_type::*genParticles,
                                                      int pdgId,
@@ -11,9 +15,9 @@ ValidGenParticlesProducer::ValidGenParticlesProducer(std::vector<KGenParticle*> 
                                                      std::vector<std::string>& (setting_type::*GetUpperAbsEtaCuts)(void) const) :
 	ProducerBase<KappaTypes>(),
 	ValidPhysicsObjectTools<KappaTypes, KGenParticle>(GetLowerPtCuts, GetUpperAbsEtaCuts, validLeptons),
+	m_validLeptonsMember(validLeptons),
 	m_genParticlesMember(genParticles),
-	m_pdgId(pdgId),
-	m_validLeptonsMember(validLeptons)
+	m_pdgId(pdgId)
 {
 }
 
@@ -104,5 +108,31 @@ std::string ValidGenTausProducer::GetProducerId() const {
 void ValidGenTausProducer::Init(KappaSettings const& settings)
 {
 	ValidGenParticlesProducer::Init(settings);
+}
+
+void ValidGenTausProducer::Produce(event_type const& event, product_type& product, KappaSettings const& settings) const
+{
+	ValidGenParticlesProducer::Produce(event, product, settings);
+	
+	// matching of KGenParticle to KGenTau
+	for (std::vector<KGenParticle*>::iterator genParticle = (product.*m_validLeptonsMember).begin();
+	     genParticle != (product.*m_validLeptonsMember).end(); ++genParticle)
+	{
+		float minAbsDeltaR = std::numeric_limits<float>::max();
+		float minAbsDeltaPt = std::numeric_limits<float>::max();
+		KGenTau* bestMatchingGenTau = nullptr;
+		
+		for (std::vector<KGenTau>::iterator genTau = event.m_genTaus->begin();
+		     genTau != event.m_genTaus->end(); ++genTau)
+		{
+			float absDeltaR = ROOT::Math::VectorUtil::DeltaR((*genParticle)->p4, genTau->p4);
+			float absDeltaPt = std::abs((*genParticle)->p4.Pt() - genTau->p4.Pt());
+			if ((absDeltaR < minAbsDeltaR) || (absDeltaPt < minAbsDeltaPt))
+			{
+				bestMatchingGenTau = &(*genTau);
+			}
+		}
+		product.m_validGenTausMap[*genParticle] = bestMatchingGenTau;
+	}
 }
 

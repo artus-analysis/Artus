@@ -53,6 +53,7 @@ public:
 	std::vector<KGenParticle*> m_validGenElectrons;
 	std::vector<KGenParticle*> m_validGenMuons;
 	std::vector<KGenParticle*> m_validGenTaus;
+	std::map<KGenParticle*, KGenTau*> m_validGenTausMap;
 
 	// filled by the GenTauDecayProducer
 	GenParticleDecayTree m_genBosonTree;
