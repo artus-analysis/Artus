@@ -129,6 +129,8 @@ void ValidGenTausProducer::Produce(event_type const& event, product_type& produc
 			float absDeltaPt = std::abs((*genParticle)->p4.Pt() - genTau->p4.Pt());
 			if ((absDeltaR < minAbsDeltaR) || (absDeltaPt < minAbsDeltaPt))
 			{
+				minAbsDeltaR = absDeltaR;
+				minAbsDeltaPt = absDeltaPt;
 				bestMatchingGenTau = &(*genTau);
 			}
 		}
