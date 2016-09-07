@@ -1,13 +1,7 @@
 #pragma once
 
-#include <Math/VectorUtil.h>
-
 #include "Kappa/DataFormats/interface/Kappa.h"
-
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
-#include "Artus/KappaAnalysis/interface/KappaEnumTypes.h"
-#include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
-#include "Artus/Utility/interface/Utility.h"
 
 
 /**
