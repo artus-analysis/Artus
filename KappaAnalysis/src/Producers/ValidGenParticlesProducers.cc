@@ -145,10 +145,6 @@ void ValidGenTausProducer::Init(KappaSettings const& settings)
 	{
 		return (product.m_validGenTaus.size() > 1 ? SafeMap::Get(product.m_validGenTausMap, product.m_validGenTaus.at(1))->nProngs : DefaultValues::UndefinedInt);
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("genTauTauDecayMode", [](KappaEvent const & event, KappaProduct const & product)
-	{
-		return Utility::ToUnderlyingValue(product.m_genTauTauDecayMode);
-	});
 }
 
 void ValidGenTausProducer::Produce(event_type const& event, product_type& product, KappaSettings const& settings) const

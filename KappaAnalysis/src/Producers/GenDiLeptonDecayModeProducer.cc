@@ -33,6 +33,11 @@ void GenDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
 	{
 		return ((product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::MM) || (product.m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::EE));
 	});
+	
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("genDiLeptonDecayMode", [](KappaEvent const& event, KappaProduct const& product)
+	{
+		return Utility::ToUnderlyingValue(product.m_genDiLeptonDecayMode);
+	});
 }
 
 void GenDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& product,
