@@ -9,7 +9,7 @@
 
 
 ValidGenParticlesProducer::ValidGenParticlesProducer(std::vector<KGenParticle*> product_type::*genParticles,
-                                                     int pdgId,
+                                                     int absPdgId,
                                                      std::vector<KGenParticle*> product_type::*validLeptons,
                                                      std::vector<std::string>& (setting_type::*GetLowerPtCuts)(void) const,
                                                      std::vector<std::string>& (setting_type::*GetUpperAbsEtaCuts)(void) const) :
@@ -17,7 +17,7 @@ ValidGenParticlesProducer::ValidGenParticlesProducer(std::vector<KGenParticle*> 
 	ValidPhysicsObjectTools<KappaTypes, KGenParticle>(GetLowerPtCuts, GetUpperAbsEtaCuts, validLeptons),
 	m_validLeptonsMember(validLeptons),
 	m_genParticlesMember(genParticles),
-	m_pdgId(pdgId)
+	m_absPdgId(absPdgId)
 {
 }
 
@@ -31,11 +31,11 @@ void ValidGenParticlesProducer::Produce(event_type const& event, product_type& p
 	for (std::vector<KGenParticle*>::iterator genParticle = (product.*m_genParticlesMember).begin();
 	     genParticle != (product.*m_genParticlesMember).end(); ++genParticle)
 	{
-		bool validLepton = ((*genParticle)->pdgId == m_pdgId);
+		bool validLepton = (std::abs((*genParticle)->pdgId) == m_absPdgId);
 		
 		// kinematic cuts
 		validLepton = validLepton && this->PassKinematicCuts(*genParticle, event, product);
-	
+		
 		// check possible analysis-specific criteria
 		validLepton = validLepton && AdditionalCriteria(*genParticle, event, product, settings);
 		

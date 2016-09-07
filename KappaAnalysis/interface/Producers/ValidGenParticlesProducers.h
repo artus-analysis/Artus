@@ -19,7 +19,7 @@ public:
 	typedef typename KappaTypes::setting_type setting_type;
 	
 	ValidGenParticlesProducer(std::vector<KGenParticle*> product_type::*genParticles,
-	                          int pdgId,
+	                          int absPdgId,
 	                          std::vector<KGenParticle*> product_type::*validLeptons,
 	                          std::vector<std::string>& (setting_type::*GetLowerPtCuts)(void) const,
 	                          std::vector<std::string>& (setting_type::*GetUpperAbsEtaCuts)(void) const);
@@ -34,7 +34,7 @@ protected:
 
 private:
 	std::vector<KGenParticle*> product_type::*m_genParticlesMember;
-	int m_pdgId;
+	int m_absPdgId;
 	
 	// Can be overwritten for analysis-specific use cases
 	virtual bool AdditionalCriteria(KGenParticle* genParticle, event_type const& event,
