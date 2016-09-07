@@ -44,6 +44,16 @@ void ValidGenParticlesProducer::Produce(event_type const& event, product_type& p
 			 (product.*m_validLeptonsMember).push_back(*genParticle);
 		}
 	}
+	
+	// preserve Pt sorting of valid gen. leptons
+	std::sort(
+			(product.*m_validLeptonsMember).begin(),
+			(product.*m_validLeptonsMember).end(),
+			[](KGenParticle const* genParticle1, KGenParticle const* genParticle2) -> bool
+			{
+				return genParticle1->p4.Pt() > genParticle2->p4.Pt();
+			}
+	);
 }
 
 bool ValidGenParticlesProducer::AdditionalCriteria(KGenParticle* genParticle, event_type const& event,
