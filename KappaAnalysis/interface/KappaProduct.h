@@ -187,14 +187,6 @@ public:
 	// MVA outputs
 	std::vector<double> m_discriminators;
 
-	std::map<const KGenTau*, GenParticleDecayTree::DecayMode> m_genMatchedDecayMode;
-	std::map<const KGenTau*, int> m_genMatchedProngSize;
-	GenParticleDecayTree::DecayMode m_tau1DecayMode;
-	GenParticleDecayTree::DecayMode m_tau2DecayMode;
-	int m_tau1ProngSize;
-	int m_tau2ProngSize;
-	KappaEnumTypes::TauTauDecayMode m_genTauTauDecayMode;
-
 	// GenPartonCounterProducer
 	int m_genNPartons = -1;
 
