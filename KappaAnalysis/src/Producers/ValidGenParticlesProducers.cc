@@ -29,7 +29,7 @@ void ValidGenParticlesProducer::Init(KappaSettings const& settings)
 void ValidGenParticlesProducer::Produce(event_type const& event, product_type& product, KappaSettings const& settings) const
 {
 	for (std::vector<KGenParticle*>::iterator genParticle = (product.*m_genParticlesMember).begin();
-	     genParticle != (product.*m_genParticlesMember).end(); ++genParticle)
+	     genParticle != (product.*m_genParticlesMember).end();)
 	{
 		bool validLepton = (std::abs((*genParticle)->pdgId) == m_absPdgId);
 		
@@ -41,7 +41,12 @@ void ValidGenParticlesProducer::Produce(event_type const& event, product_type& p
 		
 		if (validLepton)
 		{
-			 (product.*m_validLeptonsMember).push_back(*genParticle);
+			(product.*m_validLeptonsMember).push_back(*genParticle);
+			++genParticle;
+		}
+		else
+		{
+			genParticle = (product.*m_genParticlesMember).erase(genParticle);
 		}
 	}
 	
@@ -49,6 +54,14 @@ void ValidGenParticlesProducer::Produce(event_type const& event, product_type& p
 	std::sort(
 			(product.*m_validLeptonsMember).begin(),
 			(product.*m_validLeptonsMember).end(),
+			[](KGenParticle const* genParticle1, KGenParticle const* genParticle2) -> bool
+			{
+				return genParticle1->p4.Pt() > genParticle2->p4.Pt();
+			}
+	);
+	std::sort(
+			(product.*m_genParticlesMember).begin(),
+			(product.*m_genParticlesMember).end(),
 			[](KGenParticle const* genParticle1, KGenParticle const* genParticle2) -> bool
 			{
 				return genParticle1->p4.Pt() > genParticle2->p4.Pt();
