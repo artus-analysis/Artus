@@ -19,10 +19,10 @@
 
 /**
    \brief GlobalProducer, for valid muons.
-   
+
    Valid muons pass the tightId requirement of the muon POG. In addition there is a loose
    isolation requirement. Two collectons are written into the KappaProduct for valid and
-   invalid muons. 
+   invalid muons.
 
    This Producer needs the following config tags:
    ValidMuonsInput (default: auto)
@@ -64,6 +64,7 @@ public:
 		LOOSE = 2,
 		VETO = 3,
 		FAKEABLE = 4,
+		EMBEDDING = 5
 	};
 	static MuonID ToMuonID(std::string const& muonID)
 	{
@@ -72,9 +73,10 @@ public:
 		else if (muonID == "loose") return MuonID::LOOSE;
 		else if (muonID == "veto") return MuonID::VETO;
 		else if (muonID == "fakeable") return MuonID::FAKEABLE;
+		else if (muonID == "embedding") return MuonID::EMBEDDING;
 		else return MuonID::NONE;
 	}
-	
+
 	enum class MuonIsoType : int
 	{
 		NONE  = -1,
@@ -89,7 +91,7 @@ public:
 		else if (muonIsoType == "user") return MuonIsoType::USER;
 		else return MuonIsoType::NONE;
 	}
-	
+
 	enum class MuonIso : int
 	{
 		NONE  = -1,
@@ -112,7 +114,7 @@ public:
 	std::string GetProducerId() const override {
 		return "ValidMuonsProducer";
 	}
-	
+
 	ValidMuonsProducer(std::vector<KMuon*> product_type::*validMuons=&product_type::m_validMuons,
 	                   std::vector<KMuon*> product_type::*invalidMuons=&product_type::m_invalidMuons,
 	                   std::string (setting_type::*GetMuonID)(void) const=&setting_type::GetMuonID,
@@ -133,13 +135,13 @@ public:
 	void Init(setting_type const& settings) override {
 		ProducerBase<TTypes>::Init(settings);
 		ValidPhysicsObjectTools<TTypes, KMuon>::Init(settings);
-		
+
 		validMuonsInput = ToValidMuonsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidMuonsInput())));
-		
+
 		muonID = ToMuonID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetMuonID)())));
 		muonIsoType = ToMuonIsoType(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetMuonIsoType)())));
 		muonIso = ToMuonIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetMuonIso)())));
-		
+
 		// add possible quantities for the lambda ntuples consumers
 		LambdaNtupleConsumer<TTypes>::AddIntQuantity("nMuons", [](event_type const& event, product_type const& product) {
 			return product.m_validMuons.size();
@@ -202,7 +204,7 @@ public:
 	                     setting_type const& settings) const override
 	{
 		assert(event.m_muons);
-		
+
 		// select input source
 		std::vector<KMuon*> muons;
 		if ((validMuonsInput == ValidMuonsInput::AUTO && (product.m_correctedMuons.size() > 0)) || (validMuonsInput == ValidMuonsInput::CORRECTED))
@@ -226,7 +228,7 @@ public:
 				++muonIndex;
 			}
 		}
-		
+
 		// Apply muon isolation and MuonID
 		for (std::vector<KMuon*>::iterator muon = muons.begin(); muon != muons.end(); ++muon)
 		{
@@ -267,11 +269,15 @@ public:
 			{
 				validMuon = validMuon && IsFakeableMuon(*muon, event, product);
 			}
+			else if (muonID == MuonID::EMBEDDING)
+			{
+				validMuon = validMuon && IsEmbeddingMuon(*muon, event, product);
+			}
 			else if (muonID != MuonID::NONE)
 			{
 				LOG(FATAL) << "Muon ID of type " << Utility::ToUnderlyingValue(muonID) << " not yet implemented!";
 			}
-			
+
 			// Muon Isolation according to Muon POG definitions (independent of year)
 			// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Muon_Isolation
 			// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Muon_Isolation_AN1
@@ -299,13 +305,13 @@ public:
 			}
 			else if (muonIsoType != MuonIsoType::USER && muonIsoType != MuonIsoType::NONE)
 				LOG(FATAL) << "Muon isolation type of type " << Utility::ToUnderlyingValue(muonIsoType) << " not yet implemented!";
-			
+
 			// kinematic cuts
 			validMuon = validMuon && this->PassKinematicCuts(*muon, event, product);
-			
+
 			// check possible analysis-specific criteria
 			validMuon = validMuon && AdditionalCriteria(*muon, event, product, settings);
-			
+
 			if (validMuon)
 			{
 				(product.*m_validMuonsMember).push_back(*muon);
@@ -322,7 +328,7 @@ protected:
 	MuonID muonID;
 	MuonIsoType muonIsoType;
 	MuonIso muonIso;
-	
+
 	// Can be overwritten for analysis-specific use cases
 	virtual bool AdditionalCriteria(KMuon* muon, event_type const& event,
 	                                product_type& product, setting_type const& settings) const
@@ -340,7 +346,7 @@ private:
 	std::string (setting_type::*GetMuonIso)(void) const;
 
 	ValidMuonsInput validMuonsInput;
-	
+
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon_selection
 	bool IsTightMuon2011(KMuon* muon, event_type const& event, product_type& product) const
 	{
@@ -353,7 +359,7 @@ private:
 		       && muon->track.nValidPixelHits > 0
 		       && muon->track.nTrackerLayers() > 8;
 	}
-	
+
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon
 	bool IsTightMuon2012(KMuon* muon, event_type const& event, product_type& product) const
 	{
@@ -367,7 +373,7 @@ private:
 		       && muon->track.nValidPixelHits > 0
 		       && muon->track.nTrackerLayers() > 5;
 	}
-	
+
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Loose_Muon
 	bool IsLooseMuon2012(KMuon* muon, event_type const& event, product_type& product) const
 	{
@@ -379,6 +385,11 @@ private:
 	bool IsLooseMuon2015(KMuon* muon, event_type const& event, product_type& product) const
 	{
 		return muon->idLoose();
+	}
+
+	bool IsEmbeddingMuon(KMuon* muon, event_type const& event, product_type& product) const
+	{
+		return muon->isGlobalMuon() && muon->idLoose();
 	}
 
 	// https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2#Medium_Muon
