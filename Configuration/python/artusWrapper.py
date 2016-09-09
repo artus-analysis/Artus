@@ -458,6 +458,9 @@ class ArtusWrapper(object):
 		                                 help="Custom SE path, if it should different from the work directory.")
 		runningOptionsGroup.add_argument("--log-to-se", default=False, action="store_true",
 		                                 help="Write logfile in batch mode directly to SE. Does not work with remote batch system")
+		runningOptionsGroup.add_argument("--partition-lfn-modifier", default = None,
+		                                 help="Forces a certain access to input files. See base conf for corresponding dictionary")
+		                                 
 
 		if self._executable:
 			self._parser.add_argument("-x", "--executable", help="Artus executable. [Default: %(default)s]", default=self._executable)
@@ -518,7 +521,8 @@ class ArtusWrapper(object):
 				dataset = "dataset = \n\t:ListProvider:" + dbsFileBasepath,
 				epilogarguments = epilogArguments,
 				seoutputfiles = "se output files = *.root" if self._args.log_to_se else "se output files = *.log *.root",
-				backend = backend
+				backend = backend,
+				partitionlfnmodifier = "partition lfn modifier = " + self._args.partition_lfn_modifier if (self._args.partition_lfn_modifier != None) else ""
 		)
 
 		self.modify_replacing_dict()

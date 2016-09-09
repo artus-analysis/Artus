@@ -172,17 +172,17 @@ public:
 	std::pair<KLepton*, KLepton*> m_zLeptons;
 	bool m_zValid;
 
-        /// added by PFCandidatesProducer
-        std::vector<const KPFCandidate*> m_pfChargedHadrons;
-        std::vector<const KPFCandidate*> m_pfNeutralHadrons;
-        std::vector<const KPFCandidate*> m_pfPhotons;
-        std::vector<const KPFCandidate*> m_pfElectrons;
-        std::vector<const KPFCandidate*> m_pfMuons;
-        std::vector<const KPFCandidate*> m_pfHadronicHF;
-        std::vector<const KPFCandidate*> m_pfElectromagneticHF;
+    /// added by PFCandidatesProducer
+    std::vector<const KPFCandidate*> m_pfChargedHadrons;
+    std::vector<const KPFCandidate*> m_pfNeutralHadrons;
+    std::vector<const KPFCandidate*> m_pfPhotons;
+    std::vector<const KPFCandidate*> m_pfElectrons;
+    std::vector<const KPFCandidate*> m_pfMuons;
+    std::vector<const KPFCandidate*> m_pfHadronicHF;
+    std::vector<const KPFCandidate*> m_pfElectromagneticHF;
 
-        double m_pfSumHt = 0.;
-        RMFLV m_pfSumP4;
+    double m_pfSumHt = 0.;
+    RMFLV m_pfSumP4;
 
 	// MVA outputs
 	std::vector<double> m_discriminators;
