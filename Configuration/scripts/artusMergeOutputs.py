@@ -107,8 +107,8 @@ def merge_batch(args):
 	cfg.GLOBAL.workdir = os.path.join(args.project_dir[0] if(args.output_dir == None) else args.output_dir, "workdir_merge")
 	from grid_control.utils.activity import Activity
 	Activity.root = Activity('Running grid-control', name = 'root')
-	from gcTool import gc_create_workflow, createConfig
-	config = createConfig( configDict = Settings.getConfigDict())
+	from gcTool import gc_create_workflow, gc_create_config
+	config = gc_create_config( configDict = Settings.getConfigDict())
 
 	workflow = gc_create_workflow(config)
 	#activate for large verbosity
