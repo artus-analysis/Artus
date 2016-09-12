@@ -81,7 +81,7 @@ void ValidGenParticlesProducer::Produce(event_type const& event, product_type& p
 		}
 		else
 		{
-			genParticle = (product.*m_genParticlesMember).erase(genParticle);
+			++genParticle; // genParticle = (product.*m_genParticlesMember).erase(genParticle);
 		}
 	}
 	
