@@ -16,7 +16,6 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 def main():
 	ROOT.gROOT.SetBatch(True)
-	ROOT.gSystem.Load(os.path.expandvars("$CMSSW_BASE/src/Kappa/lib/libKappa"))
 	
 	parser = argparse.ArgumentParser(description="Searcg for Kappa files containing certain events.",
 	                                 parents=[logger.loggingParser])

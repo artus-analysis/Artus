@@ -19,8 +19,6 @@ from Kappa.Skimming.registerDatasetHelper import *
 
 def main():
 	
-	ROOT.gSystem.Load(os.path.expandvars("$ARTUSPATH/../Kappa/lib/libKappa"))
-	
 	parser = argparse.ArgumentParser(description="Print out the generator weight.",
 	                                 parents=[logger.loggingParser])
 

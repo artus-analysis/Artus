@@ -29,12 +29,6 @@ def pool_plot(args):
 
 class HarryPlotter(object):
 	def __init__(self, list_of_config_dicts=None, list_of_args_strings=None, n_processes=1, n_plots=None):
-		# load Kappa library
-		try:
-			ROOT.gSystem.Load("libKappa")
-		except RuntimeError:
-			log.debug("Could not load libKappa")
-
 		self.output_filenames = self.multi_plots(
 				list_of_config_dicts=list_of_config_dicts,
 				list_of_args_strings=list_of_args_strings,
