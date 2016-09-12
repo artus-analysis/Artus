@@ -146,7 +146,7 @@ void ValidGenTausProducer::Init(KappaSettings const& settings)
 	{
 		return (product.m_validGenTaus.size() > 0 ? SafeMap::Get(product.m_validGenTausMap, product.m_validGenTaus.at(0))->nProngs : DefaultValues::UndefinedInt);
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("genTau2ProngSize", [](KappaEvent const & event, KappaProduct const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("genTau2NProngs", [](KappaEvent const & event, KappaProduct const & product)
 	{
 		return (product.m_validGenTaus.size() > 1 ? SafeMap::Get(product.m_validGenTausMap, product.m_validGenTaus.at(1))->nPi0s : DefaultValues::UndefinedInt);
 	});
@@ -154,7 +154,7 @@ void ValidGenTausProducer::Init(KappaSettings const& settings)
 	{
 		return (product.m_validGenTaus.size() > 0 ? SafeMap::Get(product.m_validGenTausMap, product.m_validGenTaus.at(0))->nPi0s : DefaultValues::UndefinedInt);
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("genTau2Pi0s", [](KappaEvent const & event, KappaProduct const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("genTau2NPi0s", [](KappaEvent const & event, KappaProduct const & product)
 	{
 		return (product.m_validGenTaus.size() > 1 ? SafeMap::Get(product.m_validGenTausMap, product.m_validGenTaus.at(1))->nProngs : DefaultValues::UndefinedInt);
 	});
