@@ -13,18 +13,52 @@ ValidGenParticlesProducer::ValidGenParticlesProducer(std::vector<KGenParticle*> 
                                                      int absPdgId,
                                                      std::vector<KGenParticle*> product_type::*validLeptons,
                                                      std::vector<std::string>& (setting_type::*GetLowerPtCuts)(void) const,
-                                                     std::vector<std::string>& (setting_type::*GetUpperAbsEtaCuts)(void) const) :
+                                                     std::vector<std::string>& (setting_type::*GetUpperAbsEtaCuts)(void) const,
+                                                     std::string name) :
 	ProducerBase<KappaTypes>(),
 	ValidPhysicsObjectTools<KappaTypes, KGenParticle>(GetLowerPtCuts, GetUpperAbsEtaCuts, validLeptons),
 	m_validLeptonsMember(validLeptons),
 	m_genParticlesMember(genParticles),
-	m_absPdgId(absPdgId)
+	m_absPdgId(absPdgId),
+	m_name(name)
 {
 }
 
 void ValidGenParticlesProducer::Init(KappaSettings const& settings)
 {
 	ProducerBase<KappaTypes>::Init(settings);
+
+	// add possible quantities for the lambda ntuples consumers
+	for (size_t leptonIndex = 0; leptonIndex < 2; ++leptonIndex)
+	{
+		std::string quantityNameBase = "gen" + m_name + std::to_string(leptonIndex+1);
+		
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(quantityNameBase+"Pt", [this, leptonIndex](event_type const& event, product_type const& product)
+		{
+			return (((product.*m_validLeptonsMember).size() > leptonIndex) ? (product.*m_validLeptonsMember)[leptonIndex]->p4.Pt() : DefaultValues::UndefinedFloat);
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(quantityNameBase+"Eta", [this, leptonIndex](event_type const& event, product_type const& product)
+		{
+			return (((product.*m_validLeptonsMember).size() > leptonIndex) ? (product.*m_validLeptonsMember)[leptonIndex]->p4.Eta() : DefaultValues::UndefinedFloat);
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(quantityNameBase+"Phi", [this, leptonIndex](event_type const& event, product_type const& product)
+		{
+			return (((product.*m_validLeptonsMember).size() > leptonIndex) ? (product.*m_validLeptonsMember)[leptonIndex]->p4.Phi() : DefaultValues::UndefinedFloat);
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(quantityNameBase+"Mass", [this, leptonIndex](event_type const& event, product_type const& product)
+		{
+			return (((product.*m_validLeptonsMember).size() > leptonIndex) ? (product.*m_validLeptonsMember)[leptonIndex]->p4.mass() : DefaultValues::UndefinedFloat);
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(quantityNameBase+"Charge", [this, leptonIndex](event_type const& event, product_type const& product)
+		{
+			return (((product.*m_validLeptonsMember).size() > leptonIndex) ? (product.*m_validLeptonsMember)[leptonIndex]->charge() : DefaultValues::UndefinedFloat);
+		});
+		
+		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(quantityNameBase+"LV", [this, leptonIndex](event_type const& event, product_type const& product)
+		{
+			return (((product.*m_validLeptonsMember).size() > leptonIndex) ? (product.*m_validLeptonsMember)[leptonIndex]->p4 : DefaultValues::UndefinedRMFLV);
+		});
+	}
 }
 
 void ValidGenParticlesProducer::Produce(event_type const& event, product_type& product, KappaSettings const& settings) const
@@ -83,7 +117,8 @@ ValidGenElectronsProducer::ValidGenElectronsProducer() :
 	                          DefaultValues::pdgIdElectron,
 	                          &product_type::m_validGenElectrons,
 	                          &setting_type::GetGenElectronLowerPtCuts,
-	                          &setting_type::GetGenElectronUpperAbsEtaCuts)
+	                          &setting_type::GetGenElectronUpperAbsEtaCuts,
+	                          "Electrons")
 {
 }
 
@@ -102,7 +137,8 @@ ValidGenMuonsProducer::ValidGenMuonsProducer() :
 	                          DefaultValues::pdgIdMuon,
 	                          &product_type::m_validGenMuons,
 	                          &setting_type::GetGenMuonLowerPtCuts,
-	                          &setting_type::GetGenMuonUpperAbsEtaCuts)
+	                          &setting_type::GetGenMuonUpperAbsEtaCuts,
+	                          "Muons")
 {
 }
 
@@ -121,7 +157,8 @@ ValidGenTausProducer::ValidGenTausProducer() :
 	                          DefaultValues::pdgIdTau,
 	                          &product_type::m_validGenTaus,
 	                          &setting_type::GetGenTauLowerPtCuts,
-	                          &setting_type::GetGenTauUpperAbsEtaCuts)
+	                          &setting_type::GetGenTauUpperAbsEtaCuts,
+	                          "Taus")
 {
 }
 
