@@ -125,7 +125,7 @@ public:
 
 	IMPL_SETTING_STRINGLIST_DEFAULT(HltPaths, {});
 	IMPL_SETTING_DEFAULT(bool, AllowPrescaledTrigger, true);
-	
+
 	IMPL_SETTING_DEFAULT(bool, NoHltFiltering, false);
 
 	IMPL_SETTING_STRINGLIST_DEFAULT(ElectronTriggerFilterNames, {});
@@ -198,7 +198,7 @@ public:
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoElectronGenTauJet, 0.5f);
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoMuonGenTauJet, 0.5f);
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoTauGenTauJet, 0.5f);
-	
+
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenTauJetMatchingRecoElectrons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenTauJetMatchingRecoMuons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonGenTauJetMatchingRecoTaus, false);
@@ -206,27 +206,27 @@ public:
 	IMPL_SETTING_DEFAULT(bool, InvalidateGenTauJetMatchingRecoElectrons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateGenTauJetMatchingRecoMuons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateGenTauJetMatchingRecoTaus, false);
-	
+
 	IMPL_SETTING(int, Year);
-	
+
 	IMPL_SETTING_DEFAULT(bool, DirectIso, true);
-	
+
 	IMPL_SETTING_DEFAULT(std::string, ValidMuonsInput, "auto");
 	IMPL_SETTING(std::string, MuonID);
 	IMPL_SETTING(std::string, MuonIsoType);
 	IMPL_SETTING(std::string, MuonIso);
-	
+
 	IMPL_SETTING_DEFAULT(std::string, ValidElectronsInput, "auto");
 	IMPL_SETTING(std::string, ElectronID);
 	IMPL_SETTING(std::string, ElectronIsoType);
 	IMPL_SETTING(std::string, ElectronIso);
 	IMPL_SETTING(std::string, ElectronReco);
-	
+
 	IMPL_SETTING_DEFAULT(std::string, ValidTausInput, "auto");
 	IMPL_SETTING_STRINGLIST_DEFAULT(TauDiscriminators, {});
 	IMPL_SETTING_DEFAULT(std::string, TauID, "none");
 	IMPL_SETTING_DEFAULT(bool, TauUseOldDMs, false);
-	
+
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetEnergyCorrectionParameters, {});
 	IMPL_SETTING_DEFAULT(std::string, JetEnergyCorrectionUncertaintyParameters, "");
 	IMPL_SETTING_DEFAULT(std::string, JetEnergyCorrectionUncertaintySource, "");
@@ -240,21 +240,21 @@ public:
 	IMPL_SETTING_STRINGLIST_DEFAULT(PuJetIDs, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetTaggerLowerCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetTaggerUpperCuts, {});
-	
+
 	IMPL_SETTING(int, NElectrons);
 	IMPL_SETTING(int, NMuons);
 	IMPL_SETTING(int, NTaus);
 	IMPL_SETTING(int, NJets);
 	IMPL_SETTING(int, NBTaggedJets);
 	IMPL_SETTING(int, NNonBTaggedJets);
-	
+
 	IMPL_SETTING(int, MinNElectrons);
 	IMPL_SETTING(int, MinNMuons);
 	IMPL_SETTING(int, MinNTaus);
 	IMPL_SETTING(int, MinNJets);
 	IMPL_SETTING(int, MinNBTaggedJets);
 	IMPL_SETTING(int, MinNNonBTaggedJets);
-	
+
 	IMPL_SETTING(int, MaxNElectrons);
 	IMPL_SETTING(int, MaxNMuons);
 	IMPL_SETTING(int, MaxNTaus);
@@ -265,23 +265,23 @@ public:
 	//settings for nPUFilter
 	IMPL_SETTING(int, MinNPU);
 	IMPL_SETTING(int, MaxNPU);
-	
+
 	IMPL_SETTING_DEFAULT(size_t, MinNMatchedElectrons, 0);
 	IMPL_SETTING_DEFAULT(size_t, MinNMatchedMuons, 0);
 	IMPL_SETTING_DEFAULT(size_t, MinNMatchedTaus, 0);
 	IMPL_SETTING_DEFAULT(size_t, MinNMatchedJets, 0);
-	
+
 	IMPL_SETTING_STRINGLIST_DEFAULT(ElectronLowerPtCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(MuonLowerPtCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(TauLowerPtCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetLowerPtCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(NonBTaggedJetLowerPtCuts, {});
-		
+
 	IMPL_SETTING_STRINGLIST_DEFAULT(ElectronUpperAbsEtaCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(MuonUpperAbsEtaCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(TauUpperAbsEtaCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetUpperAbsEtaCuts, {});
-	
+
 	IMPL_SETTING_DEFAULT(float, BTaggedJetAbsEtaCut, 0.0f);
 	IMPL_SETTING_DEFAULT(std::string, BTaggedJetTrackCountingHighEffName, "TrackCountingHighEffBJetTags");
 	IMPL_SETTING_DEFAULT(std::string, BTaggedJetCombinedSecondaryVertexName, "CombinedSecondaryVertexBJetTags");
@@ -291,23 +291,23 @@ public:
 	IMPL_SETTING(std::string, BTagSFMethod);
 	IMPL_SETTING_DEFAULT(float, BTagShift, 0.0f);
 	IMPL_SETTING_DEFAULT(float, BMistagShift, 0.0f);
-	
+
 	// Needed by the GenBosonProducers
 	IMPL_SETTING_INTLIST_DEFAULT(BosonPdgIds, {23});
 	IMPL_SETTING_INTLIST_DEFAULT(BosonStatuses, {3});  //keep pythia6 status as default for back-compatibility
-	
+
 	// Needed by the ValidGenParticleProducers
 	IMPL_SETTING_STRINGLIST_DEFAULT(GenElectronLowerPtCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(GenMuonLowerPtCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(GenTauLowerPtCuts, {});
-	
+
 	IMPL_SETTING_STRINGLIST_DEFAULT(GenElectronUpperAbsEtaCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(GenMuonUpperAbsEtaCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(GenTauUpperAbsEtaCuts, {});
 
 	/// Needed by the GenPartonCounterProducer
 	IMPL_SETTING_DEFAULT(int, PartonStatus, 3);  //keep pythia6 status as default for back-compatibility
-	
+
 	/// Needed by the GenDiLeptonDecayModeFilter
 	IMPL_SETTING(std::string, GenDiLeptonDecayMode);
 	IMPL_SETTING_DEFAULT(bool, GenDiLeptonDecayModeFilterLoose, false);
@@ -325,7 +325,7 @@ public:
 	IMPL_SETTING(std::string, PileupWeightFile);
 	IMPL_SETTING(std::string, BTagScaleFactorFile);
 	IMPL_SETTING_DEFAULT(std::string, BTagEfficiencyFile, "");
-	
+
 	IMPL_SETTING(std::string, EventWeight);
 	IMPL_SETTING_DEFAULT(double, BaseWeight, 1.0);
 	IMPL_SETTING_DEFAULT(double, GeneratorWeight, DefaultValues::UndefinedDouble);
@@ -348,11 +348,13 @@ public:
 	// ZProducer
 	IMPL_SETTING_DEFAULT(float, ZMass, 91.1876f);
 	IMPL_SETTING(float, ZMassRange);
+	IMPL_SETTING_DEFAULT(float, LowerZMassCut, 0.);
+	IMPL_SETTING_DEFAULT(float, LeadingLeptonFromZLowerPtCut, 0.);
 	IMPL_SETTING_DEFAULT(bool, VetoMultipleZs, true);
 
 	// Needed by SampleStitchingWeightProducer
 	IMPL_SETTING_STRINGLIST(StitchingWeights);
 	IMPL_SETTING_STRINGLIST_DEFAULT(StitchingWeightsHighMass, {});
-	
+
 	IMPL_SETTING_DEFAULT(std::string, DatabasePDG, "$ROOTSYS/etc/pdg_table.txt");
 };

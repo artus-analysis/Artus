@@ -44,7 +44,7 @@ add_library(artus_core SHARED
 )
 
 target_link_libraries(artus_core
-	${ROOT_LIBRARIES}
+	${ROOT_LIBRARIES} RooFit RooFitCore EG
 	)
 
 add_library(artus_configuration SHARED

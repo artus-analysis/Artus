@@ -45,6 +45,36 @@ class ZProducerBase : public KappaProducerBase
                 {
                         return product.m_z.p4.M();
                 });
+
+                LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingLeptonFromZPt", [](KappaEvent const & event, KappaProduct const & product)
+                {
+                        return product.m_zLeptons.first->p4.Pt();
+                });
+
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingLeptonFromZEta", [](KappaEvent const & event, KappaProduct const & product)
+                {
+                        return product.m_zLeptons.first->p4.Eta();
+                });
+
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingLeptonFromZPhi", [](KappaEvent const & event, KappaProduct const & product)
+                {
+                        return product.m_zLeptons.first->p4.Phi();
+                });
+
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingLeptonFromZPt", [](KappaEvent const & event, KappaProduct const & product)
+                {
+                        return product.m_zLeptons.second->p4.Pt();
+                });
+
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingLeptonFromZEta", [](KappaEvent const & event, KappaProduct const & product)
+                {
+                        return product.m_zLeptons.second->p4.Eta();
+                });
+
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingLeptonFromZPhi", [](KappaEvent const & event, KappaProduct const & product)
+                {
+                        return product.m_zLeptons.second->p4.Phi();
+                });
         }
 
 
@@ -70,7 +100,7 @@ class ZProducerBase : public KappaProducerBase
 		if (lepton_pair_onZ(lep1,lep2,settings)){
 		   found_zs++;
 		   if (is_closer_to_Z((lep1->p4+lep2->p4).M(),product,settings))
-		     setZ(product,lep1,lep2);
+		     setZ(product,lep1,lep2,settings);
 		}
 	    }
 	  }
@@ -86,7 +116,7 @@ class ZProducerBase : public KappaProducerBase
 		if (lepton_pair_onZ(lep1,lep2,settings)){
 		   found_zs++;
 		   if (is_closer_to_Z((lep1->p4+lep2->p4).M(),product,settings))
-		     setZ(product,lep1,lep2);
+		     setZ(product,lep1,lep2,settings);
 		}
 	    }
 	  }
@@ -100,7 +130,7 @@ class ZProducerBase : public KappaProducerBase
 		if (lepton_pair_onZ(lep1,lep2,settings)){
 		   found_zs++;
 		   if (is_closer_to_Z((lep1->p4+lep2->p4).M(),product,settings))
-		     setZ(product,lep1,lep2);
+		     setZ(product,lep1,lep2,settings);
 		}
 	    }
 	  }
@@ -135,7 +165,7 @@ class ZProducerBase : public KappaProducerBase
             product.m_zLeptons = std::make_pair(nullptr, nullptr);
             product.m_zValid = false;
         }
-        void setZ(KappaProduct& product, KLepton* const lep1, KLepton* const lep2) const
+        void setZ(KappaProduct& product, KLepton* const lep1, KLepton* const lep2, KappaSettings const& settings) const
         {
             KLV zCandidate;
             zCandidate.p4 = lep1->p4 + lep2->p4;
@@ -146,7 +176,8 @@ class ZProducerBase : public KappaProducerBase
             else
                zLeptons = std::make_pair(lep2, lep1);
             product.m_zLeptons = zLeptons;
-            product.m_zValid = true;
+            product.m_zValid = (product.m_z.p4.M() > settings.GetLowerZMassCut() &&
+				product.m_zLeptons.first->p4.Pt() > settings.GetLeadingLeptonFromZLowerPtCut()) ;
         }
 
 
