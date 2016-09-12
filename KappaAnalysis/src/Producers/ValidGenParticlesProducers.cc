@@ -118,7 +118,7 @@ ValidGenElectronsProducer::ValidGenElectronsProducer() :
 	                          &product_type::m_validGenElectrons,
 	                          &setting_type::GetGenElectronLowerPtCuts,
 	                          &setting_type::GetGenElectronUpperAbsEtaCuts,
-	                          "Electrons")
+	                          "Electron")
 {
 }
 
@@ -138,7 +138,7 @@ ValidGenMuonsProducer::ValidGenMuonsProducer() :
 	                          &product_type::m_validGenMuons,
 	                          &setting_type::GetGenMuonLowerPtCuts,
 	                          &setting_type::GetGenMuonUpperAbsEtaCuts,
-	                          "Muons")
+	                          "Muon")
 {
 }
 
@@ -158,7 +158,7 @@ ValidGenTausProducer::ValidGenTausProducer() :
 	                          &product_type::m_validGenTaus,
 	                          &setting_type::GetGenTauLowerPtCuts,
 	                          &setting_type::GetGenTauUpperAbsEtaCuts,
-	                          "Taus")
+	                          "Tau")
 {
 }
 
