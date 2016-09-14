@@ -14,3 +14,4 @@
 <use name="boost"/>
 <use name="boost_regex"/>
 
+<bin name="KappaAnalysisExample" file="KappaAnalysisExample.cc"/>
