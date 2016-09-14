@@ -17,8 +17,6 @@ ROOT.gErrorIgnoreLevel = ROOT.kError
 
 def main():
 	
-	ROOT.gSystem.Load(os.path.expandvars("$ARTUSPATH/../Kappa/lib/libKappa"))
-	
 	parser = argparse.ArgumentParser(description="Print out the sum of entries in the Event trees of all inputs sorted by nick names.",
 	                                 parents=[logger.loggingParser])
 

@@ -1,34 +1,16 @@
-# travis config for Artus
 sudo: required
 language: cpp
-services: docker
-notifications:
-  email:
-    on_success: change
-    on_failure: always
-compiler: gcc
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - clang
+services:
+  - docker
+env:
+  - TEST_CMSSW_VERSION=CMSSW_7_6_3 SCRAM_ARCH=slc6_amd64_gcc493
+  - TEST_CMSSW_VERSION=CMSSW_8_0_14 SCRAM_ARCH=slc6_amd64_gcc530
+compiler:
+  - gcc
 before_install:
-  - sudo apt-get -y install libboost1.54-all-dev root-system
-  - export KAPPAPATH=../Kappa
-  - cd ..
-  - git clone https://github.com/KappaAnalysis/Kappa.git
-  - make -C Kappa/DataFormats/test
-  - git clone https://github.com/KappaAnalysis/KappaTools.git
-  - cd KappaTools
-  - cmake .
-  - make -j2
-  - cd ..
-  - wget http://www-ekp.physik.uni-karlsruhe.de/~sieber/CondFormats.tar.gz
-  - tar xzf CondFormats.tar.gz
-  - cd Artus
-install: 
-  - cmake .
-  - make VERBOSE=1
-script: 
-  - ./artus_core_test
+  - docker pull claria/cvmfs-cms
+script:
+  - docker run --privileged -e TEST_CMSSW_VERSION=${TEST_CMSSW_VERSION}
+                            -e SCRAM_ARCH=${SCRAM_ARCH}
+                            -v ${TRAVIS_BUILD_DIR}:/home/travis claria/cvmfs-cms /bin/bash 
+                            -c "cd /home/; /home/travis/test_build.sh"

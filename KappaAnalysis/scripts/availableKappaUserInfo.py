@@ -16,8 +16,6 @@ ROOT.gErrorIgnoreLevel = ROOT.kError
 
 def main():
 	
-	ROOT.gSystem.Load(os.path.expandvars("$CMSSW_BASE/src/Kappa/lib/libKappa"))
-	
 	parser = argparse.ArgumentParser(description="Print out the user info in the kappa skim.", parents=[logger.loggingParser])
 	parser.add_argument("file", help="Kappa skim output file containing the UserInfo in the Lumis tree")
 	parser.add_argument("-k", "--keys", nargs="+",

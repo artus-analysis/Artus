@@ -16,7 +16,6 @@ ROOT.gErrorIgnoreLevel = ROOT.kError
 
 def main():
 	
-	ROOT.gSystem.Load(os.path.expandvars("$CMSSW_BASE/src/Kappa/lib/libKappa"))
 	
 	parser = argparse.ArgumentParser(description="Print out the available jet taggers in a kappa skim.", parents=[logger.loggingParser])
 	parser.add_argument("file", help="Kappa skim output file containing the tagged jet meta data")
