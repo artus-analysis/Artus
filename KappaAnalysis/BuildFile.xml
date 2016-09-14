@@ -1,6 +1,6 @@
 <Flags LDFLAGS="-rdynamic" />
-<Flags LDFLAGS="-Lsrc/Kappa/lib -lKappa" />
 
+<use name="Kappa/DataFormats" />
 <use name="boost" />
 <use name="root" />
 <use name="roottmva"/>

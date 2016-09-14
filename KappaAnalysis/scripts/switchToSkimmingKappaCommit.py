@@ -20,8 +20,6 @@ import Artus.Utility.tools as tools
 
 def main():
 	
-	ROOT.gSystem.Load(os.path.expandvars("$CMSSW_BASE/src/Kappa/lib/libKappa"))
-	
 	parser = argparse.ArgumentParser(description="Switch to the Kappa commit that has been used for a certain skim.",
 	                                 parents=[logger.loggingParser])
 	

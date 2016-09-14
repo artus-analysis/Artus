@@ -1,7 +1,7 @@
 <Flags CXXFLAGS="-g" />
 <Flags LDFLAGS="-rdynamic" />
-<Flags LDFLAGS="-Lsrc/Kappa/lib -lKappa" />
 
+<use name="Kappa/DataFormats" />
 <use name="root" />
 <use name="rootmath" />
 <use name="roofit"/>
