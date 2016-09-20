@@ -66,8 +66,7 @@ def main():
 		print nick
 		print get_n_files_from_nick(nick)
 		if ((len(files) != int(get_n_files_from_nick(nick))) and (not args.no_strict_checking)):
-			log.critical("Found %s files, but expected %s from nick %s. Aborting. Disable this check with --no-strict-checking" % (len(files), get_n_files_from_nick(nick), nick))
-			#sys.exit()
+			log.error("Found %s files, but expected %s from nick %s. No filelist for this sample is saved. Disable this check with --no-strict-checking" % (len(files), get_n_files_from_nick(nick), nick))
 		else:
 			filelists = os.path.join(args.output_dir, "%s_sample_%s_%s.txt" % ("%s", nick, "%s"))
 			dcache_settings = {
