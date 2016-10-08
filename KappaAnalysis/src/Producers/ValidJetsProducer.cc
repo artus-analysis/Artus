@@ -71,6 +71,13 @@ void ValidTaggedJetsProducer::Init(KappaSettings const& settings)
 	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("trailingJetGenMatch", [](KappaEvent const& event, KappaProduct const& product) {
 		return product.m_validJets.size() >= 2 ? static_cast<KJet*>(product.m_validJets.at(1))->genMatch : false;
 	});
+	
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("thirdJetCSV",[bTaggedJetCSVName](KappaEvent const& event, KappaProduct const& product) {
+		return product.m_validJets.size() >= 3 ? static_cast<KJet*>(product.m_validJets.at(2))->getTag(bTaggedJetCSVName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
+	});
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("fourthJetCSV",[bTaggedJetCSVName](KappaEvent const& event, KappaProduct const& product) {
+		return product.m_validJets.size() >= 4 ? static_cast<KJet*>(product.m_validJets.at(3))->getTag(bTaggedJetCSVName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
+	});
 }
 
 // Can be overwritten for analysis-specific use cases
