@@ -255,4 +255,43 @@ namespace Utility {
 		}
 		return string;
 	}
+	
+	template<class TIn, class TOut>
+	TOut ConvertPtEtaPhiMLorentzVector(TIn const& lvIn)
+	{
+		TOut lvOut;
+		lvOut.SetPtEtaPhiM(lvIn.Pt(), lvIn.Eta(), lvIn.Phi(), lvIn.M());
+		return lvOut;
+	}
+	template<class TIn>
+	RMFLV ConvertPtEtaPhiMLorentzVector(TIn const& lvIn)
+	{
+		RMFLV lvOut(lvIn.Pt(), lvIn.Eta(), lvIn.Phi(), lvIn.M());
+		return lvOut;
+	}
+	
+	template<class TIn, class TOut>
+	TOut ConvertPxPyVector(TIn const& vIn)
+	{
+		TOut vOut;
+		vOut.SetX(vIn.X());
+		vOut.SetY(vIn.Y());
+		return vOut;
+	}
+	
+	template<class TIn, class TOut>
+	TOut ConvertMatrixSym(TIn const& mIn, size_t size)
+	{
+		TOut mOut;
+		for (size_t row = 0; row < size; ++row)
+		{
+			for (size_t column = row; column < size; ++column)
+			{
+				mOut[row][column] = mIn.At(row, column);
+				mOut[column][row] = mIn.At(column, row);
+			}
+		}
+		return mOut;
+	}
+	
 } // namespace Utility
