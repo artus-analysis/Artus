@@ -280,12 +280,12 @@ namespace Utility {
 	}
 	
 	template<class TIn, class TOut>
-	TOut ConvertMatrixSym(TIn const& mIn, size_t size)
+	TOut ConvertMatrixSym(TIn const& mIn, size_t sizeIn, size_t sizeOut=0)
 	{
-		TOut mOut;
-		for (size_t row = 0; row < size; ++row)
+		TOut mOut((sizeOut == 0) ? sizeIn : sizeOut, (sizeOut == 0) ? sizeIn : sizeOut);
+		for (size_t row = 0; row < sizeIn; ++row)
 		{
-			for (size_t column = row; column < size; ++column)
+			for (size_t column = row; column < sizeIn; ++column)
 			{
 				mOut[row][column] = mIn.At(row, column);
 				mOut[column][row] = mIn.At(column, row);
