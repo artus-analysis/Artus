@@ -260,7 +260,13 @@ namespace Utility {
 	TOut ConvertPtEtaPhiMLorentzVector(TIn const& lvIn)
 	{
 		TOut lvOut;
-		lvOut.SetPtEtaPhiM(lvIn.Pt(), lvIn.Eta(), lvIn.Phi(), lvIn.mass());
+		lvOut.SetPtEtaPhiM(lvIn.Pt(), lvIn.Eta(), lvIn.Phi(), lvIn.M());
+		return lvOut;
+	}
+	template<class TIn>
+	RMFLV ConvertPtEtaPhiMLorentzVector(TIn const& lvIn)
+	{
+		RMFLV lvOut(lvIn.Pt(), lvIn.Eta(), lvIn.Phi(), lvIn.M());
 		return lvOut;
 	}
 	
