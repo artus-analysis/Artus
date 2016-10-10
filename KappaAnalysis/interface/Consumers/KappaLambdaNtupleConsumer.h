@@ -94,10 +94,6 @@ public:
 			return event.m_pileupDensity->rho;
 		});
 
-		LambdaNtupleConsumer<TTypes>::AddIntQuantity("genDiLeptonDecayMode", [](event_type const& event, product_type const& product) {
-			return Utility::ToUnderlyingValue(product.m_genDiLeptonDecayMode);
-		});
-
 		LambdaNtupleConsumer<TTypes>::AddIntQuantity("genNPartons", [](event_type const& event, product_type const& product) {
 			return product.m_genNPartons;
 		});
