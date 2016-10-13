@@ -22,7 +22,8 @@ public:
 	                          int absPdgId,
 	                          std::vector<KGenParticle*> product_type::*validLeptons,
 	                          std::vector<std::string>& (setting_type::*GetLowerPtCuts)(void) const,
-	                          std::vector<std::string>& (setting_type::*GetUpperAbsEtaCuts)(void) const);
+	                          std::vector<std::string>& (setting_type::*GetUpperAbsEtaCuts)(void) const,
+	                          std::string name);
 
 	void Init(setting_type const& settings) override;
 
@@ -35,6 +36,7 @@ protected:
 private:
 	std::vector<KGenParticle*> product_type::*m_genParticlesMember;
 	int m_absPdgId;
+	std::string m_name;
 	
 	// Can be overwritten for analysis-specific use cases
 	virtual bool AdditionalCriteria(KGenParticle* genParticle, event_type const& event,
