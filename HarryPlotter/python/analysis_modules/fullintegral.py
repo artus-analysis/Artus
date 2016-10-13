@@ -52,7 +52,15 @@ class FullIntegral(analysisbase.AnalysisBase):
 		category = plotData.plotdict.get("category", "NoCategory")
 		if plotData.plotdict.get("full_integral_task", "standard") == "standard":
 			for integral_nicks in plotData.plotdict["full_integral_nicks"]:
-				signal = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_objects"][nick] for nick in integral_nicks.split(" ")])
+				#signal = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_objects"][nick] for nick in integral_nicks.split(" ")])
+				goodnicks = []
+				for nick in integral_nicks.split(" "):
+				  try:
+				      roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_objects"][nick]])
+				      goodnicks.append(nick)
+				  except:
+				      print "!!! Can't add",nick,"to the full integral"
+				signal = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_objects"][nick] for nick in goodnicks])
 				integral = 0
 				for x_bin in xrange(1, signal.GetNbinsX()+1):
 					#log.info("access bin %i"%x_bin)
