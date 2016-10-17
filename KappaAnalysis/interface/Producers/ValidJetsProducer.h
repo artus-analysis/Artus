@@ -291,6 +291,12 @@ public:
 						   && ((*jet)->nCharged > 0)
 						   && ((*jet)->electronFraction < maxCEMFraction);  // == CEM
 			}
+			// for run2: new jet ID between 2.7 < |eta| <= 3.0
+			if (jetIDVersion == JetIDVersion::ID2015 && std::abs((*jet)->p4.eta()) > 2.7f && std::abs((*jet)->p4.eta()) <= 3.0f)
+			{
+				validJet = ((*jet)->photonFraction + (*jet)->hfEMFraction < 0.90f)
+						   && ((*jet)->nConstituents - (*jet)->nCharged > 2);
+			}
 			// for run 2 startup: temporarily no jet ID in forward region
 			if (jetIDVersion == JetIDVersion::ID73Xtemp && std::abs((*jet)->p4.eta()) > 3.0f)
 				validJet = true;
