@@ -1,12 +1,17 @@
 
 #include "Artus/KappaAnalysis/interface/Producers/MuonCorrectionsProducer.h"
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/trim.hpp>
 
+#include "Artus/Utility/interface/SafeMap.h"
+#include "Artus/Utility/interface/Utility.h"
+#include "TLorentzVector.h"
 
 std::string MuonCorrectionsProducer::GetProducerId() const {
 	return "MuonCorrectionsProducer";
 }
 
-void MuonCorrectionsProducer::Init(setting_type const& settings) 
+void MuonCorrectionsProducer::Init(KappaSettings const& settings) 
 {
 	KappaProducerBase::Init(settings);
 }
@@ -51,3 +56,82 @@ void MuonCorrectionsProducer::AdditionalCorrections(KMuon* muon, KappaEvent cons
 {
 }
 
+//Rochester Corrections
+std::string RochMuonCorrectionsProducer::GetProducerId() const { 
+	return "RochMuonCorrectionsProducer"; 
+}
+void RochMuonCorrectionsProducer::Init(KappaSettings const& settings)
+{
+	MuonCorrectionsProducer::Init(settings);
+	
+	muonEnergyCorrection = ToMuonEnergyCorrection(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonEnergyCorrection())));
+	if (muonEnergyCorrection == MuonEnergyCorrection::ROCHCORR2015)
+	{
+		rmcor2015 = new rochcor2015(settings.GetMuonRochesterCorrectionsFile());
+	}
+	if (muonEnergyCorrection == MuonEnergyCorrection::ROCHCORR2016)
+	{
+		rmcor2016 = new rochcor2016(settings.GetMuonRochesterCorrectionsFile());
+	}
+}
+
+void RochMuonCorrectionsProducer::AdditionalCorrections(KMuon* muon, KappaEvent const& event,
+                                                       KappaProduct& product, KappaSettings const& settings) const
+{
+	MuonCorrectionsProducer::AdditionalCorrections(muon, event, product, settings);
+	
+	if (muonEnergyCorrection == MuonEnergyCorrection::FALL2015)
+	{
+		muon->p4 = muon->p4 * (1.0);
+	}
+	else if (muonEnergyCorrection == MuonEnergyCorrection::ROCHCORR2015)
+	{
+		TLorentzVector mu;
+		mu.SetPtEtaPhiM(muon->p4.Pt(),muon->p4.Eta(),muon->p4.Phi(),muon->p4.mass());
+
+		float q = muon->charge();
+		float qter = 1.0;
+
+		if (settings.GetInputIsData())
+		{
+			rmcor2015->momcor_data(mu, q, 0, qter);
+			muon->p4.SetPxPyPzE(mu.Px(),mu.Py(),mu.Pz(),mu.E());
+		}
+		else
+		{
+			int ntrk = muon->track.nPixelLayers + muon->track.nStripLayers; // TODO: this corresponds to reco::HitPattern::trackerLayersWithMeasurementOld(). update to "new" implementation also in Kappa
+			rmcor2015->momcor_mc(mu, q, ntrk, qter);
+			muon->p4.SetPxPyPzE(mu.Px(),mu.Py(),mu.Pz(),mu.E());
+		}
+	}
+	else if (muonEnergyCorrection == MuonEnergyCorrection::ROCHCORR2016)
+	{
+		TLorentzVector mu;
+		mu.SetPtEtaPhiM(muon->p4.Pt(),muon->p4.Eta(),muon->p4.Phi(),muon->p4.mass());
+
+		float q = muon->charge();
+		float qter = 1.0;
+
+		if (settings.GetInputIsData())
+		{
+			rmcor2016->momcor_data(mu, q, 0, qter);
+			muon->p4.SetPxPyPzE(mu.Px(),mu.Py(),mu.Pz(),mu.E());
+		}
+		else
+		{
+			int ntrk = muon->track.nPixelLayers + muon->track.nStripLayers; // TODO: this corresponds to reco::HitPattern::trackerLayersWithMeasurementOld(). update to "new" implementation also in Kappa
+			rmcor2016->momcor_mc(mu, q, ntrk, qter);
+			muon->p4.SetPxPyPzE(mu.Px(),mu.Py(),mu.Pz(),mu.E());
+		}
+	}
+	else if (muonEnergyCorrection != MuonEnergyCorrection::NONE)
+	{
+		LOG(FATAL) << "Muon energy correction of type " << Utility::ToUnderlyingValue(muonEnergyCorrection) << " not yet implemented!";
+	}
+	
+	float muonEnergyCorrectionShift = settings.GetMuonEnergyCorrectionShift();
+	if (muonEnergyCorrectionShift != 1.0)
+	{
+		muon->p4 = muon->p4 * muonEnergyCorrectionShift;
+	}
+}
