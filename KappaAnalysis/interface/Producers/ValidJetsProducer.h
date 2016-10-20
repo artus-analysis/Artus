@@ -302,12 +302,6 @@ public:
 				validJet = true;
 			if (jetIDVersion == JetIDVersion::ID73XnoHF && std::abs((*jet)->p4.eta()) > 3.0f)
 				validJet = false;
-			//for run 2: new jet ID in 2.7<|eta|<3.0 region
-			if (jetIDVersion == JetIDVersion::ID2015 && std::abs((*jet)->p4.eta()) > 2.7f && std::abs((*jet)->p4.eta()) < 3.0f)
-			{
-				validJet = ((*jet)->photonFraction + (*jet)->hfEMFraction < 0.90f)
-				           && ((*jet)->nConstituents - (*jet)->nCharged > 2);
-			}
 			// for run 2: new jet ID in forward region
 			if (jetIDVersion == JetIDVersion::ID2015 && std::abs((*jet)->p4.eta()) > 3.0f)
 			{
