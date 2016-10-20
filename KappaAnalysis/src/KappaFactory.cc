@@ -180,14 +180,6 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new ZemProducer();
 	else if(id == ZeemmProducer().GetProducerId())
 		return new ZeemmProducer();
-	else if(id == GenZmmProducer().GetProducerId())
-		return new GenZmmProducer();	
-	else if(id == GenZeeProducer().GetProducerId())
-		return new GenZeeProducer();
-	else if(id == GenZemProducer().GetProducerId())
-		return new GenZemProducer();
-	else if(id == GenZeemmProducer().GetProducerId())
-		return new GenZeemmProducer();
 	else if(id == GenBosonFromGenParticlesProducer().GetProducerId())
 		return new GenBosonFromGenParticlesProducer();
 	else if(id == GenBosonDiLeptonDecayModeProducer().GetProducerId())
