@@ -52,7 +52,7 @@ void MuonCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& pro
 		// perform possible analysis-specific corrections
 		if (muonEnergyCorrection == MuonEnergyCorrection::FALL2015)
 	{
-		muon->p4 = muon->p4 * (1.0);
+		muon->get()->p4 = muon->get()->p4 * (1.0);
 	}
 		else if (muonEnergyCorrection == MuonEnergyCorrection::ROCHCORR2015)
 		{
