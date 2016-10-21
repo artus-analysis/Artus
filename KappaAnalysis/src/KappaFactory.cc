@@ -87,8 +87,6 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new ElectronCorrectionsProducer();
 	else if(id == MuonCorrectionsProducer().GetProducerId())
 		return new MuonCorrectionsProducer();
-	else if(id == RochMuonCorrectionsProducer().GetProducerId())
-		return new RochMuonCorrectionsProducer();
 	else if(id == TauCorrectionsProducer().GetProducerId())
 		return new TauCorrectionsProducer();
 	else if(id == JetCorrectionsProducer().GetProducerId())

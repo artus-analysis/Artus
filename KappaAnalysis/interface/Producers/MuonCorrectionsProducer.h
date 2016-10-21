@@ -11,8 +11,7 @@
 
 /**
    \brief Producer for muon four momentum corrections.
-
-   (No correction implemented yet.)
+   \Rochester Corrections are included
 */
 class MuonCorrectionsProducer: public KappaProducerBase
 {
@@ -25,17 +24,7 @@ public:
 	void Produce(KappaEvent const& event, KappaProduct& product,
 	                     KappaSettings const& settings) const override;
 
-protected:
-
-	// Can be overwritten for analysis-specific use cases
-	virtual void AdditionalCorrections(KMuon* muon, KappaEvent const& event,
-	                                   KappaProduct& product, KappaSettings const& settings) const;
-
-};
-
-class RochMuonCorrectionsProducer: public MuonCorrectionsProducer
-{
-public:
+	public:
 	enum class MuonEnergyCorrection : int
 	{
 		NONE  = -1,
@@ -50,20 +39,14 @@ public:
 		else if (muonEnergyCorrection == "rochcorr2016") return MuonEnergyCorrection::ROCHCORR2016;
 		else return MuonEnergyCorrection::NONE;
 	}
-	
-	virtual void Init(KappaSettings const& settings) override;
-	std::string GetProducerId() const;
 
 protected:
 
-	// Htt type muon energy corrections
+	// Can be overwritten for analysis-specific use cases
 	virtual void AdditionalCorrections(KMuon* muon, KappaEvent const& event,
-	                                   KappaProduct& product, KappaSettings const& settings) const override;
-
-
+	                                   KappaProduct& product, KappaSettings const& settings) const;
 private:
 	MuonEnergyCorrection muonEnergyCorrection;
 	rochcor2015 *rmcor2015;
 	rochcor2016 *rmcor2016;
-
 };
