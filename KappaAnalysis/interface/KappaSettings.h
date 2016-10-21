@@ -351,6 +351,10 @@ public:
 	IMPL_SETTING_DEFAULT(float, LowerZMassCut, 0.);
 	IMPL_SETTING_DEFAULT(float, LeadingLeptonFromZLowerPtCut, 0.);
 	IMPL_SETTING_DEFAULT(bool, VetoMultipleZs, true);
+	
+	//Needed for RochMuonCorrectionsProducer
+	IMPL_SETTING_DEFAULT(std::string, MuonEnergyCorrection, "none");
+	IMPL_SETTING(std::string, MuonRochesterCorrectionsFile);
 
 	// Needed by SampleStitchingWeightProducer
 	IMPL_SETTING_STRINGLIST(StitchingWeights);
