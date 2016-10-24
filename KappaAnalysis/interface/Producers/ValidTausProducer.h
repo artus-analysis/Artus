@@ -41,11 +41,13 @@ public:
 	{
 		NONE = 0,
 		RECOMMENDATION13TEV = 1,
+		RECOMMENDATION13TEVAOD = 2,
 	};
 
 	static TauID ToTauID(std::string const& tauIDMethod)
 	{
 		if(tauIDMethod == "TauIDRecommendation13TeV") return TauID::RECOMMENDATION13TEV;
+		else if(tauIDMethod == "TauIDRecommendation13TeVAOD") return TauID::RECOMMENDATION13TEVAOD;
 		else return TauID::NONE;
 	}
 
@@ -254,6 +256,8 @@ public:
 			
 			if(tauID == TauID::RECOMMENDATION13TEV)
 					validTau = validTau && IsTauIDRecommendation13TeV(*tau, event, oldTauDMs);
+			if(tauID == TauID::RECOMMENDATION13TEVAOD)
+					validTau = validTau && IsTauIDRecommendation13TeV(*tau, event, oldTauDMs, true);
 			// kinematic cuts
 			validTau = validTau && this->PassKinematicCuts(*tau, event, product);
 			
@@ -306,16 +310,27 @@ private:
 	TauID tauID;
 	bool oldTauDMs;
 
-	bool IsTauIDRecommendation13TeV(KTau* tau, KappaEvent const& event, bool const& oldTauDMs) const
+	bool IsTauIDRecommendation13TeV(KTau* tau, KappaEvent const& event, bool const& oldTauDMs, bool const& isAOD=false) const
 	{
 		const KVertex* vertex = new KVertex(event.m_vertexSummary->pv);
 		float decayModeDiscriminator = (oldTauDMs ? tau->getDiscriminator("decayModeFinding", event.m_tauMetadata)
 							  : tau->getDiscriminator("decayModeFindingNewDMs", event.m_tauMetadata));
-		return ( decayModeDiscriminator > 0.5
-			 && (std::abs(tau->track.ref.z() - vertex->position.z()) < 0.2)
-			// tau dZ requirement for Phys14 sync
-			//&& (Utility::ApproxEqual(tau->track.ref.z(), vertex->position.z()))
-		);
+		if(isAOD)
+		{
+			return ( decayModeDiscriminator > 0.5
+				 && (std::abs(tau->track.ref.z() - vertex->position.z()) < 0.2)
+				// tau dZ requirement for Phys14 sync
+				//&& (Utility::ApproxEqual(tau->track.ref.z(), vertex->position.z()))
+			);
+		}
+		else
+		{
+			return ( decayModeDiscriminator > 0.5
+				 && std::abs(tau->dz) < 0.2
+				// tau dZ requirement for Phys14 sync
+				//&& (Utility::ApproxEqual(tau->track.ref.z(), vertex->position.z()))
+			);
+		}
 	}
 };
 
