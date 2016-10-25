@@ -23,6 +23,8 @@ public:
 
 	void Produce(KappaEvent const& event, KappaProduct& product,
 	                     KappaSettings const& settings) const override;
+private:
+      	mutable HLTTools local_hltInfo; 
 
 };
 

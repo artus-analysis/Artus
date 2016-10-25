@@ -14,7 +14,7 @@ void PrintHltConsumer::ProcessFilteredEvent(event_type const& event, product_typ
                                             setting_type const& settings)
 {
 	// set LumiInfo, needs to be done here for the case running over multiple files
-	product.m_hltInfo.setLumiInfo(event.m_lumiInfo);
+	product.m_hltInfo->setLumiInfo(event.m_lumiInfo);
 
 	LOG(INFO) << "Run: " << event.m_eventInfo->nRun << ", Lumi: " << event.m_eventInfo->nLumi << ", Event: " << event.m_eventInfo->nEvent;
 
@@ -24,13 +24,13 @@ void PrintHltConsumer::ProcessFilteredEvent(event_type const& event, product_typ
 	{
 		// hltName can be a regular expression (e.g. does not need to contain the actual version number
 		// (in this example, this call is not really necessary)
-		std::string hltPath = product.m_hltInfo.getHLTName(*hltName);
-		size_t hltIndex = product.m_hltInfo.getHLTPosition(hltPath);
+		std::string hltPath = product.m_hltInfo->getHLTName(*hltName);
+		size_t hltIndex = product.m_hltInfo->getHLTPosition(hltPath);
 		LOG(INFO) << "  HLT path: \"" << hltPath << "\" (index " << hltIndex << ")";
 
 		if (event.m_eventInfo->hltFired(hltPath, event.m_lumiInfo))
 		{
-			LOG(INFO) << "    HLT fired, Prescale: " << product.m_hltInfo.getPrescale(hltPath);
+			LOG(INFO) << "    HLT fired, Prescale: " << product.m_hltInfo->getPrescale(hltPath);
 
 			// loop over all filters of this fired HLT
 			for (size_t filterIndex = event.m_triggerObjectMetadata->getMinFilterIndex(hltIndex);

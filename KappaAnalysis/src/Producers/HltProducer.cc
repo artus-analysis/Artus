@@ -38,7 +38,9 @@ void HltProducer::Produce(KappaEvent const& event, KappaProduct& product,
 	}
 
 	// set LumiMetadat, needs to be done here for the case running over multiple files
-	product.m_hltInfo.setLumiInfo(event.m_lumiInfo);
+	product.m_hltInfo = &local_hltInfo;
+	product.m_hltInfo->setLumiInfo(event.m_lumiInfo);
+	
 
 	// search (independently) for trigger with lowest prescale and for fired triggers
 	std::string lowestPrescaleHltName;
@@ -52,12 +54,12 @@ void HltProducer::Produce(KappaEvent const& event, KappaProduct& product,
 	product.m_selectedHltPrescales.clear();
 	for (stringvector::const_iterator hltPath = product.m_settingsHltPaths.begin(); hltPath != product.m_settingsHltPaths.end(); ++hltPath)
 	{
-		std::string hltName = product.m_hltInfo.getHLTName(*hltPath);
+		std::string hltName = product.m_hltInfo->getHLTName(*hltPath);
 		if (! hltName.empty())
 		{
 			// look for trigger with lowest prescale
 			// do not use hltName here as a parameter because *hltPath is already cached.
-			int prescale = product.m_hltInfo.getPrescale(*hltPath);
+			int prescale = product.m_hltInfo->getPrescale(*hltPath);
 			if ((prescale < lowestPrescale) && (prescale > 0))
 			{
 				lowestPrescale = prescale;
@@ -70,7 +72,7 @@ void HltProducer::Produce(KappaEvent const& event, KappaProduct& product,
 				product.m_selectedHltNames.push_back(hltName);
 				
 				// do not use hltName here as a parameter because *hltPath is already cached.
-				product.m_selectedHltPositions.push_back(static_cast<int>(product.m_hltInfo.getHLTPosition(*hltPath)));
+				product.m_selectedHltPositions.push_back(static_cast<int>(product.m_hltInfo->getHLTPosition(*hltPath)));
 				
 				product.m_selectedHltPrescales.push_back(prescale);
 				if ((prescale < lowestSelectedPrescale) && (prescale > 0))
