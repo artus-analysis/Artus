@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Kappa/DataFormats/interface/Kappa.h"
+#include "Artus/Utility/interface/Utility.h"
 
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
@@ -48,32 +49,32 @@ class ZProducerBase : public KappaProducerBase
 
                 LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingLeptonFromZPt", [](KappaEvent const & event, KappaProduct const & product)
                 {
-                        return product.m_zLeptons.first->p4.Pt();
+                        return product.m_zValid ? product.m_zLeptons.first->p4.Pt() : DefaultValues::UndefinedFloat;
                 });
 
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingLeptonFromZEta", [](KappaEvent const & event, KappaProduct const & product)
                 {
-                        return product.m_zLeptons.first->p4.Eta();
+                        return product.m_zValid ? product.m_zLeptons.first->p4.Eta() : DefaultValues::UndefinedFloat;
                 });
 
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingLeptonFromZPhi", [](KappaEvent const & event, KappaProduct const & product)
                 {
-                        return product.m_zLeptons.first->p4.Phi();
+                        return product.m_zValid ? product.m_zLeptons.first->p4.Phi() : DefaultValues::UndefinedFloat;
                 });
 
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingLeptonFromZPt", [](KappaEvent const & event, KappaProduct const & product)
                 {
-                        return product.m_zLeptons.second->p4.Pt();
+                        return product.m_zValid ? product.m_zLeptons.second->p4.Pt() : DefaultValues::UndefinedFloat;
                 });
 
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingLeptonFromZEta", [](KappaEvent const & event, KappaProduct const & product)
                 {
-                        return product.m_zLeptons.second->p4.Eta();
+                        return product.m_zValid ? product.m_zLeptons.second->p4.Eta() : DefaultValues::UndefinedFloat;
                 });
 
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingLeptonFromZPhi", [](KappaEvent const & event, KappaProduct const & product)
                 {
-                        return product.m_zLeptons.second->p4.Phi();
+                        return product.m_zValid ? product.m_zLeptons.second->p4.Phi() : DefaultValues::UndefinedFloat;
                 });
 
 		LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("validZ", [](KappaEvent const & event, KappaProduct const & product)
