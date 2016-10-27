@@ -80,6 +80,10 @@ class ZProducerBase : public KappaProducerBase
                 {
                         return product.m_zValid;
                 });
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nZCandidates", [](KappaEvent const & event, KappaProduct const & product)
+                {
+                        return product.m_found_zs;
+                });
         }
 
 
@@ -94,7 +98,7 @@ class ZProducerBase : public KappaProducerBase
 	Exactly one Z must be reconstructed. Events with any more or less are
 	deemed ambigious, not having *a* valid Z.
 	*/
-	int found_zs = 0;
+	product.m_found_zs = 0;
         resetZ(product);
 
 	if (check_first_ll_collection){
@@ -103,7 +107,7 @@ class ZProducerBase : public KappaProducerBase
 		KLepton* const lep1 = (product.*m_validLeptonsMember1).at(i);
 		KLepton* const lep2 = (product.*m_validLeptonsMember1).at(j);
 		if (lepton_pair_onZ(lep1,lep2,settings)){
-		   found_zs++;
+		   product.m_found_zs++;
 		   if (is_closer_to_Z((lep1->p4+lep2->p4).M(),product,settings))
 		     setZ(product,lep1,lep2,settings);
 		}
@@ -119,7 +123,7 @@ class ZProducerBase : public KappaProducerBase
 		KLepton* const lep1 = (product.*m_validLeptonsMember2).at(i);
 		KLepton* const lep2 = (product.*m_validLeptonsMember2).at(j);
 		if (lepton_pair_onZ(lep1,lep2,settings)){
-		   found_zs++;
+		   product.m_found_zs++;
 		   if (is_closer_to_Z((lep1->p4+lep2->p4).M(),product,settings))
 		     setZ(product,lep1,lep2,settings);
 		}
@@ -133,7 +137,7 @@ class ZProducerBase : public KappaProducerBase
 		KLepton* const lep1 = (product.*m_validLeptonsMember1).at(i);
 		KLepton* const lep2 = (product.*m_validLeptonsMember2).at(j);
 		if (lepton_pair_onZ(lep1,lep2,settings)){
-		   found_zs++;
+		   product.m_found_zs++;
 		   if (is_closer_to_Z((lep1->p4+lep2->p4).M(),product,settings))
 		     setZ(product,lep1,lep2,settings);
 		}
@@ -141,7 +145,7 @@ class ZProducerBase : public KappaProducerBase
 	  }
 	}
 
-	if (found_zs >1 && settings.GetVetoMultipleZs()) resetZ(product);
+	if (product.m_found_zs >1 && settings.GetVetoMultipleZs()) resetZ(product);
 
 
 	return;

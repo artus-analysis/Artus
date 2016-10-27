@@ -174,6 +174,7 @@ public:
 	KLV m_z;
 	std::pair<KLepton*, KLepton*> m_zLeptons;
 	bool m_zValid;
+	int m_found_zs = 0;
 
     /// added by PFCandidatesProducer
     std::vector<const KPFCandidate*> m_pfChargedHadrons;
