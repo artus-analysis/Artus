@@ -71,10 +71,10 @@ class FullIntegral(analysisbase.AnalysisBase):
 					os.makedirs(dirpath)
 				if not os.path.exists(outpath):
 					with open(outpath, "w") as outfile:
-						outfile.write("%s: %f\n"%(category, integral))
+						outfile.write("nick: %s category: %s integral: %f\n"%(nick, category, integral))
 				else:
 					with open(outpath, "a") as outfile:
-						outfile.write("%s: %f\n"%(category, integral))
+						outfile.write("nick: %s category: %s integral: %f\n"%(nick, category, integral))
 		else:
 			integral_values = []
 			integral_nicks = []
