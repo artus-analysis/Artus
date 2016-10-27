@@ -75,6 +75,11 @@ class ZProducerBase : public KappaProducerBase
                 {
                         return product.m_zLeptons.second->p4.Phi();
                 });
+
+		LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("validZ", [](KappaEvent const & event, KappaProduct const & product)
+                {
+                        return product.m_zValid;
+                });
         }
 
 
