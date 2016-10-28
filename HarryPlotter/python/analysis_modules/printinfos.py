@@ -13,7 +13,8 @@ import Artus.HarryPlotter.analysisbase as analysisbase
 
 
 class PrintInfos(analysisbase.AnalysisBase):
-
+	"""Print information provided by ROOT for root objects (histograms) used in a plot.
+For histograms, it provides the number of entries and the total weighted sum over the bins."""
 	def __init__(self):
 		super(PrintInfos, self).__init__()
 	
