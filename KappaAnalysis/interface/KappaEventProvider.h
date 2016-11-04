@@ -95,10 +95,10 @@ public:
 			this->m_event.m_beamSpot = this->template SecureFileInterfaceGet<KBeamSpot>(settings.GetBeamSpot());
 		if (! settings.GetVertexSummary().empty())
 			this->m_event.m_vertexSummary = this->template SecureFileInterfaceGet<KVertexSummary>(settings.GetVertexSummary());
-		if (! settings.GetRefitVertex().empty())
-			this->m_event.m_refitVertex = this->template SecureFileInterfaceGet<KRefitVertex>(settings.GetRefitVertex());
-		if (! settings.GetRefitVertexBS().empty())
-			this->m_event.m_refitVertexBS = this->template SecureFileInterfaceGet<KRefitVertex>(settings.GetRefitVertexBS());
+		if (! settings.GetRefitVertices().empty())
+			this->m_event.m_refitVertices = this->template SecureFileInterfaceGet<KRefitVertices>(settings.GetRefitVertices());
+		if (! settings.GetRefitBSVertices().empty())
+			this->m_event.m_refitBSVertices = this->template SecureFileInterfaceGet<KRefitVertices>(settings.GetRefitBSVertices());
 
 		// Track summary
 		if (! settings.GetTrackSummary().empty())

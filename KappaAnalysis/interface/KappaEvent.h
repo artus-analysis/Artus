@@ -68,8 +68,8 @@ public:
 	KVertexSummary* m_vertexSummary = nullptr;
 
 	/// pointer to the refitted vertices collection
-	KRefitVertex* m_refitVertex = nullptr;
-	KRefitVertex* m_refitVertexBS = nullptr;
+	KRefitVertices* m_refitVertices = nullptr;
+	KRefitVertices* m_refitBSVertices = nullptr;
 
 	/// pointer to track summary
 	KTrackSummary* m_trackSummary = nullptr;
