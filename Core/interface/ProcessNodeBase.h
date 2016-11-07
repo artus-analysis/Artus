@@ -5,7 +5,11 @@
  */
 
 #pragma once
+
+#include <string>
+
 #include <boost/noncopyable.hpp>
+
 
 enum class ProcessNodeType {
 	Filter,
@@ -16,7 +20,9 @@ enum class ProcessNodeType {
 class ProcessNodeBase: public boost::noncopyable {
 public:
 
-	virtual ~ProcessNodeBase() {};
+	virtual ~ProcessNodeBase();
+	
+	virtual std::string GetId() const;
 
 	virtual  ProcessNodeType GetProcessNodeType () const = 0;
 };

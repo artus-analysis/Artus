@@ -36,12 +36,12 @@ public:
 	// base implemenations of ProcessEvent / Init and friends
 	friend ConsumerBaseAccess;
 
-	virtual ~ConsumerBaseUntemplated() {}
+	virtual ~ConsumerBaseUntemplated();
 
 	/*
 	 * Must return a unique id of the Consumer.
 	 */
-	virtual std::string GetConsumerId() const = 0;
+	virtual std::string GetConsumerId() const;
 
 protected:
 	// will be implemented by the ConsumerBase class

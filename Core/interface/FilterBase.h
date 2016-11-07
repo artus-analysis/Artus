@@ -27,12 +27,12 @@ public:
 	// base implemenations
 	friend FilterBaseAccess;
 
-	virtual ~FilterBaseUntemplated() {}
+	virtual ~FilterBaseUntemplated();
 
 	/*
 	 * Must return a unique id of the filter.
 	 */
-	virtual std::string GetFilterId() const = 0;
+	virtual std::string GetFilterId() const;
 
 protected:
 
