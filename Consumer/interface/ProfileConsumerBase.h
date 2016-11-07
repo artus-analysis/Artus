@@ -32,7 +32,7 @@ public:
 	}
 
 	std::string GetConsumerId() const override {
-		return "profile";
+		return "ProfileConsumerBase";
 	}
 
 	void Init( typename TTypes::setting_type const& settings) override

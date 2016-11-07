@@ -17,11 +17,6 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 
-	std::string GetConsumerId() const override
-	{
-		return "cutflow";
-	}
-
 	void Init(setting_type const& pset) override {
 		ConsumerBase<TTypes>::Init(pset);
 

@@ -70,6 +70,10 @@ public:
 	typedef std::function<std::vector<std::string>(EventBase const&, ProductBase const&)> vString_extractor_lambda_base;
 	typedef std::function<std::vector<int>(EventBase const&, ProductBase const&)> vInt_extractor_lambda_base;
 
+	std::string GetConsumerId() const override
+	{
+		return "LambdaNtupleConsumer";
+	}
 
 	static void AddBoolQuantity(std::string const& name,
 	                            std::function<bool(event_type const&, product_type const&)> valueExtractor)
