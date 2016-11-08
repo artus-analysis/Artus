@@ -298,11 +298,10 @@ namespace Utility {
 	
 	// http://stackoverflow.com/a/20140812
 	// http://stackoverflow.com/a/2216993
-	template<typename T>
-	const std::string GetClassName(T*) {
+	template<class T>
+	const std::string GetClassName(T* object) {
 		int status = 0;
-		std::string className = abi::__cxa_demangle(typeid(T).name(), 0, 0, &status);
-		return className;
+		return abi::__cxa_demangle(typeid(*object).name(), 0, 0, &status);
 	}
 	
 } // namespace Utility
