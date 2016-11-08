@@ -30,18 +30,18 @@ public:
 
 	// these virtual methods offer no default objects, so far
 	virtual ProducerBaseUntemplated * createProducer ( std::string const& id ) {
+		LOG(FATAL) << "No producer with ID \"" << id << "\" found! Please register it in the factory or adjust the configuration.";
 		return nullptr;
 	}
 
 	virtual FilterBaseUntemplated * createFilter ( std::string const& id ) {
+		LOG(FATAL) << "No filter with ID \"" << id << "\" found! Please register it in the factory or adjust the configuration.";
 		return nullptr;
 	}
 
 	virtual ConsumerBaseUntemplated * createConsumer ( std::string const& id ) {
-		/*if(id == CutFlowHistogramConsumer<TTypes>().GetConsumerId())
-			return new CutFlowHistogramConsumer<TTypes>();
-		else*/
-			return nullptr;
+		LOG(FATAL) << "No consumer with ID \"" << id << "\" found! Please register it in the factory or adjust the configuration.";
+		return nullptr;
 	}
 
 };
