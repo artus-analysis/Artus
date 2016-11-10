@@ -215,3 +215,28 @@ def get_folder_size(folder):
 			total_size += get_folder_size(itempath)
 	return total_size
 
+
+def split_multiplication(formula):
+	opening_brackets = 0
+	closing_brackets = 0
+	for pos in range(1,len(formula)+1):
+		if formula[0:pos].count('(') == formula[0:pos].count(')'):
+			if pos < len(formula):
+				if formula[pos] == '*':
+					return [ split_multiplication(formula[0:pos]), split_multiplication(formula[pos+1:]) ]
+				else:
+					return formula
+			else:
+				return split_multiplication(formula[1:len(formula)-1])
+	return formula
+
+def make_multiplication(splitted_formula):
+	if isinstance(splitted_formula,basestring):
+		return splitted_formula
+	else:
+		merged_formula = ''
+		for item in splitted_formula:
+			n_item = make_multiplication(item)
+			merged_formula = ((merged_formula + "*(" + n_item + ")") if len(merged_formula)>0 else ("(" + n_item +")"))
+		return merged_formula
+
