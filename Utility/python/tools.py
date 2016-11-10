@@ -237,6 +237,10 @@ def make_multiplication(splitted_formula):
 		merged_formula = ''
 		for item in splitted_formula:
 			n_item = make_multiplication(item)
-			merged_formula = ((merged_formula + "*(" + n_item + ")") if len(merged_formula)>0 else ("(" + n_item +")"))
-		return merged_formula
+			if n_item != "1.0":
+				merged_formula = ((merged_formula + "*(" + n_item + ")") if len(merged_formula)>0 else ("(" + n_item +")"))
+		if len(merged_formula) > 0:
+			return merged_formula
+		else:
+			return "(1.0)"
 
