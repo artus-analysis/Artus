@@ -244,3 +244,5 @@ def make_multiplication(splitted_formula):
 		else:
 			return "(1.0)"
 
+def clean_multiplication(formula):
+	return make_multiplication(split_multiplication(formula))
