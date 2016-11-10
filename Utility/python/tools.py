@@ -217,18 +217,23 @@ def get_folder_size(folder):
 
 
 def split_multiplication(formula):
-	opening_brackets = 0
-	closing_brackets = 0
-	for pos in range(1,len(formula)+1):
-		if formula[0:pos].count('(') == formula[0:pos].count(')'):
-			if pos < len(formula):
-				if formula[pos] == '*':
-					return [ split_multiplication(formula[0:pos]), split_multiplication(formula[pos+1:]) ]
+	result = []
+	index = 0
+	for pos in range(index,len(formula)+1):
+		if formula[index:pos].count('(') == formula[index:pos].count(')'):
+			if pos == len(formula):
+				if(len(result) > 0):
+					result.append(split_multiplication(formula[index:pos]))
+					return result
 				else:
-					return formula
+					if formula.startswith("("):
+						return split_multiplication(formula[1:len(formula)-1])
+					else:
+						return formula
 			else:
-				return split_multiplication(formula[1:len(formula)-1])
-	return formula
+				if formula[pos] == '*':
+					result.append(split_multiplication(formula[index:pos]))
+					index = pos+1
 
 def make_multiplication(splitted_formula):
 	if isinstance(splitted_formula,basestring):
