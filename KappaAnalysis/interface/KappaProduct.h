@@ -176,6 +176,8 @@ public:
 	std::pair<KLepton*, KLepton*> m_zLeptons;
 	bool m_zValid;
 	int m_found_zs = 0;
+	double m_theta_Z_LepMinus;
+	std::pair<const KPFCandidate*, const KPFCandidate*> m_zPFLeptonsMatched;
 
     /// added by PFCandidatesProducer
     std::vector<const KPFCandidate*> m_pfChargedHadrons;

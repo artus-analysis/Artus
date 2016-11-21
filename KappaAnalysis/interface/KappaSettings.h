@@ -351,7 +351,9 @@ public:
 	IMPL_SETTING_DEFAULT(float, LowerZMassCut, 0.);
 	IMPL_SETTING_DEFAULT(float, LeadingLeptonFromZLowerPtCut, 0.);
 	IMPL_SETTING_DEFAULT(bool, VetoMultipleZs, true);
-	
+	IMPL_SETTING_DEFAULT(float, deltaRTolleranceForPF, 0.3);
+	IMPL_SETTING_DEFAULT(float, PtTolleranceForPF, 4.);
+
 	//Needed for RochMuonCorrectionsProducer
 	IMPL_SETTING_DEFAULT(std::string, MuonEnergyCorrection, "none");
 	IMPL_SETTING(std::string, MuonRochesterCorrectionsFile);
