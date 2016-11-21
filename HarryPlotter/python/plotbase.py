@@ -119,6 +119,8 @@ class PlotBase(processor.Processor):
 		                                     help="Defines nick names for stacking. Inputs with the same nick name will be stacked. By default, every input gets a unique nick name. [Default: %(default)s]")
 		self.formatting_options.add_argument("--lines", type=float, nargs="+", default=[],
 		                                     help="Place auxiliary lines at given y-values.")
+		self.formatting_options.add_argument("--vertical-lines", type=float, nargs="+", default=[],
+		                                     help="Place auxiliary vertical lines at given x-values.")
 		self.formatting_options.add_argument("--subplot-lines", nargs="+", type=float, default=[1.],
 		                                     help="Place auxiliary lines on the subplot at given y-values.")
 
