@@ -162,6 +162,7 @@ public:
 	std::map<KElectron*, KGenTau*> m_genTauMatchedElectrons;
 	std::map<KMuon*, KGenTau*> m_genTauMatchedMuons;
 	std::map<KTau*, KGenTau*> m_genTauMatchedTaus;
+	std::map<KLepton*, KGenTau*> m_genTauMatchedLeptons;
 	float m_ratioGenTauMatched;
 	float m_genTauMatchDeltaR;
 
