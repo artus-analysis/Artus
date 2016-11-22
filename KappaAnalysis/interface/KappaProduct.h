@@ -179,17 +179,23 @@ public:
 	double m_theta_Z_LepMinus;
 	std::pair<const KPFCandidate*, const KPFCandidate*> m_zPFLeptonsMatched;
 
-    /// added by PFCandidatesProducer
-    std::vector<const KPFCandidate*> m_pfChargedHadrons;
-    std::vector<const KPFCandidate*> m_pfNeutralHadrons;
-    std::vector<const KPFCandidate*> m_pfPhotons;
-    std::vector<const KPFCandidate*> m_pfElectrons;
-    std::vector<const KPFCandidate*> m_pfMuons;
-    std::vector<const KPFCandidate*> m_pfHadronicHF;
-    std::vector<const KPFCandidate*> m_pfElectromagneticHF;
+	/// added by PFCandidatesProducer
+	std::vector<const KPFCandidate*> m_pfChargedHadrons;
+	std::vector<const KPFCandidate*> m_pfNeutralHadrons;
+	std::vector<const KPFCandidate*> m_pfPhotons;
+	std::vector<const KPFCandidate*> m_pfElectrons;
+	std::vector<const KPFCandidate*> m_pfMuons;
+	std::vector<const KPFCandidate*> m_pfHadronicHF;
+	std::vector<const KPFCandidate*> m_pfElectromagneticHF;
 
-    double m_pfSumHt = 0.;
-    RMFLV m_pfSumP4;
+	std::vector<const KPFCandidate*> m_pfChargedHadronsFromFirstPV;
+	std::vector<const KPFCandidate*> m_pfChargedHadronsNotFromFirstPV;
+
+	std::vector<const KPFCandidate*> m_pfNeutralHadronsFromFirstPV;
+	std::vector<const KPFCandidate*> m_pfNeutralHadronsNotFromFirstPV;
+
+	std::vector<const KPFCandidate*> m_pfPhotonsFromFirstPV;
+	std::vector<const KPFCandidate*> m_pfPhotonsNotFromFirstPV;
 
 	// MVA outputs
 	std::vector<double> m_discriminators;
