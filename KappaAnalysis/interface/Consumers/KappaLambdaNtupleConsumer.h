@@ -48,17 +48,17 @@ public:
 			return event.m_vertexSummary->nVertices;
 		});
 
-                LambdaNtupleConsumer<TTypes>::AddFloatQuantity("firstPV_X", [](event_type const& event, product_type const& product)
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("firstPV_X", [](event_type const& event, product_type const& product)
 		{
 			return event.m_vertexSummary->pv.position.X();
 		});
 
-                LambdaNtupleConsumer<TTypes>::AddFloatQuantity("firstPV_Y", [](event_type const& event, product_type const& product)
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("firstPV_Y", [](event_type const& event, product_type const& product)
 		{
 			return event.m_vertexSummary->pv.position.Y();
 		});
 
-                LambdaNtupleConsumer<TTypes>::AddFloatQuantity("firstPV_Z", [](event_type const& event, product_type const& product)
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("firstPV_Z", [](event_type const& event, product_type const& product)
 		{
 			return event.m_vertexSummary->pv.position.Z();
 		});
@@ -89,18 +89,19 @@ public:
 		{
 			return (bInpData) ? DefaultValues::UndefinedFloat : float(static_cast<KGenEventInfo*>(event.m_eventInfo)->qScale);
 		});
-
 		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("rho", [](event_type const& event, product_type const& product) {
 			return event.m_pileupDensity->rho;
 		});
-
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("PFMet", [](event_type const& event, product_type const& product) {
+			return event.m_met->p4.Pt();
+		});
 		LambdaNtupleConsumer<TTypes>::AddIntQuantity("genNPartons", [](event_type const& event, product_type const& product) {
 			return product.m_genNPartons;
 		});
-                LambdaNtupleConsumer<TTypes>::AddIntQuantity("NPFCandidates", [](event_type const& event, product_type const& product)
-                {
-		return event.m_packedPFCandidates->size();
-                });
+		LambdaNtupleConsumer<TTypes>::AddIntQuantity("NPFCandidates", [](event_type const& event, product_type const& product)
+		{
+			return event.m_packedPFCandidates->size();
+		});
 		// loop over all quantities containing "weight" (case-insensitive)
 		// and try to find them in the weights map to write them out
 		for (auto const & quantity : settings.GetQuantities())

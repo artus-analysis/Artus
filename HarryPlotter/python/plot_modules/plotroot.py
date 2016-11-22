@@ -62,6 +62,7 @@ class PlotRoot(plotbase.PlotBase):
 		self.subplot_axes_histogram = None
 		
 		self.subplot_line_graphs = []
+		self.plot_vertical_lines = []
 		
 		self.nice_labels = labels.LabelsDict(latex_version="root")
 	
@@ -274,6 +275,18 @@ class PlotRoot(plotbase.PlotBase):
 		else:
 			plot_pad = canvas
 			plot_pad.Draw()
+		for index, x_line in enumerate(plotData.plotdict["vertical_lines"]):
+			line_graph = ROOT.TGraph(2)
+			line_graph.SetName("vertical_line_graph_"+str(index)+"_"+str(x_line))
+			line_graph.SetTitle()
+
+			line_graph.SetPoint(0, x_line, -sys.float_info.max)
+			line_graph.SetPoint(1, x_line, +sys.float_info.max)
+
+			line_graph.SetLineColor(2)
+			line_graph.SetLineWidth(3)
+			line_graph.SetLineStyle(2)
+			self.plot_vertical_lines.append(line_graph)
 		
 		self.plot_pad_right_margin = plot_pad.GetRightMargin()
 		plot_pad.SetRightMargin(0.25)
@@ -536,6 +549,9 @@ class PlotRoot(plotbase.PlotBase):
 			ROOT.TGaxis.SetExponentOffset(-0.069,0.015,"y")
 			
 			self.axes_histogram.Draw("AXIS")
+
+			for line_graph in self.plot_vertical_lines:
+				line_graph.Draw("L SAME")
 		
 		if plotData.plot.subplot_pad:
 			plotData.plot.subplot_pad.cd()
