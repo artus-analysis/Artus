@@ -197,6 +197,11 @@ public:
 	std::vector<const KPFCandidate*> m_pfPhotonsFromFirstPV;
 	std::vector<const KPFCandidate*> m_pfPhotonsNotFromFirstPV;
 
+	// added by NumberOfParticlesProducer
+	unsigned int m_NLooseElectrons = 0;
+	unsigned int m_NLooseElectronsRelaxedVtxCriteria = 0;
+	unsigned int m_NEmbeddingMuons = 0;
+
 	// MVA outputs
 	std::vector<double> m_discriminators;
 

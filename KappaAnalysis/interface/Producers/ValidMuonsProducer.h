@@ -323,6 +323,10 @@ public:
 		}
 	}
 
+	static bool IsEmbeddingMuon(const KMuon* muon, event_type const& event, product_type& product)
+	{
+		return muon->isGlobalMuon() && muon->idLoose();
+	}
 
 protected:
 	MuonID muonID;
@@ -385,11 +389,6 @@ private:
 	bool IsLooseMuon2015(KMuon* muon, event_type const& event, product_type& product) const
 	{
 		return muon->idLoose();
-	}
-
-	bool IsEmbeddingMuon(KMuon* muon, event_type const& event, product_type& product) const
-	{
-		return muon->isGlobalMuon() && muon->idLoose();
 	}
 
 	// https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2#Medium_Muon

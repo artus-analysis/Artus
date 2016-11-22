@@ -73,6 +73,7 @@ public:
 		LOOSE = 9,
 		MEDIUM = 10,
 		TIGHT = 11,
+		VBTF95_LOOSE_RELAXEDVTXCRITERIA = 12,
 	};
 	static ElectronID ToElectronID(std::string const& electronID)
 	{
@@ -80,6 +81,7 @@ public:
 		else if (electronID == "mvatrig") return ElectronID::MVATRIG;
 		else if (electronID == "vbft95_veto") return ElectronID::VBTF95_VETO;
 		else if (electronID == "vbft95_loose") return ElectronID::VBTF95_LOOSE;
+		else if (electronID == "vbft95_loose_relaxedvtxcriteria") return ElectronID::VBTF95_LOOSE_RELAXEDVTXCRITERIA;
 		else if (electronID == "vbft95_medium") return ElectronID::VBTF95_MEDIUM;
 		else if (electronID == "vbft95_tight") return ElectronID::VBTF95_TIGHT;
 		else if (electronID == "fakeable") return ElectronID::FAKEABLE;
@@ -235,6 +237,8 @@ public:
 				valid = valid && IsVetoVbtf95Electron(*electron, event, product);
 			else if (electronID == ElectronID::VBTF95_LOOSE)
 				valid = valid && IsLooseVbtf95Electron(*electron, event, product);
+			else if (electronID == ElectronID::VBTF95_LOOSE_RELAXEDVTXCRITERIA)
+				valid = valid && IsLooseVbtf95ElectronRelaxedVtxCriteria(*electron, event, product);
 			else if (electronID == ElectronID::VBTF95_MEDIUM)
 				valid = valid && IsMediumVbtf95Electron(*electron, event, product);
 			else if (electronID == ElectronID::VBTF95_TIGHT)
@@ -395,6 +399,18 @@ public:
 //			return CutBasedID(electron, event, 0.009f, 0.1f, 0.03f, 0.1f, 0.02f, 0.2f, 0.05f, 0.15f, 1);
 // https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Spring15_selection_25ns
 			return CutBasedID(electron, event, 0.00814f, 0.182f, 0.0301f, 0.0897f, 0.118f, 0.822f, 0.126f, 0.121f, 1);
+		}
+		return false;
+	}
+	static bool IsLooseVbtf95ElectronRelaxedVtxCriteria(const KElectron* electron, event_type const& event, product_type const& product)
+	{
+		if (std::abs(electron->p4.Eta()) < DefaultValues::EtaBorderEB)
+		{
+			return CutBasedID(electron, event, 0.0105f, 0.115f, 0.0103f, 0.104f, 1000000.0f, 1000000.0f, 0.102f, 0.0893f, 2);
+		}
+		else
+		{
+			return CutBasedID(electron, event, 0.00814f, 0.182f, 0.0301f, 0.0897f, 1000000.0f, 1000000.0f, 0.126f, 0.121f, 1);
 		}
 		return false;
 	}
