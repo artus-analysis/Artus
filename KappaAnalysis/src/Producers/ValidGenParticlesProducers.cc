@@ -18,9 +18,9 @@ ValidGenParticlesProducer::ValidGenParticlesProducer(std::vector<KGenParticle*> 
 	ProducerBase<KappaTypes>(),
 	ValidPhysicsObjectTools<KappaTypes, KGenParticle>(GetLowerPtCuts, GetUpperAbsEtaCuts, validLeptons),
 	m_validLeptonsMember(validLeptons),
+	m_name(name),
 	m_genParticlesMember(genParticles),
-	m_absPdgId(absPdgId),
-	m_name(name)
+	m_absPdgId(absPdgId)
 {
 }
 
@@ -171,30 +171,28 @@ void ValidGenTausProducer::Init(KappaSettings const& settings)
 	ValidGenParticlesProducer::Init(settings);
 
 	// add possible quantities for the lambda ntuples consumers
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("genTau1DecayMode", [](KappaEvent const & event, KappaProduct const & product)
+	for (size_t leptonIndex = 0; leptonIndex < 2; ++leptonIndex)
 	{
-		return (product.m_validGenTaus.size() > 0 ? SafeMap::Get(product.m_validGenTausMap, product.m_validGenTaus.at(0))->genDecayMode() : DefaultValues::UndefinedInt);
-	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("genTau2DecayMode", [](KappaEvent const & event, KappaProduct const & product)
-	{
-		return (product.m_validGenTaus.size() > 1 ? SafeMap::Get(product.m_validGenTausMap, product.m_validGenTaus.at(1))->genDecayMode() : DefaultValues::UndefinedInt);
-	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("genTau1NProngs", [](KappaEvent const & event, KappaProduct const & product)
-	{
-		return (product.m_validGenTaus.size() > 0 ? SafeMap::Get(product.m_validGenTausMap, product.m_validGenTaus.at(0))->nProngs : DefaultValues::UndefinedInt);
-	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("genTau2NProngs", [](KappaEvent const & event, KappaProduct const & product)
-	{
-		return (product.m_validGenTaus.size() > 1 ? SafeMap::Get(product.m_validGenTausMap, product.m_validGenTaus.at(1))->nProngs : DefaultValues::UndefinedInt);
-	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("genTau1NPi0s", [](KappaEvent const & event, KappaProduct const & product)
-	{
-		return (product.m_validGenTaus.size() > 0 ? SafeMap::Get(product.m_validGenTausMap, product.m_validGenTaus.at(0))->nPi0s : DefaultValues::UndefinedInt);
-	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("genTau2NPi0s", [](KappaEvent const & event, KappaProduct const & product)
-	{
-		return (product.m_validGenTaus.size() > 1 ? SafeMap::Get(product.m_validGenTausMap, product.m_validGenTaus.at(1))->nPi0s : DefaultValues::UndefinedInt);
-	});
+		std::string quantityNameBase = "gen" + m_name + std::to_string(leptonIndex+1);
+		
+		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(quantityNameBase+"VisibleLV", [this, leptonIndex](event_type const& event, product_type const& product)
+		{
+			return (((product.*m_validLeptonsMember).size() > leptonIndex) ? static_cast<KGenTau*>((product.*m_validLeptonsMember)[leptonIndex])->visible.p4 : DefaultValues::UndefinedRMFLV);
+		});
+		
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(quantityNameBase+"DecayMode", [this, leptonIndex](event_type const& event, product_type const& product)
+		{
+			return (((product.*m_validLeptonsMember).size() > leptonIndex) ? static_cast<KGenTau*>((product.*m_validLeptonsMember)[leptonIndex])->genDecayMode() : DefaultValues::UndefinedInt);
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(quantityNameBase+"NProngs", [this, leptonIndex](event_type const& event, product_type const& product)
+		{
+			return (((product.*m_validLeptonsMember).size() > leptonIndex) ? static_cast<KGenTau*>((product.*m_validLeptonsMember)[leptonIndex])->nProngs : DefaultValues::UndefinedInt);
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(quantityNameBase+"NPi0s", [this, leptonIndex](event_type const& event, product_type const& product)
+		{
+			return (((product.*m_validLeptonsMember).size() > leptonIndex) ? static_cast<KGenTau*>((product.*m_validLeptonsMember)[leptonIndex])->nPi0s : DefaultValues::UndefinedInt);
+		});
+	}
 }
 
 void ValidGenTausProducer::Produce(event_type const& event, product_type& product, KappaSettings const& settings) const
