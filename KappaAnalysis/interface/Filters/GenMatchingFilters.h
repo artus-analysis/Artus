@@ -52,12 +52,6 @@ class ElectronGenMatchingFilter: public GenMatchingFilterBase<KElectron>
 {
 
 public:
-
-	
-	std::string GetFilterId() const override {
-		return "ElectronGenMatchingFilter";
-	}
-	
 	ElectronGenMatchingFilter() :
 		GenMatchingFilterBase<KElectron>(&KappaProduct::m_genParticleMatchedElectrons,
 		                                 &KappaProduct::m_validElectrons)
@@ -75,12 +69,6 @@ class MuonGenMatchingFilter: public GenMatchingFilterBase<KMuon>
 {
 
 public:
-
-	
-	std::string GetFilterId() const override {
-		return "MuonGenMatchingFilter";
-	}
-	
 	MuonGenMatchingFilter() :
 		GenMatchingFilterBase<KMuon>(&KappaProduct::m_genParticleMatchedMuons,
 		                             &KappaProduct::m_validMuons)
@@ -98,12 +86,6 @@ class TauGenMatchingFilter: public GenMatchingFilterBase<KTau>
 {
 
 public:
-
-	
-	std::string GetFilterId() const override {
-		return "TauGenMatchingFilter";
-	}
-	
 	TauGenMatchingFilter() :
 		GenMatchingFilterBase<KTau>(&KappaProduct::m_genParticleMatchedTaus,
 		                            &KappaProduct::m_validTaus)
@@ -121,12 +103,6 @@ class JetGenMatchingFilter: public GenMatchingFilterBase<KBasicJet>
 {
 
 public:
-
-	
-	std::string GetFilterId() const override {
-		return "JetGenMatchingFilter";
-	}
-	
 	JetGenMatchingFilter() :
 		GenMatchingFilterBase<KBasicJet>(&KappaProduct::m_genParticleMatchedJets,
 		                                 &KappaProduct::m_validJets)

@@ -67,9 +67,8 @@ class GenTauMatchingRecoElectronMinDeltaRFilter: public GenTauMatchingRecoPartic
 {
 
 public:
-
 	GenTauMatchingRecoElectronMinDeltaRFilter();
-	std::string GetFilterId() const override;
+
 };
 
 
@@ -79,9 +78,8 @@ class GenTauMatchingRecoMuonMinDeltaRFilter: public GenTauMatchingRecoParticleMi
 {
 
 public:
-
 	GenTauMatchingRecoMuonMinDeltaRFilter();
-	std::string GetFilterId() const override;
+
 };
 
 
@@ -91,7 +89,6 @@ class GenTauMatchingRecoTauMinDeltaRFilter: public GenTauMatchingRecoParticleMin
 {
 
 public:
-
 	GenTauMatchingRecoTauMinDeltaRFilter();
-	std::string GetFilterId() const override;
+
 };

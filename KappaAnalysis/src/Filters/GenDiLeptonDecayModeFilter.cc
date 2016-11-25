@@ -5,10 +5,6 @@
 #include "Artus/KappaAnalysis/interface/Filters/GenDiLeptonDecayModeFilter.h"
 
 
-std::string GenDiLeptonDecayModeFilter::GetFilterId() const {
-	return "GenDiLeptonDecayModeFilter";
-}
-
 void GenDiLeptonDecayModeFilter::Init(setting_type const& settings)
 {
 	FilterBase<KappaTypes>::Init(settings);

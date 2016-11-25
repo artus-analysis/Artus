@@ -18,8 +18,6 @@
 class HltFilter: public FilterBase<KappaTypes> {
 
 public:
-
-	std::string GetFilterId() const override;
 	bool DoesEventPass(KappaEvent const& event, KappaProduct const& product,
 	                           KappaSettings const& settings) const override;
 

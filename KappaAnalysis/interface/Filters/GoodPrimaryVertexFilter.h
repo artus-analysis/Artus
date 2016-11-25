@@ -16,8 +16,6 @@ class GoodPrimaryVertexFilter: public FilterBase<KappaTypes>
 {
 
 public:
-
-	std::string GetFilterId() const override;
 	void Init(setting_type const& settings) override;
 	bool DoesEventPass(KappaEvent const& event, KappaProduct const& product,
 	                           KappaSettings const& settings) const override;

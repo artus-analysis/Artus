@@ -73,7 +73,6 @@ class ValidElectronsMinDeltaRFilter: public ValidLeptonsMinDeltaRFilterBase<KEle
 public:
 
 	ValidElectronsMinDeltaRFilter();
-	std::string GetFilterId() const override;
 };
 
 
@@ -85,7 +84,6 @@ class ValidMuonsMinDeltaRFilter: public ValidLeptonsMinDeltaRFilterBase<KMuon>
 public:
 
 	ValidMuonsMinDeltaRFilter();
-	std::string GetFilterId() const override;
 };
 
 
@@ -97,7 +95,6 @@ class ValidTausMinDeltaRFilter: public ValidLeptonsMinDeltaRFilterBase<KTau>
 public:
 
 	ValidTausMinDeltaRFilter();
-	std::string GetFilterId() const override;
 };
 
 /** Filter events with too close valid leptons
@@ -108,6 +105,5 @@ class ValidLeptonsMinDeltaRFilter: public ValidLeptonsMinDeltaRFilterBase<KLepto
 public:
 
 	ValidLeptonsMinDeltaRFilter();
-	std::string GetFilterId() const override;
 };
 

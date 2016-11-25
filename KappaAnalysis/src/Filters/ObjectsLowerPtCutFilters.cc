@@ -1,9 +1,6 @@
 
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsLowerPtCutFilters.h"
 
-std::string ElectronLowerPtCutsFilter::GetFilterId() const {
-	return "ElectronLowerPtCutsFilter";
-}
 
 void ElectronLowerPtCutsFilter::Init(KappaSettings const& settings) {
 
@@ -13,10 +10,6 @@ void ElectronLowerPtCutsFilter::Init(KappaSettings const& settings) {
 }
 
 
-std::string MuonLowerPtCutsFilter::GetFilterId() const {
-	return "MuonLowerPtCutsFilter";
-}
-
 void MuonLowerPtCutsFilter::Init(KappaSettings const& settings) {
 
 	FilterBase<KappaTypes>::Init(settings);
@@ -24,10 +17,6 @@ void MuonLowerPtCutsFilter::Init(KappaSettings const& settings) {
 	this->Initialise(settings.GetMuonLowerPtCuts());
 }
 
-
-std::string TauLowerPtCutsFilter::GetFilterId() const {
-	return "TauLowerPtCutsFilter";
-}
 
 void TauLowerPtCutsFilter::Init(KappaSettings const& settings) {
 
@@ -37,10 +26,6 @@ void TauLowerPtCutsFilter::Init(KappaSettings const& settings) {
 }
 
 
-std::string JetLowerPtCutsFilter::GetFilterId() const {
-	return "JetLowerPtCutsFilter";
-}
-
 void JetLowerPtCutsFilter::Init(KappaSettings const& settings) {
 
 	FilterBase<KappaTypes>::Init(settings);
@@ -48,10 +33,6 @@ void JetLowerPtCutsFilter::Init(KappaSettings const& settings) {
 	this->Initialise(settings.GetJetLowerPtCuts());
 }
 
-
-std::string NonBTaggedJetLowerPtCutsFilter::GetFilterId() const {
-	return "NonBTaggedJetLowerPtCutsFilter";
-}
 
 void NonBTaggedJetLowerPtCutsFilter::Init(KappaSettings const& settings) {
 

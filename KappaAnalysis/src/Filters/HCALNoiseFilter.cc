@@ -5,10 +5,6 @@
 #include "Artus/KappaAnalysis/interface/Filters/HCALNoiseFilter.h"
 
 
-std::string HCALNoiseFilter::GetFilterId() const {
-	return "HCALNoiseFilter";
-}
-
 void HCALNoiseFilter::Init(setting_type const& settings)
 {
 	FilterBase<KappaTypes>::Init(settings);

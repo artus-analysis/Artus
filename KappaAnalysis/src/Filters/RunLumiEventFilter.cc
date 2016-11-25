@@ -1,8 +1,5 @@
 #include "Artus/KappaAnalysis/interface/Filters/RunLumiEventFilter.h"
 
-std::string RunLumiEventFilter::GetFilterId() const {
-	return "RunLumiEventFilter";
-}
 
 bool RunLumiEventFilter::DoesEventPass(KappaEvent const& event, KappaProduct const& product,
                                        KappaSettings const& settings) const 

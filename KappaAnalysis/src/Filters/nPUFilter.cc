@@ -1,8 +1,5 @@
 #include "Artus/KappaAnalysis/interface/Filters/nPUFilter.h"
 
-std::string nPUFilter::GetFilterId() const {
-	return "nPUFilter";
-}
 
 bool nPUFilter::DoesEventPass(KappaEvent const& event, KappaProduct const& product,
                                        KappaSettings const& settings) const 
