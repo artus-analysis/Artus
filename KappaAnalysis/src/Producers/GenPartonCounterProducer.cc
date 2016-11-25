@@ -3,10 +3,6 @@
 #include "Artus/Utility/interface/Utility.h"
 
 
-std::string GenPartonCounterProducer::GetProducerId() const {
-	return "GenPartonCounterProducer";
-}
-
 void GenPartonCounterProducer::Init(KappaSettings const& settings)
 {
 	ProducerBase<KappaTypes>::Init(settings);

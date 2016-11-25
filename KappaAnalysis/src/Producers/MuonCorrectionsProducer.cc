@@ -7,9 +7,6 @@
 #include "Artus/Utility/interface/Utility.h"
 #include "TLorentzVector.h"
 
-std::string MuonCorrectionsProducer::GetProducerId() const {
-	return "MuonCorrectionsProducer";
-}
 
 void MuonCorrectionsProducer::Init(KappaSettings const& settings) 
 {

@@ -364,8 +364,6 @@ class ValidJetsProducer: public ValidJetsProducerBase<KBasicJet, KBasicJet>
 {
 public:
 	ValidJetsProducer();
-
-	std::string GetProducerId() const override;
 };
 
 
@@ -383,7 +381,6 @@ class ValidTaggedJetsProducer: public ValidJetsProducerBase<KJet, KBasicJet>
 {
 public:
 	ValidTaggedJetsProducer();
-	std::string GetProducerId() const override;
 	void Init(KappaSettings const& settings) override;
 
 protected:

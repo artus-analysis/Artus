@@ -139,10 +139,6 @@ public:
 		else return ElectronReco::NONE;
 	}
 
-	std::string GetProducerId() const override {
-		return "ValidElectronsProducer";
-	}
-
 	ValidElectronsProducer(std::vector<KElectron*> product_type::*validElectrons=&product_type::m_validElectrons,
 	                       std::vector<KElectron*> product_type::*invalidElectrons=&product_type::m_invalidElectrons,
 	                       std::string (setting_type::*GetElectronID)(void) const=&setting_type::GetElectronID,

@@ -7,10 +7,6 @@
 #include "Artus/Utility/interface/Utility.h"
 
 
-std::string GenDiLeptonDecayModeProducer::GetProducerId() const {
-	return "GenDiLeptonDecayModeProducer";
-}
-
 void GenDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
 {
 	ProducerBase<KappaTypes>::Init(settings);

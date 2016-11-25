@@ -2,10 +2,6 @@
 #include "Artus/KappaAnalysis/interface/Producers/ValidLeptonsProducer.h"
 
 
-std::string ValidLeptonsProducer::GetProducerId() const {
-	return "ValidLeptonsProducer";
-}
-
 void ValidLeptonsProducer::Produce(KappaEvent const& event, KappaProduct& product,
                      KappaSettings const& settings) const
 {

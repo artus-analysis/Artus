@@ -12,10 +12,9 @@
 class PFCandidatesProducer : public KappaProducerBase
 {
 	public:
-
 		void Init(KappaSettings const& settings) override;
-		std::string GetProducerId() const override { return "PFCandidatesProducer"; };
 		void Produce(KappaEvent const& event, KappaProduct& product, KappaSettings const& settings) const override;
+	
 	private:
 		void fill_pfCandidate(std::vector<const KPFCandidate*>&, std::vector<const KPFCandidate*>&, std::vector<const KPFCandidate*>&, const KPFCandidate*) const;
 };

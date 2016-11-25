@@ -5,11 +5,6 @@
 #include "Artus/Utility/interface/Utility.h"
 
 
-std::string SampleStitchingWeightProducer::GetProducerId() const
-{
-	return "SampleStitchingWeightProducer";
-}
-
 void SampleStitchingWeightProducer::Init(KappaSettings const& settings)
 {
 	stitchingWeightsByIndex = Utility::ParseMapTypes<size_t, double>(

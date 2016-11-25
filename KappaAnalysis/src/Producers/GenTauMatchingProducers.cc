@@ -2,10 +2,6 @@
 #include "Artus/KappaAnalysis/interface/Producers/GenTauMatchingProducers.h"
 
 
-std::string RecoElectronGenTauMatchingProducer::GetProducerId() const {
-	return "RecoElectronGenTauMatchingProducer";
-}
-
 RecoElectronGenTauMatchingProducer::RecoElectronGenTauMatchingProducer() :
 	GenTauMatchingProducerBase<KElectron>(&product_type::m_genTauMatchedElectrons,
 	                                      &product_type::m_validElectrons,
@@ -18,10 +14,6 @@ RecoElectronGenTauMatchingProducer::RecoElectronGenTauMatchingProducer() :
 }
 
 
-std::string RecoMuonGenTauMatchingProducer::GetProducerId() const {
-	return "RecoMuonGenTauMatchingProducer";
-}
-
 RecoMuonGenTauMatchingProducer::RecoMuonGenTauMatchingProducer() :
 	GenTauMatchingProducerBase<KMuon>(&product_type::m_genTauMatchedMuons,
 	                                  &product_type::m_validMuons,
@@ -33,10 +25,6 @@ RecoMuonGenTauMatchingProducer::RecoMuonGenTauMatchingProducer() :
 {
 }
 
-
-std::string RecoTauGenTauMatchingProducer::GetProducerId() const {
-	return "RecoTauGenTauMatchingProducer";
-}
 
 RecoTauGenTauMatchingProducer::RecoTauGenTauMatchingProducer() :
 	GenTauMatchingProducerBase<KTau>(&product_type::m_genTauMatchedTaus,

@@ -111,10 +111,6 @@ public:
 		else return MuonIso::NONE;
 	}
 
-	std::string GetProducerId() const override {
-		return "ValidMuonsProducer";
-	}
-
 	ValidMuonsProducer(std::vector<KMuon*> product_type::*validMuons=&product_type::m_validMuons,
 	                   std::vector<KMuon*> product_type::*invalidMuons=&product_type::m_invalidMuons,
 	                   std::string (setting_type::*GetMuonID)(void) const=&setting_type::GetMuonID,

@@ -57,10 +57,6 @@ public:
 		else if (validTausInput == "corrected") return ValidTausInput::CORRECTED;
 		else return ValidTausInput::AUTO;
 	}
-
-	std::string GetProducerId() const override {
-		return "ValidTausProducer";
-	}
 	
 	ValidTausProducer() :
 		KappaProducerBase(),

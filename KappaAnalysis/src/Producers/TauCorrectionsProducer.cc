@@ -2,10 +2,6 @@
 #include "Artus/KappaAnalysis/interface/Producers/TauCorrectionsProducer.h"
 
 
-std::string TauCorrectionsProducer::GetProducerId() const {
-	return "TauCorrectionsProducer";
-}
-
 void TauCorrectionsProducer::Init(KappaSettings const& settings)
 {
 	KappaProducerBase::Init(settings);

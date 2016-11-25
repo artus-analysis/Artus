@@ -15,9 +15,6 @@ class ElectronCorrectionsProducer: public KappaProducerBase
 {
 
 public:
-
-	std::string GetProducerId() const override;
-	
 	void Init(KappaSettings const& settings)  override;
 
 	void Produce(KappaEvent const& event, KappaProduct & product,

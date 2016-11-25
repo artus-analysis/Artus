@@ -4,10 +4,6 @@
 #include "Artus/KappaAnalysis/interface/Producers/PUWeightProducer.h"
 
 
-std::string PUWeightProducer::GetProducerId() const {
-	return "PUWeightProducer";
-}
-
 void PUWeightProducer::Init(KappaSettings const& settings) {
 	KappaProducerBase::Init(settings);
 

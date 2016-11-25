@@ -131,9 +131,6 @@ class RecoElectronGenTauJetMatchingProducer: public GenTauJetMatchingProducerBas
 {
 
 public:
-	
-	std::string GetProducerId() const override;
-
 	RecoElectronGenTauJetMatchingProducer();
 
 };
@@ -149,9 +146,6 @@ class RecoMuonGenTauJetMatchingProducer: public GenTauJetMatchingProducerBase<KM
 {
 
 public:
-	
-	std::string GetProducerId() const override;
-	
 	RecoMuonGenTauJetMatchingProducer();
 
 };
@@ -167,9 +161,6 @@ class RecoTauGenTauJetMatchingProducer: public GenTauJetMatchingProducerBase<KTa
 {
 
 public:
-	
-	std::string GetProducerId() const override;
-	
 	RecoTauGenTauJetMatchingProducer();
 
 };

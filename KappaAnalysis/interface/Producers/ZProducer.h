@@ -237,7 +237,6 @@ class ZProducerBase : public KappaProducerBase
 class ZmmProducer : public ZProducerBase<KMuon, KMuon>
 {
   public:
-	std::string GetProducerId() const override { return "ZmmProducer"; };
 	ZmmProducer()
 		: ZProducerBase<KMuon, KMuon>(&KappaProduct::m_validMuons)
 	{
@@ -247,7 +246,6 @@ class ZmmProducer : public ZProducerBase<KMuon, KMuon>
 class ZeeProducer : public ZProducerBase<KElectron, KElectron>
 {
   public:
-	std::string GetProducerId() const override { return "ZeeProducer"; };
 	ZeeProducer()
 		: ZProducerBase<KElectron, KElectron>(&KappaProduct::m_validElectrons)
 	{
@@ -257,7 +255,6 @@ class ZeeProducer : public ZProducerBase<KElectron, KElectron>
 class ZemProducer : public ZProducerBase<KElectron, KMuon>
 {
   public:
-	std::string GetProducerId() const override { return "ZemProducer"; };
 	ZemProducer()
 		: ZProducerBase<KElectron, KMuon>(&KappaProduct::m_validElectrons, &KappaProduct::m_validMuons,false,true)
 	{
@@ -268,7 +265,6 @@ class ZemProducer : public ZProducerBase<KElectron, KMuon>
 class ZeemmProducer : public ZProducerBase<KElectron, KMuon>
 {
   public:
-	std::string GetProducerId() const override { return "ZeemmProducer"; };
 	ZeemmProducer()
 		: ZProducerBase<KElectron, KMuon>(&KappaProduct::m_validElectrons, &KappaProduct::m_validMuons,true,false)
 	{

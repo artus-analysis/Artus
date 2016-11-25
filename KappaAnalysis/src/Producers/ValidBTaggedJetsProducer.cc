@@ -2,10 +2,6 @@
 #include "Artus/KappaAnalysis/interface/Producers/ValidBTaggedJetsProducer.h"
 
 
-std::string ValidBTaggedJetsProducer::GetProducerId() const {
-	return "ValidBTaggedJetsProducer";
-}
-
 void ValidBTaggedJetsProducer::Init(KappaSettings const& settings)
 {
 	KappaProducerBase::Init(settings);

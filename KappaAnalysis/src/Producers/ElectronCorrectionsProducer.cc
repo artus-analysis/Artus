@@ -1,9 +1,6 @@
 
 #include "Artus/KappaAnalysis/interface/Producers/ElectronCorrectionsProducer.h"
 
-std::string ElectronCorrectionsProducer::GetProducerId() const {
-	return "ElectronCorrectionsProducer";
-}
 
 void ElectronCorrectionsProducer::Init(setting_type const& settings)
 {

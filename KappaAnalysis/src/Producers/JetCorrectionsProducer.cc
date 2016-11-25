@@ -8,18 +8,10 @@ JetCorrectionsProducer::JetCorrectionsProducer() :
 {
 }
 
-std::string JetCorrectionsProducer::GetProducerId() const {
-	return "JetCorrectionsProducer";
-}
-
 
 TaggedJetCorrectionsProducer::TaggedJetCorrectionsProducer() :
 	JetCorrectionsProducerBase<KJet>(&KappaEvent::m_tjets,
 	                                                     &KappaProduct::m_correctedTaggedJets)
 {
-}
-
-std::string TaggedJetCorrectionsProducer::GetProducerId() const {
-	return "TaggedJetCorrectionsProducer";
 }
 

@@ -2,9 +2,6 @@
 #include "Artus/KappaAnalysis/interface/Consumers/KappaLambdaNtupleConsumer.h"
 #include "Artus/KappaAnalysis/interface/Producers/HltProducer.h"
 
-std::string HltProducer::GetProducerId() const {
-	return "HltProducer";
-}
 
 void HltProducer::Init(KappaSettings const& settings)
 {

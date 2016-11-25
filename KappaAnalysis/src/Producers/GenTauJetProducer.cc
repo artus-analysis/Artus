@@ -1,9 +1,6 @@
 
 #include "Artus/KappaAnalysis/interface/Producers/GenTauJetProducer.h"
 
-std::string GenTauJetProducer::GetProducerId() const{
-	return "GenTauJetProducer";
-}
 
 void GenTauJetProducer::Init(KappaSettings const& settings)
 {
