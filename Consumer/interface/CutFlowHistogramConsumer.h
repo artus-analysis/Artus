@@ -22,7 +22,7 @@ public:
 
 	std::string GetConsumerId() const override
 	{
-		return "CutFlowHistogramConsumer";
+		return "cutflow_histogram";
 	}
 
 	CutFlowHistogramConsumer() :

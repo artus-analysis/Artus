@@ -35,7 +35,7 @@ public:
 	}
 
 	std::string GetConsumerId() const override {
-		return "DrawHist1dConsumerBase";
+		return "hist1d";
 	}
 
 	void Init(setting_type const& pset) override {

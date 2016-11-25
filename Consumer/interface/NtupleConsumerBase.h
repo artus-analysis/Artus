@@ -49,7 +49,7 @@ public:
 
 	std::string GetConsumerId() const override
 	{
-		return "NtupleConsumerBase";
+		return "ntuple";
 	}
 
 	void ProcessFilteredEvent(event_type const& event,
