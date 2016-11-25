@@ -32,11 +32,11 @@ public:
 
 protected:
 	std::vector<KGenParticle*> product_type::*m_validLeptonsMember;
+	std::string m_name;
 
 private:
 	std::vector<KGenParticle*> product_type::*m_genParticlesMember;
 	int m_absPdgId;
-	std::string m_name;
 	
 	// Can be overwritten for analysis-specific use cases
 	virtual bool AdditionalCriteria(KGenParticle* genParticle, event_type const& event,

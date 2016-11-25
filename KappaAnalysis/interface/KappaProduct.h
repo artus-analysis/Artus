@@ -162,6 +162,7 @@ public:
 	std::map<KElectron*, KGenTau*> m_genTauMatchedElectrons;
 	std::map<KMuon*, KGenTau*> m_genTauMatchedMuons;
 	std::map<KTau*, KGenTau*> m_genTauMatchedTaus;
+	std::map<KLepton*, KGenTau*> m_genTauMatchedLeptons;
 	float m_ratioGenTauMatched;
 	float m_genTauMatchDeltaR;
 
@@ -175,18 +176,31 @@ public:
 	std::pair<KLepton*, KLepton*> m_zLeptons;
 	bool m_zValid;
 	int m_found_zs = 0;
+	double m_theta_Z_LepMinus;
+	std::pair<const KPFCandidate*, const KPFCandidate*> m_zPFLeptonsMatched;
 
-    /// added by PFCandidatesProducer
-    std::vector<const KPFCandidate*> m_pfChargedHadrons;
-    std::vector<const KPFCandidate*> m_pfNeutralHadrons;
-    std::vector<const KPFCandidate*> m_pfPhotons;
-    std::vector<const KPFCandidate*> m_pfElectrons;
-    std::vector<const KPFCandidate*> m_pfMuons;
-    std::vector<const KPFCandidate*> m_pfHadronicHF;
-    std::vector<const KPFCandidate*> m_pfElectromagneticHF;
+	/// added by PFCandidatesProducer
+	std::vector<const KPFCandidate*> m_pfChargedHadrons;
+	std::vector<const KPFCandidate*> m_pfNeutralHadrons;
+	std::vector<const KPFCandidate*> m_pfPhotons;
+	std::vector<const KPFCandidate*> m_pfElectrons;
+	std::vector<const KPFCandidate*> m_pfMuons;
+	std::vector<const KPFCandidate*> m_pfHadronicHF;
+	std::vector<const KPFCandidate*> m_pfElectromagneticHF;
 
-    double m_pfSumHt = 0.;
-    RMFLV m_pfSumP4;
+	std::vector<const KPFCandidate*> m_pfChargedHadronsFromFirstPV;
+	std::vector<const KPFCandidate*> m_pfChargedHadronsNotFromFirstPV;
+
+	std::vector<const KPFCandidate*> m_pfNeutralHadronsFromFirstPV;
+	std::vector<const KPFCandidate*> m_pfNeutralHadronsNotFromFirstPV;
+
+	std::vector<const KPFCandidate*> m_pfPhotonsFromFirstPV;
+	std::vector<const KPFCandidate*> m_pfPhotonsNotFromFirstPV;
+
+	// added by NumberOfParticlesProducer
+	unsigned int m_NLooseElectrons = 0;
+	unsigned int m_NLooseElectronsRelaxedVtxCriteria = 0;
+	unsigned int m_NEmbeddingMuons = 0;
 
 	// MVA outputs
 	std::vector<double> m_discriminators;

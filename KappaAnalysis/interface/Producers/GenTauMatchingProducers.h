@@ -37,7 +37,7 @@ public:
 	                           TauDecayMode tauDecayMode,
 	                           float (setting_type::*GetDeltaRMatchingRecoObjectGenTau)(void) const,
 	                           bool (setting_type::*GetInvalidateNonGenTauMatchingObjects)(void) const,
-				   bool (setting_type::*GetInvalidateGenTauMatchingObjects)(void) const) :
+	                           bool (setting_type::*GetInvalidateGenTauMatchingObjects)(void) const) :
 		m_genTauMatchedObjects(genTauMatchedObjects),
 		m_validObjects(validObjects),
 		m_invalidObjects(invalidObjects),
@@ -62,7 +62,7 @@ public:
 	}
 
 	void Produce(event_type const& event, product_type& product,
-						 setting_type const& settings) const override
+	             setting_type const& settings) const override
 	{
 		double ratioGenTauMatched = 0;
 		
@@ -89,6 +89,7 @@ public:
 						if(deltaR<(settings.*GetDeltaRMatchingRecoObjectGenTau)() && deltaR<deltaRmin)
 						{
 							(product.*m_genTauMatchedObjects)[*validObject] = &(*genTau);
+							product.m_genTauMatchedLeptons[*validObject] = &(*genTau);
 							ratioGenTauMatched += 1.0 / (product.*m_validObjects).size();
 							product.m_genTauMatchDeltaR = deltaR;
 							deltaRmin = deltaR;

@@ -363,7 +363,7 @@ public:
 			}
 			else
 			{
-				LOG(FATAL) << "No lambda expression available for quantity \"" << *quantity << "\"!";
+				LOG(FATAL) << "No lambda expression available for quantity \"" << *quantity << "\" (pipeline \"" << settings.GetName() << "\")!";
 			}
 
 			++quantityIndex;

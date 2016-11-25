@@ -106,6 +106,9 @@ public:
 			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->p4.mass() : DefaultValues::UndefinedFloat;
 		});
 		
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("leadingTauDecayMode", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->decayMode : DefaultValues::UndefinedInt;
+		});
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingTauCharge", [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validTaus.size() >= 1 ? product.m_validTaus[0]->charge() : DefaultValues::UndefinedFloat;
 		});
@@ -158,6 +161,9 @@ public:
 			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->p4.Phi() : DefaultValues::UndefinedFloat;
 		});
 		
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("trailingTauDecayMode", [](KappaEvent const& event, KappaProduct const& product) {
+			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->decayMode : DefaultValues::UndefinedInt;
+		});
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingTauCharge", [](KappaEvent const& event, KappaProduct const& product) {
 			return product.m_validTaus.size() >= 2 ? product.m_validTaus[1]->charge() : DefaultValues::UndefinedFloat;
 		});
