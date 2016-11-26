@@ -118,14 +118,14 @@ void ValidBTaggedJetsProducer::Produce(KappaEvent const& event, KappaProduct& pr
 					if (settings.GetBMistagShift()>0)
 						bmistagSys = BTagSF::kUp;
 
-					LOG(DEBUG) << "Btagging shifts tag/mistag : " << settings.GetBTagShift() << " " << settings.GetBMistagShift(); 
+					LOG_N_TIMES(1, DEBUG) << "Btagging shifts tag/mistag : " << settings.GetBTagShift() << " " << settings.GetBMistagShift(); 
 					
 					bool taggedBefore = validBJet;
 					validBJet = m_bTagSfMap.at(*workingPoint)->isbtagged(tjet->p4.pt(), tjet->p4.eta(), combinedSecondaryVertex,
 									jetflavor, btagSys, bmistagSys, settings.GetYear(), bTagWorkingPoint); 
 					
 					if (taggedBefore != validBJet)
-						LOG(DEBUG) << "Promoted/demoted : " << validBJet;
+						LOG_N_TIMES(20, DEBUG) << "Promoted/demoted : " << validBJet;
 				}
 				
 				else if (m_bTagSFMethod == BTagScaleFactorMethod::OTHER) {
