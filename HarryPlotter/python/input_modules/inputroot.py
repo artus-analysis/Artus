@@ -58,6 +58,8 @@ class InputRoot(inputfile.InputFile):
 		self.input_options.add_argument("--tree-draw-options", nargs='+', type=str, default="",
 		                                help="Optional argument for TTree:Draw() call. Use e.g. \"prof\" or \"profs\" for projections of 2D-Histograms to 1D. See also http://root.cern.ch/ooot/html/TTree.html#TTree:Draw. Specify \"TGraph\" for plotting y- vs. x-values into a TGraph. \"TGraphErrors\" leads to a graph with errors by specifying inputs with --x-expressions <x values>:<x errors> --y-expressions <y values>:<y errors>. \"TGraphAsymmErrorsX\" leads to a graph with asymmetric x-errors by specifying inputs with --x-expressions <x values>:<x errors (down)>:<x errors (up)> --y-expressions <y values>. \"TGraphAsymmErrorsY\" leads to a graph with asymmetric y-errors by specifying inputs with --x-expressions <x values> --y-expressions <y values>:<y errors (down)>:<y errors (up)>. ROOT.TTree.MakeProxy and ROOT.TTree.Process is usued to fill the histograms from a tree instead of ROOT.TTree.Draw or ROOT.TTree.Project in case you specify the option \"proxy\" This is needed e.g. for formulas containing two branches/leafs with different non-fundamental types.")
 		
+		self.input_options.add_argument("--keep-trees", nargs="?", type="bool", default=False, const=True,
+		                                help="Keep trees in the plot data object during the complete run. [Default: %(default)s]")
 		self.input_options.add_argument("--read-config", nargs="?", type="bool", default=False, const=True,
 		                                help="Read in the config stored in Artus ROOT outputs. [Default: %(default)s]")
 
@@ -158,7 +160,7 @@ class InputRoot(inputfile.InputFile):
 				root_histogram.Print()
 			
 			# save tree (chain) in plotData merging chains with same nick names
-			if root_tree_chain != None:
+			if (not root_tree_chain is None) and plotData.plotdict["keep_trees"]:
 				if nick in plotData.plotdict.setdefault("root_trees", {}):
 					plotData.plotdict["root_trees"][nick].Add(root_tree_chain)
 				else:
