@@ -33,11 +33,6 @@ class PlotData(object):
 		self.input_json_dicts = []
 		self.fit_results = {}
 
-	def __del__(self):
-		for key in ["root_objects", "root_trees"]:
-			if key in self.plotdict:
-				del self.plotdict[key]
-
 	@staticmethod
 	def webplotting(www, output_dir, output_filenames=False, www_text = False, www_title="plots_archive", additional_output_files=False, save_legend=False, export_json = False, no_publish=False):
 		# set some needed variables
