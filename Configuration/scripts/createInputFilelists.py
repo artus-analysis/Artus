@@ -10,6 +10,8 @@ import glob
 import os
 import sys
 from Kappa.Skimming.registerDatasetHelper import get_n_files_from_nick
+from math import ceil
+job_submission_limit = 10000 # crab3 can only submit up to 10000 jobs per task
 
 def create_filelist(files, filename, symlink=None):
 	with open(filename, "w") as filelist:
@@ -37,6 +39,8 @@ def main():
 	                    help="Skimming output directory was created by Grid-Control (it has a different structure). [Default: not %(default)s]")
 	parser.add_argument("--no-strict-checking", default=False, action="store_true",
 	                    help="Disable check, if number of files in DBS is the same as Kappa files to be added to the file list. [Default: not %(default)s]")
+	parser.add_argument("--units-per-job", default=1, type=int,
+	                    help="Set the number of files per job you set in your crab campaign [Default: %(default)s]")
 
 	args = parser.parse_args()
 	logger.initLogger(args)
@@ -63,9 +67,17 @@ def main():
 			continue
 		nick = os.path.basename(files[0]).replace("kappa_", "")
 		nick = nick[:nick.rfind("_")]
+		n_files_from_nick = get_n_files_from_nick(nick)
 		print nick
-		print get_n_files_from_nick(nick)
-		if ((len(files) != int(get_n_files_from_nick(nick))) and (not args.no_strict_checking)):
+		print n_files_from_nick," files"
+		if args.units_per_job > 1:
+			n_files_from_nick = ceil(float(n_files_from_nick) / float(args.units_per_job))
+			print int(n_files_from_nick)," files (units-per-job > 1)"
+		if float(n_files_from_nick) >= job_submission_limit:
+			files_per_job = ceil(float(n_files_from_nick) / job_submission_limit)
+			n_files_from_nick = ceil(float(n_files_from_nick) / files_per_job)
+			print int(n_files_from_nick)," files (hit the job_submission_limit)"
+		if ((len(files) != int(n_files_from_nick)) and (not args.no_strict_checking)):
 			log.error("Found %s files, but expected %s from nick %s. No filelist for this sample is saved. Disable this check with --no-strict-checking" % (len(files), get_n_files_from_nick(nick), nick))
 		else:
 			filelists = os.path.join(args.output_dir, "%s_sample_%s_%s.txt" % ("%s", nick, "%s"))
