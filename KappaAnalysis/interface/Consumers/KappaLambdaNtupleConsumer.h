@@ -102,92 +102,6 @@ public:
 		{
 			return event.m_packedPFCandidates->size();
 		});
-	
-		LambdaNtupleConsumer<TTypes>::AddIntQuantity("genNJets", [](event_type const& event, product_type const& product) {
-		       return event.m_genJets->size();
-	       	});		
-
-		LambdaNtupleConsumer<TTypes>::AddRMFLVQuantity("leadingGenJetLV", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 1 ? event.m_genJets->at(0).p4 : DefaultValues::UndefinedRMFLV;
-		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingGenJetPt", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 1 ? event.m_genJets->at(0).p4.Pt() : DefaultValues::UndefinedFloat;
-		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingGenJetEta", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 1 ? event.m_genJets->at(0).p4.Eta() : DefaultValues::UndefinedFloat;
-		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingGenJetPhi", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 1 ? event.m_genJets->at(0).p4.Phi() : DefaultValues::UndefinedFloat;
-		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingGenJetMass", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 1 ? event.m_genJets->at(0).p4.mass() : DefaultValues::UndefinedFloat;
-		});
-	
-		LambdaNtupleConsumer<TTypes>::AddRMFLVQuantity("trailingGenJetLV", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 2 ? event.m_genJets->at(1).p4 : DefaultValues::UndefinedRMFLV;
-		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("trailingGenJetPt", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 2 ? event.m_genJets->at(1).p4.Pt() : DefaultValues::UndefinedFloat;
-		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("trailingGenJetEta", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 2 ? event.m_genJets->at(1).p4.Eta() : DefaultValues::UndefinedFloat;
-		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("trailingGenJetPhi", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 2 ? event.m_genJets->at(1).p4.Phi() : DefaultValues::UndefinedFloat;
-		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("trailingGenJetMass", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 2 ? event.m_genJets->at(1).p4.mass() : DefaultValues::UndefinedFloat;
-		});
-	
-		LambdaNtupleConsumer<TTypes>::AddRMFLVQuantity("thirdGenJetLV", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 3 ? event.m_genJets->at(2).p4 : DefaultValues::UndefinedRMFLV;
-		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("thirdGenJetPt", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 3 ? event.m_genJets->at(2).p4.Pt() : DefaultValues::UndefinedFloat;
-		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("thirdGenJetEta", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 3 ? event.m_genJets->at(2).p4.Eta() : DefaultValues::UndefinedFloat;
-		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("thirdGenJetPhi", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 3 ? event.m_genJets->at(2).p4.Phi() : DefaultValues::UndefinedFloat;
-		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("thirdGenJetMass", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 3 ? event.m_genJets->at(2).p4.mass() : DefaultValues::UndefinedFloat;
-		});
-
-		LambdaNtupleConsumer<TTypes>::AddRMFLVQuantity("fourthGenJetLV", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 4 ? event.m_genJets->at(3).p4 : DefaultValues::UndefinedRMFLV;
-		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("fourthGenJetPt", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 4 ? event.m_genJets->at(3).p4.Pt() : DefaultValues::UndefinedFloat;
-		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("fourthGenJetEta", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 4 ? event.m_genJets->at(3).p4.Eta() : DefaultValues::UndefinedFloat;
-		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("fourthGenJetPhi", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 4 ? event.m_genJets->at(3).p4.Phi() : DefaultValues::UndefinedFloat;
-		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("fourthGenJetMass", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 4 ? event.m_genJets->at(3).p4.mass() : DefaultValues::UndefinedFloat;
-		});
-
-		LambdaNtupleConsumer<TTypes>::AddRMFLVQuantity("fifthGenJetLV", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 5 ? event.m_genJets->at(4).p4 : DefaultValues::UndefinedRMFLV;
-		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("fifthGenJetPt", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 5 ? event.m_genJets->at(4).p4.Pt() : DefaultValues::UndefinedFloat;
-		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("fifthGenJetEta", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 5 ? event.m_genJets->at(4).p4.Eta() : DefaultValues::UndefinedFloat;
-		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("fifthGenJetPhi", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 5 ? event.m_genJets->at(4).p4.Phi() : DefaultValues::UndefinedFloat;
-		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("fifthGenJetMass", [](event_type const& event, product_type const& product) {
-			return event.m_genJets->size() >= 5 ? event.m_genJets->at(4).p4.mass() : DefaultValues::UndefinedFloat;
-		});
-
-
 		// loop over all quantities containing "weight" (case-insensitive)
 		// and try to find them in the weights map to write them out
 		for (auto const & quantity : settings.GetQuantities())
@@ -215,7 +129,7 @@ public:
 					return -1;
 				} );
 			}
-		}	
+		}
 		// need to be called at last
 		LambdaNtupleConsumer<TTypes>::Init(settings);
 	}

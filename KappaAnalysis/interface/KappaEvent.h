@@ -35,7 +35,7 @@ public:
 
 	/// pointer to jet collection
 	KBasicJets* m_basicJets = nullptr;
-	KGenJets* m_genJets = nullptr;
+	KLVs* m_genJets = nullptr;
 
 	/// pointer to tagged jet collection
 	KJets* m_tjets = nullptr;
