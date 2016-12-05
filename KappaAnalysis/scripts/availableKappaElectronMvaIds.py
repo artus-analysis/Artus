@@ -21,8 +21,8 @@ def main():
 	args = parser.parse_args()
 	logger.initLogger(args)
 	
-	root_file = ROOT.TFile(args.file, "READ")
-	lumis = root_file.Get("Lumis")
+	lumis = ROOT.TChain("Lumis")
+	lumis.Add(args.file)
 	lumis.GetEntry(0)
 	
 	log.info("\nNames of available electron MVA IDs:")
