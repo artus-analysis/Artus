@@ -40,7 +40,7 @@ if [[ -z ${WEB_PLOTTING_MKDIR_COMMAND} ]]; then
 	if [[ $HARRY_USERPC == *"rwth"* ]]; then
 		export WEB_PLOTTING_MKDIR_COMMAND="mkdir -p /afs/cern.ch/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
 	else
-		export WEB_PLOTTING_MKDIR_COMMAND="ssh ${HARRY_REMOTE_USER}@${HARRY_SSHPC} mkdir -p /disks/ekpwww/web/${HARRY_REMOTE_USER}/public_html/plots_archive/{subdir}"
+		export WEB_PLOTTING_MKDIR_COMMAND="ssh ${HARRY_REMOTE_USER}@${HARRY_SSHPC} mkdir -p /ekpwww/web/${HARRY_REMOTE_USER}/public_html/plots_archive/{subdir}"
 	fi
 fi
 
