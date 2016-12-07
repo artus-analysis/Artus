@@ -19,8 +19,8 @@ if [[ -z ${HARRY_SSHPC} ]]; then
 	else
 		# find a reachable host - try ekplxs in different offices
 		for lxid in 26 30 69 77 14 17 21 25; do
-			if ping -c 1 ekplx${lxid}.physik.uni-karlsruhe.de 2>/dev/null 1>&2; then
-				export HARRY_SSHPC=ekplx${lxid}.physik.uni-karlsruhe.de
+			if ping -c 1 ekplx${lxid}.ekp.kit.edu 2>/dev/null 1>&2; then
+				export HARRY_SSHPC=ekplx${lxid}.ekp.kit.edu
 				break
 			fi
 		done
