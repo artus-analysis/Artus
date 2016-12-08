@@ -36,6 +36,8 @@ class EventSelectionOverlap(analysisbase.AnalysisBase):
 	def prepare_args(self, parser, plotData):
 		super(EventSelectionOverlap, self).prepare_args(parser, plotData)
 		
+		plotData.plotdict["keep_trees"] = True
+		
 		if plotData.plotdict["x_label"] == parser.get_default("x_label"):
 			plotData.plotdict["x_label"] = "Event Selection Overlap"
 		

@@ -38,6 +38,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/GenBosonProducers.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidGenParticlesProducers.h"
 #include "Artus/KappaAnalysis/interface/Producers/PFCandidatesProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/NumberOfParticlesProducer.h"
 
 // filter
 #include "Artus/KappaAnalysis/interface/Filters/RunLumiEventFilter.h"
@@ -76,11 +77,11 @@
 ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 {
 	if(id == GenTauDecayProducer().GetProducerId())
-  		return new GenTauDecayProducer();
+		return new GenTauDecayProducer();
 	else if(id == GenParticleProducer().GetProducerId())
-  		return new GenParticleProducer();
+		return new GenParticleProducer();
 	else if(id == GenTauJetProducer().GetProducerId())
-  		return new GenTauJetProducer();
+		return new GenTauJetProducer();
 	else if(id == HltProducer().GetProducerId())
 		return new HltProducer();
 	else if(id == ElectronCorrectionsProducer().GetProducerId())
@@ -182,8 +183,10 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new GenBosonFromGenParticlesProducer();
 	else if(id == GenBosonDiLeptonDecayModeProducer().GetProducerId())
 		return new GenBosonDiLeptonDecayModeProducer();
-        else if(id == PFCandidatesProducer().GetProducerId())
-                return new PFCandidatesProducer();
+	else if(id == PFCandidatesProducer().GetProducerId())
+		return new PFCandidatesProducer();
+	else if(id == NumberOfParticlesProducer().GetProducerId())
+		return new NumberOfParticlesProducer();
 	else
 		return FactoryBase::createProducer( id );
 }

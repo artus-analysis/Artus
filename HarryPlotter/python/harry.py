@@ -13,6 +13,18 @@ import traceback
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gErrorIgnoreLevel = ROOT.kError
 
+for root_type in [
+		ROOT.TTree, ROOT.TChain, ROOT.TNtuple,
+		ROOT.TH1, ROOT.TH1F, ROOT.TH1D,
+		ROOT.TH2, ROOT.TH2F, ROOT.TH2D,
+		ROOT.TH3, ROOT.TH3F, ROOT.TH3D,
+		ROOT.TProfile, ROOT.TProfile2D,
+		ROOT.TGraph, ROOT.TGraphErrors, ROOT.TGraphAsymmErrors,
+		ROOT.TGraph2D, ROOT.TGraph2DErrors,
+		ROOT.TF1, ROOT.TF2, ROOT.TF3,
+]:
+	root_type.__init__._creates = True # https://root.cern.ch/phpBB3/viewtopic.php?t=9786
+
 import Artus.Utility.jsonTools as jsonTools
 import Artus.Utility.tools as tools
 import Artus.HarryPlotter.core as harrycore

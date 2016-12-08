@@ -97,7 +97,9 @@ def merge_batch(args):
 	arguments = arguments + " " + executable
 	arguments = arguments + " " .join(args.project_dir)
 	arguments = arguments + " --project-subdir @NICK@ "
-
+	if(args.output_dir != None):
+		arguments = arguments + " --output-dir " + args.output_dir
+		
 	cfg.usertask.arguments = "%s"%arguments
 	merged_directory = os.path.join(args.project_dir[0] if(args.output_dir == None) else args.output_dir, "merged")
 	cfg.storage.se_path = merged_directory 
