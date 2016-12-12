@@ -102,6 +102,10 @@ public:
 	/// added by ValidJetsProducer
 	std::vector<KBasicJet*> m_validJets;
 	std::vector<KBasicJet*> m_invalidJets;
+	
+	/// added by ValidGenJetsProducer
+	std::vector<KGenJet*> m_validGenJets;
+	std::vector<KGenJet*> m_invalidGenJets;
 
 	/// added by GenParticleProducer
 	std::map<int, std::vector<KGenParticle*>> m_genParticlesMap;

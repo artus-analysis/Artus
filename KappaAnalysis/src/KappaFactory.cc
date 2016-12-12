@@ -39,6 +39,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/ValidGenParticlesProducers.h"
 #include "Artus/KappaAnalysis/interface/Producers/PFCandidatesProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/NumberOfParticlesProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/ValidGenJetsProducer.h"
 
 // filter
 #include "Artus/KappaAnalysis/interface/Filters/RunLumiEventFilter.h"
@@ -187,6 +188,8 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new PFCandidatesProducer();
 	else if(id == NumberOfParticlesProducer().GetProducerId())
 		return new NumberOfParticlesProducer();
+	else if(id == ValidGenJetsProducer().GetProducerId())
+		return new ValidGenJetsProducer();
 	else
 		return FactoryBase::createProducer( id );
 }
