@@ -67,6 +67,7 @@ class PlotConfigs(object):
 					plot_config["x_label"] = ""
 					plot_config["x_ticks"] = range(len(branches))
 					plot_config["x_tick_labels"] = branches
+					plot_config["bottom_pad_margin"] = 0.5
 					plot_config["y_label"] = "Runtime per Event / #mus"
 					plot_config["y_log"] = True
 					plot_config["y_lims"] = [1e-1]
@@ -88,6 +89,7 @@ class PlotConfigs(object):
 					plot_config["x_label"] = ""
 					plot_config["x_ticks"] = range(len(branches))
 					plot_config["x_tick_labels"] = branches
+					plot_config["bottom_pad_margin"] = 0.5
 					plot_config["y_label"] = "Total Runtime / #mus"
 					plot_config["y_log"] = True
 					plot_config["title"] = os.path.dirname(path)
