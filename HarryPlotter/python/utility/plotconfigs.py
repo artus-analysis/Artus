@@ -63,6 +63,8 @@ class PlotConfigs(object):
 						plot_config["x_label"] = "Runtime per Event / #mus"
 						plot_config["output_dir"] = os.path.join(plot_config.get("output_dir", ""), os.path.dirname(path))
 						plot_config["filename"] = branch
+						if "www" in plot_config:
+							plot_config["www"] = os.path.join(plot_config.get("www", ""), os.path.dirname(path))
 						plot_configs.append(plot_config)
 		return plot_configs
 
