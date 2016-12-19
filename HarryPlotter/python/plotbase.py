@@ -90,6 +90,10 @@ class PlotBase(processor.Processor):
 
 		# canvas settings
 		self.canvas_options = parser.add_argument_group("Canvas options")
+		self.canvas_options.add_argument("--canvas-width", type=float, default=600,
+		                                 help="Width of the canvas in pixels. [Default: %(default)s]")
+		self.canvas_options.add_argument("--canvas-height", type=float, default=600,
+		                                 help="Height of the canvas in pixels. [Default: %(default)s]")
 
 		#plot formatting
 		self.formatting_options = parser.add_argument_group("Formatting options")

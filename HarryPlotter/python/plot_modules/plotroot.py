@@ -237,7 +237,7 @@ class PlotRoot(plotbase.PlotBase):
 		
 		if canvas is None:
 			# TODO: Creating the canvas like this leads to segmentation faults
-			canvas = defaultrootstyle.make_canvas("canvas", "")
+			canvas = defaultrootstyle.make_canvas("canvas", "", dx=plotData.plotdict["canvas_width"], dy=plotData.plotdict["canvas_height"])
 			canvas.Draw()
 		
 		if len(plotData.plotdict["subplot_nicks"]) > 0:
