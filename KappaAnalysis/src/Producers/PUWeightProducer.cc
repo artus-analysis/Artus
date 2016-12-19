@@ -36,6 +36,6 @@ void PUWeightProducer::Produce(KappaEvent const& event, KappaProduct& product,
 	if (puBin < m_pileupWeights.size())
 		product.m_weights["puWeight"] = m_pileupWeights.at(puBin);
 	else
-		product.m_weights["puWeight"] = 0.0;
+		product.m_weights["puWeight"] = 1.0;
 }
 
