@@ -102,6 +102,10 @@ class PlotRoot(plotbase.PlotBase):
 		                               help="Left margin of pad. [Default: automatically determined]")
 		self.canvas_options.add_argument("--right-pad-margin", type=float, default=None,
 		                               help="Right margin of pad. [Default: automatically determined]")
+		self.canvas_options.add_argument("--top-pad-margin", type=float, default=None,
+		                               help="Top margin of pad. [Default: automatically determined]")
+		self.canvas_options.add_argument("--bottom-pad-margin", type=float, default=None,
+		                               help="Bottom margin of pad. [Default: automatically determined]")
 		
 		self.formatting_options.add_argument("-C", "--colors", type=str, nargs="+",
 		                                     help="Colors for the plots. For each plot up to two colors (whitespace separated) can be specified, the first for lines and markers and the second for filled areas.")
@@ -300,6 +304,13 @@ class PlotRoot(plotbase.PlotBase):
 			plot_pad.SetRightMargin(plotData.plotdict["right_pad_margin"])
 			if not subplot_pad is None:
 				subplot_pad.SetRightMargin(plotData.plotdict["right_pad_margin"])
+		if not plotData.plotdict["top_pad_margin"] is None:
+			plot_pad.SetTopMargin(plotData.plotdict["top_pad_margin"])
+		if not plotData.plotdict["bottom_pad_margin"] is None:
+			if subplot_pad is None:
+				plot_pad.SetBottomMargin(plotData.plotdict["bottom_pad_margin"])
+			else:
+				subplot_pad.SetBottomMargin(plotData.plotdict["bottom_pad_margin"])
 		
 		plotData.plot = RootPlotContainer(canvas, plot_pad, subplot_pad)
 
