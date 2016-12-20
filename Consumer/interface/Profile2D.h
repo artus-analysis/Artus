@@ -19,17 +19,11 @@ public:
 
 	class DataPoint {
 	public:
-		DataPoint(double x, double y, double weight) :
-				m_fx(x), m_fy(y), m_fweight(weight) {
-		}
-
+		DataPoint(double x, double y, double weight);
 		double m_fx, m_fy, m_fweight;
 	};
 
-	Profile2d(std::string sName, std::string sFolder) :
-			ProfileBase<Profile2d>(sName, sFolder), m_iBinCountX(100), m_dBinLowerX(
-					100), m_dBinUpperX(100) {
-	}
+	Profile2d(std::string sName, std::string sFolder);
 
 	void Init();
 	void Store(TFile * pRootFile);

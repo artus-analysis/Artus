@@ -16,41 +16,19 @@ class Profile2d;
 
 class ValueModifier {
 public:
-	virtual ~ValueModifier() {
-	}
-
-	virtual void applyHistBeforeCreation(Hist1D * h1, size_t index) {
-		assert(false);
-	}
-
-	virtual void applyProfileBeforeCreation(Profile2d * h1, size_t index) {
-		assert(false);
-	}
-
-	virtual void applyHist2DBeforeCreation(Hist2D * h1, size_t index) {
-		assert(false);
-	}
-
-	/*	virtual void applyProfile(Profile2 * h1, size_t index) {
-	 assert(false);
-	 }
-	 */
+	virtual ~ValueModifier();
+	virtual void applyHistBeforeCreation(Hist1D * h1, size_t index);
+	virtual void applyProfileBeforeCreation(Profile2d * h1, size_t index);
+	virtual void applyHist2DBeforeCreation(Hist2D * h1, size_t index);
+	// virtual void applyProfile(Profile2 * h1, size_t index);
 };
 
 class ValueModifierRange: public ValueModifier {
 public:
-	ValueModifierRange(float l, float u) :
-			m_binLower(l), m_binUpper(u) {
-
-	}
-
-	virtual ~ValueModifierRange() {
-	}
-
+	ValueModifierRange(float l, float u);
+	virtual ~ValueModifierRange();
 	void applyHistBeforeCreation(Hist1D * h1, size_t index)	override;
-
 	void applyProfileBeforeCreation(Profile2d * h1, size_t index) override;
-
 	void applyHist2DBeforeCreation(Hist2D * h1, size_t index) override;
 
 private:
@@ -60,16 +38,10 @@ private:
 
 class ValueModifierBinCount: public ValueModifier {
 public:
-	explicit ValueModifierBinCount(size_t bc) : m_binCount(bc) {
-	}
-
-	virtual ~ValueModifierBinCount() {
-	}
-
+	explicit ValueModifierBinCount(size_t bc);
+	virtual ~ValueModifierBinCount();
 	void applyHistBeforeCreation(Hist1D * h1, size_t index) override;
-
 	void applyProfileBeforeCreation(Profile2d * h1, size_t index) override;
-
 	void applyHist2DBeforeCreation(Hist2D * h1, size_t index) override;
 
 private:
@@ -88,7 +60,6 @@ public:
 	static ValueModifiers getPtModifier(float maxPt);
 	static ValueModifiers getPtModifier(float minPt, float maxPt);
 	static ValueModifiers getMassModifier(float lowMass, float upperMass);
-
 	static ValueModifiers getRunModifier();
 
 };
