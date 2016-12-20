@@ -27,15 +27,11 @@ public:
 
 class SettingsBase {
 public:
-	SettingsBase() :
-			m_RootOutFile(nullptr) {
-	}
+	SettingsBase();
 
-	explicit SettingsBase(std::string const& name) : m_Name (name),	m_RootOutFile(nullptr) {
-	}
+	explicit SettingsBase(std::string const& name);
 
-	virtual ~SettingsBase() {
-	}
+	virtual ~SettingsBase();
 
 	/// path in the config file to reach the settings for this pipeline
 	IMPL_PROPERTY(std::string, PropTreePath)
@@ -57,16 +53,9 @@ public:
 
 	/// the folder name in the output root file where plots or ntuples of this pipeline will end 
 	/// up, if you want it not to be the pipeline name, override it
-	virtual std::string GetRootFileFolder() const {
-		return GetName();
-	}
+	virtual std::string GetRootFileFolder() const;
 
-	std::string GetPipelinePrefix() const {
-		if ( GetName() == "")
-			return "";
-		else
-			return  "Pipelines." + GetName() + ".";
-	}
+	std::string GetPipelinePrefix() const;
 
 	/// a pointer to the root file where all the output will be stored must be set by the 
 	/// application
@@ -75,9 +64,7 @@ public:
 	/// detemine whether this is data or MC
 	IMPL_SETTING(bool, InputIsData);
 
-	virtual std::string ToString() const {
-		return "SettingsBase - Pipeline name: " + GetName();
-	}
+	virtual std::string ToString() const;
 
 	/// get list of all local producers
 	IMPL_SETTING_STRINGLIST( Processors )
@@ -86,29 +73,15 @@ public:
 	///
 	//IMPL_GLOBAL_SETTING_STRINGLIST( GlobalProcessors )
 	VarCache<stringvector> m_globalProcessors;
-	stringvector& GetGlobalProcessors () const {
-		RETURN_CACHED(m_globalProcessors, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Processors" ))
-	}
+	stringvector& GetGlobalProcessors () const;
 
-	std::vector<std::string> GetAllProcessors () const {
-		std::vector<std::string> allProcessors;
-		std::vector<std::string> globalProcessors = GetGlobalProcessors();
-		std::vector<std::string> localProcessors = GetProcessors();
-
-		if ( GetName() != "") {
-			allProcessors.insert(allProcessors.end(), globalProcessors.begin(), globalProcessors.end());
-		}
-		allProcessors.insert(allProcessors.end(), localProcessors.begin(), localProcessors.end());
-		return allProcessors;
-	}
+	std::vector<std::string> GetAllProcessors () const;
 
 	// list of quantities needed for ntuple consumers
 	//IMPL_SETTING_STRINGLIST(Quantities);
 	IMPL_SETTING_SORTED_STRINGLIST(Quantities);
 
-	virtual stringvector GetFilters () const {
-		return SettingsUtil::ExtractFilters(GetProcessors());
-	}
+	virtual stringvector GetFilters () const;
 
 	IMPL_SETTING_STRINGLIST_DEFAULT(TaggingFilters, std::vector<std::string>());
 

@@ -11,7 +11,7 @@
 class RootEnvironment {
 public:
 	explicit RootEnvironment(const ArtusConfig& artusConfig);
-	~RootEnvironment() { Close(); };
+	~RootEnvironment();
 	
 	inline TFile* GetRootFile() const { return m_rootFile; };
 	void Close();

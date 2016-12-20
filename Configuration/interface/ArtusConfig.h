@@ -37,10 +37,7 @@ public:
 
 	void SaveConfig(TFile* outputFile) const;
 
-	stringvector const& GetInputFiles() const
-	{
-		return m_fileNames;
-	}
+	stringvector const& GetInputFiles() const;
 
 	// run this method to add all the producers/filter/consumer which are
 	// listed in your configuration file
