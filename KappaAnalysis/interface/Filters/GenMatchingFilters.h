@@ -4,6 +4,7 @@
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "Artus/Core/interface/FilterBase.h"
+#include "Artus/KappaAnalysis/interface/KappaTypes.h"
 
 
 /** Abstract filter class that filters events where valid objects match a given generator Tauon
@@ -52,17 +53,8 @@ class ElectronGenMatchingFilter: public GenMatchingFilterBase<KElectron>
 {
 
 public:
-
-	
-	std::string GetFilterId() const override {
-		return "ElectronGenMatchingFilter";
-	}
-	
-	ElectronGenMatchingFilter() :
-		GenMatchingFilterBase<KElectron>(&KappaProduct::m_genParticleMatchedElectrons,
-		                                 &KappaProduct::m_validElectrons)
-	{
-	}
+	std::string GetFilterId() const override;
+	ElectronGenMatchingFilter();
 
 };
 
@@ -75,17 +67,8 @@ class MuonGenMatchingFilter: public GenMatchingFilterBase<KMuon>
 {
 
 public:
-
-	
-	std::string GetFilterId() const override {
-		return "MuonGenMatchingFilter";
-	}
-	
-	MuonGenMatchingFilter() :
-		GenMatchingFilterBase<KMuon>(&KappaProduct::m_genParticleMatchedMuons,
-		                             &KappaProduct::m_validMuons)
-	{
-	}
+	std::string GetFilterId() const override;
+	MuonGenMatchingFilter();
 
 };
 
@@ -98,17 +81,8 @@ class TauGenMatchingFilter: public GenMatchingFilterBase<KTau>
 {
 
 public:
-
-	
-	std::string GetFilterId() const override {
-		return "TauGenMatchingFilter";
-	}
-	
-	TauGenMatchingFilter() :
-		GenMatchingFilterBase<KTau>(&KappaProduct::m_genParticleMatchedTaus,
-		                            &KappaProduct::m_validTaus)
-	{
-	}
+	std::string GetFilterId() const override;
+	TauGenMatchingFilter();
 
 };
 
@@ -121,17 +95,8 @@ class JetGenMatchingFilter: public GenMatchingFilterBase<KBasicJet>
 {
 
 public:
-
-	
-	std::string GetFilterId() const override {
-		return "JetGenMatchingFilter";
-	}
-	
-	JetGenMatchingFilter() :
-		GenMatchingFilterBase<KBasicJet>(&KappaProduct::m_genParticleMatchedJets,
-		                                 &KappaProduct::m_validJets)
-	{
-	}
+	std::string GetFilterId() const override;
+	JetGenMatchingFilter();
 
 };
 

@@ -5,6 +5,11 @@ std::string ElectronLowerPtCutsFilter::GetFilterId() const {
 	return "ElectronLowerPtCutsFilter";
 }
 
+ElectronLowerPtCutsFilter::ElectronLowerPtCutsFilter() :
+		LeptonLowerPtCutsFilter<KElectron>(&KappaProduct::m_validElectrons)
+{
+}
+
 void ElectronLowerPtCutsFilter::Init(KappaSettings const& settings) {
 
 	FilterBase<KappaTypes>::Init(settings);
@@ -15,6 +20,11 @@ void ElectronLowerPtCutsFilter::Init(KappaSettings const& settings) {
 
 std::string MuonLowerPtCutsFilter::GetFilterId() const {
 	return "MuonLowerPtCutsFilter";
+}
+
+MuonLowerPtCutsFilter::MuonLowerPtCutsFilter() :
+		LeptonLowerPtCutsFilter<KMuon>(&KappaProduct::m_validMuons)
+{
 }
 
 void MuonLowerPtCutsFilter::Init(KappaSettings const& settings) {
@@ -29,6 +39,11 @@ std::string TauLowerPtCutsFilter::GetFilterId() const {
 	return "TauLowerPtCutsFilter";
 }
 
+TauLowerPtCutsFilter::TauLowerPtCutsFilter() :
+		LeptonLowerPtCutsFilter<KTau>(&KappaProduct::m_validTaus)
+{
+}
+
 void TauLowerPtCutsFilter::Init(KappaSettings const& settings) {
 
 	FilterBase<KappaTypes>::Init(settings);
@@ -41,6 +56,11 @@ std::string JetLowerPtCutsFilter::GetFilterId() const {
 	return "JetLowerPtCutsFilter";
 }
 
+JetLowerPtCutsFilter::JetLowerPtCutsFilter() :
+		LeptonLowerPtCutsFilter<KBasicJet>(&KappaProduct::m_validJets)
+{
+}
+
 void JetLowerPtCutsFilter::Init(KappaSettings const& settings) {
 
 	FilterBase<KappaTypes>::Init(settings);
@@ -51,6 +71,11 @@ void JetLowerPtCutsFilter::Init(KappaSettings const& settings) {
 
 std::string NonBTaggedJetLowerPtCutsFilter::GetFilterId() const {
 	return "NonBTaggedJetLowerPtCutsFilter";
+}
+
+NonBTaggedJetLowerPtCutsFilter::NonBTaggedJetLowerPtCutsFilter() :
+		LeptonLowerPtCutsFilter<KJet>(&KappaProduct::m_nonBTaggedJets)
+{
 }
 
 void NonBTaggedJetLowerPtCutsFilter::Init(KappaSettings const& settings) {
