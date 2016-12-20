@@ -5,9 +5,9 @@
  */
 #pragma once
 
-#include <Artus/Core/interface/ProductBase.h>
+#include "Artus/KappaAnalysis/interface/KappaProduct.h"
 
-struct TraxProduct: ProductBase
+struct TraxProduct: KappaProduct
 {
 	float m_floatPtSim_corrected;
 };

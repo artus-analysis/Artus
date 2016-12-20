@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "Artus/Core/interface/EventBase.h"
+#include "Artus/KappaAnalysis/interface/KappaEvent.h"
 
-struct TraxEvent : EventBase {
+struct TraxEvent : KappaEvent {
 
 	float m_floatTheSim;
 	float m_floatPtSim;

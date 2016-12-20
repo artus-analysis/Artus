@@ -16,23 +16,15 @@
 
 class MeanPtConsumer: public TraxConsumerBase {
 public:
-	MeanPtConsumer() :
-			m_itemCount(0), m_mean(0.0f) {
+	MeanPtConsumer();
 
-	}
-
-	std::string GetConsumerId() const override {
-		return "mean_pt";
-	}
+	std::string GetConsumerId() const override;
 
 	void ProcessFilteredEvent(TraxEvent const& event,
 			TraxProduct const& product,
 			setting_type const& setting) override;
 
-	void Finish(setting_type const& setting ) override {
-		// todo: print pipeline name here
-		LOG(INFO) << "Track mean Pt is " << m_mean << " [GeV].";
-	}
+	void Finish(setting_type const& setting ) override;
 
 private:
 	long long m_itemCount;

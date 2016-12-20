@@ -11,24 +11,13 @@
 class ThetaFilter: public TraxFilterBase {
 public:
 
-	virtual ~ThetaFilter() {
-	}
+	virtual ~ThetaFilter();
 
-	std::string GetFilterId() const override {
-		return "filter_theta";
-	}
+	std::string GetFilterId() const override;
 
 	bool DoesEventPass(TraxEvent const& event,
 			TraxProduct const& product,
-			TraxSettings const& globalSettings) const override
-	{
-		const float lowCut = globalSettings.GetFilterThetaLow();
-		const float highCut = globalSettings.GetFilterThetaHigh();
-
-		assert(lowCut <= highCut);
-
-		return ((lowCut <= event.m_floatTheSim) && (highCut > event.m_floatTheSim));
-	}
+			TraxSettings const& globalSettings) const override;
 
 };
 

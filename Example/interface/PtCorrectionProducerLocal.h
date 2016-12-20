@@ -11,23 +11,12 @@
 class PtCorrectionProducerLocal: public TraxProducerBase {
 public:
 
-	std::string GetProducerId() const override
-	{
-		return "pt_correction_local";
-	}
+	std::string GetProducerId() const override;
 
-	void Init(setting_type const& settings)  override
-	{
-		ProducerBase<TraxTypes>::Init(settings);
-	}
+	void Init(setting_type const& settings) override;
 
 	void Produce(TraxEvent const& event,
 			TraxProduct & product,
-			TraxSettings const& localSettings) const override
-	{
-		// m_floatPtSim_corrected has been set by the global producer before
-		product.m_floatPtSim_corrected = product.m_floatPtSim_corrected
-				* localSettings.GetProducerPtCorrectionFactorLocal();
-	}
+			TraxSettings const& localSettings) const override;
 
 };

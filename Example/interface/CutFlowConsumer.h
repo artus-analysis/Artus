@@ -15,10 +15,6 @@
 class CutFlowConsumer: public CutFlowConsumerBase< TraxTypes > {
 
 public:
-
-	void Finish(setting_type const& setting) override {
-		LOG(INFO) << "Cut Flow for pipeline" << m_pipelineName << ":";
-		LOG(INFO) << m_flow.ToString();
-	}
+	void Finish(setting_type const& setting) override;
 
 };

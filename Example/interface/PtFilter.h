@@ -12,30 +12,13 @@ class PtFilter: public TraxFilterBase
 {
 public:
 
-	virtual ~PtFilter()
-	{
-	}
+	virtual ~PtFilter();
 
-	std::string GetFilterId() const override
-	{
-		return "filter_pt";
-	}
+	std::string GetFilterId() const override;
 
-	void Init(TraxSettings const& globalSettings) override
-	{
-		FilterBase<TraxTypes>::Init(globalSettings);
-	}
+	void Init(TraxSettings const& globalSettings) override;
 
 	bool DoesEventPass(TraxEvent const& event,
-			TraxProduct const& product, TraxSettings const& settings) const override
-	{
-
-		const float lowCut = settings.GetFilterPtLow();
-		const float highCut = settings.GetFilterPtHigh();
-
-		assert(lowCut <= highCut);
-
-		return ((lowCut <= event.m_floatPtSim) && (highCut > event.m_floatPtSim));
-	}
+			TraxProduct const& product, TraxSettings const& settings) const override;
 };
 

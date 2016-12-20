@@ -6,6 +6,19 @@
 
 #include "Artus/Example/interface/MeanPtConsumer.h"
 
+
+MeanPtConsumer::MeanPtConsumer() :
+		m_itemCount(0),
+		m_mean(0.0f)
+{
+
+}
+
+std::string MeanPtConsumer::GetConsumerId() const
+{
+	return "mean_pt";
+}
+
 void MeanPtConsumer::ProcessFilteredEvent(TraxEvent const& event,
 		TraxProduct const& product, TraxSettings const& setting)
 {
@@ -13,3 +26,10 @@ void MeanPtConsumer::ProcessFilteredEvent(TraxEvent const& event,
 	++m_itemCount;
 	m_mean += (static_cast<double>(event.m_floatPtSim) - m_mean) / static_cast<double>(m_itemCount);
 }
+
+void MeanPtConsumer::Finish(setting_type const& setting )
+{
+	// todo: print pipeline name here
+	LOG(INFO) << "Track mean Pt is " << m_mean << " [GeV].";
+}
+

@@ -14,27 +14,9 @@
 class TraxNtupleConsumer: public NtupleConsumerBase<TraxTypes> {
 
 public:
-	std::string GetConsumerId() const override
-	{
-		return "ntuple";
-	}
+	std::string GetConsumerId() const override;
 
 private:
+	float returnvalue(std::string string, TraxEvent const& event, TraxProduct const& product) override;
 
-	float returnvalue(std::string string, TraxEvent const& event,
-			TraxProduct const& product) override
-			{
-		if (string == "pt") {
-			return event.m_floatPtSim;
-		} else if (string == "pt_corr") {
-			return product.m_floatPtSim_corrected;
-		} else if (string == "theta") {
-			return event.m_floatTheSim;
-		} else {
-			LOG(FATAL)<< "The quantity " << string << " could not be added to the Ntuple!";
-			// the log fatal call will stop the execution of the program
-			// this is to satisfy the compiler with a return value
-			return DefaultValues::UndefinedFloat;
-		}
-	}
 };
