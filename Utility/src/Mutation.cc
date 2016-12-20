@@ -8,6 +8,10 @@ Mutation::Mutation(std::vector<FloatTupleType> const& tuple,
 
 }
 
+Mutation::Mutation()
+{
+}
+
 void MutationCombiner::getFolderName(MutationMap const& mm) {
 	std::vector<std::string> mutNames;
 

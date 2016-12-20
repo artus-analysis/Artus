@@ -19,7 +19,7 @@ struct Mutation {
 	Mutation(std::vector<FloatTupleType> const& tuple,
 			std::string const & prefix);
 
-	Mutation() {  };
+	Mutation();
 
 	size_t Index;
 	enum class TypeEnum {
