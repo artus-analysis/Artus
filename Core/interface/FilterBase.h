@@ -27,7 +27,7 @@ public:
 	// base implemenations
 	friend FilterBaseAccess;
 
-	virtual ~FilterBaseUntemplated() {}
+	virtual ~FilterBaseUntemplated();
 
 	/*
 	 * Must return a unique id of the filter.
@@ -46,28 +46,13 @@ protected:
 
 class FilterBaseAccess  {
 public:
-	explicit FilterBaseAccess(FilterBaseUntemplated& cb) : m_cb(cb) {}
+	explicit FilterBaseAccess(FilterBaseUntemplated& cb);
 
 	bool DoesEventPass(EventBase const& event,
-			ProductBase const& product, SettingsBase const& settings) const
-	{
-		return m_cb.baseDoesEventPass( event, product, settings);
-	}
-
-	void Init ( SettingsBase const& settings )
-	{
-		m_cb.baseInit( settings );
-	}
-
-	void OnLumi(EventBase const& event, SettingsBase const& settings) const
-	{
-		m_cb.baseOnLumi( event, settings);
-	}
-
-	void OnRun(EventBase const& event, SettingsBase const& settings) const
-	{
-		m_cb.baseOnRun( event, settings);
-	}
+			ProductBase const& product, SettingsBase const& settings) const;
+	void Init(SettingsBase const& settings);
+	void OnLumi(EventBase const& event, SettingsBase const& settings) const;
+	void OnRun(EventBase const& event, SettingsBase const& settings) const;
 
 private:
 	FilterBaseUntemplated & m_cb;

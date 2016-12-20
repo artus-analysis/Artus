@@ -16,7 +16,7 @@ enum class ProcessNodeType {
 class ProcessNodeBase: public boost::noncopyable {
 public:
 
-	virtual ~ProcessNodeBase() {};
+	virtual ~ProcessNodeBase();
 
 	virtual  ProcessNodeType GetProcessNodeType () const = 0;
 };

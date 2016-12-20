@@ -24,11 +24,8 @@ public:
 		std::string filterName;
 		Decision filterDecision;
 		TaggingMode taggingMode;
-		DecisionEntry() : filterName(""),
-		                  filterDecision(Decision::Undefined),
-		                  taggingMode(TaggingMode::Filtering) {}
-		DecisionEntry(std::string filterName, Decision filterDecision, TaggingMode taggingMode) :
-		              filterName(filterName), filterDecision(filterDecision), taggingMode(taggingMode) {}
+		DecisionEntry() ;
+		DecisionEntry(std::string filterName, Decision filterDecision, TaggingMode taggingMode);
 	};
 
 	typedef std::list<DecisionEntry> FilterDecisions;

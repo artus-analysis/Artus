@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <list>
+
 #include <boost/noncopyable.hpp>
 
 #include "FilterResult.h"
@@ -17,26 +19,16 @@ public:
 	typedef std::pair<std::string, long> CutStat;
 	typedef std::list<CutStat> CutCount;
 
-	CutFlow() :
-			m_overallEventCount(0)
-	{
-
-	}
+	CutFlow();
 
 	// sum up all passed events per filter
 	void AddFilterResult(FilterResult const& fres);
 
 	CutStat * GetCutEntry(std::string const& filterName);
 
-	CutCount const& GetCutCount() const
-	{
-		return m_cutCount;
-	}
+	CutCount const& GetCutCount() const;
 
-	long GetEventCount() const
-	{
-		return m_overallEventCount;
-	}
+	long GetEventCount() const;
 
 	std::string ToString() const;
 
