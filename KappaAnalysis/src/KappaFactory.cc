@@ -74,6 +74,14 @@
 #include "Artus/Consumer/interface/RunTimeConsumer.h"
 
 
+KappaFactory::KappaFactory() :
+		FactoryBase()
+{
+}
+
+KappaFactory::~KappaFactory()
+{
+}
 
 ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 {

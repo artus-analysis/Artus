@@ -17,8 +17,6 @@
 */
 class KappaProduct : public ProductBase {
 public:
-	KappaProduct() {};
-	~KappaProduct() {};
 
 	// settings to be modified (e.g. in the case of run-dependent settings)
 	std::vector<std::string> m_settingsHltPaths;
