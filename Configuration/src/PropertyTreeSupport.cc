@@ -92,10 +92,10 @@ std::vector<int> PropertyTreeSupport::GetAsIntList(boost::property_tree::ptree *
 	return vec;
 }
 
-std::vector<uint64> PropertyTreeSupport::GetAsUInt64List(boost::property_tree::ptree & propTree,
+std::vector<uint64_t> PropertyTreeSupport::GetAsUInt64List(boost::property_tree::ptree & propTree,
                                                   std::string path)
 {
-	std::vector<uint64> vec;
+	std::vector<uint64_t> vec;
 	BOOST_FOREACH(boost::property_tree::ptree::value_type & v,
 			propTree.get_child(path))
 	{
@@ -104,10 +104,10 @@ std::vector<uint64> PropertyTreeSupport::GetAsUInt64List(boost::property_tree::p
 	return vec;
 }
 
-std::vector<uint64> PropertyTreeSupport::GetAsUInt64List(boost::property_tree::ptree * propTree,
+std::vector<uint64_t> PropertyTreeSupport::GetAsUInt64List(boost::property_tree::ptree * propTree,
                                                   std::string path)
 {
-	std::vector<uint64> vec;
+	std::vector<uint64_t> vec;
 	BOOST_FOREACH(boost::property_tree::ptree::value_type & v,
 			propTree->get_child(path))
 	{

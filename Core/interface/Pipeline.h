@@ -13,8 +13,6 @@
 #include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 
-#include "Artus/Utility/interface/Collections.h"
-
 #include "PipelineSettings.h"
 #include "FilterBase.h"
 #include "ConsumerBase.h"

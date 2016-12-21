@@ -10,8 +10,6 @@
 
 #include <boost/property_tree/ptree.hpp>
 
-#include "Artus/Utility/interface/Collections.h"
-
 /*
  * This class provides various convenience functions when working with Boost PropertyTrees.
  */
@@ -31,7 +29,7 @@ public:
 
 	static std::vector<int> GetAsIntList(boost::property_tree::ptree * propTree, std::string path);
 
-	static std::vector<uint64> GetAsUInt64List(boost::property_tree::ptree & propTree, std::string path);
+	static std::vector<uint64_t> GetAsUInt64List(boost::property_tree::ptree & propTree, std::string path);
 
-	static std::vector<uint64> GetAsUInt64List(boost::property_tree::ptree * propTree, std::string path);
+	static std::vector<uint64_t> GetAsUInt64List(boost::property_tree::ptree * propTree, std::string path);
 };

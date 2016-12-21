@@ -367,8 +367,8 @@ virtual std::vector<int>& Get##SNAME () const { \
 
 
 #define IMPL_SETTING_UINT64LIST( SNAME ) \
-VarCache<std::vector<uint64>> m_##SNAME; \
-virtual std::vector<uint64>& Get##SNAME () const { \
+VarCache<std::vector<uint64_t>> m_##SNAME; \
+virtual std::vector<uint64_t>& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsUInt64List(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
 	} \
@@ -384,8 +384,8 @@ virtual std::vector<uint64>& Get##SNAME () const { \
 }
 
 #define IMPL_SETTING_UINT64LIST_DEFAULT( SNAME, DEFAULT_VAL ) \
-VarCache<std::vector<uint64>> m_##SNAME; \
-virtual std::vector<uint64>& Get##SNAME () const { \
+VarCache<std::vector<uint64_t>> m_##SNAME; \
+virtual std::vector<uint64_t>& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsUInt64List(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
 	} \
@@ -401,8 +401,8 @@ virtual std::vector<uint64>& Get##SNAME () const { \
 
 
 #define IMPL_SETTING_SORTED_UINT64LIST( SNAME ) \
-VarCache<std::vector<uint64>> m_##SNAME; \
-virtual std::vector<uint64>& Get##SNAME () const { \
+VarCache<std::vector<uint64_t>> m_##SNAME; \
+virtual std::vector<uint64_t>& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, Utility::Sorted(PropertyTreeSupport::GetAsUInt64List(GetPropTree(), GetPipelinePrefix() + #SNAME ))) \
 	} \
@@ -418,8 +418,8 @@ virtual std::vector<uint64>& Get##SNAME () const { \
 }
 
 #define IMPL_SETTING_SORTED_UINT64LIST_DEFAULT( SNAME, DEFAULT_VAL ) \
-VarCache<std::vector<uint64>> m_##SNAME; \
-virtual std::vector<uint64>& Get##SNAME () const { \
+VarCache<std::vector<uint64_t>> m_##SNAME; \
+virtual std::vector<uint64_t>& Get##SNAME () const { \
 	try { \
 		RETURN_CACHED(m_##SNAME, Utility::Sorted(PropertyTreeSupport::GetAsUInt64List(GetPropTree(), GetPipelinePrefix() + #SNAME ))) \
 	} \

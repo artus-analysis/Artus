@@ -20,7 +20,6 @@
 #include "Artus/Core/interface/ProducerBase.h"
 #include "Artus/Core/interface/FilterBase.h"
 
-#include "Artus/Utility/interface/Collections.h"
 #include "Artus/Utility/interface/ArtusLogging.h"
 
 #include "RooFitResult.h"

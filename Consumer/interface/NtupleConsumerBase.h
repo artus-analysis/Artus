@@ -12,7 +12,6 @@
 
 #include "Artus/Core/interface/ConsumerBase.h"
 #include "Artus/Utility/interface/RootFileHelper.h"
-#include "Artus/Utility/interface/Collections.h"
 #include "Artus/Utility/interface/DefaultValues.h"
 
 /*
