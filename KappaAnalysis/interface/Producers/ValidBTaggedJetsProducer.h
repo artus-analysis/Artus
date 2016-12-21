@@ -35,12 +35,7 @@ public:
 		PROMOTIONDEMOTION = 0,
 		OTHER = 1,
 	};
-	static BTagScaleFactorMethod ToBTagScaleFactorMethod(std::string const& bTagSFMethod)
-	{
-		if (bTagSFMethod == "promotiondemotion") return BTagScaleFactorMethod::PROMOTIONDEMOTION;
-		else if (bTagSFMethod == "other") return BTagScaleFactorMethod::OTHER;
-		else return BTagScaleFactorMethod::NONE;
-	}
+	static BTagScaleFactorMethod ToBTagScaleFactorMethod(std::string const& bTagSFMethod);
 
 protected:
 

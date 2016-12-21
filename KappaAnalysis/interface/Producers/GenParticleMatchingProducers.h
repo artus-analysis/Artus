@@ -34,12 +34,7 @@ public:
 		ALGORITHMIC = 1,
 		PHYSICS = 2,
 	};
-	static JetMatchingAlgorithm ToJetMatchingAlgorithm(std::string const& jetMatchingAlgorithm)
-	{
-		if (jetMatchingAlgorithm == "algorithmic") return JetMatchingAlgorithm::ALGORITHMIC;
-		else if (jetMatchingAlgorithm == "physics") return JetMatchingAlgorithm::PHYSICS;
-		else return JetMatchingAlgorithm::NONE;
-	}
+	static JetMatchingAlgorithm ToJetMatchingAlgorithm(std::string const& jetMatchingAlgorithm);
 	
 	std::string GetProducerId() const override;
 

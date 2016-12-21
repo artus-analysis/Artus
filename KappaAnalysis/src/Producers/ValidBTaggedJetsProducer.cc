@@ -1,6 +1,12 @@
 
 #include "Artus/KappaAnalysis/interface/Producers/ValidBTaggedJetsProducer.h"
 
+ValidBTaggedJetsProducer::BTagScaleFactorMethod ValidBTaggedJetsProducer::ToBTagScaleFactorMethod(std::string const& bTagSFMethod)
+{
+	if (bTagSFMethod == "promotiondemotion") return ValidBTaggedJetsProducer::BTagScaleFactorMethod::PROMOTIONDEMOTION;
+	else if (bTagSFMethod == "other") return ValidBTaggedJetsProducer::BTagScaleFactorMethod::OTHER;
+	else return ValidBTaggedJetsProducer::BTagScaleFactorMethod::NONE;
+}
 
 std::string ValidBTaggedJetsProducer::GetProducerId() const {
 	return "ValidBTaggedJetsProducer";

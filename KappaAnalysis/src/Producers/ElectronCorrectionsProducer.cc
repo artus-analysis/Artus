@@ -11,7 +11,7 @@ void ElectronCorrectionsProducer::Init(setting_type const& settings)
 }
 
 void ElectronCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                     KappaSettings const& settings) const
+                                          KappaSettings const& settings) const
 {
 	assert(event.m_electrons);
 
@@ -43,4 +43,8 @@ void ElectronCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct&
 	          { return electron1->p4.Pt() > electron2->p4.Pt(); });
 }
 
+void ElectronCorrectionsProducer::AdditionalCorrections(KElectron* electron, KappaEvent const& event,
+                                                        KappaProduct& product, KappaSettings const& settings) const
+{
+}
 

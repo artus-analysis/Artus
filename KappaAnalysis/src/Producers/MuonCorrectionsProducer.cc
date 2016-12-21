@@ -7,6 +7,14 @@
 #include "Artus/Utility/interface/Utility.h"
 #include "TLorentzVector.h"
 
+MuonCorrectionsProducer::MuonEnergyCorrection MuonCorrectionsProducer::ToMuonEnergyCorrection(std::string const& muonEnergyCorrection)
+{
+	if (muonEnergyCorrection == "fall2015") return MuonCorrectionsProducer::MuonEnergyCorrection::FALL2015;
+	else if (muonEnergyCorrection == "rochcorr2015") return MuonCorrectionsProducer::MuonEnergyCorrection::ROCHCORR2015;
+	else if (muonEnergyCorrection == "rochcorr2016") return MuonCorrectionsProducer::MuonEnergyCorrection::ROCHCORR2016;
+	else return MuonCorrectionsProducer::MuonEnergyCorrection::NONE;
+}
+
 std::string MuonCorrectionsProducer::GetProducerId() const {
 	return "MuonCorrectionsProducer";
 }

@@ -1,6 +1,13 @@
 #include "Artus/KappaAnalysis/interface/Producers/GenParticleMatchingProducers.h"
 
 
+RecoJetGenParticleMatchingProducer::JetMatchingAlgorithm RecoJetGenParticleMatchingProducer::ToJetMatchingAlgorithm(std::string const& jetMatchingAlgorithm)
+{
+	if (jetMatchingAlgorithm == "algorithmic") return RecoJetGenParticleMatchingProducer::JetMatchingAlgorithm::ALGORITHMIC;
+	else if (jetMatchingAlgorithm == "physics") return RecoJetGenParticleMatchingProducer::JetMatchingAlgorithm::PHYSICS;
+	else return RecoJetGenParticleMatchingProducer::JetMatchingAlgorithm::NONE;
+}
+
 std::string RecoJetGenParticleMatchingProducer::GetProducerId() const {
 	return "RecoJetGenParticleMatchingProducer";
 }
