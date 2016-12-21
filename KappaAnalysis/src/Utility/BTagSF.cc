@@ -3,10 +3,9 @@
 
 BTagSF::BTagSF(std::string csvfile, std::string efficiencyfile, std::string btagwp)
 {
-  
-  	TDirectory *savedir(gDirectory);
+	TDirectory *savedir(gDirectory);
 	TFile *savefile(gFile);
-  
+	
 	randm = new TRandom3(0);
 	calib = new BTagCalibration("csvv2", csvfile);
 	
@@ -99,7 +98,7 @@ BTagSF::~BTagSF()
 }
 
 bool BTagSF::isbtagged(double pt, float eta, float csv, Int_t jetflavor,
-                       unsigned int btagsys, unsigned int mistagsys, int year, float btagWP)
+	                     unsigned int btagsys, unsigned int mistagsys, int year, float btagWP)
 {
 	randm->SetSeed(static_cast<int>((eta + 5) * 100000.));
 	double randval = randm->Uniform();
@@ -173,35 +172,35 @@ bool BTagSF::isbtagged(double pt, float eta, float csv, Int_t jetflavor,
 
 double BTagSF::getSFb(double pt, float eta, unsigned int btagsys, int year)
 {
-  if(year == 2015 || year == 2016){
+	if(year == 2015 || year == 2016){
 	
-	float MaxBJetPt = 670.;
-	float MinBJetPt = 30.;
-	bool DoubleUncertainty = false;
-	
-	if ((pt > MaxBJetPt) || (pt < MinBJetPt))
-	{
-	  DoubleUncertainty = true;
-	  if (pt > MaxBJetPt)
-            pt = MaxBJetPt;
-	  else
-            pt = MinBJetPt;
-	}
+		float MaxBJetPt = 670.;
+		float MinBJetPt = 30.;
+		bool DoubleUncertainty = false;
 
-	double jet_scalefactor = reader_mujets->eval(BTagEntry::FLAV_B, std::abs(eta), pt);
-	double jet_scalefactor_up = reader_mujets_up->eval(BTagEntry::FLAV_B, std::abs(eta), pt);
-	double jet_scalefactor_do = reader_mujets_do->eval(BTagEntry::FLAV_B, std::abs(eta), pt);
-	
-	if (DoubleUncertainty) {
-	  jet_scalefactor_up = 2*(jet_scalefactor_up - jet_scalefactor) + jet_scalefactor; 
-	  jet_scalefactor_do = 2*(jet_scalefactor_do - jet_scalefactor) + jet_scalefactor; 
+		if ((pt > MaxBJetPt) || (pt < MinBJetPt))
+		{
+		  DoubleUncertainty = true;
+		  if (pt > MaxBJetPt)
+				  pt = MaxBJetPt;
+		  else
+				  pt = MinBJetPt;
+		}
+
+		double jet_scalefactor = reader_mujets->eval(BTagEntry::FLAV_B, std::abs(eta), pt);
+		double jet_scalefactor_up = reader_mujets_up->eval(BTagEntry::FLAV_B, std::abs(eta), pt);
+		double jet_scalefactor_do = reader_mujets_do->eval(BTagEntry::FLAV_B, std::abs(eta), pt);
+
+		if (DoubleUncertainty) {
+		  jet_scalefactor_up = 2*(jet_scalefactor_up - jet_scalefactor) + jet_scalefactor; 
+		  jet_scalefactor_do = 2*(jet_scalefactor_do - jet_scalefactor) + jet_scalefactor; 
+		}
+
+		if (btagsys == kDown) return jet_scalefactor_do;
+		else if (btagsys == kUp) return jet_scalefactor_up;
+		else return jet_scalefactor;
 	}
-	
-	if (btagsys == kDown) return jet_scalefactor_do;
-	else if (btagsys == kUp) return jet_scalefactor_up;
-	else return jet_scalefactor;
-  }
-  else{
+	else{
 	
 	// pT dependent scale factors
 	// Tagger: CSVM within 30 < pt < 670 GeV, abs(eta) < 2.4, x = pt
@@ -287,12 +286,12 @@ double BTagSF::getSFb(double pt, float eta, unsigned int btagsys, int year)
 		scalefactor = (SFb + SFb_error_x);
 
 	return scalefactor;
-  }
+	}
 }
 
 double BTagSF::getSFc(double pt, float eta, unsigned int btagsys, int year)
 {
-  if(year == 2015 || year == 2016){
+	if(year == 2015 || year == 2016){
 	
 	float MaxBJetPt = 670.;
 	float MinBJetPt = 30.;
@@ -302,9 +301,9 @@ double BTagSF::getSFc(double pt, float eta, unsigned int btagsys, int year)
 	{
 	  DoubleUncertainty = true;
 	  if (pt > MaxBJetPt)
-            pt = MaxBJetPt;
+	          pt = MaxBJetPt;
 	  else
-            pt = MinBJetPt;
+	          pt = MinBJetPt;
 	}
 	
 	double jet_scalefactor = reader_mujets->eval(BTagEntry::FLAV_C, std::abs(eta), pt); 
@@ -319,8 +318,8 @@ double BTagSF::getSFc(double pt, float eta, unsigned int btagsys, int year)
 	if (btagsys == kDown) return jet_scalefactor_do;
 	else if (btagsys == kUp) return jet_scalefactor_up;
 	else return jet_scalefactor;
-  }
-  else{
+	}
+	else{
 
 	// SFc = SFb with twice the quoted uncertainty
 
@@ -398,12 +397,12 @@ double BTagSF::getSFc(double pt, float eta, unsigned int btagsys, int year)
 		scalefactor = (SFc + SFc_error_x);
 
 	return scalefactor;
-  }
+	}
 }
 
 double BTagSF::getSFl(double pt, float eta, unsigned int mistagsys, int year)
 {
-  if(year == 2015 || year == 2016){
+	if(year == 2015 || year == 2016){
 	
 	float MaxLJetPt = 1000.;
 	bool DoubleUncertainty = false;
@@ -426,8 +425,8 @@ double BTagSF::getSFl(double pt, float eta, unsigned int mistagsys, int year)
 	if (mistagsys == kDown) return jet_scalefactor_do;
 	else if (mistagsys == kUp) return jet_scalefactor_up;
 	else return jet_scalefactor;
-  }
-  else{
+	}
+	else{
 
 	double x = std::min(pt, year==2011 ? 670.0 : 800.0);
 
@@ -495,7 +494,7 @@ double BTagSF::getSFl(double pt, float eta, unsigned int mistagsys, int year)
 	}
 
 	return SFl;
-  }
+	}
 }
 
 double BTagSF::getMistag(double pt, float eta)

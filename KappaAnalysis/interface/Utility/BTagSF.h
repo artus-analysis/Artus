@@ -11,7 +11,7 @@
 
 class BTagSF
 {
-  public:
+public:
 	explicit BTagSF(std::string csvfile, std::string efficiencyfile, std::string btagwp);
 	~BTagSF();
 
@@ -25,7 +25,7 @@ class BTagSF
 
 	enum { kNo, kDown, kUp }; // systematic variations
 
-  private:
+private:
 	TRandom3* randm;
 	TFile* effFile;
 	BTagCalibration* calib;
