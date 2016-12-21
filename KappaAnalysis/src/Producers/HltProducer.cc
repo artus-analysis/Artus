@@ -50,7 +50,7 @@ void HltProducer::Produce(KappaEvent const& event, KappaProduct& product,
 	product.m_selectedHltNames.clear();
 	product.m_selectedHltPositions.clear();
 	product.m_selectedHltPrescales.clear();
-	for (stringvector::const_iterator hltPath = product.m_settingsHltPaths.begin(); hltPath != product.m_settingsHltPaths.end(); ++hltPath)
+	for (std::vector<std::string>::const_iterator hltPath = product.m_settingsHltPaths.begin(); hltPath != product.m_settingsHltPaths.end(); ++hltPath)
 	{
 		std::string hltName = m_hltInfo.getHLTName(*hltPath);
 		if (! hltName.empty())

@@ -16,10 +16,10 @@ SettingsBase::SettingsBase(std::string const& name) :
 SettingsBase::~SettingsBase() {
 }
 
-stringvector SettingsUtil::ExtractFilters ( stringvector const& allProcessors )   {
-	stringvector filt;
+std::vector<std::string> SettingsUtil::ExtractFilters ( std::vector<std::string> const& allProcessors )   {
+	std::vector<std::string> filt;
 
-	for ( stringvector::const_iterator it = allProcessors.begin();
+	for ( std::vector<std::string>::const_iterator it = allProcessors.begin();
 			it != allProcessors.end(); ++it) {
 		const ArtusConfig::NodeTypePair nodeRes = ArtusConfig::ParseProcessNode( *it );
 		if ( nodeRes.first == ProcessNodeType::Filter ){
@@ -70,7 +70,7 @@ std::string SettingsBase::ToString() const {
 	return "SettingsBase - Pipeline name: " + GetName();
 }
 
-stringvector& SettingsBase::GetGlobalProcessors () const {
+std::vector<std::string>& SettingsBase::GetGlobalProcessors () const {
 	RETURN_CACHED(m_globalProcessors, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Processors" ))
 }
 
@@ -86,6 +86,6 @@ std::vector<std::string> SettingsBase::GetAllProcessors () const {
 	return allProcessors;
 }
 
-stringvector SettingsBase::GetFilters () const {
+std::vector<std::string> SettingsBase::GetFilters () const {
 	return SettingsUtil::ExtractFilters(GetProcessors());
 }

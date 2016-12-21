@@ -37,7 +37,7 @@ public:
 
 	void SaveConfig(TFile* outputFile) const;
 
-	stringvector const& GetInputFiles() const;
+	std::vector<std::string> const& GetInputFiles() const;
 
 	// run this method to add all the producers/filter/consumer which are
 	// listed in your configuration file
@@ -84,8 +84,8 @@ private:
 	void LoadGlobalProducer( TPipelineRunner& runner, TFactory & factory ) {
 
 		TGlobalSettings gSettings = GetSettings< TGlobalSettings >();
-		stringvector globalProds = gSettings.GetProcessors();
-		for (stringvector::const_iterator it = globalProds.begin(); it != globalProds.end(); ++it) {
+		std::vector<std::string> globalProds = gSettings.GetProcessors();
+		for (std::vector<std::string>::const_iterator it = globalProds.begin(); it != globalProds.end(); ++it) {
 
 			NodeTypePair ntype = ParseProcessNode( *it );
 
@@ -142,8 +142,8 @@ private:
 			pipeline_type* pLine = new pipeline_type; //CreateDefaultPipeline();
 
 			// add local producer
-			stringvector localProducers = pset.GetProcessors();
-			for (stringvector::const_iterator it = localProducers.begin(); it != localProducers.end(); ++it) {
+			std::vector<std::string> localProducers = pset.GetProcessors();
+			for (std::vector<std::string>::const_iterator it = localProducers.begin(); it != localProducers.end(); ++it) {
 
 					NodeTypePair ntype = ParseProcessNode( *it );
 
@@ -167,8 +167,8 @@ private:
 				}
 
 			// add consumer
-			stringvector localConsumers = pset.GetConsumers();
-			for (stringvector::const_iterator it = localConsumers.begin(); it != localConsumers.end(); ++it) {
+			std::vector<std::string> localConsumers = pset.GetConsumers();
+			for (std::vector<std::string>::const_iterator it = localConsumers.begin(); it != localConsumers.end(); ++it) {
 					auto * pConsumer = factory.createConsumer ( *it );
 
 					// special case for consumer:
@@ -187,7 +187,7 @@ private:
 
 	std::string m_jsonConfigFileName;
 	std::string m_outputPath;
-	stringvector m_fileNames;
+	std::vector<std::string> m_fileNames;
 	boost::property_tree::ptree m_propTreeRoot;
 
 	std::string m_minimumLogLevelString;

@@ -62,7 +62,7 @@ public:
 
 		//iterate over string vector and fill the array for each quantity
 		size_t arrayI = 0;
-		for (stringvector::iterator it = m_quantitiesVector.begin(); it != m_quantitiesVector.end(); ++it) {
+		for (std::vector<std::string>::iterator it = m_quantitiesVector.begin(); it != m_quantitiesVector.end(); ++it) {
 			array[arrayI] = returnvalue(*it, event, product);
 			++arrayI;
 		}
@@ -83,7 +83,7 @@ public:
 
 protected:
 	TNtuple* m_ntuple;
-	stringvector m_quantitiesVector;
+	std::vector<std::string> m_quantitiesVector;
 	std::string m_quantities;
 
 

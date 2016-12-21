@@ -27,15 +27,15 @@ public:
 	// cases don't have a json file loaded and
 	// the code would fail if a lookup to the json file
 	// would happen
-	stringvector GetFilters () const override
+	std::vector<std::string> GetFilters () const override
 	{
-		return stringvector();
+		return std::vector<std::string>();
 	}
-	stringvector & GetTaggingFilters () const override
+	std::vector<std::string> & GetTaggingFilters () const override
 	{
 		return m_taggingFilters;
 	}
-	mutable stringvector m_taggingFilters;
+	mutable std::vector<std::string> m_taggingFilters;
 
 	long long GetProcessNEvents () const
 	{

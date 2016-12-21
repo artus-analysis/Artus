@@ -292,7 +292,7 @@ private:
 	ConsumerVector m_consumer;
 	ProcessNodeVector m_nodes;
 	setting_type m_pipelineSettings;
-	stringvector m_filterNames;
-	stringvector m_taggingFilters;
+	std::vector<std::string> m_filterNames;
+	std::vector<std::string> m_taggingFilters;
 };
 

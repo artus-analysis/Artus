@@ -22,7 +22,7 @@
 
 class SettingsUtil {
 public:
-	static stringvector ExtractFilters ( stringvector const& allProcessors );
+	static std::vector<std::string> ExtractFilters ( std::vector<std::string> const& allProcessors );
 };
 
 class SettingsBase {
@@ -72,8 +72,8 @@ public:
 
 	///
 	//IMPL_GLOBAL_SETTING_STRINGLIST( GlobalProcessors )
-	VarCache<stringvector> m_globalProcessors;
-	stringvector& GetGlobalProcessors () const;
+	VarCache<std::vector<std::string>> m_globalProcessors;
+	std::vector<std::string>& GetGlobalProcessors () const;
 
 	std::vector<std::string> GetAllProcessors () const;
 
@@ -81,7 +81,7 @@ public:
 	//IMPL_SETTING_STRINGLIST(Quantities);
 	IMPL_SETTING_SORTED_STRINGLIST(Quantities);
 
-	virtual stringvector GetFilters () const;
+	virtual std::vector<std::string> GetFilters () const;
 
 	IMPL_SETTING_STRINGLIST_DEFAULT(TaggingFilters, std::vector<std::string>());
 

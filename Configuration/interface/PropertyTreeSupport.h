@@ -17,30 +17,21 @@
  */
 class PropertyTreeSupport {
 public:
-	static stringvector GetAsStringList(boost::property_tree::ptree * propTree,
-	                                    std::string path);
+	static std::vector<std::string> GetAsStringList(boost::property_tree::ptree * propTree, std::string path);
 
-	static doublevector GetAsDoubleList(boost::property_tree::ptree * propTree,
-	                                    std::string path);
+	static std::vector<double> GetAsDoubleList(boost::property_tree::ptree * propTree, std::string path);
 
-	static doublevector GetAsDoubleList(boost::property_tree::ptree & propTree,
-	                                    std::string path);
+	static std::vector<double> GetAsDoubleList(boost::property_tree::ptree & propTree, std::string path);
 
-	static floatvector GetAsFloatList(boost::property_tree::ptree * propTree,
-	                                  std::string path);
+	static std::vector<float> GetAsFloatList(boost::property_tree::ptree * propTree, std::string path);
 
-	static floatvector GetAsFloatList(boost::property_tree::ptree & propTree,
-	                                  std::string path);
+	static std::vector<float> GetAsFloatList(boost::property_tree::ptree & propTree, std::string path);
 
-	static intvector GetAsIntList(boost::property_tree::ptree & propTree,
-	                              std::string path);
+	static std::vector<int> GetAsIntList(boost::property_tree::ptree & propTree, std::string path);
 
-	static intvector GetAsIntList(boost::property_tree::ptree * propTree,
-	                              std::string path);
+	static std::vector<int> GetAsIntList(boost::property_tree::ptree * propTree, std::string path);
 
-	static uint64vector GetAsUInt64List(boost::property_tree::ptree & propTree,
-	                                    std::string path);
+	static std::vector<uint64> GetAsUInt64List(boost::property_tree::ptree & propTree, std::string path);
 
-	static uint64vector GetAsUInt64List(boost::property_tree::ptree * propTree,
-	                                    std::string path);
+	static std::vector<uint64> GetAsUInt64List(boost::property_tree::ptree * propTree, std::string path);
 };

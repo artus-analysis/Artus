@@ -157,7 +157,7 @@ void ArtusConfig::SaveConfig(TFile * outputFile) const
 	jsonConfigContent.Write("config");
 }
 
-stringvector const& ArtusConfig::GetInputFiles() const
+std::vector<std::string> const& ArtusConfig::GetInputFiles() const
 {
 	return m_fileNames;
 }
