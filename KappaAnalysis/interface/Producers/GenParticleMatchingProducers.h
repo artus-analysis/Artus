@@ -162,7 +162,7 @@ public:
 							if(deltaR<(settings.*GetDeltaRMatchingRecoLeptonsGenParticle)() && deltaR<deltaRmin)
 							{
 								(product.*m_genParticleMatchedLeptons)[*lepton] = &(*genParticle);
-								ratioGenParticleMatched += (1.0f / (product.*m_validLeptons).size());
+								ratioGenParticleMatched += (1.0f / leptons.size());
 								product.m_genParticleMatchDeltaR = deltaR;
 								deltaRmin = deltaR;
 								leptonMatched = true;

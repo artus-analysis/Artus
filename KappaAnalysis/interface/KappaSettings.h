@@ -211,6 +211,10 @@ public:
 	IMPL_SETTING_DEFAULT(bool, InvalidateGenTauJetMatchingRecoMuons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateGenTauJetMatchingRecoTaus, false);
 
+	IMPL_SETTING_DEFAULT(bool, MatchAllElectronsGenTau, false);
+	IMPL_SETTING_DEFAULT(bool, MatchAllMuonsGenTau, false);
+	IMPL_SETTING_DEFAULT(bool, MatchAllTausGenTau, false);
+
 	IMPL_SETTING(int, Year);
 
 	IMPL_SETTING_DEFAULT(bool, DirectIso, true);
