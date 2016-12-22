@@ -195,6 +195,10 @@ public:
 	IMPL_SETTING_DEFAULT(bool, InvalidateGenTauMatchingRecoMuons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateGenTauMatchingRecoTaus, false);
 
+	IMPL_SETTING_DEFAULT(bool, RecoElectronMatchingGenParticleMatchAllElectrons, false);
+	IMPL_SETTING_DEFAULT(bool, RecoMuonMatchingGenParticleMatchAllMuons, false);
+	IMPL_SETTING_DEFAULT(bool, RecoTauMatchingGenParticleMatchAllTaus, false);
+
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoElectronGenTauJet, 0.5f);
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoMuonGenTauJet, 0.5f);
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoTauGenTauJet, 0.5f);

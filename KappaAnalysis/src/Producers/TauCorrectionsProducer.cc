@@ -36,6 +36,11 @@ void TauCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& prod
 	
 		// perform possible analysis-specific corrections
 		AdditionalCorrections(tau->get(), event, product, settings);
+
+		// make sure to also save the corrected lepton and the matched genParticle in the map
+		// if we match genParticles to all leptons
+		if (settings.GetRecoTauMatchingGenParticleMatchAllTaus())
+			product.m_genParticleMatchedTaus[tau->get()] =  &(*product.m_genParticleMatchedTaus[static_cast<KTau*>(const_cast<KLepton*>(product.m_originalLeptons[tau->get()]))]);
 	}
 	
 	// sort vectors of corrected taus by pt

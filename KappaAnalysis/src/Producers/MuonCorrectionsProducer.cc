@@ -108,6 +108,10 @@ void MuonCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& pro
 		}
 		AdditionalCorrections(muon->get(), event, product, settings);
 		
+		// make sure to also save the corrected lepton and the matched genParticle in the map
+		// if we match genParticles to all leptons
+		if (settings.GetRecoMuonMatchingGenParticleMatchAllMuons())
+			product.m_genParticleMatchedMuons[muon->get()] =  &(*product.m_genParticleMatchedMuons[static_cast<KMuon*>(const_cast<KLepton*>(product.m_originalLeptons[muon->get()]))]);
 	}
 	
 	// sort vectors of corrected muons by pt

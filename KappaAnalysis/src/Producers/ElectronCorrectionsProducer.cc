@@ -35,6 +35,11 @@ void ElectronCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct&
 	
 		// perform possible analysis-specific corrections
 		AdditionalCorrections(electron->get(), event, product, settings);
+
+		// make sure to also save the corrected lepton and the matched genParticle in the map
+		// if we match genParticles to all leptons
+		if (settings.GetRecoElectronMatchingGenParticleMatchAllElectrons())
+			product.m_genParticleMatchedElectrons[electron->get()] =  &(*product.m_genParticleMatchedElectrons[static_cast<KElectron*>(const_cast<KLepton*>(product.m_originalLeptons[electron->get()]))]);
 	}
 	
 	// sort vectors of corrected electrons by pt
