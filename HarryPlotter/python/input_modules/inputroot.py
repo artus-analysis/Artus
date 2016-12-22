@@ -16,10 +16,12 @@ import ROOT
 import Artus.HarryPlotter.inputbase as inputbase
 import Artus.HarryPlotter.input_modules.inputfile as inputfile
 import Artus.HarryPlotter.utility.roottools as roottools
+from Artus.HarryPlotter.utility.roottools import multi_histogram_from_tree
 import Artus.Utility.progressiterator as pi
 import Artus.Utility.jsonTools as jsonTools
 from Artus.Utility.tfilecontextmanager import TFileContextManager
-
+from multiprocessing import Pool
+from functools import partial
 
 class InputRoot(inputfile.InputFile):
 	def __init__(self):
@@ -87,7 +89,9 @@ class InputRoot(inputfile.InputFile):
 			self.read_input_json_dicts(plotData)
 
 	def run(self, plotData):
-		
+		p = Pool(20)
+		histogram_from_tree_kwargs = []
+		histogram_from_tree_nicks = []
 		root_tools = roottools.RootTools()
 		for index, (
 				root_files,
@@ -119,22 +123,25 @@ class InputRoot(inputfile.InputFile):
 			# check whether to read from TTree or from TDirectory
 			root_folder_type = roottools.RootTools.check_type(root_files, folders,
 			                                                  print_quantities=plotData.plotdict["quantities"])
-			root_tree_chain = None
 			root_histogram = None
 			
 			if root_folder_type == ROOT.TTree:
 				variable_expression = "%s%s%s" % (z_expression + ":" if z_expression else "",
 				                                  y_expression + ":" if y_expression else "",
 				                                  x_expression)
-				root_tree_chain, root_histogram = root_tools.histogram_from_tree(
-						root_files, folders,
-						x_expression, y_expression, z_expression,
-						x_bins=["25"] if x_bins is None else x_bins,
-						y_bins=["25"] if y_bins is None else y_bins,
-						z_bins=["25"] if z_bins is None else z_bins,
-						weight_selection=weight, option=option, name=None,
-						friend_trees=friend_trees
+				histogram_from_tree_kwargs.append( {
+						"root_file_names":root_files,
+						"path_to_trees": folders,
+						"x_expression": x_expression,
+						"y_expression": y_expression,
+						"z_expression": z_expression,
+						"x_bins":["25"] if x_bins is None else x_bins,
+						"y_bins":["25"] if y_bins is None else y_bins,
+						"z_bins":["25"] if z_bins is None else z_bins,
+						"weight_selection":weight, "option":option, "name":None,
+						"friend_trees":friend_trees}
 				)
+				histogram_from_tree_nicks.append(nick)
 				
 			elif root_folder_type == ROOT.TDirectory:
 				if x_expression is None:
@@ -151,6 +158,9 @@ class InputRoot(inputfile.InputFile):
 						name=None)
 				if hasattr(root_histogram, "Sumw2"):
 					root_histogram.Sumw2()
+				# save histogram in plotData
+				# merging histograms with same nick names is done in upper class
+				plotData.plotdict.setdefault("root_objects", {}).setdefault(nick, []).append(root_histogram)
 			elif root_folder_type == None:
 				log.critical("Error getting ROOT object from file. Exiting.")
 				sys.exit(1)
@@ -159,17 +169,12 @@ class InputRoot(inputfile.InputFile):
 			if log.isEnabledFor(logging.DEBUG):
 				root_histogram.Print()
 			
-			# save tree (chain) in plotData merging chains with same nick names
-			if (not root_tree_chain is None) and plotData.plotdict["keep_trees"]:
-				if nick in plotData.plotdict.setdefault("root_trees", {}):
-					plotData.plotdict["root_trees"][nick].Add(root_tree_chain)
-				else:
-					plotData.plotdict["root_trees"][nick] = root_tree_chain
 			
-			# save histogram in plotData
-			# merging histograms with same nick names is done in upper class
-			plotData.plotdict.setdefault("root_objects", {}).setdefault(nick, []).append(root_histogram)
 
+		root_histograms = p.map(multi_histogram_from_tree, histogram_from_tree_kwargs)
+		for root_histogram, nick in zip(root_histograms, histogram_from_tree_nicks):
+			plotData.plotdict.setdefault("root_objects", {}).setdefault(nick, []).append(root_histogram)
+			
 		# run upper class function at last
 		super(InputRoot, self).run(plotData)
 
