@@ -64,6 +64,8 @@ class InputRoot(inputfile.InputFile):
 		                                help="Keep trees in the plot data object during the complete run. [Default: %(default)s]")
 		self.input_options.add_argument("--read-config", nargs="?", type="bool", default=False, const=True,
 		                                help="Read in the config stored in Artus ROOT outputs. [Default: %(default)s]")
+		self.input_options.add_argument("--n-cores", type=int, default=1,
+		                                help="Number of cores per Harry Plotter call. [Default: %(default)s]")
 
 	def prepare_args(self, parser, plotData):
 		super(InputRoot, self).prepare_args(parser, plotData)
@@ -89,7 +91,7 @@ class InputRoot(inputfile.InputFile):
 			self.read_input_json_dicts(plotData)
 
 	def run(self, plotData):
-		p = Pool(20)
+		p = Pool(plotData.plotdict["n_cores"])
 		histogram_from_tree_kwargs = []
 		histogram_from_tree_nicks = []
 		root_tools = roottools.RootTools()
