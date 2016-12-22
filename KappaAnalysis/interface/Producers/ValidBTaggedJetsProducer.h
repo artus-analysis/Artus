@@ -45,7 +45,7 @@ protected:
 private:
 
 	BTagScaleFactorMethod m_bTagSFMethod;
-	std::map<std::string,float> m_bTagWorkingPoints;
-	std::map<std::string,BTagSF*> m_bTagSfMap;
+	std::map<std::string, float> m_bTagWorkingPoints;
+	std::map<std::string, BTagSF> m_bTagSfMap;
 
 };
