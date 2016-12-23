@@ -39,7 +39,10 @@ void ElectronCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct&
 		// make sure to also save the corrected lepton and the matched genParticle in the map
 		// if we match genParticles to all leptons
 		if (settings.GetRecoElectronMatchingGenParticleMatchAllElectrons())
+		{
 			product.m_genParticleMatchedElectrons[electron->get()] =  &(*product.m_genParticleMatchedElectrons[static_cast<KElectron*>(const_cast<KLepton*>(product.m_originalLeptons[electron->get()]))]);
+			product.m_genParticleMatchedLeptons[electron->get()] = &(*product.m_genParticleMatchedLeptons[const_cast<KLepton*>(product.m_originalLeptons[electron->get()])]);
+		}
 		if (settings.GetMatchAllElectronsGenTau())
 		{
 			product.m_genTauMatchedElectrons[electron->get()] = &(*product.m_genTauMatchedElectrons[static_cast<KElectron*>(const_cast<KLepton*>(product.m_originalLeptons[electron->get()]))]);

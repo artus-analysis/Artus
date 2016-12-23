@@ -1,5 +1,6 @@
 
 #include "Artus/KappaAnalysis/interface/Producers/TauCorrectionsProducer.h"
+#include "Artus/KappaAnalysis/interface/Utility/GeneratorInfo.h"
 
 
 std::string TauCorrectionsProducer::GetProducerId() const {
@@ -40,7 +41,10 @@ void TauCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& prod
 		// make sure to also save the corrected lepton and the matched genParticle in the map
 		// if we match genParticles to all leptons
 		if (settings.GetRecoTauMatchingGenParticleMatchAllTaus())
+		{
 			product.m_genParticleMatchedTaus[tau->get()] =  &(*product.m_genParticleMatchedTaus[static_cast<KTau*>(const_cast<KLepton*>(product.m_originalLeptons[tau->get()]))]);
+			product.m_genParticleMatchedLeptons[tau->get()] = &(*product.m_genParticleMatchedLeptons[const_cast<KLepton*>(product.m_originalLeptons[tau->get()])]);
+		}
 		if (settings.GetMatchAllTausGenTau())
 		{
 			product.m_genTauMatchedTaus[tau->get()] = &(*product.m_genTauMatchedTaus[static_cast<KTau*>(const_cast<KLepton*>(product.m_originalLeptons[tau->get()]))]);
