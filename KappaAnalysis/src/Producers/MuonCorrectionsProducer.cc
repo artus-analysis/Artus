@@ -1,5 +1,6 @@
 
 #include "Artus/KappaAnalysis/interface/Producers/MuonCorrectionsProducer.h"
+#include "Artus/KappaAnalysis/interface/Utility/GeneratorInfo.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/trim.hpp>
 
@@ -55,6 +56,22 @@ void MuonCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& pro
 	for (std::vector<std::shared_ptr<KMuon> >::iterator muon = product.m_correctedMuons.begin();
 		 muon != product.m_correctedMuons.end(); ++muon)
 	{
+		// Check whether corrections should be applied at all
+		bool isRealMuon = false;
+		if (settings.GetCorrectOnlyRealMuons())
+		{
+			KappaEnumTypes::GenMatchingCode genMatchingCode = KappaEnumTypes::GenMatchingCode::NONE;
+			KGenParticle* genParticle = GeneratorInfo::GetGenMatchedParticle(const_cast<KLepton*>(product.m_originalLeptons[muon->get()]), product.m_genParticleMatchedLeptons, product.m_genTauMatchedTaus);
+			if (genParticle)
+			{
+				genMatchingCode = GeneratorInfo::GetGenMatchingCode(genParticle);
+			}
+
+			if (genMatchingCode == KappaEnumTypes::GenMatchingCode::IS_MUON_PROMPT ||
+				genMatchingCode == KappaEnumTypes::GenMatchingCode::IS_MUON_FROM_TAU)
+				isRealMuon = true;
+		}
+
 		// No general correction available
 	
 		// perform possible analysis-specific corrections
@@ -106,7 +123,9 @@ void MuonCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& pro
 		{
 			LOG(FATAL) << "Muon energy correction of type " << Utility::ToUnderlyingValue(muonEnergyCorrection) << " not yet implemented!";
 		}
-		AdditionalCorrections(muon->get(), event, product, settings);
+
+		if (!settings.GetCorrectOnlyRealMuons() || (settings.GetCorrectOnlyRealMuons() && isRealMuon))
+			AdditionalCorrections(muon->get(), event, product, settings);
 		
 		// make sure to also save the corrected lepton and the matched genParticle in the map
 		// if we match genParticles to all leptons

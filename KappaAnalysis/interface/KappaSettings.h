@@ -364,13 +364,18 @@ public:
 	IMPL_SETTING_DEFAULT(float, deltaRTolleranceForPF, 0.3);
 	IMPL_SETTING_DEFAULT(float, PtTolleranceForPF, 4.);
 
-	//Needed for RochMuonCorrectionsProducer
+	// Needed for RochMuonCorrectionsProducer
 	IMPL_SETTING_DEFAULT(std::string, MuonEnergyCorrection, "none");
 	IMPL_SETTING(std::string, MuonRochesterCorrectionsFile);
 
 	// Needed by SampleStitchingWeightProducer
 	IMPL_SETTING_STRINGLIST(StitchingWeights);
 	IMPL_SETTING_STRINGLIST_DEFAULT(StitchingWeightsHighMass, {});
+
+	// Needed for TauCorrectionsProducer, etc.
+	IMPL_SETTING_DEFAULT(bool, CorrectOnlyRealElectrons, false);
+	IMPL_SETTING_DEFAULT(bool, CorrectOnlyRealMuons, false);
+	IMPL_SETTING_DEFAULT(bool, CorrectOnlyRealTaus, false);
 
 	IMPL_SETTING_DEFAULT(std::string, DatabasePDG, "$ROOTSYS/etc/pdg_table.txt");
 };
