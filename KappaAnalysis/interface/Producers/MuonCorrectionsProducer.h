@@ -30,13 +30,7 @@ public:
 		ROCHCORR2015 = 1,
 		ROCHCORR2016 = 2
 	};
-	static MuonEnergyCorrection ToMuonEnergyCorrection(std::string const& muonEnergyCorrection)
-	{
-		if (muonEnergyCorrection == "fall2015") return MuonEnergyCorrection::FALL2015;
-		else if (muonEnergyCorrection == "rochcorr2015") return MuonEnergyCorrection::ROCHCORR2015;
-		else if (muonEnergyCorrection == "rochcorr2016") return MuonEnergyCorrection::ROCHCORR2016;
-		else return MuonEnergyCorrection::NONE;
-	}
+	static MuonEnergyCorrection ToMuonEnergyCorrection(std::string const& muonEnergyCorrection);
 
 protected:
 

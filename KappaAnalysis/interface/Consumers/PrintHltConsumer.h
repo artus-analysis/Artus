@@ -22,5 +22,8 @@ public:
 
 	void Finish(setting_type const& settings) override;
 
+private:
+	HLTTools m_hltInfo;
+
 };
 

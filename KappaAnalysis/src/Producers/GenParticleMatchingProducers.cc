@@ -1,6 +1,13 @@
 #include "Artus/KappaAnalysis/interface/Producers/GenParticleMatchingProducers.h"
 
 
+RecoJetGenParticleMatchingProducer::JetMatchingAlgorithm RecoJetGenParticleMatchingProducer::ToJetMatchingAlgorithm(std::string const& jetMatchingAlgorithm)
+{
+	if (jetMatchingAlgorithm == "algorithmic") return RecoJetGenParticleMatchingProducer::JetMatchingAlgorithm::ALGORITHMIC;
+	else if (jetMatchingAlgorithm == "physics") return RecoJetGenParticleMatchingProducer::JetMatchingAlgorithm::PHYSICS;
+	else return RecoJetGenParticleMatchingProducer::JetMatchingAlgorithm::NONE;
+}
+
 void RecoJetGenParticleMatchingProducer::Init(setting_type const& settings)
 {
 	KappaProducerBase::Init(settings);
@@ -180,39 +187,45 @@ KGenParticle* RecoJetGenParticleMatchingProducer::Match(event_type const& event,
 
 RecoElectronGenParticleMatchingProducer::RecoElectronGenParticleMatchingProducer() :
 	RecoLeptonGenParticleMatchingProducerBase<KElectron>(&product_type::m_genParticleMatchedElectrons,
+	                                                     &event_type::m_electrons,
 	                                                     &product_type::m_validElectrons,
 	                                                     &product_type::m_invalidElectrons,
 	                                                     &setting_type::GetRecoElectronMatchingGenParticlePdgIds,
 	                                                     &setting_type::GetRecoElectronMatchingGenParticleStatus,
 	                                                     &setting_type::GetDeltaRMatchingRecoElectronsGenParticle,
 	                                                     &setting_type::GetInvalidateNonGenParticleMatchingRecoElectrons,
-	                                                     &setting_type::GetInvalidateGenParticleMatchingRecoElectrons)
+	                                                     &setting_type::GetInvalidateGenParticleMatchingRecoElectrons,
+	                                                     &setting_type::GetRecoElectronMatchingGenParticleMatchAllElectrons)
 {
 }
 
 
 RecoMuonGenParticleMatchingProducer::RecoMuonGenParticleMatchingProducer() :
 	RecoLeptonGenParticleMatchingProducerBase<KMuon>(&product_type::m_genParticleMatchedMuons,
+	                                                 &event_type::m_muons,
 	                                                 &product_type::m_validMuons,
 	                                                 &product_type::m_invalidMuons,
 	                                                 &setting_type::GetRecoMuonMatchingGenParticlePdgIds,
 	                                                 &setting_type::GetRecoMuonMatchingGenParticleStatus,
 	                                                 &setting_type::GetDeltaRMatchingRecoMuonGenParticle,
 	                                                 &setting_type::GetInvalidateNonGenParticleMatchingRecoMuons,
-	                                                 &setting_type::GetInvalidateGenParticleMatchingRecoMuons)
+	                                                 &setting_type::GetInvalidateGenParticleMatchingRecoMuons,
+	                                                 &setting_type::GetRecoMuonMatchingGenParticleMatchAllMuons)
 {
 }
 
 
 RecoTauGenParticleMatchingProducer::RecoTauGenParticleMatchingProducer() :
 	RecoLeptonGenParticleMatchingProducerBase<KTau>(&product_type::m_genParticleMatchedTaus,
+	                                                &event_type::m_taus,
 	                                                &product_type::m_validTaus,
 	                                                &product_type::m_invalidTaus,
 	                                                &setting_type::GetRecoTauMatchingGenParticlePdgIds,
 	                                                &setting_type::GetRecoTauMatchingGenParticleStatus,
 	                                                &setting_type::GetDeltaRMatchingRecoTauGenParticle,
 	                                                &setting_type::GetInvalidateNonGenParticleMatchingRecoTaus,
-	                                                &setting_type::GetInvalidateGenParticleMatchingRecoTaus)
+	                                                &setting_type::GetInvalidateGenParticleMatchingRecoTaus,
+	                                                &setting_type::GetRecoTauMatchingGenParticleMatchAllTaus)
 {
 }
 

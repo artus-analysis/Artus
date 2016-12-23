@@ -11,8 +11,8 @@
 
 class ZFilter : public FilterBase<KappaTypes>
 {
-public:
-	ZFilter() : FilterBase<KappaTypes>() {}
+  public:
+	ZFilter();
 
 	bool DoesEventPass(KappaEvent const& event,
 	                   KappaProduct const& product,

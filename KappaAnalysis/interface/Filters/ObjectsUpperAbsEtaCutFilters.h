@@ -103,7 +103,7 @@ private:
  */
 class ElectronUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KElectron> {
 public:
-	ElectronUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KElectron>(&KappaProduct::m_validElectrons) {}
+	ElectronUpperAbsEtaCutsFilter();
 	
 	void Init(KappaSettings const& settings) override;
 };
@@ -113,7 +113,7 @@ public:
  */
 class MuonUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KMuon> {
 public:
-	MuonUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KMuon>(&KappaProduct::m_validMuons) {}
+	MuonUpperAbsEtaCutsFilter();
 	
 	void Init(KappaSettings const& settings) override;
 };
@@ -123,7 +123,7 @@ public:
  */
 class TauUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KTau> {
 public:
-	TauUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KTau>(&KappaProduct::m_validTaus) {}
+	TauUpperAbsEtaCutsFilter();
 	
 	void Init(KappaSettings const& settings) override;
 };
@@ -133,7 +133,7 @@ public:
  */
 class JetUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KBasicJet> {
 public:
-	JetUpperAbsEtaCutsFilter() : LeptonUpperAbsEtaCutsFilter<KBasicJet>(&KappaProduct::m_validJets) {}
+	JetUpperAbsEtaCutsFilter();
 	
 	void Init(KappaSettings const& settings) override;
 };

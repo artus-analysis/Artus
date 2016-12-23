@@ -2,6 +2,11 @@
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsLowerPtCutFilters.h"
 
 
+ElectronLowerPtCutsFilter::ElectronLowerPtCutsFilter() :
+		LeptonLowerPtCutsFilter<KElectron>(&KappaProduct::m_validElectrons)
+{
+}
+
 void ElectronLowerPtCutsFilter::Init(KappaSettings const& settings) {
 
 	FilterBase<KappaTypes>::Init(settings);
@@ -9,6 +14,11 @@ void ElectronLowerPtCutsFilter::Init(KappaSettings const& settings) {
 	this->Initialise(settings.GetElectronLowerPtCuts());
 }
 
+
+MuonLowerPtCutsFilter::MuonLowerPtCutsFilter() :
+		LeptonLowerPtCutsFilter<KMuon>(&KappaProduct::m_validMuons)
+{
+}
 
 void MuonLowerPtCutsFilter::Init(KappaSettings const& settings) {
 
@@ -18,6 +28,11 @@ void MuonLowerPtCutsFilter::Init(KappaSettings const& settings) {
 }
 
 
+TauLowerPtCutsFilter::TauLowerPtCutsFilter() :
+		LeptonLowerPtCutsFilter<KTau>(&KappaProduct::m_validTaus)
+{
+}
+
 void TauLowerPtCutsFilter::Init(KappaSettings const& settings) {
 
 	FilterBase<KappaTypes>::Init(settings);
@@ -26,6 +41,11 @@ void TauLowerPtCutsFilter::Init(KappaSettings const& settings) {
 }
 
 
+JetLowerPtCutsFilter::JetLowerPtCutsFilter() :
+		LeptonLowerPtCutsFilter<KBasicJet>(&KappaProduct::m_validJets)
+{
+}
+
 void JetLowerPtCutsFilter::Init(KappaSettings const& settings) {
 
 	FilterBase<KappaTypes>::Init(settings);
@@ -33,6 +53,11 @@ void JetLowerPtCutsFilter::Init(KappaSettings const& settings) {
 	this->Initialise(settings.GetJetLowerPtCuts());
 }
 
+
+NonBTaggedJetLowerPtCutsFilter::NonBTaggedJetLowerPtCutsFilter() :
+		LeptonLowerPtCutsFilter<KJet>(&KappaProduct::m_nonBTaggedJets)
+{
+}
 
 void NonBTaggedJetLowerPtCutsFilter::Init(KappaSettings const& settings) {
 

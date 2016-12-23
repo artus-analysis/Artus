@@ -1,5 +1,6 @@
 
 #include "Artus/KappaAnalysis/interface/Producers/ElectronCorrectionsProducer.h"
+#include "Artus/KappaAnalysis/interface/Utility/GeneratorInfo.h"
 
 
 void ElectronCorrectionsProducer::Init(setting_type const& settings)
@@ -8,7 +9,7 @@ void ElectronCorrectionsProducer::Init(setting_type const& settings)
 }
 
 void ElectronCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                     KappaSettings const& settings) const
+                                          KappaSettings const& settings) const
 {
 	assert(event.m_electrons);
 
@@ -28,10 +29,40 @@ void ElectronCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct&
 	for (std::vector<std::shared_ptr<KElectron> >::iterator electron = product.m_correctedElectrons.begin();
 		 electron != product.m_correctedElectrons.end(); ++electron)
 	{
+		// Check whether corrections should be applied at all
+		bool isRealElectron = false;
+		if (settings.GetCorrectOnlyRealElectrons())
+		{
+			KappaEnumTypes::GenMatchingCode genMatchingCode = KappaEnumTypes::GenMatchingCode::NONE;
+			KGenParticle* genParticle = GeneratorInfo::GetGenMatchedParticle(const_cast<KLepton*>(product.m_originalLeptons[electron->get()]), product.m_genParticleMatchedLeptons, product.m_genTauMatchedTaus);
+			if (genParticle)
+			{
+				genMatchingCode = GeneratorInfo::GetGenMatchingCode(genParticle);
+			}
+
+			if (genMatchingCode == KappaEnumTypes::GenMatchingCode::IS_ELE_PROMPT ||
+				genMatchingCode == KappaEnumTypes::GenMatchingCode::IS_ELE_FROM_TAU)
+				isRealElectron = true;
+		}
+
 		// No general correction available
 	
 		// perform possible analysis-specific corrections
-		AdditionalCorrections(electron->get(), event, product, settings);
+		if (!settings.GetCorrectOnlyRealElectrons() || (settings.GetCorrectOnlyRealElectrons() && isRealElectron))
+			AdditionalCorrections(electron->get(), event, product, settings);
+
+		// make sure to also save the corrected lepton and the matched genParticle in the map
+		// if we match genParticles to all leptons
+		if (settings.GetRecoElectronMatchingGenParticleMatchAllElectrons())
+		{
+			product.m_genParticleMatchedElectrons[electron->get()] =  &(*product.m_genParticleMatchedElectrons[static_cast<KElectron*>(const_cast<KLepton*>(product.m_originalLeptons[electron->get()]))]);
+			product.m_genParticleMatchedLeptons[electron->get()] = &(*product.m_genParticleMatchedLeptons[const_cast<KLepton*>(product.m_originalLeptons[electron->get()])]);
+		}
+		if (settings.GetMatchAllElectronsGenTau())
+		{
+			product.m_genTauMatchedElectrons[electron->get()] = &(*product.m_genTauMatchedElectrons[static_cast<KElectron*>(const_cast<KLepton*>(product.m_originalLeptons[electron->get()]))]);
+			product.m_genTauMatchedLeptons[electron->get()] = &(*product.m_genTauMatchedLeptons[const_cast<KLepton*>(product.m_originalLeptons[electron->get()])]);
+		}
 	}
 	
 	// sort vectors of corrected electrons by pt
@@ -40,4 +71,8 @@ void ElectronCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct&
 	          { return electron1->p4.Pt() > electron2->p4.Pt(); });
 }
 
+void ElectronCorrectionsProducer::AdditionalCorrections(KElectron* electron, KappaEvent const& event,
+                                                        KappaProduct& product, KappaSettings const& settings) const
+{
+}
 

@@ -25,9 +25,7 @@ protected:
 
 	// Can be overwritten for analysis-specific use cases
 	virtual void AdditionalCorrections(KElectron* electron, KappaEvent const& event,
-	                                   KappaProduct& product, KappaSettings const& settings) const
-	{
-	}
+	                                   KappaProduct& product, KappaSettings const& settings) const;
 
 };
 

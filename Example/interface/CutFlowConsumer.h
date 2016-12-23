@@ -1,8 +1,3 @@
-/* Copyright (c) 2013 - All Rights Reserved
- *   Thomas Hauth  <Thomas.Hauth@cern.ch>
- *   Joram Berger  <Joram.Berger@cern.ch>
- *   Dominik Haitz <Dominik.Haitz@kit.edu>
- */
 
 #pragma once
 
@@ -15,10 +10,6 @@
 class CutFlowConsumer: public CutFlowConsumerBase< TraxTypes > {
 
 public:
-
-	void Finish(setting_type const& setting) override {
-		LOG(INFO) << "Cut Flow for pipeline" << m_pipelineName << ":";
-		LOG(INFO) << m_flow.ToString();
-	}
+	void Finish(setting_type const& setting) override;
 
 };

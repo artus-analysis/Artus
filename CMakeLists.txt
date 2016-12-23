@@ -38,7 +38,6 @@ include_directories( ${closure_SOURCE_DIR}../ )
 add_library(artus_core SHARED
 	Core/src/CutFlow.cc
 	Core/src/FilterResult.cc
-	Core/src/Mutation.cc
 	Core/src/ProgressReport.cc
 	Core/src/OsSignalHandler.cc
 )

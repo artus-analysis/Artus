@@ -236,38 +236,25 @@ class ZProducerBase : public KappaProducerBase
 
 class ZmmProducer : public ZProducerBase<KMuon, KMuon>
 {
-  public:
-	ZmmProducer()
-		: ZProducerBase<KMuon, KMuon>(&KappaProduct::m_validMuons)
-	{
-	}
+public:
+	ZmmProducer();
 };
 
 class ZeeProducer : public ZProducerBase<KElectron, KElectron>
 {
-  public:
-	ZeeProducer()
-		: ZProducerBase<KElectron, KElectron>(&KappaProduct::m_validElectrons)
-	{
-	}
+public:
+	ZeeProducer();
 };
 
 class ZemProducer : public ZProducerBase<KElectron, KMuon>
 {
-  public:
-	ZemProducer()
-		: ZProducerBase<KElectron, KMuon>(&KappaProduct::m_validElectrons, &KappaProduct::m_validMuons,false,true)
-	{
-	}
+public:
+	ZemProducer();
 };
-
 
 class ZeemmProducer : public ZProducerBase<KElectron, KMuon>
 {
-  public:
-	ZeemmProducer()
-		: ZProducerBase<KElectron, KMuon>(&KappaProduct::m_validElectrons, &KappaProduct::m_validMuons,true,false)
-	{
-	}
+public:
+	ZeemmProducer();
 };
 

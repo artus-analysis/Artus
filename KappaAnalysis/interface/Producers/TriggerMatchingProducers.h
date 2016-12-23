@@ -5,6 +5,9 @@
 
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 
+#include <boost/regex.hpp>
+
+
 
 /** Abstract Producer class for trigger matching valid objects
  *

@@ -102,6 +102,7 @@ public:
 		{
 			return event.m_packedPFCandidates->size();
 		});
+
 		// loop over all quantities containing "weight" (case-insensitive)
 		// and try to find them in the weights map to write them out
 		for (auto const & quantity : settings.GetQuantities())
@@ -130,6 +131,7 @@ public:
 				} );
 			}
 		}
+		
 		// need to be called at last
 		LambdaNtupleConsumer<TTypes>::Init(settings);
 	}

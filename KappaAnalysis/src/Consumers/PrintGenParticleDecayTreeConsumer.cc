@@ -69,7 +69,7 @@ void PrintGenParticleDecayTreeConsumer::PrintDecayTree(KGenParticle const& genPa
 	{
 		name = pdgParticle->GetName();
 	}
-	LOG(INFO) << indent << "-> " << name << ", PDG ID = " << genParticle.pdgId << ": p4 = " << genParticle.p4;
+	LOG(INFO) << indent << "-> " << name << ", PDG ID = " << genParticle.pdgId << ", status = " << genParticle.status() << ": p4 = " << genParticle.p4;
 
 	for (std::vector<unsigned int>::const_iterator daughterIndex = genParticle.daughterIndices.begin();
 	     daughterIndex != genParticle.daughterIndices.end(); ++daughterIndex)

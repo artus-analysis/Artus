@@ -32,12 +32,7 @@ public:
 		PROMOTIONDEMOTION = 0,
 		OTHER = 1,
 	};
-	static BTagScaleFactorMethod ToBTagScaleFactorMethod(std::string const& bTagSFMethod)
-	{
-		if (bTagSFMethod == "promotiondemotion") return BTagScaleFactorMethod::PROMOTIONDEMOTION;
-		else if (bTagSFMethod == "other") return BTagScaleFactorMethod::OTHER;
-		else return BTagScaleFactorMethod::NONE;
-	}
+	static BTagScaleFactorMethod ToBTagScaleFactorMethod(std::string const& bTagSFMethod);
 
 protected:
 
@@ -47,7 +42,7 @@ protected:
 private:
 
 	BTagScaleFactorMethod m_bTagSFMethod;
-	std::map<std::string,float> m_bTagWorkingPoints;
-	std::map<std::string,BTagSF*> m_bTagSfMap;
+	std::map<std::string, float> m_bTagWorkingPoints;
+	std::map<std::string, BTagSF> m_bTagSfMap;
 
 };

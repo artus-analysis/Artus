@@ -17,8 +17,6 @@
 */
 class KappaProduct : public ProductBase {
 public:
-	KappaProduct() {};
-	~KappaProduct() {};
 
 	// settings to be modified (e.g. in the case of run-dependent settings)
 	std::vector<std::string> m_settingsHltPaths;
@@ -102,6 +100,10 @@ public:
 	/// added by ValidJetsProducer
 	std::vector<KBasicJet*> m_validJets;
 	std::vector<KBasicJet*> m_invalidJets;
+	
+	/// added by ValidGenJetsProducer
+	std::vector<KGenJet*> m_validGenJets;
+	std::vector<KGenJet*> m_invalidGenJets;
 
 	/// added by GenParticleProducer
 	std::map<int, std::vector<KGenParticle*>> m_genParticlesMap;
@@ -121,9 +123,6 @@ public:
 	std::map<std::string,std::vector<KJet*>> m_nonBTaggedJetsByWp;
 	std::vector<KJet*> m_bTaggedJets;
 	std::vector<KJet*> m_nonBTaggedJets;
-
-	//mutable HLTTools m_hltInfo = HLTTools(); // old verion, where the HLTTools must be refilled on the event base
-	HLTTools *m_hltInfo; // This class has prety cool caching function. Make us of them, so only pointer to this class is provided which is defined by the producer.
 	
 	// selected means fired (and unprescaled if requested)
 	std::vector<std::string> m_selectedHltNames;

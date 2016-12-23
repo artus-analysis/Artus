@@ -19,8 +19,8 @@ if [[ -z ${HARRY_SSHPC} ]]; then
 	else
 		# find a reachable host - try ekplxs in different offices
 		for lxid in 26 30 69 77 14 17 21 25; do
-			if ping -c 1 ekplx${lxid}.physik.uni-karlsruhe.de 2>/dev/null 1>&2; then
-				export HARRY_SSHPC=ekplx${lxid}.physik.uni-karlsruhe.de
+			if ping -c 1 ekplx${lxid}.ekp.kit.edu 2>/dev/null 1>&2; then
+				export HARRY_SSHPC=ekplx${lxid}.ekp.kit.edu
 				break
 			fi
 		done
@@ -40,7 +40,7 @@ if [[ -z ${WEB_PLOTTING_MKDIR_COMMAND} ]]; then
 	if [[ $HARRY_USERPC == *"rwth"* ]]; then
 		export WEB_PLOTTING_MKDIR_COMMAND="mkdir -p /afs/cern.ch/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
 	else
-		export WEB_PLOTTING_MKDIR_COMMAND="ssh ${HARRY_REMOTE_USER}@${HARRY_SSHPC} mkdir -p /disks/ekpwww/web/${HARRY_REMOTE_USER}/public_html/plots_archive/{subdir}"
+		export WEB_PLOTTING_MKDIR_COMMAND="ssh ${HARRY_REMOTE_USER}@${HARRY_SSHPC} mkdir -p /ekpwww/web/${HARRY_REMOTE_USER}/public_html/plots_archive/{subdir}"
 	fi
 fi
 
@@ -48,7 +48,7 @@ if [[ -z ${WEB_PLOTTING_COPY_COMMAND} ]]; then
 	if [[ $HARRY_USERPC == *"rwth"* ]]; then
 		export WEB_PLOTTING_COPY_COMMAND="cp {source} /afs/cern.ch/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
 	else
-		export WEB_PLOTTING_COPY_COMMAND="rsync -u {source} ${HARRY_REMOTE_USER}@${HARRY_SSHPC}:/disks/ekpwww/web/${HARRY_REMOTE_USER}/public_html/plots_archive/{subdir}"
+		export WEB_PLOTTING_COPY_COMMAND="rsync -u {source} ${HARRY_REMOTE_USER}@${HARRY_SSHPC}:/ekpwww/web/${HARRY_REMOTE_USER}/public_html/plots_archive/{subdir}"
 	fi
 fi
 

@@ -1,5 +1,6 @@
 
 #include "Artus/KappaAnalysis/interface/Producers/TauCorrectionsProducer.h"
+#include "Artus/KappaAnalysis/interface/Utility/GeneratorInfo.h"
 
 
 void TauCorrectionsProducer::Init(KappaSettings const& settings)
@@ -28,10 +29,41 @@ void TauCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& prod
 	for (std::vector<std::shared_ptr<KTau> >::iterator tau = product.m_correctedTaus.begin();
 		 tau != product.m_correctedTaus.end(); ++tau)
 	{
+		// Check whether corrections should be applied at all
+		bool isRealTau = false;
+		if (settings.GetCorrectOnlyRealTaus())
+		{
+			KappaEnumTypes::GenMatchingCode genMatchingCode = KappaEnumTypes::GenMatchingCode::NONE;
+			KGenParticle* genParticle = GeneratorInfo::GetGenMatchedParticle(const_cast<KLepton*>(product.m_originalLeptons[tau->get()]), product.m_genParticleMatchedLeptons, product.m_genTauMatchedTaus);
+			if (genParticle)
+			{
+				genMatchingCode = GeneratorInfo::GetGenMatchingCode(genParticle);
+			}
+
+			if (genMatchingCode == KappaEnumTypes::GenMatchingCode::IS_ELE_FROM_TAU ||
+				genMatchingCode == KappaEnumTypes::GenMatchingCode::IS_MUON_FROM_TAU ||
+				genMatchingCode == KappaEnumTypes::GenMatchingCode::IS_TAU_HAD_DECAY)
+				isRealTau = true;
+		}
+
 		// No general correction available
 	
 		// perform possible analysis-specific corrections
-		AdditionalCorrections(tau->get(), event, product, settings);
+		if (!settings.GetCorrectOnlyRealTaus() || (settings.GetCorrectOnlyRealTaus() && isRealTau))
+			AdditionalCorrections(tau->get(), event, product, settings);
+
+		// make sure to also save the corrected lepton and the matched genParticle in the map
+		// if we match genParticles to all leptons
+		if (settings.GetRecoTauMatchingGenParticleMatchAllTaus())
+		{
+			product.m_genParticleMatchedTaus[tau->get()] =  &(*product.m_genParticleMatchedTaus[static_cast<KTau*>(const_cast<KLepton*>(product.m_originalLeptons[tau->get()]))]);
+			product.m_genParticleMatchedLeptons[tau->get()] = &(*product.m_genParticleMatchedLeptons[const_cast<KLepton*>(product.m_originalLeptons[tau->get()])]);
+		}
+		if (settings.GetMatchAllTausGenTau())
+		{
+			product.m_genTauMatchedTaus[tau->get()] = &(*product.m_genTauMatchedTaus[static_cast<KTau*>(const_cast<KLepton*>(product.m_originalLeptons[tau->get()]))]);
+			product.m_genTauMatchedLeptons[tau->get()] = &(*product.m_genTauMatchedLeptons[const_cast<KLepton*>(product.m_originalLeptons[tau->get()])]);
+		}
 	}
 	
 	// sort vectors of corrected taus by pt

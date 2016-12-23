@@ -13,6 +13,10 @@ RootEnvironment::RootEnvironment(const ArtusConfig & artusConfig) :
 	artusConfig.SaveConfig(m_rootFile);
 }
 
+RootEnvironment::~RootEnvironment() {
+	Close();
+}
+
 void RootEnvironment::Close() {
 	if(m_rootFile) {
 		m_rootFile->Close();

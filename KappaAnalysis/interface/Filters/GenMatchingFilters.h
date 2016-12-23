@@ -4,6 +4,7 @@
 #include "Kappa/DataFormats/interface/Kappa.h"
 
 #include "Artus/Core/interface/FilterBase.h"
+#include "Artus/KappaAnalysis/interface/KappaTypes.h"
 
 
 /** Abstract filter class that filters events where valid objects match a given generator Tauon
@@ -52,11 +53,7 @@ class ElectronGenMatchingFilter: public GenMatchingFilterBase<KElectron>
 {
 
 public:
-	ElectronGenMatchingFilter() :
-		GenMatchingFilterBase<KElectron>(&KappaProduct::m_genParticleMatchedElectrons,
-		                                 &KappaProduct::m_validElectrons)
-	{
-	}
+	ElectronGenMatchingFilter();
 
 };
 
@@ -69,11 +66,7 @@ class MuonGenMatchingFilter: public GenMatchingFilterBase<KMuon>
 {
 
 public:
-	MuonGenMatchingFilter() :
-		GenMatchingFilterBase<KMuon>(&KappaProduct::m_genParticleMatchedMuons,
-		                             &KappaProduct::m_validMuons)
-	{
-	}
+	MuonGenMatchingFilter();
 
 };
 
@@ -86,11 +79,7 @@ class TauGenMatchingFilter: public GenMatchingFilterBase<KTau>
 {
 
 public:
-	TauGenMatchingFilter() :
-		GenMatchingFilterBase<KTau>(&KappaProduct::m_genParticleMatchedTaus,
-		                            &KappaProduct::m_validTaus)
-	{
-	}
+	TauGenMatchingFilter();
 
 };
 
@@ -103,11 +92,7 @@ class JetGenMatchingFilter: public GenMatchingFilterBase<KBasicJet>
 {
 
 public:
-	JetGenMatchingFilter() :
-		GenMatchingFilterBase<KBasicJet>(&KappaProduct::m_genParticleMatchedJets,
-		                                 &KappaProduct::m_validJets)
-	{
-	}
+	JetGenMatchingFilter();
 
 };
 

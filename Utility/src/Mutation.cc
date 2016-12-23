@@ -1,11 +1,15 @@
 
-#include "Artus/Core/interface/Mutation.h"
+#include "Artus/Utility/interface/Mutation.h"
 
 Mutation::Mutation(std::vector<FloatTupleType> const& tuple,
 		std::string const & prefix) :
 		MutationType(TypeEnum::FloatTuple), FloatTuple(tuple), NamePrefix(
 				prefix) {
 
+}
+
+Mutation::Mutation()
+{
 }
 
 void MutationCombiner::getFolderName(MutationMap const& mm) {

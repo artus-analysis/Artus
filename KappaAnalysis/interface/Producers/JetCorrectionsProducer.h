@@ -63,13 +63,13 @@ public:
 		KappaProducerBase::Init(settings);
 		
 		// load correction parameters
-		LOG(INFO) << "\tLoading JetCorrectorParameters from files...";
+		LOG(DEBUG) << "\tLoading JetCorrectorParameters from files...";
 		std::vector<JetCorrectorParameters> jecParameters;
 		for (std::vector<std::string>::const_iterator jecParametersFile = settings.GetJetEnergyCorrectionParameters().begin();
 		     jecParametersFile != settings.GetJetEnergyCorrectionParameters().end(); ++jecParametersFile)
 		{
 			jecParameters.push_back(JetCorrectorParameters(*jecParametersFile));
-			LOG(INFO) << "\t\t" << *jecParametersFile;
+			LOG(DEBUG) << "\t\t" << *jecParametersFile;
 		}
 		if (jecParameters.size() > 0)
 		{
@@ -77,7 +77,7 @@ public:
 		}
 		
 		// initialise uncertainty calculation
-		LOG(INFO) << "\tLoading JetCorrectionUncertainty from files...";
+		LOG(DEBUG) << "\tLoading JetCorrectionUncertainty from files...";
 		if ((! settings.GetJetEnergyCorrectionUncertaintyParameters().empty()) &&
 		    (settings.GetJetEnergyCorrectionUncertaintyShift() != 0.0))
 		{
@@ -95,8 +95,8 @@ public:
 				LOG(FATAL) << "Invalid definition " << settings.GetJetEnergyCorrectionUncertaintySource() 
 				           << " in file " << settings.GetJetEnergyCorrectionUncertaintyParameters();
 			jetCorrectionUncertainty = new JetCorrectionUncertainty(*jecUncertaintyParameters);
-			LOG(INFO) << "\t\t" << settings.GetJetEnergyCorrectionUncertaintySource();
-			LOG(INFO) << "\t\t" << settings.GetJetEnergyCorrectionUncertaintyParameters();
+			LOG(DEBUG) << "\t\t" << settings.GetJetEnergyCorrectionUncertaintySource();
+			LOG(DEBUG) << "\t\t" << settings.GetJetEnergyCorrectionUncertaintyParameters();
 		}
 	}
 

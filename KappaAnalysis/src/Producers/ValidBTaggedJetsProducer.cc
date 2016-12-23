@@ -1,20 +1,31 @@
 
 #include "Artus/KappaAnalysis/interface/Producers/ValidBTaggedJetsProducer.h"
+#include "Artus/Utility/interface/SafeMap.h"
 
+
+ValidBTaggedJetsProducer::BTagScaleFactorMethod ValidBTaggedJetsProducer::ToBTagScaleFactorMethod(std::string const& bTagSFMethod)
+{
+	if (bTagSFMethod == "promotiondemotion") return ValidBTaggedJetsProducer::BTagScaleFactorMethod::PROMOTIONDEMOTION;
+	else if (bTagSFMethod == "other") return ValidBTaggedJetsProducer::BTagScaleFactorMethod::OTHER;
+	else return ValidBTaggedJetsProducer::BTagScaleFactorMethod::NONE;
+}
 
 void ValidBTaggedJetsProducer::Init(KappaSettings const& settings)
 {
 	KappaProducerBase::Init(settings);
-	// is std::map<std::string,std::vector<float>
-	std::map<std::string, std::vector<float>> bTagWorkingPointsTmp = Utility::ParseMapTypes<std::string,float>(Utility::ParseVectorToMap(settings.GetBTaggerWorkingPoints()));
+	std::map<std::string, std::vector<float> > bTagWorkingPointsTmp = Utility::ParseMapTypes<std::string, float>(
+			Utility::ParseVectorToMap(settings.GetBTaggerWorkingPoints())
+	);
 
-	for (auto bTagWorkingPoint : bTagWorkingPointsTmp)
+	BTagSF bTagSFBase(settings.GetBTagScaleFactorFile(), settings.GetBTagEfficiencyFile());
+	for (std::pair<std::string, std::vector<float> > bTagWorkingPoint : bTagWorkingPointsTmp)
 	{
 		m_bTagWorkingPoints[bTagWorkingPoint.first] = bTagWorkingPoint.second.at(0);
 		if (settings.GetApplyBTagSF() && !settings.GetInputIsData())
 		{
 			m_bTagSFMethod = ToBTagScaleFactorMethod(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetBTagSFMethod())));
-			m_bTagSfMap[bTagWorkingPoint.first] = new BTagSF(settings.GetBTagScaleFactorFile(), settings.GetBTagEfficiencyFile(), bTagWorkingPoint.first);
+			m_bTagSfMap[bTagWorkingPoint.first] = bTagSFBase;
+			m_bTagSfMap[bTagWorkingPoint.first].initBtagwp(bTagWorkingPoint.first);
 		}
 		// define lambda expression for nbtag per working point
 		std::string btagQuantity = std::string("n")+bTagWorkingPoint.first+std::string("btag");
@@ -86,7 +97,7 @@ void ValidBTaggedJetsProducer::Produce(KappaEvent const& event, KappaProduct& pr
 			KJet* tjet = static_cast<KJet*>(*jet);
 
 			float combinedSecondaryVertex = tjet->getTag(settings.GetBTaggedJetCombinedSecondaryVertexName(), event.m_jetMetadata);
-			float bTagWorkingPoint = m_bTagWorkingPoints.at(*workingPoint);
+			float bTagWorkingPoint = SafeMap::Get(m_bTagWorkingPoints, *workingPoint);
 
 			if (combinedSecondaryVertex < bTagWorkingPoint ||
 				std::abs(tjet->p4.eta()) > settings.GetBTaggedJetAbsEtaCut()) {
@@ -114,14 +125,22 @@ void ValidBTaggedJetsProducer::Produce(KappaEvent const& event, KappaProduct& pr
 					if (settings.GetBMistagShift()>0)
 						bmistagSys = BTagSF::kUp;
 
-					LOG(DEBUG) << "Btagging shifts tag/mistag : " << settings.GetBTagShift() << " " << settings.GetBMistagShift(); 
+					LOG_N_TIMES(1, DEBUG) << "Btagging shifts tag/mistag : " << settings.GetBTagShift() << " " << settings.GetBMistagShift(); 
 					
 					bool taggedBefore = validBJet;
-					validBJet = m_bTagSfMap.at(*workingPoint)->isbtagged(tjet->p4.pt(), tjet->p4.eta(), combinedSecondaryVertex,
-									jetflavor, btagSys, bmistagSys, settings.GetYear(), bTagWorkingPoint); 
+					validBJet = m_bTagSfMap.at(*workingPoint).isbtagged(
+							tjet->p4.pt(),
+							tjet->p4.eta(),
+							combinedSecondaryVertex,
+							jetflavor,
+							btagSys,
+							bmistagSys,
+							settings.GetYear(),
+							bTagWorkingPoint
+					);
 					
 					if (taggedBefore != validBJet)
-						LOG(DEBUG) << "Promoted/demoted : " << validBJet;
+						LOG_N_TIMES(20, DEBUG) << "Promoted/demoted : " << validBJet;
 				}
 				
 				else if (m_bTagSFMethod == BTagScaleFactorMethod::OTHER) {

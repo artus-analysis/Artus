@@ -11,4 +11,3 @@ std::string ProcessNodeBase::GetId() const
 {
 	return Utility::GetClassName(this);
 }
-

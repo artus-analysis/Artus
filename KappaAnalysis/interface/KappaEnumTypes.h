@@ -41,5 +41,16 @@ public:
 	};
 	static DiLeptonDecayMode ToDiLeptonDecayMode(std::string const& diLeptonDecayMode);
 
+	enum class GenMatchingCode : int
+	{
+		NONE             = -1,
+		IS_ELE_PROMPT    = 1,
+		IS_MUON_PROMPT   = 2,
+		IS_ELE_FROM_TAU  = 3,
+		IS_MUON_FROM_TAU = 4,
+		IS_TAU_HAD_DECAY = 5,
+		IS_FAKE          = 6
+	};
+
 };
 
