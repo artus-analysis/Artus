@@ -30,10 +30,12 @@ class FunctionPlot(analysisbase.AnalysisBase):
 		self.function_options.add_argument("--function-fit-parameter-names", type=str, nargs="+", default=["Parameter"],
 						help="Names of the parameters (e.g. 'Slope'). Only relevant if --function-display-result is True. [Default: %(default)s]")
 
+		self.function_options.add_argument("--function-collect-result", type=str, nargs="+", default=["None"],
+						help="Collect fit results in a histogram. Save either the parameter with the given number or the Chi2. [Default: %(default)s]")
 
 	def prepare_args(self, parser, plotData):
 		self.prepare_list_args(plotData, ["functions", "function_parameters", "function_nicknames",
-						                  "function_fit", "function_ranges", "fit_backend"])
+						                  "function_fit", "function_ranges", "fit_backend", "function_collect_result"])
 		tmp_x_range = []
 		for x_range in plotData.plotdict["function_ranges"]:
 			if x_range==None:
@@ -64,6 +66,12 @@ class FunctionPlot(analysisbase.AnalysisBase):
 
 		super(FunctionPlot, self).prepare_args(parser, plotData)
 
+		self.n_functions = len(plotData.plotdict["function_collect_result"]) - plotData.plotdict["function_collect_result"].count(None)
+		
+		if self.n_functions > 0:
+			plotData.plotdict["root_objects"]["function_fit_result"] = ROOT.TH1F("function_fit_result", "function_fit_result", self.n_functions, 0, self.n_functions)
+			plotData.plotdict["nicks"].append("function_fit_result")
+
 
 	def run(self, plotData=None):
 		super(FunctionPlot, self).run()
@@ -71,12 +79,13 @@ class FunctionPlot(analysisbase.AnalysisBase):
 			log.info("You are using the FunctionPlot module. Please provide at least one input function with --function")
 			os.exit(1)
 		else:
-			for i, (function, function_nick, function_parameters, fit_nickname, x_range, fit_backend) in enumerate(zip( 
+			for i, (function, function_nick, function_parameters, fit_nickname, x_range, collect_result, fit_backend) in enumerate(zip( 
 			                                                 plotData.plotdict["functions"], 
 			                                                 plotData.plotdict["function_nicknames"],
 			                                                 plotData.plotdict["function_parameters"],
 			                                                 plotData.plotdict["function_fit"],
 			                                                 plotData.plotdict["function_ranges"],
+			                                                 plotData.plotdict["function_collect_result"],
 			                                                 plotData.plotdict["fit_backend"])):
 				if fit_nickname != None and fit_nickname in plotData.plotdict["root_objects"].keys(): 
 					root_histogram = plotData.plotdict["root_objects"][fit_nickname]
@@ -91,6 +100,13 @@ class FunctionPlot(analysisbase.AnalysisBase):
 						self.add_results_text(plotData, function_nick)
 				else:
 					plotData.plotdict["root_objects"][function_nick] = self.create_tf1(function, x_range[0], x_range[1], function_parameters)
+
+				if collect_result == None:
+					pass
+				elif collect_result == "Chi2":
+					plotData.plotdict["root_objects"]["function_fit_result"].SetBinContent(i+1, plotData.fit_results[function_nick].Chi2())
+				elif collect_result.isdigit():
+					plotData.plotdict["root_objects"]["function_fit_result"].SetBinContent(i+1, plotData.fit_results[function_nick].Parameter(int(plotData.plotdict["function_collect_result"])))
 
 
 	def create_function(self, function, x_min, x_max, start_parameters, nick="", root_histogram=None, fit_backend="ROOT"):
@@ -125,7 +141,8 @@ class FunctionPlot(analysisbase.AnalysisBase):
 		# set parameters for fit or just for drawing the function
 		for parameter_index in range(root_function.GetNpar()):
 			root_function.SetParameter(parameter_index, start_parameters[parameter_index])
-		fit_result = root_histogram.Fit(root_function.GetName(), "S", "", x_min, x_max)
+		option = "S L" if("function_fit_result" in root_function.GetName()) else "S"
+		fit_result = root_histogram.Fit(root_function.GetName(), option, "", x_min, x_max)
 		return root_function, fit_result
 
 	@staticmethod
