@@ -25,6 +25,8 @@ import Artus.Utility.geometry as geometry
 import Artus.Utility.tools as tools
 from Artus.Utility.tfilecontextmanager import TFileContextManager
 
+def multi_histogram_from_tree(kwargs):
+	return RootTools.histogram_from_tree(**kwargs)
 
 class RootTools(object):
 	def __init__(self):
@@ -201,8 +203,8 @@ class RootTools(object):
 			
 		return root_histogram
 
-
-	def histogram_from_tree(self, root_file_names, path_to_trees,
+	@staticmethod
+	def histogram_from_tree(root_file_names, path_to_trees,
 		                    x_expression, y_expression=None, z_expression=None,
 		                    x_bins=None, y_bins=None, z_bins=None,
 		                    weight_selection="", option="", name=None, friend_trees=None):
@@ -239,11 +241,10 @@ class RootTools(object):
 		
 		# prepare binning ROOT.TTree.Draw/Project
 		x_binning_string, y_binning_string, z_binning_string = ("",)*3
-
-		if not binning_identifier in self.binning_determined:
-			x_binning_string, self.x_bin_edges[binning_identifier] = RootTools.prepare_binning(x_bins)
-			y_binning_string, self.y_bin_edges[binning_identifier] = RootTools.prepare_binning(y_bins)
-			z_binning_string, self.z_bin_edges[binning_identifier] = RootTools.prepare_binning(z_bins)
+		x_bin_edges, y_bin_edges, z_bin_edges = {}, {}, {}
+		x_binning_string, x_bin_edges[binning_identifier] = RootTools.prepare_binning(x_bins)
+		y_binning_string, y_bin_edges[binning_identifier] = RootTools.prepare_binning(y_bins)
+		z_binning_string, z_bin_edges[binning_identifier] = RootTools.prepare_binning(z_bins)
 
 		binning = ""
 		root_histogram = None
@@ -261,17 +262,17 @@ class RootTools(object):
 			if binning == "()":
 				binning == ""
 			
-			if any([bin_edges != None for bin_edges in [self.x_bin_edges[binning_identifier], self.y_bin_edges[binning_identifier], self.z_bin_edges[binning_identifier]]]):
+			if any([bin_edges != None for bin_edges in [x_bin_edges[binning_identifier], y_bin_edges[binning_identifier], z_bin_edges[binning_identifier]]]):
 				if any([bin_edges == None and expression != None for (bin_edges, expression) in zip(
-						[self.x_bin_edges[binning_identifier], self.y_bin_edges[binning_identifier], self.z_bin_edges[binning_identifier]],
+						[x_bin_edges[binning_identifier], y_bin_edges[binning_identifier], z_bin_edges[binning_identifier]],
 						[x_expression, y_expression, z_expression])]
 				) and "prof" not in option.lower():
 					log.warning("Bin edges need to be specified either for no or for all axes!")
 				else:
 					root_histogram = RootTools.create_root_histogram(
-						x_bins=self.x_bin_edges[binning_identifier],
-						y_bins=None if y_expression is None else self.y_bin_edges[binning_identifier],
-						z_bins=None if z_expression is None else self.z_bin_edges[binning_identifier],
+						x_bins=x_bin_edges[binning_identifier],
+						y_bins=None if y_expression is None else y_bin_edges[binning_identifier],
+						z_bins=None if z_expression is None else z_bin_edges[binning_identifier],
 						profile_histogram=("prof" in option.lower()),
 						name=name,
 						profile_error_option=(option.lower().replace("prof", ''))
@@ -409,16 +410,14 @@ class RootTools(object):
 		
 		if isinstance(root_histogram, ROOT.TH1):
 			root_histogram.SetDirectory(0)
-			self.x_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=0)
-			self.y_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=1)
-			self.z_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=2)
+			x_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=0)
+			y_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=1)
+			z_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=2)
 		elif isinstance(root_histogram, ROOT.TGraph):
 			root_histogram.SetName(name)
 			root_histogram.SetTitle("")
 
-		if "prof" not in option.lower() and binning_identifier not in self.binning_determined:
-			self.binning_determined.append(binning_identifier)
-		return tree, root_histogram
+		return root_histogram
 
 
 	@staticmethod

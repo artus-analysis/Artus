@@ -9,6 +9,7 @@ import array
 import copy
 import fcntl
 import multiprocessing
+import multiprocessing.pool
 import os
 import re
 import sys
@@ -156,6 +157,17 @@ def get_indented_text(prefix, message, width=None):
 			)
 	return '\n'.join(['\n'.join(tmp_wrapped_texts)])
 
+# sub-class of multiprocessing.Process that allows to switch off the deamon attribute
+class NoDaemonProcess(multiprocessing.Process):
+    def _get_daemon(self):
+        return False
+    def _set_daemon(self, value):
+        pass
+    daemon = property(_get_daemon, _set_daemon)
+ 
+class NoDaemonProcessPool(multiprocessing.pool.Pool):
+    Process = NoDaemonProcess
+
 def parallelize(function, arguments_list, n_processes=1):
 	if n_processes <= 1:
 		results = []
@@ -163,7 +175,7 @@ def parallelize(function, arguments_list, n_processes=1):
 			results.append(function(arguments))
 		return results
 	else:
-		pool = multiprocessing.Pool(processes=max(1, min(n_processes, len(arguments_list))))
+		pool = NoDaemonProcessPool(processes=max(1, min(n_processes, len(arguments_list))))
 		results = pool.map_async(function, arguments_list)
 		return results.get(9999999) # 9999999 is needed for KeyboardInterrupt to work: http://stackoverflow.com/questions/1408356/keyboard-interrupts-with-pythons-multiprocessing-pool
 
