@@ -35,7 +35,7 @@ public:
 	/// name of jet collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, BasicJets, "");
 	IMPL_SETTING_DEFAULT(std::string, GenJets, "");
-	IMPL_SETTING_DEFAULT(bool, useKLVGenJets, false);
+	IMPL_SETTING_DEFAULT(bool, UseKLVGenJets, false);
 
 	/// name of tagged jet collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, TaggedJets, "");
