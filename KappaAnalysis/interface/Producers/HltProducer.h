@@ -22,9 +22,10 @@ public:
 	void Init(KappaSettings const& settings) override;
 
 	void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const override;
+	             KappaSettings const& settings) const override;
+
 private:
-      	mutable HLTTools local_hltInfo; 
+	mutable HLTTools m_hltInfo;
 
 };
 

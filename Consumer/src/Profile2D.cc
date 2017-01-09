@@ -4,6 +4,18 @@
 #include "Artus/Utility/interface/RootFileHelper.h"
 
 
+Profile2d::DataPoint::DataPoint(double x, double y, double weight) :
+		m_fx(x), m_fy(y), m_fweight(weight) {
+}
+
+Profile2d::Profile2d(std::string sName, std::string sFolder) :
+	ProfileBase<Profile2d>(sName, sFolder),
+	m_iBinCountX(100),
+	m_dBinLowerX(100),
+	m_dBinUpperX(100)
+{
+}
+
 void Profile2d::Init() {
 	RootFileHelper::SafeCd(gROOT, GetRootFileFolder());
 	m_profile.reset(

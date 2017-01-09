@@ -75,12 +75,6 @@ void GenBosonDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
 	GenBosonFromGenParticlesProducer::Init(settings);
 
 	// add possible quantities for the lambda ntuples consumers
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genDiLeptonBosonMass", [](KappaEvent const & event, KappaProduct const & product)
-	{
-		return (product.m_genBosonLVFound ? product.m_genBosonLV.mass() : DefaultValues::UndefinedFloat);
-	});
-	
-	// add possible quantities for the lambda ntuples consumers
 	for (size_t leptonIndex = 0; leptonIndex < 2; ++leptonIndex)
 	{
 		std::string lepQuantityNameBase = "genBosonLep" + std::to_string(leptonIndex+1);

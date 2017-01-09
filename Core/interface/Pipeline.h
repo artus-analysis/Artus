@@ -1,8 +1,3 @@
-/* Copyright (c) 2013 - All Rights Reserved
- *   Thomas Hauth  <Thomas.Hauth@cern.ch>
- *   Joram Berger  <Joram.Berger@cern.ch>
- *   Dominik Haitz <Dominik.Haitz@kit.edu>
- */
 
 #pragma once
 
@@ -12,8 +7,6 @@
 
 #include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
-
-#include "Artus/Utility/interface/Collections.h"
 
 #include "PipelineSettings.h"
 #include "FilterBase.h"
@@ -292,7 +285,7 @@ private:
 	ConsumerVector m_consumer;
 	ProcessNodeVector m_nodes;
 	setting_type m_pipelineSettings;
-	stringvector m_filterNames;
-	stringvector m_taggingFilters;
+	std::vector<std::string> m_filterNames;
+	std::vector<std::string> m_taggingFilters;
 };
 

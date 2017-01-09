@@ -32,19 +32,23 @@ public:
 	typedef typename KappaTypes::setting_type setting_type;
 	
 	GenTauMatchingProducerBase(std::map<TValidObject*, KGenTau*> product_type::*genTauMatchedObjects, //changed to KGenParticle from const KDataLV
+	                           std::vector<TValidObject>* event_type::*objects,
 	                           std::vector<TValidObject*> product_type::*validObjects,
 	                           std::vector<TValidObject*> product_type::*invalidObjects,
 	                           TauDecayMode tauDecayMode,
 	                           float (setting_type::*GetDeltaRMatchingRecoObjectGenTau)(void) const,
 	                           bool (setting_type::*GetInvalidateNonGenTauMatchingObjects)(void) const,
-	                           bool (setting_type::*GetInvalidateGenTauMatchingObjects)(void) const) :
+	                           bool (setting_type::*GetInvalidateGenTauMatchingObjects)(void) const,
+	                           bool (setting_type::*GetMatchAllObjectsGenTau)(void) const) :
 		m_genTauMatchedObjects(genTauMatchedObjects),
+		m_objects(objects),
 		m_validObjects(validObjects),
 		m_invalidObjects(invalidObjects),
 		tauDecayMode(tauDecayMode),
 		GetDeltaRMatchingRecoObjectGenTau(GetDeltaRMatchingRecoObjectGenTau),
 		GetInvalidateNonGenTauMatchingObjects(GetInvalidateNonGenTauMatchingObjects),
-		GetInvalidateGenTauMatchingObjects(GetInvalidateGenTauMatchingObjects)
+		GetInvalidateGenTauMatchingObjects(GetInvalidateGenTauMatchingObjects),
+		GetMatchAllObjectsGenTau(GetMatchAllObjectsGenTau)
 	{
 	}
 
@@ -70,9 +74,33 @@ public:
 		
 		if ((settings.*GetDeltaRMatchingRecoObjectGenTau)() > 0.0f)
 		{
-			// loop over all valid objects to check
-			for (typename std::vector<TValidObject*>::iterator validObject = (product.*m_validObjects).begin();
-				 validObject != (product.*m_validObjects).end();)
+			// choose valid objects or all objects for matching
+			std::vector<TValidObject*> objects;
+			if ((settings.*GetMatchAllObjectsGenTau)())
+			{
+				assert((event.*m_objects));
+
+				objects.resize((event.*m_objects)->size());
+				size_t objectIndex = 0;
+				for (typename std::vector<TValidObject>::iterator object = (event.*m_objects)->begin(); object != (event.*m_objects)->end(); ++object)
+				{
+					objects[objectIndex] = &(*object);
+					++objectIndex;
+				}
+			}
+			else
+			{
+				objects.resize((product.*m_validObjects).size());
+				size_t objectIndex = 0;
+				for (typename std::vector<TValidObject*>::iterator object = (product.*m_validObjects).begin(); object != (product.*m_validObjects).end(); ++object)
+				{
+					objects[objectIndex] = *object;
+					++objectIndex;
+				}
+			}
+			// loop over all chosen objects to check
+			for (typename std::vector<TValidObject*>::iterator object = objects.begin();
+				 object != objects.end();)
 			{
 				bool objectMatched = false;
 				float deltaR = 0;
@@ -85,12 +113,12 @@ public:
 					// only use genTaus that will decay into comparable particles
 					if (MatchDecayMode(*genTau,tauDecayMode))
 					{
-						deltaR = static_cast<float>(ROOT::Math::VectorUtil::DeltaR((*validObject)->p4, genTau->visible.p4));
+						deltaR = static_cast<float>(ROOT::Math::VectorUtil::DeltaR((*object)->p4, genTau->visible.p4));
 						if(deltaR<(settings.*GetDeltaRMatchingRecoObjectGenTau)() && deltaR<deltaRmin)
 						{
-							(product.*m_genTauMatchedObjects)[*validObject] = &(*genTau);
-							product.m_genTauMatchedLeptons[*validObject] = &(*genTau);
-							ratioGenTauMatched += 1.0 / (product.*m_validObjects).size();
+							(product.*m_genTauMatchedObjects)[*object] = &(*genTau);
+							product.m_genTauMatchedLeptons[*object] = &(*genTau);
+							ratioGenTauMatched += 1.0 / objects.size();
 							product.m_genTauMatchDeltaR = deltaR;
 							deltaRmin = deltaR;
 							objectMatched = true;
@@ -101,19 +129,20 @@ public:
 					else product.m_genTauMatchDeltaR = DefaultValues::UndefinedFloat;
 				}
 				// invalidate the object if it has not matched
-				if (((! objectMatched) && (settings.*GetInvalidateNonGenTauMatchingObjects)()) ||
-				    (objectMatched && (settings.*GetInvalidateGenTauMatchingObjects)()))
+				if (!(settings.*GetMatchAllObjectsGenTau)() &&
+					(((! objectMatched) && (settings.*GetInvalidateNonGenTauMatchingObjects)()) ||
+					(objectMatched && (settings.*GetInvalidateGenTauMatchingObjects)())))
 				{
-					(product.*m_invalidObjects).push_back(*validObject);
-					validObject = (product.*m_validObjects).erase(validObject);
+					(product.*m_invalidObjects).push_back(*object);
+					object = (product.*m_validObjects).erase(object);
 				}
 				else
 				{
-					++validObject;
+					++object;
 				}
 			}
 			// preserve sorting of invalid objects
-			if ((settings.*GetInvalidateNonGenTauMatchingObjects)() || (settings.*GetInvalidateGenTauMatchingObjects)())
+			if (!(settings.*GetMatchAllObjectsGenTau)() && ((settings.*GetInvalidateNonGenTauMatchingObjects)() || (settings.*GetInvalidateGenTauMatchingObjects)()))
 			{
 				std::sort((product.*m_invalidObjects).begin(), (product.*m_invalidObjects).end(),
 						  [](TValidObject const* object1, TValidObject const* object2) -> bool
@@ -137,12 +166,14 @@ public:
 	
 private:
 	std::map<TValidObject*, KGenTau*> product_type::*m_genTauMatchedObjects; //changed to KGenParticle from const KDataLV
+	std::vector<TValidObject>* event_type::*m_objects;
 	std::vector<TValidObject*> product_type::*m_validObjects;
 	std::vector<TValidObject*> product_type::*m_invalidObjects;
 	TauDecayMode tauDecayMode;
 	float (setting_type::*GetDeltaRMatchingRecoObjectGenTau)(void) const;
 	bool (setting_type::*GetInvalidateNonGenTauMatchingObjects)(void) const;
 	bool (setting_type::*GetInvalidateGenTauMatchingObjects)(void) const;
+	bool (setting_type::*GetMatchAllObjectsGenTau)(void) const;
 	
 	std::map<size_t, std::vector<std::string> > m_objectTriggerFiltersByIndex;
 	std::map<std::string, std::vector<std::string> > m_objectTriggerFiltersByHltName;

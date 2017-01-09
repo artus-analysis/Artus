@@ -1,11 +1,9 @@
-/* Copyright (c) 2013 - All Rights Reserved
- *   Thomas Hauth  <Thomas.Hauth@cern.ch>
- *   Joram Berger  <Joram.Berger@cern.ch>
- *   Dominik Haitz <Dominik.Haitz@kit.edu>
- */
+
 #pragma once
 
 #include <cassert>
+
+#include <boost/scoped_ptr.hpp>
 
 #include <TChain.h>
 
@@ -13,10 +11,13 @@
 
 template<class TTypes>
 class RootEventProvider: public EventProviderBase<TTypes> {
+
 public:
 	typedef typename TTypes::event_type event_type;
+	typedef typename TTypes::product_type product_type;
+	typedef typename TTypes::setting_type setting_type;
 
-	RootEventProvider(stringvector const& fileNames,
+	RootEventProvider(std::vector<std::string> const& fileNames,
 			std::string const& treeName) {
 		m_rootChain.reset(new TChain(treeName.c_str()));
 
@@ -37,7 +38,7 @@ public:
 		return m_rootChain->GetEntries();
 	}
 
-	virtual void WireEvent(TraxSettings const&) = 0;
+	virtual void WireEvent(setting_type const& settings) = 0;
 
 protected:
 	event_type m_event;

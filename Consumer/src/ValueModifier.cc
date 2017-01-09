@@ -1,16 +1,47 @@
-/* Copyright (c) 2013 - All Rights Reserved
- *   Thomas Hauth  <Thomas.Hauth@cern.ch>
- *   Joram Berger  <Joram.Berger@cern.ch>
- *   Dominik Haitz <Dominik.Haitz@kit.edu>
- */
 
 #include "Artus/Consumer/interface/ValueModifier.h"
 
 #include "Artus/Consumer/interface/Hist1D.h"
 
+ValueModifier::~ValueModifier() {
+}
+
+void ValueModifier::applyHistBeforeCreation(Hist1D * h1, size_t index) {
+	assert(false);
+}
+
+void ValueModifier::applyProfileBeforeCreation(Profile2d * h1, size_t index) {
+	assert(false);
+}
+
+void ValueModifier::applyHist2DBeforeCreation(Hist2D * h1, size_t index) {
+	assert(false);
+}
+
+/*
+void ValueModifier::applyProfile(Profile2 * h1, size_t index) {
+	assert(false);
+}
+*/
+
+ValueModifierRange::ValueModifierRange(float l, float u) :
+		m_binLower(l), m_binUpper(u) {
+
+}
+
+ValueModifierRange::~ValueModifierRange() {
+}
+
 void ValueModifierRange::applyHistBeforeCreation(Hist1D * h1, size_t index) {
 	h1->m_dBinLower = this->m_binLower;
 	h1->m_dBinUpper = this->m_binUpper;
+}
+
+ValueModifierBinCount::ValueModifierBinCount(size_t bc) :
+		m_binCount(bc) {
+}
+
+ValueModifierBinCount::~ValueModifierBinCount() {
 }
 
 void ValueModifierBinCount::applyHistBeforeCreation(Hist1D * h1, size_t index) {

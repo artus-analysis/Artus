@@ -35,6 +35,7 @@ public:
 	/// name of jet collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, BasicJets, "");
 	IMPL_SETTING_DEFAULT(std::string, GenJets, "");
+	IMPL_SETTING_DEFAULT(bool, useKLVGenJets, false);
 
 	/// name of tagged jet collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, TaggedJets, "");
@@ -197,6 +198,10 @@ public:
 	IMPL_SETTING_DEFAULT(bool, InvalidateGenTauMatchingRecoMuons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateGenTauMatchingRecoTaus, false);
 
+	IMPL_SETTING_DEFAULT(bool, RecoElectronMatchingGenParticleMatchAllElectrons, false);
+	IMPL_SETTING_DEFAULT(bool, RecoMuonMatchingGenParticleMatchAllMuons, false);
+	IMPL_SETTING_DEFAULT(bool, RecoTauMatchingGenParticleMatchAllTaus, false);
+
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoElectronGenTauJet, 0.5f);
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoMuonGenTauJet, 0.5f);
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoTauGenTauJet, 0.5f);
@@ -208,6 +213,10 @@ public:
 	IMPL_SETTING_DEFAULT(bool, InvalidateGenTauJetMatchingRecoElectrons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateGenTauJetMatchingRecoMuons, false);
 	IMPL_SETTING_DEFAULT(bool, InvalidateGenTauJetMatchingRecoTaus, false);
+
+	IMPL_SETTING_DEFAULT(bool, MatchAllElectronsGenTau, false);
+	IMPL_SETTING_DEFAULT(bool, MatchAllMuonsGenTau, false);
+	IMPL_SETTING_DEFAULT(bool, MatchAllTausGenTau, false);
 
 	IMPL_SETTING(int, Year);
 
@@ -277,12 +286,14 @@ public:
 	IMPL_SETTING_STRINGLIST_DEFAULT(MuonLowerPtCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(TauLowerPtCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetLowerPtCuts, {});
+	IMPL_SETTING_STRINGLIST_DEFAULT(GenJetLowerPtCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(NonBTaggedJetLowerPtCuts, {});
 
 	IMPL_SETTING_STRINGLIST_DEFAULT(ElectronUpperAbsEtaCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(MuonUpperAbsEtaCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(TauUpperAbsEtaCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetUpperAbsEtaCuts, {});
+	IMPL_SETTING_STRINGLIST_DEFAULT(GenJetUpperAbsEtaCuts, {});
 
 	IMPL_SETTING_DEFAULT(float, BTaggedJetAbsEtaCut, 0.0f);
 	IMPL_SETTING_DEFAULT(std::string, BTaggedJetTrackCountingHighEffName, "TrackCountingHighEffBJetTags");
@@ -356,13 +367,18 @@ public:
 	IMPL_SETTING_DEFAULT(float, deltaRTolleranceForPF, 0.3);
 	IMPL_SETTING_DEFAULT(float, PtTolleranceForPF, 4.);
 
-	//Needed for RochMuonCorrectionsProducer
+	// Needed for RochMuonCorrectionsProducer
 	IMPL_SETTING_DEFAULT(std::string, MuonEnergyCorrection, "none");
 	IMPL_SETTING(std::string, MuonRochesterCorrectionsFile);
 
 	// Needed by SampleStitchingWeightProducer
 	IMPL_SETTING_STRINGLIST(StitchingWeights);
 	IMPL_SETTING_STRINGLIST_DEFAULT(StitchingWeightsHighMass, {});
+
+	// Needed for TauCorrectionsProducer, etc.
+	IMPL_SETTING_DEFAULT(bool, CorrectOnlyRealElectrons, false);
+	IMPL_SETTING_DEFAULT(bool, CorrectOnlyRealMuons, false);
+	IMPL_SETTING_DEFAULT(bool, CorrectOnlyRealTaus, false);
 
 	IMPL_SETTING_DEFAULT(std::string, DatabasePDG, "$ROOTSYS/etc/pdg_table.txt");
 };

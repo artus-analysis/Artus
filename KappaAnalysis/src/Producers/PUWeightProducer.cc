@@ -12,8 +12,8 @@ void PUWeightProducer::Init(KappaSettings const& settings) {
 	KappaProducerBase::Init(settings);
 
 	const std::string histogramName = "pileup";
-	LOG(INFO) << "\tLoading pile-up weights from files...";
-	LOG(INFO) << "\t\t" << settings.GetPileupWeightFile() << "/" << histogramName;
+	LOG(DEBUG) << "\tLoading pile-up weights from files...";
+	LOG(DEBUG) << "\t\t" << settings.GetPileupWeightFile() << "/" << histogramName;
 	TFile file(settings.GetPileupWeightFile().c_str(), "READONLY");
 	TH1D* pileupHistogram = dynamic_cast<TH1D*>(file.Get(histogramName.c_str()));
 
@@ -36,6 +36,6 @@ void PUWeightProducer::Produce(KappaEvent const& event, KappaProduct& product,
 	if (puBin < m_pileupWeights.size())
 		product.m_weights["puWeight"] = m_pileupWeights.at(puBin);
 	else
-		product.m_weights["puWeight"] = 0.0;
+		product.m_weights["puWeight"] = 1.0;
 }
 
