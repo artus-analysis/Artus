@@ -14,7 +14,7 @@ class ZFilter : public FilterBase<KappaTypes>
   public:
 	std::string GetFilterId() const override;
 
-	ZFilter() : FilterBase<KappaTypes>() {}
+	ZFilter();
 
 	bool DoesEventPass(KappaEvent const& event,
 	                   KappaProduct const& product,

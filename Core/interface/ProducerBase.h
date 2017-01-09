@@ -32,44 +32,30 @@ public:
 	// base implemenations of ProcessEvent / Init and friends
 	friend ProducerBaseAccess;
 
-	virtual ~ProducerBaseUntemplated() {}
+	virtual ~ProducerBaseUntemplated();
 
 	/// Must return a unique id of the producer.
 	virtual std::string GetProducerId() const = 0;
 
 protected:
 	// will be implemented by the ConsumerBase class
-	virtual void baseInit ( SettingsBase const& settings ) = 0;
+	virtual void baseInit(SettingsBase const& settings) = 0;
 
-	virtual void baseProduce(EventBase const& event, ProductBase& product,
-	                     SettingsBase const& settings) const = 0;
-	virtual void baseOnRun(EventBase const& event,
-	                     SettingsBase const& settings) = 0;
-	virtual void baseOnLumi(EventBase const& event,
-	                     SettingsBase const& settings) = 0;
+	virtual void baseProduce(EventBase const& event, ProductBase& product, SettingsBase const& settings) const = 0;
+	virtual void baseOnRun(EventBase const& event, SettingsBase const& settings) = 0;
+	virtual void baseOnLumi(EventBase const& event, SettingsBase const& settings) = 0;
 };
 
 
 class ProducerBaseAccess {
 public:
-	explicit ProducerBaseAccess(ProducerBaseUntemplated& cb) : m_cb(cb) {}
+	explicit ProducerBaseAccess(ProducerBaseUntemplated& cb);
 
-	void Init ( SettingsBase const& settings ){
-		m_cb.baseInit( settings );
-	}
-
-	void Produce(EventBase const& event, ProductBase& product,
-	                     SettingsBase const& settings){
-		m_cb.baseProduce ( event, product, settings);
-	}
-	void OnRun(EventBase const& event,
-	                     SettingsBase const& settings){
-		m_cb.baseOnRun ( event, settings);
-	}
-	void OnLumi(EventBase const& event,
-	                     SettingsBase const& settings){
-		m_cb.baseOnLumi ( event, settings);
-	}
+	void Init(SettingsBase const& settings);
+	
+	void Produce(EventBase const& event, ProductBase& product, SettingsBase const& settings);
+	void OnRun(EventBase const& event, SettingsBase const& settings);
+	void OnLumi(EventBase const& event, SettingsBase const& settings);
 
 private:
 	ProducerBaseUntemplated & m_cb;

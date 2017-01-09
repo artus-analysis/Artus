@@ -25,58 +25,58 @@ std::string th1ToFormulaBinTree(const TH1*, int, int);
 class BTagEntry
 {
 public:
-  enum OperatingPoint {
-    OP_LOOSE=0,
-    OP_MEDIUM=1,
-    OP_TIGHT=2,
-    OP_RESHAPING=3,
-  };
-  enum JetFlavor {
-    FLAV_B=0,
-    FLAV_C=1,
-    FLAV_UDSG=2,
-  };
-  struct Parameters {
-    OperatingPoint operatingPoint;
-    std::string measurementType;
-    std::string sysType;
-    JetFlavor jetFlavor;
-    float etaMin;
-    float etaMax;
-    float ptMin;
-    float ptMax;
-    float discrMin;
-    float discrMax;
+	enum OperatingPoint {
+		OP_LOOSE=0,
+		OP_MEDIUM=1,
+		OP_TIGHT=2,
+		OP_RESHAPING=3,
+	};
+	enum JetFlavor {
+		FLAV_B=0,
+		FLAV_C=1,
+		FLAV_UDSG=2,
+	};
+	struct Parameters {
+		OperatingPoint operatingPoint;
+		std::string measurementType;
+		std::string sysType;
+		JetFlavor jetFlavor;
+		float etaMin;
+		float etaMax;
+		float ptMin;
+		float ptMax;
+		float discrMin;
+		float discrMax;
 
-    // default constructor
-    Parameters(
-      OperatingPoint op=OP_TIGHT,
-      std::string measurement_type="comb",
-      std::string sys_type="central",
-      JetFlavor jf=FLAV_B,
-      float eta_min=-99999.,
-      float eta_max=99999.,
-      float pt_min=0.,
-      float pt_max=99999.,
-      float discr_min=0.,
-      float discr_max=99999.
-    );
+		// default constructor
+		Parameters(
+			OperatingPoint op=OP_TIGHT,
+			std::string measurement_type="comb",
+			std::string sys_type="central",
+			JetFlavor jf=FLAV_B,
+			float eta_min=-99999.,
+			float eta_max=99999.,
+			float pt_min=0.,
+			float pt_max=99999.,
+			float discr_min=0.,
+			float discr_max=99999.
+		);
 
-  };
+	};
 
-  BTagEntry() {}
-  BTagEntry(const std::string &csvLine);
-  BTagEntry(const std::string &func, Parameters p);
-  BTagEntry(const TF1* func, Parameters p);
-  BTagEntry(const TH1* histo, Parameters p);
-  ~BTagEntry() {}
-  static std::string makeCSVHeader();
-  std::string makeCSVLine() const;
-  static std::string trimStr(std::string str);
+	BTagEntry() {}
+	BTagEntry(const std::string &csvLine);
+	BTagEntry(const std::string &func, Parameters p);
+	BTagEntry(const TF1* func, Parameters p);
+	BTagEntry(const TH1* histo, Parameters p);
+	~BTagEntry() {}
+	static std::string makeCSVHeader();
+	std::string makeCSVLine() const;
+	static std::string trimStr(std::string str);
 
-  // public, no getters needed
-  std::string formula;
-  Parameters params;
+	// public, no getters needed
+	std::string formula;
+	Parameters params;
 
 };
 
@@ -110,26 +110,26 @@ public:
 class BTagCalibration
 {
 public:
-  BTagCalibration() {}
-  BTagCalibration(const std::string &tagger);
-  BTagCalibration(const std::string &tagger, const std::string &filename);
-  ~BTagCalibration() {}
+	BTagCalibration() {}
+	BTagCalibration(const std::string &tagger);
+	BTagCalibration(const std::string &tagger, const std::string &filename);
+	~BTagCalibration() {}
 
-  std::string tagger() const {return tagger_;}
+	std::string tagger() const {return tagger_;}
 
-  void addEntry(const BTagEntry &entry);
-  const std::vector<BTagEntry>& getEntries(const BTagEntry::Parameters &par) const;
+	void addEntry(const BTagEntry &entry);
+	const std::vector<BTagEntry>& getEntries(const BTagEntry::Parameters &par) const;
 
-  void readCSV(std::istream &s);
-  void readCSV(const std::string &s);
-  void makeCSV(std::ostream &s) const;
-  std::string makeCSV() const;
+	void readCSV(std::istream &s);
+	void readCSV(const std::string &s);
+	void makeCSV(std::ostream &s) const;
+	std::string makeCSV() const;
 
 protected:
-  static std::string token(const BTagEntry::Parameters &par);
+	static std::string token(const BTagEntry::Parameters &par);
 
-  std::string tagger_;
-  std::map<std::string, std::vector<BTagEntry> > data_;
+	std::string tagger_;
+	std::map<std::string, std::vector<BTagEntry> > data_;
 
 };
 
@@ -156,33 +156,33 @@ protected:
 class BTagCalibrationReader
 {
 public:
-  BTagCalibrationReader() {}
-  BTagCalibrationReader(const BTagCalibration* c,
-                        BTagEntry::OperatingPoint op,
-                        std::string measurementType="comb",
-                        std::string sysType="central");
-  ~BTagCalibrationReader() {}
+	BTagCalibrationReader() {}
+	BTagCalibrationReader(const BTagCalibration* c,
+	                      BTagEntry::OperatingPoint op,
+	                      std::string measurementType="comb",
+	                      std::string sysType="central");
+	~BTagCalibrationReader() {}
 
-  double eval(BTagEntry::JetFlavor jf,
-              float eta,
-              float pt,
-              float discr=0.) const;
+	double eval(BTagEntry::JetFlavor jf,
+	            float eta,
+	            float pt,
+	            float discr=0.) const;
 
 protected:
-  struct TmpEntry {
-    float etaMin;
-    float etaMax;
-    float ptMin;
-    float ptMax;
-    float discrMin;
-    float discrMax;
-    TF1 func;
-  };
-  void setupTmpData(const BTagCalibration* c);
+	struct TmpEntry {
+		float etaMin;
+		float etaMax;
+		float ptMin;
+		float ptMax;
+		float discrMin;
+		float discrMax;
+		TF1 func;
+	};
+	void setupTmpData(const BTagCalibration* c);
 
-  BTagEntry::Parameters params;
-  std::map<BTagEntry::JetFlavor, std::vector<TmpEntry> > tmpData_;
-  std::vector<bool> useAbsEta;
+	BTagEntry::Parameters params;
+	std::map<BTagEntry::JetFlavor, std::vector<TmpEntry> > tmpData_;
+	std::vector<bool> useAbsEta;
 };
 
 #endif  // BTagCalibrationReader_H

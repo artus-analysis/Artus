@@ -2,11 +2,24 @@
 #include "Artus/Configuration/interface/ArtusConfig.h"
 #include "Artus/Configuration/interface/SettingsBase.h"
 
+SettingsBase::SettingsBase() :
+	m_RootOutFile(nullptr)
+{
+}
 
-stringvector SettingsUtil::ExtractFilters ( stringvector const& allProcessors )   {
-	stringvector filt;
+SettingsBase::SettingsBase(std::string const& name) :
+	m_Name(name),
+	m_RootOutFile(nullptr)
+{
+}
 
-	for ( stringvector::const_iterator it = allProcessors.begin();
+SettingsBase::~SettingsBase() {
+}
+
+std::vector<std::string> SettingsUtil::ExtractFilters ( std::vector<std::string> const& allProcessors )   {
+	std::vector<std::string> filt;
+
+	for ( std::vector<std::string>::const_iterator it = allProcessors.begin();
 			it != allProcessors.end(); ++it) {
 		const ArtusConfig::NodeTypePair nodeRes = ArtusConfig::ParseProcessNode( *it );
 		if ( nodeRes.first == ProcessNodeType::Filter ){
@@ -18,7 +31,7 @@ stringvector SettingsUtil::ExtractFilters ( stringvector const& allProcessors ) 
 }
 
 
-std::vector <SettingsBase::PipelineInfo> SettingsBase::GetPipelineInfos () const {
+std::vector<SettingsBase::PipelineInfo> SettingsBase::GetPipelineInfos () const {
 
 	if ( ! m_pipelineInfos.IsCached() ) {
 		std::vector <SettingsBase::PipelineInfo> pinfo;
@@ -40,4 +53,39 @@ std::vector <SettingsBase::PipelineInfo> SettingsBase::GetPipelineInfos () const
 	}
 
 	return m_pipelineInfos.GetValue();
+}
+
+std::string SettingsBase::GetRootFileFolder() const {
+	return GetName();
+}
+
+std::string SettingsBase::GetPipelinePrefix() const {
+	if ( GetName() == "")
+		return "";
+	else
+		return "Pipelines." + GetName() + ".";
+}
+
+std::string SettingsBase::ToString() const {
+	return "SettingsBase - Pipeline name: " + GetName();
+}
+
+std::vector<std::string>& SettingsBase::GetGlobalProcessors () const {
+	RETURN_CACHED(m_globalProcessors, PropertyTreeSupport::GetAsStringList(GetPropTree(), "Processors" ))
+}
+
+std::vector<std::string> SettingsBase::GetAllProcessors () const {
+	std::vector<std::string> allProcessors;
+	std::vector<std::string> globalProcessors = GetGlobalProcessors();
+	std::vector<std::string> localProcessors = GetProcessors();
+
+	if ( GetName() != "") {
+		allProcessors.insert(allProcessors.end(), globalProcessors.begin(), globalProcessors.end());
+	}
+	allProcessors.insert(allProcessors.end(), localProcessors.begin(), localProcessors.end());
+	return allProcessors;
+}
+
+std::vector<std::string> SettingsBase::GetFilters () const {
+	return SettingsUtil::ExtractFilters(GetProcessors());
 }

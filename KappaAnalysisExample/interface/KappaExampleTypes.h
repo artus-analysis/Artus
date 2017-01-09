@@ -5,8 +5,6 @@
 #include "Artus/Core/interface/Pipeline.h"
 #include "Artus/Core/interface/PipelineRunner.h"
 
-#include "Artus/KappaAnalysis/interface/KappaPipelineInitializer.h"
-
 #include "Artus/KappaAnalysisExample/interface/KappaExampleEvent.h"
 #include "Artus/KappaAnalysisExample/interface/KappaExampleProduct.h"
 #include "Artus/KappaAnalysisExample/interface/KappaExampleSettings.h"
@@ -28,5 +26,5 @@ public:
 
 typedef Pipeline<KappaExampleTypes> KappaExamplePipeline;
 typedef PipelineRunner<KappaExamplePipeline, KappaExampleTypes> KappaExamplePipelineRunner;
-typedef KappaPipelineInitializer<KappaExampleTypes> KappaExamplePipelineInitializer;
+typedef PipelineInitilizerBase<KappaExampleTypes> KappaExamplePipelineInitializer;
 

@@ -1,12 +1,7 @@
-/* Copyright (c) 2013 - All Rights Reserved
- *   Thomas Hauth  <Thomas.Hauth@cern.ch>
- *   Joram Berger  <Joram.Berger@cern.ch>
- *   Dominik Haitz <Dominik.Haitz@kit.edu>
- */
 
 #pragma once
 
-#include "Artus/Provider/interface/KappaEventProviderBase.h"
+#include "Artus/KappaAnalysis/interface/KappaEventProviderBase.h"
 
 #include "TraxTypes.h"
 
@@ -18,12 +13,6 @@
 
 class TraxKappaEventProvider: public KappaEventProviderBase<TraxTypes> {
 public:
-	TraxKappaEventProvider(FileInterface2 & fi, InputTypeEnum inpType) :
-		KappaEventProviderBase<TraxTypes>(fi, inpType) {
-	}
+	TraxKappaEventProvider(FileInterface2 & fi, InputTypeEnum inpType);
 
-	void WireEvent(TraxTypes::global_setting_type const&) override
-	{
-		// set up the Kappa pointers to our local memory regions
-	}
 };

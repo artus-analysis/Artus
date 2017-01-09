@@ -5,6 +5,20 @@
 #include "Artus/Core/interface/FilterResult.h"
 
 
+FilterResult::DecisionEntry::DecisionEntry() :
+		filterName(""),
+		filterDecision(Decision::Undefined),
+		taggingMode(TaggingMode::Filtering)
+{
+}
+
+FilterResult::DecisionEntry::DecisionEntry(std::string filterName, Decision filterDecision, TaggingMode taggingMode) :
+		filterName(filterName),
+		filterDecision(filterDecision),
+		taggingMode(taggingMode)
+{
+}
+
 FilterResult::FilterResult() :
 		// has passed by default
 		m_cacheHasPassed(true), m_IsCachedHasPassed(false) {

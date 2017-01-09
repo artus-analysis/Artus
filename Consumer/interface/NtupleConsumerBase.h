@@ -1,8 +1,3 @@
-/* Copyright (c) 2013 - All Rights Reserved
- *   Thomas Hauth  <Thomas.Hauth@cern.ch>
- *   Joram Berger  <Joram.Berger@cern.ch>
- *   Dominik Haitz <Dominik.Haitz@kit.edu>
- */
 
 #pragma once
 
@@ -12,7 +7,6 @@
 
 #include "Artus/Core/interface/ConsumerBase.h"
 #include "Artus/Utility/interface/RootFileHelper.h"
-#include "Artus/Utility/interface/Collections.h"
 #include "Artus/Utility/interface/DefaultValues.h"
 
 /*
@@ -62,7 +56,7 @@ public:
 
 		//iterate over string vector and fill the array for each quantity
 		size_t arrayI = 0;
-		for (stringvector::iterator it = m_quantitiesVector.begin(); it != m_quantitiesVector.end(); ++it) {
+		for (std::vector<std::string>::iterator it = m_quantitiesVector.begin(); it != m_quantitiesVector.end(); ++it) {
 			array[arrayI] = returnvalue(*it, event, product);
 			++arrayI;
 		}
@@ -83,7 +77,7 @@ public:
 
 protected:
 	TNtuple* m_ntuple;
-	stringvector m_quantitiesVector;
+	std::vector<std::string> m_quantitiesVector;
 	std::string m_quantities;
 
 

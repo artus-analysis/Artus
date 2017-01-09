@@ -105,8 +105,7 @@ public:
 	
 	std::string GetFilterId() const override;
 	
-	ElectronLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KElectron>(&KappaProduct::m_validElectrons) {}
-	
+	ElectronLowerPtCutsFilter();
 	
 	void Init(KappaSettings const& settings) override;
 };
@@ -119,7 +118,7 @@ public:
 	
 	std::string GetFilterId() const override;
 	
-	MuonLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KMuon>(&KappaProduct::m_validMuons) {}
+	MuonLowerPtCutsFilter();
 	
 	void Init(KappaSettings const& settings) override;
 };
@@ -132,7 +131,7 @@ public:
 	
 	std::string GetFilterId() const override;
 	
-	TauLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KTau>(&KappaProduct::m_validTaus) {}
+	TauLowerPtCutsFilter();
 	
 	void Init(KappaSettings const& settings) override;
 };
@@ -145,7 +144,7 @@ public:
 	
 	std::string GetFilterId() const override;
 	
-	JetLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KBasicJet>(&KappaProduct::m_validJets) {}
+	JetLowerPtCutsFilter();
 	
 	void Init(KappaSettings const& settings) override;
 };
@@ -158,7 +157,7 @@ public:
 	
 	std::string GetFilterId() const override;
 	
-	NonBTaggedJetLowerPtCutsFilter() : LeptonLowerPtCutsFilter<KJet>(&KappaProduct::m_nonBTaggedJets) {}
+	NonBTaggedJetLowerPtCutsFilter();
 	
 	void Init(KappaSettings const& settings) override;
 };

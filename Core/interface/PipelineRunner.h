@@ -1,8 +1,3 @@
-/* Copyright (c) 2013 - All Rights Reserved
- *   Thomas Hauth  <Thomas.Hauth@cern.ch>
- *   Joram Berger  <Joram.Berger@cern.ch>
- *   Dominik Haitz <Dominik.Haitz@kit.edu>
- */
 
 #pragma once
 
@@ -122,8 +117,8 @@ public:
 		{
 			nEvents = processNEvents;
 		}
-		const stringvector globlalFilterIds = settings.GetFilters();
-		const stringvector taggingFilters = settings.GetTaggingFilters();
+		const std::vector<std::string> globlalFilterIds = settings.GetFilters();
+		const std::vector<std::string> taggingFilters = settings.GetTaggingFilters();
 
 		// initialize pline filter decision
 		FilterResult::FilterNames pipelineResultNames(m_pipelines.size());

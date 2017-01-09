@@ -4,6 +4,14 @@
 #include "Artus/Core/interface/ProgressReport.h"
 
 
+ProgressReportBase::~ProgressReportBase()
+{
+}
+
+ConsoleProgressReport::~ConsoleProgressReport()
+{
+}
+
 ConsoleProgressReport::ConsoleProgressReport(float reportIntervall) :
 		m_reportIntervall(reportIntervall),
 		m_lastReport(0.0f)

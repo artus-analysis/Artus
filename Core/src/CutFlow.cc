@@ -5,6 +5,11 @@
 #include "Artus/Core/interface/CutFlow.h"
 
 
+CutFlow::CutFlow() :
+		m_overallEventCount(0)
+{
+}
+
 // sum up all passed events per filter
 void CutFlow::AddFilterResult(FilterResult const& fres)
 {
@@ -43,6 +48,16 @@ CutFlow::CutStat * CutFlow::GetCutEntry(std::string const& filterName)
 	}
 
 	return nullptr;
+}
+
+CutFlow::CutCount const& CutFlow::GetCutCount() const
+{
+	return m_cutCount;
+}
+
+long CutFlow::GetEventCount() const
+{
+	return m_overallEventCount;
 }
 
 std::string CutFlow::ToString() const

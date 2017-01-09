@@ -13,9 +13,9 @@ EventWeightProducer::~EventWeightProducer()
 {
 	if (! m_weightNames.empty())
 	{
-		LOG(INFO) << "Constructed event weight from indidual weights ("
-		          << boost::algorithm::join(m_weightNames, ", ")
-		          << ") in the pipeline \"" << pipelineName << "\".";
+		LOG(DEBUG) << "Constructed event weight from indidual weights ("
+		           << boost::algorithm::join(m_weightNames, ", ")
+		           << ") in the pipeline \"" << pipelineName << "\".";
 	}
 }
 

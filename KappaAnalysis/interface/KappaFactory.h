@@ -3,23 +3,15 @@
 
 #include "Artus/Core/interface/FactoryBase.h"
 
-//template<class TTypes>
 
-// possible problems:
-// the static storage of the GenTauDecayProducer
-
-class KappaFactory: public FactoryBase/*<TTypes>*/ {
+class KappaFactory: public FactoryBase {
 public:
 
-	KappaFactory() : FactoryBase/*<TTypes>*/() {
-	}
-
-	virtual ~KappaFactory() {}
+	KappaFactory();
+	virtual ~KappaFactory();
 
 	ProducerBaseUntemplated* createProducer(std::string const& id) override;
-
 	FilterBaseUntemplated* createFilter(std::string const& id) override;
-
 	ConsumerBaseUntemplated* createConsumer(std::string const& id) override;
 
 };
