@@ -47,7 +47,7 @@ public:
 		if (! settings.GetBasicJets().empty())
 			this->m_event.m_basicJets = this->template SecureFileInterfaceGet<KBasicJets>(settings.GetBasicJets());
 		if (! settings.GetGenJets().empty()){
-			if (settings.GetuseKLVGenJets()) this->m_event.m_genJets = (KGenJets*) this->template SecureFileInterfaceGet<KLVs>(settings.GetGenJets());
+			if (settings.GetUseKLVGenJets()) this->m_event.m_genJets = (KGenJets*) this->template SecureFileInterfaceGet<KLVs>(settings.GetGenJets());
 			else this->m_event.m_genJets = this->template SecureFileInterfaceGet<KGenJets>(settings.GetGenJets());
 			
 		}
