@@ -15,7 +15,7 @@ import sys
 import termios
 import textwrap
 import shlex
-
+import time
 
 def flattenList(listOfLists):
 	"""
@@ -156,6 +156,7 @@ def get_indented_text(prefix, message, width=None):
 			)
 	return '\n'.join(['\n'.join(tmp_wrapped_texts)])
 
+import Artus.Utility.progressiterator as pi
 def parallelize(function, arguments_list, n_processes=1):
 	if n_processes <= 1:
 		results = []
@@ -165,7 +166,22 @@ def parallelize(function, arguments_list, n_processes=1):
 	else:
 		pool = multiprocessing.Pool(processes=max(1, min(n_processes, len(arguments_list))))
 		results = pool.map_async(function, arguments_list)
-		return results.get(9999999) # 9999999 is needed for KeyboardInterrupt to work: http://stackoverflow.com/questions/1408356/keyboard-interrupts-with-pythons-multiprocessing-pool
+		n_tasks = len(arguments_list)
+		left = n_tasks
+		progress_iterator = pi.ProgressIterator(range(n_tasks), description = "calling " + str(function))
+		progress_iterator.next()
+		while (True):
+			if (results.ready()): break
+			remaining = results._number_left
+			if remaining < left:
+				for i in range(left-remaining):
+					progress_iterator.next()
+				left = remaining
+			time.sleep(1.0)
+		returnvalue = results.get(9999999)
+		pool.close() # necessary to actually terminate the processes
+		pool.join()  # without these two lines, they happen to live until the whole program terminates
+		return returnvalue
 
 
 def hadd2(arguments):

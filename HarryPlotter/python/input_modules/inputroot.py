@@ -62,6 +62,8 @@ class InputRoot(inputfile.InputFile):
 		                                help="Keep trees in the plot data object during the complete run. [Default: %(default)s]")
 		self.input_options.add_argument("--read-config", nargs="?", type="bool", default=False, const=True,
 		                                help="Read in the config stored in Artus ROOT outputs. [Default: %(default)s]")
+		self.input_options.add_argument("--hide-progressbar", nargs ="?", type="bool", default=False, const=True,
+		                                help="Show progress of the individual plot. [Default: %(default)s]")
 
 	def prepare_args(self, parser, plotData):
 		super(InputRoot, self).prepare_args(parser, plotData)
@@ -89,6 +91,8 @@ class InputRoot(inputfile.InputFile):
 	def run(self, plotData):
 		
 		root_tools = roottools.RootTools()
+		self.hide_progressbar = plotData.plotdict["hide_progressbar"]
+		del(plotData.plotdict["hide_progressbar"])
 		for index, (
 				root_files,
 				folders,
@@ -115,7 +119,7 @@ class InputRoot(inputfile.InputFile):
 				plotData.plotdict["nicks"],
 				plotData.plotdict["friend_trees"],
 				plotData.plotdict["tree_draw_options"]
-		), description="Reading ROOT inputs")):
+		), description="Reading ROOT inputs", visible=not self.hide_progressbar )):
 			# check whether to read from TTree or from TDirectory
 			root_folder_type = roottools.RootTools.check_type(root_files, folders,
 			                                                  print_quantities=plotData.plotdict["quantities"])
