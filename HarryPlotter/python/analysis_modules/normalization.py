@@ -14,13 +14,32 @@ class NormalizeByBinWidth(analysisbase.AnalysisBase):
 	def __init__(self):
 		super(NormalizeByBinWidth, self).__init__()
 
+	def modify_argument_parser(self, parser, args):
+		super(NormalizeByBinWidth, self).modify_argument_parser(parser, args)
+
+		self.normalizebybinwidth_options = parser.add_argument_group("{} options".format(self.name()))
+		self.normalizebybinwidth_options.add_argument("--histograms-to-normalize-by-binwidth", type=str, nargs="+",
+				help="Nick names of the histogram to normalize to be normalized")
+
+	def prepare_args(self, parser, plotData):
+		super(NormalizeByBinWidth, self).prepare_args(parser, plotData)
+		self.prepare_list_args(plotData, ["histograms_to_normalize_by_binwidth"])
+
 	def run(self, plotData=None):
 		super(NormalizeByBinWidth, self).run(plotData)
+		print plotData.plotdict["histograms_to_normalize_by_binwidth"]
+		if plotData.plotdict["histograms_to_normalize_by_binwidth"] != [None]:
+			for histo_to_normalize in plotData.plotdict["histograms_to_normalize_by_binwidth"]:
+				root_histogram = plotData.plotdict["root_objects"][histo_to_normalize]
+				if isinstance(root_histogram, ROOT.TH1):
+					root_histogram.Sumw2()
+					root_histogram.Scale(1.0, "width")
 		
-		for nick, root_histogram in plotData.plotdict["root_objects"].iteritems():
-			if isinstance(root_histogram, ROOT.TH1):
-				root_histogram.Sumw2()
-				root_histogram.Scale(1.0, "width")
+		else:
+			for nick, root_histogram in plotData.plotdict["root_objects"].iteritems():
+				if isinstance(root_histogram, ROOT.TH1):
+					root_histogram.Sumw2()
+					root_histogram.Scale(1.0, "width")
 
 class NormalizeToUnity(analysisbase.AnalysisBase):
 	"""Normalize all histograms to unity."""

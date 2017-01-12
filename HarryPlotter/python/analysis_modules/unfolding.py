@@ -6,7 +6,8 @@ log = logging.getLogger(__name__)
 
 import ROOT
 import copy
-
+import math
+import os
 import Artus.HarryPlotter.analysisbase as analysisbase
 
 
@@ -37,10 +38,6 @@ class Unfolding(analysisbase.AnalysisBase):
             'unfolding_method': 'dagostini',
             'unfolding_iterations': 4,
             'libRooUnfold': '~/home/RooUnfold/libRooUnfold.so',
-	    #Settings for plotting 1D and 2D in one histo:
-	    'y_expressions' : [None, None,None,'genzpt'],
-	    'x_expressions': ['zpt', 'zpt', 'genzpt', 'zpt'],
-	    'y_bins' : [None, None, None, '30 40 50 60 80 100 120 140 170 200 1000'],
         }
 	"""
 
@@ -64,6 +61,10 @@ class Unfolding(analysisbase.AnalysisBase):
 				help="Location of libRooUnfold library file")
 		self.Unfolding_options.add_argument("--unfolding-iterations", type=int, default=4,
 				help="Number of iterations for unfolding")
+		self.Unfolding_options.add_argument("--write-matrix", type=bool, default=False,
+				help="Write the Covariance and Correlation Matrix in ROOT File")
+		self.Unfolding_options.add_argument("--unfold-file", type=str, 
+				help="Name of the file for the cov matrix if it should be written")
 		self.Unfolding_options.add_argument("--unfolding-method", type=str, default="dagostini",
 				choices=['dagostini', 'svd', 'binbybin', 'inversion'],
 				help="Method for unfolding. [Default: %(default)s]")
@@ -98,13 +99,15 @@ class Unfolding(analysisbase.AnalysisBase):
 				plotData.plotdict["unfolding_method"],
 				plotData.plotdict["libRooUnfold"],
 				variation,
+				plotData.plotdict["write_matrix"],
+				plotData.plotdict["unfold_file"],
 				plotData.plotdict["unfolding_iterations"]
 			)
 			plotData.plotdict["root_objects"][new_nick] = unfolded_histo
 			plotData.plotdict["nicks"].append(new_nick)
 
 
-	def do_unfolding(self, hResponse_input, hMeas, hTrue, hData, method, libRooUnfold_path, variation=0, iterations=4):
+	def do_unfolding(self, hResponse_input, hMeas, hTrue, hData, method, libRooUnfold_path, variation=0, write=False, unfold_file=None, iterations=4):
 		"""return unfolded distribution"""
 		ROOT.gSystem.Load(libRooUnfold_path)
 
@@ -127,6 +130,36 @@ class Unfolding(analysisbase.AnalysisBase):
 
 		if method in ['dagostini', 'svd']:
 			unfold = unfolding_methods[method](response, hData, iterations)
+			
 		else:
 			unfold = unfolding_methods[method](response, hData)
+
+		if write == True:
+			unfold.SetNToys(10000)
+    			unfold.RunToy()
+
+    			recotruth_cov = unfold.Ereco()
+			out_file = ROOT.TFile(unfold_file[0], 'RECREATE')
+    			cov_matrix = hResponse.Clone("cov_matrix")
+    			for x in xrange(1, cov_matrix.GetNbinsX() + 1):
+        			for y in xrange(1, cov_matrix.GetNbinsY() + 1):
+            				cov_matrix.SetBinContent(x, y, recotruth_cov[x-1][y-1])
+            				cov_matrix.SetBinError(x, y, 0.)
+			
+
+    			corr_matrix = cov_matrix.Clone("corr_matrix")
+			f = open(unfold_file[0].replace('.root','.txt'), 'w')
+    			for x in xrange(1, corr_matrix.GetNbinsX() + 1):
+        			for y in xrange(1, corr_matrix.GetNbinsY() + 1):
+            				try:
+                				corr_matrix.SetBinContent(x, y, cov_matrix.GetBinContent(x,y) / (math.sqrt(cov_matrix.GetBinContent(x,x)) * math.sqrt(cov_matrix.GetBinContent(y,y))))
+                				corr_matrix.SetBinError(x, y, 0.)
+            				except ZeroDivisionError:
+                		 		corr_matrix.SetBinContent(x, y, 0.)
+						corr_matrix.SetBinError(x, y, 0.)
+					f.write(str(corr_matrix.ProjectionX().GetBinLowEdge(x))+" "+str(corr_matrix.ProjectionX().GetBinLowEdge(x)+corr_matrix.ProjectionX().GetBinWidth(x))+" "+str(corr_matrix.ProjectionY().GetBinLowEdge(y))+" "+str(corr_matrix.ProjectionY().GetBinLowEdge(y)+corr_matrix.ProjectionY().GetBinWidth(y))+" "+ str(corr_matrix.GetBinContent(x,y))+'\n')
+			out_file.Write()
+			out_file.Close()
 		return unfold.Hreco()
+
+		

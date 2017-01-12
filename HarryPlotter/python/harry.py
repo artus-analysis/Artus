@@ -67,6 +67,10 @@ class HarryPlotter(object):
 		config_dicts = (config_dicts*n_plots)[:n_plots]
 		args_strings = (args_strings*n_plots)[:n_plots]
 		
+		if n_processes>1:
+			for i in range(len(args_strings)):
+				args_strings[i] += (" --hide-progressbar ")
+
 		harry_args = []
 		for config_dict, args_string in zip(config_dicts, args_strings):
 			if config_dict is None:

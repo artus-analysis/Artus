@@ -50,21 +50,25 @@ class InputFastNLO(inputbase.InputBase):
 
 
 	def run(self, plotData):
-		for filename, pdfset, member, nick, kfactor in zip(
+		for filename, pdfset, member, nick, kfactor, unctype, uncstyle in zip(
 				plotData.plotdict['fastnlo_files'],
 				plotData.plotdict['pdf_sets'],
 				plotData.plotdict['members'],
 				plotData.plotdict['fastnlo_nicks'],
 				plotData.plotdict['k_factors'],
+				plotData.plotdict['uncertainty_type'],
+				plotData.plotdict['uncertainty_style'],
 		):
+			print 'asdf init fnlo file'
 			fnlo = fastnlo.fastNLOLHAPDF(str(filename))
 			fnlo.SetLHAPDFFilename(str(pdfset))
 			fnlo.SetLHAPDFMember(member)
+			fnlo.UseHoppetScaleVariations(True)
 			fnlo.CalcCrossSection()
 
 			x_binning = sorted(list(set([item for sublist in fnlo.GetDim0BinBounds() for item in sublist])))
 
-			if plotData.plotdict['uncertainty_style'] is None:
+			if unctype is None:
 				# create histogram
 				root_object = ROOT.TH1D(str(member),str(member),len(x_binning)-1, array('d', x_binning))
 
@@ -78,7 +82,7 @@ class InputFastNLO(inputbase.InputBase):
 				if kfactor:
 					cross_sections, error_up, error_down = fnlo.GetKFactors(), [0.]*len(fnlo.GetKFactors()), [0.]*len(fnlo.GetKFactors())
 				else:
-					cross_sections, error_up, error_down = (getattr(fnlo, "Get{}UncertaintyVec".format(plotData.plotdict['uncertainty_type'])))(getattr(fastnlo, plotData.plotdict['uncertainty_style']))
+					cross_sections, error_up, error_down = (getattr(fnlo, "Get{}UncertaintyVec".format(unctype)))(getattr(fastnlo, uncstyle))
 				root_object = ROOT.TGraphAsymmErrors(len(cross_sections))
 				for i, xs in enumerate(cross_sections):
 					x_center = 0.5*(x_binning[i] + x_binning[i+1])
