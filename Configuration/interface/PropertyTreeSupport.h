@@ -4,6 +4,7 @@
 #include <cstdint>
 
 #include <boost/property_tree/ptree.hpp>
+#include <vector>
 
 /*
  * This class provides various convenience functions when working with Boost PropertyTrees.

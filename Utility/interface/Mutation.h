@@ -5,6 +5,7 @@
 #include <list>
 #include <map>
 #include <algorithm>
+#include <vector>
 
 struct Mutation {
 

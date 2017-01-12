@@ -1,6 +1,6 @@
 
 #include "Artus/Utility/interface/CutRange.h"
-
+#include <cmath> 
 
 CutRange::CutRange(double min, double max, double epsilon) :
 	m_min(min),
