@@ -41,8 +41,11 @@ public:
 		LambdaNtupleConsumer<TTypes>::AddUInt64Quantity("event", [](event_type const& event, product_type const& product) -> uint64_t
 		{
 			return event.m_eventInfo->nEvent;
+		});		
+		LambdaNtupleConsumer<TTypes>::AddUInt64Quantity("nbx", [](event_type const& event, product_type const& product) -> uint64_t
+		{
+			return event.m_eventInfo->nBX;
 		});
-
 		LambdaNtupleConsumer<TTypes>::AddIntQuantity("npv", [](event_type const& event, product_type const& product)
 		{
 			return event.m_vertexSummary->nVertices;

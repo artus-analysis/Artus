@@ -22,6 +22,8 @@ class InputRootSimple(inputbase.InputBase):
 		                                default='', help="Input (root) file(s).")
 		self.input_options.add_argument("--root-names", nargs="+",
 		                                default=[], help="Name(s) of ROOT/RooFit objects to retrieve.")
+		self.input_options.add_argument("--hide-progressbar", nargs ="?", type="bool", default=False, const=True,
+		                                help="Show progress of the individual plot. [Default: %(default)s]")
 
 	def prepare_args(self, parser, plotData):
 		super(InputRootSimple, self).prepare_args(parser, plotData)
