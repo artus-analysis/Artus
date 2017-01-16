@@ -56,14 +56,14 @@ class RootTools(object):
 						log.info("List of all tree quantities (in the first file):")
 						for leaf in sorted(root_object.GetListOfLeaves(), key=lambda leaf: leaf.GetName()):
 							log.info("\t%s (%s)" % (RootTools.full_leaf_name(leaf), leaf.GetTypeName()))
-					return ROOT.TTree
+					return "TTree"
 				elif isinstance(root_object, ROOT.TDirectory):
 					if print_quantities:
 						log.info("List of all histogram/graph/function quantities (in the first file):")
 						for key, path in sorted(RootTools.walk_root_directory(root_object), key=lambda element: element[1]):
 							if key.GetClassName().startswith("TH") or key.GetClassName().startswith("TF") or key.GetClassName().startswith("Roo") or "Graph" in key.GetClassName():
 								log.info("\t%s (%s)" % (path, key.GetClassName()))
-					return ROOT.TDirectory
+					return "TDirectory"
 				else:
 					log.error("Usage of ROOT objects of Type \"" + root_object.ClassName() + "\" is not yet implemented!")
 					return None
