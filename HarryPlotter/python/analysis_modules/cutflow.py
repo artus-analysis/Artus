@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 import ROOT
 
 import Artus.HarryPlotter.analysisbase as analysisbase
-import Artus.HarryPlotter.utility.extrafunctions as extrafunctions
+import Artus.Utility.tools as tools
 
 
 class Cutflow(analysisbase.AnalysisBase):
@@ -148,7 +148,7 @@ class Cutflow(analysisbase.AnalysisBase):
 		if not all_cuts and len(_unique_cutflows) > 1:
 			log.warning("Cutflow histograms have different number of bins! New histograms containing all cuts will be constructed.")
 		# if we can merge desired cuts and individual cuts, subsequences don't have conflicting order
-		all_cuts = extrafunctions.merge_sequences(all_cuts, *_unique_cutflows)
+		all_cuts = tools.merge_sequences(all_cuts, *_unique_cutflows)
 		if cut_blacklist:
 			all_cuts = [cut for cut in all_cuts if cut not in cut_blacklist]
 		# recreate histograms with all cuts

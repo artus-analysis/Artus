@@ -126,7 +126,7 @@ class InputRoot(inputfile.InputFile):
 			root_tree_chain = None
 			root_histogram = None
 			
-			if root_folder_type == ROOT.TTree:
+			if root_folder_type == "TTree":
 				variable_expression = "%s%s%s" % (z_expression + ":" if z_expression else "",
 				                                  y_expression + ":" if y_expression else "",
 				                                  x_expression)
@@ -140,7 +140,7 @@ class InputRoot(inputfile.InputFile):
 						friend_trees=friend_trees
 				)
 				
-			elif root_folder_type == ROOT.TDirectory:
+			elif root_folder_type == "TDirectory":
 				if x_expression is None:
 					log.error('No x_expression provided.')
 					sys.exit(1)
@@ -155,7 +155,7 @@ class InputRoot(inputfile.InputFile):
 						name=None)
 				if hasattr(root_histogram, "Sumw2"):
 					root_histogram.Sumw2()
-			elif root_folder_type == None:
+			else:
 				log.critical("Error getting ROOT object from file. Exiting.")
 				sys.exit(1)
 			
@@ -175,6 +175,7 @@ class InputRoot(inputfile.InputFile):
 			plotData.plotdict.setdefault("root_objects", {}).setdefault(nick, []).append(root_histogram)
 
 		# run upper class function at last
+		
 		super(InputRoot, self).run(plotData)
 
 

@@ -56,14 +56,14 @@ class RootTools(object):
 						log.info("List of all tree quantities (in the first file):")
 						for leaf in sorted(root_object.GetListOfLeaves(), key=lambda leaf: leaf.GetName()):
 							log.info("\t%s (%s)" % (RootTools.full_leaf_name(leaf), leaf.GetTypeName()))
-					return ROOT.TTree
+					return "TTree"
 				elif isinstance(root_object, ROOT.TDirectory):
 					if print_quantities:
 						log.info("List of all histogram/graph/function quantities (in the first file):")
 						for key, path in sorted(RootTools.walk_root_directory(root_object), key=lambda element: element[1]):
 							if key.GetClassName().startswith("TH") or key.GetClassName().startswith("TF") or key.GetClassName().startswith("Roo") or "Graph" in key.GetClassName():
 								log.info("\t%s (%s)" % (path, key.GetClassName()))
-					return ROOT.TDirectory
+					return "TDirectory"
 				else:
 					log.error("Usage of ROOT objects of Type \"" + root_object.ClassName() + "\" is not yet implemented!")
 					return None
@@ -284,7 +284,12 @@ class RootTools(object):
 			path_to_trees = [path_to_trees]
 	
 		tree = ROOT.TChain()
+		ROOT.SetOwnership(tree, False)
+		
+		
 		friend_tree = ROOT.TChain()
+		ROOT.SetOwnership(friend_tree, False)
+		
 		for root_file_name in root_file_names:
 			for path_to_tree in path_to_trees:
 				complete_path_to_tree = os.path.join(root_file_name, path_to_tree)
@@ -401,6 +406,9 @@ class RootTools(object):
 		if root_histogram == None:
 			log.critical("Cannot find histogram \"%s\" created from trees %s in files %s!" % (name, str(path_to_trees), str(root_file_names)))
 			sys.exit(1)
+			
+		ROOT.SetOwnership(root_histogram, False)
+		
 		
 		# delete possible files from tree proxy
 		for tmp_proxy_file in tmp_proxy_files:
