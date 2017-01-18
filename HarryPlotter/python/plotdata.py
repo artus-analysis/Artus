@@ -12,6 +12,7 @@ import datetime
 import glob
 import os
 import string
+import subprocess
 
 import Artus.Utility.tools as tools
 
