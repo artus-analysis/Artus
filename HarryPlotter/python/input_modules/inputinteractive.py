@@ -27,19 +27,21 @@ class InputInteractive(inputbase.InputBase):
 		
 		self.input_options.add_argument("--x-errors", type=str, nargs="+",
 		                                help="x-error(s). If --x-errors-up is also specified, this corresponds to the x-errors low")
-		self.input_options.add_argument("--y-errors", type=str, nargs="+",
-		                                help="y-error(s). If --y-errors-up is also specified, this corresponds to the y-errors low")
-		self.input_options.add_argument("--z-errors", type=str, nargs="+",
-		                                help="z-error(s)")
 		self.input_options.add_argument("--x-errors-up", type=str, nargs="+",
 										help="x-error(s) high")
+		self.input_options.add_argument("--y-errors", type=str, nargs="+",
+		                                help="y-error(s). If --y-errors-up is also specified, this corresponds to the y-errors low")
 		self.input_options.add_argument("--y-errors-up", type=str, nargs="+",
 										help="y-error(s) high")
+		self.input_options.add_argument("--z-errors", type=str, nargs="+",
+		                                help="z-error(s)")
+		self.input_options.add_argument("-w", "--weights", type=str, nargs="+",
+		                                help="Weight(s)")
 	
 	def prepare_args(self, parser, plotData):
 		super(InputInteractive, self).prepare_args(parser, plotData)
 		
-		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "x_errors", "y_errors", "z_errors","x_errors_up","y_errors_up"])
+		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "x_errors", "x_errors_up", "y_errors", "y_errors_up", "z_errors", "weights"])
 		
 		def secure_float_conversion(input_string):
 			try:
@@ -56,16 +58,20 @@ class InputInteractive(inputbase.InputBase):
 		# parse values/errors to plot
 		values_keys = ["x_expressions", "y_expressions", "z_expressions"]
 		errors_keys = ["x_errors", "y_errors", "z_errors"]
-		errors_up_keys = ["x_errors_up","y_errors_up"]
-		for key in values_keys + errors_keys + errors_up_keys:
+		errors_up_keys = ["x_errors_up", "y_errors_up"]
+		weight_keys = ["weights"]
+		for key in values_keys + errors_keys + errors_up_keys + weight_keys:
 			if plotData.plotdict[key] != None:
 				plotData.plotdict[key] = [[secure_float_conversion(value) for value in (values.split() if values != None else [])] for values in plotData.plotdict[key]]
 		
-		# set default errors to 0.0					
+		# set default errors to 0.0 and weights to 1.0
 		for index in xrange(len(plotData.plotdict["nicks"])):
 			for values_key, errors_key in zip(values_keys, errors_keys):
 				if len(plotData.plotdict[errors_key][index]) == 0:
 					plotData.plotdict[errors_key][index] = len(plotData.plotdict[values_key][index]) * [0.0]
+			for values_key, weight_key in zip(values_keys, weight_keys):
+				if len(plotData.plotdict[weight_key][index]) == 0:
+					plotData.plotdict[weight_key][index] = len(plotData.plotdict[values_key][index]) * [1.0]
 		
 		x_errors_up_given = []
 		y_errors_up_given = []
@@ -89,7 +95,7 @@ class InputInteractive(inputbase.InputBase):
 		# check that x/y/z values/errors for one plot have the same size
 		for index in xrange(len(plotData.plotdict["nicks"])):
 			n_values_per_plot = []
-			for key in values_keys + errors_keys + errors_up_keys:
+			for key in values_keys + errors_keys + errors_up_keys + weight_keys:
 				if len(plotData.plotdict[key][index]) > 0:
 					n_values_per_plot.append(len(plotData.plotdict[key][index]))
 			assert(len(set(n_values_per_plot)) == 1)
@@ -103,15 +109,17 @@ class InputInteractive(inputbase.InputBase):
 				x_bins, x_values, x_errors, x_errors_up,
 				y_bins, y_values, y_errors, y_errors_up,
 				z_bins, z_values, z_errors,
+				weights,
 		) in enumerate(pi.ProgressIterator(zip(*[plotData.plotdict[key] for key in [
 				"nicks",
 				"x_bins", "x_expressions", "x_errors", "x_errors_up",
 				"y_bins", "y_expressions", "y_errors", "y_errors_up",
 				"z_bins", "z_expressions", "z_errors",
+				"weights",
 		]]), description="Reading inputs")):
 			
 			# prepare unique name
-			name_hash = hashlib.md5("_".join([str(item) for item in [nick, x_bins, x_values, x_errors, y_bins, y_values, y_errors, z_bins, z_values, z_errors, x_errors_up, y_errors_up]])).hexdigest()
+			name_hash = hashlib.md5("_".join([str(item) for item in [nick, x_bins, x_values, x_errors, x_errors_up, y_bins, y_values, y_errors, y_errors_up, z_bins, z_values, z_errors, weights]])).hexdigest()
 			
 			# determine mode
 			create_function = False
@@ -220,11 +228,10 @@ class InputInteractive(inputbase.InputBase):
 						name="histogram_"+name_hash
 				)
 				
-				weights = array.array("d", [1.0]*len(x_values))
 				if root_histogram.GetDimension() == 1:
 					if len(y_values) == 0:
-						log.debug("ROOT.TH1.FillN("+str(len(x_values))+", "+str(array.array("d", x_values))+", "+str(weights)+")")
-						root_histogram.FillN(len(x_values), array.array("d", x_values), weights)
+						log.debug("ROOT.TH1.FillN("+str(len(x_values))+", "+str(array.array("d", x_values))+", "+str(array.array("d", weights))+")")
+						root_histogram.FillN(len(x_values), array.array("d", x_values), array.array("d", weights))
 					else:
 						set_bin_errors = any([bin_error != 0.0 for bin_error in y_errors])
 						log.debug("ROOT.TH1.SetBinContent/SetBinError(<"+str(x_values)+", "+str(y_values)+", "+str(y_errors)+">)")
@@ -236,8 +243,8 @@ class InputInteractive(inputbase.InputBase):
 				
 				elif root_histogram.GetDimension() == 2:
 					if len(z_values) == 0:
-						log.debug("ROOT.TH1.FillN("+str(len(x_values))+", "+str(array.array("d", x_values))+", "+str(array.array("d", y_values))+", "+str(weights)+")")
-						root_histogram.FillN(len(x_values), array.array("d", x_values), array.array("d", y_values), weights)
+						log.debug("ROOT.TH1.FillN("+str(len(x_values))+", "+str(array.array("d", x_values))+", "+str(array.array("d", y_values))+", "+str(array.array("d", weights))+")")
+						root_histogram.FillN(len(x_values), array.array("d", x_values), array.array("d", y_values), array.array("d", weights))
 					else:
 						set_bin_errors = any([bin_error != 0.0 for bin_error in z_errors])
 						log.debug("ROOT.TH1.SetBinContent/SetBinError(<"+str(x_values)+", "+str(y_values)+", "+str(z_values)+", "+str(z_errors)+">)")
@@ -248,8 +255,8 @@ class InputInteractive(inputbase.InputBase):
 								root_histogram.SetBinError(global_bin, bin_error)
 				
 				elif root_histogram.GetDimension() == 3:
-					log.debug("ROOT.TH1.FillN("+str(len(x_values))+", "+str(array.array("d", x_values))+", "+str(array.array("d", y_values))+", "+str(array.array("d", z_values))+", "+str(weights)+")")
-					root_histogram.FillN(len(x_values), array.array("d", x_values), array.array("d", y_values), array.array("d", z_values), weights)
+					log.debug("ROOT.TH1.FillN("+str(len(x_values))+", "+str(array.array("d", x_values))+", "+str(array.array("d", y_values))+", "+str(array.array("d", z_values))+", "+str(array.array("d", weights))+")")
+					root_histogram.FillN(len(x_values), array.array("d", x_values), array.array("d", y_values), array.array("d", z_values), array.array("d", weights))
 				
 				plotData.plotdict.setdefault("root_objects", {})[nick] = root_histogram
 		
