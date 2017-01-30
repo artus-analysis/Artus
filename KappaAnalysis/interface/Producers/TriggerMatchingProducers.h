@@ -141,22 +141,22 @@ public:
 									     validObject != (product.*m_validObjects).end(); ++validObject)
 									{
 										std::vector<KLV*> matchedTriggerObjects;
-										//LOG(DEBUG) << "\t\t\t\t\t\tvalidObject = " << *validObject << ", (pt, eta, phi) = (" << (*validObject)->p4.Pt() << ", " << (*validObject)->p4.Phi() << ", " << (*validObject)->p4.Phi() << ")";
+										//LOG(DEBUG) << "\t\t\t\t\t\tvalidObject = " << *validObject << ", (pt, eta, phi) = (" << (*validObject)->p4.Pt() << ", " << (*validObject)->p4.Eta() << ", " << (*validObject)->p4.Phi() << ")";
 										
 										// loop over all trigger objects for the fired filter
 										for (std::vector<int>::const_iterator triggerObjectIndex = event.m_triggerObjects->toIdxFilter[firedFilterIndex].begin();
 										     triggerObjectIndex != event.m_triggerObjects->toIdxFilter[firedFilterIndex].end();
 										     ++triggerObjectIndex)
 										{
-											KLV triggerObject = event.m_triggerObjects->trgObjects.at(*triggerObjectIndex);
-											//LOG(DEBUG) << "\t\t\t\t\t\t\ttriggerObjectIndex, triggerObject = " << *triggerObjectIndex << ", " << &triggerObject << ", (pt, eta, phi) = (" << triggerObject.p4.Pt() << ", " << triggerObject.p4.Phi() << ", " << triggerObject.p4.Phi() << ")";
+											KLV* triggerObject = &event.m_triggerObjects->trgObjects.at(*triggerObjectIndex);
+											//LOG(DEBUG) << "\t\t\t\t\t\t\ttriggerObjectIndex, triggerObject = " << *triggerObjectIndex << ", " << triggerObject << ", (pt, eta, phi) = (" << triggerObject->p4.Pt() << ", " << triggerObject->p4.Eta() << ", " << triggerObject->p4.Phi() << ")";
 											
 											// check the matching
-											if (ROOT::Math::VectorUtil::DeltaR(triggerObject.p4, (*validObject)->p4) < (settings.*GetDeltaRTriggerMatchingObjects)() && triggerObject.p4.Pt() > settings.GetTriggerObjectLowerPtCut())
+											if (ROOT::Math::VectorUtil::DeltaR(triggerObject->p4, (*validObject)->p4) < (settings.*GetDeltaRTriggerMatchingObjects)() && triggerObject->p4.Pt() > settings.GetTriggerObjectLowerPtCut())
 											{
 												//LOG(DEBUG) << "\t\t\t\t\t\t\t\tobjectMatched";
 												
-												matchedTriggerObjects.push_back(&triggerObject);
+												matchedTriggerObjects.push_back(triggerObject);
 											}
 										}
 										
