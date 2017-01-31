@@ -63,8 +63,8 @@ def main():
 	for index, (nick, sumweight) in enumerate(sumweight_per_nick.items()):
 		if not no_regex_match: 
 			sample_name = get_sample_by_nick(nick)
-			dictionary[sample_name]["n_events_generated"] = str(int(n_entries_per_nick[nick]))
-			dictionary[sample_name]["generatorWeight"] = sumweight/n_entries_per_nick[nick]
+			dictionary[nick]["n_events_generated"] = str(int(n_entries_per_nick[nick]))
+			dictionary[nick]["generatorWeight"] = sumweight/n_entries_per_nick[nick]
 
 			log.info("\n\n\"" + sample_name + "\"" + ": {")
 		log.info("\tn_events_generated: " + str(int(n_entries_per_nick[nick])))
