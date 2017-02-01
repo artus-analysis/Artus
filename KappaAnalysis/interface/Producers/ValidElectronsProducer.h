@@ -511,8 +511,8 @@ private:
 			return (std::abs(electron->dEtaIn) < 0.009f) &&
 			       (std::abs(electron->dPhiIn) < 0.1f) &&
 			       (electron->sigmaIetaIeta < 0.03f) &&
-			       (std::abs(electron->track.dxy) < 0.02f) &&
-			       (std::abs(electron->track.dz) < 0.1f);
+			       (std::abs(electron->dxy) < 0.02f) &&
+			       (std::abs(electron->dz) < 0.1f);
 		}
 		return false;
 	}
