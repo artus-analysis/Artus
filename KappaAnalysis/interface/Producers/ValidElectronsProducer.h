@@ -360,8 +360,8 @@ public:
 			       (std::abs(electron->dPhiIn) < 0.216f) &&
 			       (electron->sigmaIetaIeta < 0.0114f) &&
 			       (electron->hadronicOverEm < 0.181f) &&
-			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.0564f) &&
-			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.472f);
+			       (std::abs(electron->dxy) < 0.0564f) &&
+			       (std::abs(electron->dz) < 0.472f);
 			       // no isolation
 		}
 		else
@@ -377,8 +377,8 @@ public:
 			return (std::abs(electron->dEtaIn) < 0.0113f) &&
 			       (std::abs(electron->dPhiIn) < 0.237f) &&
 			       (electron->sigmaIetaIeta < 0.0352f) &&
-			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.222f) &&
-			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.921f);
+			       (std::abs(electron->dxy) < 0.222f) &&
+			       (std::abs(electron->dz) < 0.921f);
 			       // no isolation
 		}
 		return false;
@@ -463,8 +463,8 @@ public:
 		       (std::abs(electron->dPhiIn) < dPhiIn) &&		//abs(dPhiIn)
 		       (electron->sigmaIetaIeta < sigmaIetaIeta) &&		//full5x5_sigmaIetaIeta
 		       (electron->hadronicOverEm < hadronicOverEm) &&		//hOverE
-		       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < Dxy) &&		//abs(d0)
-		       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < Dz) &&		//abs(dz)
+		       (std::abs(electron->dxy) < Dxy) &&		//abs(d0)
+		       (std::abs(electron->dz) < Dz) &&		//abs(dz)
 		       (std::abs(1.0f/(electron->ecalEnergy) - 1.0f/(electron->ecalEnergy/electron->eSuperClusterOverP)) < EP) &&	//ooEmooP
 		       (electron->track.nInnerHits <= missingHits);		//expectedMissingInnerHits
 		       // no isolation		//relIsoWithEA
@@ -503,16 +503,16 @@ private:
 			return (std::abs(electron->dEtaIn) < 0.007f) &&
 			       (std::abs(electron->dPhiIn) < 0.15f) &&
 			       (electron->sigmaIetaIeta < 0.01f) &&
-			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02f) &&
-			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1f);
+			       (std::abs(electron->dxy) < 0.02f) &&
+			       (std::abs(electron->dz) < 0.1f);
 		}
 		else
 		{
 			return (std::abs(electron->dEtaIn) < 0.009f) &&
 			       (std::abs(electron->dPhiIn) < 0.1f) &&
 			       (electron->sigmaIetaIeta < 0.03f) &&
-			       (std::abs(electron->track.getDxy(&event.m_vertexSummary->pv)) < 0.02f) &&
-			       (std::abs(electron->track.getDz(&event.m_vertexSummary->pv)) < 0.1f);
+			       (std::abs(electron->track.dxy) < 0.02f) &&
+			       (std::abs(electron->track.dz) < 0.1f);
 		}
 		return false;
 	}
