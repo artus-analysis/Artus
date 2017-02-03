@@ -199,7 +199,7 @@ double BTagSF::getSFb(double pt, float eta, unsigned int btagsys, int year) cons
 	if(year == 2015 || year == 2016){
 
 		float MaxBJetPt = 670.;
-		float MinBJetPt = 30.;
+		float MinBJetPt = 20.;
 		bool DoubleUncertainty = false;
 
 		if ((pt > MaxBJetPt) || (pt < MinBJetPt))
@@ -318,7 +318,7 @@ double BTagSF::getSFc(double pt, float eta, unsigned int btagsys, int year) cons
 	if(year == 2015 || year == 2016){
 
 	float MaxBJetPt = 670.;
-	float MinBJetPt = 30.;
+	float MinBJetPt = 20.;
 	bool DoubleUncertainty = false;
 
 	if ((pt > MaxBJetPt) || (pt < MinBJetPt))
