@@ -65,8 +65,7 @@ public:
 		VETO = 3,
 		FAKEABLE = 4,
 		EMBEDDING = 5,
-		MEDIUMHIPSAFE2016 = 6,
-		MEDIUM2016 = 7
+		MEDIUMHIPSAFE2016 = 6
 	};
 	static MuonID ToMuonID(std::string const& muonID)
 	{
@@ -77,7 +76,6 @@ public:
 		else if (muonID == "fakeable") return MuonID::FAKEABLE;
 		else if (muonID == "embedding") return MuonID::EMBEDDING;
 		else if (muonID == "mediumHIPsafe2016") return MuonID::MEDIUMHIPSAFE2016;
-		else if (muonID == "medium2016") return MuonID::MEDIUM2016;
 		else return MuonID::NONE;
 	}
 
@@ -281,12 +279,6 @@ public:
 				else
 					LOG(FATAL) << "Medium2016 muon ID for year " << settings.GetYear() << " not yet implemented!";
 			}
-			else if (muonID == MuonID::MEDIUM2016) {
-				if (settings.GetYear() == 2016)
-					validMuon = validMuon && IsMediumMuon2016(*muon, event, product);
-				else
-					LOG(FATAL) << "Medium2016 muon ID for year " << settings.GetYear() << " not yet implemented!";
-			}
 			else if (muonID != MuonID::NONE)
 			{
 				LOG(FATAL) << "Muon ID of type " << Utility::ToUnderlyingValue(muonID) << " not yet implemented!";
@@ -426,19 +418,6 @@ private:
 						&& muon->trkKink < 20;
 		bool isMedium = muon->idLoose()
 						&& muon->validFractionOfTrkHits > 0.49
-						&& muon->segmentCompatibility > (goodGlob ? 0.303 : 0.451);
-		return isMedium;
-	}
-	
-	// https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2#Short_Term_Medium_Muon_Definitio
-	bool IsMediumMuon2016(KMuon* muon, event_type const& event, product_type& product) const
-	{
-		bool goodGlob = muon->isGlobalMuon()
-						&& muon->normalizedChiSquare < 3
-						&& muon->chiSquareLocalPos < 12
-						&& muon->trkKink < 20;
-		bool isMedium = muon->idLoose()
-						&& muon->validFractionOfTrkHits > 0.8
 						&& muon->segmentCompatibility > (goodGlob ? 0.303 : 0.451);
 		return isMedium;
 	}
