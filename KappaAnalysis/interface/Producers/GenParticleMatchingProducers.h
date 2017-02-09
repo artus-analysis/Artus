@@ -166,7 +166,7 @@ public:
 								product.m_genParticleMatchDeltaR = deltaR;
 								deltaRmin = deltaR;
 								leptonMatched = true;
-								//LOG(INFO) << this->GetProducerId() << " (event " << event.m_eventInfo->nEvent << "): " << (*validLepton)->p4 << " --> " << genParticle->p4 << ", pdg=" << genParticle->pdgId << ", status=" << genParticle->status();
+								//LOG(INFO) << this->GetProducerId() << " (event " << event.m_eventInfo->nEvent << "): " << (*lepton)->p4 << " --> " << genParticle->p4 << ", pdg=" << genParticle->pdgId << ", status=" << genParticle->status();
 							}
 							else product.m_genParticleMatchDeltaR = DefaultValues::UndefinedFloat;
 						}
