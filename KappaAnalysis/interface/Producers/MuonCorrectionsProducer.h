@@ -7,7 +7,8 @@
 
 #include "Artus/Utility/interface/RoccoR.h"
 #include "Artus/Utility/interface/rochcor2015.h"
-#include "Artus/Utility/interface/rochcor2016.h"
+#include "Artus/Utility/interface/RoccoR2016.h"
+#include "TRandom3.h"
 
 /**
    \brief Producer for muon four momentum corrections.
@@ -42,5 +43,6 @@ protected:
 private:
 	MuonEnergyCorrection muonEnergyCorrection;
 	rochcor2015 *rmcor2015;
-	rochcor2016 *rmcor2016;
+	RoccoR2016 *rmcor2016;
+	TRandom3 *random;
 };
