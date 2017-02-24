@@ -41,4 +41,8 @@ public:
     static const int pdgIdNuTau;
 
     static const int pdgIdAOnePlus1260;
+
+    static const float ElectronMassGeV;
+    static const float MuonMassGeV;
+    static const float TauMassGeV;
 };

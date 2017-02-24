@@ -35,3 +35,7 @@ const int DefaultValues::pdgIdNuTau = 16;
 
 const int DefaultValues::pdgIdAOnePlus1260 = 20213;
 
+const float DefaultValues::ElectronMassGeV = 0.5109989461E-3;
+const float DefaultValues::MuonMassGeV = 105.6583745E-3;
+const float DefaultValues::TauMassGeV = 1776.86E-3;
+
