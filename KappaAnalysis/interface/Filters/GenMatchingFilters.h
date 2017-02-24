@@ -53,7 +53,6 @@ class ElectronGenMatchingFilter: public GenMatchingFilterBase<KElectron>
 {
 
 public:
-	std::string GetFilterId() const override;
 	ElectronGenMatchingFilter();
 
 };
@@ -67,7 +66,6 @@ class MuonGenMatchingFilter: public GenMatchingFilterBase<KMuon>
 {
 
 public:
-	std::string GetFilterId() const override;
 	MuonGenMatchingFilter();
 
 };
@@ -81,7 +79,6 @@ class TauGenMatchingFilter: public GenMatchingFilterBase<KTau>
 {
 
 public:
-	std::string GetFilterId() const override;
 	TauGenMatchingFilter();
 
 };
@@ -95,7 +92,6 @@ class JetGenMatchingFilter: public GenMatchingFilterBase<KBasicJet>
 {
 
 public:
-	std::string GetFilterId() const override;
 	JetGenMatchingFilter();
 
 };

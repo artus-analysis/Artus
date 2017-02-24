@@ -8,18 +8,10 @@ ValidJetsProducer::ValidJetsProducer() : ValidJetsProducerBase<KBasicJet, KBasic
 {
 }
 
-std::string ValidJetsProducer::GetProducerId() const {
-	return "ValidJetsProducer";
-}
-
 ValidTaggedJetsProducer::ValidTaggedJetsProducer() : ValidJetsProducerBase<KJet, KBasicJet>(&KappaEvent::m_tjets,
                                                                                         &KappaProduct::m_correctedTaggedJets,
                                                                                         &KappaProduct::m_validJets)
 {
-}
-
-std::string ValidTaggedJetsProducer::GetProducerId() const {
-	return "ValidTaggedJetsProducer";
 }
 
 void ValidTaggedJetsProducer::Init(KappaSettings const& settings)

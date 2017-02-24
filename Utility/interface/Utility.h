@@ -8,8 +8,10 @@
 #include <map>
 #include <sstream>
 #include <string>
-#include <type_traits>
+#include <typeinfo>
 #include <vector>
+
+#include <cxxabi.h>
 
 #include <boost/lexical_cast.hpp>
 
@@ -292,6 +294,14 @@ namespace Utility {
 			}
 		}
 		return mOut;
+	}
+	
+	// http://stackoverflow.com/a/20140812
+	// http://stackoverflow.com/a/2216993
+	template<class T>
+	const std::string GetClassName(T* object) {
+		int status = 0;
+		return abi::__cxa_demangle(typeid(*object).name(), 0, 0, &status);
 	}
 	
 } // namespace Utility

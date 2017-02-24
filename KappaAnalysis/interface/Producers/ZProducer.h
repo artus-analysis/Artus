@@ -237,28 +237,24 @@ class ZProducerBase : public KappaProducerBase
 class ZmmProducer : public ZProducerBase<KMuon, KMuon>
 {
 public:
-	std::string GetProducerId() const override;
 	ZmmProducer();
 };
 
 class ZeeProducer : public ZProducerBase<KElectron, KElectron>
 {
 public:
-	std::string GetProducerId() const override;
 	ZeeProducer();
 };
 
 class ZemProducer : public ZProducerBase<KElectron, KMuon>
 {
 public:
-	std::string GetProducerId() const override;
 	ZemProducer();
 };
 
 class ZeemmProducer : public ZProducerBase<KElectron, KMuon>
 {
 public:
-	std::string GetProducerId() const override;
 	ZeemmProducer();
 };
 

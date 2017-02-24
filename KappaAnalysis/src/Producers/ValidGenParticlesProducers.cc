@@ -122,10 +122,6 @@ ValidGenElectronsProducer::ValidGenElectronsProducer() :
 {
 }
 
-std::string ValidGenElectronsProducer::GetProducerId() const {
-	return "ValidGenElectronsProducer";
-}
-
 void ValidGenElectronsProducer::Init(KappaSettings const& settings)
 {
 	ValidGenParticlesProducer::Init(settings);
@@ -142,10 +138,6 @@ ValidGenMuonsProducer::ValidGenMuonsProducer() :
 {
 }
 
-std::string ValidGenMuonsProducer::GetProducerId() const {
-	return "ValidGenMuonsProducer";
-}
-
 void ValidGenMuonsProducer::Init(KappaSettings const& settings)
 {
 	ValidGenParticlesProducer::Init(settings);
@@ -160,10 +152,6 @@ ValidGenTausProducer::ValidGenTausProducer() :
 	                          &setting_type::GetGenTauUpperAbsEtaCuts,
 	                          "Tau")
 {
-}
-
-std::string ValidGenTausProducer::GetProducerId() const {
-	return "ValidGenTausProducer";
 }
 
 void ValidGenTausProducer::Init(KappaSettings const& settings)

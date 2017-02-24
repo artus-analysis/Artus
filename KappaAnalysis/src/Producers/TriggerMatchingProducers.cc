@@ -2,11 +2,6 @@
 #include "Artus/KappaAnalysis/interface/Producers/TriggerMatchingProducers.h"
 
 
-std::string ElectronTriggerMatchingProducer::GetProducerId() const
-{
-	return "ElectronTriggerMatchingProducer";
-}
-
 ElectronTriggerMatchingProducer::ElectronTriggerMatchingProducer() :
 	TriggerMatchingProducerBase<KElectron>(&KappaProduct::m_triggerMatchedElectrons,
 	                                       &KappaProduct::m_detailedTriggerMatchedElectrons,
@@ -38,11 +33,6 @@ void ElectronTriggerMatchingProducer::Produce(KappaEvent const& event, KappaProd
 	}
 }
 
-
-std::string MuonTriggerMatchingProducer::GetProducerId() const
-{
-	return "MuonTriggerMatchingProducer";
-}
 
 MuonTriggerMatchingProducer::MuonTriggerMatchingProducer() :
 	TriggerMatchingProducerBase<KMuon>(&KappaProduct::m_triggerMatchedMuons,
@@ -76,11 +66,6 @@ void MuonTriggerMatchingProducer::Produce(KappaEvent const& event, KappaProduct&
 }
 
 
-std::string TauTriggerMatchingProducer::GetProducerId() const
-{
-	return "TauTriggerMatchingProducer";
-}
-
 TauTriggerMatchingProducer::TauTriggerMatchingProducer() :
 	TriggerMatchingProducerBase<KTau>(&KappaProduct::m_triggerMatchedTaus,
 	                                  &KappaProduct::m_detailedTriggerMatchedTaus,
@@ -112,10 +97,6 @@ void TauTriggerMatchingProducer::Produce(KappaEvent const& event, KappaProduct& 
 	}
 }
 
-
-std::string JetTriggerMatchingProducer::GetProducerId() const {
-	return "JetTriggerMatchingProducer";
-}
 
 JetTriggerMatchingProducer::JetTriggerMatchingProducer() :
 	TriggerMatchingProducerBase<KBasicJet>(&KappaProduct::m_triggerMatchedJets,

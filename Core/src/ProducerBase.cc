@@ -6,6 +6,11 @@ ProducerBaseUntemplated::~ProducerBaseUntemplated()
 {
 }
 
+std::string ProducerBaseUntemplated::GetProducerId() const
+{
+	return GetId();
+}
+
 ProducerBaseAccess::ProducerBaseAccess(ProducerBaseUntemplated& cb) :
 		m_cb(cb)
 {

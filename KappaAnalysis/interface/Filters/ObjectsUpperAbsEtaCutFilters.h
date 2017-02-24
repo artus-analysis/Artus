@@ -103,9 +103,6 @@ private:
  */
 class ElectronUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KElectron> {
 public:
-	
-	std::string GetFilterId() const override;
-	
 	ElectronUpperAbsEtaCutsFilter();
 	
 	void Init(KappaSettings const& settings) override;
@@ -116,9 +113,6 @@ public:
  */
 class MuonUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KMuon> {
 public:
-	
-	std::string GetFilterId() const override;
-	
 	MuonUpperAbsEtaCutsFilter();
 	
 	void Init(KappaSettings const& settings) override;
@@ -129,9 +123,6 @@ public:
  */
 class TauUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KTau> {
 public:
-	
-	std::string GetFilterId() const override;
-	
 	TauUpperAbsEtaCutsFilter();
 	
 	void Init(KappaSettings const& settings) override;
@@ -142,9 +133,6 @@ public:
  */
 class JetUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KBasicJet> {
 public:
-	
-	std::string GetFilterId() const override;
-	
 	JetUpperAbsEtaCutsFilter();
 	
 	void Init(KappaSettings const& settings) override;

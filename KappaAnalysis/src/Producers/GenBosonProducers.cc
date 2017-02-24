@@ -5,10 +5,6 @@
 #include "Artus/Utility/interface/DefaultValues.h"
 
 
-std::string GenBosonFromGenParticlesProducer::GetProducerId() const {
-	return "GenBosonFromGenParticlesProducer";
-}
-
 void GenBosonFromGenParticlesProducer::Init(KappaSettings const& settings)
 {
 	ProducerBase<KappaTypes>::Init(settings);
@@ -65,10 +61,6 @@ void GenBosonFromGenParticlesProducer::Produce(KappaEvent const& event, KappaPro
 	}
 }
 
-
-std::string GenBosonDiLeptonDecayModeProducer::GetProducerId() const {
-	return "GenBosonDiLeptonDecayModeProducer";
-}
 
 void GenBosonDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
 {

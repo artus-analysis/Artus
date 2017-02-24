@@ -18,9 +18,6 @@
 
 class EventWeightProducer: public KappaProducerBase {
 public:
-
-	std::string GetProducerId() const override;
-	
 	~EventWeightProducer();
 	
 	void Init(KappaSettings const& settings) override;

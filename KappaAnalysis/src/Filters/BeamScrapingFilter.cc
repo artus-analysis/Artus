@@ -5,10 +5,6 @@
 #include "Artus/KappaAnalysis/interface/Filters/BeamScrapingFilter.h"
 
 
-std::string BeamScrapingFilter::GetFilterId() const {
-	return "BeamScrapingFilter";
-}
-
 void BeamScrapingFilter::Init(setting_type const& settings)
 {
 	FilterBase<KappaTypes>::Init(settings);

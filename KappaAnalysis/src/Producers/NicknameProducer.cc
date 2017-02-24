@@ -3,10 +3,6 @@
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
 
 
-std::string NicknameProducer::GetProducerId() const {
-	return "NicknameProducer";
-}
-
 void NicknameProducer::Init(KappaSettings const& settings)
 {
 	KappaProducerBase::Init(settings);

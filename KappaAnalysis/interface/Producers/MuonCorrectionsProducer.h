@@ -18,8 +18,6 @@ class MuonCorrectionsProducer: public KappaProducerBase
 {
 
 public:
-	std::string GetProducerId() const override;
-
 	void Init(setting_type const& settings) override;
 
 	void Produce(KappaEvent const& event, KappaProduct& product,

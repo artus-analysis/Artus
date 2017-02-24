@@ -247,9 +247,6 @@ class ElectronTriggerMatchingProducer: public TriggerMatchingProducerBase<KElect
 {
 
 public:
-	
-	std::string GetProducerId() const override;
-	
 	ElectronTriggerMatchingProducer();
 	
 	void Produce(KappaEvent const& event, KappaProduct& product,
@@ -268,9 +265,6 @@ class MuonTriggerMatchingProducer: public TriggerMatchingProducerBase<KMuon>
 {
 
 public:
-	
-	std::string GetProducerId() const override;
-	
 	MuonTriggerMatchingProducer();
 	
 	void Produce(KappaEvent const& event, KappaProduct& product,
@@ -289,9 +283,6 @@ class TauTriggerMatchingProducer: public TriggerMatchingProducerBase<KTau>
 {
 
 public:
-	
-	std::string GetProducerId() const override;
-	
 	TauTriggerMatchingProducer();
 	
 	void Produce(KappaEvent const& event, KappaProduct& product,
@@ -310,9 +301,6 @@ class JetTriggerMatchingProducer: public TriggerMatchingProducerBase<KBasicJet>
 {
 
 public:
-	
-	std::string GetProducerId() const override;
-	
 	JetTriggerMatchingProducer();
 
 };

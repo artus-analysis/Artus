@@ -7,10 +7,6 @@
 
 /** Filter events with too close valid electrons
  */
-std::string ValidElectronsMinDeltaRFilter::GetFilterId() const{
-	return "ValidElectronsMinDeltaRFilter";
-}
-
 ValidElectronsMinDeltaRFilter::ValidElectronsMinDeltaRFilter() :
 	ValidLeptonsMinDeltaRFilterBase<KElectron>(&product_type::m_validElectrons,
 		&setting_type::GetMinDeltaRValidElectrons)
@@ -20,10 +16,6 @@ ValidElectronsMinDeltaRFilter::ValidElectronsMinDeltaRFilter() :
 
 /** Filter events with too close valid muons
  */
-std::string ValidMuonsMinDeltaRFilter::GetFilterId() const{
-	return "ValidMuonsMinDeltaRFilter";
-}
-
 ValidMuonsMinDeltaRFilter::ValidMuonsMinDeltaRFilter() :
 	ValidLeptonsMinDeltaRFilterBase<KMuon>(&product_type::m_validMuons,
 		&setting_type::GetMinDeltaRValidMuons)
@@ -34,10 +26,6 @@ ValidMuonsMinDeltaRFilter::ValidMuonsMinDeltaRFilter() :
 
 /** Filter events with too close valid taus
  */
-std::string ValidTausMinDeltaRFilter::GetFilterId() const{
-	return "ValidTausMinDeltaRFilter";
-}
-
 ValidTausMinDeltaRFilter::ValidTausMinDeltaRFilter() :
 	ValidLeptonsMinDeltaRFilterBase<KTau>(&product_type::m_validTaus,
 		&setting_type::GetMinDeltaRValidTaus)
@@ -47,10 +35,6 @@ ValidTausMinDeltaRFilter::ValidTausMinDeltaRFilter() :
 
 /** Filter events with too close valid leptons
  */
-std::string ValidLeptonsMinDeltaRFilter::GetFilterId() const{
-	return "ValidLeptonsMinDeltaRFilter";
-}
-
 ValidLeptonsMinDeltaRFilter::ValidLeptonsMinDeltaRFilter() :
 	ValidLeptonsMinDeltaRFilterBase<KLepton>(&product_type::m_validLeptons,
 		&setting_type::GetMinDeltaRValidLeptons)

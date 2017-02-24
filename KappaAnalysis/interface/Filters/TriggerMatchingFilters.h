@@ -16,8 +16,6 @@ class TriggerMatchingFilterBase: public FilterBase<KappaTypes>
 {
 
 public:
-
-	
 	TriggerMatchingFilterBase(std::map<TValidObject*, KLV*> KappaProduct::*triggerMatchedObjects,
 	                          std::vector<TValidObject*> KappaProduct::*validObjects,
 	                          size_t (KappaSettings::*GetMinNMatchedObjects)(void) const) :
@@ -58,9 +56,8 @@ class ElectronTriggerMatchingFilter: public TriggerMatchingFilterBase<KElectron>
 {
 
 public:
-
 	ElectronTriggerMatchingFilter();
-	std::string GetFilterId() const override;
+
 };
 
 
@@ -72,9 +69,7 @@ class MuonTriggerMatchingFilter: public TriggerMatchingFilterBase<KMuon>
 {
 
 public:
-
 	MuonTriggerMatchingFilter();
-	std::string GetFilterId() const override;
 
 };
 
@@ -87,9 +82,7 @@ class TauTriggerMatchingFilter: public TriggerMatchingFilterBase<KTau>
 {
 
 public:
-
 	TauTriggerMatchingFilter();
-	std::string GetFilterId() const override;
 
 };
 
@@ -102,9 +95,7 @@ class JetTriggerMatchingFilter: public TriggerMatchingFilterBase<KBasicJet>
 {
 
 public:
-
 	JetTriggerMatchingFilter();
-	std::string GetFilterId() const override;
 
 };
 

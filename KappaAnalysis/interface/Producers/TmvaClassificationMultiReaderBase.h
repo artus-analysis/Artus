@@ -177,9 +177,6 @@ private:
 class MultiTmvaClassificationReader: public TmvaClassificationMultiReaderBase<KappaTypes>
 {
 public:
-
-	std::string GetProducerId() const override;
-
 	MultiTmvaClassificationReader();
 
 };

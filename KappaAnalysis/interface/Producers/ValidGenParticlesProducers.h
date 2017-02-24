@@ -54,8 +54,6 @@ public:
 	
 	ValidGenElectronsProducer();
 
-	std::string GetProducerId() const override;
-
 	void Init(setting_type const& settings) override;
 };
 
@@ -70,8 +68,6 @@ public:
 	
 	ValidGenMuonsProducer();
 
-	std::string GetProducerId() const override;
-
 	void Init(setting_type const& settings) override;
 };
 
@@ -85,8 +81,6 @@ public:
 	typedef typename KappaTypes::setting_type setting_type;
 	
 	ValidGenTausProducer();
-
-	std::string GetProducerId() const override;
 
 	void Init(setting_type const& settings) override;
 	

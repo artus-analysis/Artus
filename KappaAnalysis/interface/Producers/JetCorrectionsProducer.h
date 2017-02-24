@@ -177,10 +177,9 @@ private:
 */
 class JetCorrectionsProducer: public JetCorrectionsProducerBase<KBasicJet>
 {
+
 public:
 	JetCorrectionsProducer();
-
-	std::string GetProducerId() const override;
 };
 
 
@@ -192,11 +191,9 @@ public:
 */
 class TaggedJetCorrectionsProducer: public JetCorrectionsProducerBase<KJet>
 {
-public:
 
+public:
 	TaggedJetCorrectionsProducer();
-	
-	std::string GetProducerId() const override;
 };
 
 

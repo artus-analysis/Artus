@@ -10,10 +10,6 @@ ValidBTaggedJetsProducer::BTagScaleFactorMethod ValidBTaggedJetsProducer::ToBTag
 	else return ValidBTaggedJetsProducer::BTagScaleFactorMethod::NONE;
 }
 
-std::string ValidBTaggedJetsProducer::GetProducerId() const {
-	return "ValidBTaggedJetsProducer";
-}
-
 void ValidBTaggedJetsProducer::Init(KappaSettings const& settings)
 {
 	KappaProducerBase::Init(settings);

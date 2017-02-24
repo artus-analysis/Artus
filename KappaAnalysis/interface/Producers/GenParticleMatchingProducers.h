@@ -36,8 +36,6 @@ public:
 	};
 	static JetMatchingAlgorithm ToJetMatchingAlgorithm(std::string const& jetMatchingAlgorithm);
 	
-	std::string GetProducerId() const override;
-
 	void Init(setting_type const& settings) override;
 
 	void Produce(event_type const& event, product_type& product,
@@ -234,9 +232,6 @@ class RecoElectronGenParticleMatchingProducer: public RecoLeptonGenParticleMatch
 {
 
 public:
-	
-	std::string GetProducerId() const override;
-
 	RecoElectronGenParticleMatchingProducer();
 
 };
@@ -254,9 +249,6 @@ class RecoMuonGenParticleMatchingProducer: public RecoLeptonGenParticleMatchingP
 {
 
 public:
-	
-	std::string GetProducerId() const override;
-	
 	RecoMuonGenParticleMatchingProducer();
 
 };
@@ -274,9 +266,6 @@ class RecoTauGenParticleMatchingProducer: public RecoLeptonGenParticleMatchingPr
 {
 
 public:
-	
-	std::string GetProducerId() const override;
-	
 	RecoTauGenParticleMatchingProducer();
 
 };

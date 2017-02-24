@@ -3,10 +3,6 @@
 #include "Artus/KappaAnalysis/interface/Utility/GeneratorInfo.h"
 
 
-std::string TauCorrectionsProducer::GetProducerId() const {
-	return "TauCorrectionsProducer";
-}
-
 void TauCorrectionsProducer::Init(KappaSettings const& settings)
 {
 	KappaProducerBase::Init(settings);

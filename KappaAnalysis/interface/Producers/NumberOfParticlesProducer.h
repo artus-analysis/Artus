@@ -12,8 +12,6 @@
 class NumberOfParticlesProducer : public KappaProducerBase
 {
 	public:
-
 		void Init(KappaSettings const& settings) override;
-		std::string GetProducerId() const override { return "NumberOfParticlesProducer"; };
 		void Produce(KappaEvent const& event, KappaProduct& product, KappaSettings const& settings) const override;
 };

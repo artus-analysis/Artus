@@ -6,6 +6,11 @@ FilterBaseUntemplated::~FilterBaseUntemplated()
 {
 }
 
+std::string FilterBaseUntemplated::GetFilterId() const
+{
+	return GetId();
+}
+
 
 FilterBaseAccess::FilterBaseAccess(FilterBaseUntemplated& cb) :
 		m_cb(cb)

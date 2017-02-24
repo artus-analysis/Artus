@@ -1,9 +1,5 @@
 #include "Artus/KappaAnalysis/interface/Filters/ZFilter.h"
 
-std::string ZFilter::GetFilterId() const
-{
-	return "ZFilter";
-}
 
 ZFilter::ZFilter() :
 		FilterBase<KappaTypes>()

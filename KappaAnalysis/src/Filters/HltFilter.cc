@@ -7,13 +7,10 @@
  *  Therefore this filter cannot meaningfully run as a global pre-filter
  *  which gets an empty product.
  */
-	std::string HltFilter::GetFilterId() const {
-		return "HltFilter";
-	}
 
-	bool HltFilter::DoesEventPass(KappaEvent const& event, KappaProduct const& product,
-	                           KappaSettings const& settings) const
-	{
-		if (settings.GetNoHltFiltering()) return true;
-		return (! product.m_selectedHltNames.empty());
-	}
+bool HltFilter::DoesEventPass(KappaEvent const& event, KappaProduct const& product,
+                           KappaSettings const& settings) const
+{
+	if (settings.GetNoHltFiltering()) return true;
+	return (! product.m_selectedHltNames.empty());
+}

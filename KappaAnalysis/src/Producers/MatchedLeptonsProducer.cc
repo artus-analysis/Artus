@@ -1,10 +1,6 @@
 #include "Artus/KappaAnalysis/interface/Producers/MatchedLeptonsProducer.h"
 
 
-std::string MatchedLeptonsProducer::GetProducerId() const {
-	return "MatchedLeptonsProducer";
-}
-
 void MatchedLeptonsProducer::Produce(KappaEvent const& event, KappaProduct& product,
                      KappaSettings const& settings) const
 {

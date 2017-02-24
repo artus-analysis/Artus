@@ -2,9 +2,6 @@
 #include "Artus/KappaAnalysis/interface/Producers/GenParticleProducer.h"
 #include "Artus/Utility/interface/Utility.h"
 
-std::string GenParticleProducer::GetProducerId() const{
-	return "GenParticleProducer";
-}
 
 void GenParticleProducer::Init(KappaSettings const& settings)
 {

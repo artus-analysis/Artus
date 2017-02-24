@@ -35,7 +35,7 @@ public:
 	virtual ~ProducerBaseUntemplated();
 
 	/// Must return a unique id of the producer.
-	virtual std::string GetProducerId() const = 0;
+	virtual std::string GetProducerId() const;
 
 protected:
 	// will be implemented by the ConsumerBase class

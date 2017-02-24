@@ -16,10 +16,6 @@ MuonCorrectionsProducer::MuonEnergyCorrection MuonCorrectionsProducer::ToMuonEne
 	else return MuonCorrectionsProducer::MuonEnergyCorrection::NONE;
 }
 
-std::string MuonCorrectionsProducer::GetProducerId() const {
-	return "MuonCorrectionsProducer";
-}
-
 void MuonCorrectionsProducer::Init(KappaSettings const& settings) 
 {
 	KappaProducerBase::Init(settings);

@@ -15,9 +15,6 @@
 
 class SampleStitchingWeightProducer : public KappaProducerBase {
 public:
-
-	std::string GetProducerId() const override;
-
 	virtual void Init(KappaSettings const& settings);
 
 	void Produce( KappaEvent const& event,

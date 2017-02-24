@@ -2,10 +2,6 @@
 #include "Artus/KappaAnalysis/interface/Producers/GenMuonFSRProducer.h"
 
 
-std::string GenMuonFSRProducer::GetProducerId() const{
-	return "GenMuonFSRProducer";
-}
-
 void GenMuonFSRProducer::Init(KappaSettings const& settings)
 {
 	KappaProducerBase::Init(settings);

@@ -102,9 +102,6 @@ private:
  */
 class ElectronLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KElectron> {
 public:
-	
-	std::string GetFilterId() const override;
-	
 	ElectronLowerPtCutsFilter();
 	
 	void Init(KappaSettings const& settings) override;
@@ -115,9 +112,6 @@ public:
  */
 class MuonLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KMuon> {
 public:
-	
-	std::string GetFilterId() const override;
-	
 	MuonLowerPtCutsFilter();
 	
 	void Init(KappaSettings const& settings) override;
@@ -128,9 +122,6 @@ public:
  */
 class TauLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KTau> {
 public:
-	
-	std::string GetFilterId() const override;
-	
 	TauLowerPtCutsFilter();
 	
 	void Init(KappaSettings const& settings) override;
@@ -141,9 +132,6 @@ public:
  */
 class JetLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KBasicJet> {
 public:
-	
-	std::string GetFilterId() const override;
-	
 	JetLowerPtCutsFilter();
 	
 	void Init(KappaSettings const& settings) override;
@@ -154,9 +142,6 @@ public:
  */
 class NonBTaggedJetLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KJet> {
 public:
-	
-	std::string GetFilterId() const override;
-	
 	NonBTaggedJetLowerPtCutsFilter();
 	
 	void Init(KappaSettings const& settings) override;

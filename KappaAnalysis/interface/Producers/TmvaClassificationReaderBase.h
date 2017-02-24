@@ -138,9 +138,6 @@ private:
 class GeneralTmvaClassificationReader: public TmvaClassificationReaderBase<KappaTypes>
 {
 public:
-
-	std::string GetProducerId() const override;
-	
 	GeneralTmvaClassificationReader();
 	
 };

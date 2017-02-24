@@ -2,10 +2,6 @@
 #include "Artus/KappaAnalysis/interface/Producers/EmbeddingWeightProducer.h"
 
 
-std::string EmbeddingWeightProducer::GetProducerId() const {
-	return "EmbeddingWeightProducer";
-}
-
 void EmbeddingWeightProducer::Produce(KappaEvent const& event,
 		KappaProduct& product,
 		KappaSettings const& settings) const

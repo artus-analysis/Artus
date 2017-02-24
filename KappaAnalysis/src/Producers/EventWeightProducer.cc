@@ -5,10 +5,6 @@
 #include "Artus/KappaAnalysis/interface/Producers/EventWeightProducer.h"
 
 
-std::string EventWeightProducer::GetProducerId() const {
-	return "EventWeightProducer";
-}
-
 EventWeightProducer::~EventWeightProducer()
 {
 	if (! m_weightNames.empty())

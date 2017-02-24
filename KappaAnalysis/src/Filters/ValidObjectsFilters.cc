@@ -2,10 +2,6 @@
 #include "Artus/KappaAnalysis/interface/Filters/ValidObjectsFilters.h"
 
 
-std::string ValidElectronsFilter::GetFilterId() const {
-	return "ValidElectronsFilter";
-}
-
 void ValidElectronsFilter::Init(KappaSettings const& settings) {
 	CutRangeFilterBase::Init(settings);
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
@@ -16,9 +12,6 @@ void ValidElectronsFilter::Init(KappaSettings const& settings) {
 	));
 }
 
-std::string ValidMuonsFilter::GetFilterId() const {
-	return "ValidMuonsFilter";
-}
 
 void ValidMuonsFilter::Init(KappaSettings const& settings) {
 	CutRangeFilterBase::Init(settings);
@@ -30,9 +23,6 @@ void ValidMuonsFilter::Init(KappaSettings const& settings) {
 	));
 }
 
-std::string ValidTausFilter::GetFilterId() const {
-	return "ValidTausFilter";
-}
 
 void ValidTausFilter::Init(KappaSettings const& settings) {
 	CutRangeFilterBase::Init(settings);
@@ -45,10 +35,6 @@ void ValidTausFilter::Init(KappaSettings const& settings) {
 }
 
 
-std::string ValidJetsFilter::GetFilterId() const {
-	return "ValidJetsFilter";
-}
-
 void ValidJetsFilter::Init(KappaSettings const& settings) {
 	CutRangeFilterBase::Init(settings);
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
@@ -59,10 +45,6 @@ void ValidJetsFilter::Init(KappaSettings const& settings) {
 	));
 }
 
-
-std::string ValidBTaggedJetsFilter::GetFilterId() const {
-	return "ValidBTaggedJetsFilter";
-}
 
 void ValidBTaggedJetsFilter::Init(KappaSettings const& settings) {
 	CutRangeFilterBase::Init(settings);
@@ -75,10 +57,6 @@ void ValidBTaggedJetsFilter::Init(KappaSettings const& settings) {
 }
 
 
-std::string GenElectronsFilter::GetFilterId() const {
-	return "GenElectronsFilter";
-}
-
 void GenElectronsFilter::Init(KappaSettings const& settings) {
 	CutRangeFilterBase::Init(settings);
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
@@ -89,10 +67,6 @@ void GenElectronsFilter::Init(KappaSettings const& settings) {
 	));
 }
 
-
-std::string GenMuonsFilter::GetFilterId() const {
-	return "GenMuonsFilter";
-}
 
 void GenMuonsFilter::Init(KappaSettings const& settings) {
 	CutRangeFilterBase::Init(settings);
@@ -105,10 +79,6 @@ void GenMuonsFilter::Init(KappaSettings const& settings) {
 }
 
 
-std::string GenTausFilter::GetFilterId() const {
-	return "GenTausFilter";
-}
-
 void GenTausFilter::Init(KappaSettings const& settings) {
 	CutRangeFilterBase::Init(settings);
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
@@ -119,10 +89,6 @@ void GenTausFilter::Init(KappaSettings const& settings) {
 	));
 }
 
-
-std::string GenTauJetsFilter::GetFilterId() const {
-	return "GenTauJetsFilter";
-}
 
 void GenTauJetsFilter::Init(KappaSettings const& settings) {
 	CutRangeFilterBase::Init(settings);

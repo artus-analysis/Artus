@@ -8,10 +8,6 @@ RecoJetGenParticleMatchingProducer::JetMatchingAlgorithm RecoJetGenParticleMatch
 	else return RecoJetGenParticleMatchingProducer::JetMatchingAlgorithm::NONE;
 }
 
-std::string RecoJetGenParticleMatchingProducer::GetProducerId() const {
-	return "RecoJetGenParticleMatchingProducer";
-}
-
 void RecoJetGenParticleMatchingProducer::Init(setting_type const& settings)
 {
 	KappaProducerBase::Init(settings);
@@ -189,11 +185,6 @@ KGenParticle* RecoJetGenParticleMatchingProducer::Match(event_type const& event,
 }
 
 
-
-std::string RecoElectronGenParticleMatchingProducer::GetProducerId() const {
-	return "RecoElectronGenParticleMatchingProducer";
-}
-
 RecoElectronGenParticleMatchingProducer::RecoElectronGenParticleMatchingProducer() :
 	RecoLeptonGenParticleMatchingProducerBase<KElectron>(&product_type::m_genParticleMatchedElectrons,
 	                                                     &event_type::m_electrons,
@@ -209,10 +200,6 @@ RecoElectronGenParticleMatchingProducer::RecoElectronGenParticleMatchingProducer
 }
 
 
-std::string RecoMuonGenParticleMatchingProducer::GetProducerId() const {
-	return "RecoMuonGenParticleMatchingProducer";
-}
-
 RecoMuonGenParticleMatchingProducer::RecoMuonGenParticleMatchingProducer() :
 	RecoLeptonGenParticleMatchingProducerBase<KMuon>(&product_type::m_genParticleMatchedMuons,
 	                                                 &event_type::m_muons,
@@ -227,10 +214,6 @@ RecoMuonGenParticleMatchingProducer::RecoMuonGenParticleMatchingProducer() :
 {
 }
 
-
-std::string RecoTauGenParticleMatchingProducer::GetProducerId() const {
-	return "RecoTauGenParticleMatchingProducer";
-}
 
 RecoTauGenParticleMatchingProducer::RecoTauGenParticleMatchingProducer() :
 	RecoLeptonGenParticleMatchingProducerBase<KTau>(&product_type::m_genParticleMatchedTaus,

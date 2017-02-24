@@ -3,10 +3,6 @@
 #include "Artus/Utility/interface/Utility.h"
 
 
-std::string GenTauDecayProducer::GetProducerId() const {
-	return "GenTauDecayProducer";
-}
-
 void GenTauDecayProducer::Init(KappaSettings const& settings)
 {
 	KappaProducerBase::Init(settings);
