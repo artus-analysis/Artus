@@ -205,7 +205,8 @@ class RootTools(object):
 	def histogram_from_tree(self, root_file_names, path_to_trees,
 		                    x_expression, y_expression=None, z_expression=None,
 		                    x_bins=None, y_bins=None, z_bins=None,
-		                    weight_selection="", option="", name=None, friend_trees=None):
+		                    weight_selection="", option="", name=None,
+		                    friend_files=None, friend_folders=None, friend_alias=None):
 		"""
 		Read histograms from trees
 	
@@ -286,10 +287,6 @@ class RootTools(object):
 		tree = ROOT.TChain()
 		ROOT.SetOwnership(tree, False)
 		
-		
-		friend_tree = ROOT.TChain()
-		ROOT.SetOwnership(friend_tree, False)
-		
 		for root_file_name in root_file_names:
 			for path_to_tree in path_to_trees:
 				complete_path_to_tree = os.path.join(root_file_name, path_to_tree)
@@ -299,10 +296,19 @@ class RootTools(object):
 					log.error("Input %s does not contain any trees!" % complete_path_to_tree)
 		
 		#Add Friends
-		if friend_trees is not None:
-			for friend in friend_trees:
-				friend_tree.Add(friend[1] + "/" + friend[0])
-			tree.AddFriend(friend_tree)
+		friend_trees = []
+		if friend_files and friend_folders:
+			friend_trees.append(ROOT.TChain())
+			ROOT.SetOwnership(friend_trees[-1], False)
+			for root_file_name in friend_files:
+				for path_to_tree in friend_folders:
+					complete_path_to_tree = os.path.join(root_file_name, path_to_tree)
+					log.debug("Reading friend from ntuple %s ..." % complete_path_to_tree)
+					n_trees_added = friend_trees[-1].Add(complete_path_to_tree, -1)
+					if n_trees_added == 0:
+						log.error("Input %s does not contain any trees!" % complete_path_to_tree)
+			log.debug("ROOT.TTree.AddFriend(" + str(friend_trees[-1]) + ", \"" + (friend_alias if friend_alias else "") + "\")")
+			tree.AddFriend(friend_trees[-1], (friend_alias if friend_alias else ""))
 		
 		# ROOT optimisations
 		tree.SetCacheSize(256*1024*1024) # 256 MB
