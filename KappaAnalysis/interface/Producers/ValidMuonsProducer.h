@@ -65,7 +65,7 @@ public:
 		VETO = 3,
 		FAKEABLE = 4,
 		EMBEDDING = 5,
-		MEDIUM2016 = 6
+		MEDIUMHIPSAFE2016 = 6
 	};
 	static MuonID ToMuonID(std::string const& muonID)
 	{
@@ -75,7 +75,7 @@ public:
 		else if (muonID == "veto") return MuonID::VETO;
 		else if (muonID == "fakeable") return MuonID::FAKEABLE;
 		else if (muonID == "embedding") return MuonID::EMBEDDING;
-		else if (muonID == "medium2016") return MuonID::MEDIUM2016;
+		else if (muonID == "mediumHIPsafe2016") return MuonID::MEDIUMHIPSAFE2016;
 		else return MuonID::NONE;
 	}
 
@@ -273,7 +273,7 @@ public:
 			{
 				validMuon = validMuon && IsEmbeddingMuon(*muon, event, product);
 			}
-			else if (muonID == MuonID::MEDIUM2016) {
+			else if (muonID == MuonID::MEDIUMHIPSAFE2016) {
 				if (settings.GetYear() == 2016)
 					validMuon = validMuon && IsMediumMuon2016ShortTerm(*muon, event, product);
 				else
