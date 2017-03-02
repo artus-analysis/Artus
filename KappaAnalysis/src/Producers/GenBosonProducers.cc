@@ -73,38 +73,6 @@ std::string GenBosonProductionProducer::GetProducerId() const {
 void GenBosonProductionProducer::Init(KappaSettings const& settings)
 {
 	GenBosonFromGenParticlesProducer::Init(settings);
-
-	// add possible quantities for the lambda ntuples consumers
-	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("genBosonParticleFound", [](KappaEvent const & event, KappaProduct const & product)
-	{
-		return (product.m_genBosonParticle != nullptr);
-	});
-	
-	LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity("genBosonLV", [](KappaEvent const & event, KappaProduct const & product)
-	{
-		return product.m_genBosonLV;
-	});
-	
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genBosonPt", [](KappaEvent const & event, KappaProduct const & product)
-	{
-		return product.m_genBosonLV.Pt();
-	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genBosonEta", [](KappaEvent const & event, KappaProduct const & product)
-	{
-		return product.m_genBosonLV.Eta();
-	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genBosonPhi", [](KappaEvent const & event, KappaProduct const & product)
-	{
-		return product.m_genBosonLV.Phi();
-	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genBosonMass", [](KappaEvent const & event, KappaProduct const & product)
-	{
-		return product.m_genBosonLV.mass();
-	});
-	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("genBosonLVFound", [](KappaEvent const & event, KappaProduct const & product)
-	{
-		return product.m_genBosonLVFound;
-	});
 }
 
 void GenBosonProductionProducer::Produce(KappaEvent const& event, KappaProduct& product,
@@ -126,10 +94,6 @@ void GenBosonProductionProducer::Produce(KappaEvent const& event, KappaProduct& 
 	}
 	
 	product.m_genParticlesProducingBoson = FindMothersWithDifferentPdgId(event.m_genParticles, bosonIndex, product.m_genBosonParticle->pdgId);
-	for (size_t i = 0; i < product.m_genParticlesProducingBoson.size(); ++i)
-	{
-		LOG(WARNING) << product.m_genParticlesProducingBoson[i]->p4 << ", " << product.m_genParticlesProducingBoson[i]->pdgId;
-	}
 }
 
 std::vector<KGenParticle*> GenBosonProductionProducer::FindMothersWithDifferentPdgId(
