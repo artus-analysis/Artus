@@ -22,6 +22,23 @@ public:
 };
 
 
+class GenBosonProductionProducer: public GenBosonFromGenParticlesProducer
+{
+public:
+
+	std::string GetProducerId() const override;
+
+	void Init(KappaSettings const& settings) override;
+
+	void Produce(KappaEvent const& event, KappaProduct& product,
+	             KappaSettings const& settings) const override;
+
+private:
+
+	std::vector<KGenParticle*> FindMothersWithDifferentPdgId(KGenParticles* genParticles, unsigned int currentIndex, int currentPdgId) const;
+};
+
+
 class GenBosonDiLeptonDecayModeProducer: public GenBosonFromGenParticlesProducer
 {
 public:

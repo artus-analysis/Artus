@@ -66,6 +66,102 @@ void GenBosonFromGenParticlesProducer::Produce(KappaEvent const& event, KappaPro
 }
 
 
+std::string GenBosonProductionProducer::GetProducerId() const {
+	return "GenBosonProductionProducer";
+}
+
+void GenBosonProductionProducer::Init(KappaSettings const& settings)
+{
+	GenBosonFromGenParticlesProducer::Init(settings);
+
+	// add possible quantities for the lambda ntuples consumers
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("genBosonParticleFound", [](KappaEvent const & event, KappaProduct const & product)
+	{
+		return (product.m_genBosonParticle != nullptr);
+	});
+	
+	LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity("genBosonLV", [](KappaEvent const & event, KappaProduct const & product)
+	{
+		return product.m_genBosonLV;
+	});
+	
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genBosonPt", [](KappaEvent const & event, KappaProduct const & product)
+	{
+		return product.m_genBosonLV.Pt();
+	});
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genBosonEta", [](KappaEvent const & event, KappaProduct const & product)
+	{
+		return product.m_genBosonLV.Eta();
+	});
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genBosonPhi", [](KappaEvent const & event, KappaProduct const & product)
+	{
+		return product.m_genBosonLV.Phi();
+	});
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genBosonMass", [](KappaEvent const & event, KappaProduct const & product)
+	{
+		return product.m_genBosonLV.mass();
+	});
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("genBosonLVFound", [](KappaEvent const & event, KappaProduct const & product)
+	{
+		return product.m_genBosonLVFound;
+	});
+}
+
+void GenBosonProductionProducer::Produce(KappaEvent const& event, KappaProduct& product,
+                                         KappaSettings const& settings) const
+{
+	GenBosonFromGenParticlesProducer::Produce(event, product, settings);
+	assert(product.m_genBosonParticle != nullptr);
+	
+	// search for boson index
+	unsigned int bosonIndex = 0;
+	for (KGenParticles::const_iterator genParticle = event.m_genParticles->begin();
+		 genParticle != event.m_genParticles->end(); ++genParticle)
+	{
+		if (product.m_genBosonParticle == &(*genParticle))
+		{
+			break;
+		}
+		++bosonIndex;
+	}
+	
+	product.m_genParticlesProducingBoson = FindMothersWithDifferentPdgId(event.m_genParticles, bosonIndex, product.m_genBosonParticle->pdgId);
+	for (size_t i = 0; i < product.m_genParticlesProducingBoson.size(); ++i)
+	{
+		LOG(WARNING) << product.m_genParticlesProducingBoson[i]->p4 << ", " << product.m_genParticlesProducingBoson[i]->pdgId;
+	}
+}
+
+std::vector<KGenParticle*> GenBosonProductionProducer::FindMothersWithDifferentPdgId(
+		KGenParticles* genParticles,
+		unsigned int currentIndex,
+		int currentPdgId) const
+{
+	std::vector<KGenParticle*> mothers;
+	
+	unsigned int index = 0;
+	for (KGenParticles::iterator genParticle = genParticles->begin();
+		 genParticle != genParticles->end(); ++genParticle)
+	{
+		if (Utility::Contains(genParticle->daughterIndices, currentIndex))
+		{
+			if (genParticle->pdgId == currentPdgId)
+			{
+				std::vector<KGenParticle*> tmpMothers = FindMothersWithDifferentPdgId(genParticles, index, currentPdgId);
+				mothers.insert(mothers.end(), tmpMothers.begin(), tmpMothers.end());
+			}
+			else
+			{
+				mothers.push_back(&(*genParticle));
+			}
+		}
+		++index;
+	}
+	
+	return mothers;
+}
+
+
 std::string GenBosonDiLeptonDecayModeProducer::GetProducerId() const {
 	return "GenBosonDiLeptonDecayModeProducer";
 }
