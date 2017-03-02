@@ -14,7 +14,8 @@ public:
     static const RMFLV UndefinedRMFLV;
     
     static const float EtaBorderEB;
-
+    
+    static const int pdgIdGluon;
     static const int pdgIdGamma;
     static const int pdgIdZ;
     static const int pdgIdW;
