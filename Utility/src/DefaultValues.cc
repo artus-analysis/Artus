@@ -8,6 +8,7 @@ const RMFLV DefaultValues::UndefinedRMFLV = RMFLV(0.0, 0.0, 0.0, -999.0);
 
 const float DefaultValues::EtaBorderEB = 1.479f;
 
+const int DefaultValues::pdgIdGluon = 21;
 const int DefaultValues::pdgIdGamma = 22;
 const int DefaultValues::pdgIdZ = 23;
 const int DefaultValues::pdgIdW = 24;
@@ -34,4 +35,8 @@ const int DefaultValues::pdgIdTau = 15;
 const int DefaultValues::pdgIdNuTau = 16;
 
 const int DefaultValues::pdgIdAOnePlus1260 = 20213;
+
+const float DefaultValues::ElectronMassGeV = 0.5109989461E-3;
+const float DefaultValues::MuonMassGeV = 105.6583745E-3;
+const float DefaultValues::TauMassGeV = 1776.86E-3;
 

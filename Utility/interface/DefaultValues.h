@@ -14,7 +14,8 @@ public:
     static const RMFLV UndefinedRMFLV;
     
     static const float EtaBorderEB;
-
+    
+    static const int pdgIdGluon;
     static const int pdgIdGamma;
     static const int pdgIdZ;
     static const int pdgIdW;
@@ -41,4 +42,8 @@ public:
     static const int pdgIdNuTau;
 
     static const int pdgIdAOnePlus1260;
+
+    static const float ElectronMassGeV;
+    static const float MuonMassGeV;
+    static const float TauMassGeV;
 };
