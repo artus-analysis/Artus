@@ -66,6 +66,66 @@ void GenBosonFromGenParticlesProducer::Produce(KappaEvent const& event, KappaPro
 }
 
 
+std::string GenBosonProductionProducer::GetProducerId() const {
+	return "GenBosonProductionProducer";
+}
+
+void GenBosonProductionProducer::Init(KappaSettings const& settings)
+{
+	GenBosonFromGenParticlesProducer::Init(settings);
+}
+
+void GenBosonProductionProducer::Produce(KappaEvent const& event, KappaProduct& product,
+                                         KappaSettings const& settings) const
+{
+	GenBosonFromGenParticlesProducer::Produce(event, product, settings);
+	assert(product.m_genBosonParticle != nullptr);
+	
+	// search for boson index
+	unsigned int bosonIndex = 0;
+	for (KGenParticles::const_iterator genParticle = event.m_genParticles->begin();
+		 genParticle != event.m_genParticles->end(); ++genParticle)
+	{
+		if (product.m_genBosonParticle == &(*genParticle))
+		{
+			break;
+		}
+		++bosonIndex;
+	}
+	
+	product.m_genParticlesProducingBoson = FindMothersWithDifferentPdgId(event.m_genParticles, bosonIndex, product.m_genBosonParticle->pdgId);
+}
+
+std::vector<KGenParticle*> GenBosonProductionProducer::FindMothersWithDifferentPdgId(
+		KGenParticles* genParticles,
+		unsigned int currentIndex,
+		int currentPdgId) const
+{
+	std::vector<KGenParticle*> mothers;
+	
+	unsigned int index = 0;
+	for (KGenParticles::iterator genParticle = genParticles->begin();
+		 genParticle != genParticles->end(); ++genParticle)
+	{
+		if (Utility::Contains(genParticle->daughterIndices, currentIndex))
+		{
+			if (genParticle->pdgId == currentPdgId)
+			{
+				std::vector<KGenParticle*> tmpMothers = FindMothersWithDifferentPdgId(genParticles, index, currentPdgId);
+				mothers.insert(mothers.end(), tmpMothers.begin(), tmpMothers.end());
+			}
+			else
+			{
+				mothers.push_back(&(*genParticle));
+			}
+		}
+		++index;
+	}
+	
+	return mothers;
+}
+
+
 std::string GenBosonDiLeptonDecayModeProducer::GetProducerId() const {
 	return "GenBosonDiLeptonDecayModeProducer";
 }
