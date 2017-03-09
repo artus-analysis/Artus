@@ -70,7 +70,7 @@ def main():
 		skimming_dirs = glob.glob(os.path.join(args.skimming_dir, "*/crab_*"))
 	
 	for skimming_dir in skimming_dirs:
-		search_path = os.path.join(skimming_dir, "*.root")
+		search_path = os.path.join(skimming_dir, "*/*.root")
 		if args.crab:
 			search_path = os.path.join(skimming_dir, "*/*/*.root")
 		
