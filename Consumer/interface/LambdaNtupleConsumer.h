@@ -483,7 +483,7 @@ public:
 			}
 			catch (...)
 			{
-				LOG(FATAL) << "Could not call lambda function for bool quantity \"" << m_boolQuantities.at(boolValueIndex) << "\"!";
+				LOG(FATAL) << "Could not call lambda function for bool quantity \"" << m_boolQuantities.at(boolValueIndex) << "\" (pipeline \"" << settings.GetName() << "\")!";
 			}
 			++boolValueIndex;
 		}
@@ -498,7 +498,7 @@ public:
 			}
 			catch (...)
 			{
-				LOG(FATAL) << "Could not call lambda function for int quantity \"" << m_intQuantities.at(intValueIndex) << "\"!";
+				LOG(FATAL) << "Could not call lambda function for int quantity \"" << m_intQuantities.at(intValueIndex) << "\" (pipeline \"" << settings.GetName() << "\")!";
 			}
 			++intValueIndex;
 		}
@@ -513,7 +513,7 @@ public:
 			}
 			catch (...)
 			{
-				LOG(FATAL) << "Could not call lambda function for uint64 quantity \"" << m_uint64Quantities.at(uint64ValueIndex) << "\"!";
+				LOG(FATAL) << "Could not call lambda function for uint64 quantity \"" << m_uint64Quantities.at(uint64ValueIndex) << "\" (pipeline \"" << settings.GetName() << "\")!";
 			}
 			++uint64ValueIndex;
 		}
@@ -528,7 +528,7 @@ public:
 			}
 			catch (...)
 			{
-				LOG(FATAL) << "Could not call lambda function for float quantity \"" << m_floatQuantities.at(floatValueIndex) << "\"!";
+				LOG(FATAL) << "Could not call lambda function for float quantity \"" << m_floatQuantities.at(floatValueIndex) << "\" (pipeline \"" << settings.GetName() << "\")!";
 			}
 			++floatValueIndex;
 		}
@@ -543,7 +543,7 @@ public:
 			}
 			catch (...)
 			{
-				LOG(FATAL) << "Could not call lambda function for double quantity \"" << m_doubleQuantities.at(doubleValueIndex) << "\"!";
+				LOG(FATAL) << "Could not call lambda function for double quantity \"" << m_doubleQuantities.at(doubleValueIndex) << "\" (pipeline \"" << settings.GetName() << "\")!";
 			}
 			++doubleValueIndex;
 		}
@@ -558,7 +558,7 @@ public:
 			}
 			catch (...)
 			{
-				LOG(FATAL) << "Could not call lambda function for ROOT::Math::PtEtaPhiMVector quantity \"" << m_ptEtaPhiMVectorQuantities.at(ptEtaPhiMVectorValueIndex) << "\"!";
+				LOG(FATAL) << "Could not call lambda function for ROOT::Math::PtEtaPhiMVector quantity \"" << m_ptEtaPhiMVectorQuantities.at(ptEtaPhiMVectorValueIndex) << "\" (pipeline \"" << settings.GetName() << "\")!";
 			}
 			++ptEtaPhiMVectorValueIndex;
 		}
@@ -573,7 +573,7 @@ public:
 			}
 			catch (...)
 			{
-				LOG(FATAL) << "Could not call lambda function for RMFLV quantity \"" << m_rmflvQuantities.at(rmflvValueIndex) << "\"!";
+				LOG(FATAL) << "Could not call lambda function for RMFLV quantity \"" << m_rmflvQuantities.at(rmflvValueIndex) << "\" (pipeline \"" << settings.GetName() << "\")!";
 			}
 			++rmflvValueIndex;
 		}
@@ -588,7 +588,7 @@ public:
 			}
 			catch (...)
 			{
-				LOG(FATAL) << "Could not call lambda function for string quantity \"" << m_stringQuantities.at(stringValueIndex) << "\"!";
+				LOG(FATAL) << "Could not call lambda function for string quantity \"" << m_stringQuantities.at(stringValueIndex) << "\" (pipeline \"" << settings.GetName() << "\")!";
 			}
 			++stringValueIndex;
 		}
@@ -603,7 +603,7 @@ public:
 			}
 			catch (...)
 			{
-				LOG(FATAL) << "Could not call lambda function for vDouble quantity \"" << m_vDoubleQuantities.at(vDoubleValueIndex) << "\"!";
+				LOG(FATAL) << "Could not call lambda function for vDouble quantity \"" << m_vDoubleQuantities.at(vDoubleValueIndex) << "\" (pipeline \"" << settings.GetName() << "\")!";
 			}
 			++vDoubleValueIndex;
 		}
@@ -618,7 +618,7 @@ public:
 			}
 			catch (...)
 			{
-				LOG(FATAL) << "Could not call lambda function for vFloat quantity \"" << m_vFloatQuantities.at(vFloatValueIndex) << "\"!";
+				LOG(FATAL) << "Could not call lambda function for vFloat quantity \"" << m_vFloatQuantities.at(vFloatValueIndex) << "\" (pipeline \"" << settings.GetName() << "\")!";
 			}
 			++vFloatValueIndex;
 		}
@@ -633,7 +633,7 @@ public:
 			}
 			catch (...)
 			{
-				LOG(FATAL) << "Could not call lambda function for vRMFLV quantity \"" << m_vRMFLVQuantities.at(vRMFLVValueIndex) << "\"!";
+				LOG(FATAL) << "Could not call lambda function for vRMFLV quantity \"" << m_vRMFLVQuantities.at(vRMFLVValueIndex) << "\" (pipeline \"" << settings.GetName() << "\")!";
 			}
 			++vRMFLVValueIndex;
 		}
@@ -648,7 +648,7 @@ public:
 			}
 			catch (...)
 			{
-				LOG(FATAL) << "Could not call lambda function for vString quantity \"" << m_vStringQuantities.at(vStringValueIndex) << "\"!";
+				LOG(FATAL) << "Could not call lambda function for vString quantity \"" << m_vStringQuantities.at(vStringValueIndex) << "\" (pipeline \"" << settings.GetName() << "\")!";
 			}
 			++vStringValueIndex;
 		}
@@ -663,7 +663,7 @@ public:
 			}
 			catch (...)
 			{
-				LOG(FATAL) << "Could not call lambda function for vInt quantity \"" << m_vIntQuantities.at(vIntValueIndex) << "\"!";
+				LOG(FATAL) << "Could not call lambda function for vInt quantity \"" << m_vIntQuantities.at(vIntValueIndex) << "\" (pipeline \"" << settings.GetName() << "\")!";
 			}
 			++vIntValueIndex;
 		}
