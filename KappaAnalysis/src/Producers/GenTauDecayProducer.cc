@@ -442,8 +442,6 @@ void GenTauDecayProducer::Produce(KappaEvent const& event, KappaProduct& product
 	
 	// A generator level boson or its leptonic decay products must exist
 	// This is searched for by a GenBosonProducer
-	assert((product.m_genBosonParticle != nullptr) || (product.m_genBosonLVFound && (product.m_genLeptonsFromBosonDecay.size() >= 2)));
-	
 	if (product.m_genBosonParticle != nullptr)
 	{
 		product.m_genBosonTree = GenParticleDecayTree(product.m_genBosonParticle);
@@ -458,7 +456,7 @@ void GenTauDecayProducer::Produce(KappaEvent const& event, KappaProduct& product
 			BuildDecayTree(product.m_genBosonTree, product.m_genBosonParticle, event);
 		}
 	}
-	else
+	else if (product.m_genBosonLVFound && (product.m_genLeptonsFromBosonDecay.size() >= 2))
 	{
 		product.m_genBosonTree = GenParticleDecayTree(nullptr);
 		for (std::vector<KGenParticle*>::const_iterator genLepton = product.m_genLeptonsFromBosonDecay.begin();

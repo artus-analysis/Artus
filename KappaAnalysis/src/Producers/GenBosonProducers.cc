@@ -149,16 +149,31 @@ void GenBosonDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
 		
 		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(lepQuantityNameBase+"LV", [leptonIndex](event_type const& event, product_type const& product)
 		{
-			return product.m_genLeptonsFromBosonDecay.at(leptonIndex)->p4;
+			if (product.m_genLeptonsFromBosonDecay.size() > leptonIndex)
+			{
+				return product.m_genLeptonsFromBosonDecay.at(leptonIndex)->p4;
+			}
+			else
+			{
+				return DefaultValues::UndefinedRMFLV;
+			}
 		});
 		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(tauQuantityNameBase+"LV", [leptonIndex](event_type const& event, product_type const& product)
 		{
-			return ((std::abs(product.m_genLeptonsFromBosonDecay.at(leptonIndex)->pdgId) == DefaultValues::pdgIdTau) ? product.m_genLeptonsFromBosonDecay.at(leptonIndex)->p4 : DefaultValues::UndefinedRMFLV);
+			if (product.m_genLeptonsFromBosonDecay.size() > leptonIndex)
+			{
+				return ((std::abs(product.m_genLeptonsFromBosonDecay.at(leptonIndex)->pdgId) == DefaultValues::pdgIdTau) ? product.m_genLeptonsFromBosonDecay.at(leptonIndex)->p4 : DefaultValues::UndefinedRMFLV);
+			}
+			else
+			{
+				return DefaultValues::UndefinedRMFLV;
+			}
 		});
 		
 		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(tauQuantityNameBase+"VisibleLV", [leptonIndex](event_type const& event, product_type const& product)
 		{
-			if (std::abs(product.m_genLeptonsFromBosonDecay.at(leptonIndex)->pdgId) == DefaultValues::pdgIdTau)
+			if ((product.m_genLeptonsFromBosonDecay.size() > leptonIndex) &&
+			    (std::abs(product.m_genLeptonsFromBosonDecay.at(leptonIndex)->pdgId) == DefaultValues::pdgIdTau))
 			{
 				KGenTau* genTau = SafeMap::GetWithDefault(product.m_validGenTausMap, product.m_genLeptonsFromBosonDecay.at(leptonIndex), static_cast<KGenTau*>(nullptr));
 				return (genTau ? genTau->visible.p4 : DefaultValues::UndefinedRMFLV);
@@ -170,7 +185,8 @@ void GenBosonDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
 		});
 		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(tauQuantityNameBase+"DecayMode", [leptonIndex](event_type const& event, product_type const& product)
 		{
-			if (std::abs(product.m_genLeptonsFromBosonDecay.at(leptonIndex)->pdgId) == DefaultValues::pdgIdTau)
+			if ((product.m_genLeptonsFromBosonDecay.size() > leptonIndex) &&
+			    (std::abs(product.m_genLeptonsFromBosonDecay.at(leptonIndex)->pdgId) == DefaultValues::pdgIdTau))
 			{
 				KGenTau* genTau = SafeMap::GetWithDefault(product.m_validGenTausMap, product.m_genLeptonsFromBosonDecay.at(leptonIndex), static_cast<KGenTau*>(nullptr));
 				return (genTau ? genTau->genDecayMode() : DefaultValues::UndefinedInt);
@@ -182,7 +198,8 @@ void GenBosonDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
 		});
 		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(tauQuantityNameBase+"NProngs", [leptonIndex](event_type const& event, product_type const& product)
 		{
-			if (std::abs(product.m_genLeptonsFromBosonDecay.at(leptonIndex)->pdgId) == DefaultValues::pdgIdTau)
+			if ((product.m_genLeptonsFromBosonDecay.size() > leptonIndex) &&
+			    (std::abs(product.m_genLeptonsFromBosonDecay.at(leptonIndex)->pdgId) == DefaultValues::pdgIdTau))
 			{
 				KGenTau* genTau = SafeMap::GetWithDefault(product.m_validGenTausMap, product.m_genLeptonsFromBosonDecay.at(leptonIndex), static_cast<KGenTau*>(nullptr));
 				return (genTau ? genTau->nProngs : DefaultValues::UndefinedInt);
@@ -194,7 +211,8 @@ void GenBosonDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
 		});
 		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(tauQuantityNameBase+"NPi0s", [leptonIndex](event_type const& event, product_type const& product)
 		{
-			if (std::abs(product.m_genLeptonsFromBosonDecay.at(leptonIndex)->pdgId) == DefaultValues::pdgIdTau)
+			if ((product.m_genLeptonsFromBosonDecay.size() > leptonIndex) &&
+			    (std::abs(product.m_genLeptonsFromBosonDecay.at(leptonIndex)->pdgId) == DefaultValues::pdgIdTau))
 			{
 				KGenTau* genTau = SafeMap::GetWithDefault(product.m_validGenTausMap, product.m_genLeptonsFromBosonDecay.at(leptonIndex), static_cast<KGenTau*>(nullptr));
 				return (genTau ? genTau->nPi0s : DefaultValues::UndefinedInt);
