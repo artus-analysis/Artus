@@ -83,6 +83,7 @@ public:
 
 	/// name of genParticle collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, GenParticles, "");
+	IMPL_SETTING_DEFAULT(std::string, LheParticles, "");
 
 	/// name of eventMetaData in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, EventMetadata, "");
