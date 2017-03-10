@@ -19,6 +19,11 @@ public:
 
 	void Produce(KappaEvent const& event, KappaProduct& product,
 	             KappaSettings const& settings) const override;
+
+protected:
+
+	void FindGenBoson(KappaEvent const& event, KappaProduct& product,
+	                  KappaSettings const& settings, unsigned int startIndex=0) const;
 };
 
 
@@ -33,7 +38,7 @@ public:
 	void Produce(KappaEvent const& event, KappaProduct& product,
 	             KappaSettings const& settings) const override;
 
-private:
+protected:
 
 	std::vector<KGenParticle*> FindMothersWithDifferentPdgId(KGenParticles* genParticles, unsigned int currentIndex, int currentPdgId) const;
 };
@@ -49,5 +54,10 @@ public:
 
 	void Produce(KappaEvent const& event, KappaProduct& product,
 	             KappaSettings const& settings) const override;
+
+protected:
+
+	void FindGenDiLeptons(KappaEvent const& event, KappaProduct& product,
+	                      KappaSettings const& settings) const;
 };
 

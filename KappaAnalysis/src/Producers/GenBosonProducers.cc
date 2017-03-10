@@ -50,15 +50,23 @@ void GenBosonFromGenParticlesProducer::Produce(KappaEvent const& event, KappaPro
                                                KappaSettings const& settings) const
 {
 	assert(event.m_genParticles);
+	FindGenBoson(event, product, settings);
+}
+
+void GenBosonFromGenParticlesProducer::FindGenBoson(KappaEvent const& event, KappaProduct& product,
+                                                    KappaSettings const& settings, unsigned int startIndex) const
+{
+	product.m_genBosonParticle = nullptr;
+	product.m_genBosonLV = RMFLV();
 	product.m_genBosonLVFound = false;
 	
-	for (KGenParticles::const_iterator genParticle = event.m_genParticles->begin();
-		 genParticle != event.m_genParticles->end(); ++genParticle)
+	for (unsigned int genParticleIndex = startIndex; genParticleIndex < event.m_genParticles->size(); ++genParticleIndex)
 	{
+		KGenParticle* genParticle = &(event.m_genParticles->at(genParticleIndex));
 		if (Utility::Contains(settings.GetBosonPdgIds(), std::abs(genParticle->pdgId)) && Utility::Contains(settings.GetBosonStatuses(), genParticle->status()))
 		{
-			product.m_genBosonParticle = const_cast<KGenParticle*>(&(*genParticle));
-			product.m_genBosonLV = (*genParticle).p4;
+			product.m_genBosonParticle = genParticle;
+			product.m_genBosonLV = genParticle->p4;
 			product.m_genBosonLVFound = true;
 			break;
 		}
@@ -204,6 +212,13 @@ void GenBosonDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaPr
                                                 KappaSettings const& settings) const
 {
 	GenBosonFromGenParticlesProducer::Produce(event, product, settings);
+	FindGenDiLeptons(event, product, settings);
+}
+
+void GenBosonDiLeptonDecayModeProducer::FindGenDiLeptons(KappaEvent const& event, KappaProduct& product,
+                                                         KappaSettings const& settings) const
+{
+	product.m_genLeptonsFromBosonDecay.clear();
 	
 	// If no boson has been found in the event, try to reconstruct it from the first two decay
 	// products available in the list of gen. particles
@@ -232,6 +247,7 @@ void GenBosonDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaPr
 	}
 	else
 	{
+		bool rerun = false;
 		for (std::vector<unsigned int>::const_iterator decayParticleIndex = product.m_genBosonParticle->daughterIndices.begin();
 		     decayParticleIndex != product.m_genBosonParticle->daughterIndices.end(); ++decayParticleIndex)
 		{
@@ -242,6 +258,35 @@ void GenBosonDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaPr
 			{
 				product.m_genLeptonsFromBosonDecay.push_back(&(event.m_genParticles->at(*decayParticleIndex)));
 			}
+			else
+			{
+				rerun = true;
+			}
+		}
+		if (product.m_genLeptonsFromBosonDecay.size() < 2)
+		{
+			rerun = true;
+		}
+		
+		if (rerun)
+		{
+			// search for boson index
+			unsigned int bosonIndex = 0;
+			for (KGenParticles::const_iterator genParticle = event.m_genParticles->begin();
+				 genParticle != event.m_genParticles->end(); ++genParticle)
+			{
+				if (product.m_genBosonParticle == &(*genParticle))
+				{
+					break;
+				}
+				++bosonIndex;
+			}
+			
+			// search for next boson
+			FindGenBoson(event, product, settings, bosonIndex+1);
+			
+			// restart search for leptons with next boson
+			FindGenDiLeptons(event, product, settings);
 		}
 	}
 }
