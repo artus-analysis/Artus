@@ -86,7 +86,6 @@ void GenBosonProductionProducer::Init(KappaSettings const& settings)
 void GenBosonProductionProducer::Produce(KappaEvent const& event, KappaProduct& product,
                                          KappaSettings const& settings) const
 {
-	GenBosonFromGenParticlesProducer::Produce(event, product, settings);
 	assert(product.m_genBosonParticle != nullptr);
 	
 	// search for boson index
@@ -211,7 +210,6 @@ void GenBosonDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
 void GenBosonDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& product,
                                                 KappaSettings const& settings) const
 {
-	GenBosonFromGenParticlesProducer::Produce(event, product, settings);
 	FindGenDiLeptons(event, product, settings);
 }
 
