@@ -76,7 +76,7 @@ class InputRoot(inputfile.InputFile):
 		inputbase.InputBase.prepare_nicks(plotData)
 		
 		for key in ["folders", "friend_files", "friend_folders"]:
-			plotData.plotdict[key] = [element.split() if element else element for element in plotData.plotdict[key]]
+			plotData.plotdict[key] = [([""] if element.empty() else element.split()) if element else [""] for element in plotData.plotdict[key]]
 		
 		if plotData.plotdict["read_config"]:
 			self.read_input_json_dicts(plotData)
