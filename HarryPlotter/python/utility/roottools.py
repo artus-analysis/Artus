@@ -857,6 +857,8 @@ class RootTools(object):
 				return root_object.GetXmin(), root_object.GetXmax()
 			elif (axis == 1) and isinstance(root_object, ROOT.TF2):
 				return root_object.GetYmin(), root_object.GetYmax()
+			elif isinstance(root_object, ROOT.TF2):
+				return root_object.GetMinimum(array.array("d", [float("nan")])), root_object.GetMaximum(array.array("d", [float("nan")]))
 			else:
 				return root_object.GetMinimum(), root_object.GetMaximum()
 		
