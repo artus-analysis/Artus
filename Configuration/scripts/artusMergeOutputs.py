@@ -54,7 +54,7 @@ def merge_local(args):
 
 		hadd_arguments.append({"target_file": target_filename, "source_files": output_files, "hadd_args" : " -f ", "max_files" : 500})
 
-	tools.parallelize(hadd2, hadd_arguments, n_processes=args.n_processes)
+	tools.parallelize(hadd2, hadd_arguments, n_processes=args.n_processes, description="Merging Artus outputs")
 
 def merge_batch(args):
 
