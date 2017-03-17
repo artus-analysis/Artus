@@ -75,7 +75,9 @@ class InputRoot(inputfile.InputFile):
 		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "files", "directories", "folders", "weights", "friend_files", "friend_folders", "friend_aliases", "tree_draw_options"], help="InputRoot options")
 		inputbase.InputBase.prepare_nicks(plotData)
 		
-		for key in ["folders", "friend_files", "friend_folders"]:
+		for key in ["folders"]:
+			plotData.plotdict[key] = [element.split() if element else [""] for element in plotData.plotdict[key]]
+		for key in ["friend_files", "friend_folders"]:
 			plotData.plotdict[key] = [element.split() if element else element for element in plotData.plotdict[key]]
 		
 		if plotData.plotdict["read_config"]:
