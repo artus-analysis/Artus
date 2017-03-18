@@ -12,6 +12,20 @@ Copyright 2011, All rights reserved
 """	
 
 import ROOT
+for root_type in [
+		ROOT.TFile, ROOT.TDirectory, ROOT.TDirectoryFile,
+		ROOT.TTree, ROOT.TChain, ROOT.TNtuple,
+		ROOT.TH1, ROOT.TH1F, ROOT.TH1D,
+		ROOT.TH2, ROOT.TH2F, ROOT.TH2D,
+		ROOT.TH3, ROOT.TH3F, ROOT.TH3D,
+		ROOT.TProfile, ROOT.TProfile2D,
+		ROOT.TGraph, ROOT.TGraphErrors, ROOT.TGraphAsymmErrors,
+		ROOT.TGraph2D, ROOT.TGraph2DErrors,
+		ROOT.TF1, ROOT.TF2, ROOT.TF3,
+		ROOT.TCanvas, ROOT.TPad, ROOT.TLegend,
+]:
+	root_type.__init__._creates = True # https://root.cern.ch/phpBB3/viewtopic.php?t=9786
+
 import sys
 
 
@@ -42,7 +56,6 @@ class TFileContextManager(object):
 		# Plain ``TFile(...)`` makes the file managed by Python, as expected
 		# Using ``TFile.Open(...)`` makes the file owned by ROOT, because of reasons
 		# See http://comments.gmane.org/gmane.comp.lang.c%2B%2B.root/15431
-		ROOT.SetOwnership(self._file, True) 
 
 	def __enter__(self):
 		"""Provide ROOT file safely"""
