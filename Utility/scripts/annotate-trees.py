@@ -16,6 +16,7 @@ ROOT.gErrorIgnoreLevel = ROOT.kError
 
 import Artus.Utility.progressiterator as progressiterator
 import Artus.Utility.tfilecontextmanager as tfilecontextmanager
+import Artus.HarryPlotter.utility.roottools as roottools
 
 
 def main():
