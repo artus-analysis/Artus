@@ -411,7 +411,6 @@ class RootTools(object):
 		if root_histogram == None:
 			log.critical("Cannot find histogram \"%s\" created from trees %s in files %s!" % (name, str(path_to_trees), str(root_file_names)))
 			sys.exit(1)
-		root_histogram.SetDirectory(0)
 		
 		# delete possible files from tree proxy
 		for tmp_proxy_file in tmp_proxy_files:
