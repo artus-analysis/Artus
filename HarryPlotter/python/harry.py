@@ -14,7 +14,6 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gErrorIgnoreLevel = ROOT.kError
 
 for root_type in [
-		ROOT.TFile, ROOT.TDirectory, ROOT.TDirectoryFile,
 		ROOT.TTree, ROOT.TChain, ROOT.TNtuple,
 		ROOT.TH1, ROOT.TH1F, ROOT.TH1D,
 		ROOT.TH2, ROOT.TH2F, ROOT.TH2D,
@@ -23,7 +22,6 @@ for root_type in [
 		ROOT.TGraph, ROOT.TGraphErrors, ROOT.TGraphAsymmErrors,
 		ROOT.TGraph2D, ROOT.TGraph2DErrors,
 		ROOT.TF1, ROOT.TF2, ROOT.TF3,
-		ROOT.TCanvas, ROOT.TPad, ROOT.TLegend,
 ]:
 	root_type.__init__._creates = True # https://root.cern.ch/phpBB3/viewtopic.php?t=9786
 
