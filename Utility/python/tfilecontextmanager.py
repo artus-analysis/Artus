@@ -42,7 +42,6 @@ class TFileContextManager(object):
 		# Plain ``TFile(...)`` makes the file managed by Python, as expected
 		# Using ``TFile.Open(...)`` makes the file owned by ROOT, because of reasons
 		# See http://comments.gmane.org/gmane.comp.lang.c%2B%2B.root/15431
-		ROOT.SetOwnership(self._file, True) 
 
 	def __enter__(self):
 		"""Provide ROOT file safely"""
