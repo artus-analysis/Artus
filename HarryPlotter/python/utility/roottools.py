@@ -292,6 +292,7 @@ class RootTools(object):
 				n_trees_added = tree.Add(complete_path_to_tree, -1)
 				if n_trees_added == 0:
 					log.error("Input %s does not contain any trees!" % complete_path_to_tree)
+		tree.SetDirectory(0)
 		
 		#Add Friends
 		friend_trees = []
@@ -306,6 +307,7 @@ class RootTools(object):
 						log.error("Input %s does not contain any trees!" % complete_path_to_tree)
 			log.debug("ROOT.TTree.AddFriend(" + str(friend_trees[-1]) + ", \"" + (friend_alias if friend_alias else "") + "\")")
 			tree.AddFriend(friend_trees[-1], (friend_alias if friend_alias else ""))
+			friend_trees[-1].SetDirectory(0)
 		
 		# ROOT optimisations
 		tree.SetCacheSize(256*1024*1024) # 256 MB
@@ -409,7 +411,7 @@ class RootTools(object):
 		if root_histogram == None:
 			log.critical("Cannot find histogram \"%s\" created from trees %s in files %s!" % (name, str(path_to_trees), str(root_file_names)))
 			sys.exit(1)
-		
+		root_histogram.SetDirectory(0)
 		
 		# delete possible files from tree proxy
 		for tmp_proxy_file in tmp_proxy_files:
