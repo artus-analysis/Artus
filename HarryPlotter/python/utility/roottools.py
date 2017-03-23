@@ -686,19 +686,9 @@ class RootTools(object):
 				log.warning("Conversion of objects of type %s into histograms is not yet implemented!" % str(type(root_object)))
 				return root_object
 			else:
+				# first retrieve all values and errors (if available) and then sort them by increasing x values
 				x_values = root_object.GetX()
 				x_values = [x_values[index] for index in xrange(root_object.GetN())]
-				
-				# require x-values to be sorted
-				# TODO: resorting the graph points currently not implemented
-				assert all([x_low < x_high for x_low, x_high in zip(x_values[:-1], x_values[1:])])
-				
-				# determining the bin edges for the histogram
-				bin_edges = [(x_low+x_high)/2.0 for x_low, x_high in zip(x_values[:-1], x_values[1:])]
-				bin_edges.insert(0, x_values[0] - ((bin_edges[0]-x_values[0]) / 2.0))
-				bin_edges.append(x_values[-1] + ((x_values[-1]-bin_edges[-1]) / 2.0))
-				if isinstance(root_object, ROOT.TGraphAsymmErrors) or isinstance(root_object, ROOT.TGraphErrors):
-					bin_edges = RootTools.tgrapherr_get_binedges(root_object)
 				
 				y_values = root_object.GetY()
 				y_values = [y_values[index] for index in xrange(root_object.GetN())]
@@ -711,6 +701,15 @@ class RootTools(object):
 				elif isinstance(root_object, ROOT.TGraphErrors):
 					y_errors = root_object.GetEY()
 					y_errors = [y_errors[index] for index in xrange(root_object.GetN())]
+				
+				x_values, y_values, y_errors = (list(values) for values in zip(*sorted(zip(x_values, y_values, y_errors))))
+				
+				# determining the bin edges for the histogram
+				bin_edges = [(x_low+x_high)/2.0 for x_low, x_high in zip(x_values[:-1], x_values[1:])]
+				bin_edges.insert(0, x_values[0] - ((bin_edges[0]-x_values[0]) / 2.0))
+				bin_edges.append(x_values[-1] + ((x_values[-1]-bin_edges[-1]) / 2.0))
+				if isinstance(root_object, ROOT.TGraphAsymmErrors) or isinstance(root_object, ROOT.TGraphErrors):
+					bin_edges = RootTools.tgrapherr_get_binedges(root_object)
 				
 				root_histogram = ROOT.TH1F("histogram_"+root_object.GetName(), root_object.GetTitle(), len(bin_edges)-1, array.array("d", bin_edges))
 				for index, (y_value, y_error) in enumerate(zip(y_values, y_errors)):
