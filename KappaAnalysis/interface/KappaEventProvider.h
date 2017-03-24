@@ -92,16 +92,18 @@ public:
 		// Generator info
 		if (! settings.GetGenParticles().empty())
 			this->m_event.m_genParticles = this->template SecureFileInterfaceGet<KGenParticles>(settings.GetGenParticles());
+		if (! settings.GetLheParticles().empty())
+			this->m_event.m_lheParticles = this->template SecureFileInterfaceGet<KGenParticles>(settings.GetLheParticles());
 	
 		// Vertex info
 		if (! settings.GetBeamSpot().empty())
 			this->m_event.m_beamSpot = this->template SecureFileInterfaceGet<KBeamSpot>(settings.GetBeamSpot());
 		if (! settings.GetVertexSummary().empty())
 			this->m_event.m_vertexSummary = this->template SecureFileInterfaceGet<KVertexSummary>(settings.GetVertexSummary());
-		if (! settings.GetRefitVertexSummary().empty())
-			this->m_event.m_refitVertexSummary = this->template SecureFileInterfaceGet<KVertexSummary>(settings.GetRefitVertexSummary());
-		if (! settings.GetRefitVertexBSSummary().empty())
-			this->m_event.m_refitVertexBSSummary = this->template SecureFileInterfaceGet<KVertexSummary>(settings.GetRefitVertexBSSummary());
+		if (! settings.GetRefitVertices().empty())
+			this->m_event.m_refitVertices = this->template SecureFileInterfaceGet<KRefitVertices>(settings.GetRefitVertices());
+		if (! settings.GetRefitBSVertices().empty())
+			this->m_event.m_refitBSVertices = this->template SecureFileInterfaceGet<KRefitVertices>(settings.GetRefitBSVertices());
 
 		// Track summary
 		if (! settings.GetTrackSummary().empty())

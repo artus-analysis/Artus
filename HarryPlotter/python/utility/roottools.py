@@ -56,14 +56,14 @@ class RootTools(object):
 						log.info("List of all tree quantities (in the first file):")
 						for leaf in sorted(root_object.GetListOfLeaves(), key=lambda leaf: leaf.GetName()):
 							log.info("\t%s (%s)" % (RootTools.full_leaf_name(leaf), leaf.GetTypeName()))
-					return ROOT.TTree
+					return "TTree"
 				elif isinstance(root_object, ROOT.TDirectory):
 					if print_quantities:
 						log.info("List of all histogram/graph/function quantities (in the first file):")
 						for key, path in sorted(RootTools.walk_root_directory(root_object), key=lambda element: element[1]):
 							if key.GetClassName().startswith("TH") or key.GetClassName().startswith("TF") or key.GetClassName().startswith("Roo") or "Graph" in key.GetClassName():
 								log.info("\t%s (%s)" % (path, key.GetClassName()))
-					return ROOT.TDirectory
+					return "TDirectory"
 				else:
 					log.error("Usage of ROOT objects of Type \"" + root_object.ClassName() + "\" is not yet implemented!")
 					return None
@@ -205,7 +205,8 @@ class RootTools(object):
 	def histogram_from_tree(self, root_file_names, path_to_trees,
 		                    x_expression, y_expression=None, z_expression=None,
 		                    x_bins=None, y_bins=None, z_bins=None,
-		                    weight_selection="", option="", name=None, friend_trees=None):
+		                    weight_selection="", option="", name=None,
+		                    friend_files=None, friend_folders=None, friend_alias=None):
 		"""
 		Read histograms from trees
 	
@@ -284,7 +285,6 @@ class RootTools(object):
 			path_to_trees = [path_to_trees]
 	
 		tree = ROOT.TChain()
-		friend_tree = ROOT.TChain()
 		for root_file_name in root_file_names:
 			for path_to_tree in path_to_trees:
 				complete_path_to_tree = os.path.join(root_file_name, path_to_tree)
@@ -292,12 +292,22 @@ class RootTools(object):
 				n_trees_added = tree.Add(complete_path_to_tree, -1)
 				if n_trees_added == 0:
 					log.error("Input %s does not contain any trees!" % complete_path_to_tree)
+		tree.SetDirectory(0)
 		
 		#Add Friends
-		if friend_trees is not None:
-			for friend in friend_trees:
-				friend_tree.Add(friend[1] + "/" + friend[0])
-			tree.AddFriend(friend_tree)
+		friend_trees = []
+		if friend_files and friend_folders:
+			friend_trees.append(ROOT.TChain())
+			for root_file_name in friend_files:
+				for path_to_tree in friend_folders:
+					complete_path_to_tree = os.path.join(root_file_name, path_to_tree)
+					log.debug("Reading friend from ntuple %s ..." % complete_path_to_tree)
+					n_trees_added = friend_trees[-1].Add(complete_path_to_tree, -1)
+					if n_trees_added == 0:
+						log.error("Input %s does not contain any trees!" % complete_path_to_tree)
+			log.debug("ROOT.TTree.AddFriend(" + str(friend_trees[-1]) + ", \"" + (friend_alias if friend_alias else "") + "\")")
+			tree.AddFriend(friend_trees[-1], (friend_alias if friend_alias else ""))
+			friend_trees[-1].SetDirectory(0)
 		
 		# ROOT optimisations
 		tree.SetCacheSize(256*1024*1024) # 256 MB
@@ -676,19 +686,9 @@ class RootTools(object):
 				log.warning("Conversion of objects of type %s into histograms is not yet implemented!" % str(type(root_object)))
 				return root_object
 			else:
+				# first retrieve all values and errors (if available) and then sort them by increasing x values
 				x_values = root_object.GetX()
 				x_values = [x_values[index] for index in xrange(root_object.GetN())]
-				
-				# require x-values to be sorted
-				# TODO: resorting the graph points currently not implemented
-				assert all([x_low < x_high for x_low, x_high in zip(x_values[:-1], x_values[1:])])
-				
-				# determining the bin edges for the histogram
-				bin_edges = [(x_low+x_high)/2.0 for x_low, x_high in zip(x_values[:-1], x_values[1:])]
-				bin_edges.insert(0, x_values[0] - ((bin_edges[0]-x_values[0]) / 2.0))
-				bin_edges.append(x_values[-1] + ((x_values[-1]-bin_edges[-1]) / 2.0))
-				if isinstance(root_object, ROOT.TGraphAsymmErrors) or isinstance(root_object, ROOT.TGraphErrors):
-					bin_edges = RootTools.tgrapherr_get_binedges(root_object)
 				
 				y_values = root_object.GetY()
 				y_values = [y_values[index] for index in xrange(root_object.GetN())]
@@ -701,6 +701,15 @@ class RootTools(object):
 				elif isinstance(root_object, ROOT.TGraphErrors):
 					y_errors = root_object.GetEY()
 					y_errors = [y_errors[index] for index in xrange(root_object.GetN())]
+				
+				x_values, y_values, y_errors = (list(values) for values in zip(*sorted(zip(x_values, y_values, y_errors))))
+				
+				# determining the bin edges for the histogram
+				bin_edges = [(x_low+x_high)/2.0 for x_low, x_high in zip(x_values[:-1], x_values[1:])]
+				bin_edges.insert(0, x_values[0] - ((bin_edges[0]-x_values[0]) / 2.0))
+				bin_edges.append(x_values[-1] + ((x_values[-1]-bin_edges[-1]) / 2.0))
+				if isinstance(root_object, ROOT.TGraphAsymmErrors) or isinstance(root_object, ROOT.TGraphErrors):
+					bin_edges = RootTools.tgrapherr_get_binedges(root_object)
 				
 				root_histogram = ROOT.TH1F("histogram_"+root_object.GetName(), root_object.GetTitle(), len(bin_edges)-1, array.array("d", bin_edges))
 				for index, (y_value, y_error) in enumerate(zip(y_values, y_errors)):
@@ -843,6 +852,8 @@ class RootTools(object):
 				return root_object.GetXmin(), root_object.GetXmax()
 			elif (axis == 1) and isinstance(root_object, ROOT.TF2):
 				return root_object.GetYmin(), root_object.GetYmax()
+			elif isinstance(root_object, ROOT.TF2):
+				return root_object.GetMinimum(array.array("d", [float("nan")])), root_object.GetMaximum(array.array("d", [float("nan")]))
 			else:
 				return root_object.GetMinimum(), root_object.GetMaximum()
 		

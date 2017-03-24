@@ -12,9 +12,10 @@ import datetime
 import glob
 import os
 import string
+import subprocess
 
 import Artus.Utility.tools as tools
-import Artus.HarryPlotter.utility.extrafunctions as extrafunctions
+
 
 class PlotData(object):
 	"""
@@ -32,6 +33,31 @@ class PlotData(object):
 		self.metadata = {} # key: nick to which the value belongs
 		self.input_json_dicts = []
 		self.fit_results = {}
+
+	@staticmethod
+	def show_plot(filename, viewer):
+		log.info("Opening Plot " + filename + " with " + viewer)
+		FNULL = open(os.devnull, 'w')
+		subprocess.Popen([viewer, filename], stdout=FNULL, stderr=FNULL)
+
+	@staticmethod
+	def show_plot_userpc(filename, viewer, user, userpc):
+		"""Open the plot, but on the users desktop machine."""
+		subprocess.call(['rsync', filename,
+							  '%s:/usr/users/%s/plot.pdf' % (userpc, user)])
+
+		# check if the imageviewer is running on the users local machine:
+		p = subprocess.Popen(['ssh', userpc, 'ps', 'aux', '|', 'grep',
+						'"%s /usr/users/%s/plot.%s"' % (viewer,
+						user, filename.split(".")[-1]), '|', 'grep',
+						 '-v', 'grep', '|', 'wc', '-l'], stdout=subprocess.PIPE)
+		out, err = p.communicate()
+
+		# if its not already running, start!
+		if out[:1] == '0':
+			print "\nOpening %s..." % viewer
+			subprocess.Popen(['ssh', userpc,
+			'DISPLAY=:0 %s /usr/users/%s/plot.%s &' % (viewer, user, filename.split(".")[-1])])
 
 	@staticmethod
 	def webplotting(www, output_dir, output_filenames=False, www_text = False, www_title="plots_archive", additional_output_files=False, save_legend=False, export_json = False, no_publish=False):
@@ -119,9 +145,9 @@ class PlotData(object):
 
 				for output_filename in self.plotdict["output_filenames"]:
 					if self.plotdict["userpc"]:
-						extrafunctions.show_plot_userpc(output_filename, self.plotdict["live"], tools.get_environment_variable('USER'), userpc)
+						PlotData.show_plot_userpc(output_filename, self.plotdict["live"], tools.get_environment_variable('USER'), userpc)
 					else:
-						extrafunctions.show_plot(output_filename, self.plotdict["live"])
+						PlotData.show_plot(output_filename, self.plotdict["live"])
 
 			# web plotting
 			# TODO: make this more configurable if users want to user other webspaces etc.

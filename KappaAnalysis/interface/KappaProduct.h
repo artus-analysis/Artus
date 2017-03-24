@@ -45,6 +45,7 @@ public:
 	RMFLV m_genBosonLV;
 	bool m_genBosonLVFound = false;
 
+	std::vector<KGenParticle*> m_genParticlesProducingBoson;
 	std::vector<KGenParticle*> m_genLeptonsFromBosonDecay;
 
 	// filled by the ValidGenParticleProducers

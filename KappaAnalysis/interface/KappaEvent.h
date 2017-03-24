@@ -66,8 +66,10 @@ public:
 
 	/// pointer to primary vertex summary
 	KVertexSummary* m_vertexSummary = nullptr;
-	KVertexSummary* m_refitVertexSummary = nullptr;
-	KVertexSummary* m_refitVertexBSSummary = nullptr;
+
+	/// pointer to the refitted vertices collection
+	KRefitVertices* m_refitVertices = nullptr;
+	KRefitVertices* m_refitBSVertices = nullptr;
 
 	/// pointer to track summary
 	KTrackSummary* m_trackSummary = nullptr;
@@ -77,6 +79,7 @@ public:
 
 	/// pointer to generator particles
 	KGenParticles* m_genParticles = nullptr;
+	KGenParticles* m_lheParticles = nullptr;
 
 	/// pointer to trigger infos and objects
 	KTriggerObjectMetadata* m_triggerObjectMetadata = nullptr;

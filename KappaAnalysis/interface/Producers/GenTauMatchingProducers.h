@@ -122,7 +122,7 @@ public:
 							product.m_genTauMatchDeltaR = deltaR;
 							deltaRmin = deltaR;
 							objectMatched = true;
-							//LOG(INFO) << this->GetProducerId() << " (event " << event.m_eventInfo->nEvent << "): " << (*validObject)->p4 << " --> " << genTau->visible.p4;
+							//LOG(INFO) << this->GetProducerId() << " (event " << event.m_eventInfo->nEvent << "): " << (*object)->p4 << " --> " << genTau->visible.p4;
 						}
 						else product.m_genTauMatchDeltaR = DefaultValues::UndefinedFloat;
 					}

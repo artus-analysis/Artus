@@ -13,20 +13,24 @@ from Kappa.Skimming.registerDatasetHelper import get_n_files_from_nick
 from math import ceil
 job_submission_limit = 10000 # crab3 can only submit up to 10000 jobs per task
 
+def create_symlink(symlink, filename):
+	logger.subprocessCall(("ln -fsv %s %s" % (os.path.relpath(filename, os.path.dirname(symlink)), symlink)).split())
+
 def create_filelist(files, filename, symlink=None):
 	with open(filename, "w") as filelist:
 		filelist.write("\n".join(files))
 		log.info("Created %s." % filename)
 		if not symlink is None:
-			logger.subprocessCall(("ln -fsv %s %s" % (os.path.relpath(filename, os.path.dirname(symlink)), symlink)).split())
-
+			create_symlink(symlink,filename)
 
 def main():
 
-	parser = argparse.ArgumentParser(description="Create filelists for Artus inputs from pnfs mount on the NAF.", parents=[logger.loggingParser])
+	parser = argparse.ArgumentParser(description="Create filelists for Artus inputs from pnfs mount on the NAF or import already existing filelists.", parents=[logger.loggingParser])
 
 	parser.add_argument("-s", "--skimming-dir", required=True,
 	                    help="Skimming output directory as specified in se (output) path in GC.")
+	parser.add_argument("--if, --import-filelists-folder",dest="import_filelists_folder", default=None,
+	                    help="The folder, where the filelists which should be imported can be found. [Default: %(default)s]")
 	parser.add_argument("-d", "--date", required=True,
 	                    help="Date string.")
 	parser.add_argument("-o", "--output-dir", default="$CMSSW_BASE/src/HiggsAnalysis/KITHiggsToTauTau/data/Samples/",
@@ -44,7 +48,17 @@ def main():
 
 	args = parser.parse_args()
 	logger.initLogger(args)
-	
+
+	if args.import_filelists_folder:
+		print "Importing and linking existing filelists in", args.import_filelists_folder
+		for (dirpath, dirnames, filenames) in os.walk(args.import_filelists_folder):
+			for f in filenames:
+				path = os.path.join(dirpath,f)
+				# it is assumed, that the filenames are created by the SkimManager and represent dataset nicknames
+				if os.path.exists(path) and ".txt" in path:
+					create_symlink("DCAP_sample_"+os.path.basename(path).replace(".txt","_recent.txt"), path)
+		sys.exit(0)
+
 	if not args.skimming_dir.startswith("/pnfs"):
 		log.critical("You need to specify a /pnfs path at the NAF")
 		sys.exit(1)
@@ -56,7 +70,7 @@ def main():
 		skimming_dirs = glob.glob(os.path.join(args.skimming_dir, "*/crab_*"))
 	
 	for skimming_dir in skimming_dirs:
-		search_path = os.path.join(skimming_dir, "*.root")
+		search_path = os.path.join(skimming_dir, "*/*.root")
 		if args.crab:
 			search_path = os.path.join(skimming_dir, "*/*/*.root")
 		

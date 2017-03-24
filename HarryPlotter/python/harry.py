@@ -14,6 +14,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gErrorIgnoreLevel = ROOT.kError
 
 for root_type in [
+		ROOT.TFile, ROOT.TDirectory, ROOT.TDirectoryFile,
 		ROOT.TTree, ROOT.TChain, ROOT.TNtuple,
 		ROOT.TH1, ROOT.TH1F, ROOT.TH1D,
 		ROOT.TH2, ROOT.TH2F, ROOT.TH2D,
@@ -22,6 +23,7 @@ for root_type in [
 		ROOT.TGraph, ROOT.TGraphErrors, ROOT.TGraphAsymmErrors,
 		ROOT.TGraph2D, ROOT.TGraph2DErrors,
 		ROOT.TF1, ROOT.TF2, ROOT.TF3,
+		ROOT.TCanvas, ROOT.TPad, ROOT.TLegend,
 ]:
 	root_type.__init__._creates = True # https://root.cern.ch/phpBB3/viewtopic.php?t=9786
 
@@ -99,7 +101,7 @@ class HarryPlotter(object):
 		failed_plots = []
 		if len(harry_args) > 1 and n_processes > 1:
 			log.info("Creating {:d} plots in {:d} processes".format(len(harry_args), min(n_processes, len(harry_args))))
-			results = tools.parallelize(pool_plot, zip([self]*len(harry_args), harry_args), n_processes)
+			results = tools.parallelize(pool_plot, zip([self]*len(harry_args), harry_args), n_processes, description="Plotting")
 			tmp_output_filenames, tmp_failed_plots, tmp_error_messages = zip(*([result for result in results if not result is None and result != (None,)]))
 			output_filenames = [output_filename for output_filename in tmp_output_filenames if not output_filename is None]
 			failed_plots = [(failed_plot, error_message) for failed_plot, error_message in zip(tmp_failed_plots, tmp_error_messages) if not failed_plot is None]

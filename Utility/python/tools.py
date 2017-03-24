@@ -17,6 +17,9 @@ import textwrap
 import shlex
 import time
 
+from difflib import SequenceMatcher
+
+
 def flattenList(listOfLists):
 	"""
 	flatten 2D list
@@ -156,8 +159,7 @@ def get_indented_text(prefix, message, width=None):
 			)
 	return '\n'.join(['\n'.join(tmp_wrapped_texts)])
 
-import Artus.Utility.progressiterator as pi
-def parallelize(function, arguments_list, n_processes=1):
+def parallelize(function, arguments_list, n_processes=1, description=None):
 	if n_processes <= 1:
 		results = []
 		for arguments in arguments_list:
@@ -168,7 +170,8 @@ def parallelize(function, arguments_list, n_processes=1):
 		results = pool.map_async(function, arguments_list)
 		n_tasks = len(arguments_list)
 		left = n_tasks
-		progress_iterator = pi.ProgressIterator(range(n_tasks), description = "calling " + str(function))
+		import Artus.Utility.progressiterator as pi
+		progress_iterator = pi.ProgressIterator(range(n_tasks), description=(description if description else "calling "+str(function)))
 		progress_iterator.next()
 		while (True):
 			if (results.ready()): break
@@ -267,3 +270,53 @@ def make_multiplication(splitted_formula):
 
 def clean_multiplication(formula):
 	return make_multiplication(split_multiplication(formula))
+
+def isfloat(element):
+	try:
+		float(element)
+		return True
+	except ValueError:
+		return False
+
+def merge_sequences(*sequences):
+	"""
+	Merge lists preserving relative order
+
+	:param sequences: lists to merge
+	:type seuqnces: list[list]
+	:returns: ordered union of all lists
+	:rtype: list
+
+	:see: `Stackoverflow thread<http://stackoverflow.com/questions/14241320/interleave-different-length-lists-elimating-duplicates-and-preserve-order-in-py>`_
+	:raises ValueError: If individual sequences have non-unique elements or several
+	                    sequences have the same elements in different order
+	"""
+	if len(sequences) == 1:
+		return sequences[0]
+	if len(sequences) == 2:
+		return _merge_sequences(*sequences)
+	if len(sequences) % 2 == 0:
+		return _merge_sequences(*[_merge_sequences(sequences[idx-1], sequences[idx]) for idx in xrange(1,len(sequences),2)])
+	return _merge_sequences(*[_merge_sequences(sequences[idx-1], sequences[idx]) for idx in xrange(1,len(sequences),2)] + [sequences[-1]])
+
+def _merge_sequences(seq1,seq2):
+	"""http://stackoverflow.com/questions/14241320/interleave-different-length-lists-elimating-duplicates-and-preserve-order-in-py"""
+	sm=SequenceMatcher(a=seq1,b=seq2)
+	res = []
+	for (op, start1, end1, start2, end2) in sm.get_opcodes():
+		if op == 'equal' or op=='delete':
+			#This range appears in both sequences, or only in the first one.
+			res += seq1[start1:end1]
+		elif op == 'insert':
+			#This range appears in only the second sequence.
+			res += seq2[start2:end2]
+		elif op == 'replace':
+			#There are different ranges in each sequence - add both.
+			res += seq1[start1:end1]
+			res += seq2[start2:end2]
+	# duplicates indicat non-unique (implicitly unordered) positions or differently ordered subsequences
+	if len(set(res)) != len(res):
+		raise ValueError("Sequences have non-unique elements or differently ordered subsequences")
+	return res
+
+

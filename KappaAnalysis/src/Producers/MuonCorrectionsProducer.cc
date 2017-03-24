@@ -31,8 +31,9 @@ void MuonCorrectionsProducer::Init(KappaSettings const& settings)
 	}
 	if (muonEnergyCorrection == MuonEnergyCorrection::ROCHCORR2016)
 	{
-		rmcor2016 = new rochcor2016(settings.GetMuonRochesterCorrectionsFile());
+		rmcor2016 = new RoccoR2016(settings.GetMuonRochesterCorrectionsFile());
 	}
+	random = new TRandom3();
 }
 
 void MuonCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& product,
@@ -84,7 +85,7 @@ void MuonCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& pro
 			TLorentzVector mu;
 			mu.SetPtEtaPhiM(muon->get()->p4.Pt(),muon->get()->p4.Eta(),muon->get()->p4.Phi(),muon->get()->p4.mass());
 	
-			float q = muon->get()->charge();
+			int q = muon->get()->charge();
 			float qter = 1.0;
 	
 			if (settings.GetInputIsData())
@@ -101,23 +102,46 @@ void MuonCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& pro
 		}
 		else if (muonEnergyCorrection == MuonEnergyCorrection::ROCHCORR2016)
 		{
-			TLorentzVector mu;
-			mu.SetPtEtaPhiM(muon->get()->p4.Pt(),muon->get()->p4.Eta(),muon->get()->p4.Phi(),muon->get()->p4.mass());
-	
-			float q = muon->get()->charge();
-			float qter = 1.0;
+			int q = muon->get()->charge();
+			float pt = muon->get()->p4.Pt();
+			float eta = muon->get()->p4.Eta();
+			float phi = muon->get()->p4.Phi();
+
+			float scaleFactor = 1.0;
 
 			if (settings.GetInputIsData())
 			{
-				rmcor2016->momcor_data(mu, q, 0, qter);
-				muon->get()->p4.SetPxPyPzE(mu.Px(),mu.Py(),mu.Pz(),mu.E());
+				scaleFactor = rmcor2016->kScaleDT(q, pt, eta, phi);
 			}
 			else
 			{
 				int ntrk = muon->get()->track.nPixelLayers + muon->get()->track.nStripLayers; // TODO: this corresponds to reco::HitPattern::trackerLayersWithMeasurementOld(). update to "new" implementation also in Kappa
-				rmcor2016->momcor_mc(mu, q, ntrk, qter);
-				muon->get()->p4.SetPxPyPzE(mu.Px(),mu.Py(),mu.Pz(),mu.E());
+				if (settings.GetRecoMuonMatchingGenParticleMatchAllMuons() &&
+					&(*product.m_genParticleMatchedMuons[static_cast<KMuon*>(const_cast<KLepton*>(product.m_originalLeptons[muon->get()]))]) != nullptr
+					)
+				{
+					KGenParticle* genMuon = &(*product.m_genParticleMatchedMuons[static_cast<KMuon*>(const_cast<KLepton*>(product.m_originalLeptons[muon->get()]))]);
+					float genPt = genMuon->p4.Pt();
+					double u1 = random->Rndm();
+					scaleFactor = rmcor2016->kScaleFromGenMC(q, pt, eta, phi, ntrk, genPt, u1);
+				}
+				else
+				{
+					double u1 = random->Rndm();
+					double u2 = random->Rndm();
+					scaleFactor = rmcor2016->kScaleAndSmearMC(q, pt, eta, phi, ntrk, u1, u2);
+				}
 			}
+
+			// scale only three dimensional momentum
+			// -> need to manually calculate energy
+			float muonMass = 0.105658;
+			float scaledPx = muon->get()->p4.Px() * scaleFactor;
+			float scaledPy = muon->get()->p4.Py() * scaleFactor;
+			float scaledPz = muon->get()->p4.Pz() * scaleFactor;
+			float scaledE = TMath::Sqrt(TMath::Power(scaledPx,2) + TMath::Power(scaledPy,2) + TMath::Power(scaledPz,2) + TMath::Power(muonMass,2));
+
+			muon->get()->p4.SetPxPyPzE(scaledPx, scaledPy, scaledPz, scaledE);
 		}
 		else if (muonEnergyCorrection != MuonEnergyCorrection::NONE)
 		{

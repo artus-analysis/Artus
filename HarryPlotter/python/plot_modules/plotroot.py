@@ -379,8 +379,8 @@ class PlotRoot(plotbase.PlotBase):
 				self.x_min = plotData.plotdict["x_lims"][0] - plotData.plotdict["x_lims"][1]
 				self.x_max = plotData.plotdict["x_lims"][0] + plotData.plotdict["x_lims"][1]
 			else:
-				tmp_x_min = self.x_min * plotData.plotdict["x_rel_lims"][0]
-				tmp_x_max = self.x_max * plotData.plotdict["x_rel_lims"][1]
+				tmp_x_min = self.x_min * (plotData.plotdict["x_rel_lims"][0] if self.x_min > 0.0 else 2.0-plotData.plotdict["x_rel_lims"][0])
+				tmp_x_max = self.x_max * (plotData.plotdict["x_rel_lims"][1] if self.x_max > 0.0 else 2.0-plotData.plotdict["x_rel_lims"][1])
 				
 				if not plotData.plotdict["x_lims"] is None:
 					center = plotData.plotdict["x_lims"][0]
@@ -399,10 +399,10 @@ class PlotRoot(plotbase.PlotBase):
 				if len(plotData.plotdict["x_lims"]) > 1:
 					self.x_max = plotData.plotdict["x_lims"][1]
 				else:
-					self.x_max *= plotData.plotdict["x_rel_lims"][1]
+					self.x_max *= (plotData.plotdict["x_rel_lims"][1] if self.x_max > 0.0 else 2.0-plotData.plotdict["x_rel_lims"][1])
 			else:
-				self.x_min *= plotData.plotdict["x_rel_lims"][0]
-				self.x_max *= plotData.plotdict["x_rel_lims"][1]
+				self.x_min *= (plotData.plotdict["x_rel_lims"][0] if self.x_min > 0.0 else 2.0-plotData.plotdict["x_rel_lims"][0])
+				self.x_max *= (plotData.plotdict["x_rel_lims"][1] if self.x_max > 0.0 else 2.0-plotData.plotdict["x_rel_lims"][1])
 		if self.x_min == self.x_max:
 			self.x_min -= 1.0
 			self.x_max += 1.0
@@ -413,8 +413,8 @@ class PlotRoot(plotbase.PlotBase):
 				self.y_min = plotData.plotdict["y_lims"][0] - plotData.plotdict["y_lims"][1]
 				self.y_max = plotData.plotdict["y_lims"][0] + plotData.plotdict["y_lims"][1]
 			else:
-				tmp_y_min = self.y_min * ((plotData.plotdict["y_rel_lims"][0] if self.y_min > 0.0 else plotData.plotdict["y_rel_lims"][1]) if self.max_dim < 3 else 1.0)
-				tmp_y_max = self.y_max * ((plotData.plotdict["y_rel_lims"][1] if self.y_max > 0.0 else plotData.plotdict["y_rel_lims"][0]) if self.max_dim < 3 else 1.0)
+				tmp_y_min = self.y_min * ((plotData.plotdict["y_rel_lims"][0] if self.y_min > 0.0 else 2.0-plotData.plotdict["y_rel_lims"][0]) if self.max_dim < 3 else 1.0)
+				tmp_y_max = self.y_max * ((plotData.plotdict["y_rel_lims"][1] if self.y_max > 0.0 else 2.0-plotData.plotdict["y_rel_lims"][1]) if self.max_dim < 3 else 1.0)
 				if not plotData.plotdict["y_lims"] is None:
 					center = plotData.plotdict["y_lims"][0]
 					width = max([abs(y - center) for y in [tmp_y_min, tmp_y_max]])
@@ -430,12 +430,12 @@ class PlotRoot(plotbase.PlotBase):
 			if not plotData.plotdict["y_lims"] is None:
 				self.y_min = plotData.plotdict["y_lims"][0]
 			elif self.max_dim < 3:
-				self.y_min *= (plotData.plotdict["y_rel_lims"][0] if self.y_min > 0.0 else plotData.plotdict["y_rel_lims"][1])
+				self.y_min *= (plotData.plotdict["y_rel_lims"][0] if self.y_min > 0.0 else 2.0-plotData.plotdict["y_rel_lims"][0])
 		
 			if not plotData.plotdict["y_lims"] is None and len(plotData.plotdict["y_lims"]) > 1:
 				self.y_max = plotData.plotdict["y_lims"][1]
 			elif self.max_dim < 3:
-				self.y_max *= (plotData.plotdict["y_rel_lims"][1] if self.y_max > 0.0 else plotData.plotdict["y_rel_lims"][0])
+				self.y_max *= (plotData.plotdict["y_rel_lims"][1] if self.y_max > 0.0 else 2.0-plotData.plotdict["y_rel_lims"][1])
 				if plotData.plotdict["cms"]:
 					self.y_max *= 1.2
 

@@ -28,12 +28,16 @@ class InputRoot(inputfile.InputFile):
 	def modify_argument_parser(self, parser, args):
 		super(InputRoot, self).modify_argument_parser(parser, args)
 		
+		self.input_options.add_argument("--friend-files", type=str, nargs="+",
+		                                help="Filenames to be added as friends. Filenames separated by whitespaces in one argument will be added to the same friend tree.", default=[None])
+		
 		self.input_options.add_argument("-f", "--folders", type=str, nargs='*',
 		                                help="Path(s) to ROOT objects.")
-		self.input_options.add_argument("--friend-treenames", type=str, nargs="+",
-		                                help="Names of trees to be used as friends. Seperate different plots with space, seperate for same plot with whitespace.", default=None)
-		self.input_options.add_argument("--friend-filenames", type=str, nargs="+",
-		                                help="Filenames to be added as friends. Seperate different plots with space, seperate for same plot with whitespace.", default=None)
+		self.input_options.add_argument("--friend-folders", type=str, nargs="+",
+		                                help="Paths to trees to be added as friends. Paths separated by whitespaces in one argument will be added to the same friend tree. Currently, each input can only have one friend, although ROOT allows for more friends.", default=[None])
+		self.input_options.add_argument("--friend-aliases", type=str, nargs="+",
+		                                help="Aliases for friend trees. This is useful if trees of the same internal structure are compared. [Default: name of the tree]", default=[None])
+		
 		self.input_options.add_argument("-q", "--quantities", nargs="?", type="bool", default=False, const=True,
 		                                help="Print available quantities in given folder. [Default: %(default)s]")
 		self.input_options.add_argument("-x", "--x-expressions", type=str, nargs="+",
@@ -68,22 +72,13 @@ class InputRoot(inputfile.InputFile):
 	def prepare_args(self, parser, plotData):
 		super(InputRoot, self).prepare_args(parser, plotData)
 
-		if (plotData.plotdict["friend_treenames"] is not None) and (plotData.plotdict["friend_filenames"] is not None):
-			plotData.plotdict["friend_trees"] = []
-			for friend_treename, friend_filename in zip( 
-		                     	 plotData.plotdict["friend_treenames"],
-		                     	 plotData.plotdict["friend_filenames"]):
-				tuple = []
-				for plot_friend_treename, plot_friend_filename in zip(friend_treename.split(), friend_filename.split()):
-					tuple.append((plot_friend_treename, plot_friend_filename))
-				plotData.plotdict["friend_trees"].append(tuple)
-		else:
-			plotData.plotdict["friend_trees"] = [None]
-
-		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "files", "directories", "folders", "weights", "friend_trees", "tree_draw_options"], help="InputRoot options")
+		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "files", "directories", "folders", "weights", "friend_files", "friend_folders", "friend_aliases", "tree_draw_options"], help="InputRoot options")
 		inputbase.InputBase.prepare_nicks(plotData)
 		
-		plotData.plotdict["folders"] = [folders.split() if folders else [""] for folders in plotData.plotdict["folders"]]
+		for key in ["folders"]:
+			plotData.plotdict[key] = [element.split() if element else [""] for element in plotData.plotdict[key]]
+		for key in ["friend_files", "friend_folders"]:
+			plotData.plotdict[key] = [element.split() if element else element for element in plotData.plotdict[key]]
 		
 		if plotData.plotdict["read_config"]:
 			self.read_input_json_dicts(plotData)
@@ -104,7 +99,9 @@ class InputRoot(inputfile.InputFile):
 				y_bins,
 				z_bins,
 				nick,
-				friend_trees,
+				friend_files,
+				friend_folders,
+				friend_alias,
 				option
 		) in enumerate(pi.ProgressIterator(zip(
 				plotData.plotdict["files"],
@@ -117,7 +114,9 @@ class InputRoot(inputfile.InputFile):
 				plotData.plotdict["y_bins"],
 				plotData.plotdict["z_bins"],
 				plotData.plotdict["nicks"],
-				plotData.plotdict["friend_trees"],
+				plotData.plotdict["friend_files"],
+				plotData.plotdict["friend_folders"],
+				plotData.plotdict["friend_aliases"],
 				plotData.plotdict["tree_draw_options"]
 		), description="Reading ROOT inputs", visible=not self.hide_progressbar )):
 			# check whether to read from TTree or from TDirectory
@@ -126,7 +125,7 @@ class InputRoot(inputfile.InputFile):
 			root_tree_chain = None
 			root_histogram = None
 			
-			if root_folder_type == ROOT.TTree:
+			if root_folder_type == "TTree":
 				variable_expression = "%s%s%s" % (z_expression + ":" if z_expression else "",
 				                                  y_expression + ":" if y_expression else "",
 				                                  x_expression)
@@ -137,10 +136,12 @@ class InputRoot(inputfile.InputFile):
 						y_bins=["25"] if y_bins is None else y_bins,
 						z_bins=["25"] if z_bins is None else z_bins,
 						weight_selection=weight, option=option, name=None,
-						friend_trees=friend_trees
+						friend_files=friend_files,
+						friend_folders=friend_folders,
+						friend_alias=friend_alias
 				)
 				
-			elif root_folder_type == ROOT.TDirectory:
+			elif root_folder_type == "TDirectory":
 				if x_expression is None:
 					log.error('No x_expression provided.')
 					sys.exit(1)
@@ -155,7 +156,7 @@ class InputRoot(inputfile.InputFile):
 						name=None)
 				if hasattr(root_histogram, "Sumw2"):
 					root_histogram.Sumw2()
-			elif root_folder_type == None:
+			else:
 				log.critical("Error getting ROOT object from file. Exiting.")
 				sys.exit(1)
 			
@@ -175,6 +176,7 @@ class InputRoot(inputfile.InputFile):
 			plotData.plotdict.setdefault("root_objects", {}).setdefault(nick, []).append(root_histogram)
 
 		# run upper class function at last
+		
 		super(InputRoot, self).run(plotData)
 
 

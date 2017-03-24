@@ -64,7 +64,8 @@ public:
 		LOOSE = 2,
 		VETO = 3,
 		FAKEABLE = 4,
-		EMBEDDING = 5
+		EMBEDDING = 5,
+		MEDIUMHIPSAFE2016 = 6
 	};
 	static MuonID ToMuonID(std::string const& muonID)
 	{
@@ -74,6 +75,7 @@ public:
 		else if (muonID == "veto") return MuonID::VETO;
 		else if (muonID == "fakeable") return MuonID::FAKEABLE;
 		else if (muonID == "embedding") return MuonID::EMBEDDING;
+		else if (muonID == "mediumHIPsafe2016") return MuonID::MEDIUMHIPSAFE2016;
 		else return MuonID::NONE;
 	}
 
@@ -246,10 +248,8 @@ public:
 					LOG(FATAL) << "Tight muon ID for year " << settings.GetYear() << " not yet implemented!";
 			}
 			else if (muonID == MuonID::MEDIUM) {
-				if (settings.GetYear() == 2015)
+				if (settings.GetYear() == 2015 || settings.GetYear() == 2016)
 					validMuon = validMuon && IsMediumMuon2015(*muon, event, product);
-				else if (settings.GetYear() == 2016) // TODO: once medium id is stable again, update this!
-					validMuon = validMuon && IsMediumMuon2016ShortTerm(*muon, event, product);
 				else
 					LOG(FATAL) << "Medium muon ID for year " << settings.GetYear() << " not yet implemented!";
 			}
@@ -272,6 +272,12 @@ public:
 			else if (muonID == MuonID::EMBEDDING)
 			{
 				validMuon = validMuon && IsEmbeddingMuon(*muon, event, product);
+			}
+			else if (muonID == MuonID::MEDIUMHIPSAFE2016) {
+				if (settings.GetYear() == 2016)
+					validMuon = validMuon && IsMediumMuon2016ShortTerm(*muon, event, product);
+				else
+					LOG(FATAL) << "Medium2016 muon ID for year " << settings.GetYear() << " not yet implemented!";
 			}
 			else if (muonID != MuonID::NONE)
 			{
