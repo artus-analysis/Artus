@@ -54,6 +54,7 @@ public:
 		ID73Xtemp = 4, // temporary recommendation for first run 2 events due to ID problems in the forward region
 		ID73XnoHF = 5, // as temp but invalidate forward jets
 		ID2015 = 6,  // new jet ID for run 2 updated on 2015-09-11
+		ID2016 = 7,  // new jet ID for 2016 updated on 2017-03-24
 	};
 
 	static ValidJetsInput ToValidJetsInput(std::string const& validJetsInput)
@@ -70,8 +71,9 @@ public:
 		else if (jetIDVersion == "73xtemp") return JetIDVersion::ID73Xtemp;
 		else if (jetIDVersion == "73xnohf") return JetIDVersion::ID73XnoHF;
 		else if (jetIDVersion == "2015") return JetIDVersion::ID2015;
+		else if (jetIDVersion == "2016") return JetIDVersion::ID2016;
 		else LOG(FATAL) << "Jet ID version '" << jetIDVersion << "' is not available";
-		return JetIDVersion::ID2015;
+		return JetIDVersion::ID2016;
 	}
 
 	ValidJetsProducerBase(std::vector<TJet>* KappaEvent::*jets,
@@ -117,7 +119,8 @@ public:
 		    jetIDVersion == JetIDVersion::ID73X ||
 		    jetIDVersion == JetIDVersion::ID73Xtemp ||
 		    jetIDVersion == JetIDVersion::ID73XnoHF ||
-		    (jetIDVersion == JetIDVersion::ID2015 && (jetID == "tightlepveto" || jetID == "looselepveto")))
+		    (jetIDVersion == JetIDVersion::ID2015 && (jetID == "tightlepveto" || jetID == "looselepveto")) ||
+		    ((jetIDVersion == JetIDVersion::ID2016 && (jetID == "tightlepveto" || jetID == "looselepveto"))))
 		{
 			maxMuFraction = 0.8f;
 			maxCEMFraction = maxFraction;
@@ -297,13 +300,19 @@ public:
 				validJet = ((*jet)->photonFraction + (*jet)->hfEMFraction < 0.90f)
 						   && ((*jet)->nConstituents - (*jet)->nCharged > 2);
 			}
+			if (jetIDVersion == JetIDVersion::ID2016 && std::abs((*jet)->p4.eta()) > 2.7f && std::abs((*jet)->p4.eta()) <= 3.0f)
+			{
+				validJet = ((*jet)->photonFraction + (*jet)->hfEMFraction > 0.01f)
+							&& ((*jet)->neutralHadronFraction < 0.98f)
+							&& ((*jet)->nConstituents - (*jet)->nCharged > 2);
+			}
 			// for run 2 startup: temporarily no jet ID in forward region
 			if (jetIDVersion == JetIDVersion::ID73Xtemp && std::abs((*jet)->p4.eta()) > 3.0f)
 				validJet = true;
 			if (jetIDVersion == JetIDVersion::ID73XnoHF && std::abs((*jet)->p4.eta()) > 3.0f)
 				validJet = false;
 			// for run 2: new jet ID in forward region
-			if (jetIDVersion == JetIDVersion::ID2015 && std::abs((*jet)->p4.eta()) > 3.0f)
+			if ((jetIDVersion == JetIDVersion::ID2015 || jetIDVersion == JetIDVersion::ID2016) && std::abs((*jet)->p4.eta()) > 3.0f)
 			{
 				validJet = ((*jet)->photonFraction + (*jet)->hfEMFraction < 0.90f)
 				           && ((*jet)->nConstituents - (*jet)->nCharged > 10);
