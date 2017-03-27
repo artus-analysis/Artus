@@ -50,11 +50,14 @@ class HarryPlotter(object):
 				n_fast_plots=n_plots
 		)
 	
-	def plot(self, harry_args):
-		harry_core = harrycore.HarryCore(args_from_script=harry_args)
-		if not harry_args is None:
-			log.debug("harry.py " + harry_args)
-		return harry_core.run()
+	def plot(self, plot_index):
+		tmp_harry_args = self.harry_args[plot_index]
+		harry_core = harrycore.HarryCore(args_from_script=tmp_harry_args)
+		if not tmp_harry_args is None:
+			log.debug("harry.py " + tmp_harry_args)
+		output_filenames = harry_core.run()
+		self.harry_cores[plot_index] = harry_core # TODO: thread-safe?
+		return output_filenames
 	
 	def multi_plots(self, list_of_config_dicts, list_of_args_strings, n_processes=1, n_fast_plots=None):
 		config_dicts = list_of_config_dicts if isinstance(list_of_config_dicts, collections.Iterable) and not isinstance(list_of_config_dicts, basestring) else [list_of_config_dicts]
@@ -73,10 +76,10 @@ class HarryPlotter(object):
 			for i in range(len(args_strings)):
 				args_strings[i] += (" --hide-progressbar ")
 
-		harry_args = []
+		self.harry_args = []
 		for config_dict, args_string in zip(config_dicts, args_strings):
 			if config_dict is None:
-				harry_args.append(None)
+				self.harry_args.append(None)
 			else:
 				config_dict["comment"] = " ".join(sys.argv)
 				if "json_defaults" in config_dict:
@@ -84,43 +87,47 @@ class HarryPlotter(object):
 					config_dict.pop("json_defaults")
 					json_defaults_dict.update(config_dict)
 					config_dict = json_defaults_dict
-				harry_args.append("--json-defaults \"%s\"" % jsonTools.JsonDict(config_dict).toString(indent=None).replace("\"", "'"))
+				self.harry_args.append("--json-defaults \"%s\"" % jsonTools.JsonDict(config_dict).toString(indent=None).replace("\"", "'"))
 			
 			if not args_string is None:
-				if harry_args[-1] is None:
-					harry_args[-1] = args_string
+				if self.harry_args[-1] is None:
+					self.harry_args[-1] = args_string
 				else:
-					harry_args[-1] += (" "+args_string)
+					self.harry_args[-1] += (" "+args_string)
 				if config_dict is None:
-					harry_args[-1] += (" --comment " + (" ".join(sys.argv)))
+					self.harry_args[-1] += (" --comment " + (" ".join(sys.argv)))
+		
 		if not n_fast_plots is None:
-			harry_args = harry_args[:n_fast_plots]
+			self.harry_args = self.harry_args[:n_fast_plots]
+			n_plots = len(self.harry_args)
+		
+		self.harry_cores = [None]*n_plots
 		
 		# multi processing of multiple plots
 		output_filenames = []
 		failed_plots = []
-		if len(harry_args) > 1 and n_processes > 1:
-			log.info("Creating {:d} plots in {:d} processes".format(len(harry_args), min(n_processes, len(harry_args))))
-			results = tools.parallelize(pool_plot, zip([self]*len(harry_args), harry_args), n_processes, description="Plotting")
+		if (n_plots > 1) and (n_processes > 1):
+			log.info("Creating {:d} plots in {:d} processes".format(n_plots, min(n_processes, n_plots)))
+			results = tools.parallelize(pool_plot, zip([self]*n_plots, self.harry_args), n_processes, description="Plotting")
 			tmp_output_filenames, tmp_failed_plots, tmp_error_messages = zip(*([result for result in results if not result is None and result != (None,)]))
 			output_filenames = [output_filename for output_filename in tmp_output_filenames if not output_filename is None]
 			failed_plots = [(failed_plot, error_message) for failed_plot, error_message in zip(tmp_failed_plots, tmp_error_messages) if not failed_plot is None]
 		
 		# single processing of multiple plots
-		elif len(harry_args) > 1:
-			log.info("Creating {:d} plots".format(len(harry_args)))
-			for harry_args in harry_args:
+		elif n_plots > 1:
+			log.info("Creating {:d} plots".format(n_plots))
+			for plot_index in xrange(n_plots):
 				try:
-					output_filenames.append(self.plot(harry_args))
+					output_filenames.append(self.plot(plot_index))
 				except SystemExit as e:
-					failed_plots.append((harry_args, None))
+					failed_plots.append((self.harry_args[plot_index], None))
 				except Exception as e:
 					log.info(str(e))
-					failed_plots.append((harry_args, None))
+					failed_plots.append((self.harry_args[plot_index], None))
 		
 		# single plot
-		elif len(harry_args) > 0:
-			output_filenames.append(self.plot(harry_args[0]))
+		elif n_plots > 0:
+			output_filenames.append(self.plot(0))
 		
 		if len(failed_plots) > 0:
 			log.error("%d failed plots:" % len(failed_plots))
