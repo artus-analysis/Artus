@@ -116,7 +116,7 @@ class HarryCore(object):
 
 		if self.args["list_available_modules"]:
 			self._print_available_modules()
-			return
+			sys.exit(0)
 		
 		# handle input modules (first)
 		if isinstance(self.args["input_modules"], basestring):
@@ -204,8 +204,6 @@ class HarryCore(object):
 		
 		# save plots
 		output_filenames = plotData.save()
-		
-		del(plotData)
 		return output_filenames
 	
 	def register_processor(self, processor):
