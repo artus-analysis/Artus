@@ -6,6 +6,8 @@ log = logging.getLogger(__name__)
 
 import hashlib
 
+import ROOT
+
 import Artus.HarryPlotter.analysisbase as analysisbase
 import Artus.HarryPlotter.utility.roottools as roottools
 import Artus.HarryPlotter.analysis_modules.scaleerrors as scaleerrors
@@ -95,10 +97,26 @@ class Ratio(analysisbase.AnalysisBase):
 				scaleerrors.ScaleErrors.scale_errors(denominator_histogram)
 			
 			# calculate ratio
-			ratio_histogram = roottools.RootTools.to_histogram(numerator_histogram)
-			successful_division = ratio_histogram.Divide(roottools.RootTools.to_histogram(denominator_histogram))
+			if isinstance(numerator_histogram, ROOT.TGraph) and isinstance(denominator_histogram, ROOT.TGraph):
+				ratio_histogram = ROOT.TGraph()
+				for point in range(0,numerator_histogram.GetN()):
+					x_value = ROOT.Double(0)
+					y_value_numerator = ROOT.Double(0)
+					numerator_histogram.GetPoint(point, x_value, y_value_numerator)
+					y_value_denominator = denominator_histogram.Eval(x_value)
+					if y_value_denominator != 0.:
+						ratio_histogram.SetPoint(point, x_value, y_value_numerator/y_value_denominator)
+						successful_division = True
+					else:
+						successful_division = False
+			else:
+				ratio_histogram = roottools.RootTools.to_histogram(numerator_histogram)
+				successful_division = ratio_histogram.Divide(roottools.RootTools.to_histogram(denominator_histogram))
 			if not successful_division:
-				log.warning("Could not successfully divide histogram(s) '{0}' by '{1}'!".format(",".join(ratio_numerator_nicks), ",".join(ratio_denominator_nicks)))
+				if isinstance(ratio_histogram, ROOT.TGraph):
+					log.warning("Could not successfully divide all points of the graphs '{0}' and '{1}'!".format(",".join(ratio_numerator_nicks), ",".join(ratio_denominator_nicks)))
+				else:
+					log.warning("Could not successfully divide histogram(s) '{0}' by '{1}'!".format(",".join(ratio_numerator_nicks), ",".join(ratio_denominator_nicks)))
 			if hasattr(ratio_histogram, "SetDirectory"):
 				ratio_histogram.SetDirectory(0)
 			ratio_histogram.SetTitle("")

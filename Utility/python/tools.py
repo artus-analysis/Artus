@@ -159,7 +159,7 @@ def get_indented_text(prefix, message, width=None):
 			)
 	return '\n'.join(['\n'.join(tmp_wrapped_texts)])
 
-def parallelize(function, arguments_list, n_processes=1):
+def parallelize(function, arguments_list, n_processes=1, description=None):
 	if n_processes <= 1:
 		results = []
 		for arguments in arguments_list:
@@ -171,7 +171,7 @@ def parallelize(function, arguments_list, n_processes=1):
 		n_tasks = len(arguments_list)
 		left = n_tasks
 		import Artus.Utility.progressiterator as pi
-		progress_iterator = pi.ProgressIterator(range(n_tasks), description = "calling " + str(function))
+		progress_iterator = pi.ProgressIterator(range(n_tasks), description=(description if description else "calling "+str(function)))
 		progress_iterator.next()
 		while (True):
 			if (results.ready()): break
