@@ -110,21 +110,16 @@ public:
 				for (typename std::vector<KGenTau>::iterator genTau = event.m_genTaus->begin(); 
 					genTau != event.m_genTaus->end(); ++genTau) 
 				{
-					// only use genTaus that will decay into comparable particles
-					if (MatchDecayMode(*genTau,tauDecayMode))
+					deltaR = static_cast<float>(ROOT::Math::VectorUtil::DeltaR((*object)->p4, genTau->visible.p4));
+					if(deltaR<(settings.*GetDeltaRMatchingRecoObjectGenTau)() && deltaR<deltaRmin)
 					{
-						deltaR = static_cast<float>(ROOT::Math::VectorUtil::DeltaR((*object)->p4, genTau->visible.p4));
-						if(deltaR<(settings.*GetDeltaRMatchingRecoObjectGenTau)() && deltaR<deltaRmin)
-						{
-							(product.*m_genTauMatchedObjects)[*object] = &(*genTau);
-							product.m_genTauMatchedLeptons[*object] = &(*genTau);
-							ratioGenTauMatched += 1.0 / objects.size();
-							product.m_genTauMatchDeltaR = deltaR;
-							deltaRmin = deltaR;
-							objectMatched = true;
-							//LOG(INFO) << this->GetProducerId() << " (event " << event.m_eventInfo->nEvent << "): " << (*object)->p4 << " --> " << genTau->visible.p4;
-						}
-						else product.m_genTauMatchDeltaR = DefaultValues::UndefinedFloat;
+						(product.*m_genTauMatchedObjects)[*object] = &(*genTau);
+						product.m_genTauMatchedLeptons[*object] = &(*genTau);
+						ratioGenTauMatched += 1.0 / objects.size();
+						product.m_genTauMatchDeltaR = deltaR;
+						deltaRmin = deltaR;
+						objectMatched = true;
+						//LOG(INFO) << this->GetProducerId() << " (event " << event.m_eventInfo->nEvent << "): " << (*object)->p4 << " --> " << genTau->visible.p4;
 					}
 					else product.m_genTauMatchDeltaR = DefaultValues::UndefinedFloat;
 				}
@@ -175,9 +170,6 @@ private:
 	bool (setting_type::*GetInvalidateGenTauMatchingObjects)(void) const;
 	bool (setting_type::*GetMatchAllObjectsGenTau)(void) const;
 	
-	std::map<size_t, std::vector<std::string> > m_objectTriggerFiltersByIndex;
-	std::map<std::string, std::vector<std::string> > m_objectTriggerFiltersByHltName;
-
 };
 
 

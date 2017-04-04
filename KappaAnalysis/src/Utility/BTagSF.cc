@@ -51,12 +51,12 @@ void BTagSF::initBtagwp(std::string btagwp)
 		reader_mujets = BTagCalibrationReader(
 				&calib,				  // calibration instance
 				BTagEntry::OP_MEDIUM, // operating point
-				"mujets",			  // measurement type
+				"comb",			  // measurement type
 				"central"			  // systematics type
 		);
 
-		reader_mujets_up = BTagCalibrationReader(&calib, BTagEntry::OP_MEDIUM, "mujets", "up");	  // sys up
-		reader_mujets_do = BTagCalibrationReader(&calib, BTagEntry::OP_MEDIUM, "mujets", "down");  // sys down
+		reader_mujets_up = BTagCalibrationReader(&calib, BTagEntry::OP_MEDIUM, "comb", "up");	  // sys up
+		reader_mujets_do = BTagCalibrationReader(&calib, BTagEntry::OP_MEDIUM, "comb", "down");  // sys down
 
 		reader_incl = BTagCalibrationReader(
 				&calib,				  // calibration instance
@@ -73,12 +73,12 @@ void BTagSF::initBtagwp(std::string btagwp)
 		reader_mujets = BTagCalibrationReader(
 				&calib,				 // calibration instance
 				BTagEntry::OP_LOOSE, // operating point
-				"mujets",			 // measurement type
+				"comb",			 // measurement type
 				"central"			 // systematics type
 		);
 
-		reader_mujets_up = BTagCalibrationReader(&calib, BTagEntry::OP_LOOSE, "mujets", "up");	 // sys up
-		reader_mujets_do = BTagCalibrationReader(&calib, BTagEntry::OP_LOOSE, "mujets", "down");  // sys down
+		reader_mujets_up = BTagCalibrationReader(&calib, BTagEntry::OP_LOOSE, "comb", "up");	 // sys up
+		reader_mujets_do = BTagCalibrationReader(&calib, BTagEntry::OP_LOOSE, "comb", "down");  // sys down
 
 		reader_incl = BTagCalibrationReader(
 				&calib,				 // calibration instance
@@ -95,12 +95,12 @@ void BTagSF::initBtagwp(std::string btagwp)
 		reader_mujets = BTagCalibrationReader(
 				&calib,				 // calibration instance
 				BTagEntry::OP_TIGHT, // operating point
-				"mujets",			 // measurement type
+				"comb",			 // measurement type
 				"central"			 // systematics type
 		);
 
-		reader_mujets_up = BTagCalibrationReader(&calib, BTagEntry::OP_TIGHT, "mujets", "up");	 // sys up
-		reader_mujets_do = BTagCalibrationReader(&calib, BTagEntry::OP_TIGHT, "mujets", "down");  // sys down
+		reader_mujets_up = BTagCalibrationReader(&calib, BTagEntry::OP_TIGHT, "comb", "up");	 // sys up
+		reader_mujets_do = BTagCalibrationReader(&calib, BTagEntry::OP_TIGHT, "comb", "down");  // sys down
 
 		reader_incl = BTagCalibrationReader(
 				&calib,				 // calibration instance
@@ -199,7 +199,7 @@ double BTagSF::getSFb(double pt, float eta, unsigned int btagsys, int year) cons
 	if(year == 2015 || year == 2016){
 
 		float MaxBJetPt = 670.;
-		float MinBJetPt = 30.;
+		float MinBJetPt = 20.;
 		bool DoubleUncertainty = false;
 
 		if ((pt > MaxBJetPt) || (pt < MinBJetPt))
@@ -318,7 +318,7 @@ double BTagSF::getSFc(double pt, float eta, unsigned int btagsys, int year) cons
 	if(year == 2015 || year == 2016){
 
 	float MaxBJetPt = 670.;
-	float MinBJetPt = 30.;
+	float MinBJetPt = 20.;
 	bool DoubleUncertainty = false;
 
 	if ((pt > MaxBJetPt) || (pt < MinBJetPt))

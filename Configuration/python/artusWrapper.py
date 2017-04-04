@@ -154,7 +154,7 @@ class ArtusWrapper(object):
 				main_key = ""
 				for key in dbs.keys():
 					#pdb.set_trace()
-					if key in files[0]:
+					if re.search("kappa_%s_[0-9]+.root"%key, files[0]):
 						main_key = key
 						break
 				for sfile in files:

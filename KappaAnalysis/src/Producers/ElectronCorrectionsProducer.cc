@@ -37,7 +37,7 @@ void ElectronCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct&
 		if (settings.GetCorrectOnlyRealElectrons())
 		{
 			KappaEnumTypes::GenMatchingCode genMatchingCode = KappaEnumTypes::GenMatchingCode::NONE;
-			KGenParticle* genParticle = GeneratorInfo::GetGenMatchedParticle(const_cast<KLepton*>(product.m_originalLeptons[electron->get()]), product.m_genParticleMatchedLeptons, product.m_genTauMatchedTaus);
+			KGenParticle* genParticle = GeneratorInfo::GetGenMatchedParticle(const_cast<KLepton*>(product.m_originalLeptons[electron->get()]), product.m_genParticleMatchedLeptons, product.m_genTauMatchedLeptons);
 			if (genParticle)
 			{
 				genMatchingCode = GeneratorInfo::GetGenMatchingCode(genParticle);

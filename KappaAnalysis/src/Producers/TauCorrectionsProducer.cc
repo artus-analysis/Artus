@@ -38,7 +38,7 @@ void TauCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& prod
 		if (settings.GetCorrectOnlyRealTaus())
 		{
 			KappaEnumTypes::GenMatchingCode genMatchingCode = KappaEnumTypes::GenMatchingCode::NONE;
-			KGenParticle* genParticle = GeneratorInfo::GetGenMatchedParticle(const_cast<KLepton*>(product.m_originalLeptons[tau->get()]), product.m_genParticleMatchedLeptons, product.m_genTauMatchedTaus);
+			KGenParticle* genParticle = GeneratorInfo::GetGenMatchedParticle(const_cast<KLepton*>(product.m_originalLeptons[tau->get()]), product.m_genParticleMatchedLeptons, product.m_genTauMatchedLeptons);
 			if (genParticle)
 			{
 				genMatchingCode = GeneratorInfo::GetGenMatchingCode(genParticle);

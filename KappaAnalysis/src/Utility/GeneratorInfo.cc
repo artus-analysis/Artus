@@ -52,31 +52,24 @@ RMFLV* GeneratorInfo::GetVisibleLV(KGenParticle* genParticle)
 KGenParticle* GeneratorInfo::GetGenMatchedParticle(
 		KLepton* lepton,
 		std::map<KLepton*, KGenParticle*> const& leptonGenParticleMap,
-		std::map<KTau*, KGenTau*> const& tauGenTauMap
+		std::map<KLepton*, KGenTau*> const& tauGenTauMap
 )
 {
 	KGenParticle* defaultGenParticle = nullptr;
 	KGenParticle* genParticle = SafeMap::GetWithDefault(leptonGenParticleMap, lepton, defaultGenParticle);
 	
-	if (lepton->flavour() == KLeptonFlavour::TAU)
+	KGenTau* defaultGenTau = nullptr;
+	KGenTau* genTau = SafeMap::GetWithDefault(tauGenTauMap, lepton, defaultGenTau);
+	
+	float deltaRTauGenTau = (genTau ? ROOT::Math::VectorUtil::DeltaR(lepton->p4, genTau->visible.p4) : std::numeric_limits<float>::max());
+	float deltaRTauGenParticle = (genParticle ? ROOT::Math::VectorUtil::DeltaR(lepton->p4, genParticle->p4) : std::numeric_limits<float>::max());
+	
+	if (deltaRTauGenParticle <= deltaRTauGenTau)
 	{
-		KGenTau* defaultGenTau = nullptr;
-		KGenTau* genTau = SafeMap::GetWithDefault(tauGenTauMap, static_cast<KTau*>(lepton), defaultGenTau);
-		
-		float deltaRTauGenTau = (genTau ? ROOT::Math::VectorUtil::DeltaR(lepton->p4, genTau->visible.p4) : std::numeric_limits<float>::max());
-		float deltaRTauGenParticle = (genParticle ? ROOT::Math::VectorUtil::DeltaR(lepton->p4, genParticle->p4) : std::numeric_limits<float>::max());
-		
-		if (deltaRTauGenParticle < deltaRTauGenTau)
-		{
-			return genParticle;
-		}
-		else
-		{
-			return genTau;
-		}
+		return genParticle;
 	}
 	else
 	{
-		return genParticle;
+		return genTau;
 	}
 }
