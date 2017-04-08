@@ -2,6 +2,8 @@
 #pragma once
 
 #include <cassert>
+#include <chrono>
+#include <future>
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 #include "Kappa/DataFormats/interface/KDebug.h"
@@ -17,6 +19,7 @@
    purely virtual function that needs to be implemented by any derived class. This function needs
    to be called after the derived EventProvider is instantiated in the main executable.
 */
+
 
 template<class TTypes>
 class KappaEventProviderBase: public EventProviderBase<TTypes> {
@@ -49,8 +52,20 @@ public:
 
 		if (!m_mon->Update())
 			return false;
-
-		long resultGetEntry = m_fi.eventdata.GetEntry(lEvent);
+		
+		// lood entries asynchronously and exit the program, if looding the entry takes unreasonably long (dCache, ...)
+		TTree* eventdata = &(m_fi.eventdata);
+		std::future<long> futureGetEntry = std::async(std::launch::async, [eventdata, lEvent] () -> long
+		{
+			return eventdata->GetEntry(lEvent);
+		});
+		std::chrono::seconds timeout(60);
+		if (futureGetEntry.wait_for(timeout) != std::future_status::ready)
+		{
+			LOG(FATAL) << "Timeout: Could not read entry from Events tree!";
+		}
+		long resultGetEntry = futureGetEntry.get();
+		
 		m_event.m_input = m_fi.eventdata.GetTreeNumber();
 
 		if (m_prevTree != m_fi.eventdata.GetTreeNumber())
@@ -70,7 +85,18 @@ public:
 
 		if ( m_prevLumi != m_event.m_eventInfo->nLumi ) {
 			m_prevLumi = m_event.m_eventInfo->nLumi;
-			m_fi.GetMetaEntry();
+			
+			// lood entries asynchronously and exit the program, if looding the entry takes unreasonably long (dCache, ...)
+			FileInterface2* fi = &m_fi;
+			std::future<void> futureGetMetaEntry = std::async(std::launch::async, [fi] ()
+			{
+				fi->GetMetaEntry();
+			});
+			if (futureGetMetaEntry.wait_for(timeout) != std::future_status::ready)
+			{
+				LOG(FATAL) << "Timeout: Could not read entry from Lumis tree!";
+			}
+			
 			m_newLumisection = true;
 		}
 		else
