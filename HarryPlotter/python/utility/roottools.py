@@ -9,6 +9,7 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import array
+import copy
 import collections
 import glob
 import hashlib
@@ -374,12 +375,17 @@ class RootTools(object):
 				log.critical("Plotting of compliled proxy formulas not yet implemented for the case where no binning is specified!")
 				sys.exit(1)
 			else:
-				draw_option = option.replace("TGraphAsymmErrorsX", "").replace("TGraphAsymmErrorsY", "").replace("TGraphErrors", "").replace("TGraph", "")
+				draw_option = copy.deepcopy(option)
+				special_options = ["TGraph2D", "TGraphAsymmErrorsX", "TGraphAsymmErrorsY", "TGraphErrors", "TGraph"]
+				for special_option in special_options:
+					draw_option = draw_option.replace(special_option, "")
 			
 				log.debug("ROOT.TTree.Draw(\"" + variable_expression + ">>" + name + binning + "\", \"" + str(weight_selection) + "\", \"" + draw_option + " GOFF\")")
 				tree.Draw(variable_expression + ">>" + name + binning, str(weight_selection), draw_option + " GOFF")
-			
-				if "TGraphAsymmErrors" in option:
+				
+				if "TGraph2D" in option:
+					root_histogram = ROOT.TGraph2D(tree.GetSelectedRows(), tree.GetV3(), tree.GetV2(), tree.GetV1())
+				elif "TGraphAsymmErrors" in option:
 					n_points = tree.GetSelectedRows()
 					x_values = tree.GetV2() if "TGraphAsymmErrorsX" in option else tree.GetV4()
 					y_values = tree.GetV1()
