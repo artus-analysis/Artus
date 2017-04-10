@@ -8,6 +8,8 @@ import hashlib
 
 import ROOT
 
+from math import sqrt, pow
+
 import Artus.HarryPlotter.analysisbase as analysisbase
 import Artus.HarryPlotter.utility.roottools as roottools
 import Artus.HarryPlotter.analysis_modules.scaleerrors as scaleerrors
@@ -98,7 +100,12 @@ class Ratio(analysisbase.AnalysisBase):
 			
 			# calculate ratio
 			if isinstance(numerator_histogram, ROOT.TGraph) and isinstance(denominator_histogram, ROOT.TGraph):
-				ratio_histogram = ROOT.TGraph()
+				if isinstance(numerator_histogram, ROOT.TGraphAsymmErrors) and isinstance(denominator_histogram, ROOT.TGraphAsymmErrors):
+					ratio_histogram = ROOT.TGraphAsymmErrors()
+				elif isinstance(numerator_histogram, ROOT.TGraphErrors) and isinstance(denominator_histogram, ROOT.TGraphErrors):
+					ratio_histogram = ROOT.TGraphErrors()
+				else:
+					ratio_histogram = ROOT.TGraph()
 				for point in range(0,numerator_histogram.GetN()):
 					x_value = ROOT.Double(0)
 					y_value_numerator = ROOT.Double(0)
@@ -106,6 +113,25 @@ class Ratio(analysisbase.AnalysisBase):
 					y_value_denominator = denominator_histogram.Eval(x_value)
 					if y_value_denominator != 0.:
 						ratio_histogram.SetPoint(point, x_value, y_value_numerator/y_value_denominator)
+						if isinstance(ratio_histogram, ROOT.TGraphAsymmErrors):
+							x_err_high = numerator_histogram.GetErrorXhigh(point)
+							x_err_low = numerator_histogram.GetErrorXlow(point)
+							y_err_high_numerator = numerator_histogram.GetErrorYhigh(point)
+							y_err_high_denominator = denominator_histogram.GetErrorYhigh(point)
+							y_err_low_numerator = numerator_histogram.GetErrorYlow(point)
+							y_err_low_denominator = denominator_histogram.GetErrorYlow(point)
+							y_err_high_ratio = sqrt(pow(y_err_high_numerator/y_value_denominator,2) + pow(x_value*y_err_high_denominator,2)/pow(y_value_denominator,4))
+							y_err_low_ratio = sqrt(pow(y_err_low_numerator/y_value_denominator,2) + pow(x_value*y_err_low_denominator,2)/pow(y_value_denominator,4))
+							ratio_histogram.SetPointEXhigh(point, x_err_high)
+							ratio_histogram.SetPointEXlow(point, x_err_low)
+							ratio_histogram.SetPointEYhigh(point, y_err_high_ratio)
+							ratio_histogram.SetPointEYlow(point, y_err_low_ratio)
+						elif isinstance(ratio_histogram, ROOT.TGraphErrors()):
+							x_err = numerator_histogram.GetErrorX(point)
+							y_err_numerator = numerator_histogram.GetErrorY(point)
+							y_err_denominator = denominator_histogram.GetErrorY(point)
+							y_err_ratio = sqrt(pow(y_err_numerator/y_value_denominator,2) + pow(x_value*y_err_denominator,2)/pow(y_value_denominator,4))
+							ratio_histogram.SetPointError(point, x_err, y_err_ratio)
 						successful_division = True
 					else:
 						successful_division = False
