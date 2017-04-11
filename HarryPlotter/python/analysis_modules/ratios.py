@@ -106,6 +106,7 @@ class Ratio(analysisbase.AnalysisBase):
 					ratio_histogram = ROOT.TGraphErrors()
 				else:
 					ratio_histogram = ROOT.TGraph()
+				successful_division = True
 				for point in range(0,numerator_histogram.GetN()):
 					x_value = ROOT.Double(0)
 					y_value_numerator = ROOT.Double(0)
@@ -132,7 +133,6 @@ class Ratio(analysisbase.AnalysisBase):
 							y_err_denominator = denominator_histogram.GetErrorY(point)
 							y_err_ratio = sqrt(pow(y_err_numerator/y_value_denominator,2) + pow(x_value*y_err_denominator,2)/pow(y_value_denominator,4))
 							ratio_histogram.SetPointError(point, x_err, y_err_ratio)
-						successful_division = True
 					else:
 						successful_division = False
 			else:
