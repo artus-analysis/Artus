@@ -137,6 +137,8 @@ class PlotRoot(plotbase.PlotBase):
 		                               help="Make a CMS publication plot (CMS outside frame). See https://ghm.web.cern.ch/ghm/plots/.")
 		self.formatting_options.add_argument("--year", type=str, nargs="?", default="",
 											help="Year of data taking is written in front of integrated luminosity.")
+		self.formatting_options.add_argument("--set-paint-text-format", type=str, nargs="?", default=None,
+											help="Set the number of digits that are printed when using the draw option TEXT. [Default: ROOT default]")
 		
 	def prepare_args(self, parser, plotData):
 		super(PlotRoot, self).prepare_args(parser, plotData)
@@ -228,6 +230,9 @@ class PlotRoot(plotbase.PlotBase):
 		
 		tdrstyle.setTDRStyle()
 		defaultrootstyle.set_default_root_style()
+		
+		if plotData.plotdict["set_paint_text_format"] != None:
+			ROOT.gStyle.SetPaintTextFormat(plotData.plotdict["set_paint_text_format"])
 		
 		# load custom painter (fixes for horizontal histograms)
 		roottools.RootTools.load_compile_macro(os.path.expandvars("$ARTUSPATH/HarryPlotter/python/utility/customhistogrampainter.C"))
