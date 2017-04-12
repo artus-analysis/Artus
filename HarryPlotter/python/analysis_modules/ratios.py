@@ -127,7 +127,7 @@ class Ratio(analysisbase.AnalysisBase):
 							ratio_histogram.SetPointEXlow(point, x_err_low)
 							ratio_histogram.SetPointEYhigh(point, y_err_high_ratio)
 							ratio_histogram.SetPointEYlow(point, y_err_low_ratio)
-						elif isinstance(ratio_histogram, ROOT.TGraphErrors()):
+						elif isinstance(ratio_histogram, ROOT.TGraphErrors):
 							x_err = numerator_histogram.GetErrorX(point)
 							y_err_numerator = numerator_histogram.GetErrorY(point)
 							y_err_denominator = denominator_histogram.GetErrorY(point)
