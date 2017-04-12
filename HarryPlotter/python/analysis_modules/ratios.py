@@ -121,8 +121,8 @@ class Ratio(analysisbase.AnalysisBase):
 							y_err_high_denominator = denominator_histogram.GetErrorYhigh(point)
 							y_err_low_numerator = numerator_histogram.GetErrorYlow(point)
 							y_err_low_denominator = denominator_histogram.GetErrorYlow(point)
-							y_err_high_ratio = sqrt(pow(y_err_high_numerator/y_value_denominator,2) + pow(x_value*y_err_high_denominator,2)/pow(y_value_denominator,4))
-							y_err_low_ratio = sqrt(pow(y_err_low_numerator/y_value_denominator,2) + pow(x_value*y_err_low_denominator,2)/pow(y_value_denominator,4))
+							y_err_high_ratio = sqrt(pow(y_err_high_numerator/y_value_denominator,2) + pow(y_value_numerator*y_err_high_denominator,2)/pow(y_value_denominator,4))
+							y_err_low_ratio = sqrt(pow(y_err_low_numerator/y_value_denominator,2) + pow(y_value_numerator*y_err_low_denominator,2)/pow(y_value_denominator,4))
 							ratio_histogram.SetPointEXhigh(point, x_err_high)
 							ratio_histogram.SetPointEXlow(point, x_err_low)
 							ratio_histogram.SetPointEYhigh(point, y_err_high_ratio)
@@ -131,7 +131,7 @@ class Ratio(analysisbase.AnalysisBase):
 							x_err = numerator_histogram.GetErrorX(point)
 							y_err_numerator = numerator_histogram.GetErrorY(point)
 							y_err_denominator = denominator_histogram.GetErrorY(point)
-							y_err_ratio = sqrt(pow(y_err_numerator/y_value_denominator,2) + pow(x_value*y_err_denominator,2)/pow(y_value_denominator,4))
+							y_err_ratio = sqrt(pow(y_err_numerator/y_value_denominator,2) + pow(y_value_numerator*y_err_denominator,2)/pow(y_value_denominator,4))
 							ratio_histogram.SetPointError(point, x_err, y_err_ratio)
 					else:
 						successful_division = False
