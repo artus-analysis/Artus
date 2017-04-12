@@ -11,6 +11,7 @@ import json
 import os
 import pprint
 import sys
+import tempfile
 
 import ROOT
 ROOT.gROOT.SetBatch(True)
@@ -132,6 +133,11 @@ class JsonDict(dict):
 	def doExpandvars(self):
 		""" expands environment variables in dictionary values """
 		return JsonDict(JsonDict.deepexpandvars(self))
+
+	def doReplaceFilesByLocalCopies(self, tmp_directory, remote_identifiers=None):
+		""" download remote files in dictionary values first and point to this copies in the dictionary """
+		remote_identifiers = ["dcap", "root"]
+		return JsonDict(JsonDict.deepreplaceremotefiles(self, tmp_directory, remote_identifiers))
 
 	def __str__(self):
 		""" converts JSON dict to a string """
@@ -338,6 +344,41 @@ class JsonDict(dict):
 				result.append(JsonDict.deepexpandvars(item))
 		elif isinstance(jsonDict, basestring):
 			result = os.path.expandvars(jsonDict)
+		else:
+			result = jsonDict
+		return result
+
+	@staticmethod
+	def deepreplaceremotefiles(jsonDict, tmp_directory, remote_identifiers=None):
+		""" download remote files in dictionary values first and point to this copies in the dictionary """
+		remote_identifiers = ["dcap", "root"]
+		
+		if not os.path.exists(tmp_directory):
+			os.makedirs(tmp_directory)
+		
+		result = None
+		if isinstance(jsonDict, dict):
+			result = JsonDict()
+			for key, value in jsonDict.items():
+				result[key] = JsonDict.deepreplaceremotefiles(value, tmp_directory, remote_identifiers)
+		elif isinstance(jsonDict, collections.Iterable) and not isinstance(jsonDict, basestring):
+			result = []
+			for item in jsonDict:
+				result.append(JsonDict.deepreplaceremotefiles(item, tmp_directory, remote_identifiers))
+		elif isinstance(jsonDict, basestring):
+			if any([jsonDict.startswith(remote_identifier) for remote_identifier in remote_identifiers]):
+				prefix, suffix = os.path.splitext(os.path.basename(jsonDict))
+				result = tempfile.mktemp(prefix=prefix+"_", suffix=suffix, dir=tmp_directory)
+				copy_command = "gfal-copy --force {remote} file://{local}".format(remote=jsonDict, local=result)
+				log.debug(copy_command)
+				try:
+					exitCode = logger.subprocessCall(copy_command.split())
+					if exitCode != 0:
+						result = jsonDict
+				except:
+					result = jsonDict
+			else:
+				result = jsonDict
 		else:
 			result = jsonDict
 		return result
