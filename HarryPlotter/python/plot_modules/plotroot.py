@@ -109,7 +109,7 @@ class PlotRoot(plotbase.PlotBase):
 		
 		self.formatting_options.add_argument("-C", "--colors", type=str, nargs="+",
 		                                     help="Colors for the plots. For each plot up to two colors (whitespace separated) can be specified, the first for lines and markers and the second for filled areas.")
-		self.formatting_options.add_argument("--colormap", nargs="?", type="bool", default=False, const=True,
+		self.formatting_options.add_argument("--colormap", nargs="+", type="bool", default=[False],
 		                                     help="Use colormap as defined by multiple colors (whitespace separated) in --colors). [Default: %(default)s]")
 		self.formatting_options.add_argument("--x-grid", nargs="?", type="bool", default=False, const=True,
 		                                     help="Place an x-axes grid on the plot. [Default: %(default)s]")
@@ -596,18 +596,19 @@ class PlotRoot(plotbase.PlotBase):
 			for line_graph in self.subplot_line_graphs:
 				line_graph.Draw("L SAME")
 		
-		for nick, subplot, marker, colors in zip(
+		for nick, subplot, marker, colors, colormap in zip(
 				plotData.plotdict["nicks"],
 				plotData.plotdict["subplots"],
 				plotData.plotdict["markers"],
-				plotData.plotdict["colors"]
+				plotData.plotdict["colors"],
+				plotData.plotdict["colormap"]
 		):
 			# select pad to plot on
 			pad = plotData.plot.subplot_pad if subplot else plotData.plot.plot_pad
 			pad.cd()
 			
 			# set color map
-			if plotData.plotdict["colormap"]:
+			if colormap:
 				if len(set(colors)) == 1:
 					ROOT.gStyle.SetPalette(colors[0])
 				else:
