@@ -11,6 +11,7 @@ import sys
 import tempfile
 import hashlib
 import json
+import shutil
 import subprocess
 import re
 from string import Template
@@ -104,7 +105,10 @@ class ArtusWrapper(object):
 			exitCode = self.sendToBatchSystem()
 		elif not self._args.no_run:
 			exitCode = self.callExecutable()
-
+		
+		if (not self.tmp_directory_remote_files is None):
+			shutil.rmtree(self.tmp_directory_remote_files)
+		
 		if exitCode < 256:
 			return exitCode
 		else:
@@ -168,6 +172,7 @@ class ArtusWrapper(object):
 			length += len(item)
 		log.info("Final dbs consists of %i files" %length)
 		return dbs
+	
 	def setInputFilenames(self, filelist, alreadyInGridControl = False):
 		if (not (isinstance(self._config["InputFiles"], list)) and not isinstance(self._config["InputFiles"], basestring)):
 			self._config["InputFiles"] = []
@@ -306,6 +311,9 @@ class ArtusWrapper(object):
 		if not self._args.n_events is None:
 			self._config["ProcessNEvents"] = self._args.n_events
 
+		# shrink Input Files to requested Number
+		self.removeUnwantedInputFiles()
+
 		if self._args.output_file:
 			self.setOutputFilename(self._args.output_file)
 
@@ -331,10 +339,8 @@ class ArtusWrapper(object):
 		# merge resulting pipeline config into the main config
 		self._config += (pipelineBaseJsonDict + pipelineJsonDict)
 
-		# shrink Input Files to requested Number
-		self.removeUnwantedInputFiles()
-
 		# treat includes, nicks and comments
+		self.tmp_directory_remote_files = None
 		if self._args.batch:
 			self._config = self._config.doIncludes().doComments()
 			self._config["BatchMode"] = True
@@ -352,6 +358,10 @@ class ArtusWrapper(object):
 		# treat environment variables
 		if self._args.envvar_expansion:
 			self._config = self._config.doExpandvars()
+		
+		# treat remote files
+		if self._args.copy_remote_files:
+			self.useLocalCopiesOfRemoteFiles()
 
 		# set log level
 		self._config["LogLevel"] = self._args.log_level
@@ -374,11 +384,16 @@ class ArtusWrapper(object):
 			nickname = self._args.nick
 		return nickname
 
-
 	def replaceLines(self, inputList, replacingDict):
 		for line in range(len(inputList)):
 			inputList[line] = Template(inputList[line]).safe_substitute(replacingDict)
 
+	def useLocalCopiesOfRemoteFiles(self, remote_identifiers=None):
+		if remote_identifiers is None:
+			remote_identifiers = ["dcap", "root"]
+		
+		self.tmp_directory_remote_files = tempfile.mkdtemp(prefix="artus_remote_files_")
+		self._config = self._config.doReplaceFilesByLocalCopies(self.tmp_directory_remote_files, remote_identifiers)
 
 	def _initArgumentParser(self, userArgParsers=None):
 
@@ -436,6 +451,8 @@ class ArtusWrapper(object):
 		runningOptionsGroup = self._parser.add_argument_group("Running options")
 		runningOptionsGroup.add_argument("--no-run", default=False, action="store_true",
 		                                 help="Exit before running Artus to only check the configs.")
+		runningOptionsGroup.add_argument("--copy-remote-files", default=False, action="store_true",
+		                                 help="Copy remote files first to avoid too many open connections.")
 		runningOptionsGroup.add_argument("--ld-library-paths", nargs="+",
 		                                 help="Add paths to environment variable LD_LIBRARY_PATH.")
 		runningOptionsGroup.add_argument("--profile", default="",
@@ -499,7 +516,7 @@ class ArtusWrapper(object):
 		epilogArguments += r"--print-envvars ROOTSYS CMSSW_BASE DATASETNICK FILE_NAMES LD_LIBRARY_PATH "
 		epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
 		epilogArguments += "--nick $DATASETNICK "
-		epilogArguments += "-i $FILE_NAMES "
+		epilogArguments += "-i $FILE_NAMES --copy-remote-files"
 		if not self._args.ld_library_paths is None:
 			epilogArguments += ("--ld-library-paths %s" % " ".join(self._args.ld_library_paths))
 
