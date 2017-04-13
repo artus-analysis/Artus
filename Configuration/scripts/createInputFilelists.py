@@ -97,8 +97,8 @@ def main():
 			filelists = os.path.join(args.output_dir, "%s_sample_%s_%s.txt" % ("%s", nick, "%s"))
 			dcache_settings = {
 				#"NAF" : ["", None],
-				"DCAP" : ["dcap://dcache-cms-dcap.desy.de/", None],
-				#"XROOTD" : ["root://cms-xrd-global.cern.ch/", "/pnfs/desy.de/cms/tier2"],
+				#"DCAP" : ["dcap://dcache-cms-dcap.desy.de/", None],
+				"XROOTD" : ["root://cms-xrd-global.cern.ch/", "/pnfs/desy.de/cms/tier2"],
 			}
 			for name, settings in dcache_settings.items():
 				create_filelist(
