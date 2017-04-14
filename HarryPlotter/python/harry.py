@@ -36,9 +36,9 @@ def pool_plot(args):
 	try:
 		return (args[0].plot(*args[1:]), None, None)
 	except SystemExit as e:
-		return (None, args[1:], None)
+		return (None, args[0].harry_args[args[1]], None)
 	except Exception as e:
-		return (None, args[1:], traceback.format_exc())
+		return (None, args[0].harry_args[args[1]], traceback.format_exc())
 
 
 class HarryPlotter(object):
