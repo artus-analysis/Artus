@@ -314,13 +314,13 @@ class RootTools(object):
 		tree.SetCacheSize(256*1024*1024) # 256 MB
 		tree.AddBranchToCache("*", True)
 		
-		tree.SetName(str(hashlib.md5("".join(root_file_names))))
+		tree.SetName(hashlib.md5("".join(root_file_names)).hexdigest())
 		
 		# treat functions/macros that need to be compiled before drawing
 		tmp_proxy_files = []
 		proxy_call = None
 		if "proxy" in option:
-			proxy_name = re.sub("[^a-zA-Z0-9]", "_", variable_expression+"__"+str(weight_selection))
+			proxy_name = hashlib.md5(variable_expression+"__"+str(weight_selection)).hexdigest()
 			
 			proxy_class_name = "proxy_class_"+proxy_name
 			proxy_macro_name = "proxy_macro_"+proxy_name
@@ -419,9 +419,13 @@ class RootTools(object):
 			sys.exit(1)
 		
 		# delete possible files from tree proxy
+		if log.isEnabledFor(logging.DEBUG):
+			log.warning("Delete proxy files manually:")
 		for tmp_proxy_file in tmp_proxy_files:
 			for tmp_file in glob.glob(os.path.splitext(tmp_proxy_file)[0]+"*"):
-				os.remove(tmp_file)
+				log.debug("rm " + tmp_file)
+				if not log.isEnabledFor(logging.DEBUG):
+					os.remove(tmp_file)
 		
 		if isinstance(root_histogram, ROOT.TH1):
 			root_histogram.SetDirectory(0)
