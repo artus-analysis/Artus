@@ -441,14 +441,16 @@ public:
 // https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
 //			return CutBasedID(electron, event, 0.004f, 0.03f, 0.01f, 0.12f, 0.02f, 0.1f, 0.05f, 0.18f, 0);
 // https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Spring15_selection_25ns
-			return CutBasedID(electron, event, 0.00926f, 0.0336f, 0.0101f, 0.0597f, 0.0111f, 0.0466f, 0.012f, 0.0354f, 2);
+//			return CutBasedID(electron, event, 0.00926f, 0.0336f, 0.0101f, 0.0597f, 0.0111f, 0.0466f, 0.012f, 0.0354f, 2); // Spring15,25ns
+			return CutBasedID(electron, event, 0.00308f, 0.0816f, 0.00998f, 0.0414f, 0.05f, 0.10f, 0.0129f, 0.0588f, 1); // Spring16
 		}
 		else
 		{
 // https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Endcap_Cuts_1_479_eta_superclust
 //			return CutBasedID(electron, event, 0.005f, 0.02f, 0.03f, 0.1f, 0.02f, 0.1f, 0.05f, 0.18f, 0);
 // https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Spring15_selection_25ns
-			return CutBasedID(electron, event, 0.00724f, 0.0918f, 0.0279f, 0.0615f, 0.0351f, 0.417f, 0.0615f, 0.0646f, 1);
+//			return CutBasedID(electron, event, 0.00724f, 0.0918f, 0.0279f, 0.0615f, 0.0351f, 0.417f, 0.0615f, 0.0646f, 1); // Sprng15,25ns
+			return CutBasedID(electron, event, 0.00605f, 0.0394f, 0.0292f, 0.0641f, 0.1f, 0.2f, 0.0129f, 0.0571f, 1); // Spring16
 		}
 		return false;
 	}
