@@ -118,10 +118,11 @@ public:
 			++jetIndex;
 		}
 		
-		// apply jet energy corrections and uncertainty shift
+		// apply jet energy corrections and uncertainty shift (if uncertainties are not to be splitted into individual contributions)
+		float shift = settings.GetJetEnergyCorrectionSplitUncertainty() ? 0.0 : settings.GetJetEnergyCorrectionUncertaintyShift();
 		correctJets(&correctJetsForJecTools, factorizedJetCorrector, jetCorrectionUncertainty,
 		            event.m_pileupDensity->rho, event.m_vertexSummary->nVertices, -1,
-		            settings.GetJetEnergyCorrectionUncertaintyShift());
+		            shift);
 		
 		// create the shared pointers to store in the product
 		(product.*m_correctedJetsMember).clear();
