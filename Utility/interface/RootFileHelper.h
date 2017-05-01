@@ -3,6 +3,7 @@
 
 #include <iostream>
 
+#include <TObject.h>
 #include <TH1D.h>
 #include <TH2D.h>
 #include <TProfile.h>
@@ -253,5 +254,7 @@ public:
 			std::string m_sCaption, int m_iBinXCount, double m_dBinXLower,
 			double m_dBinXUpper, int m_iBinYCount, double m_dBinYLower,
 			double m_dBinYUpper);
+	
+	static void WriteRootObject(TDirectory* directory, TObject* object, std::string path);
 
 };

@@ -3,6 +3,8 @@
 
 #include <cassert>
 
+#include <boost/algorithm/string.hpp>
+
 
 void RootFileHelper::SafeCd(TDirectory * pDir, std::string const& dirName) {
 	assert(pDir);
@@ -50,4 +52,28 @@ TProfile2D * RootFileHelper::GetStandaloneTProfile2D(std::string m_sName,
 	return new TProfile2D(m_sName.c_str(), m_sCaption.c_str(), m_iBinXCount,
 			m_dBinXLower, m_dBinXUpper, m_iBinYCount, m_dBinYLower,
 			m_dBinYUpper);
+}
+
+void RootFileHelper::WriteRootObject(TDirectory* directory, TObject* object, std::string path)
+{
+	std::vector<std::string> subDirectories;
+	boost::split(subDirectories, path, boost::is_any_of("/"));
+	TDirectory* tmpDirectory = directory;
+	for (std::vector<std::string>::iterator subDirectory = subDirectories.begin(); subDirectory != subDirectories.end(); ++subDirectory)
+	{
+		tmpDirectory->cd();
+		if (subDirectory == subDirectories.end() - 1)
+		{
+			object->Write(subDirectory->c_str(), TObject::kWriteDelete);
+		}
+		else
+		{
+			if (! tmpDirectory->Get(subDirectory->c_str()))
+			{
+				tmpDirectory->mkdir(subDirectory->c_str());
+			}
+			tmpDirectory = static_cast<TDirectory*>(tmpDirectory->Get(subDirectory->c_str()));
+		}
+	}
+	directory->cd();
 }
