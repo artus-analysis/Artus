@@ -20,3 +20,34 @@ KappaEnumTypes::DiLeptonDecayMode KappaEnumTypes::ToDiLeptonDecayMode(std::strin
 	return KappaEnumTypes::DiLeptonDecayMode::NONE;
 }
 
+KappaEnumTypes::ValidJetsInput KappaEnumTypes::ToValidJetsInput(std::string const& validJetsInput)
+{
+	if (validJetsInput == "uncorrected") return KappaEnumTypes::ValidJetsInput::UNCORRECTED;
+	else if (validJetsInput == "corrected") return KappaEnumTypes::ValidJetsInput::CORRECTED;
+	else return KappaEnumTypes::ValidJetsInput::AUTO;
+}
+
+KappaEnumTypes::JetIDVersion KappaEnumTypes::ToJetIDVersion(std::string const& jetIDVersion)
+{
+	if (jetIDVersion == "2010") return KappaEnumTypes::JetIDVersion::ID2010;
+	else if (jetIDVersion == "2014") return KappaEnumTypes::JetIDVersion::ID2014;
+	else if (jetIDVersion == "73x") return KappaEnumTypes::JetIDVersion::ID73X;
+	else if (jetIDVersion == "73xtemp") return KappaEnumTypes::JetIDVersion::ID73Xtemp;
+	else if (jetIDVersion == "73xnohf") return KappaEnumTypes::JetIDVersion::ID73XnoHF;
+	else if (jetIDVersion == "2015") return KappaEnumTypes::JetIDVersion::ID2015;
+	else if (jetIDVersion == "2016") return KappaEnumTypes::JetIDVersion::ID2016;
+	else LOG(FATAL) << "Jet ID version '" << jetIDVersion << "' is not available";
+	return KappaEnumTypes::JetIDVersion::ID2016;
+}
+
+KappaEnumTypes::JetID KappaEnumTypes::ToJetID(std::string const& jetID)
+{
+	if (jetID == "loose") return KappaEnumTypes::JetID::LOOSE;
+	else if (jetID == "looselepveto") return KappaEnumTypes::JetID::LOOSELEPVETO;
+	else if (jetID == "medium") return KappaEnumTypes::JetID::MEDIUM;
+	else if (jetID == "tight") return KappaEnumTypes::JetID::TIGHT;
+	else if (jetID == "tightlepveto") return KappaEnumTypes::JetID::TIGHTLEPVETO;
+	else if (jetID == "none") return KappaEnumTypes::JetID::NONE;
+	else LOG(FATAL) << "Jet ID of type '" << jetID << "' not implemented!";
+	return KappaEnumTypes::JetID::NONE;
+}

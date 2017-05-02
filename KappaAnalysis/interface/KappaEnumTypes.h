@@ -52,5 +52,37 @@ public:
 		IS_FAKE          = 6
 	};
 
+	enum class ValidJetsInput : int
+	{
+		AUTO = 0,
+		UNCORRECTED = 1,
+		CORRECTED = 2,
+	};
+	static ValidJetsInput ToValidJetsInput(std::string const& validJetsInput);
+
+	enum class JetIDVersion : int
+	{
+		ID2010 = 0,  // old run1 version (most run 1 analyses)
+		ID2014 = 1,  // new run1 version (run 1 legacy: old version + muon fraction cut)
+		             // first run 2 version identical to run 1 legacy version
+		ID73X = 3,   // new run 2 version identical to ID2014 but change in cmssw 7.3.x fraction definitions
+		ID73Xtemp = 4, // temporary recommendation for first run 2 events due to ID problems in the forward region
+		ID73XnoHF = 5, // as temp but invalidate forward jets
+		ID2015 = 6,  // new jet ID for run 2 updated on 2015-09-11
+		ID2016 = 7,  // new jet ID for 2016 updated on 2017-03-24
+	};
+	static JetIDVersion ToJetIDVersion(std::string const& jetIDVersion);
+
+	enum class JetID : int
+	{
+		NONE,
+		LOOSE,
+		LOOSELEPVETO,
+		MEDIUM,
+		TIGHT,
+		TIGHTLEPVETO
+	};
+	static JetID ToJetID(std::string const& jetID);
+
 };
 
