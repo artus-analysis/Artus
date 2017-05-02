@@ -93,7 +93,7 @@ public:
 		if (! settings.GetGenParticles().empty())
 			this->m_event.m_genParticles = this->template SecureFileInterfaceGet<KGenParticles>(settings.GetGenParticles());
 		if (! settings.GetLheParticles().empty())
-			this->m_event.m_lheParticles = this->template SecureFileInterfaceGet<KGenParticles>(settings.GetLheParticles());
+			this->m_event.m_lheParticles = this->template SecureFileInterfaceGet<KLHEParticles>(settings.GetLheParticles(), false);
 	
 		// Vertex info
 		if (! settings.GetBeamSpot().empty())
