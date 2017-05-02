@@ -19,6 +19,7 @@ from datetime import datetime
 
 import Artus.Utility.tools as tools
 import Artus.Utility.jsonTools as jsonTools
+import Artus.Utility.profile_cpp as profile_cpp
 
 
 class ArtusWrapper(object):
@@ -579,43 +580,13 @@ class ArtusWrapper(object):
 
 	def measurePerformance(self, profTool):
 		"""run Artus with profiler"""
-		exitCode = 0
-
-		# check output directory
-		outputDir = os.path.dirname(self._args.output_file)
-		if outputDir and not os.path.exists(outputDir):
-			os.makedirs(outputDir)
-
-		commands=""
-		profile_outputs=""
-		if profTool == "igprof":
-			# call C++ executable with profiler igprof
-			profile_outputs = [os.path.join(outputDir, filename) for filename in ["igprof.pp.gz", "igprof.analyse.txt", "igprof.analyse.sql3"]]
-
-			commands = [
-			"igprof -d -pp -z -o " + profile_outputs[0] + " " + self._executable + " " + self._configFilename,
-			"execute-command.sh igprof-analyse -d -v -g " + profile_outputs[0] + " > " + profile_outputs[1],
-			"execute-command.sh igprof-analyse --sqlite -d -v -g " + profile_outputs[0] + " | sqlite3 " + profile_outputs[2],
-			"igprof-navigator " + profile_outputs[2],
-			]
-		elif profTool == "valgrind":
-			# call C++ executable with profiler valgrind
-			profile_outputs = [os.path.join(outputDir, filename) for filename in ["callgrind.out.8080"]]
-
-			commands = [
-			"valgrind --tool=callgrind --callgrind-out-file=" + profile_outputs[0] + " " + self._executable + " " + self._configFilename,
-			"callgrind_annotate --auto=yes " + profile_outputs[0],
-			]
-		else:
-			log.info(profTool + "is not a valid profiler")
-
-		for command in commands:
-			log.info("Execute \"%s\"." % command)
-			logger.subprocessCall(command.split())
-
-		if profile_outputs:
-			log.info("Profiling output is written to \"%s\"." % "\", \"".join(profile_outputs))
-
+		
+		profile_cpp.profile_cpp(
+				command=self._executable+" "+self._configFilename,
+				profiler=profTool,
+				output_dir=os.path.dirname(self._args.output_file)
+		)
+		
 		return 0
 
 
