@@ -10,6 +10,7 @@ log = logging.getLogger(__name__)
 import hashlib
 import ROOT
 import math
+import numpy
 
 import Artus.HarryPlotter.analysisbase as analysisbase
 from Artus.HarryPlotter.analysis_modules.sumofhistograms import SumOfHistograms
@@ -61,6 +62,8 @@ class AverageHistograms(analysisbase.AnalysisBase):
 				result_histogram.SetBinContent(n_bin, (max(values) - min(values)) / 2)
 			elif(plotData.plotdict["averaging_method"] == "rms"):
 				result_histogram.SetBinContent(n_bin, self.mse(values))
+			elif(plotData.plotdict["averaging_method"] == "rmssum"):
+				result_histogram.SetBinContent(n_bin, (sum(numpy.array(values)**2)**0.5))
 			values = []
 		plotData.plotdict["root_objects"][plotData.plotdict["average_result_nick"]] = result_histogram
 		plotData.plotdict["nicks"].append(plotData.plotdict["average_result_nick"])
