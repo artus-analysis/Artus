@@ -135,7 +135,7 @@ class Unfolding(analysisbase.AnalysisBase):
 			unfold = unfolding_methods[method](response, hData)
 
 		if write == True:
-			unfold.SetNToys(10000)
+			unfold.SetNToys(10000000)
     			unfold.RunToy()
 
     			recotruth_cov = unfold.Ereco()
