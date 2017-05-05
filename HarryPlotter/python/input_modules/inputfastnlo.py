@@ -59,7 +59,6 @@ class InputFastNLO(inputbase.InputBase):
 				plotData.plotdict['uncertainty_type'],
 				plotData.plotdict['uncertainty_style'],
 		):
-			print 'asdf init fnlo file'
 			fnlo = fastnlo.fastNLOLHAPDF(str(filename))
 			fnlo.SetLHAPDFFilename(str(pdfset))
 			fnlo.SetLHAPDFMember(member)
