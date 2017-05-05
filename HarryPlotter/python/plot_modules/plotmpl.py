@@ -90,6 +90,8 @@ class PlotMpl(plotbase.PlotBase):
 		                                     help="Show y errors for the plots. [Default: True for first plot, False otherwise]")
 		self.formatting_options.add_argument("--edgecolors", nargs="+",
 		                                     help="Edgecolor to be passed to plot objects.")
+		self.formatting_options.add_argument("--hatch", nargs="+",
+                                                     help="Hatch of the errorband")
 		self.formatting_options.add_argument("--step", default=False, type='bool', nargs="+",
 		                                     help="Step lines according to bin edges instead of connecting points.")
 		self.formatting_options.add_argument("--zorder", type=int, nargs="+",
@@ -122,7 +124,7 @@ class PlotMpl(plotbase.PlotBase):
 
 		self.prepare_list_args(
 				plotData,
-				["nicks", "stacks", "colors", "labels", "markers", "marker_fill_styles", "line_styles", "line_widths", "x_errors", "y_errors", "step", "zorder", "edgecolors", "alphas"],
+				["nicks", "stacks", "colors", "labels", "markers", "marker_fill_styles", "line_styles", "line_widths", "x_errors", "y_errors", "step", "zorder", "edgecolors", "alphas", "hatch"],
 				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]
 		))
 
@@ -241,8 +243,7 @@ class PlotMpl(plotbase.PlotBase):
 	def make_plots(self, plotData):
 
 		zip_arguments = self.get_zip_arguments(plotData)
-
-		for nick, color, edgecolor, label, marker, marker_fill_style, x_error, y_error, line_style, line_width, step, zorder, alpha in zip(*zip_arguments):
+		for nick, color, edgecolor, label, marker, marker_fill_style, x_error, y_error, line_style, line_width, step, zorder, alpha, hatch in zip(*zip_arguments):
 			if nick in plotData.plotdict["subplot_nicks"]:
 				ax = plotData.plot.axes[1]
 			else:
@@ -255,7 +256,7 @@ class PlotMpl(plotbase.PlotBase):
 				self.mplhist = MplGraph(root_object)
 
 				if marker=='fill':
-					self.plot_tgrapherrors_envelope(self.mplhist, ax, label, color, line_style, line_width, step, zorder, alpha)
+					self.plot_tgrapherrors_envelope(self.mplhist, ax, label, color, line_style, line_width, step, zorder, alpha, hatch, edgecolor)
 				else:
 					self.plot_errorbar(self.mplhist, ax=ax,
 					               show_xerr=x_error, show_yerr=y_error,
@@ -717,7 +718,7 @@ class PlotMpl(plotbase.PlotBase):
 			cmap=cmap, linewidth=0, antialiased=True, shade=False)
 
 
-	def plot_tgrapherrors_envelope(self, mplhist, ax, label, color, line_style, line_width, step, zorder, alpha):
+	def plot_tgrapherrors_envelope(self, mplhist, ax, label, color, line_style, line_width, step, zorder, alpha, hatch, edgecolor):
 		""" Plot the envelope given by y-errors around a TGraphErrors"""
 		if step:
 			# central values:
@@ -731,7 +732,9 @@ class PlotMpl(plotbase.PlotBase):
 				color=color,
 				label=label,
 				alpha=alpha,
-				zorder=zorder
+				edgecolor = edgecolor,
+				zorder=zorder,
+				hatch = hatch,
 			)
 		else:
 			# draw a smooth curve with error band around
@@ -744,10 +747,14 @@ class PlotMpl(plotbase.PlotBase):
 				edgecolor=color,
 				interpolate=False,
 				alpha=alpha,
+				hatch=hatch,
 				zorder=zorder,
 				label=label,
 			)
-		patch_for_label = plt.Rectangle((0, 0), 0, 0, label=label, color=color, alpha=alpha, hatch=hatch)
+		if(hatch==None):
+			patch_for_label = plt.Rectangle((0, 0), 0, 0, label=label, color=color, alpha=alpha, hatch=hatch)
+		else:
+			patch_for_label = plt.Rectangle((0, 0), 0, 0, label=label, facecolor='white', edgecolor=edgecolor, alpha=alpha, hatch=hatch)
 		ax.add_patch(patch_for_label)
 
 
@@ -764,7 +771,9 @@ class PlotMpl(plotbase.PlotBase):
 		                                 plotData.plotdict["line_widths"],
 		                                 plotData.plotdict["step"],
 		                                 plotData.plotdict["zorder"],
-		                                 plotData.plotdict["alphas"])
+		                                 plotData.plotdict["alphas"],
+						 plotData.plotdict["hatch"])
+	                                   
 		return zip_arguments
 
 	@staticmethod
