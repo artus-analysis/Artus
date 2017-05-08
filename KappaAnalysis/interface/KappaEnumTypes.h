@@ -84,5 +84,12 @@ public:
 	};
 	static JetID ToJetID(std::string const& jetID);
 
+	enum class BTagScaleFactorMethod : int
+	{
+		NONE = -1,
+		PROMOTIONDEMOTION = 0,
+		OTHER = 1,
+	};
+	static BTagScaleFactorMethod ToBTagScaleFactorMethod(std::string const& bTagSFMethod);
 };
 

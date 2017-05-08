@@ -246,6 +246,7 @@ public:
 	IMPL_SETTING_DEFAULT(bool, JetEnergyCorrectionSplitUncertainty, false);
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetEnergyCorrectionSplitUncertaintyParameterNames, {});
 	IMPL_SETTING_DEFAULT(std::string, JetEnergyCorrectionSplitUncertaintyParameters, "");
+	IMPL_SETTING_DEFAULT(bool, UseJECShiftsForBJets, false);
 
 	IMPL_SETTING_DEFAULT(std::string, ValidJetsInput, "auto");
 	IMPL_SETTING(std::string, JetID);

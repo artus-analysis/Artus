@@ -51,3 +51,11 @@ KappaEnumTypes::JetID KappaEnumTypes::ToJetID(std::string const& jetID)
 	else LOG(FATAL) << "Jet ID of type '" << jetID << "' not implemented!";
 	return KappaEnumTypes::JetID::NONE;
 }
+
+KappaEnumTypes::BTagScaleFactorMethod KappaEnumTypes::ToBTagScaleFactorMethod(std::string const& bTagSFMethod)
+{
+	if (bTagSFMethod == "promotiondemotion") return KappaEnumTypes::BTagScaleFactorMethod::PROMOTIONDEMOTION;
+	else if (bTagSFMethod == "other") return KappaEnumTypes::BTagScaleFactorMethod::OTHER;
+	else return KappaEnumTypes::BTagScaleFactorMethod::NONE;
+}
+

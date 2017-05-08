@@ -3,13 +3,6 @@
 #include "Artus/Utility/interface/SafeMap.h"
 
 
-ValidBTaggedJetsProducer::BTagScaleFactorMethod ValidBTaggedJetsProducer::ToBTagScaleFactorMethod(std::string const& bTagSFMethod)
-{
-	if (bTagSFMethod == "promotiondemotion") return ValidBTaggedJetsProducer::BTagScaleFactorMethod::PROMOTIONDEMOTION;
-	else if (bTagSFMethod == "other") return ValidBTaggedJetsProducer::BTagScaleFactorMethod::OTHER;
-	else return ValidBTaggedJetsProducer::BTagScaleFactorMethod::NONE;
-}
-
 std::string ValidBTaggedJetsProducer::GetProducerId() const {
 	return "ValidBTaggedJetsProducer";
 }
@@ -27,7 +20,7 @@ void ValidBTaggedJetsProducer::Init(KappaSettings const& settings)
 		m_bTagWorkingPoints[bTagWorkingPoint.first] = bTagWorkingPoint.second.at(0);
 		if (settings.GetApplyBTagSF() && !settings.GetInputIsData())
 		{
-			m_bTagSFMethod = ToBTagScaleFactorMethod(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetBTagSFMethod())));
+			m_bTagSFMethod = KappaEnumTypes::ToBTagScaleFactorMethod(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetBTagSFMethod())));
 			m_bTagSfMap[bTagWorkingPoint.first] = bTagSFBase;
 			m_bTagSfMap[bTagWorkingPoint.first].initBtagwp(bTagWorkingPoint.first);
 		}
@@ -114,7 +107,7 @@ void ValidBTaggedJetsProducer::Produce(KappaEvent const& event, KappaProduct& pr
 			if (settings.GetApplyBTagSF() && !settings.GetInputIsData())
 			{
 				//https://twiki.cern.ch/twiki/bin/view/CMS/BTagSFMethods#2a_Jet_by_jet_updating_of_the_b
-				if (m_bTagSFMethod == BTagScaleFactorMethod::PROMOTIONDEMOTION) {
+				if (m_bTagSFMethod == KappaEnumTypes::BTagScaleFactorMethod::PROMOTIONDEMOTION) {
 				
 					int jetflavor = tjet->flavour;
 					unsigned int btagSys = BTagSF::kNo;
@@ -147,7 +140,7 @@ void ValidBTaggedJetsProducer::Produce(KappaEvent const& event, KappaProduct& pr
 						LOG_N_TIMES(20, DEBUG) << "Promoted/demoted : " << validBJet;
 				}
 				
-				else if (m_bTagSFMethod == BTagScaleFactorMethod::OTHER) {
+				else if (m_bTagSFMethod == KappaEnumTypes::BTagScaleFactorMethod::OTHER) {
 					//todo
 				}
 			}
