@@ -49,7 +49,7 @@ class ArtusWrapper(object):
 
 		# write username to the config
 		try:
-			self._config["User"] = os.environ["USER"] 
+			self._config["User"] = os.environ["USER"]
 		except:
 			import random
 			import string
@@ -101,15 +101,15 @@ class ArtusWrapper(object):
 
 		#Run Artus if desired
 		if self._args.profile:
-			exitCode = self.measurePerformance(self._args.profile)
+			exitCode = self.measurePerformance(self._args.profile,self._args.profile_options)
 		elif self._args.batch:
 			exitCode = self.sendToBatchSystem()
 		elif not self._args.no_run:
 			exitCode = self.callExecutable()
-		
+
 		if (not self.tmp_directory_remote_files is None):
 			shutil.rmtree(self.tmp_directory_remote_files)
-		
+
 		if exitCode < 256:
 			return exitCode
 		else:
@@ -173,7 +173,7 @@ class ArtusWrapper(object):
 			length += len(item)
 		log.info("Final dbs consists of %i files" %length)
 		return dbs
-	
+
 	def setInputFilenames(self, filelist, alreadyInGridControl = False):
 		if (not (isinstance(self._config["InputFiles"], list)) and not isinstance(self._config["InputFiles"], basestring)):
 			self._config["InputFiles"] = []
@@ -359,7 +359,7 @@ class ArtusWrapper(object):
 		# treat environment variables
 		if self._args.envvar_expansion:
 			self._config = self._config.doExpandvars()
-		
+
 		# treat remote files
 		if self._args.copy_remote_files:
 			self.useLocalCopiesOfRemoteFiles()
@@ -392,7 +392,7 @@ class ArtusWrapper(object):
 	def useLocalCopiesOfRemoteFiles(self, remote_identifiers=None):
 		if remote_identifiers is None:
 			remote_identifiers = ["dcap", "root"]
-		
+
 		self.tmp_directory_remote_files = tempfile.mkdtemp(prefix="artus_remote_files_")
 		self._config = self._config.doReplaceFilesByLocalCopies(self.tmp_directory_remote_files, remote_identifiers)
 
@@ -458,6 +458,8 @@ class ArtusWrapper(object):
 		                                 help="Add paths to environment variable LD_LIBRARY_PATH.")
 		runningOptionsGroup.add_argument("--profile", default="",
 		                                 help="Measure performance with profiler. Choose igprof or valgrind.")
+		runningOptionsGroup.add_argument("--profile-options", default="pp",
+		                                 help="Additional options for profiling. Choose memory (mp) or performance (pp). [Default: %(default)s]")
 		runningOptionsGroup.add_argument("-r", "--root", default=False, action="store_true",
 		                                 help="Open output file in ROOT TBrowser after completion.")
 		runningOptionsGroup.add_argument("-b", "--batch", default=False, const="naf", nargs="?",
@@ -478,7 +480,7 @@ class ArtusWrapper(object):
 		                                 help="Write logfile in batch mode directly to SE. Does not work with remote batch system")
 		runningOptionsGroup.add_argument("--partition-lfn-modifier", default = None,
 		                                 help="Forces a certain access to input files. See base conf for corresponding dictionary")
-		                                 
+
 
 		if self._executable:
 			self._parser.add_argument("-x", "--executable", help="Artus executable. [Default: %(default)s]", default=self._executable)
@@ -578,15 +580,16 @@ class ArtusWrapper(object):
 		pass # to be overwritten by deriving classes
 
 
-	def measurePerformance(self, profTool):
+	def measurePerformance(self, profTool, profOpt):
 		"""run Artus with profiler"""
-		
+
 		profile_cpp.profile_cpp(
 				command=self._executable+" "+self._configFilename,
 				profiler=profTool,
+				profiler_opt=profOpt,
 				output_dir=os.path.dirname(self._args.output_file)
 		)
-		
+
 		return 0
 
 
