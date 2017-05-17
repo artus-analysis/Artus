@@ -6,6 +6,7 @@
 #include <boost/regex.hpp>
 
 #include "Kappa/DataFormats/interface/Kappa.h"
+#include "Artus/KappaAnalysis/interface/KappaEnumTypes.h"
 
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/KappaAnalysis/interface/Consumers/KappaLambdaNtupleConsumer.h"
@@ -29,13 +30,6 @@ public:
 	void Produce(KappaEvent const& event, KappaProduct& product,
 	                     KappaSettings const& settings) const override;
 
-	enum class BTagScaleFactorMethod : int
-	{
-		NONE = -1,
-		PROMOTIONDEMOTION = 0,
-		OTHER = 1,
-	};
-	static BTagScaleFactorMethod ToBTagScaleFactorMethod(std::string const& bTagSFMethod);
 
 protected:
 
@@ -44,7 +38,7 @@ protected:
 
 private:
 
-	BTagScaleFactorMethod m_bTagSFMethod;
+ 	KappaEnumTypes::BTagScaleFactorMethod m_bTagSFMethod;
 	std::map<std::string, float> m_bTagWorkingPoints;
 	std::map<std::string, BTagSF> m_bTagSfMap;
 

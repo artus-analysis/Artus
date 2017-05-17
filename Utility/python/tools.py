@@ -15,6 +15,7 @@ import sys
 import termios
 import textwrap
 import shlex
+import subprocess
 import time
 
 from difflib import SequenceMatcher
@@ -319,4 +320,11 @@ def _merge_sequences(seq1,seq2):
 		raise ValueError("Sequences have non-unique elements or differently ordered subsequences")
 	return res
 
+
+
+
+def subprocessCall(args, **kwargs):
+	kwargs["stdout"] = subprocess.PIPE
+	kwargs["stderr"] = subprocess.PIPE
+	return subprocess.Popen(args, **kwargs).communicate()
 

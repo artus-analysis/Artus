@@ -56,7 +56,7 @@ def main():
 				path = os.path.join(dirpath,f)
 				# it is assumed, that the filenames are created by the SkimManager and represent dataset nicknames
 				if os.path.exists(path) and ".txt" in path:
-					create_symlink("DCAP_sample_"+os.path.basename(path).replace(".txt","_recent.txt"), path)
+					create_symlink("XROOTD_sample_"+os.path.basename(path).replace(".txt","_recent.txt"), path)
 		sys.exit(0)
 
 	if not args.skimming_dir.startswith("/pnfs"):
