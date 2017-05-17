@@ -79,7 +79,7 @@ public:
 
 	/// pointer to generator particles
 	KGenParticles* m_genParticles = nullptr;
-	KGenParticles* m_lheParticles = nullptr;
+	KLHEParticles* m_lheParticles = nullptr;
 
 	/// pointer to trigger infos and objects
 	KTriggerObjectMetadata* m_triggerObjectMetadata = nullptr;
