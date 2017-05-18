@@ -520,7 +520,7 @@ class ArtusWrapper(object):
 		epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
 		epilogArguments += "--nick $DATASETNICK "
 		epilogArguments += "-i $FILE_NAMES "
-		if self._args.copy_remote_files
+		if self._args.copy_remote_files:
 			epilogArguments += "--copy-remote-files "
 		if not self._args.ld_library_paths is None:
 			epilogArguments += ("--ld-library-paths %s" % " ".join(self._args.ld_library_paths))
