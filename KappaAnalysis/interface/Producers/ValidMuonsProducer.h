@@ -75,7 +75,7 @@ public:
 		else if (muonID == "veto") return MuonID::VETO;
 		else if (muonID == "fakeable") return MuonID::FAKEABLE;
 		else if (muonID == "embedding") return MuonID::EMBEDDING;
-		else if (muonID == "mediumHIPsafe2016") return MuonID::MEDIUMHIPSAFE2016;
+		else if (muonID == "mediumhipsafe2016") return MuonID::MEDIUMHIPSAFE2016;
 		else return MuonID::NONE;
 	}
 
