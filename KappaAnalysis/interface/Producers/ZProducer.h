@@ -155,6 +155,11 @@ class ZProducerBase : public KappaProducerBase
 			std::make_pair(determine_pfCandidate_for_lepton(product, settings, true),
 			               determine_pfCandidate_for_lepton(product, settings, false) );
 		product.m_theta_Z_LepMinus = calculate_theta_Z_LepMinus(product);
+
+		if (product.m_zPFLeptonsMatched.first == nullptr or product.m_zPFLeptonsMatched.second == nullptr) {
+			//std::cout << "Failed match" << std::endl;
+			product.m_zValid = false;
+		}
 	}
 	return;
 }
