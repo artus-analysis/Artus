@@ -351,7 +351,7 @@ class JsonDict(dict):
 	@staticmethod
 	def deepreplaceremotefiles(jsonDict, tmp_directory, remote_identifiers=None):
 		""" download remote files in dictionary values first and point to this copies in the dictionary """
-		remote_identifiers = ["dcap", "root"]
+		remote_identifiers = ["dcap", "root", "srm"]
 		
 		if not os.path.exists(tmp_directory):
 			os.makedirs(tmp_directory)
@@ -366,9 +366,10 @@ class JsonDict(dict):
 			for item in jsonDict:
 				result.append(JsonDict.deepreplaceremotefiles(item, tmp_directory, remote_identifiers))
 		elif isinstance(jsonDict, basestring):
-			if any([jsonDict.startswith(remote_identifier) for remote_identifier in remote_identifiers]):
-				prefix, suffix = os.path.splitext(os.path.basename(jsonDict))
-				result = tempfile.mktemp(prefix=prefix+"_", suffix=suffix, dir=tmp_directory)
+			if any([jsonDict.strip().rstrip().startswith(remote_identifier) for remote_identifier in remote_identifiers]):
+				#prefix, suffix = os.path.splitext(jsonDict.strip().rstrip())
+				#result = tempfile.mktemp(prefix=prefix+"_", suffix=suffix, dir=tmp_directory)
+				result = os.path.join(tmp_directory, jsonDict.strip().rstrip().replace(":", "_").replace("/", "__")[-200:])
 				copy_command = "gfal-copy --force {remote} file://{local}".format(remote=jsonDict, local=result)
 				log.debug(copy_command)
 				try:
