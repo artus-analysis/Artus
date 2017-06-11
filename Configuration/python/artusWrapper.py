@@ -361,7 +361,7 @@ class ArtusWrapper(object):
 			self._config = self._config.doExpandvars()
 
 		# treat remote files
-		if self._args.copy_remote_files:
+		if self._args.copy_remote_files and (not self._args.batch):
 			self.useLocalCopiesOfRemoteFiles()
 
 		# set log level
