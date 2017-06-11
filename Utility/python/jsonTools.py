@@ -370,7 +370,7 @@ class JsonDict(dict):
 				#prefix, suffix = os.path.splitext(jsonDict.strip().rstrip())
 				#result = tempfile.mktemp(prefix=prefix+"_", suffix=suffix, dir=tmp_directory)
 				result = os.path.join(tmp_directory, jsonDict.strip().rstrip().replace(":", "_").replace("/", "__")[-200:])
-				copy_command = "gfal-copy --force {remote} file://{local}".format(remote=jsonDict, local=result)
+				copy_command = "gfal-copy --timeout 150 --force {remote} file://{local}".format(remote=jsonDict, local=result)
 				log.debug(copy_command)
 				try:
 					exitCode = logger.subprocessCall(copy_command.split())
