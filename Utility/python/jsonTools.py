@@ -372,12 +372,20 @@ class JsonDict(dict):
 				result = os.path.join(tmp_directory, jsonDict.strip().rstrip().replace(":", "_").replace("/", "__")[-200:])
 				copy_command = "gfal-copy --timeout 150 --force {remote} file://{local}".format(remote=jsonDict, local=result)
 				log.debug(copy_command)
+				success = True
 				try:
 					exitCode = logger.subprocessCall(copy_command.split())
 					if exitCode != 0:
 						result = jsonDict
+						success = False
+						log.warning("1")
 				except:
 					result = jsonDict
+					success = False
+					log.warning("2")
+				if not success:
+					log.critical("Could not download \""+jsonDict+"\"!")
+					sys.exit(1)
 			else:
 				result = jsonDict
 		else:
