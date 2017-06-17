@@ -19,6 +19,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gErrorIgnoreLevel = ROOT.kError
 
 import Artus.Utility.tools as tools
+import Artus.Utility.dcachetools as dcachetools
 
 
 class JsonDict(dict):
@@ -370,7 +371,7 @@ class JsonDict(dict):
 				#prefix, suffix = os.path.splitext(jsonDict.strip().rstrip())
 				#result = tempfile.mktemp(prefix=prefix+"_", suffix=suffix, dir=tmp_directory)
 				result = os.path.join(tmp_directory, jsonDict.strip().rstrip().replace(":", "_").replace("/", "__")[-200:])
-				copy_command = "gfal-copy --timeout 1800 --force {remote} file://{local}".format(remote=jsonDict, local=result)
+				copy_command = "gfal-copy --timeout 1800 --force {remote} file://{local}".format(remote=dcachetools.xrd2srm(jsonDict), local=result)
 				log.debug(copy_command)
 				success = True
 				try:
