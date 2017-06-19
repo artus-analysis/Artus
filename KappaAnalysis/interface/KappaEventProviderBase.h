@@ -59,7 +59,7 @@ public:
 		{
 			return eventdata->GetEntry(lEvent);
 		});
-		std::chrono::seconds timeout(60);
+		std::chrono::minutes timeout(5);
 		if (futureGetEntry.wait_for(timeout) != std::future_status::ready)
 		{
 			LOG(FATAL) << "Timeout: Could not read entry from Events tree!";
