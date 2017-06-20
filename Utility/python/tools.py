@@ -168,19 +168,21 @@ def parallelize(function, arguments_list, n_processes=1, description=None):
 		return results
 	else:
 		pool = multiprocessing.Pool(processes=max(1, min(n_processes, len(arguments_list))))
-		results = pool.map_async(function, arguments_list)
+		results = pool.map_async(function, arguments_list, chunksize=1)
 		n_tasks = len(arguments_list)
-		left = n_tasks
+		left = n_tasks-1
 		import Artus.Utility.progressiterator as pi
 		progress_iterator = pi.ProgressIterator(range(n_tasks), description=(description if description else "calling "+str(function)))
 		progress_iterator.next()
 		while (True):
-			if (results.ready()): break
+			ready = results.ready()
 			remaining = results._number_left
-			if remaining < left:
+			if ready or (remaining < left):
 				for i in range(left-remaining):
 					progress_iterator.next()
 				left = remaining
+			if ready:
+				break
 			time.sleep(1.0)
 		returnvalue = results.get(9999999)
 		pool.close() # necessary to actually terminate the processes
@@ -319,9 +321,6 @@ def _merge_sequences(seq1,seq2):
 	if len(set(res)) != len(res):
 		raise ValueError("Sequences have non-unique elements or differently ordered subsequences")
 	return res
-
-
-
 
 def subprocessCall(args, **kwargs):
 	kwargs["stdout"] = subprocess.PIPE

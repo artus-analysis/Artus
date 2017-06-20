@@ -819,11 +819,14 @@ class PlotRoot(plotbase.PlotBase):
 
 		# lumi and energy: outside plot, top right, with best possible offset
 		if self.dataset_title != "":
-			self.dataset_title = re.sub(r"\\mathrm{(fb|pb)}", re.search(r"\\mathrm{(fb|pb)}", self.dataset_title).group(1), self.dataset_title)
-			year = "("
-			if plotData.plotdict["year"] != "":
-				year += plotData.plotdict["year"] + ", "
-			CMS_lumi.lumi_sqrtS = self.dataset_title.replace("$", "").replace("\,", "").split("(")[0] + year + self.dataset_title.replace("$", "").replace("\,", "").split("(")[1]
+			if "Simulation" in plotData.plotdict["extra_text"]:
+				CMS_lumi.lumi_sqrtS = ""
+			else:
+				self.dataset_title = re.sub(r"\\mathrm{(fb|pb)}", re.search(r"\\mathrm{(fb|pb)}", self.dataset_title).group(1), self.dataset_title)
+				year = "("
+				if plotData.plotdict["year"] != "":
+					year += plotData.plotdict["year"] + ", "
+					CMS_lumi.lumi_sqrtS = self.dataset_title.replace("$", "").replace("\,", "").split("(")[0] + year + self.dataset_title.replace("$", "").replace("\,", "").split("(")[1]
 			CMS_lumi.lumiTextSize = 0.5
 			if not self.subplot_axes_histogram is None:
 				CMS_lumi.lumiTextOffset = 0.4

@@ -47,14 +47,6 @@ class ArtusWrapper(object):
 			self.setRepositoryRevisions()
 			self._config["Date"] = date_now
 
-		# write username to the config
-		try:
-			self._config["User"] = os.environ["USER"]
-		except:
-			import random
-			import string
-			self._config["User"] = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
-
 		#Expand Config
 		self.expandConfig()
 		self.projectPath = None
@@ -361,7 +353,7 @@ class ArtusWrapper(object):
 			self._config = self._config.doExpandvars()
 
 		# treat remote files
-		if self._args.copy_remote_files:
+		if self._args.copy_remote_files and (not self._args.batch):
 			self.useLocalCopiesOfRemoteFiles()
 
 		# set log level
