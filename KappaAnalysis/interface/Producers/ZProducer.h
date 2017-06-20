@@ -149,7 +149,7 @@ class ZProducerBase : public KappaProducerBase
 	}
 
 	if (product.m_found_zs >1 && settings.GetVetoMultipleZs()) resetZ(product);
-	if(product.m_zValid)
+	if(product.m_zValid && settings.GetMatchPairToPFCandidates())
 	{
 		product.m_zPFLeptonsMatched =
 			std::make_pair(determine_pfCandidate_for_lepton(product, settings, true),
