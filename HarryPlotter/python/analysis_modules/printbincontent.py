@@ -49,3 +49,15 @@ class PrintBinContent(analysisbase.AnalysisBase):
 						log.info("{0:<10} {1:<22.1f} {2:<22.3f}".format(iBin,
 						root_object.GetBinLowEdge(iBin), root_object.GetBinContent(iBin)))
 				
+			elif isinstance(root_object, ROOT.TGraph):
+				log.info("\n")
+				log.info("{:*^50}".format(" Bin content of: {} ".format(nick)))
+				log.info("{0:<9}| {1:<21}| {2:<21}".format("Bin Nr.",
+				                                           "BinLowEdge",
+				                                           "BinContent"))
+
+				for iBin in range(0, root_object.GetN()):
+					d1, d2 = ROOT.Double(0), ROOT.Double(0)
+					root_object.GetPoint(iBin, d1, d2)
+					log.info("{0:<10} {1:<22.3f} {2:<22.3f}".format(iBin,d1, d2))
+				
