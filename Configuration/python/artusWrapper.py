@@ -559,9 +559,9 @@ class ArtusWrapper(object):
 
 		log.info("Output is written to directory \"%s\"" % sepathRaw)
 		log.info("\nMerge outputs in one file per nick using")
-		if not self.remote_se:
-			log.info("artusMergeOutputs.py %s" % self.projectPath)
-		log.info("artusMergeOutputsWithGC.py %s" % (self.localProjectPath if self.remote_se else self.projectPath))
+		if self.remote_se:
+			log.info("se_output_download.py -lmo %s %s [-t 4]" % (os.path.join(self.localProjectPath, "output"), tmpGcConfigFileBasepath))
+		log.info("artusMergeOutputs.py %s [-n 4]" % (self.localProjectPath if self.remote_se else self.projectPath))
 
 		if exitCode != 0:
 			log.error("Exit with code %s.\n\n" % exitCode)
