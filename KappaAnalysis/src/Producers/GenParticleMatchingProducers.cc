@@ -201,7 +201,7 @@ RecoElectronGenParticleMatchingProducer::RecoElectronGenParticleMatchingProducer
 	                                                     &product_type::m_invalidElectrons,
 	                                                     &setting_type::GetRecoElectronMatchingGenParticlePdgIds,
 	                                                     &setting_type::GetRecoElectronMatchingGenParticleStatus,
-	                                                     &setting_type::GetDeltaRMatchingRecoElectronsGenParticle,
+	                                                     &setting_type::GetDeltaRMatchingRecoElectronGenParticle,
 	                                                     &setting_type::GetInvalidateNonGenParticleMatchingRecoElectrons,
 	                                                     &setting_type::GetInvalidateGenParticleMatchingRecoElectrons,
 	                                                     &setting_type::GetRecoElectronMatchingGenParticleMatchAllElectrons)

@@ -149,7 +149,7 @@ public:
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonMatchingTaus, true);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonMatchingJets, true);
 
-	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoElectronsGenParticle, 0.5f);
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoElectronGenParticle, 0.5f);
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoMuonGenParticle, 0.5f);
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoTauGenParticle, 0.5f);
 
