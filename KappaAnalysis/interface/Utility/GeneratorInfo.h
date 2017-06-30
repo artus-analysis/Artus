@@ -21,7 +21,7 @@ public:
 	static KGenParticle* GetGenMatchedParticle(
 			KLepton* lepton,
 			std::map<KLepton*, KGenParticle*> const& leptonGenParticleMap,
-			std::map<KLepton*, KGenTau*> const& tauGenTauMap
+			std::map<KLepton*, KGenTau*> const& leptonGenTauMap
 	);
 
 private:

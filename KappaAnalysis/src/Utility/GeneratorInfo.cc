@@ -52,14 +52,14 @@ RMFLV* GeneratorInfo::GetVisibleLV(KGenParticle* genParticle)
 KGenParticle* GeneratorInfo::GetGenMatchedParticle(
 		KLepton* lepton,
 		std::map<KLepton*, KGenParticle*> const& leptonGenParticleMap,
-		std::map<KLepton*, KGenTau*> const& tauGenTauMap
+		std::map<KLepton*, KGenTau*> const& leptonGenTauMap
 )
 {
 	KGenParticle* defaultGenParticle = nullptr;
 	KGenParticle* genParticle = SafeMap::GetWithDefault(leptonGenParticleMap, lepton, defaultGenParticle);
 	
 	KGenTau* defaultGenTau = nullptr;
-	KGenTau* genTau = SafeMap::GetWithDefault(tauGenTauMap, lepton, defaultGenTau);
+	KGenTau* genTau = SafeMap::GetWithDefault(leptonGenTauMap, lepton, defaultGenTau);
 	
 	float deltaRTauGenTau = (genTau ? ROOT::Math::VectorUtil::DeltaR(lepton->p4, genTau->visible.p4) : std::numeric_limits<float>::max());
 	float deltaRTauGenParticle = (genParticle ? ROOT::Math::VectorUtil::DeltaR(lepton->p4, genParticle->p4) : std::numeric_limits<float>::max());

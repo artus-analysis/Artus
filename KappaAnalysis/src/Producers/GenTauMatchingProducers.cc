@@ -15,7 +15,8 @@ RecoElectronGenTauMatchingProducer::RecoElectronGenTauMatchingProducer() :
 	                                      &setting_type::GetDeltaRMatchingRecoElectronGenTau,
 	                                      &setting_type::GetInvalidateNonGenTauMatchingRecoElectrons,
 	                                      &setting_type::GetInvalidateGenTauMatchingRecoElectrons,
-	                                      &setting_type::GetMatchAllElectronsGenTau)
+	                                      &setting_type::GetMatchAllElectronsGenTau,
+	                                      &setting_type::GetMatchGenTauDecayMode)
 {
 }
 
@@ -33,7 +34,8 @@ RecoMuonGenTauMatchingProducer::RecoMuonGenTauMatchingProducer() :
 	                                  &setting_type::GetDeltaRMatchingRecoMuonGenTau,
 	                                  &setting_type::GetInvalidateNonGenTauMatchingRecoMuons,
 	                                  &setting_type::GetInvalidateGenTauMatchingRecoMuons,
-	                                  &setting_type::GetMatchAllMuonsGenTau)
+	                                  &setting_type::GetMatchAllMuonsGenTau,
+	                                  &setting_type::GetMatchGenTauDecayMode)
 {
 }
 
@@ -51,7 +53,8 @@ RecoTauGenTauMatchingProducer::RecoTauGenTauMatchingProducer() :
 	                                 &setting_type::GetDeltaRMatchingRecoTauGenTau,
 	                                 &setting_type::GetInvalidateNonGenTauMatchingRecoTaus,
 	                                 &setting_type::GetInvalidateGenTauMatchingRecoTaus,
-	                                 &setting_type::GetMatchAllTausGenTau)
+	                                 &setting_type::GetMatchAllTausGenTau,
+	                                 &setting_type::GetMatchGenTauDecayMode)
 {
 }
 
