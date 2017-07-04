@@ -456,6 +456,8 @@ class ArtusWrapper(object):
 		                                 help="Open output file in ROOT TBrowser after completion.")
 		runningOptionsGroup.add_argument("-b", "--batch", default=False, const="naf", nargs="?",
 		                                 help="Run with grid-control. Optionally select backend. [Default: %(default)s]")
+		runningOptionsGroup.add_argument("--pilot-job-files", "--pilot-jobs", default=None, const=1, type=int, nargs="?",
+		                                 help="Number of files per sample to be submitted as pilot jobs. [Default: all/1]")
 		runningOptionsGroup.add_argument("--files-per-job", type=int, default=15,
 		                                 help="Files per batch job. [Default: %(default)s]")
 		runningOptionsGroup.add_argument("--area-files", default=None,
@@ -482,7 +484,7 @@ class ArtusWrapper(object):
 	def sendToBatchSystem(self):
 
 		# write dbs file
-		dbsFileContent = tools.write_dbsfile(self._gridControlInputFiles)
+		dbsFileContent = tools.write_dbsfile(self._gridControlInputFiles, max_files_per_nick=self._args.pilot_job_files)
 
 		dbsFileBasename = "datasets.dbs"
 		dbsFileBasepath = os.path.join(self.localProjectPath, dbsFileBasename)
@@ -531,7 +533,7 @@ class ArtusWrapper(object):
 				areafiles = self._args.area_files if (self._args.area_files != None) else "",
 				walltime = "wall time = " + self._args.wall_time,
 				memory = "memory = " + str(self._args.memory),
-				cmdargs = "cmdargs = " + self._args.cmdargs,
+				cmdargs = "cmdargs = " + self._args.cmdargs.replace("m 3", "m 3" if self._args.pilot_job_files is None else "m 0"),
 				dataset = "dataset = \n\t:ListProvider:" + dbsFileBasepath,
 				epilogarguments = epilogArguments,
 				seoutputfiles = "se output files = *.root" if self._args.log_to_se else "se output files = *.log *.root",

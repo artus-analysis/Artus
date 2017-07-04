@@ -218,11 +218,11 @@ def hadd(target_file, source_files, hadd_args="", max_files=500):
 			os.remove(last_target_file)
 	return exit_code
 
-def write_dbsfile(input_files):
+def write_dbsfile(input_files, max_files_per_nick=None):
 	dbsFileContent = ""
 	for nickname, filelist in input_files.iteritems():
 		dbsFileContent += "\n[" + nickname + "]\nnickname = " + nickname + "\n"
-		for inputEntry in filelist:
+		for inputEntry in filelist[:max_files_per_nick]:
 			dbsFileContent += inputEntry + "\n"
 
 	return dbsFileContent
