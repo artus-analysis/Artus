@@ -120,12 +120,9 @@ class PlotData(object):
 			files_to_copy += [os.path.join(output_dir, save_legend + _format) for _format in formats]
 
 		# create remote dir, copy files
-		mkdir_command = os.path.expandvars("$WEB_PLOTTING_MKDIR_COMMAND").format(subdir=remote_subdir)
 		copy_command = os.path.expandvars("$WEB_PLOTTING_COPY_COMMAND").format(source=" ".join(files_to_copy), subdir=remote_subdir)
 
 		log.info("Copying plots to webspace...")
-		log.debug("\nIssueing mkdir command: " + mkdir_command)
-		logger.subprocessCall(mkdir_command.split())
 		log.debug("\nIssueing rsync command: " + copy_command)
 		logger.subprocessCall(copy_command.split())
 		log.info("Copied {0}; see {1}".format(" ".join([f.split("/")[-1] for f in files_to_copy]), url))
