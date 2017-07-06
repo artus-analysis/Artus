@@ -8,6 +8,7 @@ echo "/HarryPlotter/" >> .git/info/sparse-checkout
 echo "/Utility/python/" >> .git/info/sparse-checkout
 echo "/Utility/scripts/" >> .git/info/sparse-checkout
 echo "/Configuration/scripts/ini_artus_python_standalone.sh" >> .git/info/sparse-checkout
+echo "Example/scripts/generateCorrelatedGaussians.py" >> .git/info/sparse-checkout
 git pull
 git read-tree --empty
 git read-tree -mu HEAD
