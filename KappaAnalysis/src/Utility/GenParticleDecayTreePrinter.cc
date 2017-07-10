@@ -51,7 +51,10 @@ void GenParticleDecayTreePrinter::PrintDecayTree(std::vector<KGenParticle>* genP
 	{
 		for (unsigned int genParticleIndex = 0; genParticleIndex < genParticles->size(); ++genParticleIndex)
 		{
-			PrintDecayTree(genParticles, genParticleIndex, 0);
+			if (genParticles->at(genParticleIndex).pdgId == 2212)
+			{
+				PrintDecayTree(genParticles, genParticleIndex, 0);
+			}
 		}
 	}
 	else
@@ -81,7 +84,7 @@ void GenParticleDecayTreePrinter::PrintDecayTree(std::vector<KGenParticle>* genP
 		{
 			name = pdgParticle->GetName();
 		}
-		LOG(INFO) << indent << "-> " << name << ", PDG ID = " << genParticle.pdgId << ", status = " << genParticle.status() << ": p4 = " << genParticle.p4;
+		LOG(INFO) << indent << "-> " << name << ", PDG ID = " << genParticle.pdgId << ", status = " << genParticle.status() << ", p4 = " << genParticle.p4 << ", kappa index = " << currentIndex;
 
 		for (std::vector<unsigned int>::const_iterator daughterIndex = genParticle.daughterIndices.begin();
 			 daughterIndex != genParticle.daughterIndices.end(); ++daughterIndex)
