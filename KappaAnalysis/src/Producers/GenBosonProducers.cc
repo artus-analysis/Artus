@@ -274,10 +274,10 @@ void GenBosonDiLeptonDecayModeProducer::FindGenDiLeptons(KappaEvent const& event
 			{
 				product.m_genLeptonsFromBosonDecay.push_back(&(event.m_genParticles->at(*decayParticleIndex)));
 			}
-			else
+			/*else
 			{
 				rerun = true;
-			}
+			}*/
 		}
 		if (product.m_genLeptonsFromBosonDecay.size() < 2)
 		{
