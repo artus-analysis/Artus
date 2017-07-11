@@ -264,7 +264,9 @@ def compareNtuple(directory1, directory2, ntupleID):
 	nevts1 = ntuple1.GetEntries()
 	nevts2 = ntuple1.GetEntries()
 	if nleaves1 != nleaves2:
-		log.critical("different number of leaves")
+		only1 = [a.GetName() for a in leaves1 if not leaves2.FindObject(a.GetName())]
+		only2 = [a.GetName() for a in leaves2 if not leaves1.FindObject(a.GetName())]
+		log.critical("different number of leaves ("+ ntupleID + "):" + str(nleaves1) + " != " + str(nleaves2) + ".\n Only in root file 1: " + str(only1) + "\n Only in root file 2:" + str(only2) +"." )
 		if not opt_all:
 			return False
 		result = False
