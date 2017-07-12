@@ -388,4 +388,5 @@ public:
 	IMPL_SETTING_DEFAULT(bool, CorrectOnlyRealTaus, false);
 
 	IMPL_SETTING_DEFAULT(std::string, DatabasePDG, "$ROOTSYS/etc/pdg_table.txt");
+	IMPL_SETTING_DEFAULT(std::string, GenCollectionToPrint, "all");
 };

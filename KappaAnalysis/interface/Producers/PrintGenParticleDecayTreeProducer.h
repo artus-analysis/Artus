@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
+#include "Artus/KappaAnalysis/interface/KappaEnumTypes.h"
 #include "Artus/KappaAnalysis/interface/Utility/GenParticleDecayTreePrinter.h"
 
 
@@ -12,5 +13,6 @@ public:
 
 private:
 	GenParticleDecayTreePrinter genParticleDecayTreePrinter;
+	KappaEnumTypes::GenCollectionToPrint genCollectionToPrint = KappaEnumTypes::GenCollectionToPrint::NONE;
 
 };

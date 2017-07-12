@@ -45,7 +45,7 @@ TDatabasePDG* GenParticleDecayTreePrinter::GetPdgDatabase()
 	return m_databasePDG;
 }
 
-void GenParticleDecayTreePrinter::PrintDecayTree(std::vector<KGenParticle>* genParticles, int currentIndex, unsigned int currentLevel) const
+void GenParticleDecayTreePrinter::PrintGenParticlesDecayTree(std::vector<KGenParticle>* genParticles, int currentIndex, unsigned int currentLevel) const
 {
 	if (currentIndex < 0)
 	{
@@ -53,29 +53,13 @@ void GenParticleDecayTreePrinter::PrintDecayTree(std::vector<KGenParticle>* genP
 		{
 			if (genParticles->at(genParticleIndex).pdgId == 2212)
 			{
-				PrintDecayTree(genParticles, genParticleIndex, 0);
+				PrintGenParticlesDecayTree(genParticles, genParticleIndex, 0);
 			}
 		}
 	}
 	else
 	{
-		std::string indent = "";
-		for (unsigned int levelIndex = 0; levelIndex < currentLevel; ++levelIndex)
-		{
-			if (levelIndex == currentLevel - 1)
-			{
-				indent += "|---";
-			}
-			else if (levelIndex < currentLevel - 1)
-			{
-				indent += "    ";
-			}
-			else if (levelIndex > currentLevel - 1)
-			{
-				indent += "----";
-			}
-	
-		}
+		std::string indent = GenParticleDecayTreePrinter::GetIndent(currentLevel);
 
 		KGenParticle& genParticle = genParticles->at(currentIndex);
 		std::string name = "";
@@ -89,8 +73,62 @@ void GenParticleDecayTreePrinter::PrintDecayTree(std::vector<KGenParticle>* genP
 		for (std::vector<unsigned int>::const_iterator daughterIndex = genParticle.daughterIndices.begin();
 			 daughterIndex != genParticle.daughterIndices.end(); ++daughterIndex)
 		{
-			PrintDecayTree(genParticles, *daughterIndex, currentLevel+1);
+			PrintGenParticlesDecayTree(genParticles, *daughterIndex, currentLevel+1);
 		}
 	}
+}
+
+void GenParticleDecayTreePrinter::PrintLHEParticlesDecayTree(KLHEParticles* lheParticles, int currentIndex, unsigned int currentLevel) const
+{
+	if (currentIndex < 0)
+	{
+		for (unsigned int lheParticleIndex = 0; lheParticleIndex < lheParticles->particles.size(); ++lheParticleIndex)
+		{
+			if (true) // (lheParticles->particles.at(lheParticleIndex).p4.Pt() < 1e-3)
+			{
+				PrintLHEParticlesDecayTree(lheParticles, lheParticleIndex, 0);
+			}
+		}
+	}
+	else
+	{
+		std::string indent = GenParticleDecayTreePrinter::GetIndent(currentLevel);
+
+		KLHEParticle& lheParticle = lheParticles->particles.at(currentIndex);
+		std::string name = "";
+		TParticlePDG* pdgParticle = m_databasePDG->GetParticle(lheParticle.pdgId);
+		if (pdgParticle)
+		{
+			name = pdgParticle->GetName();
+		}
+		LOG(INFO) << indent << "-> " << name << ", PDG ID = " << lheParticle.pdgId << ", status = " << lheParticle.status << ", p4 = " << lheParticle.p4 << ", kappa index = " << currentIndex; // << ", daughter indices = " << lheParticle.firstLastMotherIDs.first << " - " << lheParticle.firstLastMotherIDs.second;
+
+		/*for (int daughterIndex = lheParticle.firstLastMotherIDs.first; daughterIndex <= lheParticle.firstLastMotherIDs.second; ++daughterIndex)
+		{
+			PrintLHEParticlesDecayTree(lheParticles, daughterIndex, currentLevel+1);
+		}*/
+	}
+}
+
+std::string GenParticleDecayTreePrinter::GetIndent(unsigned int level)
+{
+	std::string indent = "";
+	for (unsigned int levelIndex = 0; levelIndex < level; ++levelIndex)
+	{
+		if (levelIndex == level - 1)
+		{
+			indent += "|---";
+		}
+		else if (levelIndex < level - 1)
+		{
+			indent += "    ";
+		}
+		else if (levelIndex > level - 1)
+		{
+			indent += "----";
+		}
+
+	}
+	return indent;
 }
 
