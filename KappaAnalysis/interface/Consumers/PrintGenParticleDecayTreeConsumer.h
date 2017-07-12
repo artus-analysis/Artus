@@ -2,6 +2,7 @@
 
 #include "Artus/Core/interface/ConsumerBase.h"
 #include "Artus/KappaAnalysis/interface/KappaTypes.h"
+#include "Artus/KappaAnalysis/interface/KappaEnumTypes.h"
 #include "Artus/KappaAnalysis/interface/Utility/GenParticleDecayTreePrinter.h"
 
 
@@ -28,5 +29,7 @@ public:
 
 private:
 	GenParticleDecayTreePrinter genParticleDecayTreePrinter;
+	KappaEnumTypes::GenCollectionToPrint genCollectionToPrint = KappaEnumTypes::GenCollectionToPrint::NONE;
+
 };
 

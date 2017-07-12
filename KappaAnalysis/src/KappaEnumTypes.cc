@@ -59,3 +59,11 @@ KappaEnumTypes::BTagScaleFactorMethod KappaEnumTypes::ToBTagScaleFactorMethod(st
 	else return KappaEnumTypes::BTagScaleFactorMethod::NONE;
 }
 
+KappaEnumTypes::GenCollectionToPrint KappaEnumTypes::ToGenCollectionToPrint(std::string const& genCollectionToPrint)
+{
+	if (genCollectionToPrint == "all") return KappaEnumTypes::GenCollectionToPrint::ALL;
+	else if (genCollectionToPrint == "gen") return KappaEnumTypes::GenCollectionToPrint::GEN;
+	else if (genCollectionToPrint == "lhe") return KappaEnumTypes::GenCollectionToPrint::LHE;
+	else return KappaEnumTypes::GenCollectionToPrint::NONE;
+}
+
