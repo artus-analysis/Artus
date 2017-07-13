@@ -17,6 +17,7 @@ import textwrap
 import shlex
 import subprocess
 import time
+import ROOT
 
 from difflib import SequenceMatcher
 
@@ -327,3 +328,8 @@ def subprocessCall(args, **kwargs):
 	kwargs["stderr"] = subprocess.PIPE
 	return subprocess.Popen(args, **kwargs).communicate()
 
+def pvalue2sigma(pvalue):
+	return ROOT.Math.normal_quantile_c(pvalue/2, 1.0)
+
+def sigma2pvalue(sigma):
+	return 2*ROOT.Math.normal_cdf_c(sigma)
