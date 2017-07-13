@@ -219,6 +219,7 @@ public:
 	IMPL_SETTING_DEFAULT(bool, MatchAllMuonsGenTau, false);
 	IMPL_SETTING_DEFAULT(bool, MatchAllTausGenTau, false);
 	IMPL_SETTING_DEFAULT(bool, MatchGenTauDecayMode, false);
+	IMPL_SETTING_DEFAULT(bool, UseUWGenMatching, false);
 
 	IMPL_SETTING(int, Year);
 
