@@ -207,7 +207,8 @@ class RootTools(object):
 		                    x_expression, y_expression=None, z_expression=None,
 		                    x_bins=None, y_bins=None, z_bins=None,
 		                    weight_selection="", option="", name=None,
-		                    friend_files=None, friend_folders=None, friend_alias=None):
+		                    friend_files=None, friend_folders=None, friend_alias=None,
+		                    proxy_prefix=None):
 		"""
 		Read histograms from trees
 	
@@ -365,6 +366,8 @@ class RootTools(object):
 					"htemp = fDirector.CreateHistogram(GetOption());", "htemp = (TH1*)gDirectory->Get(\"{name}\");".format(name=name)
 			).replace(
 					"htemp->SetTitle", "//htemp->SetTitle"
+			).replace(
+					"using namespace ROOT;", proxy_prefix+"\nusing namespace ROOT;"
 			)
 			with open(proxy_class_filename, "w") as proxy_class_file:
 				proxy_class_file.write(proxy_class_content)
