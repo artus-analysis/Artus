@@ -17,7 +17,6 @@ import numpy
 import os
 import sys
 import re
-import tempfile
 
 import ROOT
 ROOT.gEnv.SetValue("TFile.AsyncPrefetching", 1)
@@ -412,7 +411,9 @@ class RootTools(object):
 		else:
 			if ("proxy" in option) and (not proxy_call is None):
 				log.debug("ROOT.TTree.Process(\"" + proxy_call + "\")")
-				tree.Process(proxy_call)
+				result = tree.Process(proxy_call)
+				if result < 0:
+					log.error("Reading input based on proxy failed. Try preserving all proxy files by using debug logging (--log-level debug).")
 			else:
 				log.debug("ROOT.TTree.Project(\"" + name + "\", \"" + variable_expression + "\", \"" + str(weight_selection) + "\", \"" + option + "\" GOFF\")")
 				tree.Project(name, variable_expression, str(weight_selection), option + " GOFF")
