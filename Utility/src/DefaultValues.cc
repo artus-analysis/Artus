@@ -40,3 +40,6 @@ const float DefaultValues::ElectronMassGeV = 0.5109989461E-3;
 const float DefaultValues::MuonMassGeV = 105.6583745E-3;
 const float DefaultValues::TauMassGeV = 1776.86E-3;
 
+const float DefaultValues::ChargedPionMass = 139.57061E-3;
+const float DefaultValues::NeutralPionMass = 134.9770E-3;
+
