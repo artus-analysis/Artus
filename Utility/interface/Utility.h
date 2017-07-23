@@ -278,7 +278,30 @@ namespace Utility {
 		vOut.SetY(vIn.Y());
 		return vOut;
 	}
+	template<class TIn, class TOut>
+	TOut ConvertPxPyPzVector(TIn const& vIn)
+	{
+		TOut vOut;
+		vOut.SetX(vIn.X());
+		vOut.SetY(vIn.Y());
+		vOut.SetZ(vIn.Z());
+		return vOut;
+	}
 	
+	template<class TIn, class TOut>
+	TOut ConvertMatrix(TIn const& mIn, size_t size1, size_t size2)
+	{
+		TOut mOut(size1, size2);
+		for (size_t row = 0; row < size1; ++row)
+		{
+			for (size_t column = 0; column < size2; ++column)
+			{
+				mOut[row][column] = mIn.At(row, column);
+				mOut[column][row] = mIn.At(column, row);
+			}
+		}
+		return mOut;
+	}
 	template<class TIn, class TOut>
 	TOut ConvertMatrixSym(TIn const& mIn, size_t sizeIn, size_t sizeOut=0)
 	{
