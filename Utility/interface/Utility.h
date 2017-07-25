@@ -19,6 +19,7 @@
 #include <Math/Cartesian3D.h>
 #include <Math/SMatrix.h>
 #include <Math/VectorUtil.h>
+#include <TMatrixD.h>
 
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > RMFLV;
@@ -305,7 +306,29 @@ namespace Utility {
 	template<class TIn, class TOut>
 	TOut ConvertMatrixSym(TIn const& mIn, size_t sizeIn, size_t sizeOut=0)
 	{
-		TOut mOut((sizeOut == 0) ? sizeIn : sizeOut, (sizeOut == 0) ? sizeIn : sizeOut);
+		if (sizeOut == 0)
+		{
+			sizeOut = sizeIn;
+		}
+		TOut mOut(sizeOut);
+		for (size_t row = 0; row < sizeIn; ++row)
+		{
+			for (size_t column = row; column < sizeIn; ++column)
+			{
+				mOut[row][column] = mIn.At(row, column);
+				mOut[column][row] = mIn.At(column, row);
+			}
+		}
+		return mOut;
+	}
+	template<class TIn>
+	TMatrixD ConvertMatrixSym(TIn const& mIn, size_t sizeIn, size_t sizeOut=0)
+	{
+		if (sizeOut == 0)
+		{
+			sizeOut = sizeIn;
+		}
+		TMatrixD mOut(sizeOut, sizeOut);
 		for (size_t row = 0; row < sizeIn; ++row)
 		{
 			for (size_t column = row; column < sizeIn; ++column)
