@@ -339,9 +339,9 @@ class ArtusWrapper(object):
 			self._config["BatchMode"] = True
 		else:
 			nickname = self.determineNickname(self._args.nick)
+			log.debug("Prepare config for \""+nickname+"\" sample...")
 			self._config = self._config.doIncludes().doNicks(nickname).doComments()
 			self._config["Nickname"] = nickname
-			log.debug("Prepare config for \""+nickname+"\" sample...")
 
 			#read in external values
 			self.readInExternals()
