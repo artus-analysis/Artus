@@ -92,6 +92,9 @@ public:
 	/// name of lumiMetaData in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, LumiMetadata, "");
 
+	/// name of lumiMetaData in kappa tuple
+	IMPL_SETTING_DEFAULT(std::string, RunMetadata, "");
+
 	/// name of filterMetaData in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, FilterMetadata, "");
 

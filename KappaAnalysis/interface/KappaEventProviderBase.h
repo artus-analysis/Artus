@@ -158,5 +158,20 @@ protected:
 		}
 		return result;
 	}
+
+	template<typename T>
+	T* SecureFileInterfaceGetRun(const std::string &name, const bool check = true, const bool def = false)
+	{
+		T* result = nullptr;
+		if (GetEntries() > 0)
+		{
+			result = this->m_fi.template GetRun<T>(name, check, def);
+			if (result == nullptr)
+			{
+				LOG(FATAL) << "Requested branch (" << name << ") not found!";
+			}
+		}
+		return result;
+	}
 };
 

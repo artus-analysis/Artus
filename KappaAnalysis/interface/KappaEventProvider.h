@@ -131,14 +131,10 @@ public:
 		
 		if (! settings.GetLumiMetadata().empty())
 		{
-			if(settings.GetInputIsData())
+			this->m_event.m_lumiInfo = this->template SecureFileInterfaceGetMeta<KLumiInfo>(settings.GetLumiMetadata());
+			if(!settings.GetInputIsData())
 			{
-				this->m_event.m_lumiInfo = this->template SecureFileInterfaceGetMeta<KLumiInfo>(settings.GetLumiMetadata());
-			}
-			else
-			{
-				this->m_event.m_genLumiInfo = this->template SecureFileInterfaceGetMeta<KGenLumiInfo>(settings.GetLumiMetadata());
-				this->m_event.m_lumiInfo = this->m_event.m_genLumiInfo;
+				this->m_event.m_genRunInfo = this->template SecureFileInterfaceGetRun<KGenRunInfo>(settings.GetRunMetadata());
 			}
 		}
 		if (! settings.GetFilterMetadata().empty())
