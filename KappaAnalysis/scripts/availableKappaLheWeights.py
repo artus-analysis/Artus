@@ -31,6 +31,14 @@ def main():
 	for lheWeightNames in lheWeightNamesMap:
 		mapping.append([lheWeightNames[0], lheWeightNames[1]])
 		
+	log.info("\nNames of available LHE weights (human readable:")
+	for item in sorted(mapping, key=lambda item: item[0]):
+		log.info("\t" + item[0])
+	
+	log.info("\nNames of available LHE weights (index):")
+	for item in sorted(mapping, key=lambda item: int(item[1])):
+		log.info("\t" + item[1])
+	
 	log.info("\nNames of available LHE weights (human readable -> index):")
 	for item in sorted(mapping, key=lambda item: item[0]):
 		log.info("\t" + item[0] + " -> " + item[1])
