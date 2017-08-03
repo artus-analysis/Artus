@@ -38,6 +38,8 @@ def main():
 	log.info("\nNames of available LHE weights (index -> human readable):")
 	for item in sorted(mapping, key=lambda item: int(item[1])):
 		log.info("\t" + item[1] + " -> " + item[0])
+
+
 if __name__ == "__main__":
 	main()
 
