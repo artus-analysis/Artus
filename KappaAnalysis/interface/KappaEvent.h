@@ -89,7 +89,7 @@ public:
 	KEventInfo* m_eventInfo = nullptr;
 	KGenEventInfo* m_genEventInfo = nullptr;
 	KLumiInfo* m_lumiInfo = nullptr;
-	KGenRunInfo* m_genRunInfo = nullptr;
+	KGenLumiInfo* m_genLumiInfo = nullptr;
 	KFilterMetadata* m_filterMetadata = nullptr;
 	KFilterSummary* m_filterSummary = nullptr;
 	KJetMetadata* m_jetMetadata = nullptr;
