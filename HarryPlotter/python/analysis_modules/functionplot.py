@@ -106,6 +106,8 @@ class FunctionPlot(analysisbase.AnalysisBase):
 					plotData.plotdict["root_objects"]["function_fit_result"].SetBinContent(i+1, plotData.fit_results[function_nick].Chi2())
 				elif collect_result.isdigit():
 					plotData.plotdict["root_objects"]["function_fit_result"].SetBinContent(i+1, plotData.fit_results[function_nick].Parameter(int(plotData.plotdict["function_collect_result"])))
+				
+				print "Probability to obtain a Chi2 of " + str(plotData.fit_results[function_nick].Chi2()) + " for an ndf of " + str(plotData.fit_results[function_nick].Ndf()) + " is " + str(ROOT.TMath.Prob(plotData.fit_results[function_nick].Chi2(),plotData.fit_results[function_nick].Ndf()))
 
 	def create_function(self, function, x_min, x_max, start_parameters, nick="", root_histogram=None, fit_backend="ROOT"):
 		"""
