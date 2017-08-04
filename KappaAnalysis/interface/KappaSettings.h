@@ -149,7 +149,7 @@ public:
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonMatchingTaus, true);
 	IMPL_SETTING_DEFAULT(bool, InvalidateNonMatchingJets, true);
 
-	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoElectronsGenParticle, 0.5f);
+	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoElectronGenParticle, 0.5f);
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoMuonGenParticle, 0.5f);
 	IMPL_SETTING_DEFAULT(float, DeltaRMatchingRecoTauGenParticle, 0.5f);
 
@@ -218,6 +218,8 @@ public:
 	IMPL_SETTING_DEFAULT(bool, MatchAllElectronsGenTau, false);
 	IMPL_SETTING_DEFAULT(bool, MatchAllMuonsGenTau, false);
 	IMPL_SETTING_DEFAULT(bool, MatchAllTausGenTau, false);
+	IMPL_SETTING_DEFAULT(bool, MatchGenTauDecayMode, false);
+	IMPL_SETTING_DEFAULT(bool, UseUWGenMatching, false);
 
 	IMPL_SETTING(int, Year);
 
@@ -371,6 +373,7 @@ public:
 	IMPL_SETTING_DEFAULT(bool, VetoMultipleZs, true);
 	IMPL_SETTING_DEFAULT(float, deltaRTolleranceForPF, 0.3);
 	IMPL_SETTING_DEFAULT(float, PtTolleranceForPF, 4.);
+ 	IMPL_SETTING_DEFAULT(bool, MatchPairToPFCandidates, false);
 
 	// Needed for RochMuonCorrectionsProducer
 	IMPL_SETTING_DEFAULT(std::string, MuonEnergyCorrection, "none");
@@ -386,4 +389,5 @@ public:
 	IMPL_SETTING_DEFAULT(bool, CorrectOnlyRealTaus, false);
 
 	IMPL_SETTING_DEFAULT(std::string, DatabasePDG, "$ROOTSYS/etc/pdg_table.txt");
+	IMPL_SETTING_DEFAULT(std::string, GenCollectionToPrint, "all");
 };

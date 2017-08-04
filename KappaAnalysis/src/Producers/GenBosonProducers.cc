@@ -38,7 +38,7 @@ void GenBosonFromGenParticlesProducer::Init(KappaSettings const& settings)
 	});
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genBosonMass", [](KappaEvent const & event, KappaProduct const & product)
 	{
-		return product.m_genBosonLV.mass();
+		return product.m_genBosonLV.M();
 	});
 	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("genBosonLVFound", [](KappaEvent const & event, KappaProduct const & product)
 	{
@@ -270,14 +270,17 @@ void GenBosonDiLeptonDecayModeProducer::FindGenDiLeptons(KappaEvent const& event
 			int pdgId = std::abs(event.m_genParticles->at(*decayParticleIndex).pdgId);
 			if ((pdgId == DefaultValues::pdgIdElectron) ||
 			    (pdgId == DefaultValues::pdgIdMuon) ||
-			    (pdgId == DefaultValues::pdgIdTau))
+			    (pdgId == DefaultValues::pdgIdTau)||
+			    (pdgId == DefaultValues::pdgIdNuTau)||
+			    (pdgId == DefaultValues::pdgIdNuMu)||
+			    (pdgId == DefaultValues::pdgIdNuE))
 			{
 				product.m_genLeptonsFromBosonDecay.push_back(&(event.m_genParticles->at(*decayParticleIndex)));
 			}
-			else
+			/*else
 			{
 				rerun = true;
-			}
+			}*/
 		}
 		if (product.m_genLeptonsFromBosonDecay.size() < 2)
 		{

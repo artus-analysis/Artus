@@ -47,14 +47,6 @@ class ArtusWrapper(object):
 			self.setRepositoryRevisions()
 			self._config["Date"] = date_now
 
-		# write username to the config
-		try:
-			self._config["User"] = os.environ["USER"]
-		except:
-			import random
-			import string
-			self._config["User"] = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
-
 		#Expand Config
 		self.expandConfig()
 		self.projectPath = None
@@ -347,6 +339,7 @@ class ArtusWrapper(object):
 			self._config["BatchMode"] = True
 		else:
 			nickname = self.determineNickname(self._args.nick)
+			log.debug("Prepare config for \""+nickname+"\" sample...")
 			self._config = self._config.doIncludes().doNicks(nickname).doComments()
 			self._config["Nickname"] = nickname
 
@@ -361,7 +354,7 @@ class ArtusWrapper(object):
 			self._config = self._config.doExpandvars()
 
 		# treat remote files
-		if self._args.copy_remote_files:
+		if self._args.copy_remote_files and (not self._args.batch):
 			self.useLocalCopiesOfRemoteFiles()
 
 		# set log level
@@ -464,6 +457,8 @@ class ArtusWrapper(object):
 		                                 help="Open output file in ROOT TBrowser after completion.")
 		runningOptionsGroup.add_argument("-b", "--batch", default=False, const="naf", nargs="?",
 		                                 help="Run with grid-control. Optionally select backend. [Default: %(default)s]")
+		runningOptionsGroup.add_argument("--pilot-job-files", "--pilot-jobs", default=None, const=1, type=int, nargs="?",
+		                                 help="Number of files per sample to be submitted as pilot jobs. [Default: all/1]")
 		runningOptionsGroup.add_argument("--files-per-job", type=int, default=15,
 		                                 help="Files per batch job. [Default: %(default)s]")
 		runningOptionsGroup.add_argument("--area-files", default=None,
@@ -490,7 +485,7 @@ class ArtusWrapper(object):
 	def sendToBatchSystem(self):
 
 		# write dbs file
-		dbsFileContent = tools.write_dbsfile(self._gridControlInputFiles)
+		dbsFileContent = tools.write_dbsfile(self._gridControlInputFiles, max_files_per_nick=self._args.pilot_job_files)
 
 		dbsFileBasename = "datasets.dbs"
 		dbsFileBasepath = os.path.join(self.localProjectPath, dbsFileBasename)
@@ -519,7 +514,9 @@ class ArtusWrapper(object):
 		epilogArguments += r"--print-envvars ROOTSYS CMSSW_BASE DATASETNICK FILE_NAMES LD_LIBRARY_PATH "
 		epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
 		epilogArguments += "--nick $DATASETNICK "
-		epilogArguments += "-i $FILE_NAMES --copy-remote-files"
+		epilogArguments += "-i $FILE_NAMES "
+		if self._args.copy_remote_files:
+			epilogArguments += "--copy-remote-files "
 		if not self._args.ld_library_paths is None:
 			epilogArguments += ("--ld-library-paths %s" % " ".join(self._args.ld_library_paths))
 
@@ -537,7 +534,7 @@ class ArtusWrapper(object):
 				areafiles = self._args.area_files if (self._args.area_files != None) else "",
 				walltime = "wall time = " + self._args.wall_time,
 				memory = "memory = " + str(self._args.memory),
-				cmdargs = "cmdargs = " + self._args.cmdargs,
+				cmdargs = "cmdargs = " + self._args.cmdargs.replace("m 3", "m 3" if self._args.pilot_job_files is None else "m 0"),
 				dataset = "dataset = \n\t:ListProvider:" + dbsFileBasepath,
 				epilogarguments = epilogArguments,
 				seoutputfiles = "se output files = *.root" if self._args.log_to_se else "se output files = *.log *.root",
@@ -565,9 +562,9 @@ class ArtusWrapper(object):
 
 		log.info("Output is written to directory \"%s\"" % sepathRaw)
 		log.info("\nMerge outputs in one file per nick using")
-		if not self.remote_se:
-			log.info("artusMergeOutputs.py %s" % self.projectPath)
-		log.info("artusMergeOutputsWithGC.py %s" % (self.localProjectPath if self.remote_se else self.projectPath))
+		if self.remote_se:
+			log.info("se_output_download.py -lmo %s %s [-t 4]" % (os.path.join(self.localProjectPath, "output"), tmpGcConfigFileBasepath))
+		log.info("artusMergeOutputs.py %s [-n 4]" % (self.localProjectPath if self.remote_se else self.projectPath))
 
 		if exitCode != 0:
 			log.error("Exit with code %s.\n\n" % exitCode)

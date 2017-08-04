@@ -3,16 +3,18 @@
 import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
+import sys
 
 import hashlib
 
 import ROOT
 
 import Artus.HarryPlotter.analysisbase as analysisbase
+import Artus.HarryPlotter.utility.roottools as roottools
 
 
 class SOverBRebinning(analysisbase.AnalysisBase):
-	"""Reorder bins of 1-3D. histograms according to the signal over background ratio, resulting in 1D histograms. All input histograms need to have the same binning."""
+	"""Create s/b rebinned histograms including data points."""
 
 	def modify_argument_parser(self, parser, args):
 		super(SOverBRebinning, self).modify_argument_parser(parser, args)
@@ -27,21 +29,64 @@ class SOverBRebinning(analysisbase.AnalysisBase):
 				help="Nick names (whitespace separated) for the background histograms."
 		)
 		self.rebinning_options.add_argument(
-				"--rebinning-nicks", type=str, nargs="+", default=[],
-				help="Nick names (whitespace separated) for the histograms to be rebinned."
+				"--data-nicks", type=str, nargs="+", default=[],
+				help="Nick names (whitespace separated) for the data histograms."
+		)
+		self.rebinning_options.add_argument(
+				"--rebinned-binning", type=str, nargs="+", default=[]
+		)
+		self.rebinning_options.add_argument(
+				"--rebinned-name", type=str, nargs="+", default=[]
 		)
 
 	def prepare_args(self, parser, plotData):
 		super(SOverBRebinning, self).prepare_args(parser, plotData)
-		self.prepare_list_args(plotData, ["signal_nicks", "background_nicks", "rebinning_nicks"])
-		plotData.plotdict["signal_nicks"] = [nicks.split() for nicks in plotData.plotdict["signal_nicks"]]
-		plotData.plotdict["background_nicks"] = [nicks.split() for nicks in plotData.plotdict["background_nicks"]]
-		plotData.plotdict["rebinning_nicks"] = [nicks.split() for nicks in plotData.plotdict["rebinning_nicks"]]
+		self.prepare_list_args(plotData, ["signal_nicks", "background_nicks", "data_nicks", "rebinned_binning", "rebinned_name"])
 
 	def run(self, plotData=None):
 		super(SOverBRebinning, self).run(plotData)
-		
-		for signal_nicks, background_nicks, rebinning_nicks in zip(*[plotData.plotdict[k] for k in ["signal_nicks", "background_nicks", "rebinning_nicks"]]):
+		for signal_nick, background_nick, data_nick, rebinning_binning, rebinned_name in zip(*[plotData.plotdict[k] for k in ["signal_nicks", "background_nicks", "data_nicks", "rebinned_binning", "rebinned_name"]]):
+			binning = [float(a) for a in rebinning_binning.split(" ")]
+			log.debug("rebinned_name: ", rebinned_name + "_s")
+
+			signal_histo = roottools.RootTools.create_root_histogram(binning, name = rebinned_name + "_s")
+			bkg_histo = roottools.RootTools.create_root_histogram(binning, name = rebinned_name + "_b")
+			data_histo = roottools.RootTools.create_root_histogram(binning, name = rebinned_name + "_data")
+			nbinsX = plotData.plotdict["root_objects"][signal_nick].GetNbinsX()
+			log.debug( signal_nick, " / ", background_nick, " / ", data_nick )
+
+			for xbin in range(1,nbinsX,1):
+				signal = plotData.plotdict["root_objects"][signal_nick].GetBinContent(xbin)
+				signal_e = plotData.plotdict["root_objects"][signal_nick].GetBinError(xbin)
+				bkg = plotData.plotdict["root_objects"][background_nick].GetBinContent(xbin)
+				bkg_e = plotData.plotdict["root_objects"][background_nick].GetBinError(xbin)
+				data = plotData.plotdict["root_objects"][data_nick].GetBinContent(xbin)
+				data_e = plotData.plotdict["root_objects"][data_nick].GetBinError(xbin)
+				sb = signal / (signal+bkg)
+				if sb < binning[0]:
+					sb = binning[0]
+				current_bin = signal_histo.FindBin(sb)
+
+				signal_histo.SetBinContent(current_bin, signal+signal_histo.GetBinContent(current_bin))
+				signal_histo.SetBinError(current_bin, signal_e+signal_histo.GetBinError(current_bin))
+
+				bkg_histo.SetBinContent(current_bin, bkg+bkg_histo.GetBinContent(current_bin))
+				bkg_histo.SetBinError(current_bin, bkg_e+bkg_histo.GetBinError(current_bin))
+
+				data_histo.SetBinContent(current_bin, data+data_histo.GetBinContent(current_bin))
+				data_histo.SetBinError(current_bin, data_e+data_histo.GetBinError(current_bin))
+
+				if (sb > 0.1):
+					print data_nick, " : ", sb, ", content: ", data, ", bin: ", xbin, ", signal:", signal, " bg: ", bkg
+			
+			plotData.plotdict["nicks"].append(rebinned_name + "_s")
+			plotData.plotdict["nicks"].append(rebinned_name + "_b")
+			plotData.plotdict["nicks"].append(rebinned_name + "_data")
+			plotData.plotdict["root_objects"][rebinned_name + "_s"] = signal_histo
+			plotData.plotdict["root_objects"][rebinned_name + "_b"] = bkg_histo
+			plotData.plotdict["root_objects"][rebinned_name + "_data"] = data_histo
+
+
 			name_hash = hashlib.md5("_".join([str(signal_nicks), str(background_nicks), str(rebinning_nicks)])).hexdigest()
 			
 			signal_histogram = None

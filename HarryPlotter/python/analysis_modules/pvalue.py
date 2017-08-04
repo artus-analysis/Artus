@@ -13,7 +13,7 @@ import math
 import ROOT
 
 import Artus.HarryPlotter.analysisbase as analysisbase
-
+import Artus.Utility.tools as tools
 
 class PValue(analysisbase.AnalysisBase):
 	"""Build PValue graphs from two histograms"""
@@ -85,14 +85,14 @@ class PValue(analysisbase.AnalysisBase):
 			pvalue=alternative_hypothesis_integral_fromq/alternative_hypothesis_integral_full
 			print "pvalue=", pvalue
 
-			significance_in_sigma = ROOT.Math.normal_quantile_c(pvalue ,+1.0)
+			significance_in_sigma = tools.pvalue2sigma(pvalue)
 
-			print "sigmas=", significance_in_sigma
+			print "sigmas	= ", significance_in_sigma
 
-		"""	
+		"""
 			PValue_graph_name = "histogram_" + hashlib.md5("_".join([plotData.plotdict["root_objects"][PValue_numerator_nick].GetName(),
 			                                                             plotData.plotdict["root_objects"][PValue_denominator_nick].GetName()])).hexdigest()
-			
+
 			PValue_graph = ROOT.TGraphAsymmErrors(
 					plotData.plotdict["root_objects"][PValue_numerator_nick],
 					plotData.plotdict["root_objects"][PValue_denominator_nick]

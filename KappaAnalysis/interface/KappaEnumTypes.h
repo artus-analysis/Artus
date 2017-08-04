@@ -91,5 +91,14 @@ public:
 		OTHER = 1,
 	};
 	static BTagScaleFactorMethod ToBTagScaleFactorMethod(std::string const& bTagSFMethod);
+
+	enum class GenCollectionToPrint : int
+	{
+		NONE = -1,
+		ALL = 0,
+		GEN = 1,
+		LHE = 2,
+	};
+	static GenCollectionToPrint ToGenCollectionToPrint(std::string const& genCollectionToPrint);
 };
 

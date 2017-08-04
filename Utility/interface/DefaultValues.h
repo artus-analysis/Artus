@@ -46,4 +46,7 @@ public:
     static const float ElectronMassGeV;
     static const float MuonMassGeV;
     static const float TauMassGeV;
+    
+    static const float ChargedPionMass;
+    static const float NeutralPionMass;
 };

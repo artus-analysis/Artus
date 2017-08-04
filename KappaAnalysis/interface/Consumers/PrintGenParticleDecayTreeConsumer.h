@@ -2,8 +2,9 @@
 
 #include "Artus/Core/interface/ConsumerBase.h"
 #include "Artus/KappaAnalysis/interface/KappaTypes.h"
+#include "Artus/KappaAnalysis/interface/KappaEnumTypes.h"
+#include "Artus/KappaAnalysis/interface/Utility/GenParticleDecayTreePrinter.h"
 
-#include "TDatabasePDG.h"
 
 
 class PrintGenParticleDecayTreeConsumer: public ConsumerBase<KappaTypes>
@@ -27,8 +28,8 @@ public:
 	void Finish(setting_type const& settings) override;
 
 private:
-	void PrintDecayTree(KGenParticle const& genParticle, event_type const& event, int level) const;
+	GenParticleDecayTreePrinter genParticleDecayTreePrinter;
+	KappaEnumTypes::GenCollectionToPrint genCollectionToPrint = KappaEnumTypes::GenCollectionToPrint::NONE;
 
-	TDatabasePDG m_databasePDG;
 };
 

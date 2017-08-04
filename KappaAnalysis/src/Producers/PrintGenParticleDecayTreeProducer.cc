@@ -1,27 +1,22 @@
 
-#include "Artus/KappaAnalysis/interface/Consumers/PrintGenParticleDecayTreeConsumer.h"
-#include "Artus/Utility/interface/DefaultValues.h"
+#include "Artus/KappaAnalysis/interface/Producers/PrintGenParticleDecayTreeProducer.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/trim.hpp>
 
 
-PrintGenParticleDecayTreeConsumer::PrintGenParticleDecayTreeConsumer() : ConsumerBase<KappaTypes>()
+std::string PrintGenParticleDecayTreeProducer::GetProducerId() const
 {
+	return "PrintGenParticleDecayTreeProducer";
 }
 
-std::string PrintGenParticleDecayTreeConsumer::GetConsumerId() const
-{
-	return "PrintGenParticleDecayTreeConsumer";
-}
-
-void PrintGenParticleDecayTreeConsumer::Init(setting_type const& settings)
+void PrintGenParticleDecayTreeProducer::Init(KappaSettings const& settings)
 {
 	genParticleDecayTreePrinter.InitPDGDatabase(settings.GetDatabasePDG());
 	genCollectionToPrint = KappaEnumTypes::ToGenCollectionToPrint(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetGenCollectionToPrint())));
 }
 
-void PrintGenParticleDecayTreeConsumer::ProcessFilteredEvent(event_type const& event, product_type const& product, setting_type const& settings)
+void PrintGenParticleDecayTreeProducer::Produce(KappaEvent const& event, KappaProduct & product, KappaSettings const& settings) const
 {
 	LOG(INFO) << "Processed event: run = " << event.m_eventInfo->nRun << ", lumi = " << event.m_eventInfo->nLumi << ", event = " << event.m_eventInfo->nEvent << ", pipeline = " << settings.GetName();
 	
@@ -42,9 +37,5 @@ void PrintGenParticleDecayTreeConsumer::ProcessFilteredEvent(event_type const& e
 		genParticleDecayTreePrinter.PrintLHEParticlesDecayTree(event.m_lheParticles);
 		LOG(INFO) << "==================================================";
 	}
-}
-
-void PrintGenParticleDecayTreeConsumer::Finish(setting_type const& settings)
-{
 }
 

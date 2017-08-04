@@ -17,7 +17,6 @@ import numpy
 import os
 import sys
 import re
-import tempfile
 
 import ROOT
 ROOT.gEnv.SetValue("TFile.AsyncPrefetching", 1)
@@ -207,7 +206,8 @@ class RootTools(object):
 		                    x_expression, y_expression=None, z_expression=None,
 		                    x_bins=None, y_bins=None, z_bins=None,
 		                    weight_selection="", option="", name=None,
-		                    friend_files=None, friend_folders=None, friend_alias=None):
+		                    friend_files=None, friend_folders=None, friend_alias=None,
+		                    proxy_prefix=None):
 		"""
 		Read histograms from trees
 	
@@ -365,6 +365,8 @@ class RootTools(object):
 					"htemp = fDirector.CreateHistogram(GetOption());", "htemp = (TH1*)gDirectory->Get(\"{name}\");".format(name=name)
 			).replace(
 					"htemp->SetTitle", "//htemp->SetTitle"
+			).replace(
+					"using namespace ROOT;", proxy_prefix+"\nusing namespace ROOT;"
 			)
 			with open(proxy_class_filename, "w") as proxy_class_file:
 				proxy_class_file.write(proxy_class_content)
@@ -409,7 +411,9 @@ class RootTools(object):
 		else:
 			if ("proxy" in option) and (not proxy_call is None):
 				log.debug("ROOT.TTree.Process(\"" + proxy_call + "\")")
-				tree.Process(proxy_call)
+				result = tree.Process(proxy_call)
+				if result < 0:
+					log.error("Reading input based on proxy failed. Try preserving all proxy files by using debug logging (--log-level debug).")
 			else:
 				log.debug("ROOT.TTree.Project(\"" + name + "\", \"" + variable_expression + "\", \"" + str(weight_selection) + "\", \"" + option + "\" GOFF\")")
 				tree.Project(name, variable_expression, str(weight_selection), option + " GOFF")

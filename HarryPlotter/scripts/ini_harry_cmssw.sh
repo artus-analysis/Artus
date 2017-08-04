@@ -16,14 +16,6 @@ if [[ -z ${HARRY_SSHPC} ]]; then
 		export HARRY_SSHPC=$HARRY_USERPC
 	elif [[ $HARRY_USERPC == *"rwth"* ]]; then
 		export HARRY_SSHPC=$HARRY_USERPC
-	else
-		# find a reachable host - try ekplxs in different offices
-		for lxid in 26 30 69 77 14 17 21 25; do
-			if ping -c 1 ekplx${lxid}.ekp.kit.edu 2>/dev/null 1>&2; then
-				export HARRY_SSHPC=ekplx${lxid}.ekp.kit.edu
-				break
-			fi
-		done
 	fi
 	if [[ -z ${HARRY_SSHPC} ]]; then
 		echo "Failed to find reachable \$HARRY_SSHP host" 1>&2

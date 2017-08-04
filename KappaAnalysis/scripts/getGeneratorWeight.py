@@ -34,7 +34,7 @@ def main():
 	for (fileindex, file_name) in enumerate(args.files):
 		
 		# retrieve weights and total number of events
-		root_file = ROOT.TFile(file_name, "READ")
+		root_file = ROOT.TFile.Open(file_name, "READ")
 		lumiTree = root_file.Get("Lumis")
 		n_entries = lumiTree.GetEntries()
 		

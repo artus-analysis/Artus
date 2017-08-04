@@ -149,12 +149,17 @@ class ZProducerBase : public KappaProducerBase
 	}
 
 	if (product.m_found_zs >1 && settings.GetVetoMultipleZs()) resetZ(product);
-	if(product.m_zValid)
+	if(product.m_zValid && settings.GetMatchPairToPFCandidates())
 	{
 		product.m_zPFLeptonsMatched =
 			std::make_pair(determine_pfCandidate_for_lepton(product, settings, true),
 			               determine_pfCandidate_for_lepton(product, settings, false) );
 		product.m_theta_Z_LepMinus = calculate_theta_Z_LepMinus(product);
+
+		if (product.m_zPFLeptonsMatched.first == nullptr or product.m_zPFLeptonsMatched.second == nullptr) {
+			//std::cout << "Failed match" << std::endl;
+			product.m_zValid = false;
+		}
 	}
 	return;
 }

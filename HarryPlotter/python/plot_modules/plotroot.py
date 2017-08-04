@@ -97,6 +97,14 @@ class PlotRoot(plotbase.PlotBase):
 		                               help="Reverse Y axis labelling. [Default: %(default)s]")
 		self.axis_options.add_argument("--reverse-z-axis", nargs="?", type="bool", default=False, const=True,
 		                               help="Reverse Z axis labelling. [Default: %(default)s]")
+		self.axis_options.add_argument("--x-labels-vertical", action="store_true", default=False,
+		                               help="Draw vertical X axis labels. [Default: %(default)s]")
+		self.axis_options.add_argument("--x-title-offset", type=float, default=None,
+		                               help="Manually set title offset for X axis. [Default: %(default)s]")
+		self.axis_options.add_argument("--y-title-offset", type=float, default=None,
+		                               help="Manually set title offset for Y axis. [Default: %(default)s]")
+		self.axis_options.add_argument("--y-subplot-title-offset", type=float, default=None,
+		                               help="Manually set title offset for Y axis of subplot. [Default: %(default)s]")
 		
 		self.canvas_options.add_argument("--left-pad-margin", type=float, default=None,
 		                               help="Left margin of pad. [Default: automatically determined]")
@@ -139,6 +147,8 @@ class PlotRoot(plotbase.PlotBase):
 											help="Year of data taking is written in front of integrated luminosity.")
 		self.formatting_options.add_argument("--set-paint-text-format", type=str, nargs="?", default=None,
 											help="Set the number of digits that are printed when using the draw option TEXT. [Default: ROOT default]")
+		self.formatting_options.add_argument("--no-fit-results-box", action="store_true", default=False,
+											help="Do not display fit results. [Default: ROOT default]")
 		
 	def prepare_args(self, parser, plotData):
 		super(PlotRoot, self).prepare_args(parser, plotData)
@@ -233,6 +243,9 @@ class PlotRoot(plotbase.PlotBase):
 		
 		if plotData.plotdict["set_paint_text_format"] != None:
 			ROOT.gStyle.SetPaintTextFormat(plotData.plotdict["set_paint_text_format"])
+		
+		if plotData.plotdict["no_fit_results_box"]:
+			ROOT.gStyle.SetOptFit(0)
 		
 		# load custom painter (fixes for horizontal histograms)
 		roottools.RootTools.load_compile_macro(os.path.expandvars("$ARTUSPATH/HarryPlotter/python/utility/customhistogrampainter.C"))
@@ -709,6 +722,22 @@ class PlotRoot(plotbase.PlotBase):
 			self.subplot_axes_histogram.GetYaxis().SetTitleOffset(self.subplot_axes_histogram.GetYaxis().GetTitleOffset() * self.plot_subplot_slider_y)
 			self.subplot_axes_histogram.GetYaxis().SetNdivisions(5, 0, 0)
 		
+		if not plotData.plotdict["x_title_offset"] is None:
+			if not self.subplot_axes_histogram is None:
+				self.subplot_axes_histogram.GetXaxis().SetTitleOffset(plotData.plotdict["x_title_offset"])
+			else:
+				self.axes_histogram.GetXaxis().SetTitleOffset(plotData.plotdict["x_title_offset"])
+		if not plotData.plotdict["y_title_offset"] is None:
+			self.axes_histogram.GetYaxis().SetTitleOffset(plotData.plotdict["y_title_offset"])
+		if not self.subplot_axes_histogram is None and not plotData.plotdict["y_subplot_title_offset"] is None:
+			self.subplot_axes_histogram.GetYaxis().SetTitleOffset(plotData.plotdict["y_subplot_title_offset"])
+		
+		if plotData.plotdict["x_labels_vertical"]:
+			if not self.subplot_axes_histogram is None:
+				self.subplot_axes_histogram.LabelsOption("v", "X")
+			else:
+				self.axes_histogram.LabelsOption("v", "X")
+		
 		palettes = [(root_object if isinstance(root_object, ROOT.TH1) else root_object.GetHistogram()).GetListOfFunctions().FindObject("palette") for root_object in plotData.plotdict["root_objects"].values()]
 		if all([palette == None for palette in palettes]) and (plotData.plotdict["right_pad_margin"] is None):
 			plotData.plot.plot_pad.SetRightMargin(0.05)
@@ -819,11 +848,14 @@ class PlotRoot(plotbase.PlotBase):
 
 		# lumi and energy: outside plot, top right, with best possible offset
 		if self.dataset_title != "":
-			self.dataset_title = re.sub(r"\\mathrm{(fb|pb)}", re.search(r"\\mathrm{(fb|pb)}", self.dataset_title).group(1), self.dataset_title)
-			year = "("
-			if plotData.plotdict["year"] != "":
-				year += plotData.plotdict["year"] + ", "
-			CMS_lumi.lumi_sqrtS = self.dataset_title.replace("$", "").replace("\,", "").split("(")[0] + year + self.dataset_title.replace("$", "").replace("\,", "").split("(")[1]
+			if "Simulation" in plotData.plotdict["extra_text"]:
+				CMS_lumi.lumi_sqrtS = ""
+			else:
+				self.dataset_title = re.sub(r"\\mathrm{(fb|pb)}", re.search(r"\\mathrm{(fb|pb)}", self.dataset_title).group(1), self.dataset_title)
+				year = "("
+				if plotData.plotdict["year"] != "":
+					year += plotData.plotdict["year"] + ", "
+					CMS_lumi.lumi_sqrtS = self.dataset_title.replace("$", "").replace("\,", "").split("(")[0] + year + self.dataset_title.replace("$", "").replace("\,", "").split("(")[1]
 			CMS_lumi.lumiTextSize = 0.5
 			if not self.subplot_axes_histogram is None:
 				CMS_lumi.lumiTextOffset = 0.4

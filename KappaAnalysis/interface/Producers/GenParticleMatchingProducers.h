@@ -226,7 +226,7 @@ private:
  *  Required config tags:
  *  - RecoElectronMatchingGenParticlePdgIds (default provided)
  *  - RecoElectronMatchingGenParticleStatus (every status is used by default)
- *  - DeltaRMatchingRecoElectronsGenParticle (default provided)
+ *  - DeltaRMatchingRecoElectronGenParticle (default provided)
  *  - InvalidateNonGenParticleMatchingRecoElectrons (default provided)
  *  - InvalidateGenParticleMatchingRecoElectrons (default provided)
  */

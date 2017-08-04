@@ -19,6 +19,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gErrorIgnoreLevel = ROOT.kError
 
 import Artus.Utility.tools as tools
+import Artus.Utility.dcachetools as dcachetools
 
 
 class JsonDict(dict):
@@ -351,7 +352,7 @@ class JsonDict(dict):
 	@staticmethod
 	def deepreplaceremotefiles(jsonDict, tmp_directory, remote_identifiers=None):
 		""" download remote files in dictionary values first and point to this copies in the dictionary """
-		remote_identifiers = ["dcap", "root"]
+		remote_identifiers = ["dcap", "root", "srm"]
 		
 		if not os.path.exists(tmp_directory):
 			os.makedirs(tmp_directory)
@@ -366,17 +367,24 @@ class JsonDict(dict):
 			for item in jsonDict:
 				result.append(JsonDict.deepreplaceremotefiles(item, tmp_directory, remote_identifiers))
 		elif isinstance(jsonDict, basestring):
-			if any([jsonDict.startswith(remote_identifier) for remote_identifier in remote_identifiers]):
-				prefix, suffix = os.path.splitext(os.path.basename(jsonDict))
-				result = tempfile.mktemp(prefix=prefix+"_", suffix=suffix, dir=tmp_directory)
-				copy_command = "gfal-copy --force {remote} file://{local}".format(remote=jsonDict, local=result)
+			if any([jsonDict.strip().rstrip().startswith(remote_identifier) for remote_identifier in remote_identifiers]):
+				#prefix, suffix = os.path.splitext(jsonDict.strip().rstrip())
+				#result = tempfile.mktemp(prefix=prefix+"_", suffix=suffix, dir=tmp_directory)
+				result = os.path.join(tmp_directory, jsonDict.strip().rstrip().replace(":", "_").replace("/", "__")[-200:])
+				copy_command = "gfal-copy --timeout 1800 --force {remote} file://{local}".format(remote=dcachetools.xrd2srm(jsonDict), local=result)
 				log.debug(copy_command)
+				success = True
 				try:
 					exitCode = logger.subprocessCall(copy_command.split())
 					if exitCode != 0:
 						result = jsonDict
+						success = False
 				except:
 					result = jsonDict
+					success = False
+				if not success:
+					log.critical("Could not download \""+jsonDict+"\"!")
+					#sys.exit(1)
 			else:
 				result = jsonDict
 		else:

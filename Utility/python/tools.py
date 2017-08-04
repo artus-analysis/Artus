@@ -17,6 +17,7 @@ import textwrap
 import shlex
 import subprocess
 import time
+import ROOT
 
 from difflib import SequenceMatcher
 
@@ -168,19 +169,21 @@ def parallelize(function, arguments_list, n_processes=1, description=None):
 		return results
 	else:
 		pool = multiprocessing.Pool(processes=max(1, min(n_processes, len(arguments_list))))
-		results = pool.map_async(function, arguments_list)
+		results = pool.map_async(function, arguments_list, chunksize=1)
 		n_tasks = len(arguments_list)
-		left = n_tasks
+		left = n_tasks-1
 		import Artus.Utility.progressiterator as pi
 		progress_iterator = pi.ProgressIterator(range(n_tasks), description=(description if description else "calling "+str(function)))
 		progress_iterator.next()
 		while (True):
-			if (results.ready()): break
+			ready = results.ready()
 			remaining = results._number_left
-			if remaining < left:
+			if ready or (remaining < left):
 				for i in range(left-remaining):
 					progress_iterator.next()
 				left = remaining
+			if ready:
+				break
 			time.sleep(1.0)
 		returnvalue = results.get(9999999)
 		pool.close() # necessary to actually terminate the processes
@@ -216,11 +219,11 @@ def hadd(target_file, source_files, hadd_args="", max_files=500):
 			os.remove(last_target_file)
 	return exit_code
 
-def write_dbsfile(input_files):
+def write_dbsfile(input_files, max_files_per_nick=None):
 	dbsFileContent = ""
 	for nickname, filelist in input_files.iteritems():
 		dbsFileContent += "\n[" + nickname + "]\nnickname = " + nickname + "\n"
-		for inputEntry in filelist:
+		for inputEntry in filelist[:max_files_per_nick]:
 			dbsFileContent += inputEntry + "\n"
 
 	return dbsFileContent
@@ -320,11 +323,13 @@ def _merge_sequences(seq1,seq2):
 		raise ValueError("Sequences have non-unique elements or differently ordered subsequences")
 	return res
 
-
-
-
 def subprocessCall(args, **kwargs):
 	kwargs["stdout"] = subprocess.PIPE
 	kwargs["stderr"] = subprocess.PIPE
 	return subprocess.Popen(args, **kwargs).communicate()
 
+def pvalue2sigma(pvalue):
+	return ROOT.Math.normal_quantile_c(pvalue/2, 1.0)
+
+def sigma2pvalue(sigma):
+	return 2*ROOT.Math.normal_cdf_c(sigma)

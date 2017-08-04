@@ -39,7 +39,7 @@ class ProgressIterator(object):
 				sys.stdout.write(line)
 				sys.stdout.flush()
 		
-		if self.current_index == self.len and self.visible:
+		if (self.current_index == self.len-1) and self.visible:
 			sys.stdout.write("\r\033[J")
 			sys.stdout.flush()
 		
