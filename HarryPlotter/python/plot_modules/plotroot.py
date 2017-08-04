@@ -139,6 +139,8 @@ class PlotRoot(plotbase.PlotBase):
 											help="Year of data taking is written in front of integrated luminosity.")
 		self.formatting_options.add_argument("--set-paint-text-format", type=str, nargs="?", default=None,
 											help="Set the number of digits that are printed when using the draw option TEXT. [Default: ROOT default]")
+		self.formatting_options.add_argument("--no-fit-results-box", action="store_true", default=False,
+											help="Do not display fit results. [Default: ROOT default]")
 		
 	def prepare_args(self, parser, plotData):
 		super(PlotRoot, self).prepare_args(parser, plotData)
@@ -233,6 +235,9 @@ class PlotRoot(plotbase.PlotBase):
 		
 		if plotData.plotdict["set_paint_text_format"] != None:
 			ROOT.gStyle.SetPaintTextFormat(plotData.plotdict["set_paint_text_format"])
+		
+		if plotData.plotdict["no_fit_results_box"]:
+			ROOT.gStyle.SetOptFit(0)
 		
 		# load custom painter (fixes for horizontal histograms)
 		roottools.RootTools.load_compile_macro(os.path.expandvars("$ARTUSPATH/HarryPlotter/python/utility/customhistogrampainter.C"))
