@@ -3,6 +3,7 @@
 
 //#include <boost/scoped_ptr.hpp>
 
+#include <TDirectory.h>
 #include <TH1.h>
 #include "TROOT.h"
 
@@ -115,6 +116,7 @@ private:
 		int nFilters = filterNames.size();
 
 		// histograms
+		TDirectory* tmpDirectory = gDirectory;
 		RootFileHelper::SafeCd( setting.GetRootOutFile(),
 		                        setting.GetRootFileFolder());
 
@@ -129,6 +131,8 @@ private:
 			                                 cutFlowHistTitle.c_str(),
 			                                 nFilters+1, 0.0, nFilters+1.0);
 		}
+		
+		gDirectory = tmpDirectory;
 
 		// names for bins
 		int bin = 1;
