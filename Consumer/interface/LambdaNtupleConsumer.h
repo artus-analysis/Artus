@@ -6,6 +6,7 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 
+#include <TDirectory.h>
 #include <TTree.h>
 #include <Math/Vector4D.h>
 #include <Math/Vector4Dfwd.h>
@@ -366,8 +367,10 @@ public:
 		}
 
 		// create tree
+		TDirectory* tmpDirectory = gDirectory;
 		RootFileHelper::SafeCd(settings.GetRootOutFile(), settings.GetRootFileFolder());
 		m_tree = new TTree("ntuple", ("Tree for Pipeline \"" + settings.GetName() + "\"").c_str());
+		gDirectory = tmpDirectory;
 
 		// create branches
 		m_boolValues.resize(m_boolValueExtractors.size());
