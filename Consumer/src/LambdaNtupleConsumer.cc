@@ -1,6 +1,9 @@
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
 
 
+typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > RMFLV;
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > CartesianRMFLV;
+
 std::map<std::string, std::function<bool(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonBoolQuantities
 	= std::map<std::string, std::function<bool(EventBase const&, ProductBase const& ) >>();
 
@@ -22,6 +25,9 @@ std::map<std::string, std::function<ROOT::Math::PtEtaPhiMVector(EventBase const&
 std::map<std::string, std::function<RMFLV(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonRMFLVQuantities
 	= std::map<std::string, std::function<RMFLV(EventBase const&, ProductBase const& ) >>();
 
+std::map<std::string, std::function<CartesianRMFLV(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonCartesianRMFLVQuantities
+	= std::map<std::string, std::function<CartesianRMFLV(EventBase const&, ProductBase const& ) >>();
+
 std::map<std::string, std::function<std::string(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonStringQuantities
 	= std::map<std::string, std::function<std::string(EventBase const&, ProductBase const& ) >>();
 
@@ -39,6 +45,4 @@ std::map<std::string, std::function<std::vector<std::string>(EventBase const&, P
 
 std::map<std::string, std::function<std::vector<int>(EventBase const&, ProductBase const& ) >> LambdaNtupleQuantities::CommonVIntQuantities
 	= std::map<std::string, std::function<std::vector<int>(EventBase const&, ProductBase const& ) >>();
-
-
 
