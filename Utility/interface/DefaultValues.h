@@ -7,11 +7,15 @@
 // never a good idea and the outcome can depend of compile and platform
 class DefaultValues {
 public:
+	typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > RMFLV;
+	typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > CartesianRMFLV;
+
 	// values set in .cc file
     static const int UndefinedInt;
     static const float UndefinedFloat;
     static const double UndefinedDouble;
     static const RMFLV UndefinedRMFLV;
+    static const CartesianRMFLV UndefinedCartesianRMFLV;
     
     static const float EtaBorderEB;
     
