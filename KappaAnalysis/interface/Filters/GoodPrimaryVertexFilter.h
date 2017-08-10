@@ -11,6 +11,7 @@
 /** Filter events
  *  Config tags:
  *   - GenDiLeptonDecayMode
+ *   - GenDiLeptonDecayModeLFV
  */
 class GoodPrimaryVertexFilter: public FilterBase<KappaTypes>
 {
