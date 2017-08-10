@@ -28,6 +28,8 @@
 #include "Artus/KappaAnalysis/interface/Producers/SampleStitchingWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/TmvaClassificationReaderBase.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenDiLeptonDecayModeProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/LHEDiLeptonDecayModeProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/GenDiLeptonDecayModeLFVProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/GenPartonCounterProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/EmbeddingWeightProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/NicknameProducer.h"
@@ -163,6 +165,10 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new GeneralTmvaClassificationReader();
 	else if(id == GenDiLeptonDecayModeProducer().GetProducerId())
 		return new GenDiLeptonDecayModeProducer();
+	else if(id == LHEDiLeptonDecayModeProducer().GetProducerId())
+		return new LHEDiLeptonDecayModeProducer();
+	else if(id == GenDiLeptonDecayModeLFVProducer().GetProducerId())
+		return new GenDiLeptonDecayModeLFVProducer();
 	else if(id == GenPartonCounterProducer().GetProducerId())
 		return new GenPartonCounterProducer();
 	else if(id == EmbeddingWeightProducer().GetProducerId())

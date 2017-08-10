@@ -61,3 +61,20 @@ protected:
 	                      KappaSettings const& settings) const;
 };
 
+
+class GenBosonDiLeptonDecayModeLFVProducer: public GenBosonFromGenParticlesProducer
+{
+public:
+
+	std::string GetProducerId() const override;
+
+	void Init(KappaSettings const& settings) override;
+
+	void Produce(KappaEvent const& event, KappaProduct& product,
+	             KappaSettings const& settings) const override;
+
+protected:
+
+	void FindGenDiLeptons(KappaEvent const& event, KappaProduct& product,
+	                      KappaSettings const& settings) const;
+};

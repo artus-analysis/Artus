@@ -17,7 +17,22 @@ KappaEnumTypes::DiLeptonDecayMode KappaEnumTypes::ToDiLeptonDecayMode(std::strin
 	else if (diLeptonDecayMode == "mm") return KappaEnumTypes::DiLeptonDecayMode::MM;
 	else if (diLeptonDecayMode == "tt") return KappaEnumTypes::DiLeptonDecayMode::TT;
 	else if (diLeptonDecayMode == "ll") return KappaEnumTypes::DiLeptonDecayMode::LL;
+	else if (diLeptonDecayMode == "em") return KappaEnumTypes::DiLeptonDecayMode::EM;
+	else if (diLeptonDecayMode == "et") return KappaEnumTypes::DiLeptonDecayMode::ET;
+	else if (diLeptonDecayMode == "mt") return KappaEnumTypes::DiLeptonDecayMode::MT;
 	return KappaEnumTypes::DiLeptonDecayMode::NONE;
+}
+
+KappaEnumTypes::DiLeptonDecayModeLFV KappaEnumTypes::ToDiLeptonDecayModeLFV(std::string const& diLeptonDecayModeLFV)
+{
+	if (diLeptonDecayModeLFV == "ee") return KappaEnumTypes::DiLeptonDecayModeLFV::EE;
+	else if (diLeptonDecayModeLFV == "mm") return KappaEnumTypes::DiLeptonDecayModeLFV::MM;
+	else if (diLeptonDecayModeLFV == "tt") return KappaEnumTypes::DiLeptonDecayModeLFV::TT;
+	else if (diLeptonDecayModeLFV == "ll") return KappaEnumTypes::DiLeptonDecayModeLFV::LL;
+	else if (diLeptonDecayModeLFV == "em") return KappaEnumTypes::DiLeptonDecayModeLFV::EM;
+	else if (diLeptonDecayModeLFV == "et") return KappaEnumTypes::DiLeptonDecayModeLFV::ET;
+	else if (diLeptonDecayModeLFV == "mt") return KappaEnumTypes::DiLeptonDecayModeLFV::MT;
+	return KappaEnumTypes::DiLeptonDecayModeLFV::NONE;
 }
 
 KappaEnumTypes::ValidJetsInput KappaEnumTypes::ToValidJetsInput(std::string const& validJetsInput)
