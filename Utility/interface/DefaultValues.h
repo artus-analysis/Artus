@@ -44,6 +44,13 @@ public:
 	static const int pdgIdNuMu;
 	static const int pdgIdTau;
 	static const int pdgIdNuTau;
+	
+	static const int pdgIdDown;
+	static const int pdgIdUp;
+	static const int pdgIdStrange;
+	static const int pdgIdCharm;
+	static const int pdgIdBottom;
+	static const int pdgIdTop;
 
 	static const int pdgIdAOnePlus1260;
 

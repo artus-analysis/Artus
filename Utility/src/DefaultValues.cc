@@ -39,6 +39,13 @@ const int DefaultValues::pdgIdNuMu = 14;
 const int DefaultValues::pdgIdTau = 15;
 const int DefaultValues::pdgIdNuTau = 16;
 
+const int DefaultValues::pdgIdDown = 1;
+const int DefaultValues::pdgIdUp = 2;
+const int DefaultValues::pdgIdStrange = 3;
+const int DefaultValues::pdgIdCharm = 4;
+const int DefaultValues::pdgIdBottom = 5;
+const int DefaultValues::pdgIdTop = 6;
+
 const int DefaultValues::pdgIdAOnePlus1260 = 20213;
 
 const float DefaultValues::ElectronMassGeV = 0.5109989461E-3;
