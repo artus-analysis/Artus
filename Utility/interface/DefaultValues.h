@@ -24,7 +24,7 @@ public:
 	static const int pdgIdZ;
 	static const int pdgIdW;
 	static const int pdgIdH;
-	static const int pdgIdHCPOdd;
+	static const int pdgIdHCPEven;
 	static const int pdgIdACPOdd;
 
 	static const int pdgIdPiZero;
