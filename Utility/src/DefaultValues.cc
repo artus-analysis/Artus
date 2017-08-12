@@ -18,7 +18,7 @@ const int DefaultValues::pdgIdGamma = 22;
 const int DefaultValues::pdgIdZ = 23;
 const int DefaultValues::pdgIdW = 24;
 const int DefaultValues::pdgIdH = 25;
-const int DefaultValues::pdgIdHCPOdd = 35;
+const int DefaultValues::pdgIdHCPEven = 35;
 const int DefaultValues::pdgIdACPOdd = 36;
 
 const int DefaultValues::pdgIdPiZero = 111;
