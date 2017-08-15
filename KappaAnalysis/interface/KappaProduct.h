@@ -48,6 +48,13 @@ public:
 	std::vector<KGenParticle*> m_genParticlesProducingBoson;
 	std::vector<KGenParticle*> m_genLeptonsFromBosonDecay;
 
+	KLHEParticle* m_lheBosonParticle = nullptr;
+	RMFLV m_lheBosonLV;
+	bool m_lheBosonLVFound = false;
+
+	std::vector<KLHEParticle*> m_lheParticlesProducingBoson;
+	std::vector<KLHEParticle*> m_lheLeptonsFromBosonDecay;
+
 	// filled by the ValidGenParticleProducers
 	std::vector<KGenParticle*> m_validGenElectrons;
 	std::vector<KGenParticle*> m_validGenMuons;
@@ -118,6 +125,13 @@ public:
 	/// added by GenDiLeptonDecayModeProducer
 	KappaEnumTypes::DiLeptonDecayMode m_genDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::NONE;
 	KappaEnumTypes::TauTauDecayMode m_genTauTauDecayMode = KappaEnumTypes::TauTauDecayMode::NONE;
+
+	/// added by LHEDiLeptonDecayModeProducer
+	KappaEnumTypes::DiLeptonDecayMode m_lheDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::NONE;
+
+	/// added by GenDiLeptonDecayModeLFVProducer
+	KappaEnumTypes::DiLeptonDecayModeLFV m_genDiLeptonDecayModeLFV = KappaEnumTypes::DiLeptonDecayModeLFV::NONE;
+	KappaEnumTypes::TauDecayMode m_genTauDecayMode = KappaEnumTypes::TauDecayMode::NONE;
 
 	/// added by ValidBTaggedJetsProducer
 	std::map<std::string,std::vector<KJet*>> m_bTaggedJetsByWp;

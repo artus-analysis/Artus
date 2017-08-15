@@ -31,15 +31,42 @@ public:
 		EE   = 6
 	};
 
+	enum class TauDecayMode : int
+	{
+		NONE = 5,
+		TT   = 1,
+		MT   = 2,
+		ET   = 3,
+		MM   = 4,
+		EM   = 5,
+		EE   = 6
+	};
+
 	enum class DiLeptonDecayMode : int
 	{
 		NONE = -1,
 		EE = 0,
 		MM = 1,
 		TT = 2,
-		LL = 3,
+		LL = 4,
+		ET = 5,
+		EM = 6,
+		MT = 7,
 	};
 	static DiLeptonDecayMode ToDiLeptonDecayMode(std::string const& diLeptonDecayMode);
+
+	enum class DiLeptonDecayModeLFV : int
+	{
+		NONE = -1,
+		EE = 0,
+		MM = 1,
+		TT = 2,
+		LL = 4,
+		ET = 5,
+		EM = 6,
+		MT = 7,
+	};
+	static DiLeptonDecayModeLFV ToDiLeptonDecayModeLFV(std::string const& diLeptonDecayModeLFV);
 
 	enum class GenMatchingCode : int
 	{
