@@ -20,23 +20,28 @@ class ProjectByFit(analysisbase.AnalysisBase):
 		super(ProjectByFit, self).__init__()
 
 	def modify_argument_parser(self, parser, args):
-		self.projectbyfit_options = parser.add_argument_group("Options for ProjectByFit module. See TH2::FitSlicesY for documentation.")
-		self.projectbyfit_options.add_argument("--projection-function", type=str, nargs="+", default=None,
-								help="Function to project along Y-Axis")
+		self.projectbyfit_options = parser.add_argument_group("Options for ProjectByFit module. See TH2::FitSlicesY for documentation. \
+								Pay attention that the fit will be performed on histogram set for Y-Axis, in bins of X-Axis (should be controlled using --x-bins option).")
+		self.projectbyfit_options.add_argument("--projection-functions", type=str, nargs="+", default=None,
+								help="Functions to project along Y-Axis. Basically functions which will be fitted in terms of Y-Axis histogram")
 		self.projectbyfit_options.add_argument("--projection-parameters", type=str, nargs="+", default=None,
 								help="Starting parameters for the fit, comma seperated.")
 		self.projectbyfit_options.add_argument("--projection-to-plot", type=str, nargs="+", default="0",
-								help="Parameter number that should be plotted or TFormula to combine parameters of fit.")
+								help="Parameter number that should be plotted or TFormula to combine parameters of fit. [Default: %(default)s]")
 		self.projectbyfit_options.add_argument("--projection-fit-range", type=str, nargs="+", default=None,
-								help="Y-Range to perform the fit in the format \"low,high\". Default is the whole range of the input 2D Histogram.")
+								help="Y-Range to perform the fit in the format \"low,high\". Default is the whole range of the input 2D Histogram Y-Axis.\
+								The number of passed arguments should correspond to the number of arguments in --projection-to-nick.")
 		self.projectbyfit_options.add_argument("--projection-to-nick", type=str, nargs="+", default="nick0",
-						help="Nickname of 2D input histogram. Default: nick0")
-		self.projectbyfit_options.add_argument("--fit-backend", type=str, nargs="+", default="ROOT",
+								help="Nickname of 2D input histogram. The starting histogram will be replaced by a fit-evaluated.\
+								The number of passed arguments should correspond to the number of arguments in --projection-fit-range. [Default: %(default)s]")
+		self.projectbyfit_options.add_argument("--projection-fit-backend", type=str, nargs="+", default="ROOT",
 								help="Fit backend. ROOT and RooFit are available. Check sourcecode which parts of RooFit are implemented. [Default: %(default)s]")
+		self.projectbyfit_options.add_argument("--projection-options", type=str, nargs="+", default="QNR",
+								help="The argument option can be used to change the fit options. If debug mode is enabled the 'Q' option will be always removed. [Default: %(default)s]")
 
 	def prepare_args(self, parser, plotData):
 		super(ProjectByFit, self).prepare_args(parser, plotData)
-		self.prepare_list_args(plotData, ["projection_function", "projection_parameters", "projection_to_plot","projection_fit_range","projection_to_nick", "fit_backend"])
+		self.prepare_list_args(plotData, ["projection_functions", "projection_parameters", "projection_to_plot","projection_fit_range","projection_to_nick", "projection_fit_backend", "projection_options"])
 		plotData.plotdict["projection_fit_range"] = [ x.replace("\\", "") if x != None else x for x in plotData.plotdict["projection_fit_range"] ]
 
 	def run(self, plotData=None):
@@ -44,18 +49,20 @@ class ProjectByFit(analysisbase.AnalysisBase):
 
 		histograms_to_replace = []
 		result_histograms = {}
-		for function, start_parameter, output_selection, fit_range, nick, fit_backend in zip(plotData.plotdict["projection_function"],
-																							plotData.plotdict["projection_parameters"],
-																							plotData.plotdict["projection_to_plot"],
-																							plotData.plotdict["projection_fit_range"],
-																							plotData.plotdict["projection_to_nick"],
-																							plotData.plotdict["fit_backend"]):
+		for function, start_parameter, parameter_to_plot, fit_range, nick, fit_backend, option in zip(plotData.plotdict["projection_functions"],
+		                                                                plotData.plotdict["projection_parameters"],
+		                                                                plotData.plotdict["projection_to_plot"],
+		                                                                plotData.plotdict["projection_fit_range"],
+		                                                                plotData.plotdict["projection_to_nick"],
+		                                                                plotData.plotdict["projection_fit_backend"],
+		                                                                plotData.plotdict["projection_options"]):
 
 			histogram_2D = plotData.plotdict["root_objects"][nick]
-
+			if log.isEnabledFor(logging.DEBUG): option.translate(None, "Q")
 			if not histogram_2D.ClassName().startswith("TH2"):
 				log.fatal("The ProjectByFit Module only works on projecting TH2 histograms to TH1 histograms, but " + histogram_2D.ClassName() + " was provided as input.")
 				sys.exit(1)
+
 			# Estimating fit range
 			if fit_range != None:
 				fit_min = float(fit_range.split(",")[0])
@@ -64,20 +71,23 @@ class ProjectByFit(analysisbase.AnalysisBase):
 				fit_min = histogram_2D.GetYaxis().GetXmin()
 				fit_max = histogram_2D.GetYaxis().GetXmax()
 			start_parameters = [float(x) for x in start_parameter.split(",")]
+
 			# Getting fitted histogram
 			if fit_backend == "ROOT":
 				root_function = functionplot.FunctionPlot.create_tf1(function, fit_min, fit_max, start_parameters, nick=nick)
-				histogram_2D.FitSlicesY(root_function)
+				aSlices = ROOT.TObjArray()
+				histogram_2D.FitSlicesY(root_function,  0, -1, 0, option, aSlices)
+				if log.isEnabledFor(logging.DEBUG): aSlices[parameter_to_plot].Print("all")
 
-				if output_selection.isdigit():
-					fitted_histogram = copy.deepcopy(ROOT.gDirectory.Get(histogram_2D.GetName() + "_" + str(output_selection)))
+				if parameter_to_plot.isdigit():
+					fitted_histogram = copy.deepcopy(ROOT.gDirectory.Get(histogram_2D.GetName() + "_" + str(parameter_to_plot)))
 				else:
 					fitted_histograms = []
 					for i in range(len(start_parameters)):
 						fitted_histograms.append(copy.deepcopy(ROOT.gDirectory.Get(histogram_2D.GetName() + "_" + str(i))))
-					fitted_histogram = self.postprocess_fits(fitted_histograms, output_selection)
+					fitted_histogram = self.postprocess_fits(fitted_histograms, parameter_to_plot)
 			elif fit_backend == "RooFit":
-				fitted_histogram = self.fitSlicesRooFit(histogram_2D, function, start_parameters, output_selection)
+				fitted_histogram = self.fitSlicesRooFit(histogram_2D, function, start_parameters, parameter_to_plot)
 			else:
 				log.fatal("No such backend")
 				sys.exit(1)
@@ -91,23 +101,24 @@ class ProjectByFit(analysisbase.AnalysisBase):
 			del(plotData.plotdict["root_objects"][nick])
 
 		plotData.plotdict["root_objects"].update(result_histograms)
+		print plotData.plotdict["root_objects"]
 
 	@staticmethod
-	def fitSlicesRooFit(histogram_2D, function, start_parameters, output_selection):
+	def fitSlicesRooFit(histogram_2D, function, start_parameters, parameter_to_plot):
 		name = histogram_2D.GetName()
 		result_histo = ROOT.TH1F(histogram_2D.GetName() + "_projection", "",
-								 histogram_2D.GetNbinsX(),
-								 histogram_2D.GetXaxis().GetXmin(),
-								 histogram_2D.GetXaxis().GetXmax())
+		                         histogram_2D.GetNbinsX(),
+		                         histogram_2D.GetXaxis().GetXmin(),
+		                         histogram_2D.GetXaxis().GetXmax())
 
 		slice_generator =  projectionY.ProjectionY.histoSlice(histogram_2D)
 		for ibin, fit_histogram in enumerate(slice_generator):
 			val, error = functionplot.FunctionPlot.get_roofit_parameter(function,
-											  fit_histogram.GetXaxis().GetXmin(),
-											  fit_histogram.GetXaxis().GetXmax(),
-											  start_parameters,
-											  fit_histogram,
-											  output_selection)
+		                         fit_histogram.GetXaxis().GetXmin(),
+		                         fit_histogram.GetXaxis().GetXmax(),
+		                         start_parameters,
+		                         fit_histogram,
+		                         parameter_to_plot)
 			result_histo.SetBinContent(ibin + 1, val)
 			result_histo.SetBinError(ibin + 1, error)
 
