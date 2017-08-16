@@ -101,7 +101,7 @@ class ProjectByFit(analysisbase.AnalysisBase):
 			del(plotData.plotdict["root_objects"][nick])
 
 		plotData.plotdict["root_objects"].update(result_histograms)
-		print plotData.plotdict["root_objects"]
+		log.debug(plotData.plotdict["root_objects"])
 
 	@staticmethod
 	def fitSlicesRooFit(histogram_2D, function, start_parameters, parameter_to_plot):
