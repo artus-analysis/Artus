@@ -61,9 +61,8 @@ class ProjectByFit(analysisbase.AnalysisBase):
 
 		histograms_to_replace = []
 		result_histograms = {}
-		fit_slices_z = plotData.plotdict["projection_fit_slices_z"][0]
 
-		for function, start_parameter, parameter_to_plot, fit_range, nick, fit_backend, bin_minx, bins_maxx, option, cut_bins_filled, bin_miny, bin_maxy in zip(plotData.plotdict["projection_functions"],
+		for function, start_parameter, parameter_to_plot, fit_range, nick, fit_backend, bin_minx, bins_maxx, option, cut_bins_filled, bin_miny, bin_maxy, fit_slices_z in zip(plotData.plotdict["projection_functions"],
 		                                                                plotData.plotdict["projection_parameters"],
 		                                                                plotData.plotdict["projection_to_plot"],
 		                                                                plotData.plotdict["projection_fit_range"],
@@ -74,7 +73,8 @@ class ProjectByFit(analysisbase.AnalysisBase):
 		                                                                plotData.plotdict["projection_options"],
 		                                                                plotData.plotdict["projection_cuts_bins_filled"],
 		                                                                plotData.plotdict["projection_bins_miny"],
-		                                                                plotData.plotdict["projection_bins_maxy"]):
+		                                                                plotData.plotdict["projection_bins_maxy"],
+		                                                                plotData.plotdict["projection_fit_slices_z"]):
 
 			histogram_ND = plotData.plotdict["root_objects"][nick]
 
@@ -99,13 +99,11 @@ class ProjectByFit(analysisbase.AnalysisBase):
 			if fit_backend == "ROOT":
 				root_function = functionplot.FunctionPlot.create_tf1(function, fit_min, fit_max, start_parameters, nick=nick)
 				if not fit_slices_z:
-					print 1
 					aSlices = ROOT.TObjArray()
 					histogram_ND.FitSlicesY(root_function,  int(bin_minx), int(bins_maxx), int(cut_bins_filled), option, aSlices)
 					if log.isEnabledFor(logging.DEBUG): aSlices[parameter_to_plot].Print("all")
 				else:
-					print 2
-					histogram_ND.FitSlicesZ(root_function,  int(bin_minx), int(bins_maxx), int(bin_miny), int(bin_maxy), option)
+					histogram_ND.FitSlicesZ(root_function,  int(bin_minx), int(bins_maxx), int(bin_miny), int(bin_maxy), int(cut_bins_filled), option)
 
 				if parameter_to_plot.isdigit():
 					fitted_histogram = copy.deepcopy(ROOT.gDirectory.Get(histogram_ND.GetName() + "_" + str(parameter_to_plot)))
