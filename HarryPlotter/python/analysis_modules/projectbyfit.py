@@ -36,12 +36,18 @@ class ProjectByFit(analysisbase.AnalysisBase):
 								The number of passed arguments should correspond to the number of arguments in --projection-fit-range. [Default: %(default)s]")
 		self.projectbyfit_options.add_argument("--projection-fit-backend", type=str, nargs="+", default="ROOT",
 								help="Fit backend. ROOT and RooFit are available. Check sourcecode which parts of RooFit are implemented. [Default: %(default)s]")
+		self.projectbyfit_options.add_argument("--projection-bins-minx", type=str, nargs="+", default="0",
+								help="Fit starting from this bin along X. [Default: %(default)s]")
+		self.projectbyfit_options.add_argument("--projection-bins-maxx", type=str, nargs="+", default="-1",
+								help="Fit starting from this bin along X. [Default: %(default)s]")
 		self.projectbyfit_options.add_argument("--projection-options", type=str, nargs="+", default="QNR",
 								help="The argument option can be used to change the fit options. If debug mode is enabled the 'Q' option will be always removed. [Default: %(default)s]")
+		self.projectbyfit_options.add_argument("--projection-cuts-bins-filled", type=str, nargs="+", default="0",
+								help="Fit for bins in X for which the corresponding projection along Y has more than **cut** bins filled. [Default: %(default)s]")
 
 	def prepare_args(self, parser, plotData):
 		super(ProjectByFit, self).prepare_args(parser, plotData)
-		self.prepare_list_args(plotData, ["projection_functions", "projection_parameters", "projection_to_plot","projection_fit_range","projection_to_nick", "projection_fit_backend", "projection_options"])
+		self.prepare_list_args(plotData, ["projection_functions", "projection_parameters", "projection_to_plot","projection_fit_range","projection_to_nick", "projection_fit_backend", "projection_bins_minx", "projection_bins_maxx", "projection_options", "projection_cuts_bins_filled"])
 		plotData.plotdict["projection_fit_range"] = [ x.replace("\\", "") if x != None else x for x in plotData.plotdict["projection_fit_range"] ]
 
 	def run(self, plotData=None):
@@ -49,13 +55,16 @@ class ProjectByFit(analysisbase.AnalysisBase):
 
 		histograms_to_replace = []
 		result_histograms = {}
-		for function, start_parameter, parameter_to_plot, fit_range, nick, fit_backend, option in zip(plotData.plotdict["projection_functions"],
+		for function, start_parameter, parameter_to_plot, fit_range, nick, fit_backend, bin_minx, bins_maxx, option, cut_bins_filled in zip(plotData.plotdict["projection_functions"],
 		                                                                plotData.plotdict["projection_parameters"],
 		                                                                plotData.plotdict["projection_to_plot"],
 		                                                                plotData.plotdict["projection_fit_range"],
 		                                                                plotData.plotdict["projection_to_nick"],
 		                                                                plotData.plotdict["projection_fit_backend"],
-		                                                                plotData.plotdict["projection_options"]):
+		                                                                plotData.plotdict["projection_bins_minx"],
+		                                                                plotData.plotdict["projection_bins_maxx"],
+		                                                                plotData.plotdict["projection_options"],
+		                                                                plotData.plotdict["projection_cuts_bins_filled"]):
 
 			histogram_2D = plotData.plotdict["root_objects"][nick]
 			if log.isEnabledFor(logging.DEBUG): option.translate(None, "Q")
@@ -76,7 +85,7 @@ class ProjectByFit(analysisbase.AnalysisBase):
 			if fit_backend == "ROOT":
 				root_function = functionplot.FunctionPlot.create_tf1(function, fit_min, fit_max, start_parameters, nick=nick)
 				aSlices = ROOT.TObjArray()
-				histogram_2D.FitSlicesY(root_function,  0, -1, 0, option, aSlices)
+				histogram_2D.FitSlicesY(root_function,  int(bin_minx), int(bins_maxx), int(cut_bins_filled), option, aSlices)
 				if log.isEnabledFor(logging.DEBUG): aSlices[parameter_to_plot].Print("all")
 
 				if parameter_to_plot.isdigit():
