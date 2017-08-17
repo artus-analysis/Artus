@@ -114,32 +114,47 @@ public:
 			this->m_event.m_hcalNoiseSummary = this->template SecureFileInterfaceGet<KHCALNoiseSummary>(settings.GetHCALNoiseSummary());
 
 		// Meta data
-		if (! settings.GetEventMetadata().empty())
+		if(settings.GetInputIsData())
 		{
-			if(settings.GetInputIsData())
+			if (! settings.GetEventInfo().empty())
+				this->m_event.m_eventInfo = this->template SecureFileInterfaceGet<KEventInfo>(settings.GetEventInfo());
+			
+			if (! settings.GetLumiInfo().empty())
 			{
-				this->m_event.m_eventInfo = this->template SecureFileInterfaceGet<KEventInfo>(settings.GetEventMetadata());
+				this->m_event.m_dataLumiInfo = this->template SecureFileInterfaceGetMeta<KDataLumiInfo>(settings.GetLumiInfo());
+				this->m_event.m_lumiInfo = this->m_event.m_dataLumiInfo;
 			}
-			else
+			
+			if (! settings.GetRunInfo().empty())
 			{
-				this->m_event.m_genEventInfo = this->template SecureFileInterfaceGet<KGenEventInfo>(settings.GetEventMetadata()); // "EventMetadata" is misleading and does not follow Kappa naming convention -> TODO: rename to EventInfo
-				if (! settings.GetGenEventInfoMetadata().empty())
-					this->m_event.m_genEventInfoMetadata = this->template SecureFileInterfaceGetMeta<KGenEventInfoMetadata>(settings.GetGenEventInfoMetadata());
+				this->m_event.m_dataRunInfo = this->template SecureFileInterfaceGetRun<KDataRunInfo>(settings.GetRunInfo());
+				this->m_event.m_runInfo = this->m_event.m_dataRunInfo;
+			}
+		}
+		else
+		{
+			if (! settings.GetGenEventInfoMetadata().empty())
+				this->m_event.m_genEventInfoMetadata = this->template SecureFileInterfaceGetMeta<KGenEventInfoMetadata>(settings.GetGenEventInfoMetadata());
+			
+			if (! settings.GetEventInfo().empty())
+			{
+				this->m_event.m_genEventInfo = this->template SecureFileInterfaceGet<KGenEventInfo>(settings.GetEventInfo());
 				this->m_event.m_eventInfo = this->m_event.m_genEventInfo;
+			}
+			
+			if (! settings.GetLumiInfo().empty())
+			{
+				this->m_event.m_genLumiInfo = this->template SecureFileInterfaceGetMeta<KGenLumiInfo>(settings.GetLumiInfo());
+				this->m_event.m_lumiInfo = this->m_event.m_genLumiInfo;
+			}
+			
+			if (! settings.GetRunInfo().empty())
+			{
+				this->m_event.m_genRunInfo = this->template SecureFileInterfaceGetRun<KGenRunInfo>(settings.GetRunInfo());
+				this->m_event.m_runInfo = this->m_event.m_genRunInfo;
 			}
 		}
 		
-		if (! settings.GetLumiMetadata().empty())
-		{
-			this->m_event.m_lumiInfo = this->template SecureFileInterfaceGetMeta<KLumiInfo>(settings.GetLumiMetadata());
-		}
-		if (! settings.GetRunMetadata().empty())
-		{
-			if(! settings.GetInputIsData())
-			{
-				this->m_event.m_genRunInfo = this->template SecureFileInterfaceGetRun<KGenRunInfo>(settings.GetRunMetadata());
-			}
-		}
 		if (! settings.GetFilterMetadata().empty())
 			this->m_event.m_filterMetadata = this->template SecureFileInterfaceGetMeta<KFilterMetadata>(settings.GetFilterMetadata()); // TODO: Check
 		if (! settings.GetFilterSummary().empty())

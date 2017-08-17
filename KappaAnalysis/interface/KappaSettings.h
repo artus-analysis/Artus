@@ -85,15 +85,15 @@ public:
 	IMPL_SETTING_DEFAULT(std::string, GenParticles, "");
 	IMPL_SETTING_DEFAULT(std::string, LheParticles, "");
 
-	/// name of eventMetaData in kappa tuple
-	IMPL_SETTING_DEFAULT(std::string, EventMetadata, "");
+	/// name of eventInfo in kappa tuple
+	IMPL_SETTING_DEFAULT(std::string, EventInfo, "");
 	IMPL_SETTING_DEFAULT(std::string, GenEventInfoMetadata, "");
 
-	/// name of lumiMetaData in kappa tuple
-	IMPL_SETTING_DEFAULT(std::string, LumiMetadata, "");
+	/// name of lumiInfo in kappa tuple
+	IMPL_SETTING_DEFAULT(std::string, LumiInfo, "");
 
-	/// name of lumiMetaData in kappa tuple
-	IMPL_SETTING_DEFAULT(std::string, RunMetadata, "");
+	/// name of runInfo in kappa tuple
+	IMPL_SETTING_DEFAULT(std::string, RunInfo, "");
 
 	/// name of filterMetaData in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, FilterMetadata, "");

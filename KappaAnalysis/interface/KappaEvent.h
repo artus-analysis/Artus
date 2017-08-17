@@ -88,8 +88,15 @@ public:
 	/// pointer to metadata // TODO: move to Artus/Provider
 	KEventInfo* m_eventInfo = nullptr;
 	KGenEventInfo* m_genEventInfo = nullptr;
+	
 	KLumiInfo* m_lumiInfo = nullptr;
+	KGenLumiInfo* m_genLumiInfo = nullptr;
+	KDataLumiInfo* m_dataLumiInfo = nullptr;
+	
+	KRunInfo* m_runInfo = nullptr;
 	KGenRunInfo* m_genRunInfo = nullptr;
+	KDataRunInfo* m_dataRunInfo = nullptr;
+	
 	KFilterMetadata* m_filterMetadata = nullptr;
 	KFilterSummary* m_filterSummary = nullptr;
 	KJetMetadata* m_jetMetadata = nullptr;
