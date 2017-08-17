@@ -353,6 +353,11 @@ public:
 	IMPL_SETTING_DEFAULT(double, BaseWeight, 1.0);
 	IMPL_SETTING_DEFAULT(double, GeneratorWeight, DefaultValues::UndefinedDouble);
 
+	/// Needed by the GenDiLeptonDecayModeLFVFilter
+	//IMPL_SETTING(std::string, GenDiLeptonDecayModeLFV);
+	//IMPL_SETTING_DEFAULT(bool, GenDiLeptonDecayModeLFVFilterLoose, false);
+	//IMPL_SETTING_DEFAULT(bool, InvertGenDiLeptonDecayModeLFV, false);
+
 	// TMVA reader settings
 	IMPL_SETTING_STRINGLIST_DEFAULT(TmvaInputQuantities, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(TmvaMethods, {});

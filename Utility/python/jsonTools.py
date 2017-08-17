@@ -379,6 +379,8 @@ class JsonDict(dict):
 					if exitCode != 0:
 						result = jsonDict
 						success = False
+						log.critical("Could not download \""+jsonDict+"\"!")
+						sys.exit(1)
 				except:
 					result = jsonDict
 					success = False

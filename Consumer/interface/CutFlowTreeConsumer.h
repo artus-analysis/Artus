@@ -3,6 +3,7 @@
 
 //#include <boost/scoped_ptr.hpp>
 
+#include <TDirectory.h>
 #include <TTree.h>
 #include <TROOT.h>
 
@@ -109,6 +110,7 @@ private:
 		std::vector<std::string> filterNames = filterResult.GetFilterNames();
 	
 		// trees
+		TDirectory* tmpDirectory = gDirectory;
 		RootFileHelper::SafeCd(setting.GetRootOutFile(),
 		                       setting.GetRootFileFolder());
 		
@@ -126,6 +128,7 @@ private:
 			m_cutFlowTrees.push_back(cutFlowTree);
 			
 		}
+		gDirectory = tmpDirectory;
 		
 		return true;
 	}

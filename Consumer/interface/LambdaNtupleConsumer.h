@@ -6,6 +6,7 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 
+#include <TDirectory.h>
 #include <TTree.h>
 #include <Math/Vector4D.h>
 #include <Math/Vector4Dfwd.h>
@@ -31,6 +32,9 @@
 class LambdaNtupleQuantities {
 
 public:
+	typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > RMFLV;
+	typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > CartesianRMFLV;
+	
 	static std::map<std::string, std::function<bool(EventBase const&, ProductBase const& ) >> CommonBoolQuantities;
 	static std::map<std::string, std::function<int(EventBase const&, ProductBase const& ) >> CommonIntQuantities;
 	static std::map<std::string, std::function<uint64_t(EventBase const&, ProductBase const& ) >> CommonUInt64Quantities;
@@ -38,6 +42,7 @@ public:
 	static std::map<std::string, std::function<double(EventBase const&, ProductBase const& ) >> CommonDoubleQuantities;
 	static std::map<std::string, std::function<ROOT::Math::PtEtaPhiMVector(EventBase const&, ProductBase const& ) >> CommonPtEtaPhiMVectorQuantities;
 	static std::map<std::string, std::function<RMFLV(EventBase const&, ProductBase const& ) >> CommonRMFLVQuantities;
+	static std::map<std::string, std::function<CartesianRMFLV(EventBase const&, ProductBase const& ) >> CommonCartesianRMFLVQuantities;
 	static std::map<std::string, std::function<std::string(EventBase const&, ProductBase const& ) >> CommonStringQuantities;
 	static std::map<std::string, std::function<std::vector<double>(EventBase const&, ProductBase const& ) >> CommonVDoubleQuantities;
 	static std::map<std::string, std::function<std::vector<float>(EventBase const&, ProductBase const& ) >> CommonVFloatQuantities;
@@ -51,6 +56,7 @@ class LambdaNtupleConsumer: public ConsumerBase<TTypes> {
 
 public:
 	typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > RMFLV;
+	typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > CartesianRMFLV;
 
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
@@ -63,6 +69,7 @@ public:
 	typedef std::function<double(EventBase const&, ProductBase const&)> double_extractor_lambda_base;
 	typedef std::function<ROOT::Math::PtEtaPhiMVector(EventBase const&, ProductBase const&)> ptEtaPhiMVector_extractor_lambda_base;
 	typedef std::function<RMFLV(EventBase const&, ProductBase const&)> rmflv_extractor_lambda_base;
+	typedef std::function<CartesianRMFLV(EventBase const&, ProductBase const&)> cartesianRMFLV_extractor_lambda_base;
 	typedef std::function<std::string(EventBase const&, ProductBase const&)> string_extractor_lambda_base;
 	typedef std::function<std::vector<double>(EventBase const&, ProductBase const&)> vDouble_extractor_lambda_base;
 	typedef std::function<std::vector<float>(EventBase const&, ProductBase const&)> vFloat_extractor_lambda_base;
@@ -135,6 +142,16 @@ public:
 	                              std::function<RMFLV(event_type const&, product_type const&)> valueExtractor)
 	{
 		LambdaNtupleQuantities::CommonRMFLVQuantities[name] = [valueExtractor](EventBase const& ev, ProductBase const& pd) -> RMFLV
+		{
+			auto const& specEv = static_cast<event_type const&>(ev);
+			auto const& specPd = static_cast<product_type const&>(pd);
+			return valueExtractor(specEv, specPd);
+		};
+	}
+	static void AddCartesianRMFLVQuantity(std::string const& name,
+	                              std::function<CartesianRMFLV(event_type const&, product_type const&)> valueExtractor)
+	{
+		LambdaNtupleQuantities::CommonCartesianRMFLVQuantities[name] = [valueExtractor](EventBase const& ev, ProductBase const& pd) -> CartesianRMFLV
 		{
 			auto const& specEv = static_cast<event_type const&>(ev);
 			auto const& specPd = static_cast<product_type const&>(pd);
@@ -227,6 +244,9 @@ public:
 	static std::map<std::string, std::function<RMFLV(EventBase const&, ProductBase const& ) >> & GetRMFLVQuantities () {
 		return LambdaNtupleQuantities::CommonRMFLVQuantities;
 	}
+	static std::map<std::string, std::function<CartesianRMFLV(EventBase const&, ProductBase const& ) >> & GetCartesianRMFLVQuantities () {
+		return LambdaNtupleQuantities::CommonCartesianRMFLVQuantities;
+	}
 	static std::map<std::string, std::function<std::vector<double>(EventBase const&, ProductBase const& ) >> & GetVDoubleQuantities () {
 		return LambdaNtupleQuantities::CommonVDoubleQuantities;
 	}
@@ -254,6 +274,7 @@ public:
 		m_doubleValueExtractors.clear();
 		m_ptEtaPhiMVectorValueExtractors.clear();
 		m_rmflvValueExtractors.clear();
+		m_cartesianRMFLVValueExtractors.clear();
 		m_stringValueExtractors.clear();
 		m_vDoubleValueExtractors.clear();
 		m_vFloatValueExtractors.clear();
@@ -268,6 +289,7 @@ public:
 		m_doubleQuantities.clear();
 		m_ptEtaPhiMVectorQuantities.clear();
 		m_rmflvQuantities.clear();
+		m_cartesianRMFLVQuantities.clear();
 		m_stringQuantities.clear();
 		m_vDoubleQuantities.clear();
 		m_vFloatQuantities.clear();
@@ -339,6 +361,12 @@ public:
 				m_rmflvValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetRMFLVQuantities(), *quantity));
 				m_rmflvQuantities.push_back(*quantity);
 			}
+			else if (LambdaNtupleConsumer<TTypes>::GetCartesianRMFLVQuantities().count(*quantity) > 0)
+			{
+				//LOG(DEBUG) << "Init CartesianRMFLV quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
+				m_cartesianRMFLVValueExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetCartesianRMFLVQuantities(), *quantity));
+				m_cartesianRMFLVQuantities.push_back(*quantity);
+			}
 			else if (LambdaNtupleConsumer<TTypes>::GetVRMFLVQuantities().count(*quantity) > 0)
 			{
 				//LOG(DEBUG) << "Init vRMFLV quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
@@ -366,8 +394,10 @@ public:
 		}
 
 		// create tree
+		TDirectory* tmpDirectory = gDirectory;
 		RootFileHelper::SafeCd(settings.GetRootOutFile(), settings.GetRootFileFolder());
 		m_tree = new TTree("ntuple", ("Tree for Pipeline \"" + settings.GetName() + "\"").c_str());
+		gDirectory = tmpDirectory;
 
 		// create branches
 		m_boolValues.resize(m_boolValueExtractors.size());
@@ -377,6 +407,7 @@ public:
 		m_doubleValues.resize(m_doubleValueExtractors.size());
 		m_ptEtaPhiMVectorValues.resize(m_ptEtaPhiMVectorValueExtractors.size());
 		m_rmflvValues.resize(m_rmflvValueExtractors.size());
+		m_cartesianRMFLVValues.resize(m_cartesianRMFLVValueExtractors.size());
 		m_stringValues.resize(m_stringValueExtractors.size());
 		m_vDoubleValues.resize(m_vDoubleValueExtractors.size());
 		m_vFloatValues.resize(m_vFloatValueExtractors.size());
@@ -391,6 +422,7 @@ public:
 		size_t doubleQuantityIndex = 0;
 		size_t ptEtaPhiMVectorQuantityIndex = 0;
 		size_t rmflvQuantityIndex = 0;
+		size_t cartesianRMFLVQuantityIndex = 0;
 		size_t stringQuantityIndex = 0;
 		size_t vDoubleQuantityIndex = 0;
 		size_t vFloatQuantityIndex = 0;
@@ -444,6 +476,11 @@ public:
 			{
 				m_tree->Branch(quantity->c_str(), &(m_rmflvValues[rmflvQuantityIndex]));
 				++rmflvQuantityIndex;
+			}
+			else if (LambdaNtupleQuantities::CommonCartesianRMFLVQuantities.count(*quantity) > 0)
+			{
+				m_tree->Branch(quantity->c_str(), &(m_cartesianRMFLVValues[cartesianRMFLVQuantityIndex]));
+				++cartesianRMFLVQuantityIndex;
 			}
 			else if (LambdaNtupleQuantities::CommonVRMFLVQuantities.count(*quantity) > 0)
 			{
@@ -578,6 +615,21 @@ public:
 			++rmflvValueIndex;
 		}
 		
+		size_t cartesianRMFLVValueIndex = 0;
+		for(typename std::vector<cartesianRMFLV_extractor_lambda_base>::iterator valueExtractor = m_cartesianRMFLVValueExtractors.begin();
+		    valueExtractor != m_cartesianRMFLVValueExtractors.end(); ++valueExtractor)
+		{
+			try
+			{
+				m_cartesianRMFLVValues[cartesianRMFLVValueIndex] = (*valueExtractor)(event, product);
+			}
+			catch (...)
+			{
+				LOG(FATAL) << "Could not call lambda function for CartesianRMFLV quantity \"" << m_cartesianRMFLVQuantities.at(cartesianRMFLVValueIndex) << "\" (pipeline \"" << settings.GetName() << "\")!";
+			}
+			++cartesianRMFLVValueIndex;
+		}
+		
 		size_t stringValueIndex = 0;
 		for(typename std::vector<string_extractor_lambda_base>::iterator valueExtractor = m_stringValueExtractors.begin();
 		    valueExtractor != m_stringValueExtractors.end(); ++valueExtractor)
@@ -689,6 +741,7 @@ private:
 	std::vector<double_extractor_lambda_base> m_doubleValueExtractors;
 	std::vector<ptEtaPhiMVector_extractor_lambda_base> m_ptEtaPhiMVectorValueExtractors;
 	std::vector<rmflv_extractor_lambda_base> m_rmflvValueExtractors;
+	std::vector<cartesianRMFLV_extractor_lambda_base> m_cartesianRMFLVValueExtractors;
 	std::vector<string_extractor_lambda_base> m_stringValueExtractors;
 	std::vector<vDouble_extractor_lambda_base> m_vDoubleValueExtractors;
 	std::vector<vFloat_extractor_lambda_base> m_vFloatValueExtractors;
@@ -703,6 +756,7 @@ private:
 	std::vector<std::string> m_doubleQuantities;
 	std::vector<std::string> m_ptEtaPhiMVectorQuantities;
 	std::vector<std::string> m_rmflvQuantities;
+	std::vector<std::string> m_cartesianRMFLVQuantities;
 	std::vector<std::string> m_stringQuantities;
 	std::vector<std::string> m_vDoubleQuantities;
 	std::vector<std::string> m_vFloatQuantities;
@@ -717,6 +771,7 @@ private:
 	std::vector<double> m_doubleValues;
 	std::vector<ROOT::Math::PtEtaPhiMVector> m_ptEtaPhiMVectorValues;
 	std::vector<RMFLV> m_rmflvValues;
+	std::vector<CartesianRMFLV> m_cartesianRMFLVValues;
 	std::vector<std::string> m_stringValues;
 	std::vector<std::vector<double> > m_vDoubleValues;
 	std::vector<std::vector<float> > m_vFloatValues;

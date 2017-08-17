@@ -1,5 +1,6 @@
 #pragma once
 
+#include <TDirectory.h>
 #include <TTree.h>
 
 #include "Artus/Core/interface/ConsumerBase.h"
@@ -59,9 +60,12 @@ public:
 	{
 		ConsumerBase<KappaTypes>::Init(settings);
 
+		TDirectory* tmpDirectory = gDirectory;
 		RootFileHelper::SafeCd(settings.GetRootOutFile(),
 		                       settings.GetRootFileFolder());
 		m_tree = new TTree(m_treeName.c_str(), m_treeName.c_str());
+		gDirectory = tmpDirectory;
+		
 		m_tree->Branch("object", &m_currentObject);
 
 		if (m_objectMetaInfoAvailable)

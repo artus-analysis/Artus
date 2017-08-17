@@ -81,13 +81,22 @@ class PValue(analysisbase.AnalysisBase):
 			#print alternative_hypothesis_integral_full
 			alternative_hypothesis_integral_fromq=alternative_hypothesis_histogramm.Integral(alternative_hypothesis_histogramm.FindBin(q_obs),alternative_hypothesis_histogramm.GetNbinsX()+1)
 
+			null_hypothesis_integral_fromq=null_hypothesis_histogramm.Integral(0,null_hypothesis_histogramm.FindBin(q_obs))
+
 			#print alternative_hypothesis_integral_fromq
-			pvalue=alternative_hypothesis_integral_fromq/alternative_hypothesis_integral_full
-			print "pvalue=", pvalue
+			pvalue1=alternative_hypothesis_integral_fromq/alternative_hypothesis_integral_full
+			print "pvalue=", pvalue1
 
-			significance_in_sigma = tools.pvalue2sigma(pvalue)
+			significance_in_sigma1 = tools.pvalue2sigma(pvalue1)
 
-			print "sigmas	= ", significance_in_sigma
+			print "sigmas1	= ", significance_in_sigma1
+
+			pvalue2=null_hypothesis_integral_fromq/null_hypothesis_integral_full
+			print "pvalue2=", pvalue2
+
+			significance_in_sigma2 = tools.pvalue2sigma(pvalue2)
+
+			print "sigmas2=", significance_in_sigma2
 
 		"""
 			PValue_graph_name = "histogram_" + hashlib.md5("_".join([plotData.plotdict["root_objects"][PValue_numerator_nick].GetName(),
