@@ -81,18 +81,18 @@ class HarryCore(object):
 
 		for filename in matches:
 			try:
-				log.debug("Try to import module from path {0}.".format(filename))
+				log.debug("Importing modules from path {0}.".format(filename))
 				module_name = os.path.splitext(os.path.basename(filename))[0]
 				module = imp.load_source(module_name, filename)
 				for name, obj in inspect.getmembers(module):
 					if inspect.isclass(obj):
 						if (issubclass(obj, AnalysisBase) or issubclass(obj, InputBase) or
 						    issubclass(obj, PlotBase)):
-							log.debug("Adding module {0} to available processors.".format(obj.name()))
+							#log.debug("Adding module {0} to available processors.".format(obj.name()))
 							self.available_processors[obj.name()] = obj
 			except ImportError as e:
-				log.debug("Failed to import module {0} from {1}.".format(module_name, filename))
-				log.debug("Error message {0}.".format(e))
+				log.warning("Failed to import module {0} from {1}.".format(module_name, filename))
+				log.warning("Error message {0}.".format(e))
 				pass
 
 	def run(self):
