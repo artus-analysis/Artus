@@ -88,11 +88,11 @@ public:
 			
 			// lood entries asynchronously and exit the program, if looding the entry takes unreasonably long (dCache, ...)
 			FileInterface2* fi = &m_fi;
-			std::future<void> futureGetMetaEntry = std::async(std::launch::async, [fi] ()
+			std::future<void> futureGetLumiEntry = std::async(std::launch::async, [fi] ()
 			{
-				fi->GetMetaEntry();
+				fi->GetLumiEntry();
 			});
-			if (futureGetMetaEntry.wait_for(timeout) != std::future_status::ready)
+			if (futureGetLumiEntry.wait_for(timeout) != std::future_status::ready)
 			{
 				LOG(FATAL) << "Timeout: Could not read entry from Lumis tree!";
 			}
@@ -130,12 +130,12 @@ protected:
 	boost::scoped_ptr<ProgressMonitor> m_mon;
 
 	template<typename T>
-	T* SecureFileInterfaceGet(const std::string &name, const bool check = true, const bool def = false)
+	T* SecureFileInterfaceGetEvent(const std::string &name, const bool check = true, const bool def = false)
 	{
 		T* result = nullptr;
 		if (GetEntries() > 0)
 		{
-			result = this->m_fi.template Get<T>(name, check, def);
+			result = this->m_fi.template GetEvent<T>(name, check, def);
 			if (result == nullptr)
 			{
 				LOG(FATAL) << "Requested branch (" << name << ") not found!";
@@ -145,12 +145,12 @@ protected:
 	}
 
 	template<typename T>
-	T* SecureFileInterfaceGetMeta(const std::string &name, const bool check = true, const bool def = false)
+	T* SecureFileInterfaceGetLumi(const std::string &name, const bool check = true, const bool def = false)
 	{
 		T* result = nullptr;
 		if (GetEntries() > 0)
 		{
-			result = this->m_fi.template GetMeta<T>(name, check, def);
+			result = this->m_fi.template GetLumi<T>(name, check, def);
 			if (result == nullptr)
 			{
 				LOG(FATAL) << "Requested branch (" << name << ") not found!";
