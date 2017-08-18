@@ -14,8 +14,6 @@ import Artus.HarryPlotter.analysisbase as analysisbase
 import Artus.HarryPlotter.analysis_modules.functionplot as functionplot
 import Artus.HarryPlotter.analysis_modules.projectionY as projectionY
 import copy
-import pprint
-pp = pprint.PrettyPrinter(indent=4)
 
 class ProjectByFit(analysisbase.AnalysisBase):
 	def __init__(self):
@@ -149,9 +147,6 @@ class ProjectByFit(analysisbase.AnalysisBase):
 				result_histograms[nick] = fitted_histogram
 
 		plotData.plotdict["root_objects"].update(result_histograms)
-		if log.isEnabledFor(logging.DEBUG):
-			pp.pprint(plotData.plotdict)
-		log.debug(plotData.plotdict["root_objects"])
 
 	@staticmethod
 	def fitSlicesRooFit(histogram_2D, function, start_parameters, parameter_to_plot):
