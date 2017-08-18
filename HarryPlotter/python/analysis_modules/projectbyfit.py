@@ -14,10 +14,12 @@ import Artus.HarryPlotter.analysisbase as analysisbase
 import Artus.HarryPlotter.analysis_modules.functionplot as functionplot
 import Artus.HarryPlotter.analysis_modules.projectionY as projectionY
 import copy
+import pprint
 
 class ProjectByFit(analysisbase.AnalysisBase):
 	def __init__(self):
 		super(ProjectByFit, self).__init__()
+		self.replace = True
 
 	def modify_argument_parser(self, parser, args):
 		self.projectbyfit_options = parser.add_argument_group("Options for ProjectByFit module. See TH2::FitSlicesY for documentation. \
@@ -32,7 +34,7 @@ class ProjectByFit(analysisbase.AnalysisBase):
 								help="Y-Range to perform the fit in the format \"low,high\". Default is the whole range of the input 2D Histogram Y-Axis.\
 								The number of passed arguments should correspond to the number of arguments in --projection-to-nick.")
 		self.projectbyfit_options.add_argument("--projection-to-nick", type=str, nargs="+", default="nick0",
-								help="Nickname of 2D input histogram. The starting histogram will be replaced by a fit-evaluated.\
+								help="Nickname of 2D input histogram. The starting histogram by default will be replaced by a fit-evaluated.\
 								The number of passed arguments should correspond to the number of arguments in --projection-fit-range. [Default: %(default)s]")
 		self.projectbyfit_options.add_argument("--projection-fit-backend", type=str, nargs="+", default="ROOT",
 								help="Fit backend. ROOT and RooFit are available. Check sourcecode which parts of RooFit are implemented. [Default: %(default)s]")
@@ -50,31 +52,53 @@ class ProjectByFit(analysisbase.AnalysisBase):
 								help="Fit starting from this bin along Y. [Default: %(default)s]")
 		self.projectbyfit_options.add_argument("--projection-bins-maxy", type=str, nargs="+", default="-1",
 								help="Fit starting from this bin along Y. [Default: %(default)s]")
+		self.projectbyfit_options.add_argument("--projection-result-nicks", nargs="+",
+								help="Nick names for the resulting ratio graphs. \
+								If the nicknames ARE Not specified the initial histogram will be replaced \
+								UNLESS this behaviour is rewritten by the --projection-not-override option.\
+								If the nicknames ARE specified the initial histogram will be replaced \
+								UNLESS this behaviour is rewritten by the --projection-not-override option.")
+		self.projectbyfit_options.add_argument("--projection-not-override", type="bool", nargs="?", default=False, const=True,
+								help="Force not to override the initial histograms. [Default: %(default)s]")
 
 	def prepare_args(self, parser, plotData):
 		super(ProjectByFit, self).prepare_args(parser, plotData)
-		self.prepare_list_args(plotData, ["projection_functions", "projection_parameters", "projection_to_plot","projection_fit_range","projection_to_nick", "projection_fit_backend", "projection_bins_minx", "projection_bins_maxx", "projection_options", "projection_cuts_bins_filled", "projection_fit_slices_z", "projection_bins_miny", "projection_bins_maxy"])
+		self.prepare_list_args(plotData, ["projection_functions", "projection_parameters", "projection_to_plot",
+			                              "projection_fit_range", "projection_to_nick", "projection_fit_backend",
+			                              "projection_bins_minx", "projection_bins_maxx", "projection_options",
+			                              "projection_cuts_bins_filled", "projection_fit_slices_z", "projection_bins_miny",
+			                              "projection_bins_maxy", "projection_result_nicks", "projection_not_override"])
 		plotData.plotdict["projection_fit_range"] = [ x.replace("\\", "") if x != None else x for x in plotData.plotdict["projection_fit_range"] ]
+
+		for index, (not_override, projection_to_nick, projection_result_nicks) in enumerate(zip(*[plotData.plotdict[k] for k in ["projection_not_override", "projection_to_nick", "projection_result_nicks"]])):
+			if projection_result_nicks is None:
+				plotData.plotdict["projection_result_nicks"][index] = "projection_result_nicks_{nick}".format(nick="_".join([projection_to_nick]))
+
+			if not plotData.plotdict["projection_result_nicks"][index] in plotData.plotdict["nicks"] and not_override:
+				plotData.plotdict["nicks"].append(plotData.plotdict["projection_result_nicks"][index])
 
 	def run(self, plotData=None):
 		super(ProjectByFit, self).run()
 
-		histograms_to_replace = []
 		result_histograms = {}
 
-		for function, start_parameter, parameter_to_plot, fit_range, nick, fit_backend, bin_minx, bins_maxx, option, cut_bins_filled, bin_miny, bin_maxy, fit_slices_z in zip(plotData.plotdict["projection_functions"],
-		                                                                plotData.plotdict["projection_parameters"],
-		                                                                plotData.plotdict["projection_to_plot"],
-		                                                                plotData.plotdict["projection_fit_range"],
-		                                                                plotData.plotdict["projection_to_nick"],
-		                                                                plotData.plotdict["projection_fit_backend"],
-		                                                                plotData.plotdict["projection_bins_minx"],
-		                                                                plotData.plotdict["projection_bins_maxx"],
-		                                                                plotData.plotdict["projection_options"],
-		                                                                plotData.plotdict["projection_cuts_bins_filled"],
-		                                                                plotData.plotdict["projection_bins_miny"],
-		                                                                plotData.plotdict["projection_bins_maxy"],
-		                                                                plotData.plotdict["projection_fit_slices_z"]):
+		for function, start_parameter, parameter_to_plot, fit_range, nick, \
+		    fit_backend, bin_minx, bins_maxx, option, cut_bins_filled, bin_miny, \
+		    bin_maxy, fit_slices_z, result_nick, not_override in zip(plotData.plotdict["projection_functions"],
+		                                                             plotData.plotdict["projection_parameters"],
+		                                                             plotData.plotdict["projection_to_plot"],
+		                                                             plotData.plotdict["projection_fit_range"],
+		                                                             plotData.plotdict["projection_to_nick"],
+		                                                             plotData.plotdict["projection_fit_backend"],
+		                                                             plotData.plotdict["projection_bins_minx"],
+		                                                             plotData.plotdict["projection_bins_maxx"],
+		                                                             plotData.plotdict["projection_options"],
+		                                                             plotData.plotdict["projection_cuts_bins_filled"],
+		                                                             plotData.plotdict["projection_bins_miny"],
+		                                                             plotData.plotdict["projection_bins_maxy"],
+		                                                             plotData.plotdict["projection_fit_slices_z"],
+		                                                             plotData.plotdict["projection_result_nicks"],
+		                                                             plotData.plotdict["projection_not_override"]):
 
 			histogram_ND = plotData.plotdict["root_objects"][nick]
 
@@ -101,7 +125,7 @@ class ProjectByFit(analysisbase.AnalysisBase):
 				if not fit_slices_z:
 					aSlices = ROOT.TObjArray()
 					histogram_ND.FitSlicesY(root_function,  int(bin_minx), int(bins_maxx), int(cut_bins_filled), option, aSlices)
-					if log.isEnabledFor(logging.DEBUG): aSlices[parameter_to_plot].Print("all")
+					if log.isEnabledFor(logging.DEBUG): aSlices[int(parameter_to_plot)].Print("all")
 				else:
 					histogram_ND.FitSlicesZ(root_function,  int(bin_minx), int(bins_maxx), int(bin_miny), int(bin_maxy), int(cut_bins_filled), option)
 
@@ -118,15 +142,14 @@ class ProjectByFit(analysisbase.AnalysisBase):
 				log.fatal("No such backend")
 				sys.exit(1)
 
-			# TODO: this might be not so safe if one want to reuse the histogram
-			# Remove original histogram and replace by projection
-			result_histograms[nick] = fitted_histogram
-			histograms_to_replace.append(nick)
-
-		for nick in histograms_to_replace:
-			del(plotData.plotdict["root_objects"][nick])
+			if not_override:
+				result_histograms[result_nick] = fitted_histogram
+			else:
+				result_histograms[nick] = fitted_histogram
 
 		plotData.plotdict["root_objects"].update(result_histograms)
+		pp = pprint.PrettyPrinter(indent=4)
+		pp.pprint(plotData.plotdict)
 		log.debug(plotData.plotdict["root_objects"])
 
 	@staticmethod
