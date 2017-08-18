@@ -46,12 +46,16 @@ public:
 	{
 	}
 
-	bool GetEntry(long long lEvent) override {
-		assert(m_event.m_eventInfo);
+	bool GetEntry(long long lEvent) override
+	{
+		assert(m_event.m_runInfo);
 		assert(m_event.m_lumiInfo);
+		assert(m_event.m_eventInfo);
 
 		if (!m_mon->Update())
+		{
 			return false;
+		}
 		
 		// lood entries asynchronously and exit the program, if looding the entry takes unreasonably long (dCache, ...)
 		TChain* eventdata = m_fi.eventdata;
@@ -71,19 +75,36 @@ public:
 		if (m_prevTree != eventdata->GetTreeNumber())
 		{
 			m_prevTree = eventdata->GetTreeNumber();
+			m_prevRun = -1;
 			m_prevLumi = -1;
 			LOG(INFO) << "\nProcessing " << eventdata->GetFile()->GetName() << " ...";
 		}
 
-		if (  m_prevRun != m_event.m_eventInfo->nRun ) {
+		if (m_prevRun != m_event.m_eventInfo->nRun)
+		{
 			m_prevRun = m_event.m_eventInfo->nRun;
 			m_prevLumi = -1;
+			
+			// lood entries asynchronously and exit the program, if looding the entry takes unreasonably long (dCache, ...)
+			FileInterface2* fi = &m_fi;
+			std::future<void> futureGetRunEntry = std::async(std::launch::async, [fi] ()
+			{
+				fi->GetRunEntry();
+			});
+			if (futureGetRunEntry.wait_for(timeout) != std::future_status::ready)
+			{
+				LOG(FATAL) << "Timeout: Could not read entry from Runs tree!";
+			}
+			
 			m_newRun = true;
 		}
 		else
+		{
 			m_newRun = false;
+		}
 
-		if ( m_prevLumi != m_event.m_eventInfo->nLumi ) {
+		if (m_prevLumi != m_event.m_eventInfo->nLumi)
+		{
 			m_prevLumi = m_event.m_eventInfo->nLumi;
 			
 			// lood entries asynchronously and exit the program, if looding the entry takes unreasonably long (dCache, ...)
@@ -100,7 +121,12 @@ public:
 			m_newLumisection = true;
 		}
 		else
+		{
 			m_newLumisection = false;
+		}
+		
+		assert((m_event.m_eventInfo->nRun == m_event.m_lumiInfo->nRun) && (m_event.m_eventInfo->nRun == m_event.m_runInfo->nRun));
+		assert(m_event.m_eventInfo->nLumi == m_event.m_lumiInfo->nLumi);
 
 		return (resultGetEntry != 0);
 	}
