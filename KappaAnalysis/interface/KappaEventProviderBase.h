@@ -54,7 +54,7 @@ public:
 			return false;
 		
 		// lood entries asynchronously and exit the program, if looding the entry takes unreasonably long (dCache, ...)
-		TTree* eventdata = &(m_fi.eventdata);
+		TChain* eventdata = &(m_fi.eventdata);
 		std::future<long> futureGetEntry = std::async(std::launch::async, [eventdata, lEvent] () -> long
 		{
 			return eventdata->GetEntry(lEvent);
@@ -66,13 +66,13 @@ public:
 		}
 		long resultGetEntry = futureGetEntry.get();
 		
-		m_event.m_input = m_fi.eventdata.GetTreeNumber();
+		m_event.m_input = eventdata->GetTreeNumber();
 
-		if (m_prevTree != m_fi.eventdata.GetTreeNumber())
+		if (m_prevTree != eventdata->GetTreeNumber())
 		{
-			m_prevTree = m_fi.eventdata.GetTreeNumber();
+			m_prevTree = eventdata->GetTreeNumber();
 			m_prevLumi = -1;
-			LOG(INFO) << "\nProcessing " << m_fi.eventdata.GetFile()->GetName() << " ...";
+			LOG(INFO) << "\nProcessing " << eventdata->GetFile()->GetName() << " ...";
 		}
 
 		if (  m_prevRun != m_event.m_eventInfo->nRun ) {
