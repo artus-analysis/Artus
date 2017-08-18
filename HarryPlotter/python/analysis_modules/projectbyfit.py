@@ -15,6 +15,7 @@ import Artus.HarryPlotter.analysis_modules.functionplot as functionplot
 import Artus.HarryPlotter.analysis_modules.projectionY as projectionY
 import copy
 import pprint
+pp = pprint.PrettyPrinter(indent=4)
 
 class ProjectByFit(analysisbase.AnalysisBase):
 	def __init__(self):
@@ -148,8 +149,8 @@ class ProjectByFit(analysisbase.AnalysisBase):
 				result_histograms[nick] = fitted_histogram
 
 		plotData.plotdict["root_objects"].update(result_histograms)
-		pp = pprint.PrettyPrinter(indent=4)
-		pp.pprint(plotData.plotdict)
+		if log.isEnabledFor(logging.DEBUG):
+			pp.pprint(plotData.plotdict)
 		log.debug(plotData.plotdict["root_objects"])
 
 	@staticmethod
