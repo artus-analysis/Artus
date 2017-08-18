@@ -35,7 +35,7 @@ public:
 
 		// auto-delete objects when moving to a new object. Not default root behaviour
 		// RF: Deactivated since it caused trouble when running on multiple files
-		//m_fi.eventdata.SetAutoDelete(true);
+		//m_fi.eventdata->SetAutoDelete(true);
 
 		m_mon.reset(new ProgressMonitor(GetEntries()));
 	}
@@ -54,7 +54,7 @@ public:
 			return false;
 		
 		// lood entries asynchronously and exit the program, if looding the entry takes unreasonably long (dCache, ...)
-		TChain* eventdata = &(m_fi.eventdata);
+		TChain* eventdata = m_fi.eventdata;
 		std::future<long> futureGetEntry = std::async(std::launch::async, [eventdata, lEvent] () -> long
 		{
 			return eventdata->GetEntry(lEvent);
@@ -113,7 +113,7 @@ public:
 	virtual bool NewRun() const override { return m_newRun; }
 
 	long long GetEntries() const override {
-		return (m_batchMode ? m_fi.eventdata.GetEntriesFast() : m_fi.eventdata.GetEntries());
+		return (m_batchMode ? m_fi.eventdata->GetEntriesFast() : m_fi.eventdata->GetEntries());
 	}
 
 
