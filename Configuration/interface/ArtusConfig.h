@@ -97,7 +97,7 @@ private:
 				}
 				else
 				{
-					ProducerBaseAccess(*gProd).Init(gSettings);
+					ProducerBaseAccess(*gProd).Init(gSettings, runner.GetGlobalMetadata());
 					runner.AddProducer(gProd);
 				}
 			}
@@ -111,7 +111,7 @@ private:
 				}
 				else
 				{
-					FilterBaseAccess(*gFilter).Init(gSettings);
+					FilterBaseAccess(*gFilter).Init(gSettings, runner.GetGlobalMetadata());
 					runner.AddFilter(gFilter);
 				}
 			}
@@ -197,7 +197,7 @@ private:
 					}
 				}
 
-			pLine->InitPipeline(pset, pInit);
+			pLine->InitPipeline(pset, runner.GetGlobalMetadata(), pInit);
 			runner.AddPipeline(pLine);
 		}
 	}

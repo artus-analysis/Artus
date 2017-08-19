@@ -12,23 +12,23 @@ FilterBaseAccess::FilterBaseAccess(FilterBaseUntemplated& filter) :
 {
 }
 
-bool FilterBaseAccess::DoesEventPass(EventBase const& event, ProductBase const& product, SettingsBase const& settings) const
+void FilterBaseAccess::Init(SettingsBase const& settings, MetadataBase& metadata)
 {
-	return m_filter.baseDoesEventPass(event, product, settings);
+	m_filter.baseInit(settings, metadata);
 }
 
-void FilterBaseAccess::Init(SettingsBase const& settings)
+void FilterBaseAccess::OnLumi(EventBase const& event, SettingsBase const& settings, MetadataBase const& metadata) const
 {
-	m_filter.baseInit(settings);
+	m_filter.baseOnLumi(event, settings, metadata);
 }
 
-void FilterBaseAccess::OnLumi(EventBase const& event, SettingsBase const& settings) const
+void FilterBaseAccess::OnRun(EventBase const& event, SettingsBase const& settings, MetadataBase const& metadata) const
 {
-	m_filter.baseOnLumi(event, settings);
+	m_filter.baseOnRun(event, settings, metadata);
 }
 
-void FilterBaseAccess::OnRun(EventBase const& event, SettingsBase const& settings) const
+bool FilterBaseAccess::DoesEventPass(EventBase const& event, ProductBase const& product, SettingsBase const& settings, MetadataBase const& metadata) const
 {
-	m_filter.baseOnRun(event, settings);
+	return m_filter.baseDoesEventPass(event, product, settings, metadata);
 }
 
