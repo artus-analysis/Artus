@@ -174,19 +174,20 @@ public:
 					break;
 				}
 
+				event_type currentEvent = evtProvider.GetCurrentEvent();
+				productGlobal.newRun = evtProvider.NewRun();
+				productGlobal.newLumisection = evtProvider.NewLumisection();
+				
 				if (processNode->GetProcessNodeType() == ProcessNodeType::Producer)
 				{
 					producer_base_type& prod = static_cast<producer_base_type&>(*processNode);
 					gettimeofday(&tStart, nullptr);
 					
-					event_type currentEvent = evtProvider.GetCurrentEvent();
-					productGlobal.newRun = evtProvider.NewRun();
-					productGlobal.newLumisection = evtProvider.NewLumisection();
-					if (evtProvider.NewRun())
+					if (productGlobal.newRun)
 					{
 						ProducerBaseAccess(prod).OnRun(currentEvent, settings);
 					}
-					if (evtProvider.NewLumisection())
+					if (productGlobal.newLumisection)
 					{
 						ProducerBaseAccess(prod).OnLumi(currentEvent, settings);
 					}
@@ -201,12 +202,11 @@ public:
 					filter_base_type& flt = static_cast<filter_base_type&>(*processNode);
 					gettimeofday(&tStart, nullptr);
 					
-					event_type currentEvent = evtProvider.GetCurrentEvent();
-					if (evtProvider.NewRun())
+					if (productGlobal.newRun)
 					{
 						FilterBaseAccess(flt).OnRun(currentEvent, settings);
 					}
-					if (evtProvider.NewLumisection())
+					if (productGlobal.newLumisection)
 					{
 						FilterBaseAccess(flt).OnLumi(currentEvent, settings);
 					}
