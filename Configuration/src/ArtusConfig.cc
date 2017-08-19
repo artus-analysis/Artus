@@ -11,6 +11,7 @@
 #include "Artus/Configuration/interface/PropertyTreeSupport.h"
 #include "Artus/Utility/interface/Utility.h"
 
+
 ArtusConfig::ArtusConfig(int argc, char** argv) :
 	m_jsonConfigFileName(""),
 	m_minimumLogLevelString("")
@@ -18,9 +19,9 @@ ArtusConfig::ArtusConfig(int argc, char** argv) :
 	boost::program_options::options_description programOptions("Options");
 	programOptions.add_options()
 		("help,h", "Print help message")
-		("log-level", boost::program_options::value< std::string >(&m_minimumLogLevelString),
+		("log-level", boost::program_options::value<std::string>(&m_minimumLogLevelString),
 		 "Detail level of logging (debug, info, warning, error, critical). [Default: taken from JSON config or info]")
-		("json-config", boost::program_options::value< std::string >(&m_jsonConfigFileName),
+		("json-config", boost::program_options::value<std::string>(&m_jsonConfigFileName),
 		 "JSON config file");
 
 	
@@ -34,7 +35,8 @@ ArtusConfig::ArtusConfig(int argc, char** argv) :
 	
 	// print help message, either if requested or if no parameters 
     // have been supplied
-	if(optionsVariablesMap.count("help") || ( optionsVariablesMap.size() == 0 )) {
+	if (optionsVariablesMap.count("help") || (optionsVariablesMap.size() == 0))
+	{
 		std::cout << "Usage: " << argv[0] << " [options] JSON-CONFIG" << std::endl;
 		std::cout << programOptions << std::endl;
 		exit(0);
@@ -71,18 +73,20 @@ std::pair<bool, el::Level> ArtusConfig::parseLogLevel(
 	return std::make_pair(false, el::Level::Fatal);
 }
 
-ArtusConfig::ArtusConfig(std::stringstream & sStream)
+ArtusConfig::ArtusConfig(std::stringstream& sStream)
 {
 	boost::property_tree::json_parser::read_json(sStream, m_propTreeRoot);
 
-	InitConfig( true );
+	InitConfig(true);
 }
 
-void ArtusConfig::InitConfig( bool configPreLoaded )
+void ArtusConfig::InitConfig(bool configPreLoaded)
 {
     // has the config been preloaded via the constructor already ?
-    if (! configPreLoaded ) {
-	    if(m_jsonConfigFileName.empty()) {
+    if (! configPreLoaded)
+    {
+	    if(m_jsonConfigFileName.empty())
+	    {
 		    LOG(FATAL) << "NO JSON config specified!";
 	    }
 	
@@ -91,7 +95,8 @@ void ArtusConfig::InitConfig( bool configPreLoaded )
     }
 	
 	// init logging
-	if(m_minimumLogLevelString.empty()) {
+	if(m_minimumLogLevelString.empty())
+	{
 		m_minimumLogLevelString = m_propTreeRoot.get<std::string>("LogLevel", "info");
 	}
 	std::pair<bool, el::Level> minimumLogLevel = parseLogLevel(m_minimumLogLevelString);
@@ -149,7 +154,7 @@ void ArtusConfig::InitConfig( bool configPreLoaded )
 	}
 }
 
-void ArtusConfig::SaveConfig(TFile * outputFile) const
+void ArtusConfig::SaveConfig(TFile* outputFile) const
 {
 	TObjString jsonConfigContent(
 			Utility::ReadStringFromFile(m_jsonConfigFileName).c_str());
@@ -164,7 +169,7 @@ std::vector<std::string> const& ArtusConfig::GetInputFiles() const
 
 ArtusConfig::NodeTypePair ArtusConfig::ParseProcessNode(std::string const& sInp)
 {
-	std::vector < std::string > splitted;
+	std::vector<std::string> splitted;
 	boost::algorithm::split(splitted, sInp, boost::algorithm::is_any_of(":"));
 	transform(splitted.begin(), splitted.end(), splitted.begin(),
 	          [](std::string s) { return boost::algorithm::trim_copy(s); });

@@ -14,6 +14,7 @@
 #include "Artus/Core/interface/ProcessNodeBase.h"
 #include "Artus/Core/interface/ProducerBase.h"
 #include "Artus/Core/interface/FilterBase.h"
+#include "Artus/Core/interface/ConsumerBase.h"
 
 #include "Artus/Utility/interface/ArtusLogging.h"
 
@@ -21,6 +22,8 @@
 #include "RooMsgService.h"
 
 #include "TError.h"
+
+
 class ArtusConfig {
 public:
 	// loads the json config file as given in the command line parameters
@@ -37,14 +40,12 @@ public:
 	// listed in your configuration file
 	// outputFile can be null, if no root is to be used
 	template<class TPipelineInitializer, class TPipelineRunner, class TFactory>
-	void LoadConfiguration(TPipelineInitializer& pInit, TPipelineRunner& runner,
-			TFactory & factory,
-			TFile * outputFile)
+	void LoadConfiguration(TPipelineInitializer& pInit, TPipelineRunner& runner, TFactory& factory, TFile* outputFile)
 	{
 		typedef typename TPipelineRunner::setting_type setting_type;
 
-		LoadGlobalProducer <TPipelineRunner,TFactory, setting_type > (runner, factory);
-		LoadPipelines< TPipelineInitializer, TPipelineRunner>(pInit, runner, factory, outputFile);
+		LoadGlobalProducer<TPipelineRunner,TFactory, setting_type>(runner, factory);
+		LoadPipelines<TPipelineInitializer, TPipelineRunner>(pInit, runner, factory, outputFile);
 	}
 
 	template<class TSettings>
@@ -61,45 +62,57 @@ public:
 		return m_outputPath;
 	}
 
-	typedef std::pair< ProcessNodeType, std::string > NodeTypePair;
+	typedef std::pair<ProcessNodeType, std::string> NodeTypePair;
 
-	static NodeTypePair ParseProcessNode ( std::string const& sInp );
+	static NodeTypePair ParseProcessNode(std::string const& sInp);
 
 private:
 
-	void InitConfig( bool configPreLoaded = false );
+	void InitConfig(bool configPreLoaded = false);
 
-	std::pair < bool, el::Level> parseLogLevel(std::string const& inpString) const;
+	std::pair<bool, el::Level> parseLogLevel(std::string const& inpString) const;
 
 	// load the global produce list from configuration and
 	// use the factory object to add these producers to the pipeline runner
 	// don't use directly but call LoadConfiguration
 	template<class TPipelineRunner, class TFactory, class TGlobalSettings>
-	void LoadGlobalProducer( TPipelineRunner& runner, TFactory & factory ) {
-
-		TGlobalSettings gSettings = GetSettings< TGlobalSettings >();
+	void LoadGlobalProducer(TPipelineRunner& runner, TFactory& factory)
+	{
+		LOG(DEBUG) << "";
+		LOG(DEBUG) << "Initialize global pipeline...";
+		
+		TGlobalSettings gSettings = GetSettings<TGlobalSettings>();
 		std::vector<std::string> globalProds = gSettings.GetProcessors();
-		for (std::vector<std::string>::const_iterator it = globalProds.begin(); it != globalProds.end(); ++it) {
+		for (std::vector<std::string>::const_iterator it = globalProds.begin(); it != globalProds.end(); ++it)
+		{
+			NodeTypePair ntype = ParseProcessNode(*it);
 
-			NodeTypePair ntype = ParseProcessNode( *it );
+			if (ntype.first == ProcessNodeType::Producer)
+			{
+				ProducerBaseUntemplated* gProd = factory.createProducer(ntype.second);
 
-			if (ntype.first == ProcessNodeType::Producer ) {
-				auto * gProd = factory.createProducer ( ntype.second );
-
-				if ( gProd == nullptr ){
+				if (gProd == nullptr)
+				{
 					LOG(FATAL) << "Global producer with id " << ntype.second << " not found!";
-				} else {
-					ProducerBaseAccess(	*gProd ).Init(gSettings);
-					runner.AddProducer( gProd );
 				}
-			} else if (ntype.first == ProcessNodeType::Filter ) {
-				auto * gProd = factory.createFilter ( ntype.second );
+				else
+				{
+					ProducerBaseAccess(*gProd).Init(gSettings);
+					runner.AddProducer(gProd);
+				}
+			}
+			else if (ntype.first == ProcessNodeType::Filter)
+			{
+				FilterBaseUntemplated* gProd = factory.createFilter(ntype.second);
 
-				if ( gProd == nullptr ){
+				if (gFilter == nullptr)
+				{
 					LOG(FATAL) << "Global filter with id " << ntype.second << " not found!";
-				} else {
-					FilterBaseAccess( *gProd ).Init(gSettings);
-					runner.AddFilter( gProd );
+				}
+				else
+				{
+					FilterBaseAccess(*gFilter).Init(gSettings);
+					runner.AddFilter(gFilter);
 				}
 			}
 		}
@@ -110,15 +123,14 @@ private:
 	// don't use directly but call LoadConfiguration
 	template<class TPipelineInitializer, class TPipelineRunner, class TFactory>
 	void LoadPipelines(TPipelineInitializer& pInit, TPipelineRunner& runner,
-			TFactory & factory,
+			TFactory& factory,
 			// can be null
-			TFile * outputFile)
+			TFile* outputFile)
 	{
 		typedef typename TPipelineInitializer::setting_type setting_type;
 		typedef typename TPipelineInitializer::pipeline_type pipeline_type;
 
-		BOOST_FOREACH(boost::property_tree::ptree::value_type& v,
-				m_propTreeRoot.get_child("Pipelines"))
+		BOOST_FOREACH(boost::property_tree::ptree::value_type& v, m_propTreeRoot.get_child("Pipelines"))
 		{
 			setting_type pset;
 
@@ -137,40 +149,51 @@ private:
 
 			// add local producer
 			std::vector<std::string> localProducers = pset.GetProcessors();
-			for (std::vector<std::string>::const_iterator it = localProducers.begin(); it != localProducers.end(); ++it) {
+			for (std::vector<std::string>::const_iterator it = localProducers.begin(); it != localProducers.end(); ++it)
+			{
+					NodeTypePair ntype = ParseProcessNode(*it);
 
-					NodeTypePair ntype = ParseProcessNode( *it );
+					if (ntype.first == ProcessNodeType::Producer)
+					{
+						ProducerBaseUntemplated* pProducer = factory.createProducer(ntype.second);
 
-					if (ntype.first == ProcessNodeType::Producer ) {
-						auto * pProducer = factory.createProducer ( ntype.second );
-
-						if ( pProducer == nullptr ){
+						if (pProducer == nullptr)
+						{
 							 LOG(FATAL) << "Local Producer with id " << ntype.second << " not found!";
-						} else {
-							pLine->AddProducer ( pProducer );
 						}
-					} else if (ntype.first == ProcessNodeType::Filter ) {
-						auto * pProducer = factory.createFilter ( ntype.second );
+						else
+						{
+							pLine->AddProducer(pProducer);
+						}
+					}
+					else if (ntype.first == ProcessNodeType::Filter)
+					{
+						FilterBaseUntemplated* pProducer = factory.createFilter(ntype.second);
 
-						if ( pProducer == nullptr ){
+						if (pProducer == nullptr)
+						{
 							 LOG(FATAL) << "Local Filter with id " << ntype.second << " not found!";
-						} else {
-							pLine->AddFilter ( pProducer );
+						}
+						else
+						{
+							pLine->AddFilter(pProducer);
 						}
 					}
 				}
 
 			// add consumer
 			std::vector<std::string> localConsumers = pset.GetConsumers();
-			for (std::vector<std::string>::const_iterator it = localConsumers.begin(); it != localConsumers.end(); ++it) {
-					auto * pConsumer = factory.createConsumer ( *it );
+			for (std::vector<std::string>::const_iterator it = localConsumers.begin(); it != localConsumers.end(); ++it)
+			{
+					ConsumerBaseUntemplated* pConsumer = factory.createConsumer(*it);
 
 					// special case for consumer:
 					// it is ok if they cannot be created here, because some might
 					// only be produced in the InitPipeline method below
 					// for example when using an alias for a set of producer
-					if ( pConsumer != nullptr ){
-						pLine->AddConsumer ( pConsumer );
+					if (pConsumer != nullptr)
+					{
+						pLine->AddConsumer(pConsumer);
 					}
 				}
 
