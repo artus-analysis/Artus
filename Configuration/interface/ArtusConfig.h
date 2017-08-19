@@ -103,7 +103,7 @@ private:
 			}
 			else if (ntype.first == ProcessNodeType::Filter)
 			{
-				FilterBaseUntemplated* gProd = factory.createFilter(ntype.second);
+				FilterBaseUntemplated* gFilter = factory.createFilter(ntype.second);
 
 				if (gFilter == nullptr)
 				{
