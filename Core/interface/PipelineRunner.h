@@ -49,9 +49,12 @@ public:
 		}
 	}
 
-	~PipelineRunner() {
+	~PipelineRunner()
+	{
 		if (m_registerSignalHandler)
+		{
 			osUnregisterHandler();
+		}
 	}
 
 	typedef TPipeline pipeline_type;
@@ -97,18 +100,16 @@ public:
 	/// Add a range of pipelines. The object is destroyed in the destructor of the PipelineRunner.
 	void AddPipelines(std::vector<TPipeline*> pVec)
 	{
-
-		for (auto * it : pVec)
+		for (TPipeline* pipeline : pVec)
 		{
-			AddPipeline(it);
+			AddPipeline(pipeline);
 		}
 	}
 
 	/// Run the Producers and all pipelines. Give any pipeline setting here: only the
 	/// producer will read from the settings ...
 	template<class TEventProvider>
-	void RunPipelines(TEventProvider & evtProvider,
-			setting_type const& settings)
+	void RunPipelines(TEventProvider& evtProvider, setting_type const& settings)
 	{
 		long long firstEvent = settings.GetFirstEvent();
 		long long nEvents = evtProvider.GetEntries();
@@ -122,25 +123,19 @@ public:
 
 		// initialize pline filter decision
 		FilterResult::FilterNames pipelineResultNames(m_pipelines.size());
-		std::transform(m_pipelines.begin(), m_pipelines.end(),
-				pipelineResultNames.begin(),
-				[] ( pipeline_type const& p ) -> std::string
-				{	return p.GetSettings().GetName();});
+		std::transform(m_pipelines.begin(), m_pipelines.end(), pipelineResultNames.begin(),
+		               [](pipeline_type const& p) -> std::string { return p.GetSettings().GetName(); });
 
+		std::vector<std::string> pipelineResultNamesSorted = pipelineResultNames;
+		// must be sorted to perform the unique option
+		// but don't use the sorted strings later on
+		std::sort(pipelineResultNamesSorted.begin(), pipelineResultNamesSorted.end());
+		std::vector<std::string>::iterator itUnq = std::unique(pipelineResultNamesSorted.begin(), pipelineResultNamesSorted.end());
+		if (itUnq != pipelineResultNamesSorted.end())
 		{
-			auto pipelineResultNamesSorted = pipelineResultNames;
-			// must be sorted to perform the unique option
-			// but don't use the sorted strings later on
-			std::sort(pipelineResultNamesSorted.begin(),
-					pipelineResultNamesSorted.end());
-
-			auto itUnq = std::unique(pipelineResultNamesSorted.begin(),
-					pipelineResultNamesSorted.end());
-			if (itUnq != pipelineResultNamesSorted.end())
-			{
-				LOG(FATAL)<< "Pipeline name '" << *itUnq << "' is not unique, but pipeline names must be unique";
-			}
+			LOG(FATAL)<< "Pipeline name '" << *itUnq << "' is not unique, but pipeline names must be unique";
 		}
+		
 		// apparently evtProvider.GetEntries() is not reliable. Therefore, if 'ProcessNEvents' is not set (=-1), the loop condition
 		// always evaluates to true (processNEvents<0) = (-1<0) and is terminated via the 'if (!evtProvider.GetEntry(i)) break' statement
 		for (long long iEvent = firstEvent; (iEvent < (firstEvent + nEvents)); ++iEvent)
@@ -153,18 +148,20 @@ public:
 			}
 
 			if (!evtProvider.GetEntry(iEvent))
-			break;
-			for (ProgressReportIterator it = m_progressReport.begin();
-					it != m_progressReport.end(); ++it)
 			{
-				it->update(iEvent-firstEvent, nEvents);
+				break;
+			}
+			
+			for (ProgressReportIterator report = m_progressReport.begin(); report != m_progressReport.end(); ++report)
+			{
+				report->update(iEvent-firstEvent, nEvents);
 			}
 
 			product_type productGlobal;
 			// use the lit of filters to bootstrap the filter list names
-			FilterResult globalFilterResult ( globlalFilterIds, taggingFilters );
+			FilterResult globalFilterResult(globlalFilterIds, taggingFilters);
 
-			for (ProcessNodesIterator it = m_globalNodes.begin(); it != m_globalNodes.end(); ++it)
+			for (ProcessNodesIterator processNode = m_globalNodes.begin(); processNode != m_globalNodes.end(); ++processNode)
 			{
 				// variables for runtime measurement
 				timeval tStart, tEnd;
@@ -173,39 +170,49 @@ public:
 				// stop processing as soon as one filter fails
 				// but the consumers will still be processed
 				if (! globalFilterResult.HasPassed())
-				break;
-
-				if ( it->GetProcessNodeType () == ProcessNodeType::Producer )
 				{
-					producer_base_type& prod = static_cast<producer_base_type&>(*it);
-					//LOG(DEBUG) << prod.GetProducerId() << "::Produce";
+					break;
+				}
+
+				if (processNode->GetProcessNodeType() == ProcessNodeType::Producer)
+				{
+					producer_base_type& prod = static_cast<producer_base_type&>(*processNode);
 					gettimeofday(&tStart, nullptr);
-					auto currentEvent = evtProvider.GetCurrentEvent();
+					
+					event_type currentEvent = evtProvider.GetCurrentEvent();
 					productGlobal.newRun = evtProvider.NewRun();
 					productGlobal.newLumisection = evtProvider.NewLumisection();
-					if(evtProvider.NewRun())
+					if (evtProvider.NewRun())
+					{
 						ProducerBaseAccess(prod).OnRun(currentEvent, settings);
-					if(evtProvider.NewLumisection())
+					}
+					if (evtProvider.NewLumisection())
+					{
 						ProducerBaseAccess(prod).OnLumi(currentEvent, settings);
-					ProducerBaseAccess(prod).Produce(currentEvent,
-							productGlobal, settings);
+					}
+					ProducerBaseAccess(prod).Produce(currentEvent, productGlobal, settings);
+					
 					gettimeofday(&tEnd, nullptr);
 					runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);
 					productGlobal.processorRunTime[prod.GetProducerId()] = runTime;
 				}
-				else if ( it->GetProcessNodeType () == ProcessNodeType::Filter )
+				else if ( processNode->GetProcessNodeType () == ProcessNodeType::Filter )
 				{
-					filter_base_type& flt = static_cast<filter_base_type&>(*it);
-					//LOG(DEBUG) << flt.GetFilterId() << "::DoesEventPass";
+					filter_base_type& flt = static_cast<filter_base_type&>(*processNode);
 					gettimeofday(&tStart, nullptr);
-					auto currentEvent = evtProvider.GetCurrentEvent();
-					if(evtProvider.NewRun())
+					
+					event_type currentEvent = evtProvider.GetCurrentEvent();
+					if (evtProvider.NewRun())
+					{
 						FilterBaseAccess(flt).OnRun(currentEvent, settings);
-					if(evtProvider.NewLumisection())
+					}
+					if (evtProvider.NewLumisection())
+					{
 						FilterBaseAccess(flt).OnLumi(currentEvent, settings);
-					const bool filterResult = FilterBaseAccess(flt).DoesEventPass(evtProvider.GetCurrentEvent(),
-							productGlobal, settings);
+					}
+					const bool filterResult = FilterBaseAccess(flt).DoesEventPass(evtProvider.GetCurrentEvent(), productGlobal, settings);
 					globalFilterResult.SetFilterDecision(flt.GetFilterId(), filterResult);
+					
 					gettimeofday(&tEnd, nullptr);
 					runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);
 					productGlobal.processorRunTime[flt.GetFilterId()] = runTime;
@@ -219,31 +226,29 @@ public:
 			// run the pipelines
 			FilterResult pipelineFilterRes(pipelineResultNames, taggingFilters);
 
-			for (PipelinesIterator it = m_pipelines.begin(); it != m_pipelines.end(); ++it)
+			for (PipelinesIterator pipeline = m_pipelines.begin(); pipeline != m_pipelines.end(); ++pipeline)
 			{
-				if (it->GetSettings().GetLevel() == 1)
+				if (pipeline->GetSettings().GetLevel() == 1)
 				{
 					productGlobal.PreviousPipelinesResult = pipelineFilterRes;
-					bool result = it->RunEvent(evtProvider.GetCurrentEvent(),
-							productGlobal, globalFilterResult);
-					pipelineFilterRes.SetFilterDecision(
-							it->GetSettings().GetName(), result);
+					bool result = pipeline->RunEvent(evtProvider.GetCurrentEvent(), productGlobal, globalFilterResult);
+					pipelineFilterRes.SetFilterDecision(pipeline->GetSettings().GetName(), result);
 				}
 			}
 		}
 
-		for (ProgressReportIterator it = m_progressReport.begin();
-				it != m_progressReport.end(); ++it)
+		for (ProgressReportIterator report = m_progressReport.begin(); report != m_progressReport.end(); ++report)
 		{
-			it->finish();
+			report->finish();
 		}
 
 		// first safe the results ( > plots ) from all level one pipelines
-		for (PipelinesIterator it = m_pipelines.begin();
-				!(it == m_pipelines.end()); ++it)
+		for (PipelinesIterator pipeline = m_pipelines.begin(); pipeline != m_pipelines.end(); ++pipeline)
 		{
-			if (it->GetSettings().GetLevel() == 1)
-				it->FinishPipeline();
+			if (pipeline->GetSettings().GetLevel() == 1)
+			{
+				pipeline->FinishPipeline();
+			}
 		}
 
 		osSignalReset();
@@ -252,11 +257,10 @@ public:
 		// even if the previous event loop was interrupted
 		bool noPipelineRun = false;
 		size_t curLevel = 2;
-		while (!noPipelineRun)
+		while (! noPipelineRun)
 		{
 			noPipelineRun = true;
-			for (PipelinesIterator it = m_pipelines.begin();
-					it != m_pipelines.end(); ++it)
+			for (PipelinesIterator pipeline = m_pipelines.begin(); pipeline != m_pipelines.end(); ++pipeline)
 			{
 				if (osHasSIGINT())
 				{
@@ -264,19 +268,19 @@ public:
 					break;
 				}
 
-				if (it->GetSettings().GetLevel() == curLevel)
+				if (pipeline->GetSettings().GetLevel() == curLevel)
 				{
 					noPipelineRun = false;
 
-					it->Run();
-					it->FinishPipeline();
+					pipeline->Run();
+					pipeline->FinishPipeline();
 				}
 			}
 			++curLevel;
 		}
 	}
 
-	void AddProgressReport(ProgressReportBase * p)
+	void AddProgressReport(ProgressReportBase* p)
 	{
 		m_progressReport.push_back(p);
 	}
@@ -286,12 +290,12 @@ public:
 		m_progressReport.clear();
 	}
 
-	Pipelines & GetPipelines()
+	Pipelines& GetPipelines()
 	{
 		return m_pipelines;
 	}
 
-	ProcessNodes & GetNodes()
+	ProcessNodes& GetNodes()
 	{
 		return m_globalNodes;
 	}
