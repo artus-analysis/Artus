@@ -3,6 +3,7 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
+#include "Artus/KappaAnalysis/interface/KappaTypes.h"
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
 #include "Artus/Utility/interface/DefaultValues.h"
 #include "Artus/Core/interface/ProducerBase.h"
@@ -27,10 +28,6 @@ public:
 		T   = 2
 	};
 
-	typedef typename KappaTypes::event_type event_type;
-	typedef typename KappaTypes::product_type product_type;
-	typedef typename KappaTypes::setting_type setting_type;
-	
 	GenTauMatchingProducerBase(std::map<TValidObject*, KGenTau*> product_type::*genTauMatchedObjects, //changed to KGenParticle from const KDataLV
 	                           std::vector<TValidObject>* event_type::*objects,
 	                           std::vector<TValidObject*> product_type::*validObjects,
@@ -54,9 +51,9 @@ public:
 	{
 	}
 
-	void Init(setting_type const& settings) override 
+	void Init(setting_type const& settings, metadata_type& metadata) override 
 	{
-		ProducerBase<KappaTypes>::Init(settings);
+		ProducerBase<KappaTypes>::Init(settings, metadata);
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("ratioGenTauMatched", [](event_type const & event, product_type const & product)
 		{
 			return product.m_ratioGenTauMatched;
@@ -68,7 +65,7 @@ public:
 	}
 
 	void Produce(event_type const& event, product_type& product,
-	             setting_type const& settings) const override
+	             setting_type const& settings, metadata_type const& metadata) const override
 	{
 		double ratioGenTauMatched = 0;
 		

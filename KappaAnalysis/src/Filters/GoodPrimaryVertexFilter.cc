@@ -9,16 +9,16 @@ std::string GoodPrimaryVertexFilter::GetFilterId() const {
 	return "GoodPrimaryVertexFilter";
 }
 
-void GoodPrimaryVertexFilter::Init(setting_type const& settings)
+void GoodPrimaryVertexFilter::Init(setting_type const& settings, metadata_type& metadata)
 {
-	FilterBase<KappaTypes>::Init(settings);
+	FilterBase<KappaTypes>::Init(settings, metadata);
 	m_maxPrimaryVertexZ = settings.GetMaxPrimaryVertexZ();
 	m_maxPrimaryVertexRho = settings.GetMaxPrimaryVertexRho();
 	m_minPrimaryVertexFitnDOF = settings.GetMinPrimaryVertexFitnDOF();
 }
 
-bool GoodPrimaryVertexFilter::DoesEventPass(KappaEvent const& event, KappaProduct const& product,
-                                               KappaSettings const& settings) const 
+bool GoodPrimaryVertexFilter::DoesEventPass(event_type const& event, product_type const& product,
+                                            setting_type const& settings, metadata_type const& metadata) const 
 {
 	assert(event.m_vertexSummary);
 	return (!(event.m_vertexSummary->pv.fake()) &&

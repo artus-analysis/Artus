@@ -17,15 +17,15 @@ class GenMatchingFilterBase: public FilterBase<KappaTypes>
 
 public:
 	
-	GenMatchingFilterBase(std::map<TValidObject*, KGenParticle*> KappaProduct::*genParticleMatchedObjects,
-	                      std::vector<TValidObject*> KappaProduct::*validObjects) :
+	GenMatchingFilterBase(std::map<TValidObject*, KGenParticle*> product_type::*genParticleMatchedObjects,
+	                      std::vector<TValidObject*> product_type::*validObjects) :
 		m_genParticleMatchedObjects(genParticleMatchedObjects),
 		m_validObjects(validObjects)
 	{
 	}
 
-	bool DoesEventPass(KappaEvent const& event, KappaProduct const& product,
-	                           KappaSettings const& settings) const override
+	bool DoesEventPass(event_type const& event, product_type const& product,
+	                   setting_type const& settings, metadata_type const& metadata) const override
 	{
 		if ((product.*m_genParticleMatchedObjects).size() == 0) 
 		{
@@ -39,8 +39,8 @@ public:
 
 
 private:
-	std::map<TValidObject*, KGenParticle*> KappaProduct::*m_genParticleMatchedObjects;
-	std::vector<TValidObject*> KappaProduct::*m_validObjects;
+	std::map<TValidObject*, KGenParticle*> product_type::*m_genParticleMatchedObjects;
+	std::vector<TValidObject*> product_type::*m_validObjects;
 
 };
 

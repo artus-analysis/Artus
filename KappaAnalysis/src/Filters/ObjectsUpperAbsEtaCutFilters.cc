@@ -2,52 +2,55 @@
 #include "Artus/KappaAnalysis/interface/Filters/ObjectsUpperAbsEtaCutFilters.h"
 
 
-std::string ElectronUpperAbsEtaCutsFilter::GetFilterId() const {
+std::string ElectronUpperAbsEtaCutsFilter::GetFilterId() const
+{
 	return "ElectronUpperAbsEtaCutsFilter";
 }
 
 ElectronUpperAbsEtaCutsFilter::ElectronUpperAbsEtaCutsFilter() :
-		LeptonUpperAbsEtaCutsFilter<KElectron>(&KappaProduct::m_validElectrons)
+		LeptonUpperAbsEtaCutsFilter<KElectron>(&product_type::m_validElectrons)
 {
 }
 
-void ElectronUpperAbsEtaCutsFilter::Init(KappaSettings const& settings) {
-
-	FilterBase<KappaTypes>::Init(settings);
+void ElectronUpperAbsEtaCutsFilter::Init(setting_type const& settings, metadata_type& metadata)
+{
+	FilterBase<KappaTypes>::Init(settings, metadata);
 
 	this->Initialise(settings.GetElectronUpperAbsEtaCuts());
 }
 
 
-std::string MuonUpperAbsEtaCutsFilter::GetFilterId() const {
+std::string MuonUpperAbsEtaCutsFilter::GetFilterId() const
+{
 	return "MuonUpperAbsEtaCutsFilter";
 }
 
 MuonUpperAbsEtaCutsFilter::MuonUpperAbsEtaCutsFilter() :
-		LeptonUpperAbsEtaCutsFilter<KMuon>(&KappaProduct::m_validMuons)
+		LeptonUpperAbsEtaCutsFilter<KMuon>(&product_type::m_validMuons)
 {
 }
 
-void MuonUpperAbsEtaCutsFilter::Init(KappaSettings const& settings) {
-
-	FilterBase<KappaTypes>::Init(settings);
+void MuonUpperAbsEtaCutsFilter::Init(setting_type const& settings, metadata_type& metadata)
+{
+	FilterBase<KappaTypes>::Init(settings, metadata);
 
 	this->Initialise(settings.GetMuonUpperAbsEtaCuts());
 }
 
 
-std::string TauUpperAbsEtaCutsFilter::GetFilterId() const {
+std::string TauUpperAbsEtaCutsFilter::GetFilterId() const
+{
 	return "TauUpperAbsEtaCutsFilter";
 }
 
 TauUpperAbsEtaCutsFilter::TauUpperAbsEtaCutsFilter() :
-		LeptonUpperAbsEtaCutsFilter<KTau>(&KappaProduct::m_validTaus)
+		LeptonUpperAbsEtaCutsFilter<KTau>(&product_type::m_validTaus)
 {
 }
 
-void TauUpperAbsEtaCutsFilter::Init(KappaSettings const& settings) {
-
-	FilterBase<KappaTypes>::Init(settings);
+void TauUpperAbsEtaCutsFilter::Init(setting_type const& settings, metadata_type& metadata)
+{
+	FilterBase<KappaTypes>::Init(settings, metadata);
 
 	this->Initialise(settings.GetTauUpperAbsEtaCuts());
 }
@@ -58,13 +61,13 @@ std::string JetUpperAbsEtaCutsFilter::GetFilterId() const {
 }
 
 JetUpperAbsEtaCutsFilter::JetUpperAbsEtaCutsFilter() :
-		LeptonUpperAbsEtaCutsFilter<KBasicJet>(&KappaProduct::m_validJets)
+		LeptonUpperAbsEtaCutsFilter<KBasicJet>(&product_type::m_validJets)
 {
 }
 
-void JetUpperAbsEtaCutsFilter::Init(KappaSettings const& settings) {
-
-	FilterBase<KappaTypes>::Init(settings);
+void JetUpperAbsEtaCutsFilter::Init(setting_type const& settings, metadata_type& metadata)
+{
+	FilterBase<KappaTypes>::Init(settings, metadata);
 
 	this->Initialise(settings.GetJetUpperAbsEtaCuts());
 }

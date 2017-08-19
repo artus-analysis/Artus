@@ -11,7 +11,7 @@ std::string PrintHltConsumer::GetConsumerId() const
 }
 
 void PrintHltConsumer::ProcessFilteredEvent(event_type const& event, product_type const& product,
-                                            setting_type const& settings)
+                                            setting_type const& settings, metadata_type const& metadata)
 {
 	// set LumiInfo, needs to be done here for the case running over multiple files
 	m_hltInfo.setLumiInfo(event.m_lumiInfo);
@@ -62,7 +62,7 @@ void PrintHltConsumer::ProcessFilteredEvent(event_type const& event, product_typ
 	LOG(INFO) << "==================================================";
 }
 
-void PrintHltConsumer::Finish(setting_type const& settings)
+void PrintHltConsumer::Finish(setting_type const& settings, metadata_type const& metadata)
 {
 }
 

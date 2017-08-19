@@ -6,9 +6,9 @@ std::string GenMuonFSRProducer::GetProducerId() const{
 	return "GenMuonFSRProducer";
 }
 
-void GenMuonFSRProducer::Init(KappaSettings const& settings)
+void GenMuonFSRProducer::Init(setting_type const& settings, metadata_type& metadata)
 {
-	KappaProducerBase::Init(settings);
+	KappaProducerBase::Init(settings, metadata);
 	
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingMuonFSR", [](event_type const& event, product_type const& product)
 	{
@@ -20,8 +20,8 @@ void GenMuonFSRProducer::Init(KappaSettings const& settings)
 	});
 }
 
-void GenMuonFSRProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                     KappaSettings const& settings) const
+void GenMuonFSRProducer::Produce(event_type const& event, product_type& product,
+                                 setting_type const& settings, metadata_type const& metadata) const
 {
 	// start with empty vector
 	product.m_sumMuonFSRPt.clear();

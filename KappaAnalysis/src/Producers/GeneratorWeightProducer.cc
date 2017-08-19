@@ -6,9 +6,8 @@ std::string GeneratorWeightProducer::GetProducerId() const {
 	return "GeneratorWeightProducer";
 }
 
-void GeneratorWeightProducer::Produce(KappaEvent const& event,
-		KappaProduct& product,
-		KappaSettings const& settings) const
+void GeneratorWeightProducer::Produce(event_type const& event, product_type& product,
+                                      setting_type const& settings, metadata_type const& metadata) const
 {
 	assert(event.m_genEventInfo);
 

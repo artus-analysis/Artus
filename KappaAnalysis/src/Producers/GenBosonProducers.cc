@@ -9,52 +9,52 @@ std::string GenBosonFromGenParticlesProducer::GetProducerId() const {
 	return "GenBosonFromGenParticlesProducer";
 }
 
-void GenBosonFromGenParticlesProducer::Init(KappaSettings const& settings)
+void GenBosonFromGenParticlesProducer::Init(setting_type const& settings, metadata_type& metadata)
 {
-	ProducerBase<KappaTypes>::Init(settings);
+	ProducerBase<KappaTypes>::Init(settings, metadata);
 
 	// add possible quantities for the lambda ntuples consumers
-	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("genBosonParticleFound", [](KappaEvent const & event, KappaProduct const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("genBosonParticleFound", [](event_type const & event, product_type const & product)
 	{
 		return (product.m_genBosonParticle != nullptr);
 	});
 	
-	LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity("genBosonLV", [](KappaEvent const & event, KappaProduct const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity("genBosonLV", [](event_type const & event, product_type const & product)
 	{
 		return product.m_genBosonLV;
 	});
 	
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genBosonPt", [](KappaEvent const & event, KappaProduct const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genBosonPt", [](event_type const & event, product_type const & product)
 	{
 		return product.m_genBosonLV.Pt();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genBosonEta", [](KappaEvent const & event, KappaProduct const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genBosonEta", [](event_type const & event, product_type const & product)
 	{
 		return product.m_genBosonLV.Eta();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genBosonPhi", [](KappaEvent const & event, KappaProduct const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genBosonPhi", [](event_type const & event, product_type const & product)
 	{
 		return product.m_genBosonLV.Phi();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genBosonMass", [](KappaEvent const & event, KappaProduct const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genBosonMass", [](event_type const & event, product_type const & product)
 	{
 		return product.m_genBosonLV.M();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("genBosonLVFound", [](KappaEvent const & event, KappaProduct const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("genBosonLVFound", [](event_type const & event, product_type const & product)
 	{
 		return product.m_genBosonLVFound;
 	});
 }
 
-void GenBosonFromGenParticlesProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                                               KappaSettings const& settings) const
+void GenBosonFromGenParticlesProducer::Produce(event_type const& event, product_type& product,
+                                               setting_type const& settings, metadata_type const& metadata) const
 {
 	assert(event.m_genParticles);
 	FindGenBoson(event, product, settings);
 }
 
-void GenBosonFromGenParticlesProducer::FindGenBoson(KappaEvent const& event, KappaProduct& product,
-                                                    KappaSettings const& settings, unsigned int startIndex) const
+void GenBosonFromGenParticlesProducer::FindGenBoson(event_type const& event, product_type& product,
+                                                    setting_type const& settings, unsigned int startIndex) const
 {
 	product.m_genBosonParticle = nullptr;
 	product.m_genBosonLV = RMFLV();
@@ -78,13 +78,13 @@ std::string GenBosonProductionProducer::GetProducerId() const {
 	return "GenBosonProductionProducer";
 }
 
-void GenBosonProductionProducer::Init(KappaSettings const& settings)
+void GenBosonProductionProducer::Init(setting_type const& settings, metadata_type & metadata)
 {
-	GenBosonFromGenParticlesProducer::Init(settings);
+	GenBosonFromGenParticlesProducer::Init(settings, metadata);
 }
 
-void GenBosonProductionProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                                         KappaSettings const& settings) const
+void GenBosonProductionProducer::Produce(event_type const& event, product_type& product,
+                                         setting_type const& settings, metadata_type const& metadata) const
 {
 	assert(product.m_genBosonParticle != nullptr);
 	
@@ -137,9 +137,9 @@ std::string GenBosonDiLeptonDecayModeProducer::GetProducerId() const {
 	return "GenBosonDiLeptonDecayModeProducer";
 }
 
-void GenBosonDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
+void GenBosonDiLeptonDecayModeProducer::Init(setting_type const& settings, metadata_type& metadata)
 {
-	GenBosonFromGenParticlesProducer::Init(settings);
+	GenBosonFromGenParticlesProducer::Init(settings, metadata);
 
 	// add possible quantities for the lambda ntuples consumers
 	for (size_t leptonIndex = 0; leptonIndex < 2; ++leptonIndex)
@@ -225,14 +225,14 @@ void GenBosonDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
 	}
 }
 
-void GenBosonDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                                                KappaSettings const& settings) const
+void GenBosonDiLeptonDecayModeProducer::Produce(event_type const& event, product_type& product,
+                                                setting_type const& settings, metadata_type const& metadata) const
 {
 	FindGenDiLeptons(event, product, settings);
 }
 
-void GenBosonDiLeptonDecayModeProducer::FindGenDiLeptons(KappaEvent const& event, KappaProduct& product,
-                                                         KappaSettings const& settings) const
+void GenBosonDiLeptonDecayModeProducer::FindGenDiLeptons(event_type const& event, product_type& product,
+                                                         setting_type const& settings) const
 {
 	product.m_genLeptonsFromBosonDecay.clear();
 	

@@ -6,8 +6,8 @@ std::string ValidLeptonsProducer::GetProducerId() const {
 	return "ValidLeptonsProducer";
 }
 
-void ValidLeptonsProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                     KappaSettings const& settings) const
+void ValidLeptonsProducer::Produce(event_type const& event, product_type& product,
+                                   setting_type const& settings, metadata_type const& metadata) const
 {
 	// start with empty vectors
 	product.m_validLeptons.clear();

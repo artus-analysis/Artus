@@ -18,17 +18,17 @@ class TriggerMatchingFilterBase: public FilterBase<KappaTypes>
 public:
 
 	
-	TriggerMatchingFilterBase(std::map<TValidObject*, KLV*> KappaProduct::*triggerMatchedObjects,
-	                          std::vector<TValidObject*> KappaProduct::*validObjects,
-	                          size_t (KappaSettings::*GetMinNMatchedObjects)(void) const) :
+	TriggerMatchingFilterBase(std::map<TValidObject*, KLV*> product_type::*triggerMatchedObjects,
+	                          std::vector<TValidObject*> product_type::*validObjects,
+	                          size_t (setting_type::*GetMinNMatchedObjects)(void) const) :
 		m_triggerMatchedObjects(triggerMatchedObjects),
 		m_validObjects(validObjects),
 		GetMinNMatchedObjects(GetMinNMatchedObjects)
 	{
 	}
 
-	bool DoesEventPass(KappaEvent const& event, KappaProduct const& product,
-	                           KappaSettings const& settings) const override
+	bool DoesEventPass(event_type const& event, product_type const& product,
+	                   setting_type const& settings, metadata_type const& metadata) const override
 	{
 		if (((product.*m_triggerMatchedObjects).size() < (product.*m_validObjects).size()) ||
 		    ((product.*m_triggerMatchedObjects).size() < (settings.*GetMinNMatchedObjects)()))
@@ -43,9 +43,9 @@ public:
 
 
 private:
-	std::map<TValidObject*, KLV*> KappaProduct::*m_triggerMatchedObjects;
-	std::vector<TValidObject*> KappaProduct::*m_validObjects;
-	size_t (KappaSettings::*GetMinNMatchedObjects)(void) const;
+	std::map<TValidObject*, KLV*> product_type::*m_triggerMatchedObjects;
+	std::vector<TValidObject*> product_type::*m_validObjects;
+	size_t (setting_type::*GetMinNMatchedObjects)(void) const;
 
 };
 

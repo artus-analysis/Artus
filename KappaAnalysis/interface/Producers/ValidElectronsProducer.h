@@ -10,6 +10,7 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
+#include "Artus/KappaAnalysis/interface/KappaTypes.h"
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
@@ -43,6 +44,7 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
+	typedef typename TTypes::metadata_type metadata_type;
 
 	enum class ValidElectronsInput : int
 	{
@@ -162,8 +164,8 @@ public:
 	{
 	}
 
-	void Init(setting_type const& settings) override {
-		ProducerBase<TTypes>::Init(settings);
+	void Init(setting_type const& settings, metadata_type& metadata) override {
+		ProducerBase<TTypes>::Init(settings, metadata);
 		ValidPhysicsObjectTools<TTypes, KElectron>::Init(settings);
 		
 		validElectronsInput = ToValidElectronsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidElectronsInput())));
@@ -191,7 +193,7 @@ public:
 	}
 
 	void Produce(event_type const& event, product_type& product,
-	                     setting_type const& settings) const override
+	             setting_type const& settings, metadata_type const& metadata) const override
 	{
 		assert(event.m_electrons);
 		assert(event.m_vertexSummary);
@@ -290,7 +292,7 @@ public:
 			valid = valid && this->PassKinematicCuts(*electron, event, product);
 
 			// check possible analysis-specific criteria
-			valid = valid && AdditionalCriteria(*electron, event, product, settings);
+			valid = valid && AdditionalCriteria(*electron, event, product, settings, metadata);
 
 			if (valid)
 				(product.*m_validElectronsMember).push_back(*electron);
@@ -481,8 +483,8 @@ protected:
 	ElectronReco electronReco;
 
 	// Can be overwritten for analysis-specific use cases
-	virtual bool AdditionalCriteria(KElectron* electron, event_type const& event,
-	                                product_type& product, setting_type const& settings) const
+	virtual bool AdditionalCriteria(KElectron* electron, event_type const& event, product_type& product,
+	                                setting_type const& settings, metadata_type const& metadata) const
 	{
 		return true;
 	}
@@ -519,7 +521,7 @@ private:
 		return false;
 	}
 
-	bool IsFakeableElectronIso(KElectron* electron, event_type const& event, product_type& product,  setting_type const& settings) const
+	bool IsFakeableElectronIso(KElectron* electron, event_type const& event, product_type& product, setting_type const& settings) const
 	{
 		return (((electron->trackIso / electron->p4.Pt()) < 0.2f) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&
 				((electron->ecalIso / electron->p4.Pt()) < 0.2f) ? settings.GetDirectIso() : (!settings.GetDirectIso()) &&

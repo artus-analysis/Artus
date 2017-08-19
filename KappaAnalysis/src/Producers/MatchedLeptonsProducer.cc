@@ -5,8 +5,8 @@ std::string MatchedLeptonsProducer::GetProducerId() const {
 	return "MatchedLeptonsProducer";
 }
 
-void MatchedLeptonsProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                     KappaSettings const& settings) const
+void MatchedLeptonsProducer::Produce(event_type const& event, product_type& product,
+                                     setting_type const& settings, metadata_type const& metadata) const
 {
 	// start with empty vectors
 	product.m_genParticleMatchedLeptons.clear();

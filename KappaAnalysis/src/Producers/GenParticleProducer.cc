@@ -6,9 +6,9 @@ std::string GenParticleProducer::GetProducerId() const{
 	return "GenParticleProducer";
 }
 
-void GenParticleProducer::Init(KappaSettings const& settings)
+void GenParticleProducer::Init(setting_type const& settings, metadata_type& metadata)
 {
-	KappaProducerBase::Init(settings);
+	KappaProducerBase::Init(settings, metadata);
 	
 	m_genParticleTypes.clear();
 	for (std::vector<std::string>::const_iterator genParticleType = settings.GetGenParticleTypes().begin();
@@ -18,8 +18,8 @@ void GenParticleProducer::Init(KappaSettings const& settings)
 	}
 }
 
-void GenParticleProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                     KappaSettings const& settings) const
+void GenParticleProducer::Produce(event_type const& event, product_type& product,
+                                  setting_type const& settings, metadata_type const& metadata) const
 {
 	assert(event.m_genParticles);
 

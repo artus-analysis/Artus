@@ -11,8 +11,8 @@
 		return "HltFilter";
 	}
 
-	bool HltFilter::DoesEventPass(KappaEvent const& event, KappaProduct const& product,
-	                           KappaSettings const& settings) const
+	bool HltFilter::DoesEventPass(event_type const& event, product_type const& product,
+	                              setting_type const& settings, metadata_type const& metadata) const
 	{
 		if (settings.GetNoHltFiltering()) return true;
 		return (! product.m_selectedHltNames.empty());

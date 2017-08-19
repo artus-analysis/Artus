@@ -3,8 +3,8 @@
 
 
 JetCorrectionsProducer::JetCorrectionsProducer() :
-	JetCorrectionsProducerBase<KBasicJet>(&KappaEvent::m_basicJets,
-	                                               &KappaProduct::m_correctedJets)
+	JetCorrectionsProducerBase<KBasicJet>(&event_type::m_basicJets,
+	                                      &product_type::m_correctedJets)
 {
 }
 
@@ -14,8 +14,8 @@ std::string JetCorrectionsProducer::GetProducerId() const {
 
 
 TaggedJetCorrectionsProducer::TaggedJetCorrectionsProducer() :
-	JetCorrectionsProducerBase<KJet>(&KappaEvent::m_tjets,
-	                                                     &KappaProduct::m_correctedTaggedJets)
+	JetCorrectionsProducerBase<KJet>(&event_type::m_tjets,
+	                                 &product_type::m_correctedTaggedJets)
 {
 }
 

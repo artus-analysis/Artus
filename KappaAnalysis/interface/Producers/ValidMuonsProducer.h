@@ -11,6 +11,7 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
+#include "Artus/KappaAnalysis/interface/KappaTypes.h"
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
@@ -21,7 +22,7 @@
    \brief GlobalProducer, for valid muons.
 
    Valid muons pass the tightId requirement of the muon POG. In addition there is a loose
-   isolation requirement. Two collectons are written into the KappaProduct for valid and
+   isolation requirement. Two collectons are written into the product_type for valid and
    invalid muons.
 
    This Producer needs the following config tags:
@@ -42,6 +43,7 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
+	typedef typename TTypes::metadata_type metadata_type;
 
 	enum class ValidMuonsInput : int
 	{
@@ -134,8 +136,8 @@ public:
 	{
 	}
 
-	void Init(setting_type const& settings) override {
-		ProducerBase<TTypes>::Init(settings);
+	void Init(setting_type const& settings, metadata_type& metadata) override {
+		ProducerBase<TTypes>::Init(settings, metadata);
 		ValidPhysicsObjectTools<TTypes, KMuon>::Init(settings);
 
 		validMuonsInput = ToValidMuonsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidMuonsInput())));
@@ -203,7 +205,7 @@ public:
 	}
 
 	void Produce(event_type const& event, product_type& product,
-	                     setting_type const& settings) const override
+	             setting_type const& settings, metadata_type const& metadata) const override
 	{
 		assert(event.m_muons);
 
@@ -316,7 +318,7 @@ public:
 			validMuon = validMuon && this->PassKinematicCuts(*muon, event, product);
 
 			// check possible analysis-specific criteria
-			validMuon = validMuon && AdditionalCriteria(*muon, event, product, settings);
+			validMuon = validMuon && AdditionalCriteria(*muon, event, product, settings, metadata);
 
 			if (validMuon)
 			{
@@ -340,8 +342,8 @@ protected:
 	MuonIso muonIso;
 
 	// Can be overwritten for analysis-specific use cases
-	virtual bool AdditionalCriteria(KMuon* muon, event_type const& event,
-	                                product_type& product, setting_type const& settings) const
+	virtual bool AdditionalCriteria(KMuon* muon, event_type const& event, product_type& product,
+	                                setting_type const& settings, metadata_type const& metadata) const
 	{
 		bool validMuon = true;
 		return validMuon;

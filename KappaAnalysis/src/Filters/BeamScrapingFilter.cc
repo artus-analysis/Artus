@@ -9,15 +9,15 @@ std::string BeamScrapingFilter::GetFilterId() const {
 	return "BeamScrapingFilter";
 }
 
-void BeamScrapingFilter::Init(setting_type const& settings)
+void BeamScrapingFilter::Init(setting_type const& settings, metadata_type& metadata)
 {
-	FilterBase<KappaTypes>::Init(settings);
+	FilterBase<KappaTypes>::Init(settings, metadata);
 
 	m_purityRatio = settings.GetMinPurityRatio();
 }
 
-bool BeamScrapingFilter::DoesEventPass(KappaEvent const& event, KappaProduct const& product,
-                                       KappaSettings const& settings) const
+bool BeamScrapingFilter::DoesEventPass(event_type const& event, product_type const& product,
+                                       setting_type const& settings, metadata_type const& metadata) const
 {
 	assert(event.m_trackSummary);
 
