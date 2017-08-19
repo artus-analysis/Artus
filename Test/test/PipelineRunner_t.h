@@ -27,12 +27,13 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_product )
 	tline4->bCheckProducer = true;
 	tline5->bCheckProducer = true;
 
+	TestMetadata metadata;
 	TestSettings global_tset;
-	tline1->InitPipeline( TestSettings("1"), TestPipelineInitializer() );
-	tline2->InitPipeline( TestSettings("2"), TestPipelineInitializer() );
-	tline3->InitPipeline( TestSettings("3"), TestPipelineInitializer() );
-	tline4->InitPipeline( TestSettings("4"), TestPipelineInitializer() );
-	tline5->InitPipeline( TestSettings("5"), TestPipelineInitializer() );
+	tline1->InitPipeline( TestSettings("1"), metadata, TestPipelineInitializer() );
+	tline2->InitPipeline( TestSettings("2"), metadata, TestPipelineInitializer() );
+	tline3->InitPipeline( TestSettings("3"), metadata, TestPipelineInitializer() );
+	tline4->InitPipeline( TestSettings("4"), metadata, TestPipelineInitializer() );
+	tline5->InitPipeline( TestSettings("5"), metadata, TestPipelineInitializer() );
 
 	TestPipelineRunnerInstr prunner;
 	// don't show progress report in this test cases
@@ -65,10 +66,11 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_producer_filter )
 
 	tline1->bCheckProducer = true;
 
+	TestMetadata metadata;
 	TestSettings tset("1");
 	TestSettings global_tset;
 	tset.SetLevel(1);
-	tline1->InitPipeline( tset, TestPipelineInitializer() );
+	tline1->InitPipeline( tset, metadata, TestPipelineInitializer() );
 
 	TestPipelineRunnerInstr prunner(false);
 	// don't show progress report in this test cases
@@ -94,10 +96,11 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_global_producer_filter_pass )
 
 	tline1->bCheckProducer = true;
 
+	TestMetadata metadata;
 	TestSettings tset("1");
 	TestSettings global_tset;
 	tset.SetLevel(1);
-	tline1->InitPipeline( tset, TestPipelineInitializer() );
+	tline1->InitPipeline( tset, metadata, TestPipelineInitializer() );
 
 	TestPipelineRunnerInstr prunner(false);
 	// don't show progress report in this test cases
@@ -126,12 +129,13 @@ BOOST_AUTO_TEST_CASE( test_event_prunner )
 	TestPipelineInstr * tline4 = new TestPipelineInstr;
 	TestPipelineInstr * tline5 = new TestPipelineInstr;
 
+	TestMetadata metadata;
 	TestSettings global_tset;
-	tline1->InitPipeline( TestSettings("1"), TestPipelineInitializer() );
-	tline2->InitPipeline( TestSettings("2"), TestPipelineInitializer() );
-	tline3->InitPipeline( TestSettings("3"), TestPipelineInitializer() );
-	tline4->InitPipeline( TestSettings("4"), TestPipelineInitializer() );
-	tline5->InitPipeline( TestSettings("5"), TestPipelineInitializer() );
+	tline1->InitPipeline( TestSettings("1"), metadata, TestPipelineInitializer() );
+	tline2->InitPipeline( TestSettings("2"), metadata, TestPipelineInitializer() );
+	tline3->InitPipeline( TestSettings("3"), metadata, TestPipelineInitializer() );
+	tline4->InitPipeline( TestSettings("4"), metadata, TestPipelineInitializer() );
+	tline5->InitPipeline( TestSettings("5"), metadata, TestPipelineInitializer() );
 
 	TestPipelineRunnerInstr prunner(false);
 	// don't show progress report in this test cases
@@ -175,10 +179,11 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_result )
 						== FilterResult::Decision::Undefined );
 	};
 
+	TestMetadata metadata;
 	TestSettings global_tset;
-	tline1->InitPipeline( TestSettings("line1"), TestPipelineInitializer() );
-	tline2->InitPipeline( TestSettings("line2"), TestPipelineInitializer() );
-	tline3->InitPipeline( TestSettings("line3"), TestPipelineInitializer() );
+	tline1->InitPipeline( TestSettings("line1"), metadata, TestPipelineInitializer() );
+	tline2->InitPipeline( TestSettings("line2"), metadata, TestPipelineInitializer() );
+	tline3->InitPipeline( TestSettings("line3"), metadata, TestPipelineInitializer() );
 
 	TestPipelineRunnerInstr prunner(false);
 	// don't show progress report in this test cases
@@ -202,15 +207,16 @@ BOOST_AUTO_TEST_CASE( test_event_prunner_multi_level )
 	TestPipelineInstr * tline2 = new TestPipelineInstr;
 	TestPipelineInstr * tline3 = new TestPipelineInstr;
 
+	TestMetadata metadata;
 	TestSettings tset_lvl1_a( "lvl1a");
 	TestSettings tset_lvl1_b( "lvl1b");
 	TestSettings tset_lvl2("lvl2");
 	TestSettings global_tset_lvl2;
 	tset_lvl1_a.SetLevel(1);
 	tset_lvl2.SetLevel(2);
-	tline1->InitPipeline( tset_lvl1_a, TestPipelineInitializer() );
-	tline2->InitPipeline( tset_lvl1_b, TestPipelineInitializer() );
-	tline3->InitPipeline( tset_lvl2, TestPipelineInitializer() );
+	tline1->InitPipeline( tset_lvl1_a, metadata, TestPipelineInitializer() );
+	tline2->InitPipeline( tset_lvl1_b, metadata, TestPipelineInitializer() );
+	tline3->InitPipeline( tset_lvl2, metadata, TestPipelineInitializer() );
 
 	TestPipelineRunnerInstr prunner(false);
 	// don't show progress report in this test cases
