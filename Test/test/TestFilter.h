@@ -11,7 +11,7 @@ public:
 	}
 
 	bool DoesEventPass(const TestEvent & event, TestProduct const& product,
-	                           TestSettings const& settings) const override
+	                   TestSettings const& settings, TestMetadata const& metadata) const override
 	{
 		return (event.iVal < 2);
 	}
@@ -24,8 +24,8 @@ public:
 		return "testfilter2";
 	}
 
-	bool DoesEventPass(const TestEvent & event,
-			TestProduct const& product, TestSettings const& settings) const	override
+	bool DoesEventPass(const TestEvent & event, TestProduct const& product,
+			TestSettings const& settings, TestMetadata const& metadata) const	override
 	{
 		return false;
 	}
@@ -38,8 +38,8 @@ public:
 		return "testfilter3";
 	}
 
-	bool DoesEventPass(const TestEvent & event,
-			TestProduct const& product, TestSettings const& settings) const override
+	bool DoesEventPass(const TestEvent & event, TestProduct const& product,
+			TestSettings const& settings, TestMetadata const& metadata) const override
 	{
 		// this is only 1, if the local producer ran before
 		return ( product.iLocalProduct == 1 );
@@ -53,8 +53,8 @@ public:
 		return "testglobalfilter";
 	}
 
-	bool DoesEventPass(const TestEvent & event,
-			TestProduct const& product, TestSettings const& settings) const	override
+	bool DoesEventPass(const TestEvent & event, TestProduct const& product,
+			TestSettings const& settings, TestMetadata const& metadata) const	override
 	{
 		return (event.iVal == 0);
 	}
@@ -67,8 +67,8 @@ public:
 		return "testglobalfilter2";
 	}
 
-	bool DoesEventPass(const TestEvent & event,
-			TestProduct const& product, TestSettings const& settings) const	override
+	bool DoesEventPass(const TestEvent & event, TestProduct const& product,
+			TestSettings const& settings, TestMetadata const& metadata) const	override
 	{
 		return ( product.iGlobalProduct2 == 1 );
 	}

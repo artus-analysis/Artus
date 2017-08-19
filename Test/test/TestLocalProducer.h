@@ -17,7 +17,8 @@ public:
 	// for each pipeline
 	void Produce(TestEvent const& event,
 			TestProduct & product,
-			TestSettings const& m_pipelineSettings) const override
+			TestSettings const& m_pipelineSettings,
+			TestMetadata const& metadata) const override
 	{
 		product.iLocalProduct = event.iVal + 1;
 	}
@@ -35,7 +36,8 @@ public:
 	// for each pipeline
 	void Produce(TestEvent const& event,
 			TestProduct & product,
-			TestSettings const& m_pipelineSettings) const override
+			TestSettings const& m_pipelineSettings,
+			TestMetadata const& metadata) const override
 	{
 		product.iLocalProduct = product.iGlobalProduct + 1;
 	}

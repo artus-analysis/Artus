@@ -30,9 +30,10 @@ BOOST_AUTO_TEST_CASE( test_pipeline )
 
 	TestPipelineInitializer init;
 
+	TestMetadata metadata;
 	TestSettings settings;
 	TestSettings globalSettings;
-	pline.InitPipeline(settings, init);
+	pline.InitPipeline(settings, metadata, init);
 
 	TestGlobalProducer globalProducer;
 	TestProduct product;
@@ -41,13 +42,13 @@ BOOST_AUTO_TEST_CASE( test_pipeline )
 	FilterResult globalFilterResult;
 
 	// run global producers
-	globalProducer.Produce(td, product, globalSettings);
+	globalProducer.Produce(td, product, globalSettings, metadata);
 	pline.RunEvent(td, product, globalFilterResult);
 
-	globalProducer.Produce(td, product, globalSettings);
+	globalProducer.Produce(td, product, globalSettings, metadata);
 	pline.RunEvent(td, product, globalFilterResult);
 
-	globalProducer.Produce(td, product, globalSettings);
+	globalProducer.Produce(td, product, globalSettings, metadata);
 	pline.RunEvent(td, product, globalFilterResult);
 
 	pline.FinishPipeline();
@@ -68,9 +69,10 @@ BOOST_AUTO_TEST_CASE( test_pipeline_gobal_local_producer )
 
 	TestPipelineInitializer init;
 
+	TestMetadata metadata;
 	TestSettings settings;
 	TestSettings globalSettings;
-	pline.InitPipeline(settings, init);
+	pline.InitPipeline(settings, metadata, init);
 
 	TestGlobalProducer globalProducer;
 	TestProduct product;
@@ -79,7 +81,7 @@ BOOST_AUTO_TEST_CASE( test_pipeline_gobal_local_producer )
 	FilterResult globalFilterResult;
 
 	// run global producers
-	globalProducer.Produce( td, product, globalSettings );
+	globalProducer.Produce( td, product, globalSettings, metadata );
 	pline.RunEvent( td, product, globalFilterResult );
 
 	pline.FinishPipeline();
@@ -114,22 +116,23 @@ BOOST_AUTO_TEST_CASE( test_filter )
 
 	TestPipelineInitializer init;
 
+	TestMetadata metadata;
 	TestSettings settings;
 	TestSettings globalSettings;
-	pline.InitPipeline(settings, init);
+	pline.InitPipeline(settings, metadata, init);
 
 	TestEvent td;
 	TestProduct product;
 	TestGlobalProducer globalProducer;
 	FilterResult globalFilterResult;
 
-	globalProducer.Produce(td, product, globalSettings);
+	globalProducer.Produce(td, product, globalSettings, metadata);
 	pline.RunEvent(td, product, globalFilterResult);
 	td.iVal++;
-	globalProducer.Produce(td, product, globalSettings);
+	globalProducer.Produce(td, product, globalSettings, metadata);
 	pline.RunEvent(td, product, globalFilterResult);
 	td.iVal++;
-	globalProducer.Produce(td, product, globalSettings);
+	globalProducer.Produce(td, product, globalSettings, metadata);
 	pline.RunEvent(td, product, globalFilterResult);
 
 	pline.FinishPipeline();
@@ -154,15 +157,16 @@ BOOST_AUTO_TEST_CASE( test_multiplefilter_producer )
 	pline.AddProducer( new TestLocalProducer() );
 
 	TestPipelineInitializer init;
+	TestMetadata metadata;
 	TestSettings settings;
 	TestSettings globalSettings;
-	pline.InitPipeline( settings, init );
+	pline.InitPipeline(settings, metadata, init);
 
 	TestEvent td;
 	TestProduct product;
 	FilterResult globalFilterResult;
 
-	globalProducer.Produce(td, product, globalSettings);
+	globalProducer.Produce(td, product, globalSettings, metadata);
 	pline.RunEvent(td, product, globalFilterResult);
 
 	pline.FinishPipeline();
@@ -189,15 +193,16 @@ BOOST_AUTO_TEST_CASE( test_multiplefilter_producer_stop_exec )
 	pline.AddProducer( new TestLocalProducer() );
 
 	TestPipelineInitializer init;
+	TestMetadata metadata;
 	TestSettings settings;
 	TestSettings globalSettings;
-	pline.InitPipeline( settings, init );
+	pline.InitPipeline(settings, metadata, init);
 
 	TestEvent td;
 	TestProduct product;
 	FilterResult globalFilterResult;
 
-	globalProducer.Produce(td, product, globalSettings);
+	globalProducer.Produce(td, product, globalSettings, metadata);
 	pline.RunEvent(td, product, globalFilterResult);
 
 	pline.FinishPipeline();
@@ -219,10 +224,11 @@ BOOST_AUTO_TEST_CASE( test_event_pipeline_level2 )
 
 	TestPipelineInitializer init;
 
+	TestMetadata metadata;
 	TestSettings settings;
 	TestSettings globalSettings;
 	settings.SetLevel(2);
-	pline.InitPipeline(settings, init);
+	pline.InitPipeline(settings, metadata, init);
 
 	pline.Run();
 	pline.Run();
