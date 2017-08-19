@@ -6,13 +6,13 @@ std::string ElectronCorrectionsProducer::GetProducerId() const {
 	return "ElectronCorrectionsProducer";
 }
 
-void ElectronCorrectionsProducer::Init(setting_type const& settings)
+void ElectronCorrectionsProducer::Init(setting_type const& settings, metadata_type& metadata)
 {
-	KappaProducerBase::Init(settings);
+	KappaProducerBase::Init(settings, metadata);
 }
 
-void ElectronCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                                          KappaSettings const& settings) const
+void ElectronCorrectionsProducer::Produce(event_type const& event, product_type& product,
+                                          setting_type const& settings, metadata_type const& metadata) const
 {
 	assert(event.m_electrons);
 
@@ -59,7 +59,9 @@ void ElectronCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct&
 	
 		// perform possible analysis-specific corrections
 		if (!settings.GetCorrectOnlyRealElectrons() || (settings.GetCorrectOnlyRealElectrons() && isRealElectron))
-			AdditionalCorrections(electron->get(), event, product, settings);
+		{
+			AdditionalCorrections(electron->get(), event, product, settings, metadata);
+		}
 
 		// make sure to also save the corrected lepton and the matched genParticle in the map
 		// if we match genParticles to all leptons
@@ -81,8 +83,8 @@ void ElectronCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct&
 	          { return electron1->p4.Pt() > electron2->p4.Pt(); });
 }
 
-void ElectronCorrectionsProducer::AdditionalCorrections(KElectron* electron, KappaEvent const& event,
-                                                        KappaProduct& product, KappaSettings const& settings) const
+void ElectronCorrectionsProducer::AdditionalCorrections(KElectron* electron, event_type const& event,
+                                                        product_type& product, setting_type const& settings, metadata_type const& metadata) const
 {
 }
 

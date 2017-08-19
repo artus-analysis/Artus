@@ -11,13 +11,13 @@ std::string PrintEventsConsumer::GetConsumerId() const
 }
 
 void PrintEventsConsumer::ProcessEvent(event_type const& event, product_type const& product,
-                                       setting_type const& settings, FilterResult& result)
+                                       setting_type const& settings, metadata_type const& metadata, FilterResult& result)
 {
 	LOG(INFO) << "Processed event: run = " << event.m_eventInfo->nRun << ", lumi = " << event.m_eventInfo->nLumi << ", event = " << event.m_eventInfo->nEvent << ", pipeline = " << settings.GetName();
 	LOG(INFO) << "====================================================================================================\n";
 }
 
-void PrintEventsConsumer::Finish(setting_type const& settings)
+void PrintEventsConsumer::Finish(setting_type const& settings, metadata_type const& metadata)
 {
 }
 

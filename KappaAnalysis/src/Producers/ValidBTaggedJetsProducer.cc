@@ -7,9 +7,9 @@ std::string ValidBTaggedJetsProducer::GetProducerId() const {
 	return "ValidBTaggedJetsProducer";
 }
 
-void ValidBTaggedJetsProducer::Init(KappaSettings const& settings)
+void ValidBTaggedJetsProducer::Init(setting_type const& settings, metadata_type& metadata)
 {
-	KappaProducerBase::Init(settings);
+	KappaProducerBase::Init(settings, metadata);
 	std::map<std::string, std::vector<float> > bTagWorkingPointsTmp = Utility::ParseMapTypes<std::string, float>(
 			Utility::ParseVectorToMap(settings.GetBTaggerWorkingPoints())
 	);
@@ -26,60 +26,60 @@ void ValidBTaggedJetsProducer::Init(KappaSettings const& settings)
 		}
 		// define lambda expression for nbtag per working point
 		std::string btagQuantity = std::string("n")+bTagWorkingPoint.first+std::string("btag");
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(btagQuantity, [bTagWorkingPoint](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(btagQuantity, [bTagWorkingPoint](event_type const& event, product_type const& product) {
 			auto it = product.m_bTaggedJetsByWp.find(bTagWorkingPoint.first);
 			return it != product.m_bTaggedJetsByWp.end() ? product.m_bTaggedJetsByWp.at(bTagWorkingPoint.first).size() : 0;
 		});
 	}
 	
 	// add possible quantities for the lambda ntuples consumers
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nBJets", [](KappaEvent const& event, KappaProduct const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nBJets", [](event_type const& event, product_type const& product) {
 		return product.m_bTaggedJets.size();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nBJets20", [this](KappaEvent const& event, KappaProduct const& product) {
-		return KappaProduct::GetNJetsAbovePtThreshold(product.m_bTaggedJets, 20.0);
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nBJets20", [this](event_type const& event, product_type const& product) {
+		return product_type::GetNJetsAbovePtThreshold(product.m_bTaggedJets, 20.0);
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nBJets30", [this](KappaEvent const& event, KappaProduct const& product) {
-		return KappaProduct::GetNJetsAbovePtThreshold(product.m_bTaggedJets, 30.0);
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nBJets30", [this](event_type const& event, product_type const& product) {
+		return product_type::GetNJetsAbovePtThreshold(product.m_bTaggedJets, 30.0);
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("bJetPt", [](KappaEvent const& event, KappaProduct const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("bJetPt", [](event_type const& event, product_type const& product) {
 		return product.m_bTaggedJets.size() >= 1 ? product.m_bTaggedJets.at(0)->p4.Pt() : DefaultValues::UndefinedFloat;
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("bJetEta", [](KappaEvent const& event, KappaProduct const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("bJetEta", [](event_type const& event, product_type const& product) {
 		return product.m_bTaggedJets.size() >= 1 ? product.m_bTaggedJets.at(0)->p4.Eta() : DefaultValues::UndefinedFloat;
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("bJetPhi", [](KappaEvent const& event, KappaProduct const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("bJetPhi", [](event_type const& event, product_type const& product) {
 		return product.m_bTaggedJets.size() >= 1 ? product.m_bTaggedJets.at(0)->p4.Phi() : DefaultValues::UndefinedFloat;
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("bJet2Pt", [](KappaEvent const& event, KappaProduct const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("bJet2Pt", [](event_type const& event, product_type const& product) {
 		return product.m_bTaggedJets.size() >= 2 ? product.m_bTaggedJets.at(1)->p4.Pt() : DefaultValues::UndefinedFloat;
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("bJet2Eta", [](KappaEvent const& event, KappaProduct const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("bJet2Eta", [](event_type const& event, product_type const& product) {
 		return product.m_bTaggedJets.size() >= 2 ? product.m_bTaggedJets.at(1)->p4.Eta() : DefaultValues::UndefinedFloat;
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("bJet2Phi", [](KappaEvent const& event, KappaProduct const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("bJet2Phi", [](event_type const& event, product_type const& product) {
 		return product.m_bTaggedJets.size() >= 2 ? product.m_bTaggedJets.at(1)->p4.Phi() : DefaultValues::UndefinedFloat;
 	});
 
 	std::string bTaggedJetCSVName = settings.GetBTaggedJetCombinedSecondaryVertexName();
 	std::string jetPuJetIDName = settings.GetPuJetIDFullDiscrName();
 
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingBJetCSV",[bTaggedJetCSVName](KappaEvent const& event, KappaProduct const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingBJetCSV",[bTaggedJetCSVName](event_type const& event, product_type const& product) {
 		return product.m_bTaggedJets.size() >= 1 ? static_cast<KJet*>(product.m_bTaggedJets.at(0))->getTag(bTaggedJetCSVName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingBJetPuID",[jetPuJetIDName](KappaEvent const& event, KappaProduct const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingBJetPuID",[jetPuJetIDName](event_type const& event, product_type const& product) {
 		return product.m_bTaggedJets.size() >= 1 ? static_cast<KJet*>(product.m_bTaggedJets.at(0))->getTag(jetPuJetIDName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingBJetCSV",[bTaggedJetCSVName](KappaEvent const& event, KappaProduct const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingBJetCSV",[bTaggedJetCSVName](event_type const& event, product_type const& product) {
 		return product.m_bTaggedJets.size() >= 2 ? static_cast<KJet*>(product.m_bTaggedJets.at(1))->getTag(bTaggedJetCSVName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingBJetPuID",[jetPuJetIDName](KappaEvent const& event, KappaProduct const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingBJetPuID",[jetPuJetIDName](event_type const& event, product_type const& product) {
 		return product.m_bTaggedJets.size() >= 2 ? static_cast<KJet*>(product.m_bTaggedJets.at(1))->getTag(jetPuJetIDName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
 	});
 }
 
-void ValidBTaggedJetsProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                                       KappaSettings const& settings) const
+void ValidBTaggedJetsProducer::Produce(event_type const& event, product_type& product,
+                                       setting_type const& settings, metadata_type const& metadata) const
 {
 	assert(event.m_jetMetadata);
 	assert(settings.GetBTagWPs().size() > 0);
@@ -101,7 +101,7 @@ void ValidBTaggedJetsProducer::Produce(KappaEvent const& event, KappaProduct& pr
 				validBJet = false;
 			}
 
-			validBJet = validBJet && AdditionalCriteria(tjet, event, product, settings);
+			validBJet = validBJet && AdditionalCriteria(tjet, event, product, settings, metadata);
 			
 			//entry point for Scale Factor (SF) of btagged jets
 			if (settings.GetApplyBTagSF() && !settings.GetInputIsData())
@@ -155,8 +155,8 @@ void ValidBTaggedJetsProducer::Produce(KappaEvent const& event, KappaProduct& pr
 	product.m_nonBTaggedJets = product.m_nonBTaggedJetsByWp[settings.GetBTagWPs().at(0)];
 }
 
-bool ValidBTaggedJetsProducer::AdditionalCriteria(KJet* jet, KappaEvent const& event,
-                                KappaProduct& product, KappaSettings const& settings) const
+bool ValidBTaggedJetsProducer::AdditionalCriteria(KJet* jet, event_type const& event, product_type& product,
+                                                  setting_type const& settings, metadata_type const& metadata) const
 {
 	bool validBJet = true;
 	return validBJet;

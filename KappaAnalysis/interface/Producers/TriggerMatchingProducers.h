@@ -3,6 +3,7 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
+#include "Artus/KappaAnalysis/interface/KappaTypes.h"
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 
 #include <boost/regex.hpp>
@@ -45,15 +46,15 @@ public:
 		return hltNames;
 	}
 	
-	TriggerMatchingProducerBase(std::map<TValidObject*, KLV*> KappaProduct::*triggerMatchedObjects,
-	                            std::map<TValidObject*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > > KappaProduct::*detailedTriggerMatchedObjects,
-	                            std::vector<TValidObject*> KappaProduct::*validObjects,
-	                            std::vector<TValidObject*> KappaProduct::*invalidObjects,
-	                            std::map<size_t, std::vector<std::string> > KappaProduct::*settingsObjectTriggerFiltersByIndex,
-	                            std::map<std::string, std::vector<std::string> > KappaProduct::*settingsObjectTriggerFiltersByHltName,
-	                            std::vector<std::string>& (KappaSettings::*GetObjectTriggerFilterNames)(void) const,
-	                            float (KappaSettings::*GetDeltaRTriggerMatchingObjects)(void) const,
-	                            bool (KappaSettings::*GetInvalidateNonMatchingObjects)(void) const) :
+	TriggerMatchingProducerBase(std::map<TValidObject*, KLV*> product_type::*triggerMatchedObjects,
+	                            std::map<TValidObject*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > > product_type::*detailedTriggerMatchedObjects,
+	                            std::vector<TValidObject*> product_type::*validObjects,
+	                            std::vector<TValidObject*> product_type::*invalidObjects,
+	                            std::map<size_t, std::vector<std::string> > product_type::*settingsObjectTriggerFiltersByIndex,
+	                            std::map<std::string, std::vector<std::string> > product_type::*settingsObjectTriggerFiltersByHltName,
+	                            std::vector<std::string>& (setting_type::*GetObjectTriggerFilterNames)(void) const,
+	                            float (setting_type::*GetDeltaRTriggerMatchingObjects)(void) const,
+	                            bool (setting_type::*GetInvalidateNonMatchingObjects)(void) const) :
 		m_triggerMatchedObjects(triggerMatchedObjects),
 		m_detailedTriggerMatchedObjects(detailedTriggerMatchedObjects),
 		m_validObjects(validObjects),
@@ -66,14 +67,15 @@ public:
 	{
 	}
 
-	void Init(KappaSettings const& settings) override {
-		KappaProducerBase::Init(settings);
+	void Init(setting_type const& settings, metadata_type& metadata) override
+	{
+		KappaProducerBase::Init(settings, metadata);
 		
 		m_objectTriggerFiltersByIndexFromSettings = Utility::ParseMapTypes<size_t, std::string>(Utility::ParseVectorToMap((settings.*GetObjectTriggerFilterNames)()), m_objectTriggerFiltersByHltNameFromSettings);
 	}
 
-	void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const override
+	void Produce(event_type const& event, product_type& product,
+	             setting_type const& settings, metadata_type const& metadata) const override
 	{
 		assert(event.m_triggerObjects);
 		assert(event.m_triggerObjectMetadata);
@@ -221,15 +223,15 @@ public:
 
 
 private:
-	std::map<TValidObject*, KLV*> KappaProduct::*m_triggerMatchedObjects;
-	std::map<TValidObject*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > > KappaProduct::*m_detailedTriggerMatchedObjects;
-	std::vector<TValidObject*> KappaProduct::*m_validObjects;
-	std::vector<TValidObject*> KappaProduct::*m_invalidObjects;
-	std::map<size_t, std::vector<std::string> > KappaProduct::*m_settingsObjectTriggerFiltersByIndex;
-	std::map<std::string, std::vector<std::string> > KappaProduct::*m_settingsObjectTriggerFiltersByHltName;
-	std::vector<std::string>& (KappaSettings::*GetObjectTriggerFilterNames)(void) const;
-	float (KappaSettings::*GetDeltaRTriggerMatchingObjects)(void) const;
-	bool (KappaSettings::*GetInvalidateNonMatchingObjects)(void) const;
+	std::map<TValidObject*, KLV*> product_type::*m_triggerMatchedObjects;
+	std::map<TValidObject*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > > product_type::*m_detailedTriggerMatchedObjects;
+	std::vector<TValidObject*> product_type::*m_validObjects;
+	std::vector<TValidObject*> product_type::*m_invalidObjects;
+	std::map<size_t, std::vector<std::string> > product_type::*m_settingsObjectTriggerFiltersByIndex;
+	std::map<std::string, std::vector<std::string> > product_type::*m_settingsObjectTriggerFiltersByHltName;
+	std::vector<std::string>& (setting_type::*GetObjectTriggerFilterNames)(void) const;
+	float (setting_type::*GetDeltaRTriggerMatchingObjects)(void) const;
+	bool (setting_type::*GetInvalidateNonMatchingObjects)(void) const;
 	
 	std::map<size_t, std::vector<std::string> > m_objectTriggerFiltersByIndexFromSettings;
 	std::map<std::string, std::vector<std::string> > m_objectTriggerFiltersByHltNameFromSettings;
@@ -252,8 +254,8 @@ public:
 	
 	ElectronTriggerMatchingProducer();
 	
-	void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const override;
+	void Produce(event_type const& event, product_type& product,
+	            setting_type const& settings, metadata_type const& metadata) const override;
 
 };
 
@@ -273,8 +275,8 @@ public:
 	
 	MuonTriggerMatchingProducer();
 	
-	void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const override;
+	void Produce(event_type const& event, product_type& product,
+	             setting_type const& settings, metadata_type const& metadata) const override;
 
 };
 
@@ -294,8 +296,8 @@ public:
 	
 	TauTriggerMatchingProducer();
 	
-	void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const override;
+	void Produce(event_type const& event, product_type& product,
+	             setting_type const& settings, metadata_type const& metadata) const override;
 
 };
 

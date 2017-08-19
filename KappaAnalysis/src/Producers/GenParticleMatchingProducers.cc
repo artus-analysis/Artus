@@ -12,9 +12,9 @@ std::string RecoJetGenParticleMatchingProducer::GetProducerId() const {
 	return "RecoJetGenParticleMatchingProducer";
 }
 
-void RecoJetGenParticleMatchingProducer::Init(setting_type const& settings)
+void RecoJetGenParticleMatchingProducer::Init(setting_type const& settings, metadata_type& metadata)
 {
-	KappaProducerBase::Init(settings);
+	KappaProducerBase::Init(settings, metadata);
 
 	m_jetMatchingAlgorithm = ToJetMatchingAlgorithm(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetJetMatchingAlgorithm())));
 	m_DeltaRMatchingRecoJetGenParticle = settings.GetDeltaRMatchingRecoJetGenParticle();
@@ -23,7 +23,7 @@ void RecoJetGenParticleMatchingProducer::Init(setting_type const& settings)
 }
 
 void RecoJetGenParticleMatchingProducer::Produce(event_type const& event, product_type& product,
-                                                 setting_type const& settings) const
+                                                 setting_type const& settings, metadata_type const& metadata) const
 {
 	assert(event.m_genParticles);
 

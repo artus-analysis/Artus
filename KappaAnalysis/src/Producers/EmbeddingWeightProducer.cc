@@ -6,9 +6,8 @@ std::string EmbeddingWeightProducer::GetProducerId() const {
 	return "EmbeddingWeightProducer";
 }
 
-void EmbeddingWeightProducer::Produce(KappaEvent const& event,
-		KappaProduct& product,
-		KappaSettings const& settings) const
+void EmbeddingWeightProducer::Produce(event_type const& event, product_type& product,
+                                      setting_type const& settings, metadata_type const& metadata) const
 {
 	assert(event.m_eventInfo);
 

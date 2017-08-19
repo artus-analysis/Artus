@@ -6,6 +6,7 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
+#include "Artus/KappaAnalysis/interface/KappaTypes.h"
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
 #include "Artus/Utility/interface/DefaultValues.h"
@@ -24,10 +25,6 @@ class RecoJetGenParticleMatchingProducer: public KappaProducerBase
 
 public:
 
-	typedef typename KappaTypes::event_type event_type;
-	typedef typename KappaTypes::product_type product_type;
-	typedef typename KappaTypes::setting_type setting_type;
-
 	enum class JetMatchingAlgorithm : int
 	{
 		NONE = 0,
@@ -38,10 +35,10 @@ public:
 	
 	std::string GetProducerId() const override;
 
-	void Init(setting_type const& settings) override;
+	void Init(setting_type const& settings, metadata_type& metadata) override;
 
 	void Produce(event_type const& event, product_type& product,
-						 setting_type const& settings) const override;
+	             setting_type const& settings, metadata_type const& metadata) const override;
 
 	KGenParticle* Match(event_type const& event, product_type const& product,
                         setting_type const& settings, KLV* const recoJet) const;
@@ -65,10 +62,6 @@ class RecoLeptonGenParticleMatchingProducerBase: public KappaProducerBase
 
 public:
 
-	typedef typename KappaTypes::event_type event_type;
-	typedef typename KappaTypes::product_type product_type;
-	typedef typename KappaTypes::setting_type setting_type;
-	
 	RecoLeptonGenParticleMatchingProducerBase(std::map<TLepton*, KGenParticle*> product_type::*genParticleMatchedLeptons,
 	                                          std::vector<TLepton>* event_type::*leptons,
 	                                          std::vector<TLepton*> product_type::*validLeptons,
@@ -92,9 +85,9 @@ public:
 	{
 	}
 
-	void Init(setting_type const& settings) override
+	void Init(setting_type const& settings, metadata_type& metadata) override
 	{
-		KappaProducerBase::Init(settings);
+		KappaProducerBase::Init(settings, metadata);
 		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("ratioGenParticleMatched", [](event_type const & event, product_type const & product)
 		{
 			return product.m_ratioGenParticleMatched;
@@ -106,7 +99,7 @@ public:
 	}
 
 	void Produce(event_type const& event, product_type& product,
-						 setting_type const& settings) const override
+	             setting_type const& settings, metadata_type const& metadata) const override
 	{
 		assert(event.m_genParticles);
 

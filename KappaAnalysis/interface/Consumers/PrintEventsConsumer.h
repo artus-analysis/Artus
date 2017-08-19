@@ -19,9 +19,9 @@ public:
 	std::string GetConsumerId() const override;
 
 	void ProcessEvent(event_type const& event, product_type const& product,
-	                          setting_type const& settings, FilterResult& result) override;
+	                  setting_type const& settings, metadata_type const& metadata, FilterResult& result) override;
 
-	void Finish(setting_type const& settings) override;
+	void Finish(setting_type const& settings, metadata_type const& metadata) override;
 
 };
 

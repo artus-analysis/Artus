@@ -3,24 +3,24 @@
 #include "Artus/KappaAnalysis/interface/Producers/ValidElectronsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidMuonsProducer.h"
 
-void NumberOfParticlesProducer::Init(KappaSettings const& settings)
+void NumberOfParticlesProducer::Init(setting_type const& settings, metadata_type& metadata)
 {
-	KappaProducerBase::Init(settings);
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("NLooseElectrons", [](KappaEvent const& event, KappaProduct const& product)
+	KappaProducerBase::Init(settings, metadata);
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("NLooseElectrons", [](event_type const& event, product_type const& product)
 	{
 		return product.m_NLooseElectrons;
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("NLooseElectronsRelaxedVtxCriteria", [](KappaEvent const& event, KappaProduct const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("NLooseElectronsRelaxedVtxCriteria", [](event_type const& event, product_type const& product)
 	{
 		return product.m_NLooseElectronsRelaxedVtxCriteria;
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("NEmbeddingMuons", [](KappaEvent const& event, KappaProduct const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("NEmbeddingMuons", [](event_type const& event, product_type const& product)
 	{
 		return product.m_NEmbeddingMuons;
 	});
 }
 
-void NumberOfParticlesProducer::Produce(KappaEvent const& event, KappaProduct& product, KappaSettings const& settings) const
+void NumberOfParticlesProducer::Produce(event_type const& event, product_type& product, setting_type const& settings, metadata_type const& metadata) const
 {
 	for (KElectrons::const_iterator electron = event.m_electrons->begin();
 		electron != event.m_electrons->end(); ++electron)

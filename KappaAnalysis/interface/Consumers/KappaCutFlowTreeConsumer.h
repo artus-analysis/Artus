@@ -12,5 +12,5 @@ class KappaCutFlowTreeConsumer: public CutFlowTreeConsumer<KappaTypes> {
 
 public:
 	
-	void Init(KappaSettings const& settings) override;
+	void Init(setting_type const& settings, metadata_type& metadata) override;
 };

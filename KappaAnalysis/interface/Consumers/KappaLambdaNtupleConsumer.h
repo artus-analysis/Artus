@@ -17,13 +17,14 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
+	typedef typename TTypes::metadata_type metadata_type;
 
 	std::string GetConsumerId() const override
 	{
 		return "KappaLambdaNtupleConsumer";
 	}
 
-	void Init(setting_type const& settings) override
+	void Init(setting_type const& settings, metadata_type& metadata) override
 	{
 		// add possible quantities for the lambda ntuples consumers
 		LambdaNtupleConsumer<TTypes>::AddIntQuantity("input", [](event_type const& event, product_type const& product)
@@ -136,6 +137,6 @@ public:
 		}
 		
 		// need to be called at last
-		LambdaNtupleConsumer<TTypes>::Init(settings);
+		LambdaNtupleConsumer<TTypes>::Init(settings, metadata);
 	}
 };

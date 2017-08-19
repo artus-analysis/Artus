@@ -8,22 +8,22 @@ std::string ElectronTriggerMatchingProducer::GetProducerId() const
 }
 
 ElectronTriggerMatchingProducer::ElectronTriggerMatchingProducer() :
-	TriggerMatchingProducerBase<KElectron>(&KappaProduct::m_triggerMatchedElectrons,
-	                                       &KappaProduct::m_detailedTriggerMatchedElectrons,
-	                                       &KappaProduct::m_validElectrons,
-	                                       &KappaProduct::m_invalidElectrons,
-	                                       &KappaProduct::m_settingsElectronTriggerFiltersByIndex,
-	                                       &KappaProduct::m_settingsElectronTriggerFiltersByHltName,
-	                                       &KappaSettings::GetElectronTriggerFilterNames,
-	                                       &KappaSettings::GetDeltaRTriggerMatchingElectrons,
-	                                       &KappaSettings::GetInvalidateNonMatchingElectrons)
+	TriggerMatchingProducerBase<KElectron>(&product_type::m_triggerMatchedElectrons,
+	                                       &product_type::m_detailedTriggerMatchedElectrons,
+	                                       &product_type::m_validElectrons,
+	                                       &product_type::m_invalidElectrons,
+	                                       &product_type::m_settingsElectronTriggerFiltersByIndex,
+	                                       &product_type::m_settingsElectronTriggerFiltersByHltName,
+	                                       &setting_type::GetElectronTriggerFilterNames,
+	                                       &setting_type::GetDeltaRTriggerMatchingElectrons,
+	                                       &setting_type::GetInvalidateNonMatchingElectrons)
 {
 }
 
-void ElectronTriggerMatchingProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                                              KappaSettings const& settings) const
+void ElectronTriggerMatchingProducer::Produce(event_type const& event, product_type& product,
+                                              setting_type const& settings, metadata_type const& metadata) const
 {
-	TriggerMatchingProducerBase<KElectron>::Produce(event, product, settings);
+	TriggerMatchingProducerBase<KElectron>::Produce(event, product, settings, metadata);
 	
 	for (std::map<KElectron*, KLV*>::iterator it = product.m_triggerMatchedElectrons.begin();
 	     it != product.m_triggerMatchedElectrons.end(); ++it)
@@ -45,22 +45,22 @@ std::string MuonTriggerMatchingProducer::GetProducerId() const
 }
 
 MuonTriggerMatchingProducer::MuonTriggerMatchingProducer() :
-	TriggerMatchingProducerBase<KMuon>(&KappaProduct::m_triggerMatchedMuons,
-	                                   &KappaProduct::m_detailedTriggerMatchedMuons,
-	                                   &KappaProduct::m_validMuons,
-	                                   &KappaProduct::m_invalidMuons,
-	                                   &KappaProduct::m_settingsMuonTriggerFiltersByIndex,
-	                                   &KappaProduct::m_settingsMuonTriggerFiltersByHltName,
-	                                   &KappaSettings::GetMuonTriggerFilterNames,
-	                                   &KappaSettings::GetDeltaRTriggerMatchingMuons,
-	                                   &KappaSettings::GetInvalidateNonMatchingMuons)
+	TriggerMatchingProducerBase<KMuon>(&product_type::m_triggerMatchedMuons,
+	                                   &product_type::m_detailedTriggerMatchedMuons,
+	                                   &product_type::m_validMuons,
+	                                   &product_type::m_invalidMuons,
+	                                   &product_type::m_settingsMuonTriggerFiltersByIndex,
+	                                   &product_type::m_settingsMuonTriggerFiltersByHltName,
+	                                   &setting_type::GetMuonTriggerFilterNames,
+	                                   &setting_type::GetDeltaRTriggerMatchingMuons,
+	                                   &setting_type::GetInvalidateNonMatchingMuons)
 {
 }
 
-void MuonTriggerMatchingProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                                              KappaSettings const& settings) const
+void MuonTriggerMatchingProducer::Produce(event_type const& event, product_type& product,
+                                          setting_type const& settings, metadata_type const& metadata) const
 {
-	TriggerMatchingProducerBase<KMuon>::Produce(event, product, settings);
+	TriggerMatchingProducerBase<KMuon>::Produce(event, product, settings, metadata);
 	
 	for (std::map<KMuon*, KLV*>::iterator it = product.m_triggerMatchedMuons.begin();
 	     it != product.m_triggerMatchedMuons.end(); ++it)
@@ -82,22 +82,22 @@ std::string TauTriggerMatchingProducer::GetProducerId() const
 }
 
 TauTriggerMatchingProducer::TauTriggerMatchingProducer() :
-	TriggerMatchingProducerBase<KTau>(&KappaProduct::m_triggerMatchedTaus,
-	                                  &KappaProduct::m_detailedTriggerMatchedTaus,
-	                                  &KappaProduct::m_validTaus,
-	                                  &KappaProduct::m_invalidTaus,
-	                                  &KappaProduct::m_settingsTauTriggerFiltersByIndex,
-	                                  &KappaProduct::m_settingsTauTriggerFiltersByHltName,
-	                                  &KappaSettings::GetTauTriggerFilterNames,
-	                                  &KappaSettings::GetDeltaRTriggerMatchingTaus,
-	                                  &KappaSettings::GetInvalidateNonMatchingTaus)
+	TriggerMatchingProducerBase<KTau>(&product_type::m_triggerMatchedTaus,
+	                                  &product_type::m_detailedTriggerMatchedTaus,
+	                                  &product_type::m_validTaus,
+	                                  &product_type::m_invalidTaus,
+	                                  &product_type::m_settingsTauTriggerFiltersByIndex,
+	                                  &product_type::m_settingsTauTriggerFiltersByHltName,
+	                                  &setting_type::GetTauTriggerFilterNames,
+	                                  &setting_type::GetDeltaRTriggerMatchingTaus,
+	                                  &setting_type::GetInvalidateNonMatchingTaus)
 {
 }
 
-void TauTriggerMatchingProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                                              KappaSettings const& settings) const
+void TauTriggerMatchingProducer::Produce(event_type const& event, product_type& product,
+                                         setting_type const& settings, metadata_type const& metadata) const
 {
-	TriggerMatchingProducerBase<KTau>::Produce(event, product, settings);
+	TriggerMatchingProducerBase<KTau>::Produce(event, product, settings, metadata);
 	
 	for (std::map<KTau*, KLV*>::iterator it = product.m_triggerMatchedTaus.begin();
 	     it != product.m_triggerMatchedTaus.end(); ++it)
@@ -118,15 +118,15 @@ std::string JetTriggerMatchingProducer::GetProducerId() const {
 }
 
 JetTriggerMatchingProducer::JetTriggerMatchingProducer() :
-	TriggerMatchingProducerBase<KBasicJet>(&KappaProduct::m_triggerMatchedJets,
-	                                       &KappaProduct::m_detailedTriggerMatchedJets,
-	                                       &KappaProduct::m_validJets,
-	                                       &KappaProduct::m_invalidJets,
-	                                       &KappaProduct::m_settingsJetTriggerFiltersByIndex,
-	                                       &KappaProduct::m_settingsJetTriggerFiltersByHltName,
-	                                       &KappaSettings::GetJetTriggerFilterNames,
-	                                       &KappaSettings::GetDeltaRTriggerMatchingJets,
-	                                       &KappaSettings::GetInvalidateNonMatchingJets)
+	TriggerMatchingProducerBase<KBasicJet>(&product_type::m_triggerMatchedJets,
+	                                       &product_type::m_detailedTriggerMatchedJets,
+	                                       &product_type::m_validJets,
+	                                       &product_type::m_invalidJets,
+	                                       &product_type::m_settingsJetTriggerFiltersByIndex,
+	                                       &product_type::m_settingsJetTriggerFiltersByHltName,
+	                                       &setting_type::GetJetTriggerFilterNames,
+	                                       &setting_type::GetDeltaRTriggerMatchingJets,
+	                                       &setting_type::GetInvalidateNonMatchingJets)
 {
 }
 

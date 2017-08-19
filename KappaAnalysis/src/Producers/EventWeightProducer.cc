@@ -19,14 +19,14 @@ EventWeightProducer::~EventWeightProducer()
 	}
 }
 
-void EventWeightProducer::Init(KappaSettings const& settings)
+void EventWeightProducer::Init(setting_type const& settings, metadata_type& metadata)
 {
-	ProducerBase<KappaTypes>::Init(settings);
+	ProducerBase<KappaTypes>::Init(settings, metadata);
 	pipelineName = settings.GetName();
 }
 
-void EventWeightProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                                  KappaSettings const& settings) const
+void EventWeightProducer::Produce(event_type const& event, product_type& product,
+                                  setting_type const& settings, metadata_type const& metadata) const
 {
 	double eventWeight = settings.GetBaseWeight();
 	bool firstRun = m_weightNames.empty();
