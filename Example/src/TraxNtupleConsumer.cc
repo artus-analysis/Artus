@@ -7,7 +7,7 @@ std::string TraxNtupleConsumer::GetConsumerId() const
 	return "ntuple";
 }
 
-float TraxNtupleConsumer::returnvalue(std::string string, TraxEvent const& event, TraxProduct const& product)
+float TraxNtupleConsumer::returnvalue(std::string string, event_type const& event, product_type const& product)
 {
 	if (string == "pt") {
 		return event.m_floatPtSim;

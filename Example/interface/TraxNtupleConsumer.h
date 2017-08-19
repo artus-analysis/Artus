@@ -12,6 +12,6 @@ public:
 	std::string GetConsumerId() const override;
 
 private:
-	float returnvalue(std::string string, TraxEvent const& event, TraxProduct const& product) override;
+	float returnvalue(std::string string, event_type const& event, product_type const& product) override;
 
 };

@@ -4,15 +4,18 @@
 #include "Artus/Core/interface/ProducerBase.h"
 #include "Artus/Core/interface/PipelineRunner.h"
 
-#include "TraxEvent.h"
-#include "TraxProduct.h"
-#include "TraxPipelineSettings.h"
+#include "Artus/Example/interface/TraxEvent.h"
+#include "Artus/Example/interface/TraxProduct.h"
+#include "Artus/Example/interface/TraxMetadata.h"
+#include "Artus/Example/interface/TraxPipelineSettings.h"
+
 
 // all data types which are used for this analysis
 struct TraxTypes {
 	typedef TraxEvent event_type;
 	typedef TraxProduct product_type;
 	typedef TraxSettings setting_type;
+	typedef TraxMetadata metadata_type;
 };
 
 // Pass the template parameters for the Producers

@@ -11,9 +11,9 @@ public:
 
 	std::string GetFilterId() const override;
 
-	void Init(TraxSettings const& globalSettings) override;
+	void Init(setting_type const& settings, metadata_type& metadata) override;
 
-	bool DoesEventPass(TraxEvent const& event,
-			TraxProduct const& product, TraxSettings const& settings) const override;
+	bool DoesEventPass(event_type const& event, product_type const& product,
+			setting_type const& settings, metadata_type const& metadata) const override;
 };
 

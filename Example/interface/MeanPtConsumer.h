@@ -15,11 +15,10 @@ public:
 
 	std::string GetConsumerId() const override;
 
-	void ProcessFilteredEvent(TraxEvent const& event,
-			TraxProduct const& product,
-			setting_type const& setting) override;
+	void ProcessFilteredEvent(event_type const& event, product_type const& product,
+			setting_type const& settings, metadata_type const& metadata) override;
 
-	void Finish(setting_type const& setting ) override;
+	void Finish(setting_type const& settings, metadata_type const& metadata) override;
 
 private:
 	long long m_itemCount;

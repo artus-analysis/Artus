@@ -6,33 +6,33 @@
 #include "Artus/Consumer/interface/ProfileConsumerBase.h"
 
 
-void TraxPipelineInitializer::InitPipeline(TraxPipeline * pLine, TraxSettings const& pset) const
+void TraxPipelineInitializer::InitPipeline(TraxPipeline * pLine, setting_type const& settings, metadata_type& metadata) const
 {
 
 	// define how to extract Pt and the range
 	auto extractPtSim =
-			[]( TraxEvent const& ev, TraxProduct const & prod )
+			[]( event_type const& ev, product_type const & prod )
 			-> std::vector<float> {return {ev.m_floatPtSim};};
 	auto PtSimValue = std::make_pair(extractPtSim,
 			DefaultModifiers::getPtModifier(0.7, 1.3f));
 
 	// extracts the value which has been corrected by a globalProducer
 	auto extractPtSimCorrected =
-			[]( TraxEvent const& ev, TraxProduct const & prod )
+			[]( event_type const& ev, product_type const & prod )
 			-> std::vector<float> {return {prod.m_floatPtSim_corrected};};
 	auto PtSimCorrectedValue = std::make_pair(extractPtSimCorrected,
 			DefaultModifiers::getPtModifier(0.7, 1.3f));
 
 	// define how to extract Theta and the range
 	auto extractThetaSim =
-			[]( TraxEvent const& ev, TraxProduct const & prod )
+			[]( event_type const& ev, product_type const & prod )
 			-> std::vector<float> {return {ev.m_floatTheSim};};
 
 	auto ThetaSimValue = std::make_pair(extractThetaSim,
 			DefaultModifiers::getThetaModifier());
 
 
-	BOOST_FOREACH(std::string id, pset.GetConsumers())
+	BOOST_FOREACH(std::string id, settings.GetConsumers())
 	{
 		// the quantities_all serves as an alias which
 		// will install custom producers to pipeline
