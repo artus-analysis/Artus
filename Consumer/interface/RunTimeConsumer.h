@@ -20,6 +20,7 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
+	typedef typename TTypes::metadata_type metadata_type;
 
 	std::string GetConsumerId() const override
 	{
@@ -31,9 +32,9 @@ public:
 	{
 	}
 
-	void Init(setting_type const& settings) override
+	void Init(setting_type const& settings, metadata_type& metadata) override
 	{
-		ConsumerBase<TTypes>::Init(settings);
+		ConsumerBase<TTypes>::Init(settings, metadata);
 		std::vector<std::string> processors = settings.GetAllProcessors();
 
 		// save file
@@ -54,21 +55,20 @@ public:
 		}
 	}
 
-	void Finish(setting_type const& setting) override
+	void Finish(setting_type const& settings, metadata_type const& metadata) override
 	{
 		// save file
-		RootFileHelper::SafeCd(setting.GetRootOutFile(),
-				setting.GetRootFileFolder());
+		RootFileHelper::SafeCd(settings.GetRootOutFile(),
+				settings.GetRootFileFolder());
 
 		m_tree->Write("runTime");
 	}
 
-	void ProcessEvent(event_type const& event,
-	                  product_type const& product,
-	                  setting_type const& setting,
+	void ProcessEvent(event_type const& event, product_type const& product,
+	                  setting_type const& settings, metadata_type const& metadata,
 	                  FilterResult & filterResult) override
 	{
-		ConsumerBase<TTypes>::ProcessEvent(event, product, setting, filterResult);
+		ConsumerBase<TTypes>::ProcessEvent(event, product, settings, metadata, filterResult);
 
 		// set values of runtime
 		int i=0;

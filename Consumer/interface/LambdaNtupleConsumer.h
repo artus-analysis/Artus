@@ -61,6 +61,7 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
+	typedef typename TTypes::metadata_type metadata_type;
 
 	typedef std::function<bool(EventBase const&, ProductBase const&)> bool_extractor_lambda_base;
 	typedef std::function<int(EventBase const&, ProductBase const&)> int_extractor_lambda_base;
@@ -263,8 +264,8 @@ public:
 		return LambdaNtupleQuantities::CommonVIntQuantities;
 	}
 
-	void Init(setting_type const& settings) override {
-		ConsumerBase<TTypes>::Init(settings);
+	void Init(setting_type const& settings, metadata_type& metadata) override {
+		ConsumerBase<TTypes>::Init(settings, metadata);
 
 		// construct value extractors
 		m_boolValueExtractors.clear();
@@ -505,9 +506,9 @@ public:
 		}
 	}
 
-	void ProcessFilteredEvent(event_type const& event, product_type const& product, setting_type const& settings ) override
+	void ProcessFilteredEvent(event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata ) override
 	{
-		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product, settings);
+		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product, settings, metadata);
 
 		// calculate values
 		size_t boolValueIndex = 0;
@@ -724,7 +725,7 @@ public:
 		this->m_tree->Fill();
 	}
 
-	void Finish(setting_type const& settings) override
+	void Finish(setting_type const& settings, metadata_type const& metadata) override
 	{
 		RootFileHelper::SafeCd(settings.GetRootOutFile(), settings.GetRootFileFolder());
 		m_tree->Write(m_tree->GetName());
