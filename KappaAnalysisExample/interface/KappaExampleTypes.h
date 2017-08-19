@@ -8,6 +8,7 @@
 #include "Artus/KappaAnalysisExample/interface/KappaExampleEvent.h"
 #include "Artus/KappaAnalysisExample/interface/KappaExampleProduct.h"
 #include "Artus/KappaAnalysisExample/interface/KappaExampleSettings.h"
+#include "Artus/KappaAnalysisExample/interface/KappaExampleMetadata.h"
 
 
 /// all data types which are used for KappaExample analyses
@@ -22,6 +23,9 @@ public:
 	
 	/// configuration settings which are KappaExample specific
 	typedef KappaExampleSettings setting_type;
+	
+	/// objects that exist once per pipeline and can be modified in Init functions of processors
+	typedef KappaExampleMetadata metadata_type;
 };
 
 typedef Pipeline<KappaExampleTypes> KappaExamplePipeline;

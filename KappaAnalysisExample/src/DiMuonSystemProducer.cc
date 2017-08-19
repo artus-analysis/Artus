@@ -9,9 +9,9 @@ std::string DiMuonSystemProducer::GetProducerId() const
 	return "DiMuonSystemProducer";
 }
 
-void DiMuonSystemProducer::Init(setting_type const& settings)
+void DiMuonSystemProducer::Init(setting_type const& settings, metadata_type& metadata)
 {
-	ProducerBase<KappaExampleTypes>::Init(settings);
+	ProducerBase<KappaExampleTypes>::Init(settings, metadata);
 	
 	// add possible quantities for the lambda ntuples consumers
 	LambdaNtupleConsumer<KappaExampleTypes>::AddFloatQuantity("diMuonPt", [](event_type const& event, product_type const& product) {
@@ -29,7 +29,7 @@ void DiMuonSystemProducer::Init(setting_type const& settings)
 }
 
 void DiMuonSystemProducer::Produce(event_type const& event, product_type& product,
-                                   setting_type const& settings) const
+                                   setting_type const& settings, metadata_type const& metadata) const
 {
 	// make sure that there are at least two muons reconstructed
 	// this should be ensured by a muon counting filter before running this producer
