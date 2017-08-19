@@ -7,7 +7,7 @@ ConsumerBaseUntemplated::~ConsumerBaseUntemplated()
 }
 
 
-explicit ConsumerBaseAccess::ConsumerBaseAccess(ConsumerBaseUntemplated& consumer) :
+ConsumerBaseAccess::ConsumerBaseAccess(ConsumerBaseUntemplated& consumer) :
 	m_consumer(consumer)
 {
 }
