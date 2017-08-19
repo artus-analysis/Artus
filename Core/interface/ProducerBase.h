@@ -9,6 +9,7 @@
 
 #include "Artus/Core/interface/ProductBase.h"
 #include "Artus/Core/interface/EventBase.h"
+#include "Artus/Core/interface/MetadataBase.h"
 #include "Artus/Core/interface/ProcessNodeBase.h"
 #include "Artus/Configuration/interface/SettingsBase.h"
 
@@ -39,11 +40,12 @@ public:
 
 protected:
 	// will be implemented by the ConsumerBase class
-	virtual void baseInit(SettingsBase const& settings) = 0;
+	virtual void baseInit(SettingsBase const& settings, MetadataBase& metadata) = 0;
+	
+	virtual void baseOnRun(EventBase const& event, SettingsBase const& settings, MetadataBase const& metadata) = 0;
+	virtual void baseOnLumi(EventBase const& event, SettingsBase const& settings, MetadataBase const& metadata) = 0;
 
-	virtual void baseProduce(EventBase const& event, ProductBase& product, SettingsBase const& settings) const = 0;
-	virtual void baseOnRun(EventBase const& event, SettingsBase const& settings) = 0;
-	virtual void baseOnLumi(EventBase const& event, SettingsBase const& settings) = 0;
+	virtual void baseProduce(EventBase const& event, ProductBase& product, SettingsBase const& settings, MetadataBase const& metadata) const = 0;
 };
 
 
@@ -52,14 +54,15 @@ class ProducerBaseAccess
 public:
 	explicit ProducerBaseAccess(ProducerBaseUntemplated& producer);
 
-	void Init(SettingsBase const& settings);
+	void Init(SettingsBase const& settings, MetadataBase& metadata);
 	
-	void Produce(EventBase const& event, ProductBase& product, SettingsBase const& settings);
-	void OnRun(EventBase const& event, SettingsBase const& settings);
-	void OnLumi(EventBase const& event, SettingsBase const& settings);
+	void OnRun(EventBase const& event, SettingsBase const& settings, MetadataBase const& metadata);
+	void OnLumi(EventBase const& event, SettingsBase const& settings, MetadataBase const& metadata);
+	
+	void Produce(EventBase const& event, ProductBase& product, SettingsBase const& settings, MetadataBase const& metadata);
 
 private:
-	ProducerBaseUntemplated & m_producer;
+	ProducerBaseUntemplated& m_producer;
 };
 
 template<class TTypes>
@@ -70,23 +73,26 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
+	typedef typename TTypes::metadata_type metadata_type;
 
 	virtual ~ProducerBase()
 	{
 	}
 
-	virtual void Init(setting_type const& globalSettings)
+	virtual void Init(setting_type const& settings, metadata_type& metadata)
 	{
 		LOG(DEBUG) << "Initialize producer \"" << this->GetProducerId() << "\".";
 	}
+	
+	virtual void OnLumi(event_type const& event, setting_type const& settings, metadata_type const& metadata)
+	{
+	}
+	
+	virtual void OnRun(event_type const& event, setting_type const& settings, metadata_type const& metadata)
+	{
+	}
 
-	virtual void Produce(event_type const& event, product_type& product, setting_type const& globalSettings) const = 0;
-	virtual void OnLumi(event_type const& event, setting_type const& globalSettings)
-	{
-	}
-	virtual void OnRun(event_type const& event, setting_type const& globalSettings)
-	{
-	}
+	virtual void Produce(event_type const& event, product_type& product, setting_type const& settings, metadata_type const& metadata) const = 0;
 
 	ProcessNodeType GetProcessNodeType() const final
 	{
@@ -95,34 +101,40 @@ public:
 
 protected:
 
-	void baseProduce(EventBase const& evt, ProductBase & prod, SettingsBase const& setting) const override
+	void baseInit(SettingsBase const& settings, MetadataBase& metadata) override
 	{
-		auto const& specEvent = static_cast<event_type const&>(evt);
-		auto & specProd = static_cast<product_type &>(prod);
-		auto const& specSetting = static_cast<setting_type const&>(setting);
+		setting_type const& specSettings = static_cast<setting_type const&>(settings);
+		metadata_type& specMetadata = static_cast<metadata_type&>(metadata);
 
-		Produce(specEvent, specProd, specSetting);
+		this->Init(specSettings, specMetadata);
 	}
 
-	void baseOnRun(EventBase const& evt, SettingsBase const& setting) override
+	void baseOnRun(EventBase const& evt, SettingsBase const& settings, MetadataBase const& metadata) override
 	{
-		auto const& specEvent = static_cast<event_type const&>(evt);
-		auto const& specSetting = static_cast<setting_type const&>(setting);
+		event_type const& specEvent = static_cast<event_type const&>(evt);
+		setting_type const& specSettings = static_cast<setting_type const&>(settings);
+		metadata_type const& specMetadata = static_cast<metadata_type const&>(metadata);
 
-		OnRun(specEvent, specSetting);
+		OnRun(specEvent, specSettings, specMetadata);
 	}
-	void baseOnLumi(EventBase const& evt, SettingsBase const& setting) override
+	
+	void baseOnLumi(EventBase const& evt, SettingsBase const& settings, MetadataBase const& metadata) override
 	{
-		auto const& specEvent = static_cast<event_type const&>(evt);
-		auto const& specSetting = static_cast<setting_type const&>(setting);
+		event_type const& specEvent = static_cast<event_type const&>(evt);
+		setting_type const& specSettings = static_cast<setting_type const&>(settings);
+		metadata_type const& specMetadata = static_cast<metadata_type const&>(metadata);
 
-		OnLumi(specEvent, specSetting);
+		OnLumi(specEvent, specSettings, specMetadata);
 	}
 
-	void baseInit(SettingsBase const& settings) override {
-		auto const& specSettings = static_cast<setting_type const&>(settings);
+	void baseProduce(EventBase const& evt, ProductBase& prod, SettingsBase const& settings, MetadataBase const& metadata) const override
+	{
+		event_type const& specEvent = static_cast<event_type const&>(evt);
+		product_type& specProduct = static_cast<product_type&>(prod);
+		setting_type const& specSettings = static_cast<setting_type const&>(settings);
+		metadata_type const& specMetadata = static_cast<metadata_type const&>(metadata);
 
-		this->Init(specSettings);
+		Produce(specEvent, specProduct, specSettings, specMetadata);
 	}
 };
 

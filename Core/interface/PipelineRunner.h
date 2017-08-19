@@ -11,11 +11,12 @@
 #include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_list.hpp>
 
-#include "Pipeline.h"
-#include "EventProviderBase.h"
-#include "ProgressReport.h"
-#include "FilterResult.h"
-#include "OsSignalHandler.h"
+#include "Artus/Core/interface/Pipeline.h"
+#include "Artus/Core/interface/EventProviderBase.h"
+#include "Artus/Core/interface/ProgressReport.h"
+#include "Artus/Core/interface/FilterResult.h"
+#include "Artus/Core/interface/OsSignalHandler.h"
+#include "Artus/Core/interface/MetadataBase.h"
 
 /**
  \brief Class to manage all registered Pipelines and to connect them to the event.
@@ -62,6 +63,7 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
+	typedef typename TTypes::metadata_type metadata_type;
 
 	typedef ProducerBaseUntemplated producer_base_type;
 	typedef FilterBaseUntemplated filter_base_type;
@@ -185,13 +187,13 @@ public:
 					
 					if (productGlobal.newRun)
 					{
-						ProducerBaseAccess(prod).OnRun(currentEvent, settings);
+						ProducerBaseAccess(prod).OnRun(currentEvent, settings, m_globalMetadata);
 					}
 					if (productGlobal.newLumisection)
 					{
-						ProducerBaseAccess(prod).OnLumi(currentEvent, settings);
+						ProducerBaseAccess(prod).OnLumi(currentEvent, settings, m_globalMetadata);
 					}
-					ProducerBaseAccess(prod).Produce(currentEvent, productGlobal, settings);
+					ProducerBaseAccess(prod).Produce(currentEvent, productGlobal, settings, m_globalMetadata);
 					
 					gettimeofday(&tEnd, nullptr);
 					runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);
@@ -204,13 +206,13 @@ public:
 					
 					if (productGlobal.newRun)
 					{
-						FilterBaseAccess(flt).OnRun(currentEvent, settings);
+						FilterBaseAccess(flt).OnRun(currentEvent, settings, m_globalMetadata);
 					}
 					if (productGlobal.newLumisection)
 					{
-						FilterBaseAccess(flt).OnLumi(currentEvent, settings);
+						FilterBaseAccess(flt).OnLumi(currentEvent, settings, m_globalMetadata);
 					}
-					const bool filterResult = FilterBaseAccess(flt).DoesEventPass(evtProvider.GetCurrentEvent(), productGlobal, settings);
+					const bool filterResult = FilterBaseAccess(flt).DoesEventPass(evtProvider.GetCurrentEvent(), productGlobal, settings, m_globalMetadata);
 					globalFilterResult.SetFilterDecision(flt.GetFilterId(), filterResult);
 					
 					gettimeofday(&tEnd, nullptr);
@@ -299,6 +301,11 @@ public:
 	{
 		return m_globalNodes;
 	}
+	
+	metadata_type& GetGlobalMetadata()
+	{
+		return m_globalMetadata;
+	}
 
 private:
 
@@ -306,5 +313,6 @@ private:
 	ProcessNodes m_globalNodes;
 	ProgressReportList m_progressReport;
 	bool m_registerSignalHandler;
+	metadata_type m_globalMetadata;
 };
 
