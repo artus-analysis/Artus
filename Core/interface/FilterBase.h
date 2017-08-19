@@ -13,9 +13,11 @@
 #include "Artus/Core/interface/EventBase.h"
 #include "Artus/Configuration/interface/SettingsBase.h"
 
+
 class FilterBaseAccess;
 
-class FilterBaseUntemplated : public ProcessNodeBase {
+class FilterBaseUntemplated : public ProcessNodeBase
+{
 public:
 
 	// this will allow the pipeline class to call the protected
@@ -31,37 +33,38 @@ public:
 
 protected:
 
-	virtual bool baseDoesEventPass(EventBase const& event,
-			ProductBase const& product, SettingsBase const& settings) const = 0;
+	virtual bool baseDoesEventPass(EventBase const& event, ProductBase const& product, SettingsBase const& settings) const = 0;
 	virtual void baseOnRun(EventBase const& event, SettingsBase const& settings) = 0;
 	virtual void baseOnLumi(EventBase const& event, SettingsBase const& settings) = 0;
-	virtual void baseInit ( SettingsBase const& settings ) = 0;
+	virtual void baseInit(SettingsBase const& settings) = 0;
 
 };
 
-class FilterBaseAccess  {
+class FilterBaseAccess
+{
 public:
-	explicit FilterBaseAccess(FilterBaseUntemplated& cb);
+	explicit FilterBaseAccess(FilterBaseUntemplated& filter);
 
-	bool DoesEventPass(EventBase const& event,
-			ProductBase const& product, SettingsBase const& settings) const;
+	bool DoesEventPass(EventBase const& event, ProductBase const& product, SettingsBase const& settings) const;
 	void Init(SettingsBase const& settings);
 	void OnLumi(EventBase const& event, SettingsBase const& settings) const;
 	void OnRun(EventBase const& event, SettingsBase const& settings) const;
 
 private:
-	FilterBaseUntemplated & m_cb;
+	FilterBaseUntemplated & m_filter;
 };
 
 template<class TTypes>
-class FilterBase: public FilterBaseUntemplated {
+class FilterBase: public FilterBaseUntemplated
+{
 public:
 
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 
-	virtual ~FilterBase() {
+	virtual ~FilterBase()
+	{
 	}
 
 	// initialise global pre-filters
@@ -71,54 +74,60 @@ public:
 	}
 
 	// process global event
-	virtual bool DoesEventPass(event_type const& event,
-			product_type const& product, setting_type const& settings) const
+	virtual bool DoesEventPass(event_type const& event, product_type const& product, setting_type const& settings) const
 	{
 		LOG(FATAL) << "DoesEventPassGlobal function for filter \"" << this->GetFilterId() << "\" is not implemented!";
 		return false;
 	}
-	virtual void OnLumi(event_type const& event, setting_type const& settings){ return; }
-	virtual void OnRun(event_type const& event, setting_type const& settings){ return; }
+	virtual void OnLumi(event_type const& event, setting_type const& settings)
+	{
+	}
+	virtual void OnRun(event_type const& event, setting_type const& settings)
+	{
+	}
 
-	virtual std::string ToString(bool bVerbose = false) {
+	virtual std::string ToString(bool bVerbose = false)
+	{
 		return GetFilterId();
 	}
 
-	ProcessNodeType GetProcessNodeType () const final
+	ProcessNodeType GetProcessNodeType() const final
 	{
 		return ProcessNodeType::Filter;
 	}
 
 protected:
 
-	bool baseDoesEventPass(EventBase const& evt,
-	                       ProductBase const& prod,
-	                       SettingsBase const& settings ) const override {
-		auto const& specEvent = static_cast < event_type const&> ( evt );
-		auto const& specProd = static_cast < product_type const&> ( prod );
-		auto const& specSetting = static_cast < setting_type const&> ( settings );
+	bool baseDoesEventPass(EventBase const& evt, ProductBase const& prod, SettingsBase const& settings) const override
+	{
+		auto const& specEvent = static_cast<event_type const&>(evt);
+		auto const& specProd = static_cast<product_type const&>(prod);
+		auto const& specSetting = static_cast<setting_type const&>(settings);
 
-		return DoesEventPass( specEvent, specProd, specSetting );
+		return DoesEventPass(specEvent, specProd, specSetting);
 	}
 
-	void baseInit (SettingsBase const& settings) override {
-		auto const& specSettings = static_cast < setting_type const&> ( settings );
+	void baseInit(SettingsBase const& settings) override
+	{
+		auto const& specSettings = static_cast<setting_type const&>(settings);
 
-		this->Init ( specSettings );
+		this->Init(specSettings);
 	}
 
-	void baseOnLumi(EventBase const& evt, SettingsBase const& settings ) override {
-		auto const& specEvent = static_cast < event_type const&> ( evt );
-		auto const& specSetting = static_cast < setting_type const&> ( settings );
+	void baseOnLumi(EventBase const& evt, SettingsBase const& settings) override
+	{
+		auto const& specEvent = static_cast<event_type const&>(evt);
+		auto const& specSetting = static_cast<setting_type const&>(settings);
 
-		OnLumi( specEvent, specSetting );
+		OnLumi(specEvent, specSetting);
 	}
 
-	void baseOnRun(EventBase const& evt, SettingsBase const& settings ) override {
-		auto const& specEvent = static_cast < event_type const&> ( evt );
-		auto const& specSetting = static_cast < setting_type const&> ( settings );
+	void baseOnRun(EventBase const& evt, SettingsBase const& settings) override
+	{
+		auto const& specEvent = static_cast<event_type const&>(evt);
+		auto const& specSetting = static_cast<setting_type const&>(settings);
 
-		OnRun( specEvent, specSetting );
+		OnRun(specEvent, specSetting);
 	}
 
 };
