@@ -7,7 +7,7 @@ TraxEventProvider::TraxEventProvider(std::vector<std::string> const& fileNames) 
 {
 }
 
-void TraxEventProvider::WireEvent(TraxSettings const& settings)
+void TraxEventProvider::WireEvent(setting_type const& settings)
 {
 	// set up the ROOT pointers to our local memory regions
 	m_rootChain->SetBranchAddress("theSim", &m_event.m_floatTheSim);

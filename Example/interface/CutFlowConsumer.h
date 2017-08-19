@@ -10,6 +10,6 @@
 class CutFlowConsumer: public CutFlowConsumerBase< TraxTypes > {
 
 public:
-	void Finish(setting_type const& setting) override;
+	void Finish(setting_type const& settings, metadata_type const& metadata) override;
 
 };
