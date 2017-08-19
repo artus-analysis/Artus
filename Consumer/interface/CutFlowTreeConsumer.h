@@ -18,6 +18,7 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
+	typedef typename TTypes::metadata_type metadata_type;
 	
 	typedef typename std::function<uint64_t(event_type const&, product_type const&, setting_type const&)> uint64_extractor_lambda;
 
@@ -32,9 +33,9 @@ public:
 	{
 	}
 
-	void Init(typename TTypes::setting_type const& settings) override
+	void Init(setting_type const& settings, metadata_type& metadata) override
 	{
-		CutFlowConsumerBase<TTypes>::Init(settings);
+		CutFlowConsumerBase<TTypes>::Init(settings, metadata);
 		
 		// default run,lumi,event = 1.0
 		// overwrite this in analysis-specific code
@@ -43,21 +44,20 @@ public:
 		m_eventExtractor = [](event_type const&, product_type const&, setting_type const&) { return 1.0; };
 	}
 
-	void ProcessEvent(event_type const& event,
-	                  product_type const& product,
-	                  setting_type const& setting,
+	void ProcessEvent(event_type const& event, product_type const& product,
+	                  setting_type const& settings, metadata_type const& metadata,
 	                  FilterResult & filterResult) override
 	{
-		CutFlowConsumerBase<TTypes>::ProcessEvent(event, product, setting, filterResult);
+		CutFlowConsumerBase<TTypes>::ProcessEvent(event, product, settings, metadata, filterResult);
 		
 		// initialise histograms in first event
 		if(! m_treesInitialised) {
-			m_treesInitialised = InitialiseTrees(setting, filterResult);
+			m_treesInitialised = InitialiseTrees(settings, filterResult);
 		}
 		
-		m_run = m_runExtractor(event, product, setting);
-		m_lumi = m_lumiExtractor(event, product, setting);
-		m_event = m_eventExtractor(event, product, setting);
+		m_run = m_runExtractor(event, product, settings);
+		m_lumi = m_lumiExtractor(event, product, settings);
+		m_event = m_eventExtractor(event, product, settings);
 		
 		// fill tree corresponding to non-passed filters
 		size_t filterIndex = 0;
@@ -75,14 +75,14 @@ public:
 		}
 	}
 
-	void Finish(setting_type const& setting) override {
-		CutFlowConsumerBase<TTypes>::Finish(setting);
+	void Finish(setting_type const& settings, metadata_type const& metadata) override {
+		CutFlowConsumerBase<TTypes>::Finish(settings, metadata);
 		
 		if (m_treesInitialised)
 		{
 			// save histograms
-			RootFileHelper::SafeCd(setting.GetRootOutFile(),
-					setting.GetRootFileFolder());
+			RootFileHelper::SafeCd(settings.GetRootOutFile(),
+					settings.GetRootFileFolder());
 		
 			for (std::vector<TTree*>::iterator cutFlowTree = m_cutFlowTrees.begin(); cutFlowTree != m_cutFlowTrees.end(); ++cutFlowTree)
 			{
@@ -104,15 +104,15 @@ private:
 	uint64_t m_event;
 	
 	// initialise histograms; to be called in first event
-	bool InitialiseTrees(setting_type const& setting, FilterResult & filterResult) {
+	bool InitialiseTrees(setting_type const& settings, FilterResult & filterResult) {
 
 		// filters
 		std::vector<std::string> filterNames = filterResult.GetFilterNames();
 	
 		// trees
 		TDirectory* tmpDirectory = gDirectory;
-		RootFileHelper::SafeCd(setting.GetRootOutFile(),
-		                       setting.GetRootFileFolder());
+		RootFileHelper::SafeCd(settings.GetRootOutFile(),
+		                       settings.GetRootFileFolder());
 		
 		for(size_t filterIndex = 0; filterIndex < filterNames.size(); ++filterIndex)
 		{

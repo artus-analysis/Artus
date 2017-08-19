@@ -18,6 +18,7 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
+	typedef typename TTypes::metadata_type metadata_type;
 
 	typedef typename std::function<float(event_type const&, product_type const&, setting_type const&)> weight_extractor_lambda;
 
@@ -33,28 +34,27 @@ public:
 	{
 	}
 
-	void Init(typename TTypes::setting_type const& settings) override
+	void Init(setting_type const& settings, metadata_type& metadata) override
 	{
-		CutFlowConsumerBase<TTypes>::Init(settings);
+		CutFlowConsumerBase<TTypes>::Init(settings, metadata);
 		// default weight = 1.0
 		// overwrite this in analysis-specific code
 		// and set m_addWeightedCutFlow to true
 		weightExtractor = [](event_type const&, product_type const&, setting_type const&) { return 1.0; };
 	}
 
-	void ProcessEvent(event_type const& event,
-	                  product_type const& product,
-	                  setting_type const& setting,
+	void ProcessEvent(event_type const& event, product_type const& product,
+	                  setting_type const& settings, metadata_type const& metadata,
 	                  FilterResult & filterResult) override
 	{
-		CutFlowConsumerBase<TTypes>::ProcessEvent(event, product, setting, filterResult);
+		CutFlowConsumerBase<TTypes>::ProcessEvent(event, product, settings, metadata, filterResult);
 
 		// initialise histograms in first event
 		if(! m_histogramsInitialised) {
-			m_histogramsInitialised = InitialiseHistograms(setting, filterResult);
+			m_histogramsInitialised = InitialiseHistograms(settings, filterResult);
 		}
 
-		float weight = weightExtractor(event, product, setting);
+		float weight = weightExtractor(event, product, settings);
 		int bin = 0;
 
 		// fill first bin of histograms with all events
@@ -82,14 +82,14 @@ public:
 		}
 	}
 
-	void Finish(setting_type const& setting) override {
-		CutFlowConsumerBase<TTypes>::Finish(setting);
+	void Finish(setting_type const& settings, metadata_type const& metadata) override {
+		CutFlowConsumerBase<TTypes>::Finish(settings, metadata);
 		
 		if (m_histogramsInitialised)
 		{
 			// save histograms
-			RootFileHelper::SafeCd(setting.GetRootOutFile(),
-					setting.GetRootFileFolder());
+			RootFileHelper::SafeCd(settings.GetRootOutFile(),
+					settings.GetRootFileFolder());
 
 			m_cutFlowUnweightedHist->Write(m_cutFlowUnweightedHist->GetName());
 
@@ -109,7 +109,7 @@ private:
 	bool m_histogramsInitialised;
 
 	// initialise histograms; to be called in first event
-	bool InitialiseHistograms( setting_type const& setting, FilterResult & filterResult) {
+	bool InitialiseHistograms( setting_type const& settings, FilterResult & filterResult) {
 
 		// filters
 		std::vector<std::string> filterNames = filterResult.GetFilterNames();
@@ -117,10 +117,10 @@ private:
 
 		// histograms
 		TDirectory* tmpDirectory = gDirectory;
-		RootFileHelper::SafeCd( setting.GetRootOutFile(),
-		                        setting.GetRootFileFolder());
+		RootFileHelper::SafeCd( settings.GetRootOutFile(),
+		                        settings.GetRootFileFolder());
 
-		std::string cutFlowHistTitle("Cut Flow for Pipeline \"" + setting.GetName() + "\"");
+		std::string cutFlowHistTitle("Cut Flow for Pipeline \"" + settings.GetName() + "\"");
 
 		m_cutFlowUnweightedHist = new TH1F("cutFlowUnweighted",
 		                                   cutFlowHistTitle.c_str(),
