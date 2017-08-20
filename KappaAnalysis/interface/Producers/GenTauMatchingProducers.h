@@ -54,11 +54,11 @@ public:
 	void Init(setting_type const& settings, metadata_type& metadata) override 
 	{
 		ProducerBase<KappaTypes>::Init(settings, metadata);
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("ratioGenTauMatched", [](event_type const & event, product_type const & product)
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "ratioGenTauMatched", [](event_type const & event, product_type const & product)
 		{
 			return product.m_ratioGenTauMatched;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genTauMatchTauDeltaR", [](event_type const & event, product_type const & product)
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "genTauMatchTauDeltaR", [](event_type const & event, product_type const & product)
 		{
 			return product.m_genTauMatchDeltaR;
 		});

@@ -33,28 +33,28 @@ void ValidGenParticlesProducer::Init(KappaTypes::KappaTypes::setting_type const&
 	{
 		std::string quantityNameBase = "gen" + m_name + std::to_string(leptonIndex+1);
 		
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(quantityNameBase+"Pt", [this, leptonIndex](KappaTypes::event_type const& event, KappaTypes::product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, quantityNameBase+"Pt", [this, leptonIndex](KappaTypes::event_type const& event, KappaTypes::product_type const& product)
 		{
 			return (((product.*m_validLeptonsMember).size() > leptonIndex) ? (product.*m_validLeptonsMember)[leptonIndex]->p4.Pt() : DefaultValues::UndefinedFloat);
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(quantityNameBase+"Eta", [this, leptonIndex](KappaTypes::event_type const& event, KappaTypes::product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, quantityNameBase+"Eta", [this, leptonIndex](KappaTypes::event_type const& event, KappaTypes::product_type const& product)
 		{
 			return (((product.*m_validLeptonsMember).size() > leptonIndex) ? (product.*m_validLeptonsMember)[leptonIndex]->p4.Eta() : DefaultValues::UndefinedFloat);
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(quantityNameBase+"Phi", [this, leptonIndex](KappaTypes::event_type const& event, KappaTypes::product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, quantityNameBase+"Phi", [this, leptonIndex](KappaTypes::event_type const& event, KappaTypes::product_type const& product)
 		{
 			return (((product.*m_validLeptonsMember).size() > leptonIndex) ? (product.*m_validLeptonsMember)[leptonIndex]->p4.Phi() : DefaultValues::UndefinedFloat);
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(quantityNameBase+"Mass", [this, leptonIndex](KappaTypes::event_type const& event, KappaTypes::product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, quantityNameBase+"Mass", [this, leptonIndex](KappaTypes::event_type const& event, KappaTypes::product_type const& product)
 		{
 			return (((product.*m_validLeptonsMember).size() > leptonIndex) ? (product.*m_validLeptonsMember)[leptonIndex]->p4.mass() : DefaultValues::UndefinedFloat);
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(quantityNameBase+"Charge", [this, leptonIndex](KappaTypes::event_type const& event, KappaTypes::product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, quantityNameBase+"Charge", [this, leptonIndex](KappaTypes::event_type const& event, KappaTypes::product_type const& product)
 		{
 			return (((product.*m_validLeptonsMember).size() > leptonIndex) ? (product.*m_validLeptonsMember)[leptonIndex]->charge() : DefaultValues::UndefinedFloat);
 		});
 		
-		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(quantityNameBase+"LV", [this, leptonIndex](KappaTypes::event_type const& event, KappaTypes::product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, quantityNameBase+"LV", [this, leptonIndex](KappaTypes::event_type const& event, KappaTypes::product_type const& product)
 		{
 			return (((product.*m_validLeptonsMember).size() > leptonIndex) ? (product.*m_validLeptonsMember)[leptonIndex]->p4 : DefaultValues::UndefinedRMFLV);
 		});
@@ -176,20 +176,20 @@ void ValidGenTausProducer::Init(KappaTypes::KappaTypes::setting_type const& sett
 	{
 		std::string quantityNameBase = "gen" + m_name + std::to_string(leptonIndex+1);
 		
-		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(quantityNameBase+"VisibleLV", [this, leptonIndex](KappaTypes::event_type const& event, KappaTypes::product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, quantityNameBase+"VisibleLV", [this, leptonIndex](KappaTypes::event_type const& event, KappaTypes::product_type const& product)
 		{
 			return (((product.*m_validLeptonsMember).size() > leptonIndex) ? static_cast<KGenTau*>((product.*m_validLeptonsMember)[leptonIndex])->visible.p4 : DefaultValues::UndefinedRMFLV);
 		});
 		
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(quantityNameBase+"DecayMode", [this, leptonIndex](KappaTypes::event_type const& event, KappaTypes::product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, quantityNameBase+"DecayMode", [this, leptonIndex](KappaTypes::event_type const& event, KappaTypes::product_type const& product)
 		{
 			return (((product.*m_validLeptonsMember).size() > leptonIndex) ? static_cast<KGenTau*>((product.*m_validLeptonsMember)[leptonIndex])->genDecayMode() : DefaultValues::UndefinedInt);
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(quantityNameBase+"NProngs", [this, leptonIndex](KappaTypes::event_type const& event, KappaTypes::product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, quantityNameBase+"NProngs", [this, leptonIndex](KappaTypes::event_type const& event, KappaTypes::product_type const& product)
 		{
 			return (((product.*m_validLeptonsMember).size() > leptonIndex) ? static_cast<KGenTau*>((product.*m_validLeptonsMember)[leptonIndex])->nProngs : DefaultValues::UndefinedInt);
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(quantityNameBase+"NPi0s", [this, leptonIndex](KappaTypes::event_type const& event, KappaTypes::product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, quantityNameBase+"NPi0s", [this, leptonIndex](KappaTypes::event_type const& event, KappaTypes::product_type const& product)
 		{
 			return (((product.*m_validLeptonsMember).size() > leptonIndex) ? static_cast<KGenTau*>((product.*m_validLeptonsMember)[leptonIndex])->nPi0s : DefaultValues::UndefinedInt);
 		});
