@@ -11,11 +11,11 @@ void HltProducer::Init(setting_type const& settings, metadata_type& metadata)
 	KappaProducerBase::Init(settings, metadata);
 	
 	// add possible quantities for the lambda ntuples consumers
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nSelectedHltPaths", [](event_type const& event, product_type const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "nSelectedHltPaths", [](event_type const& event, product_type const& product)
 	{
 		return static_cast<int>(product.m_selectedHltNames.size());
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddVStringQuantity("selectedHltPaths", [](event_type const& event, product_type const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddVStringQuantity(metadata, "selectedHltPaths", [](event_type const& event, product_type const& product)
 	{
 		return product.m_selectedHltNames;
 	});

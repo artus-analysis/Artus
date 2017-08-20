@@ -60,13 +60,13 @@ public:
 					  [](std::string s) { return boost::algorithm::trim_copy(s); });
 			std::string lambdaQuantity = splitted.front();
 			
-			if (LambdaNtupleConsumer<TTypes>::GetFloatQuantities().count(lambdaQuantity) > 0)
+			if (metadata.m_commonFloatQuantities.count(lambdaQuantity) > 0)
 			{
-				m_inputExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetFloatQuantities(), lambdaQuantity));
+				m_inputExtractors.push_back(SafeMap::Get(metadata.m_commonFloatQuantities, lambdaQuantity));
 			}
-			else if(LambdaNtupleConsumer<TTypes>::GetIntQuantities().count(lambdaQuantity) > 0)
+			else if(metadata.m_commonIntQuantities.count(lambdaQuantity) > 0)
 			{
-				m_inputExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetIntQuantities(), lambdaQuantity));
+				m_inputExtractors.push_back(SafeMap::Get(metadata.m_commonIntQuantities, lambdaQuantity));
 			}
 			else
 			{

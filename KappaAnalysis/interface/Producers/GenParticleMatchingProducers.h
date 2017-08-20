@@ -88,11 +88,11 @@ public:
 	void Init(setting_type const& settings, metadata_type& metadata) override
 	{
 		KappaProducerBase::Init(settings, metadata);
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("ratioGenParticleMatched", [](event_type const & event, product_type const & product)
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "ratioGenParticleMatched", [](event_type const & event, product_type const & product)
 		{
 			return product.m_ratioGenParticleMatched;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("genParticleMatchDeltaR", [](event_type const & event, product_type const & product)
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "genParticleMatchDeltaR", [](event_type const & event, product_type const & product)
 		{
 			return product.m_genParticleMatchDeltaR;
 		});

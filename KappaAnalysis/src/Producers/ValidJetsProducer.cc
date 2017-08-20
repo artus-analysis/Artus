@@ -46,36 +46,36 @@ void ValidTaggedJetsProducer::Init(KappaTypes::setting_type const& settings, Kap
 	std::string bTaggedJetTCHEName = settings.GetBTaggedJetTrackCountingHighEffName();
 	std::string jetPuJetIDName = settings.GetPuJetIDFullDiscrName();
 
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingJetCSV",[bTaggedJetCSVName](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "leadingJetCSV",[bTaggedJetCSVName](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 		return product.m_validJets.size() >= 1 ? static_cast<KJet*>(product.m_validJets.at(0))->getTag(bTaggedJetCSVName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
 	} );
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingJetTCHE",[bTaggedJetTCHEName](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "leadingJetTCHE",[bTaggedJetTCHEName](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 		return product.m_validJets.size() >= 1 ? static_cast<KJet*>(product.m_validJets.at(0))->getTag(bTaggedJetTCHEName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
 	} );
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingJetPuID",[jetPuJetIDName](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "leadingJetPuID",[jetPuJetIDName](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 		return product.m_validJets.size() >= 1 ? static_cast<KJet*>(product.m_validJets.at(0))->getTag(jetPuJetIDName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
 	} );
-	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("leadingJetGenMatch", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, "leadingJetGenMatch", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 		return product.m_validJets.size() >= 1 ? static_cast<KJet*>(product.m_validJets.at(0))->genMatch : false;
 	});
 	
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingJetCSV",[bTaggedJetCSVName](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "trailingJetCSV",[bTaggedJetCSVName](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 		return product.m_validJets.size() >= 2 ? static_cast<KJet*>(product.m_validJets.at(1))->getTag(bTaggedJetCSVName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
 	} );
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingJetTCHE",[bTaggedJetTCHEName](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "trailingJetTCHE",[bTaggedJetTCHEName](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 		return product.m_validJets.size() >= 2 ? static_cast<KJet*>(product.m_validJets.at(1))->getTag(bTaggedJetTCHEName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
 	} );
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingJetPuID",[jetPuJetIDName](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "trailingJetPuID",[jetPuJetIDName](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 		return product.m_validJets.size() >= 2 ? static_cast<KJet*>(product.m_validJets.at(1))->getTag(jetPuJetIDName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
 	} );
-	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("trailingJetGenMatch", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, "trailingJetGenMatch", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 		return product.m_validJets.size() >= 2 ? static_cast<KJet*>(product.m_validJets.at(1))->genMatch : false;
 	});
 	
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("thirdJetCSV",[bTaggedJetCSVName](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "thirdJetCSV",[bTaggedJetCSVName](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 		return product.m_validJets.size() >= 3 ? static_cast<KJet*>(product.m_validJets.at(2))->getTag(bTaggedJetCSVName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("fourthJetCSV",[bTaggedJetCSVName](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "fourthJetCSV",[bTaggedJetCSVName](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 		return product.m_validJets.size() >= 4 ? static_cast<KJet*>(product.m_validJets.at(3))->getTag(bTaggedJetCSVName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
 	});
 }

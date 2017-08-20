@@ -12,7 +12,7 @@ void NicknameProducer::Init(setting_type const& settings, metadata_type& metadat
 	KappaProducerBase::Init(settings, metadata);
 
 	// add possible quantities for the lambda ntuples consumers
-	LambdaNtupleConsumer<KappaTypes>::AddStringQuantity("nickname", [](event_type const& event, product_type const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddStringQuantity(metadata, "nickname", [](event_type const& event, product_type const& product)
 	{
 		return product.m_nickname;
 	});

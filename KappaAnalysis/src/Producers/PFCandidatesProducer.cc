@@ -3,31 +3,31 @@
 void PFCandidatesProducer::Init(setting_type const& settings, metadata_type& metadata)
 {
 	KappaProducerBase::Init(settings, metadata);
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("NPFChargedHadrons", [](event_type const& event, product_type const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "NPFChargedHadrons", [](event_type const& event, product_type const& product)
 	{
 		return product.m_pfChargedHadrons.size();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("NPFNeutralHadrons", [](event_type const& event, product_type const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "NPFNeutralHadrons", [](event_type const& event, product_type const& product)
 	{
 		return product.m_pfNeutralHadrons.size();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("NPFElectrons", [](event_type const& event, product_type const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "NPFElectrons", [](event_type const& event, product_type const& product)
 	{
 		return product.m_pfElectrons.size();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("NPFMuons", [](event_type const& event, product_type const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "NPFMuons", [](event_type const& event, product_type const& product)
 	{
 		return product.m_pfMuons.size();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("NPFPhotons", [](event_type const& event, product_type const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "NPFPhotons", [](event_type const& event, product_type const& product)
 	{
 		return product.m_pfPhotons.size();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("NPFHadronicHF", [](event_type const& event, product_type const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "NPFHadronicHF", [](event_type const& event, product_type const& product)
 	{
 		return product.m_pfHadronicHF.size();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("NPFElectromagneticHF", [](event_type const& event, product_type const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "NPFElectromagneticHF", [](event_type const& event, product_type const& product)
 	{
 		return product.m_pfElectromagneticHF.size();
 	});
