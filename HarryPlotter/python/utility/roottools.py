@@ -207,7 +207,7 @@ class RootTools(object):
 		                    x_bins=None, y_bins=None, z_bins=None,
 		                    weight_selection="", option="", name=None,
 		                    friend_files=None, friend_folders=None, friend_alias=None,
-		                    proxy_prefix=None):
+		                    proxy_prefix=""):
 		"""
 		Read histograms from trees
 	
