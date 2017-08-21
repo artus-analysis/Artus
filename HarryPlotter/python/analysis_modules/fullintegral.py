@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """
 """
 
@@ -24,7 +23,7 @@ class FullIntegral(analysisbase.AnalysisBase):
 		for option in options:
 			for action in parser._actions:
 				if vars(action)['option_strings'][0] == option:
-					parser._handle_conflict_resolve(None,[(option,action)])
+					parser._handle_conflict_resolve(None, [(option, action)])
 					break
 	
 	def modify_argument_parser(self, parser, args):
@@ -39,6 +38,7 @@ class FullIntegral(analysisbase.AnalysisBase):
 				help="standard: add nicks, integrate sum, write to file -- int_to_histogram: integrate each nick, remove them from plotlist, fill into new histogram, add to plotlist")
 		self.full_integral.add_argument("--full-integral-binning", default="25,0,100",
 				help="binning is only used if one choses task=int_to_histogram: [Defaul:%(default)s]NBins,XMin,XMax")
+
 	def prepare_args(self, parser, plotData):
 		super(FullIntegral, self).prepare_args(parser, plotData)
 		self.prepare_list_args(plotData, ["full_integral_nicks", "full_integral_outputs"])
@@ -48,60 +48,55 @@ class FullIntegral(analysisbase.AnalysisBase):
 	def run(self, plotData=None):
 		super(FullIntegral, self).run(plotData)
 		outpath = os.path.expandvars(plotData.plotdict["full_integral_outputs"][0])
-		#log.info(outpath)
+
 		category = plotData.plotdict.get("category", "NoCategory")
 		if plotData.plotdict.get("full_integral_task", "standard") == "standard":
 			for integral_nicks in plotData.plotdict["full_integral_nicks"]:
-				#signal = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_objects"][nick] for nick in integral_nicks.split(" ")])
 				goodnicks = []
+
 				for nick in integral_nicks.split(" "):
-				  try:
-				      roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_objects"][nick]])
-				      goodnicks.append(nick)
-				  except:
-				      print "!!! Can't add",nick,"to the full integral"
+					try:
+						roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_objects"][nick]])
+						goodnicks.append(nick)
+					except:
+						log.error("Can't add " + nick + " to the full integral")
+
 				signal = roottools.RootTools.add_root_histograms(*[plotData.plotdict["root_objects"][nick] for nick in goodnicks])
 				integral = 0
-				for x_bin in xrange(1, signal.GetNbinsX()+1):
-					#log.info("access bin %i"%x_bin)
+				for x_bin in xrange(1, signal.GetNbinsX() + 1):
 					integral += signal.GetBinContent(x_bin)
 
 				dirpath, filename = os.path.split(outpath)
-				if not os.path.isdir(dirpath):
-					os.makedirs(dirpath)
-				if not os.path.exists(outpath):
-					with open(outpath, "w") as outfile:
-						outfile.write("nick: %s category: %s integral: %f\n"%(nick, category, integral))
-				else:
-					with open(outpath, "a") as outfile:
-						outfile.write("nick: %s category: %s integral: %f\n"%(nick, category, integral))
+				if not os.path.isdir(dirpath): os.makedirs(dirpath)
+
+				with open(outpath, "a" if os.path.exists(outpath) else "w") as outfile:
+					outfile.write("nick: %s category: %s integral: %f\n"%(nick, category, integral))
 		else:
 			integral_values = []
 			integral_nicks = []
-			#print plotData.plotdict.get("root_objects", {})
 			for nick, histogram in plotData.plotdict.get("root_objects", {}).iteritems():
 				integral = 0
-				for x_bin in xrange(1, histogram.GetNbinsX()+1):
-					#log.info("access bin %i"%x_bin)
+				for x_bin in xrange(1, histogram.GetNbinsX() + 1):
 					integral += histogram.GetBinContent(x_bin)
 				integral_values.append(integral)
 				integral_nicks.append(nick)
-				#delete and reassign to get rid of those nasty root objects without disturbing pythons iterator
+
+				# Delete and reassign to get rid of those nasty root objects without disturbing pythons iterator
 				del plotData.plotdict["root_objects"][nick]
 				plotData.plotdict["root_objects"][nick] = None
+
 			histogram = ROOT.TH1F("FullIntegralHistogram", "FullIntegralHistogram", *map(int,plotData.plotdict.get("full_integral_binning", "25,0,100").split(",")))
-			#print outpath
-			#sys.exit()
+
 			dirpath, filename = os.path.split(outpath)
 			if not os.path.isdir(dirpath):
 				os.makedirs(dirpath)
+
 			with open(outpath, "w") as outfile:
 				for nick, integral in zip(integral_nicks, integral_values):
 					outfile.write("%s: %f\n"%(nick, integral))
 					histogram.Fill(integral)
-			#plotData.plotdict = {"full_integral_binning":plotData.plotdict["full_integral_binning"]}
-			plotData.plotdict["root_objects"] = {"FullIntegral":histogram}
-			#plotData.plotdict["root_objects"] = {"FullIntegral":None}
+
+			plotData.plotdict["root_objects"] = {"FullIntegral" : histogram}
 			plotData.plotdict["nicks"] = ["FullIntegral"]
 			plotData.plotdict["x_bins"] = [plotData.plotdict["full_integral_binning"]]
 			plotData.plotdict["scale_factors"] = [1.0]
@@ -113,11 +108,7 @@ class FullIntegral(analysisbase.AnalysisBase):
 			plotData.plotdict["folders"] = [plotData.plotdict["folders"][0]]
 			plotData.plotdict["weights"] = [plotData.plotdict["weights"][0]]
 			plotData.plotdict["stacks"] = [plotData.plotdict["stacks"][0]]
-			#plotData.plotdict["comment"] = 
+
 			del plotData.plotdict["root_trees"]
 			plotData.input_json_dicts = []
-			print plotData.plotdict
-			##return plotData.plotdict
-
-			#jsonTools.JsonDict(plotData.metadata).save("metadata.json", indent=4)
-			#jsonTools.JsonDict(plotData.plotdict).save("plotdict.json", indent=4)
+			log.info(plotData.plotdict)
