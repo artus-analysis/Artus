@@ -26,27 +26,35 @@ def main():
 	runs.GetEntry(0)
 	
 	lheWeightNamesMap = runs.runInfo.lheWeightNamesMap
+	if len(lheWeightNamesMap) > 0:
+		mapping = []
+		for lheWeightNames in lheWeightNamesMap:
+			mapping.append([lheWeightNames[0], lheWeightNames[1]])
 	
-	mapping = []
-	for lheWeightNames in lheWeightNamesMap:
-		mapping.append([lheWeightNames[0], lheWeightNames[1]])
+		log.info("\nNames of available LHE weights (human readable:")
+		for item in sorted(mapping, key=lambda item: item[0]):
+			log.info("\t" + item[0])
 	
-	log.info("\nNames of available LHE weights (human readable:")
-	for item in sorted(mapping, key=lambda item: item[0]):
-		log.info("\t" + item[0])
+		log.info("\nNames of available LHE weights (index):")
+		for item in sorted(mapping, key=lambda item: int(item[1])):
+			log.info("\t" + item[1])
 	
-	log.info("\nNames of available LHE weights (index):")
-	for item in sorted(mapping, key=lambda item: int(item[1])):
-		log.info("\t" + item[1])
+		log.info("\nNames of available LHE weights (human readable -> index):")
+		for item in sorted(mapping, key=lambda item: item[0]):
+			log.info("\t" + item[0] + " -> " + item[1])
 	
-	log.info("\nNames of available LHE weights (human readable -> index):")
-	for item in sorted(mapping, key=lambda item: item[0]):
-		log.info("\t" + item[0] + " -> " + item[1])
-	
-	log.info("\nNames of available LHE weights (index -> human readable):")
-	for item in sorted(mapping, key=lambda item: int(item[1])):
-		log.info("\t" + item[1] + " -> " + item[0])
+		log.info("\nNames of available LHE weights (index -> human readable):")
+		for item in sorted(mapping, key=lambda item: int(item[1])):
+			log.info("\t" + item[1] + " -> " + item[0])
 
+	else:
+		lumis = ROOT.TChain("Lumis")
+		lumis.Add(args.file)
+		lumis.GetEntry(0)
+		
+		lheWeightNames = lumis.genEventInfoMetadata.lheWeightNames
+		for lheWeightName in lheWeightNames:
+			log.info("\t" + lheWeightName)
 
 if __name__ == "__main__":
 	main()
