@@ -21,11 +21,11 @@ def main():
 	args = parser.parse_args()
 	logger.initLogger(args)
 	
-	lumis = ROOT.TChain("Lumis")
-	lumis.Add(args.file)
-	lumis.GetEntry(0)
+	runs = ROOT.TChain("Runs")
+	runs.Add(args.file)
+	runs.GetEntry(0)
 	
-	lheWeightNamesMap = lumis.lumiInfo.lheWeightNamesMap
+	lheWeightNamesMap = runs.runInfo.lheWeightNamesMap
 	
 	mapping = []
 	for lheWeightNames in lheWeightNamesMap:
