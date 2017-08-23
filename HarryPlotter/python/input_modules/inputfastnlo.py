@@ -11,7 +11,6 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
-import fastnlo
 import ROOT
 import numpy as np
 from array import array
@@ -50,6 +49,8 @@ class InputFastNLO(inputbase.InputBase):
 
 
 	def run(self, plotData):
+		import fastnlo
+		
 		for filename, pdfset, member, nick, kfactor, unctype, uncstyle in zip(
 				plotData.plotdict['fastnlo_files'],
 				plotData.plotdict['pdf_sets'],
