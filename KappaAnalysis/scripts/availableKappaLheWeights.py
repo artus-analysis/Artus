@@ -53,8 +53,10 @@ def main():
 		lumis.GetEntry(0)
 		
 		lheWeightNames = lumis.genEventInfoMetadata.lheWeightNames
+		log.info("\nIndices of available LHE weights:")
 		for lheWeightName in lheWeightNames:
 			log.info("\t" + lheWeightName)
+		log.info("\nSee https://lhapdf.hepforge.org/pdfsets.html for more information")
 
 if __name__ == "__main__":
 	main()
