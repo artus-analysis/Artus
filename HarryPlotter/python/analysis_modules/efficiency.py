@@ -99,7 +99,7 @@ class CutEfficiency(analysisbase.AnalysisBase):
 		)
 		self.cut_efficiency_options.add_argument(
 				"--cut-efficiency-modes", nargs="+", default=["sigEffVsBkgRej"],
-				choices=["sigEff", "sigRej", "bkgEff", "bkgRej", "sigEffVsBkgEff", "sigEffVsBkgRej", "sigRejVsBkgEff", "sigRejVsBkgRej", "sigPur"],
+				choices=["sigEff", "sigRej", "bkgEff", "bkgRej", "sigEffVsBkgEff", "sigEffVsBkgRej", "sigRejVsBkgEff", "sigRejVsBkgRej", "sigPur", "sOverSqrtSB"],
 				help="ROC modes. [Default: %(default)s]"
 		)
 
@@ -145,6 +145,28 @@ class CutEfficiency(analysisbase.AnalysisBase):
 				
 				signal_purity = ROOT.TGraphAsymmErrors(signal_cumulative, total_cumulative)
 				graph = signal_purity
+			
+			elif cut_efficiency_mode == "soversqrtsb":
+				assert signal_cumulative.GetNbinsX() == background_cumulative.GetNbinsX()
+				assert signal_cumulative.GetNbinsY() == background_cumulative.GetNbinsY()
+				assert signal_cumulative.GetNbinsZ() == background_cumulative.GetNbinsZ()
+				
+				result_histogram = signal_cumulative.Clone("soversqrtsb"+name_hash)
+				for x_bin in range(1, signal_cumulative.GetNbinsX()+1):
+					for y_bin in range(1, signal_cumulative.GetNbinsY()+1):
+						for z_bin in range(1, signal_cumulative.GetNbinsY()+1):
+							global_bin = signal_cumulative.GetBin(x_bin, y_bin, z_bin)
+							s, se = signal_cumulative.GetBinContent(global_bin), signal_cumulative.GetBinError(global_bin)
+							b, be = background_cumulative.GetBinContent(global_bin), background_cumulative.GetBinError(global_bin)
+							
+							bin_content = (s / math.sqrt(s+b)) if s+b != 0.0 else 0.0
+							# https://www.wolframalpha.com/input/?i=Sqrt%5B(x*D%5Bs%2FSqrt%5Bs%2Bb%5D,s%5D)%5E2%2B(y*D%5Bs%2FSqrt%5Bs%2Bb%5D,b%5D)%5E2%5D
+							bin_error = (math.sqrt((4.0*b*b*se*se + 4.0*b*s*se*se + s*s*se*se + s*s*be*be)/((b+s)*(b+s)*(b+s)))/2.0) if s+b != 0.0 else 0.0
+							
+							result_histogram.SetBinContent(global_bin, bin_content)
+							result_histogram.SetBinError(global_bin, bin_error)
+				graph = result_histogram
+			
 			else:
 				total_signal = CutEfficiency.get_total_from_cumulative(signal_cumulative, "totsig_"+name_hash)
 				total_background = CutEfficiency.get_total_from_cumulative(background_cumulative, "totbkg_"+name_hash)
@@ -158,12 +180,14 @@ class CutEfficiency(analysisbase.AnalysisBase):
 							x_take_x=True,
 							y_modifier=lambda y: (1.0-y) if "rej" in cut_efficiency_mode else y
 					)
+				
 				elif (cut_efficiency_mode == "bkgeff") or (cut_efficiency_mode == "bkgrej"):
 					graph = CutEfficiency.build_graph(
 							background_efficiency, background_efficiency,
 							x_take_x=True,
 							y_modifier=lambda y: (1.0-y) if "rej" in cut_efficiency_mode else y
 					)
+				
 				else:
 					graph = CutEfficiency.build_graph(
 							background_efficiency, signal_efficiency,
