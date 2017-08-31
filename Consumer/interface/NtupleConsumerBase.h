@@ -20,6 +20,7 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
+	typedef typename TTypes::metadata_type metadata_type;
 
 	NtupleConsumerBase() : ConsumerBase<TTypes>() {
 	}
@@ -27,17 +28,17 @@ public:
 	virtual ~NtupleConsumerBase() {
 	}
 
-	void Init(setting_type const& pset) override {
-		ConsumerBase<TTypes>::Init(pset);
+	void Init(setting_type const& settings, metadata_type& metadata) override {
+		ConsumerBase<TTypes>::Init(settings, metadata);
 
-		m_quantitiesVector = pset.GetQuantities();
+		m_quantitiesVector = settings.GetQuantities();
 		m_quantities = boost::algorithm::join(m_quantitiesVector, ":");
 
-		RootFileHelper::SafeCd(pset.GetRootOutFile(),
-		                       pset.GetRootFileFolder());
+		RootFileHelper::SafeCd(settings.GetRootOutFile(),
+		                       settings.GetRootFileFolder());
 		
 		m_ntuple = new TNtuple("ntuple",
-				   ("Ntuple for Pipeline \"" + pset.GetName() + "\"").c_str(),
+				   ("Ntuple for Pipeline \"" + settings.GetName() + "\"").c_str(),
 				   m_quantities.c_str());
 	}
 
@@ -46,10 +47,9 @@ public:
 		return "ntuple";
 	}
 
-	void ProcessFilteredEvent(event_type const& event,
-			product_type const& product,
-			setting_type const& setting) override {
-		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product, setting);
+	void ProcessFilteredEvent(event_type const& event, product_type const& product,
+			setting_type const& settings, metadata_type const& metadata) override {
+		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product, settings, metadata);
 
 		// preallocated vector
 		std::vector<float> array (m_quantitiesVector.size()) ;
@@ -66,10 +66,10 @@ public:
 	}
 
 
-	void Finish(setting_type const& setting) override
+	void Finish(setting_type const& settings, metadata_type const& metadata) override
 	{
-		RootFileHelper::SafeCd(setting.GetRootOutFile(),
-								setting.GetRootFileFolder());
+		RootFileHelper::SafeCd(settings.GetRootOutFile(),
+								settings.GetRootFileFolder());
 		
 		m_ntuple->Write(m_ntuple->GetName());
 	}

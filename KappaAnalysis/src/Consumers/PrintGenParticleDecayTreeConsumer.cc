@@ -15,13 +15,15 @@ std::string PrintGenParticleDecayTreeConsumer::GetConsumerId() const
 	return "PrintGenParticleDecayTreeConsumer";
 }
 
-void PrintGenParticleDecayTreeConsumer::Init(setting_type const& settings)
+void PrintGenParticleDecayTreeConsumer::Init(setting_type const& settings, metadata_type& metadata)
 {
+	ConsumerBase<KappaTypes>::Init(settings, metadata);
+	
 	genParticleDecayTreePrinter.InitPDGDatabase(settings.GetDatabasePDG());
 	genCollectionToPrint = KappaEnumTypes::ToGenCollectionToPrint(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetGenCollectionToPrint())));
 }
 
-void PrintGenParticleDecayTreeConsumer::ProcessFilteredEvent(event_type const& event, product_type const& product, setting_type const& settings)
+void PrintGenParticleDecayTreeConsumer::ProcessFilteredEvent(event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 {
 	LOG(INFO) << "Processed event: run = " << event.m_eventInfo->nRun << ", lumi = " << event.m_eventInfo->nLumi << ", event = " << event.m_eventInfo->nEvent << ", pipeline = " << settings.GetName();
 	
@@ -44,7 +46,7 @@ void PrintGenParticleDecayTreeConsumer::ProcessFilteredEvent(event_type const& e
 	}
 }
 
-void PrintGenParticleDecayTreeConsumer::Finish(setting_type const& settings)
+void PrintGenParticleDecayTreeConsumer::Finish(setting_type const& settings, metadata_type const& metadata)
 {
 }
 

@@ -11,10 +11,10 @@
 class MaxElectronsCountFilter: public CutRangeFilterBase<KappaTypes> {
 public:
 	
-	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
+	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
 	
 	std::string GetFilterId() const override;
-	void Init(KappaSettings const& settings) override;
+	void Init(setting_type const& settings, metadata_type& metadata) override;
 };
 
 
@@ -24,10 +24,10 @@ public:
 class MaxMuonsCountFilter: public CutRangeFilterBase<KappaTypes> {
 public:
 	
-	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
+	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
 	
 	std::string GetFilterId() const override;
-	void Init(KappaSettings const& settings) override;
+	void Init(setting_type const& settings, metadata_type& metadata) override;
 };
 
 
@@ -37,10 +37,10 @@ public:
 class MaxTausCountFilter: public CutRangeFilterBase<KappaTypes> {
 public:
 	
-	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
+	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
 	
 	std::string GetFilterId() const override;
-	void Init(KappaSettings const& settings) override;
+	void Init(setting_type const& settings, metadata_type& metadata) override;
 };
 
 
@@ -50,10 +50,10 @@ public:
 class MaxJetsCountFilter: public CutRangeFilterBase<KappaTypes> {
 public:
 	
-	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
+	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
 	
 	std::string GetFilterId() const override;
-	void Init(KappaSettings const& settings) override;
+	void Init(setting_type const& settings, metadata_type& metadata) override;
 };
 
 
@@ -63,10 +63,10 @@ public:
 class MaxBTaggedJetsCountFilter: public CutRangeFilterBase<KappaTypes> {
 public:
 	
-	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
+	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
 	
 	std::string GetFilterId() const override;
-	void Init(KappaSettings const& settings) override;
+	void Init(setting_type const& settings, metadata_type& metadata) override;
 };
 
 
@@ -76,8 +76,8 @@ public:
 class MaxNonBTaggedJetsCountFilter: public CutRangeFilterBase<KappaTypes> {
 public:
 	
-	typedef typename std::function<double(KappaEvent const&, KappaProduct const&)> double_extractor_lambda;
+	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
 	
 	std::string GetFilterId() const override;
-	void Init(KappaSettings const& settings) override;
+	void Init(setting_type const& settings, metadata_type& metadata) override;
 };

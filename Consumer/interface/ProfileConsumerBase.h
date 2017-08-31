@@ -13,6 +13,7 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
+	typedef typename TTypes::metadata_type metadata_type;
 
 	typedef std::function<
 			std::vector<float>(event_type const&, product_type const& )>
@@ -30,9 +31,9 @@ public:
 		return "profile";
 	}
 
-	void Init( typename TTypes::setting_type const& settings) override
+	void Init(setting_type const& settings, metadata_type& metadata) override
 	{
-		ConsumerBase<TTypes>::Init(settings);
+		ConsumerBase<TTypes>::Init(settings, metadata);
 
 		m_profile.reset(
 				new Profile2d(m_plotName,
@@ -48,21 +49,18 @@ public:
 		m_profile->Init();
 	}
 
-	void ProcessEvent(typename TTypes::event_type const& event,
-			typename TTypes::product_type const& product,
-			typename TTypes::setting_type const& setting,
+	void ProcessEvent(event_type const& event, product_type const& product,
+			setting_type const& settings, metadata_type const& metadata,
 			FilterResult& result) override {
-		ConsumerBase<TTypes>::ProcessEvent(event, product, setting,
-				result);
+		ConsumerBase<TTypes>::ProcessEvent(event, product, settings, metadata, result);
 
 		// not supported ..
 	}
 
-	void ProcessFilteredEvent(typename TTypes::event_type const& event,
-			typename TTypes::product_type const& product,
-			typename TTypes::setting_type const& setting) override
+	void ProcessFilteredEvent(event_type const& event, product_type const& product,
+			setting_type const& settings, metadata_type const& metadata) override
 	{
-		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product, setting);
+		ConsumerBase<TTypes>::ProcessFilteredEvent(event, product, settings, metadata);
 
 		auto resX = m_xsource.first(event, product);
 		auto resY = m_ysource.first(event, product);
@@ -91,8 +89,8 @@ public:
 		}
 	}
 
-	void Finish(setting_type const& setting) override {
-		m_profile->Store(setting.GetRootOutFile());
+	void Finish(setting_type const& settings, metadata_type const& metadata) override {
+		m_profile->Store(settings.GetRootOutFile());
 	}
 
 	void SetPlotName(std::string plotName) {

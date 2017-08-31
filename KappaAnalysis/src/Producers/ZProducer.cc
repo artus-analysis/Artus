@@ -8,7 +8,7 @@ std::string ZmmProducer::GetProducerId() const
 }
 
 ZmmProducer::ZmmProducer() :
-		ZProducerBase<KMuon, KMuon>(&KappaProduct::m_validMuons)
+		ZProducerBase<KMuon, KMuon>(&product_type::m_validMuons)
 {
 }
 
@@ -18,7 +18,7 @@ std::string ZeeProducer::GetProducerId() const
 }
 
 ZeeProducer::ZeeProducer() :
-		ZProducerBase<KElectron, KElectron>(&KappaProduct::m_validElectrons)
+		ZProducerBase<KElectron, KElectron>(&product_type::m_validElectrons)
 {
 }
 
@@ -27,7 +27,7 @@ std::string ZemProducer::GetProducerId() const
 	return "ZemProducer";
 }
 
-ZemProducer::ZemProducer() : ZProducerBase<KElectron, KMuon>(&KappaProduct::m_validElectrons, &KappaProduct::m_validMuons, false, true)
+ZemProducer::ZemProducer() : ZProducerBase<KElectron, KMuon>(&product_type::m_validElectrons, &product_type::m_validMuons, false, true)
 {
 }
 
@@ -37,7 +37,7 @@ std::string ZeemmProducer::GetProducerId() const
 }
 
 ZeemmProducer::ZeemmProducer() :
-		ZProducerBase<KElectron, KMuon>(&KappaProduct::m_validElectrons, &KappaProduct::m_validMuons, true, false)
+		ZProducerBase<KElectron, KMuon>(&product_type::m_validElectrons, &product_type::m_validMuons, true, false)
 {
 }
 

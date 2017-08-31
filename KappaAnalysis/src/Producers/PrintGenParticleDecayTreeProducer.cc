@@ -10,13 +10,14 @@ std::string PrintGenParticleDecayTreeProducer::GetProducerId() const
 	return "PrintGenParticleDecayTreeProducer";
 }
 
-void PrintGenParticleDecayTreeProducer::Init(KappaSettings const& settings)
+void PrintGenParticleDecayTreeProducer::Init(setting_type const& settings, metadata_type& metadata)
 {
+	KappaProducerBase::Init(settings, metadata);
 	genParticleDecayTreePrinter.InitPDGDatabase(settings.GetDatabasePDG());
 	genCollectionToPrint = KappaEnumTypes::ToGenCollectionToPrint(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetGenCollectionToPrint())));
 }
 
-void PrintGenParticleDecayTreeProducer::Produce(KappaEvent const& event, KappaProduct & product, KappaSettings const& settings) const
+void PrintGenParticleDecayTreeProducer::Produce(event_type const& event, product_type & product, setting_type const& settings, metadata_type const& metadata) const
 {
 	LOG(INFO) << "Processed event: run = " << event.m_eventInfo->nRun << ", lumi = " << event.m_eventInfo->nLumi << ", event = " << event.m_eventInfo->nEvent << ", pipeline = " << settings.GetName();
 	

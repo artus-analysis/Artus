@@ -20,10 +20,10 @@ class MuonCorrectionsProducer: public KappaProducerBase
 public:
 	std::string GetProducerId() const override;
 
-	void Init(setting_type const& settings) override;
+	void Init(setting_type const& settings, metadata_type& metadata) override;
 
-	void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const override;
+	void Produce(event_type const& event, product_type& product,
+	             setting_type const& settings, metadata_type const& metadata) const override;
 
 	public:
 	enum class MuonEnergyCorrection : int
@@ -38,8 +38,8 @@ public:
 protected:
 
 	// Can be overwritten for analysis-specific use cases
-	virtual void AdditionalCorrections(KMuon* muon, KappaEvent const& event,
-	                                   KappaProduct& product, KappaSettings const& settings) const;
+	virtual void AdditionalCorrections(KMuon* muon, event_type const& event, product_type& product,
+	                                   setting_type const& settings, metadata_type const& metadata) const;
 private:
 	MuonEnergyCorrection muonEnergyCorrection;
 	rochcor2015 *rmcor2015;

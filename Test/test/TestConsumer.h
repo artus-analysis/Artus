@@ -13,25 +13,23 @@ public:
 		return "test_consumer";
 	}
 
-	void Init(TestSettings const& setting) override {
+	void Init(TestSettings const& setting, TestMetadata& metadata) override {
 		++iInit;
 	}
 
-	void Finish(TestSettings const& setting) override {
+	void Finish(TestSettings const& setting, TestMetadata const& metadata) override {
 		++iFinish;
 	}
 
-	void ProcessFilteredEvent(TestEvent const& event,
-			TestProduct const& product,
-			TestSettings const& setting) override
+	void ProcessFilteredEvent(TestEvent const& event, TestProduct const& product,
+			TestSettings const& setting, TestMetadata const& metadata) override
 	{
 		++iProcessFilteredEvent;
 	}
 
 	// this method is called for all events
-	void ProcessEvent(TestEvent const& event,
-			TestProduct const& product,
-			TestSettings const& setting,
+	void ProcessEvent(TestEvent const& event, TestProduct const& product,
+			TestSettings const& setting, TestMetadata const& metadata,
 			FilterResult& result) override
 	{
 		if ( bCheckInProcessEvent ) {
@@ -44,7 +42,7 @@ public:
 		fres = result;
 	}
 
-	void Process(TestSettings const& setting) override {
+	void Process(TestSettings const& setting, TestMetadata const& metadata) override {
 		++iProcess;
 	}
 
@@ -76,14 +74,13 @@ public:
 		return "test_consumer_local";
 	}
 
-	void ProcessFilteredEvent(TestEvent const& event,
-			TestProduct const& product,
-			TestSettings const& setting) override
+	void ProcessFilteredEvent(TestEvent const& event, TestProduct const& product,
+			TestSettings const& setting, TestMetadata const& metadata) override
 	{
 		m_iLocalValue = product.iLocalProduct;
 	}
 
-	void Finish (TestSettings const& setting) override {}
+	void Finish (TestSettings const& setting, TestMetadata const& metadata) override {}
 
 	void CheckValue(int compareTo ) {
 		BOOST_CHECK_EQUAL( m_iLocalValue, compareTo );

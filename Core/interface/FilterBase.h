@@ -11,6 +11,7 @@
 
 #include "Artus/Core/interface/ProductBase.h"
 #include "Artus/Core/interface/EventBase.h"
+#include "Artus/Core/interface/MetadataBase.h"
 #include "Artus/Configuration/interface/SettingsBase.h"
 
 
@@ -33,10 +34,12 @@ public:
 
 protected:
 
-	virtual bool baseDoesEventPass(EventBase const& event, ProductBase const& product, SettingsBase const& settings) const = 0;
-	virtual void baseOnRun(EventBase const& event, SettingsBase const& settings) = 0;
-	virtual void baseOnLumi(EventBase const& event, SettingsBase const& settings) = 0;
-	virtual void baseInit(SettingsBase const& settings) = 0;
+	virtual void baseInit(SettingsBase const& settings, MetadataBase& metadata) = 0;
+	
+	virtual void baseOnRun(EventBase const& event, SettingsBase const& settings, MetadataBase const& metadata) = 0;
+	virtual void baseOnLumi(EventBase const& event, SettingsBase const& settings, MetadataBase const& metadata) = 0;
+	
+	virtual bool baseDoesEventPass(EventBase const& event, ProductBase const& product, SettingsBase const& settings, MetadataBase const& metadata) const = 0;
 
 };
 
@@ -45,13 +48,15 @@ class FilterBaseAccess
 public:
 	explicit FilterBaseAccess(FilterBaseUntemplated& filter);
 
-	bool DoesEventPass(EventBase const& event, ProductBase const& product, SettingsBase const& settings) const;
-	void Init(SettingsBase const& settings);
-	void OnLumi(EventBase const& event, SettingsBase const& settings) const;
-	void OnRun(EventBase const& event, SettingsBase const& settings) const;
+	void Init(SettingsBase const& settings, MetadataBase& metadata);
+	
+	void OnLumi(EventBase const& event, SettingsBase const& settings, MetadataBase const& metadata) const;
+	void OnRun(EventBase const& event, SettingsBase const& settings, MetadataBase const& metadata) const;
+	
+	bool DoesEventPass(EventBase const& event, ProductBase const& product, SettingsBase const& settings, MetadataBase const& metadata) const;
 
 private:
-	FilterBaseUntemplated & m_filter;
+	FilterBaseUntemplated& m_filter;
 };
 
 template<class TTypes>
@@ -62,28 +67,29 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
+	typedef typename TTypes::metadata_type metadata_type;
 
 	virtual ~FilterBase()
 	{
 	}
 
-	// initialise global pre-filters
-	virtual void Init(setting_type const& settings)
+	virtual void Init(setting_type const& settings, metadata_type& metadata)
 	{
 		LOG(DEBUG) << "Initialize filter \"" << this->GetFilterId() << "\".";
 	}
+	
+	virtual void OnLumi(event_type const& event, setting_type const& settings, metadata_type const& metadata)
+	{
+	}
+	
+	virtual void OnRun(event_type const& event, setting_type const& settings, metadata_type const& metadata)
+	{
+	}
 
-	// process global event
-	virtual bool DoesEventPass(event_type const& event, product_type const& product, setting_type const& settings) const
+	virtual bool DoesEventPass(event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) const
 	{
 		LOG(FATAL) << "DoesEventPassGlobal function for filter \"" << this->GetFilterId() << "\" is not implemented!";
 		return false;
-	}
-	virtual void OnLumi(event_type const& event, setting_type const& settings)
-	{
-	}
-	virtual void OnRun(event_type const& event, setting_type const& settings)
-	{
 	}
 
 	virtual std::string ToString(bool bVerbose = false)
@@ -98,36 +104,40 @@ public:
 
 protected:
 
-	bool baseDoesEventPass(EventBase const& evt, ProductBase const& prod, SettingsBase const& settings) const override
+	void baseInit(SettingsBase const& settings, MetadataBase& metadata) override
 	{
-		auto const& specEvent = static_cast<event_type const&>(evt);
-		auto const& specProd = static_cast<product_type const&>(prod);
-		auto const& specSetting = static_cast<setting_type const&>(settings);
+		setting_type const& specSettings = static_cast<setting_type const&>(settings);
+		metadata_type& specMetadata = static_cast<metadata_type&>(metadata);
 
-		return DoesEventPass(specEvent, specProd, specSetting);
+		this->Init(specSettings, specMetadata);
 	}
 
-	void baseInit(SettingsBase const& settings) override
+	void baseOnLumi(EventBase const& evt, SettingsBase const& settings, MetadataBase const& metadata) override
 	{
-		auto const& specSettings = static_cast<setting_type const&>(settings);
+		event_type const& specEvent = static_cast<event_type const&>(evt);
+		setting_type const& specSettings = static_cast<setting_type const&>(settings);
+		metadata_type const& specMetadata = static_cast<metadata_type const&>(metadata);
 
-		this->Init(specSettings);
+		OnLumi(specEvent, specSettings, specMetadata);
 	}
 
-	void baseOnLumi(EventBase const& evt, SettingsBase const& settings) override
+	void baseOnRun(EventBase const& evt, SettingsBase const& settings, MetadataBase const& metadata) override
 	{
-		auto const& specEvent = static_cast<event_type const&>(evt);
-		auto const& specSetting = static_cast<setting_type const&>(settings);
+		event_type const& specEvent = static_cast<event_type const&>(evt);
+		setting_type const& specSettings = static_cast<setting_type const&>(settings);
+		metadata_type const& specMetadata = static_cast<metadata_type const&>(metadata);
 
-		OnLumi(specEvent, specSetting);
+		OnRun(specEvent, specSettings, specMetadata);
 	}
 
-	void baseOnRun(EventBase const& evt, SettingsBase const& settings) override
+	bool baseDoesEventPass(EventBase const& evt, ProductBase const& prod, SettingsBase const& settings, MetadataBase const& metadata) const override
 	{
-		auto const& specEvent = static_cast<event_type const&>(evt);
-		auto const& specSetting = static_cast<setting_type const&>(settings);
+		event_type const& specEvent = static_cast<event_type const&>(evt);
+		product_type const& specProduct = static_cast<product_type const&>(prod);
+		setting_type const& specSettings = static_cast<setting_type const&>(settings);
+		metadata_type const& specMetadata = static_cast<metadata_type const&>(metadata);
 
-		OnRun(specEvent, specSetting);
+		return DoesEventPass(specEvent, specProduct, specSettings, specMetadata);
 	}
 
 };

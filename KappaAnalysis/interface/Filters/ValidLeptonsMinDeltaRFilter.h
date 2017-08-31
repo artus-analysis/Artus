@@ -29,7 +29,7 @@ public:
 	}
 
 	bool DoesEventPass(event_type const& event, product_type const& product,
-	                           setting_type const& settings) const override
+	                   setting_type const& settings, metadata_type const& metadata) const override
 	{
 		if ((product.*m_validLeptons).size() >= 2)
 		{
@@ -61,7 +61,7 @@ public:
 	};
 
 private:
-	std::vector<TValidObject*> KappaProduct::*m_validLeptons;
+	std::vector<TValidObject*> product_type::*m_validLeptons;
 	float (setting_type::*GetMinDeltaRValidLeptons)(void) const;
 };
 

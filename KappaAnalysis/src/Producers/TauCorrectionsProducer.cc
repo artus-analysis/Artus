@@ -7,13 +7,13 @@ std::string TauCorrectionsProducer::GetProducerId() const {
 	return "TauCorrectionsProducer";
 }
 
-void TauCorrectionsProducer::Init(KappaSettings const& settings)
+void TauCorrectionsProducer::Init(setting_type const& settings, metadata_type& metadata)
 {
-	KappaProducerBase::Init(settings);
+	KappaProducerBase::Init(settings, metadata);
 }
 
-void TauCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                     KappaSettings const& settings) const
+void TauCorrectionsProducer::Produce(event_type const& event, product_type& product,
+                                     setting_type const& settings, metadata_type const& metadata) const
 {
 	assert(event.m_taus);
 	
@@ -61,7 +61,9 @@ void TauCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& prod
 	
 		// perform possible analysis-specific corrections
 		if (!settings.GetCorrectOnlyRealTaus() || (settings.GetCorrectOnlyRealTaus() && isRealTau))
-			AdditionalCorrections(tau->get(), event, product, settings);
+		{
+			AdditionalCorrections(tau->get(), event, product, settings, metadata);
+		}
 
 		// make sure to also save the corrected lepton and the matched genParticle in the map
 		// if we match genParticles to all leptons
@@ -83,8 +85,8 @@ void TauCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& prod
 	          { return tau1->p4.Pt() > tau2->p4.Pt(); });
 }
 
-void TauCorrectionsProducer::AdditionalCorrections(KTau* tau, KappaEvent const& event,
-	                                   KappaProduct& product, KappaSettings const& settings) const
+void TauCorrectionsProducer::AdditionalCorrections(KTau* tau, event_type const& event, product_type& product,
+                                                   setting_type const& settings, metadata_type const& metadata) const
 {
 }
 

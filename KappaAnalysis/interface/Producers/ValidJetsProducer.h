@@ -11,11 +11,11 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
+#include "Artus/KappaAnalysis/interface/KappaTypes.h"
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
 #include "Artus/KappaAnalysis/interface/Consumers/KappaLambdaNtupleConsumer.h"
 #include "Artus/Utility/interface/Utility.h"
-#include "Artus/KappaAnalysis/interface/KappaProduct.h"
 
 /**
    \brief Producer for valid jets.
@@ -39,21 +39,21 @@ class ValidJetsProducerBase: public KappaProducerBase, public ValidPhysicsObject
 
 public:
 
-	ValidJetsProducerBase(std::vector<TJet>* KappaEvent::*jets,
-	                      std::vector<std::shared_ptr<TJet> > KappaProduct::*correctJets,
-	                      std::vector<TValidJet*> KappaProduct::*validJets) :
+	ValidJetsProducerBase(std::vector<TJet>* KappaTypes::event_type::*jets,
+	                      std::vector<std::shared_ptr<TJet> > KappaTypes::product_type::*correctJets,
+	                      std::vector<TValidJet*> KappaTypes::product_type::*validJets) :
 		KappaProducerBase(),
-		ValidPhysicsObjectTools<KappaTypes, TValidJet>(&KappaSettings::GetJetLowerPtCuts,
-		                                               &KappaSettings::GetJetUpperAbsEtaCuts,
+		ValidPhysicsObjectTools<KappaTypes, TValidJet>(&KappaTypes::setting_type::GetJetLowerPtCuts,
+		                                               &KappaTypes::setting_type::GetJetUpperAbsEtaCuts,
 		                                               validJets),
 		m_basicJetsMember(jets),
 		m_correctedJetsMember(correctJets)
 	{
 	}
 
-	void Init(KappaSettings const& settings) override
+	void Init(KappaTypes::setting_type const& settings, KappaTypes::metadata_type& metadata) override
 	{
-		KappaProducerBase::Init(settings);
+		KappaProducerBase::Init(settings, metadata);
 		ValidPhysicsObjectTools<KappaTypes, TValidJet>::Init(settings);
 
 		validJetsInput = KappaEnumTypes::ToValidJetsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidJetsInput())));
@@ -66,130 +66,130 @@ public:
 			LOG(WARNING) << "This jet ID version is not valid for 73X samples.";
 
 		// add possible quantities for the lambda ntuples consumers
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nJets", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "nJets", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size();
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nJets20",[this](KappaEvent const& event, KappaProduct const& product) {
-			return KappaProduct::GetNJetsAbovePtThreshold(product.m_validJets, 20.0);
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "nJets20",[this](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
+			return KappaTypes::product_type::GetNJetsAbovePtThreshold(product.m_validJets, 20.0);
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nJets30",[this](KappaEvent const& event, KappaProduct const& product) {
-			return KappaProduct::GetNJetsAbovePtThreshold(product.m_validJets, 30.0);
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "nJets30",[this](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
+			return KappaTypes::product_type::GetNJetsAbovePtThreshold(product.m_validJets, 30.0);
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nJets50",[this](KappaEvent const& event, KappaProduct const& product) {
-			return KappaProduct::GetNJetsAbovePtThreshold(product.m_validJets, 50.0);
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "nJets50",[this](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
+			return KappaTypes::product_type::GetNJetsAbovePtThreshold(product.m_validJets, 50.0);
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nJets80",[this](KappaEvent const& event, KappaProduct const& product) {
-			return KappaProduct::GetNJetsAbovePtThreshold(product.m_validJets, 80.0);
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "nJets80",[this](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
+			return KappaTypes::product_type::GetNJetsAbovePtThreshold(product.m_validJets, 80.0);
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("nJets20Eta2p4",[this](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "nJets20Eta2p4",[this](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
             std::vector<TValidJet*> filteredJets;
 			for (typename std::vector<TValidJet*>::const_iterator jet = (product.m_validJets).begin();
 				 jet != (product.m_validJets).end(); ++jet)
 			{
 				if ((*jet)->p4.Eta() < 2.4) filteredJets.push_back(new TValidJet(*(*jet)));
 			}
-			return KappaProduct::GetNJetsAbovePtThreshold(filteredJets, 20.0);
+			return KappaTypes::product_type::GetNJetsAbovePtThreshold(filteredJets, 20.0);
 		});
 
-		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity("leadingJetLV", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, "leadingJetLV", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 1 ? product.m_validJets.at(0)->p4 : DefaultValues::UndefinedRMFLV;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingJetPt", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "leadingJetPt", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 1 ? product.m_validJets.at(0)->p4.Pt() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingJetEta", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "leadingJetEta", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 1 ? product.m_validJets.at(0)->p4.Eta() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingJetPhi", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "leadingJetPhi", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 1 ? product.m_validJets.at(0)->p4.Phi() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("leadingJetMass", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "leadingJetMass", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 1 ? product.m_validJets.at(0)->p4.mass() : DefaultValues::UndefinedFloat;
 		});
 
-		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity("trailingJetLV", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, "trailingJetLV", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 2 ? product.m_validJets.at(1)->p4 : DefaultValues::UndefinedRMFLV;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingJetPt", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "trailingJetPt", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 2 ? product.m_validJets.at(1)->p4.Pt() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingJetEta", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "trailingJetEta", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 2 ? product.m_validJets.at(1)->p4.Eta() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingJetPhi", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "trailingJetPhi", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 2 ? product.m_validJets.at(1)->p4.Phi() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("trailingJetMass", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "trailingJetMass", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 2 ? product.m_validJets.at(1)->p4.mass() : DefaultValues::UndefinedFloat;
 		});
 
-		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity("thirdJetLV", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, "thirdJetLV", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 3 ? product.m_validJets.at(2)->p4 : DefaultValues::UndefinedRMFLV;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("thirdJetPt", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "thirdJetPt", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 3 ? product.m_validJets.at(2)->p4.Pt() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("thirdJetEta", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "thirdJetEta", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 3 ? product.m_validJets.at(2)->p4.Eta() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("thirdJetPhi", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "thirdJetPhi", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 3 ? product.m_validJets.at(2)->p4.Phi() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("thirdJetMass", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "thirdJetMass", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 3 ? product.m_validJets.at(2)->p4.mass() : DefaultValues::UndefinedFloat;
 		});
 		
-		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity("fourthJetLV", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, "fourthJetLV", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 4 ? product.m_validJets.at(3)->p4 : DefaultValues::UndefinedRMFLV;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("fourthJetPt", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "fourthJetPt", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 4 ? product.m_validJets.at(3)->p4.Pt() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("fourthJetEta", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "fourthJetEta", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 4 ? product.m_validJets.at(3)->p4.Eta() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("fourthJetPhi", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "fourthJetPhi", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 4 ? product.m_validJets.at(3)->p4.Phi() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("fourthJetMass", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "fourthJetMass", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 4 ? product.m_validJets.at(3)->p4.mass() : DefaultValues::UndefinedFloat;
 		});
 		
-		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity("fifthJetLV", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, "fifthJetLV", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 5 ? product.m_validJets.at(4)->p4 : DefaultValues::UndefinedRMFLV;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("fifthJetPt", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "fifthJetPt", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 5 ? product.m_validJets.at(4)->p4.Pt() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("fifthJetEta", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "fifthJetEta", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 5 ? product.m_validJets.at(4)->p4.Eta() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("fifthJetPhi", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "fifthJetPhi", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 5 ? product.m_validJets.at(4)->p4.Phi() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("fifthJetMass", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "fifthJetMass", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 5 ? product.m_validJets.at(4)->p4.mass() : DefaultValues::UndefinedFloat;
 		});
 		
-		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity("sixthJetLV", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, "sixthJetLV", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 6 ? product.m_validJets.at(5)->p4 : DefaultValues::UndefinedRMFLV;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("sixthJetPt", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "sixthJetPt", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 6 ? product.m_validJets.at(5)->p4.Pt() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("sixthJetEta", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "sixthJetEta", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 6 ? product.m_validJets.at(5)->p4.Eta() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("sixthJetPhi", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "sixthJetPhi", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 6 ? product.m_validJets.at(5)->p4.Phi() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity("sixthJetMass", [](KappaEvent const& event, KappaProduct const& product) {
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "sixthJetMass", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product) {
 			return product.m_validJets.size() >= 6 ? product.m_validJets.at(5)->p4.mass() : DefaultValues::UndefinedFloat;
 		});
 	}
 
-	void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const override
+	void Produce(KappaTypes::event_type const& event, KappaTypes::product_type& product,
+	             KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) const override
 	{
 		assert((event.*m_basicJetsMember));
 
@@ -234,7 +234,7 @@ public:
 			validJet = validJet && this->PassKinematicCuts(*jet, event, product);
 
 			// check possible analysis-specific criteria
-			validJet = validJet && AdditionalCriteria(*jet, event, product, settings);
+			validJet = validJet && AdditionalCriteria(*jet, event, product, settings, metadata);
 
 			if (validJet)
 				product.m_validJets.push_back(*jet);
@@ -321,16 +321,16 @@ public:
 
 protected:
 	// Can be overwritten for analysis-specific use cases
-	virtual bool AdditionalCriteria(TJet* jet, KappaEvent const& event,
-	                                KappaProduct& product, KappaSettings const& settings) const
+	virtual bool AdditionalCriteria(TJet* jet, KappaTypes::event_type const& event, KappaTypes::product_type& product,
+	                                KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) const
 	{
 		return true;
 	}
 
 
 private:
-	std::vector<TJet>* KappaEvent::*m_basicJetsMember;
-	std::vector<std::shared_ptr<TJet> > KappaProduct::*m_correctedJetsMember;
+	std::vector<TJet>* KappaTypes::event_type::*m_basicJetsMember;
+	std::vector<std::shared_ptr<TJet> > KappaTypes::product_type::*m_correctedJetsMember;
 
 	KappaEnumTypes::ValidJetsInput validJetsInput;
 	KappaEnumTypes::JetIDVersion jetIDVersion;
@@ -368,12 +368,12 @@ class ValidTaggedJetsProducer: public ValidJetsProducerBase<KJet, KBasicJet>
 public:
 	ValidTaggedJetsProducer();
 	std::string GetProducerId() const override;
-	void Init(KappaSettings const& settings) override;
+	void Init(KappaTypes::setting_type const& settings, KappaTypes::metadata_type& metadata) override;
 
 protected:
 	// Can be overwritten for analysis-specific use cases
-	virtual bool AdditionalCriteria(KJet* jet, KappaEvent const& event,
-	                                KappaProduct& product, KappaSettings const& settings) const;
+	virtual bool AdditionalCriteria(KJet* jet, KappaTypes::event_type const& event, KappaTypes::product_type& product,
+	                                KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) const;
 
 private:
 	std::map<size_t, std::vector<std::string> > puJetIdsByIndex;

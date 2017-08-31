@@ -15,5 +15,5 @@ class TraxEventProvider: public RootEventProvider<TraxTypes> {
 public:
 	explicit TraxEventProvider(std::vector<std::string> const& fileNames);
 
-	virtual void WireEvent(TraxSettings const& settings) override;
+	virtual void WireEvent(setting_type const& settings) override;
 };

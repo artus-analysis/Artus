@@ -11,6 +11,7 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
+#include "Artus/KappaAnalysis/interface/KappaTypes.h"
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
@@ -21,7 +22,7 @@
    \brief GlobalProducer, for valid muons.
 
    Valid muons pass the tightId requirement of the muon POG. In addition there is a loose
-   isolation requirement. Two collectons are written into the KappaProduct for valid and
+   isolation requirement. Two collectons are written into the product_type for valid and
    invalid muons.
 
    This Producer needs the following config tags:
@@ -42,6 +43,7 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
+	typedef typename TTypes::metadata_type metadata_type;
 
 	enum class ValidMuonsInput : int
 	{
@@ -134,8 +136,8 @@ public:
 	{
 	}
 
-	void Init(setting_type const& settings) override {
-		ProducerBase<TTypes>::Init(settings);
+	void Init(setting_type const& settings, metadata_type& metadata) override {
+		ProducerBase<TTypes>::Init(settings, metadata);
 		ValidPhysicsObjectTools<TTypes, KMuon>::Init(settings);
 
 		validMuonsInput = ToValidMuonsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidMuonsInput())));
@@ -145,22 +147,22 @@ public:
 		muonIso = ToMuonIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetMuonIso)())));
 
 		// add possible quantities for the lambda ntuples consumers
-		LambdaNtupleConsumer<TTypes>::AddIntQuantity("nMuons", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddIntQuantity(metadata, "nMuons", [](event_type const& event, product_type const& product) {
 			return product.m_validMuons.size();
 		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuonPt", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "leadingMuonPt", [](event_type const& event, product_type const& product) {
 			return product.m_validMuons.size() >= 1 ? product.m_validMuons[0]->p4.Pt() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuonEta", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "leadingMuonEta", [](event_type const& event, product_type const& product) {
 			return product.m_validMuons.size() >= 1 ? product.m_validMuons[0]->p4.Eta() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("trailingMuonPt", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "trailingMuonPt", [](event_type const& event, product_type const& product) {
 			return product.m_validMuons.size() >= 2 ? product.m_validMuons[1]->p4.Pt() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("trailingMuonEta", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "trailingMuonEta", [](event_type const& event, product_type const& product) {
 			return product.m_validMuons.size() >= 2 ? product.m_validMuons[1]->p4.Eta() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuMinusPt", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "leadingMuMinusPt", [](event_type const& event, product_type const& product) {
 			for (unsigned int i = 0; i < product.m_validMuons.size(); ++i)
 			{
 				if (product.m_validMuons[i]->charge() < 0)
@@ -170,7 +172,7 @@ public:
 			}
 			return DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuPlusPt", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "leadingMuPlusPt", [](event_type const& event, product_type const& product) {
 			for (unsigned int i = 0; i < product.m_validMuons.size(); ++i)
 			{
 				if (product.m_validMuons[i]->charge() > 0)
@@ -180,7 +182,7 @@ public:
 			}
 			return DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuMinusEta", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "leadingMuMinusEta", [](event_type const& event, product_type const& product) {
 			for (unsigned int i = 0; i < product.m_validMuons.size(); ++i)
 			{
 				if (product.m_validMuons[i]->charge() < 0)
@@ -190,7 +192,7 @@ public:
 			}
 			return DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity("leadingMuPlusEta", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "leadingMuPlusEta", [](event_type const& event, product_type const& product) {
 			for (unsigned int i = 0; i < product.m_validMuons.size(); ++i)
 			{
 				if (product.m_validMuons[i]->charge() > 0)
@@ -203,7 +205,7 @@ public:
 	}
 
 	void Produce(event_type const& event, product_type& product,
-	                     setting_type const& settings) const override
+	             setting_type const& settings, metadata_type const& metadata) const override
 	{
 		assert(event.m_muons);
 
@@ -316,7 +318,7 @@ public:
 			validMuon = validMuon && this->PassKinematicCuts(*muon, event, product);
 
 			// check possible analysis-specific criteria
-			validMuon = validMuon && AdditionalCriteria(*muon, event, product, settings);
+			validMuon = validMuon && AdditionalCriteria(*muon, event, product, settings, metadata);
 
 			if (validMuon)
 			{
@@ -340,8 +342,8 @@ protected:
 	MuonIso muonIso;
 
 	// Can be overwritten for analysis-specific use cases
-	virtual bool AdditionalCriteria(KMuon* muon, event_type const& event,
-	                                product_type& product, setting_type const& settings) const
+	virtual bool AdditionalCriteria(KMuon* muon, event_type const& event, product_type& product,
+	                                setting_type const& settings, metadata_type const& metadata) const
 	{
 		bool validMuon = true;
 		return validMuon;

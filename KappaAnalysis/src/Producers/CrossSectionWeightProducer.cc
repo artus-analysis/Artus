@@ -6,9 +6,8 @@ std::string CrossSectionWeightProducer::GetProducerId() const
 	return "CrossSectionWeightProducer";
 }
 
-void CrossSectionWeightProducer::Produce( KappaEvent const& event,
-			KappaProduct & product,
-			KappaSettings const& settings) const
+void CrossSectionWeightProducer::Produce(event_type const& event, product_type & product,
+                                         setting_type const& settings, metadata_type const& metadata) const
 {
 	assert(event.m_genRunInfo);
 	

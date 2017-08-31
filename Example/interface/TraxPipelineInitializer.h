@@ -4,12 +4,10 @@
 #include "TraxTypes.h"
 
 #include "TraxPipelineSettings.h"
-#include "TraxEvent.h"
-#include "TraxProduct.h"
 
 class TraxPipelineInitializer: public PipelineInitilizerBase<TraxTypes > {
 public:
 
 	void InitPipeline(TraxPipeline * pLine,
-			TraxSettings const& pset) const override;
+			setting_type const& settings, metadata_type& metadata) const override;
 };

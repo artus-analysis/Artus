@@ -9,9 +9,9 @@ std::string HCALNoiseFilter::GetFilterId() const {
 	return "HCALNoiseFilter";
 }
 
-void HCALNoiseFilter::Init(setting_type const& settings)
+void HCALNoiseFilter::Init(setting_type const& settings, metadata_type& metadata)
 {
-	FilterBase<KappaTypes>::Init(settings);
+	FilterBase<KappaTypes>::Init(settings, metadata);
 
 	minRatio = -999.0;
 	maxRatio = 999.0;
@@ -28,8 +28,8 @@ void HCALNoiseFilter::Init(setting_type const& settings)
 	useTS4TS5 = true;
 }
 
-bool HCALNoiseFilter::DoesEventPass(KappaEvent const& event, KappaProduct const& product,
-                                               KappaSettings const& settings) const 
+bool HCALNoiseFilter::DoesEventPass(event_type const& event, product_type const& product,
+                                    setting_type const& settings, metadata_type const& metadata) const 
 {
 	assert(event.m_hcalNoiseSummary);
 	bool pass;

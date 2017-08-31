@@ -8,8 +8,8 @@ std::string PUWeightProducer::GetProducerId() const {
 	return "PUWeightProducer";
 }
 
-void PUWeightProducer::Init(KappaSettings const& settings) {
-	KappaProducerBase::Init(settings);
+void PUWeightProducer::Init(setting_type const& settings, metadata_type& metadata) {
+	KappaProducerBase::Init(settings, metadata);
 
 	const std::string histogramName = "pileup";
 	LOG(DEBUG) << "\tLoading pile-up weights from files...";
@@ -27,8 +27,8 @@ void PUWeightProducer::Init(KappaSettings const& settings) {
 	file.Close();
 }
 
-void PUWeightProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                     KappaSettings const& settings) const
+void PUWeightProducer::Produce(event_type const& event, product_type& product,
+                               setting_type const& settings, metadata_type const& metadata) const
 {
 	assert(event.m_genEventInfo != nullptr);
 

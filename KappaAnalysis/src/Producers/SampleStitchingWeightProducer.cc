@@ -10,8 +10,10 @@ std::string SampleStitchingWeightProducer::GetProducerId() const
 	return "SampleStitchingWeightProducer";
 }
 
-void SampleStitchingWeightProducer::Init(KappaSettings const& settings)
+void SampleStitchingWeightProducer::Init(setting_type const& settings, metadata_type& metadata)
 {
+	KappaProducerBase::Init(settings, metadata);
+	
 	stitchingWeightsByIndex = Utility::ParseMapTypes<size_t, double>(
 			Utility::ParseVectorToMap(settings.GetStitchingWeights()),
 			stitchingWeightsByName
@@ -22,11 +24,8 @@ void SampleStitchingWeightProducer::Init(KappaSettings const& settings)
 	);
 }
 
-void SampleStitchingWeightProducer::Produce(
-		KappaEvent const& event,
-		KappaProduct & product,
-		KappaSettings const& settings
-) const
+void SampleStitchingWeightProducer::Produce(event_type const& event, product_type & product,
+                                            setting_type const& settings, metadata_type const& metadata) const
 {
 	assert(event.m_genEventInfo != nullptr);
 	

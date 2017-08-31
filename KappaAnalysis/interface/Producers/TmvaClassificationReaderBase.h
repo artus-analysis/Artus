@@ -6,6 +6,7 @@
 
 #include <TMVA/Reader.h>
 
+#include "Artus/KappaAnalysis/interface/KappaTypes.h"
 #include "Artus/Core/interface/ProducerBase.h"
 #include "Artus/KappaAnalysis/interface/Consumers/KappaLambdaNtupleConsumer.h"
 #include "Artus/Utility/interface/DefaultValues.h"
@@ -23,7 +24,7 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
-	
+	typedef typename TTypes::metadata_type metadata_type;
 	typedef std::function<float(event_type const&, product_type const&)> float_extractor_lambda;
 	
 	static double GetMvaOutput(std::string const& methodName, std::vector<double> const& mvaOutputs)
@@ -44,9 +45,9 @@ public:
 	{
 	}
 
-	void Init(setting_type const& settings) override
+	void Init(setting_type const& settings, metadata_type& metadata) override
 	{
-		ProducerBase<TTypes>::Init(settings);
+		ProducerBase<TTypes>::Init(settings, metadata);
 		
 		// construct extractors vector
 		m_inputExtractors.clear();
@@ -59,13 +60,13 @@ public:
 					  [](std::string s) { return boost::algorithm::trim_copy(s); });
 			std::string lambdaQuantity = splitted.front();
 			
-			if (LambdaNtupleConsumer<TTypes>::GetFloatQuantities().count(lambdaQuantity) > 0)
+			if (metadata.m_commonFloatQuantities.count(lambdaQuantity) > 0)
 			{
-				m_inputExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetFloatQuantities(), lambdaQuantity));
+				m_inputExtractors.push_back(SafeMap::Get(metadata.m_commonFloatQuantities, lambdaQuantity));
 			}
-			else if(LambdaNtupleConsumer<TTypes>::GetIntQuantities().count(lambdaQuantity) > 0)
+			else if(metadata.m_commonIntQuantities.count(lambdaQuantity) > 0)
 			{
-				m_inputExtractors.push_back(SafeMap::Get(LambdaNtupleConsumer<TTypes>::GetIntQuantities(), lambdaQuantity));
+				m_inputExtractors.push_back(SafeMap::Get(metadata.m_commonIntQuantities, lambdaQuantity));
 			}
 			else
 			{
@@ -93,7 +94,7 @@ public:
 	}
 
 	void Produce(event_type const& event, product_type& product,
-						 setting_type const& settings) const override
+	             setting_type const& settings, metadata_type const& metadata) const override
 	{
 		// construct and fill input vector
 		std::vector<double> tmvaInputs(m_inputExtractors.size());

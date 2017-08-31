@@ -8,9 +8,9 @@ std::string MultiTmvaClassificationReader::GetProducerId() const
 }
 
 MultiTmvaClassificationReader::MultiTmvaClassificationReader() :
-	TmvaClassificationMultiReaderBase(&KappaSettings::GetTmvaInputQuantities,
-										&KappaSettings::GetTmvaMethods,
-										&KappaSettings::GetTmvaWeights,
-										&KappaProduct::m_discriminators)
+	TmvaClassificationMultiReaderBase(&setting_type::GetTmvaInputQuantities,
+										&setting_type::GetTmvaMethods,
+										&setting_type::GetTmvaWeights,
+										&product_type::m_discriminators)
 {
 }

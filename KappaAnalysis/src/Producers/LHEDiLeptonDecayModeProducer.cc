@@ -11,49 +11,49 @@ std::string LHEDiLeptonDecayModeProducer::GetProducerId() const {
 	return "LHEDiLeptonDecayModeProducer";
 }
 
-void LHEDiLeptonDecayModeProducer::Init(KappaSettings const& settings)
+void LHEDiLeptonDecayModeProducer::Init(setting_type const& settings, metadata_type& metadata)
 {
-	ProducerBase<KappaTypes>::Init(settings);
+	ProducerBase<KappaTypes>::Init(settings, metadata);
 
 	// add possible quantities for the lambda ntuples consumers
-	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("lheZtoEM", [](KappaEvent const& event, KappaProduct const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, "lheZtoEM", [](event_type const& event, product_type const& product)
 	{
 		return (product.m_lheDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::EM);
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("lheZtoET", [](KappaEvent const& event, KappaProduct const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, "lheZtoET", [](event_type const& event, product_type const& product)
 	{
 		return (product.m_lheDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::ET);
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("lheZtoMT", [](KappaEvent const& event, KappaProduct const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, "lheZtoMT", [](event_type const& event, product_type const& product)
 	{
 		return (product.m_lheDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::MT);
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("lheZtoEE", [](KappaEvent const& event, KappaProduct const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, "lheZtoEE", [](event_type const& event, product_type const& product)
 	{
 		return (product.m_lheDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::EE);
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("lheZtoMM", [](KappaEvent const& event, KappaProduct const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, "lheZtoMM", [](event_type const& event, product_type const& product)
 	{
 		return (product.m_lheDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::MM);
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("lheZtoTT", [](KappaEvent const& event, KappaProduct const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, "lheZtoTT", [](event_type const& event, product_type const& product)
 	{
 		return (product.m_lheDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::TT);
 	});
 
-	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity("lheZtoLL", [](KappaEvent const& event, KappaProduct const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, "lheZtoLL", [](event_type const& event, product_type const& product)
 	{
 		return ((product.m_lheDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::MM) || (product.m_lheDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::EE) || (product.m_lheDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::EM));
 	});
 	
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("lheDiLeptonDecayMode", [](KappaEvent const& event, KappaProduct const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "lheDiLeptonDecayMode", [](event_type const& event, product_type const& product)
 	{
 		return Utility::ToUnderlyingValue(product.m_lheDiLeptonDecayMode);
 	});
 }
 
-void LHEDiLeptonDecayModeProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                                           KappaSettings const& settings) const
+void LHEDiLeptonDecayModeProducer::Produce(event_type const& event, product_type& product,
+                                           setting_type const& settings, metadata_type const& metadata) const
 {
 	product.m_lheDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::NONE;
 
