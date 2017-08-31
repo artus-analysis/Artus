@@ -11,17 +11,17 @@
 		return "JsonFilter";
 	}
 
-	void JsonFilter::Init(KappaSettings const& settings)
+	void JsonFilter::Init(setting_type const& settings, metadata_type& metadata)
 	{
-		FilterBase<KappaTypes>::Init(settings);
+		FilterBase<KappaTypes>::Init(settings, metadata);
 		
 		m_runLumiSelector = RunLumiSelector(settings.GetJsonFiles(),
 		                                    settings.GetPassRunLow(),
 		                                    settings.GetPassRunHigh());
 	}
 
-	bool JsonFilter::DoesEventPass(KappaEvent const& event, KappaProduct const& product,
-	                           KappaSettings const& settings) const
+	bool JsonFilter::DoesEventPass(event_type const& event, product_type const& product,
+	                               setting_type const& settings, metadata_type const& metadata) const
 	{
 		assert(event.m_eventInfo);
 		

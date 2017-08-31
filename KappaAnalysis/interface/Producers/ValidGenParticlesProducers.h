@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include "Artus/KappaAnalysis/interface/KappaTypes.h"
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/KappaAnalysis/interface/Utility/ValidPhysicsObjectTools.h"
 
@@ -14,33 +15,29 @@ class ValidGenParticlesProducer: public ProducerBase<KappaTypes>, public ValidPh
 {
 public:
 
-	typedef typename KappaTypes::event_type event_type;
-	typedef typename KappaTypes::product_type product_type;
-	typedef typename KappaTypes::setting_type setting_type;
-	
-	ValidGenParticlesProducer(std::vector<KGenParticle*> product_type::*genParticles,
+	ValidGenParticlesProducer(std::vector<KGenParticle*> KappaTypes::product_type::*genParticles,
 	                          int absPdgId,
-	                          std::vector<KGenParticle*> product_type::*validLeptons,
-	                          std::vector<std::string>& (setting_type::*GetLowerPtCuts)(void) const,
-	                          std::vector<std::string>& (setting_type::*GetUpperAbsEtaCuts)(void) const,
+	                          std::vector<KGenParticle*> KappaTypes::product_type::*validLeptons,
+	                          std::vector<std::string>& (KappaTypes::setting_type::*GetLowerPtCuts)(void) const,
+	                          std::vector<std::string>& (KappaTypes::setting_type::*GetUpperAbsEtaCuts)(void) const,
 	                          std::string name);
 
-	void Init(setting_type const& settings) override;
+	void Init(KappaTypes::setting_type const& settings, KappaTypes::metadata_type& metadata) override;
 
-	void Produce(event_type const& event, product_type& product,
-	             setting_type const& settings) const override;
+	void Produce(KappaTypes::event_type const& event, KappaTypes::product_type& product,
+	             KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) const override;
 
 protected:
-	std::vector<KGenParticle*> product_type::*m_validLeptonsMember;
+	std::vector<KGenParticle*> KappaTypes::product_type::*m_validLeptonsMember;
 	std::string m_name;
 
 private:
-	std::vector<KGenParticle*> product_type::*m_genParticlesMember;
+	std::vector<KGenParticle*> KappaTypes::product_type::*m_genParticlesMember;
 	int m_absPdgId;
 	
 	// Can be overwritten for analysis-specific use cases
-	virtual bool AdditionalCriteria(KGenParticle* genParticle, event_type const& event,
-	                                product_type& product, setting_type const& settings) const;
+	virtual bool AdditionalCriteria(KGenParticle* genParticle, KappaTypes::event_type const& event, KappaTypes::product_type& product,
+	                                KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) const;
 };
 
 
@@ -48,15 +45,11 @@ class ValidGenElectronsProducer: public ValidGenParticlesProducer
 {
 public:
 
-	typedef typename KappaTypes::event_type event_type;
-	typedef typename KappaTypes::product_type product_type;
-	typedef typename KappaTypes::setting_type setting_type;
-	
 	ValidGenElectronsProducer();
 
 	std::string GetProducerId() const override;
 
-	void Init(setting_type const& settings) override;
+	void Init(KappaTypes::setting_type const& settings, KappaTypes::metadata_type& metadata) override;
 };
 
 
@@ -64,15 +57,11 @@ class ValidGenMuonsProducer: public ValidGenParticlesProducer
 {
 public:
 
-	typedef typename KappaTypes::event_type event_type;
-	typedef typename KappaTypes::product_type product_type;
-	typedef typename KappaTypes::setting_type setting_type;
-	
 	ValidGenMuonsProducer();
 
 	std::string GetProducerId() const override;
 
-	void Init(setting_type const& settings) override;
+	void Init(KappaTypes::setting_type const& settings, KappaTypes::metadata_type& metadata) override;
 };
 
 
@@ -80,17 +69,13 @@ class ValidGenTausProducer: public ValidGenParticlesProducer
 {
 public:
 
-	typedef typename KappaTypes::event_type event_type;
-	typedef typename KappaTypes::product_type product_type;
-	typedef typename KappaTypes::setting_type setting_type;
-	
 	ValidGenTausProducer();
 
 	std::string GetProducerId() const override;
 
-	void Init(setting_type const& settings) override;
+	void Init(KappaTypes::setting_type const& settings, KappaTypes::metadata_type& metadata) override;
 	
-	void Produce(event_type const& event, product_type& product,
-	             setting_type const& settings) const override;
+	void Produce(KappaTypes::event_type const& event, KappaTypes::product_type& product,
+	             KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) const override;
 };
 

@@ -20,9 +20,9 @@ std::string MuonCorrectionsProducer::GetProducerId() const {
 	return "MuonCorrectionsProducer";
 }
 
-void MuonCorrectionsProducer::Init(KappaSettings const& settings) 
+void MuonCorrectionsProducer::Init(setting_type const& settings, metadata_type& metadata) 
 {
-	KappaProducerBase::Init(settings);
+	KappaProducerBase::Init(settings, metadata);
 	muonEnergyCorrection = ToMuonEnergyCorrection(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetMuonEnergyCorrection())));
 	if (muonEnergyCorrection == MuonEnergyCorrection::ROCHCORR2015)
 	{
@@ -36,8 +36,8 @@ void MuonCorrectionsProducer::Init(KappaSettings const& settings)
 	random = new TRandom3();
 }
 
-void MuonCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                     KappaSettings const& settings) const
+void MuonCorrectionsProducer::Produce(event_type const& event, product_type& product,
+                                      setting_type const& settings, metadata_type const& metadata) const
 {
 	assert(event.m_muons);
 
@@ -156,7 +156,9 @@ void MuonCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& pro
 		}
 
 		if (!settings.GetCorrectOnlyRealMuons() || (settings.GetCorrectOnlyRealMuons() && isRealMuon))
-			AdditionalCorrections(muon->get(), event, product, settings);
+		{
+			AdditionalCorrections(muon->get(), event, product, settings, metadata);
+		}
 		
 		// make sure to also save the corrected lepton and the matched genParticle in the map
 		// if we match genParticles to all leptons
@@ -180,8 +182,8 @@ void MuonCorrectionsProducer::Produce(KappaEvent const& event, KappaProduct& pro
 
 
 // Can be overwritten for analysis-specific use cases
-void MuonCorrectionsProducer::AdditionalCorrections(KMuon* muon, KappaEvent const& event,
-                                   KappaProduct& product, KappaSettings const& settings) const
+void MuonCorrectionsProducer::AdditionalCorrections(KMuon* muon, event_type const& event, product_type& product,
+                                                    setting_type const& settings, metadata_type const& metadata) const
 {
 	
 }

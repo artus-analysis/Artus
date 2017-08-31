@@ -16,6 +16,7 @@
 #define USE_JEC
 #include "KappaTools/RootTools/interface/JECTools.h"
 
+#include "Artus/KappaAnalysis/interface/KappaTypes.h"
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/Utility/interface/Utility.h"
 
@@ -45,8 +46,8 @@ class JetCorrectionsProducerBase: public KappaProducerBase
 
 public:
 	
-	JetCorrectionsProducerBase(std::vector<TJet>* KappaEvent::*jets,
-	                           std::vector<std::shared_ptr<TJet> > KappaProduct::*correctedJets) :
+	JetCorrectionsProducerBase(std::vector<TJet>* event_type::*jets,
+	                           std::vector<std::shared_ptr<TJet> > product_type::*correctedJets) :
 		KappaProducerBase(),
 		m_basicJetsMember(jets),
 		m_correctedJetsMember(correctedJets)
@@ -58,9 +59,9 @@ public:
 		delete factorizedJetCorrector;
 	}
 
-	void Init(KappaSettings const& settings) override
+	void Init(setting_type const& settings, metadata_type& metadata) override
 	{
-		KappaProducerBase::Init(settings);
+		KappaProducerBase::Init(settings, metadata);
 		
 		// load correction parameters
 		LOG(DEBUG) << "\tLoading JetCorrectorParameters from files...";
@@ -100,8 +101,8 @@ public:
 		}
 	}
 
-	void Produce(KappaEvent const& event, KappaProduct& product,
-	                     KappaSettings const& settings) const override
+	void Produce(event_type const& event, product_type& product,
+	             setting_type const& settings, metadata_type const& metadata) const override
 	{
 		assert((event.*m_basicJetsMember));
 		assert(event.m_pileupDensity);
@@ -143,7 +144,7 @@ public:
 			// No general correction available
 		
 			// perform possible analysis-specific corrections
-			AdditionalCorrections(jet->get(), event, product, settings);
+			AdditionalCorrections(jet->get(), event, product, settings, metadata);
 		}
 		
 		// sort vectors of corrected jets by pt
@@ -155,15 +156,15 @@ public:
 
 protected:
 	// Can be overwritten for analysis-specific use cases
-	virtual void AdditionalCorrections(TJet* jet, KappaEvent const& event,
-	                                   KappaProduct& product, KappaSettings const& settings) const
+	virtual void AdditionalCorrections(TJet* jet, event_type const& event, product_type& product,
+	                                   setting_type const& settings, metadata_type const& metadata) const
 	{
 	}
 
 
 private:
-	std::vector<TJet>* KappaEvent::*m_basicJetsMember;
-	std::vector<std::shared_ptr<TJet> > KappaProduct::*m_correctedJetsMember;
+	std::vector<TJet>* event_type::*m_basicJetsMember;
+	std::vector<std::shared_ptr<TJet> > product_type::*m_correctedJetsMember;
 
 	FactorizedJetCorrector* factorizedJetCorrector = nullptr;
 	JetCorrectionUncertainty* jetCorrectionUncertainty = nullptr;

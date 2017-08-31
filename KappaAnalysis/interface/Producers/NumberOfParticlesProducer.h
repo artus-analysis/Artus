@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Artus/KappaAnalysis/interface/KappaTypes.h"
 #include "Kappa/DataFormats/interface/Kappa.h"
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"
 #include "Artus/Consumer/interface/LambdaNtupleConsumer.h"
@@ -13,7 +14,13 @@ class NumberOfParticlesProducer : public KappaProducerBase
 {
 	public:
 
-		void Init(KappaSettings const& settings) override;
-		std::string GetProducerId() const override { return "NumberOfParticlesProducer"; };
-		void Produce(KappaEvent const& event, KappaProduct& product, KappaSettings const& settings) const override;
+		void Init(setting_type const& settings, metadata_type& metadata) override;
+		
+		std::string GetProducerId() const override
+		{
+			return "NumberOfParticlesProducer";
+		};
+		
+		void Produce(event_type const& event, product_type& product,
+		             setting_type const& settings, metadata_type const& metadata) const override;
 };

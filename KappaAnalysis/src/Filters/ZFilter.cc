@@ -10,9 +10,8 @@ ZFilter::ZFilter() :
 {
 }
 
-bool ZFilter::DoesEventPass(KappaEvent const& event,
-                            KappaProduct const& product,
-                            KappaSettings const& settings) const
+bool ZFilter::DoesEventPass(event_type const& event, product_type const& product,
+                            setting_type const& settings, metadata_type const& metadata) const
 {
 	return product.m_zValid;
 }

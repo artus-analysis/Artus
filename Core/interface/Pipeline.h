@@ -30,10 +30,13 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
+	typedef typename TTypes::metadata_type metadata_type;
 
 	typedef Pipeline<TTypes> pipeline_type;
 
-	virtual void InitPipeline(pipeline_type* pLine, setting_type const& pset) const {};
+	virtual void InitPipeline(pipeline_type* pLine, setting_type const& pset, metadata_type& metadata) const
+	{
+	};
 
 };
 
@@ -79,6 +82,7 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
+	typedef typename TTypes::metadata_type metadata_type;
 
 	typedef ConsumerBaseUntemplated ConsumerForThisPipeline;
 	typedef boost::ptr_vector<ConsumerBaseUntemplated> ConsumerVector;
@@ -97,23 +101,25 @@ public:
 
 	/// Initialize the pipeline using a custom PipelineInitilizer. This PipelineInitilizerBase 
 	/// can create specific Filters and Consumers
-	virtual void InitPipeline(setting_type pset, PipelineInitilizerBase<TTypes> const& initializer)
+	virtual void InitPipeline(setting_type pset, metadata_type globalMetadata, PipelineInitilizerBase<TTypes> const& initializer)
 	{
 		LOG(DEBUG) << "";
 		LOG(DEBUG) << "Initialize pipeline \"" << pset.GetName() << "\"...";
 
 		m_pipelineSettings = pset;
-		initializer.InitPipeline(this, pset);
+		m_metadata = globalMetadata;
+		
+		initializer.InitPipeline(this, pset, m_metadata);
 
 		for(ProcessNodeIterator processNode = m_nodes.begin(); processNode != m_nodes.end(); ++processNode)
 		{
 			if (processNode->GetProcessNodeType() == ProcessNodeType::Producer)
 			{
-				ProducerBaseAccess(static_cast<ProducerForThisPipeline&>(*processNode)).Init(pset);
+				ProducerBaseAccess(static_cast<ProducerForThisPipeline&>(*processNode)).Init(pset, m_metadata);
 			}
 			else if (processNode->GetProcessNodeType() == ProcessNodeType::Filter)
 			{
-				FilterBaseAccess(static_cast<FilterForThisPipeline&>(*processNode)).Init(pset);
+				FilterBaseAccess(static_cast<FilterForThisPipeline&>(*processNode)).Init(pset, m_metadata);
 			}
 			else
 			{
@@ -124,7 +130,7 @@ public:
 		// init Consumers
 		for (ConsumerForThisPipeline& consumer : m_consumer)
 		{
-			ConsumerBaseAccess(consumer).Init(pset);
+			ConsumerBaseAccess(consumer).Init(pset, m_metadata);
 		}
 
 		// store the filter names for later use in RunEvent
@@ -156,7 +162,7 @@ public:
 	{
 		for (ConsumerForThisPipeline& consumer : m_consumer)
 		{
-			ConsumerBaseAccess(consumer).Finish(GetSettings());
+			ConsumerBaseAccess(consumer).Finish(GetSettings(), m_metadata);
 		}
 	}
 
@@ -166,7 +172,7 @@ public:
 	{
 		for (ConsumerForThisPipeline& consumer : m_consumer)
 		{
-			ConsumerBaseAccess(consumer).Process(GetSettings());
+			ConsumerBaseAccess(consumer).Process(GetSettings(), m_metadata);
 		}
 	}
 
@@ -203,13 +209,13 @@ public:
 				
 				if (globalProduct.newRun)
 				{
-					ProducerBaseAccess(prod).OnRun(evt, m_pipelineSettings);
+					ProducerBaseAccess(prod).OnRun(evt, m_pipelineSettings, m_metadata);
 				}
 				if (globalProduct.newLumisection)
 				{
-						ProducerBaseAccess(prod).OnLumi(evt, m_pipelineSettings);
+						ProducerBaseAccess(prod).OnLumi(evt, m_pipelineSettings, m_metadata);
 				}
-				ProducerBaseAccess(prod).Produce(evt, localProduct, m_pipelineSettings);
+				ProducerBaseAccess(prod).Produce(evt, localProduct, m_pipelineSettings, m_metadata);
 				
 				gettimeofday(&tEnd, nullptr);
 				runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);  // a long int might be needed here but SafeMaps for long ints are not yet working
@@ -222,13 +228,13 @@ public:
 				
 				if(globalProduct.newRun)
 				{
-					FilterBaseAccess(flt).OnRun(evt, m_pipelineSettings);
+					FilterBaseAccess(flt).OnRun(evt, m_pipelineSettings, m_metadata);
 				}
 				if(globalProduct.newLumisection)
 				{
-					FilterBaseAccess(flt).OnLumi(evt, m_pipelineSettings);
+					FilterBaseAccess(flt).OnLumi(evt, m_pipelineSettings, m_metadata);
 				}
-				const bool filterResult = FilterBaseAccess(flt).DoesEventPass(evt, localProduct, m_pipelineSettings);
+				const bool filterResult = FilterBaseAccess(flt).DoesEventPass(evt, localProduct, m_pipelineSettings, m_metadata);
 				localFilterResult.SetFilterDecision(flt.GetFilterId(), filterResult);
 				
 				gettimeofday(&tEnd, nullptr);
@@ -247,18 +253,18 @@ public:
 		{
 			if (globalProduct.newRun)
 			{
-				ConsumerBaseAccess(*consumer).OnRun(evt, GetSettings());
+				ConsumerBaseAccess(*consumer).OnRun(evt, GetSettings(), m_metadata);
 			}
 			if (globalProduct.newLumisection)
 			{
-				ConsumerBaseAccess(*consumer).OnLumi(evt, GetSettings());
+				ConsumerBaseAccess(*consumer).OnLumi(evt, GetSettings(), m_metadata);
 			}
 			if (localFilterResult.HasPassed())
 			{
-				ConsumerBaseAccess(*consumer).ProcessFilteredEvent(evt, localProduct, GetSettings());
+				ConsumerBaseAccess(*consumer).ProcessFilteredEvent(evt, localProduct, GetSettings(), m_metadata);
 			}
 
-			ConsumerBaseAccess(*consumer).ProcessEvent(evt, localProduct, GetSettings(), localFilterResult);
+			ConsumerBaseAccess(*consumer).ProcessEvent(evt, localProduct, GetSettings(), m_metadata, localFilterResult);
 		}
 
 		return localFilterResult.HasPassed();
@@ -315,6 +321,11 @@ public:
 	{
 		return m_nodes;
 	}
+	
+	metadata_type& GetMetadata()
+	{
+		return m_metadata;
+	}
 
 	/// Return a list of filters is this pipeline.
 	/*
@@ -329,5 +340,6 @@ private:
 	setting_type m_pipelineSettings;
 	std::vector<std::string> m_filterNames;
 	std::vector<std::string> m_taggingFilters;
+	metadata_type m_metadata;
 };
 

@@ -1,39 +1,39 @@
 #include "Artus/KappaAnalysis/interface/Producers/PFCandidatesProducer.h"
 
-void PFCandidatesProducer::Init(KappaSettings const& settings)
+void PFCandidatesProducer::Init(setting_type const& settings, metadata_type& metadata)
 {
-	KappaProducerBase::Init(settings);
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("NPFChargedHadrons", [](KappaEvent const& event, KappaProduct const& product)
+	KappaProducerBase::Init(settings, metadata);
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "NPFChargedHadrons", [](event_type const& event, product_type const& product)
 	{
 		return product.m_pfChargedHadrons.size();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("NPFNeutralHadrons", [](KappaEvent const& event, KappaProduct const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "NPFNeutralHadrons", [](event_type const& event, product_type const& product)
 	{
 		return product.m_pfNeutralHadrons.size();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("NPFElectrons", [](KappaEvent const& event, KappaProduct const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "NPFElectrons", [](event_type const& event, product_type const& product)
 	{
 		return product.m_pfElectrons.size();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("NPFMuons", [](KappaEvent const& event, KappaProduct const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "NPFMuons", [](event_type const& event, product_type const& product)
 	{
 		return product.m_pfMuons.size();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("NPFPhotons", [](KappaEvent const& event, KappaProduct const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "NPFPhotons", [](event_type const& event, product_type const& product)
 	{
 		return product.m_pfPhotons.size();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("NPFHadronicHF", [](KappaEvent const& event, KappaProduct const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "NPFHadronicHF", [](event_type const& event, product_type const& product)
 	{
 		return product.m_pfHadronicHF.size();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity("NPFElectromagneticHF", [](KappaEvent const& event, KappaProduct const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "NPFElectromagneticHF", [](event_type const& event, product_type const& product)
 	{
 		return product.m_pfElectromagneticHF.size();
 	});
 }
 
-void PFCandidatesProducer::Produce(KappaEvent const& event, KappaProduct& product, KappaSettings const& settings) const
+void PFCandidatesProducer::Produce(event_type const& event, product_type& product, setting_type const& settings, metadata_type const& metadata) const
 {
 	for (KPFCandidates::const_iterator pfCandidate = event.m_packedPFCandidates->begin();
 		pfCandidate != event.m_packedPFCandidates->end(); ++pfCandidate)

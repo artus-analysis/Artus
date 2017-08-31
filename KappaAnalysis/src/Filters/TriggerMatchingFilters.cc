@@ -10,9 +10,9 @@ std::string ElectronTriggerMatchingFilter::GetFilterId() const{
 }
 
 ElectronTriggerMatchingFilter::ElectronTriggerMatchingFilter() :
-	TriggerMatchingFilterBase<KElectron>(&KappaProduct::m_triggerMatchedElectrons,
-	                                                 &KappaProduct::m_validElectrons,
-	                                                 &KappaSettings::GetMinNMatchedElectrons)
+	TriggerMatchingFilterBase<KElectron>(&product_type::m_triggerMatchedElectrons,
+	                                                 &product_type::m_validElectrons,
+	                                                 &setting_type::GetMinNMatchedElectrons)
 {
 }
 
@@ -26,9 +26,9 @@ std::string MuonTriggerMatchingFilter::GetFilterId() const{
 }
 
 MuonTriggerMatchingFilter::MuonTriggerMatchingFilter() :
-	TriggerMatchingFilterBase<KMuon>(&KappaProduct::m_triggerMatchedMuons,
-	                                             &KappaProduct::m_validMuons,
-	                                             &KappaSettings::GetMinNMatchedMuons)
+	TriggerMatchingFilterBase<KMuon>(&product_type::m_triggerMatchedMuons,
+	                                             &product_type::m_validMuons,
+	                                             &setting_type::GetMinNMatchedMuons)
 {
 }
 
@@ -44,9 +44,9 @@ std::string TauTriggerMatchingFilter::GetFilterId() const{
 }
 
 TauTriggerMatchingFilter::TauTriggerMatchingFilter() :
-	TriggerMatchingFilterBase<KTau>(&KappaProduct::m_triggerMatchedTaus,
-	                                              &KappaProduct::m_validTaus,
-	                                              &KappaSettings::GetMinNMatchedTaus)
+	TriggerMatchingFilterBase<KTau>(&product_type::m_triggerMatchedTaus,
+	                                              &product_type::m_validTaus,
+	                                              &setting_type::GetMinNMatchedTaus)
 {
 }
 
@@ -62,8 +62,8 @@ std::string JetTriggerMatchingFilter::GetFilterId() const{
 }
 
 JetTriggerMatchingFilter::JetTriggerMatchingFilter() :
-	TriggerMatchingFilterBase<KBasicJet>(&KappaProduct::m_triggerMatchedJets,
-	                                              &KappaProduct::m_validJets,
-	                                              &KappaSettings::GetMinNMatchedJets)
+	TriggerMatchingFilterBase<KBasicJet>(&product_type::m_triggerMatchedJets,
+	                                              &product_type::m_validJets,
+	                                              &setting_type::GetMinNMatchedJets)
 {
 }

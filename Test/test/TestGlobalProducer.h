@@ -15,7 +15,8 @@ public:
 	
 	void Produce(TestEvent const& event,
 			TestProduct & product,
-			TestSettings const& globalSettings) const override {
+			TestSettings const& globalSettings,
+			TestMetadata const& metadata) const override {
 		product.iGlobalProduct = event.iVal + 5 + globalSettings.GetOffset();
 	}
 };
@@ -28,7 +29,8 @@ public:
 
 	void Produce(TestEvent const& event,
 			TestProduct & product,
-			TestSettings const& globalSettings) const override {
+			TestSettings const& globalSettings,
+			TestMetadata const& metadata) const override {
 		product.iGlobalProduct2 = event.iVal + 1;
 	}
 };

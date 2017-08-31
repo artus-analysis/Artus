@@ -15,6 +15,7 @@ public:
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
+	typedef typename TTypes::metadata_type metadata_type;
 
 	typedef std::function<
 			std::vector<float>(event_type const&, product_type const&
@@ -33,29 +34,28 @@ public:
 		return "hist1d";
 	}
 
-	void Init(setting_type const& pset) override {
-		DrawConsumerBase<TTypes>::Init(pset);
+	void Init(setting_type const& settings, metadata_type& metadata) override {
+		DrawConsumerBase<TTypes>::Init(settings, metadata);
 
 		// init called
-		const std::string rootFolder = pset.GetRootFileFolder();
+		const std::string rootFolder = settings.GetRootFileFolder();
 		Hist1D * hist = new Hist1D(m_histName, rootFolder, m_desc.second);
 		setHist(hist);
 		assert(m_hist);
 		m_hist->Init();
 	}
 
-	void Finish( setting_type const& setting ) override {
+	void Finish(setting_type const& settings, metadata_type const& metadata ) override {
 		// store hist
 		// + modifiers
 		//LOG(INFO) << "Storing Hist for " << this->GetProductName() << ".";
-		m_hist->Store(setting.GetRootOutFile());
+		m_hist->Store(settings.GetRootOutFile());
 	}
 
-	void ProcessFilteredEvent(event_type const& event,
-			product_type const& product,
-			setting_type const& setting ) override {
+	void ProcessFilteredEvent(event_type const& event, product_type const& product,
+			setting_type const& settings, metadata_type const& metadata) override {
 
-		DrawConsumerBase<TTypes>::ProcessFilteredEvent(event, product, setting );
+		DrawConsumerBase<TTypes>::ProcessFilteredEvent(event, product, settings, metadata);
 
 		auto res = m_desc.first(event, product);
 

@@ -56,9 +56,9 @@ public:
 	{
 	}
 
-	void Init(setting_type const& settings) override
+	void Init(setting_type const& settings, metadata_type& metadata) override
 	{
-		ConsumerBase<KappaTypes>::Init(settings);
+		ConsumerBase<KappaTypes>::Init(settings, metadata);
 
 		TDirectory* tmpDirectory = gDirectory;
 		RootFileHelper::SafeCd(settings.GetRootOutFile(),
@@ -99,7 +99,7 @@ public:
 	}
 
 	void ProcessFilteredEvent(event_type const& event, product_type const& product,
-	                                  setting_type const& settings) override
+	                          setting_type const& settings, metadata_type const& metadata) override
 	{
 		for (typename std::vector<TObject*>::const_iterator validObject = (product.*m_validObjects).begin();
 		     validObject != (product.*m_validObjects).end(); ++validObject)
@@ -164,7 +164,7 @@ public:
 		}
 	}
 	
-	void Finish(setting_type const& settings) override
+	void Finish(setting_type const& settings, metadata_type const& metadata) override
 	{
 		RootFileHelper::SafeCd(settings.GetRootOutFile(),
 		                       settings.GetRootFileFolder());

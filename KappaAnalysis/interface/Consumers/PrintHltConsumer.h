@@ -18,9 +18,9 @@ public:
 	std::string GetConsumerId() const override;
 
 	void ProcessFilteredEvent(event_type const& event, product_type const& product,
-	                          setting_type const& settings) override;
+	                          setting_type const& settings, metadata_type const& metadata) override;
 
-	void Finish(setting_type const& settings) override;
+	void Finish(setting_type const& settings, metadata_type const& metadata) override;
 
 private:
 	HLTTools m_hltInfo;

@@ -11,13 +11,13 @@ std::string PtFilter::GetFilterId() const
 	return "filter_pt";
 }
 
-void PtFilter::Init(TraxSettings const& globalSettings)
+void PtFilter::Init(setting_type const& settings, metadata_type& metadata)
 {
-	FilterBase<TraxTypes>::Init(globalSettings);
+	FilterBase<TraxTypes>::Init(settings, metadata);
 }
 
-bool PtFilter::DoesEventPass(TraxEvent const& event,
-		TraxProduct const& product, TraxSettings const& settings) const
+bool PtFilter::DoesEventPass(event_type const& event, product_type const& product,
+		setting_type const& settings, metadata_type const& metadata) const
 {
 
 	const float lowCut = settings.GetFilterPtLow();

@@ -5,11 +5,11 @@ std::string GenTauJetProducer::GetProducerId() const{
 	return "GenTauJetProducer";
 }
 
-void GenTauJetProducer::Init(KappaSettings const& settings)
+void GenTauJetProducer::Init(setting_type const& settings, metadata_type& metadata)
 {
-	KappaProducerBase::Init(settings);
+	KappaProducerBase::Init(settings, metadata);
 	
-	LambdaNtupleConsumer<KappaTypes>::AddVFloatQuantity("genTauJetVisPt", [](KappaEvent const & event, KappaProduct const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddVFloatQuantity(metadata, "genTauJetVisPt", [](event_type const & event, product_type const & product)
 	{
 		std::vector<float> genTauJetPt;
 		for (typename std::vector<KGenJet*>::const_iterator genJet = (product.m_genTauJets).begin();
@@ -19,7 +19,7 @@ void GenTauJetProducer::Init(KappaSettings const& settings)
 		}
 		return genTauJetPt;
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddVFloatQuantity("genTauJetEta", [](KappaEvent const & event, KappaProduct const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddVFloatQuantity(metadata, "genTauJetEta", [](event_type const & event, product_type const & product)
 	{
 		std::vector<float> genTauJetEta;
 		for (typename std::vector<KGenJet*>::const_iterator genJet = (product.m_genTauJets).begin();
@@ -29,7 +29,7 @@ void GenTauJetProducer::Init(KappaSettings const& settings)
 		}
 		return genTauJetEta;
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddVIntQuantity("genTauJetDM", [](KappaEvent const & event, KappaProduct const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddVIntQuantity(metadata, "genTauJetDM", [](event_type const & event, product_type const & product)
 	{
 		std::vector<int> genTauJetDM;
 		for (typename std::vector<KGenJet*>::const_iterator genJet = (product.m_genTauJets).begin();
@@ -41,8 +41,8 @@ void GenTauJetProducer::Init(KappaSettings const& settings)
 	});
 }
 
-void GenTauJetProducer::Produce(KappaEvent const& event, KappaProduct& product,
-                     KappaSettings const& settings) const
+void GenTauJetProducer::Produce(event_type const& event, product_type& product,
+                                setting_type const& settings, metadata_type const& metadata) const
 {
 	assert(event.m_genTauJets);
 	

@@ -8,8 +8,8 @@ std::string ElectronGenMatchingFilter::GetFilterId() const
 }
 
 ElectronGenMatchingFilter::ElectronGenMatchingFilter() :
-	GenMatchingFilterBase<KElectron>(&KappaProduct::m_genParticleMatchedElectrons,
-	                                 &KappaProduct::m_validElectrons)
+	GenMatchingFilterBase<KElectron>(&product_type::m_genParticleMatchedElectrons,
+	                                 &product_type::m_validElectrons)
 {
 }
 
@@ -20,8 +20,8 @@ std::string MuonGenMatchingFilter::GetFilterId() const
 }
 
 MuonGenMatchingFilter::MuonGenMatchingFilter() :
-	GenMatchingFilterBase<KMuon>(&KappaProduct::m_genParticleMatchedMuons,
-	                             &KappaProduct::m_validMuons)
+	GenMatchingFilterBase<KMuon>(&product_type::m_genParticleMatchedMuons,
+	                             &product_type::m_validMuons)
 {
 }
 
@@ -32,8 +32,8 @@ std::string TauGenMatchingFilter::GetFilterId() const
 }
 
 TauGenMatchingFilter::TauGenMatchingFilter() :
-	GenMatchingFilterBase<KTau>(&KappaProduct::m_genParticleMatchedTaus,
-	                            &KappaProduct::m_validTaus)
+	GenMatchingFilterBase<KTau>(&product_type::m_genParticleMatchedTaus,
+	                            &product_type::m_validTaus)
 {
 }
 
@@ -44,8 +44,8 @@ std::string JetGenMatchingFilter::GetFilterId() const
 }
 
 JetGenMatchingFilter::JetGenMatchingFilter() :
-	GenMatchingFilterBase<KBasicJet>(&KappaProduct::m_genParticleMatchedJets,
-	                                 &KappaProduct::m_validJets)
+	GenMatchingFilterBase<KBasicJet>(&product_type::m_genParticleMatchedJets,
+	                                 &product_type::m_validJets)
 {
 }
 

@@ -29,7 +29,7 @@ public:
 	}
 
 	bool DoesEventPass(event_type const& event, product_type const& product,
-	                           setting_type const& settings) const override
+	                   setting_type const& settings, metadata_type const& metadata) const override
 	{
 		if ((product.*m_genTauMatchedObjects).size() >= 2)
 		{
@@ -57,7 +57,7 @@ public:
 	};
 
 private:
-	std::map<TValidObject*, KGenTau*> KappaProduct::*m_genTauMatchedObjects;
+	std::map<TValidObject*, KGenTau*> product_type::*m_genTauMatchedObjects;
 	float (setting_type::*GetMinDeltaRMatchedRecoObjects)(void) const;
 };
 

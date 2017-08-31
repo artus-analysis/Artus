@@ -7,7 +7,6 @@
 <use name="Artus/Configuration"/>
 <use name="Artus/Consumer"/>
 <use name="Artus/Utility"/>
-<use name="Artus/KappaAnalysis"/>
 
 <flags ADD_SUBDIR="1"/>
 

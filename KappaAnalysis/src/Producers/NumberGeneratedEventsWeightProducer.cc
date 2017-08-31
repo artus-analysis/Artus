@@ -6,9 +6,8 @@ std::string NumberGeneratedEventsWeightProducer::GetProducerId() const {
 	return "NumberGeneratedEventsWeightProducer";
 }
 
-void NumberGeneratedEventsWeightProducer::Produce(KappaEvent const& event,
-                     KappaProduct & product,
-                     KappaSettings const& settings) const
+void NumberGeneratedEventsWeightProducer::Produce(event_type const& event, product_type & product,
+                                                  setting_type const& settings, metadata_type const& metadata) const
 {
 	product.m_weights["numberGeneratedEventsWeight"] = (1.0 / settings.GetNumberGeneratedEvents());
 }

@@ -8,10 +8,10 @@ std::string GeneralTmvaClassificationReader::GetProducerId() const
 }
 
 GeneralTmvaClassificationReader::GeneralTmvaClassificationReader() :
-	TmvaClassificationReaderBase(&KappaSettings::GetTmvaInputQuantities,
-	                             &KappaSettings::GetTmvaMethods,
-	                             &KappaSettings::GetTmvaWeights,
-	                             &KappaProduct::m_discriminators)
+	TmvaClassificationReaderBase(&setting_type::GetTmvaInputQuantities,
+	                             &setting_type::GetTmvaMethods,
+	                             &setting_type::GetTmvaWeights,
+	                             &product_type::m_discriminators)
 {
 }
 
