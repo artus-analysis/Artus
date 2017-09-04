@@ -38,7 +38,7 @@ fi
 
 if [[ -z ${WEB_PLOTTING_COPY_COMMAND} ]]; then
 	if [[ $HARRY_USERPC == *"rwth"* ]]; then
-		export WEB_PLOTTING_COPY_COMMAND="xrdcp -f {source} root://eosuser.cern.ch//eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
+		export WEB_PLOTTING_COPY_COMMAND="xrdcp -s -f {source} root://eosuser.cern.ch//eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
 	else
 		export WEB_PLOTTING_COPY_COMMAND="rsync -u {source} ${HARRY_REMOTE_USER}@${HARRY_SSHPC}:/ekpwww/web/${HARRY_REMOTE_USER}/public_html/plots_archive/{subdir}"
 	fi
