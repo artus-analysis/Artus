@@ -38,7 +38,7 @@ fi
 
 if [[ -z ${WEB_PLOTTING_MKDIR_COMMAND} ]]; then
 	if [[ $HARRY_USERPC == *"rwth"* ]]; then
-		export WEB_PLOTTING_MKDIR_COMMAND="xrdfs eosuser.cern.ch mkdir /eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
+		export WEB_PLOTTING_MKDIR_COMMAND="xrdfs eosuser.cern.ch mkdir -p /eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
 	else
 		export WEB_PLOTTING_MKDIR_COMMAND="ssh ${HARRY_REMOTE_USER}@${HARRY_SSHPC} mkdir -p /ekpwww/web/${HARRY_REMOTE_USER}/public_html/plots_archive/{subdir}"
 	fi
