@@ -36,12 +36,12 @@ else
 	export HARRY_URL=http://www.ekp.kit.edu/~${HARRY_REMOTE_USER}/plots_archive
 fi
 
+if [[ -z ${WEB_PLOTTING_MKDIR_COMMAND} ]]; then
+	export WEB_PLOTTING_MKDIR_COMMAND="xrdfs eosuser.cern.ch mkdir /eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
+fi
+
 if [[ -z ${WEB_PLOTTING_COPY_COMMAND} ]]; then
-	if [[ $HARRY_USERPC == *"rwth"* ]]; then
-		export WEB_PLOTTING_COPY_COMMAND="rsync -du {source} ${HARRY_REMOTE_USER}@lxplus.cern.ch:/eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
-	else
-		export WEB_PLOTTING_COPY_COMMAND="rsync -du {source} ${HARRY_REMOTE_USER}@${HARRY_SSHPC}:/ekpwww/web/${HARRY_REMOTE_USER}/public_html/plots_archive/{subdir}"
-	fi
+	export WEB_PLOTTING_COPY_COMMAND="xrdcp {source} root://eosuser.cern.ch//eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
 fi
 
 start_ssh_agent() {
@@ -56,7 +56,7 @@ start_ssh_agent() {
 web_plotting_no_passwd() {
 	if [[ $HARRY_USERPC == *"rwth"* ]]; then
 		kinit ${HARRY_REMOTE_USER}@CERN.CH
-		aklog -c cern.ch
+		aklog -c cern.ch #For web-plotting on EOS, this line isn't needed
 	else
 		# startup ssh-agent
 		unset SSH_ASKPASS
