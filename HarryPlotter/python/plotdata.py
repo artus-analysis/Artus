@@ -126,7 +126,7 @@ class PlotData(object):
 		log.info("Copying plots to webspace...")
 		log.debug("\nIssueing mkdir command: " + mkdir_command)
 		logger.subprocessCall(mkdir_command.split())
-		log.debug("\nIssueing xrdcp command: " + copy_command)
+		log.debug("\nIssueing copy command: " + copy_command)
 		logger.subprocessCall(copy_command.split())
 		log.info("Copied {0}; see {1}".format(" ".join([f.split("/")[-1] for f in files_to_copy]), url))
 

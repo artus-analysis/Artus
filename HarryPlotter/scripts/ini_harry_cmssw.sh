@@ -37,11 +37,19 @@ else
 fi
 
 if [[ -z ${WEB_PLOTTING_MKDIR_COMMAND} ]]; then
-	export WEB_PLOTTING_MKDIR_COMMAND="xrdfs eosuser.cern.ch mkdir /eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
+	if [[ $HARRY_USERPC == *"rwth"* ]]; then
+		export WEB_PLOTTING_MKDIR_COMMAND="xrdfs eosuser.cern.ch mkdir /eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
+	else
+		export WEB_PLOTTING_MKDIR_COMMAND="ssh ${HARRY_REMOTE_USER}@${HARRY_SSHPC} mkdir -p /ekpwww/web/${HARRY_REMOTE_USER}/public_html/plots_archive/{subdir}"
+	fi
 fi
 
 if [[ -z ${WEB_PLOTTING_COPY_COMMAND} ]]; then
-	export WEB_PLOTTING_COPY_COMMAND="xrdcp {source} root://eosuser.cern.ch//eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
+	if [[ $HARRY_USERPC == *"rwth"* ]]; then
+		export WEB_PLOTTING_COPY_COMMAND="xrdcp {source} root://eosuser.cern.ch//eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
+	else
+		export WEB_PLOTTING_COPY_COMMAND="rsync -u {source} ${HARRY_REMOTE_USER}@${HARRY_SSHPC}:/ekpwww/web/${HARRY_REMOTE_USER}/public_html/plots_archive/{subdir}"
+	fi
 fi
 
 start_ssh_agent() {
