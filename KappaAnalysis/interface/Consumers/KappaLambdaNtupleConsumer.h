@@ -114,7 +114,7 @@ public:
 		
 		LambdaNtupleConsumer<TTypes>::AddCartesianRMFLVQuantity(metadata, "LHE_p_2", [](event_type const& event, product_type const& product) -> CartesianRMFLV
 		{
-			return (event.m_lheParticles->particles.size() == 5) ? event.m_lheParticles->particles.at(4).p4 : DefaultValues::UndefinedCartesianRMFLV;
+			return (event.m_lheParticles->particles.size() >= 5) ? event.m_lheParticles->particles.at(4).p4 : DefaultValues::UndefinedCartesianRMFLV;
 		});
 
 		// loop over all quantities containing "weight" (case-insensitive)
