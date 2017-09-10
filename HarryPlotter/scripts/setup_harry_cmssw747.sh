@@ -11,7 +11,7 @@ then
 	scram project CMSSW CMSSW_7_4_7
 fi
 cd CMSSW_7_4_7/src
-cmsenv
+eval `scram runtime -sh`
 
 # check out HarryPlotter
 if [ ! -e Artus/HarryPlotter ]
@@ -35,4 +35,7 @@ then
 	scram b -j `grep -c ^processor /proc/cpuinfo`
 fi
 
+export ARTUS_PATH="${CMSSW_BASE}/src/Artus"
 source ${CMSSW_BASE}/src/Artus/HarryPlotter/scripts/ini_harry_cmssw.sh
+
+set +e
