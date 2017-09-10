@@ -42,7 +42,7 @@ class HarryParser(argparse.ArgumentParser):
 		                                 help="Input Modules. [Default: %(default)s]")
 		self.module_options.add_argument("--analysis-modules", default=[], nargs="+",
 		                                 help="Analysis Modules. [Default: %(default)s]")
-		self.module_options.add_argument("--plot-modules", default="PlotMpl", nargs="+",
+		self.module_options.add_argument("--plot-modules", default="PlotRoot", nargs="+",
 		                                 help="Plot Modules. [Default: %(default)s]")
 		self.module_options.add_argument("--list-available-modules", default=False, action="store_true",
 		                                 help="List all available modules.")
