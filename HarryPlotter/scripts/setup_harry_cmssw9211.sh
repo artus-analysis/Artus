@@ -1,5 +1,4 @@
 #!/bin/sh
-set -e # exit on errors
 
 export SCRAM_ARCH=slc6_amd64_gcc530
 export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
@@ -35,7 +34,5 @@ then
 	scram b -j `grep -c ^processor /proc/cpuinfo`
 fi
 
-export ARTUS_PATH="${CMSSW_BASE}/src/Artus"
+export ARTUSPATH="${CMSSW_BASE}/src/Artus"
 source ${CMSSW_BASE}/src/Artus/HarryPlotter/scripts/ini_harry_cmssw.sh
-
-set +e
