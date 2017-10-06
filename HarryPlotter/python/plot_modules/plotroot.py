@@ -99,6 +99,8 @@ class PlotRoot(plotbase.PlotBase):
 		                               help="Reverse Z axis labelling. [Default: %(default)s]")
 		self.axis_options.add_argument("--x-labels-vertical", action="store_true", default=False,
 		                               help="Draw vertical X axis labels. [Default: %(default)s]")
+		self.axis_options.add_argument("--CP-plot", action="store_true", default=False,
+									   help="Use proper x tick labels for CP angle plots. [Default: %(default)s]")
 		self.axis_options.add_argument("--x-title-offset", type=float, default=None,
 		                               help="Manually set title offset for X axis. [Default: %(default)s]")
 		self.axis_options.add_argument("--y-title-offset", type=float, default=None,
@@ -570,6 +572,18 @@ class PlotRoot(plotbase.PlotBase):
 			if plotData.plotdict["y_tick_labels"] and len(plotData.plotdict["y_tick_labels"]) > 0:
 				for y_bin in range(n_binsY):
 					self.axes_histogram.GetYaxis().SetBinLabel(y_bin+1, plotData.plotdict["y_tick_labels"][y_bin])
+			if plotData.plotdict["CP_plot"]:		
+				self.axes_histogram.GetXaxis().Set(1000,0,2*math.pi)
+				self.axes_histogram.GetXaxis().SetBinLabel(1, "0")
+				self.axes_histogram.GetXaxis().SetBinLabel(250, "#pi/2")
+				self.axes_histogram.GetXaxis().SetBinLabel(500, "#pi")
+				self.axes_histogram.GetXaxis().SetBinLabel(750, "3#pi/2")		
+				self.axes_histogram.GetXaxis().SetBinLabel(1000, "2#pi")
+				#TODO: Figure out why this adjustment is necessary to obtain equally sized labels on both axes.
+				self.axes_histogram.GetXaxis().SetLabelSize(1.35*self.axes_histogram.GetYaxis().GetLabelSize())
+				self.axes_histogram.LabelsOption("h", "X")
+
+				
 			
 			# avoid scientific notation for x-axis
 			self.axes_histogram.GetXaxis().SetNoExponent(True)
