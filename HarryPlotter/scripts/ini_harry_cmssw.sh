@@ -21,7 +21,7 @@ if [[ -z ${WEB_PLOTTING_MKDIR_COMMAND} ]]; then
 fi
 
 if [[ -z ${WEB_PLOTTING_COPY_COMMAND} ]]; then
-		export WEB_PLOTTING_COPY_COMMAND="xrdcp -s -f {source} root://eosuser.cern.ch//eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
+	export WEB_PLOTTING_COPY_COMMAND="xrdcp -s -f {source} root://eosuser.cern.ch//eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
 fi
 
 start_ssh_agent() {
