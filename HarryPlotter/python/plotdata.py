@@ -66,7 +66,7 @@ class PlotData(object):
 		html_content = ""
 		overview_filename = "index.html"
 		date = datetime.date.today().strftime('%Y_%m_%d')
-		remote_subdir = os.path.expandvars(os.path.join((date if not www_nodate else ""), (www if type(www)==str else "")))
+		remote_subdir = os.path.expandvars(os.path.join((date if (www == "" or not www_nodate) else ""), (www if type(www)==str else "")))
 		url = os.path.expandvars(os.path.join("$HARRY_URL", remote_subdir, overview_filename))
 		plots_for_gallery = [p for p in sorted(os.listdir(output_dir)) if (os.path.isfile(os.path.join(output_dir, p)) and all([not p.endswith("."+ext) for ext in ["json", "html", "root"]]))]
 		# get the html templates

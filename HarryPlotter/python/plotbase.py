@@ -231,7 +231,7 @@ class PlotBase(processor.Processor):
 		plotData.plotdict["colors"] = [None if color is None else self.predefined_colors.get_predefined_color(color) for color in plotData.plotdict["colors"]]
 		
 		if plotData.plotdict["www"] != None:
-			plotData.plotdict["output_dir"] = os.path.join("websync", datetime.date.today().strftime("%Y_%m_%d") if not plotData.plotdict["www_nodate"] else "", (plotData.plotdict["www"] or ""))
+			plotData.plotdict["output_dir"] = os.path.join("websync", datetime.date.today().strftime("%Y_%m_%d") if (plotData.plotdict["www"] == "" or not plotData.plotdict["www_nodate"]) else "", (plotData.plotdict["www"] or ""))
 		
 		# construct file name from x/y/z expressions if not specified by user
 		if plotData.plotdict["filename"] == None:
