@@ -176,6 +176,8 @@ class PlotBase(processor.Processor):
 		                                 help="Title for the web gallery. [Default: %(default)s]")
 		self.other_options.add_argument("--www-text", type=str, default=None,
 		                                 help="Text for the web gallery. [Default: download-link]")
+		self.other_options.add_argument("--www-nodate", nargs="?", type="bool", default=False, const=True,
+		                                 help="Does not create a folder with the current date. [Default: %(default)s]")
 		self.other_options.add_argument("--www-mkdir-command", type=str, default="$WEB_PLOTTING_MKDIR_COMMAND",
 		                                 help="Command for creating the directory for the gallery. This command must contain {subdir} as placeholder for the gallery sub-directory to be created. [Default: %(default)s]")
 		self.other_options.add_argument("--www-copy-command", type=str, default="$WEB_PLOTTING_COPY_COMMAND",
@@ -229,7 +231,7 @@ class PlotBase(processor.Processor):
 		plotData.plotdict["colors"] = [None if color is None else self.predefined_colors.get_predefined_color(color) for color in plotData.plotdict["colors"]]
 		
 		if plotData.plotdict["www"] != None:
-			plotData.plotdict["output_dir"] = os.path.join("websync", datetime.date.today().strftime("%Y_%m_%d"), (plotData.plotdict["www"] or ""))
+			plotData.plotdict["output_dir"] = os.path.join("websync", datetime.date.today().strftime("%Y_%m_%d") if not plotData.plotdict["www_nodate"] else "", (plotData.plotdict["www"] or ""))
 		
 		# construct file name from x/y/z expressions if not specified by user
 		if plotData.plotdict["filename"] == None:

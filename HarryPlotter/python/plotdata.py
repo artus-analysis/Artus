@@ -60,13 +60,13 @@ class PlotData(object):
 			'DISPLAY=:0 %s /usr/users/%s/plot.%s &' % (viewer, user, filename.split(".")[-1])])
 
 	@staticmethod
-	def webplotting(www, output_dir, output_filenames=False, www_text = False, www_title="plots_archive", additional_output_files=False, save_legend=False, export_json = False, no_publish=False):
+	def webplotting(www, output_dir, output_filenames=False, www_text = False, www_title="plots_archive", www_nodate = False, additional_output_files=False, save_legend=False, export_json = False, no_publish=False):
 		# set some needed variables
 		user = tools.get_environment_variable("HARRY_REMOTE_USER")
 		html_content = ""
 		overview_filename = "index.html"
 		date = datetime.date.today().strftime('%Y_%m_%d')
-		remote_subdir = os.path.expandvars(os.path.join(date, (www if type(www)==str else "")))
+		remote_subdir = os.path.expandvars(os.path.join((date if not www_nodate else ""), (www if type(www)==str else "")))
 		url = os.path.expandvars(os.path.join("$HARRY_URL", remote_subdir, overview_filename))
 		plots_for_gallery = [p for p in sorted(os.listdir(output_dir)) if (os.path.isfile(os.path.join(output_dir, p)) and all([not p.endswith("."+ext) for ext in ["json", "html", "root"]]))]
 		# get the html templates
@@ -158,6 +158,7 @@ class PlotData(object):
 				             output_filenames = self.plotdict["output_filenames"],
 				             www_text= self.plotdict["www_text"],
 				             www_title = self.plotdict["www_title"],
+				             www_nodate = self.plotdict["www_nodate"],
 				             additional_output_files = self.plotdict["additional_output_files"] if "additional_output_files" in self.plotdict else False,
 				             save_legend = self.plotdict.get("save_legend", False),
 				             export_json = self.plotdict["export_json"]
