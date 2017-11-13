@@ -2,7 +2,7 @@
 
 #include "Kappa/DataFormats/interface/Kappa.h"
 
-#include "KappaTools/RootTools/interface/HLTTools.h"
+#include "Artus/KappaTools/interface/HLTTools.h"
 
 #include "Artus/Core/interface/ProductBase.h"
 #include "Artus/KappaAnalysis/interface/KappaEnumTypes.h"

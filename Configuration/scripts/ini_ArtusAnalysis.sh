@@ -22,10 +22,6 @@ elif [ -n "$ZSH_VERSION" ]; then
 
 fi
 
-
-# setup Kappa
-source $ARTUSPATH/../KappaTools/Toolbox/scripts/ini_KappaTools.sh
-
 # voms proxy path
 export X509_USER_PROXY=$HOME/.globus/x509up
 

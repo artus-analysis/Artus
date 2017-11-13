@@ -1,0 +1,15 @@
+<Flags CXXFLAGS="-g" />
+<Flags LDFLAGS="-rdynamic" />
+
+<use name="root" />
+<use name="rootmath" />
+<use name="boost" />
+<use name="boost_system" />
+<use name="Kappa/DataFormats" />
+
+<flags CXXFLAGS="`printenv CMSSW_VERSION | sed 's/CMSSW_\([0-9]*\)_\([0-9]*\)_\([0-9]*\).*/-DCMSSW_MAJOR_VERSION=\1 -DCMSSW_MINOR_VERSION=\2 -DCMSSW_REVISION=\3/'`"/>
+<flags ADD_SUBDIR="1"/>
+
+<export>
+   <lib   name="1"/>
+</export>

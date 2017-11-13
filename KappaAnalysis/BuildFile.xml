@@ -5,10 +5,9 @@
 <use name="root" />
 <use name="roottmva"/>
 <use name="CondFormats/JetMETObjects" />
-<use name="KappaTools/Toolbox" />
-<use name="KappaTools/RootTools" />
 <use name="Artus/Configuration"/>
 <use name="Artus/Consumer"/>
+<use name="Artus/KappaTools"/>
 <use name="Artus/Utility"/>
 
 <lib name="EG" />

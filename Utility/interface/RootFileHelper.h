@@ -12,7 +12,7 @@
 #include <TFile.h>
 #include <TGraphErrors.h>
 
-#include "KappaTools/Toolbox/interface/String.h"
+#include "Artus/KappaTools/interface/String.h"
 
 #include "ArtusLogging.h"
 

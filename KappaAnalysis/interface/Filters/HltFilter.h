@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "KappaTools/RootTools/interface/RunLumiReader.h"
+#include "Artus/KappaTools/interface/RunLumiReader.h"
 
 #include "Artus/Core/interface/FilterBase.h"
 #include "Artus/KappaAnalysis/interface/KappaTypes.h"

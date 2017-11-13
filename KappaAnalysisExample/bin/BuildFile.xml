@@ -1,7 +1,6 @@
 <Flags CXXFLAGS="-g" />
 <Flags LDFLAGS="-rdynamic" />
 <use name="Kappa/DataFormats" />
-<use name="KappaTools/RootTools"/>
 <use name="Artus/Core"/>
 <use name="Artus/Provider"/>
 <use name="Artus/Configuration"/>

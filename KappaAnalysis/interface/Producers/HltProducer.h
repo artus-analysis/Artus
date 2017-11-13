@@ -4,7 +4,7 @@
 #include <limits>
 
 #include "Kappa/DataFormats/interface/Kappa.h"
-#include "KappaTools/RootTools/interface/RunLumiReader.h"
+#include "Artus/KappaTools/interface/RunLumiReader.h"
 
 #include "Artus/KappaAnalysis/interface/KappaTypes.h"
 #include "Artus/KappaAnalysis/interface/KappaProducerBase.h"

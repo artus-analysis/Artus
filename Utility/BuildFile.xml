@@ -1,6 +1,6 @@
 <Flags LDFLAGS="-rdynamic" />
 
-<use name="KappaTools/Toolbox" />
+<use name="Artus/KappaTools"/>
 <use name="root" />
 <use name="boost" />
 
