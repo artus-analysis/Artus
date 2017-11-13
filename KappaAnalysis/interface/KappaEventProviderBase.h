@@ -35,7 +35,7 @@ public:
 
 		// auto-delete objects when moving to a new object. Not default root behaviour
 		// RF: Deactivated since it caused trouble when running on multiple files
-		//m_fi.eventdata.SetAutoDelete(true);
+		//m_fi.eventdata->SetAutoDelete(true);
 
 		m_mon.reset(new ProgressMonitor(GetEntries()));
 	}
@@ -46,15 +46,19 @@ public:
 	{
 	}
 
-	bool GetEntry(long long lEvent) override {
-		assert(m_event.m_eventInfo);
+	bool GetEntry(long long lEvent) override
+	{
+		assert(m_event.m_runInfo);
 		assert(m_event.m_lumiInfo);
+		assert(m_event.m_eventInfo);
 
 		if (!m_mon->Update())
+		{
 			return false;
+		}
 		
 		// lood entries asynchronously and exit the program, if looding the entry takes unreasonably long (dCache, ...)
-		TTree* eventdata = &(m_fi.eventdata);
+		TChain* eventdata = m_fi.eventdata;
 		std::future<long> futureGetEntry = std::async(std::launch::async, [eventdata, lEvent] () -> long
 		{
 			return eventdata->GetEntry(lEvent);
@@ -66,33 +70,50 @@ public:
 		}
 		long resultGetEntry = futureGetEntry.get();
 		
-		m_event.m_input = m_fi.eventdata.GetTreeNumber();
+		m_event.m_input = eventdata->GetTreeNumber();
 
-		if (m_prevTree != m_fi.eventdata.GetTreeNumber())
+		if (m_prevTree != eventdata->GetTreeNumber())
 		{
-			m_prevTree = m_fi.eventdata.GetTreeNumber();
+			m_prevTree = eventdata->GetTreeNumber();
+			m_prevRun = -1;
 			m_prevLumi = -1;
-			LOG(INFO) << "\nProcessing " << m_fi.eventdata.GetFile()->GetName() << " ...";
+			LOG(INFO) << "\nProcessing " << eventdata->GetFile()->GetName() << " ...";
 		}
 
-		if (  m_prevRun != m_event.m_eventInfo->nRun ) {
+		if (m_prevRun != m_event.m_eventInfo->nRun)
+		{
 			m_prevRun = m_event.m_eventInfo->nRun;
 			m_prevLumi = -1;
+			
+			// lood entries asynchronously and exit the program, if looding the entry takes unreasonably long (dCache, ...)
+			FileInterface2* fi = &m_fi;
+			std::future<void> futureGetRunEntry = std::async(std::launch::async, [fi] ()
+			{
+				fi->GetRunEntry();
+			});
+			if (futureGetRunEntry.wait_for(timeout) != std::future_status::ready)
+			{
+				LOG(FATAL) << "Timeout: Could not read entry from Runs tree!";
+			}
+			
 			m_newRun = true;
 		}
 		else
+		{
 			m_newRun = false;
+		}
 
-		if ( m_prevLumi != m_event.m_eventInfo->nLumi ) {
+		if (m_prevLumi != m_event.m_eventInfo->nLumi)
+		{
 			m_prevLumi = m_event.m_eventInfo->nLumi;
 			
 			// lood entries asynchronously and exit the program, if looding the entry takes unreasonably long (dCache, ...)
 			FileInterface2* fi = &m_fi;
-			std::future<void> futureGetMetaEntry = std::async(std::launch::async, [fi] ()
+			std::future<void> futureGetLumiEntry = std::async(std::launch::async, [fi] ()
 			{
-				fi->GetMetaEntry();
+				fi->GetLumiEntry();
 			});
-			if (futureGetMetaEntry.wait_for(timeout) != std::future_status::ready)
+			if (futureGetLumiEntry.wait_for(timeout) != std::future_status::ready)
 			{
 				LOG(FATAL) << "Timeout: Could not read entry from Lumis tree!";
 			}
@@ -100,7 +121,12 @@ public:
 			m_newLumisection = true;
 		}
 		else
+		{
 			m_newLumisection = false;
+		}
+		
+		assert((m_event.m_eventInfo->nRun == m_event.m_lumiInfo->nRun) && (m_event.m_eventInfo->nRun == m_event.m_runInfo->nRun));
+		assert(m_event.m_eventInfo->nLumi == m_event.m_lumiInfo->nLumi);
 
 		return (resultGetEntry != 0);
 	}
@@ -113,7 +139,7 @@ public:
 	virtual bool NewRun() const override { return m_newRun; }
 
 	long long GetEntries() const override {
-		return (m_batchMode ? m_fi.eventdata.GetEntriesFast() : m_fi.eventdata.GetEntries());
+		return (m_batchMode ? m_fi.eventdata->GetEntriesFast() : m_fi.eventdata->GetEntries());
 	}
 
 
@@ -130,12 +156,12 @@ protected:
 	boost::scoped_ptr<ProgressMonitor> m_mon;
 
 	template<typename T>
-	T* SecureFileInterfaceGet(const std::string &name, const bool check = true, const bool def = false)
+	T* SecureFileInterfaceGetEvent(const std::string &name, const bool check = true, const bool def = false)
 	{
 		T* result = nullptr;
 		if (GetEntries() > 0)
 		{
-			result = this->m_fi.template Get<T>(name, check, def);
+			result = this->m_fi.template GetEvent<T>(name, check, def);
 			if (result == nullptr)
 			{
 				LOG(FATAL) << "Requested branch (" << name << ") not found!";
@@ -145,12 +171,27 @@ protected:
 	}
 
 	template<typename T>
-	T* SecureFileInterfaceGetMeta(const std::string &name, const bool check = true, const bool def = false)
+	T* SecureFileInterfaceGetLumi(const std::string &name, const bool check = true, const bool def = false)
 	{
 		T* result = nullptr;
 		if (GetEntries() > 0)
 		{
-			result = this->m_fi.template GetMeta<T>(name, check, def);
+			result = this->m_fi.template GetLumi<T>(name, check, def);
+			if (result == nullptr)
+			{
+				LOG(FATAL) << "Requested branch (" << name << ") not found!";
+			}
+		}
+		return result;
+	}
+
+	template<typename T>
+	T* SecureFileInterfaceGetRun(const std::string &name, const bool check = true, const bool def = false)
+	{
+		T* result = nullptr;
+		if (GetEntries() > 0)
+		{
+			result = this->m_fi.template GetRun<T>(name, check, def);
 			if (result == nullptr)
 			{
 				LOG(FATAL) << "Requested branch (" << name << ") not found!";
