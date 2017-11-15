@@ -169,7 +169,6 @@ public:
 	std::map<KTau*, KGenParticle*> m_genParticleMatchedTaus;
 	std::map<KBasicJet*, KGenParticle*> m_genParticleMatchedJets;
 	std::map<KLepton*, KGenParticle*> m_genParticleMatchedLeptons;
-	float m_ratioGenParticleMatched;
 	float m_genParticleMatchDeltaR;
 
 	/// added by GenTauMatchingProducers

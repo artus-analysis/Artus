@@ -88,22 +88,12 @@ public:
 	void Init(setting_type const& settings, metadata_type& metadata) override
 	{
 		KappaProducerBase::Init(settings, metadata);
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "ratioGenParticleMatched", [](event_type const & event, product_type const & product)
-		{
-			return product.m_ratioGenParticleMatched;
-		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "genParticleMatchDeltaR", [](event_type const & event, product_type const & product)
-		{
-			return product.m_genParticleMatchDeltaR;
-		});
 	}
 
 	void Produce(event_type const& event, product_type& product,
 	             setting_type const& settings, metadata_type const& metadata) const override
 	{
 		assert(event.m_genParticles);
-
-		float ratioGenParticleMatched = 0.0f;
 
 		if ((settings.*GetDeltaRMatchingRecoLeptonsGenParticle)() > 0.0f)
 		{
@@ -155,17 +145,12 @@ public:
 							if(deltaR<(settings.*GetDeltaRMatchingRecoLeptonsGenParticle)() && deltaR<deltaRmin)
 							{
 								(product.*m_genParticleMatchedLeptons)[*lepton] = &(*genParticle);
-								ratioGenParticleMatched += (1.0f / leptons.size());
-								product.m_genParticleMatchDeltaR = deltaR;
 								deltaRmin = deltaR;
 								leptonMatched = true;
 								//LOG(INFO) << this->GetProducerId() << " (event " << event.m_eventInfo->nEvent << "): " << (*lepton)->p4 << " --> " << genParticle->p4 << ", pdg=" << genParticle->pdgId << ", status=" << genParticle->status();
 							}
-							else product.m_genParticleMatchDeltaR = DefaultValues::UndefinedFloat;
 						}
-						else product.m_genParticleMatchDeltaR = DefaultValues::UndefinedFloat;
 					}
-					else product.m_genParticleMatchDeltaR = DefaultValues::UndefinedFloat;
 				}
 				// invalidate (non) matching lepton if requested
 				if (!(settings.*GetRecoLeptonMatchingGenParticleMatchAllLeptons)() &&
@@ -188,12 +173,6 @@ public:
 						  { return lepton1->p4.Pt() > lepton2->p4.Pt(); });
 			}
 		}
-		else
-		{
-			product.m_genParticleMatchDeltaR = DefaultValues::UndefinedFloat;
-		}
-		
-		product.m_ratioGenParticleMatched = ratioGenParticleMatched;
 	}
 
 
