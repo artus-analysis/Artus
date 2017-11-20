@@ -36,15 +36,23 @@ void PrintHltConsumer::ProcessFilteredEvent(event_type const& event, product_typ
 			for (size_t filterIndex = event.m_triggerObjectMetadata->getMinFilterIndex(hltIndex);
 			     filterIndex < event.m_triggerObjectMetadata->getMaxFilterIndex(hltIndex); ++filterIndex)
 			{
-				std::string filterName = event.m_triggerObjectMetadata->toFilter[filterIndex];
+				std::string filterName = event.m_triggerObjectMetadata->toFilter.at(filterIndex);
 				LOG(INFO) << "      Filter: \"" << filterName << "\" (index " << filterIndex << ")";
 
 				// loop over all trigger objects of this filter
-				for (std::vector<int>::const_iterator triggerObjectIndex = event.m_triggerObjects->toIdxFilter[filterIndex].begin();
-				     triggerObjectIndex != event.m_triggerObjects->toIdxFilter[filterIndex].end(); ++triggerObjectIndex)
+				if (event.m_triggerObjects->toIdxFilter.size() <= filterIndex)
 				{
-					KLV triggerObject = event.m_triggerObjects->trgObjects[*triggerObjectIndex];
-					LOG(INFO) << "        Trigger object: (pt = " << triggerObject.p4.Pt() << ", eta = " << triggerObject.p4.Eta() << ", phi = " << triggerObject.p4.Phi() << ", mass = " << triggerObject.p4.mass() << ")";
+					LOG(WARNING) << "No trigger objects found!";
+					LOG(INFO) << "event.m_triggerObjects->toIdxFilter.size() = " << event.m_triggerObjects->toIdxFilter.size() << " <= " << filterIndex << " = filterIndex";
+				}
+				else
+				{
+					for (std::vector<int>::const_iterator triggerObjectIndex = event.m_triggerObjects->toIdxFilter.at(filterIndex).begin();
+						 triggerObjectIndex != event.m_triggerObjects->toIdxFilter.at(filterIndex).end(); ++triggerObjectIndex)
+					{
+						KLV triggerObject = event.m_triggerObjects->trgObjects.at(*triggerObjectIndex);
+						LOG(INFO) << "        Trigger object: (pt = " << triggerObject.p4.Pt() << ", eta = " << triggerObject.p4.Eta() << ", phi = " << triggerObject.p4.Phi() << ", mass = " << triggerObject.p4.mass() << ")";
+					}
 				}
 				
 				if (filterName.empty())

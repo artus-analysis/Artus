@@ -110,7 +110,7 @@ public:
 				{
 					std::string firedHltName = product.m_selectedHltNames.at(firedHltIndex);
 					int firedHltPosition = product.m_selectedHltPositions.at(firedHltIndex);
-					//LOG(DEBUG) << "\tfiredFilterIndex, firedHltName, firedHltPosition = " << firedHltIndex << ", " << firedHltName << ", " << firedHltPosition;
+					//LOG(DEBUG) << "\tfiredHltIndex, firedHltName, firedHltPosition = " << firedHltIndex << ", " << firedHltName << ", " << firedHltPosition;
 					
 					// check that the hlt name given in the config matches the hlt which fired in the event
 					if (boost::regex_search(firedHltName, boost::regex(objectTriggerFilterByHltName->first, boost::regex::icase | boost::regex::extended)))
@@ -129,7 +129,7 @@ public:
 							     firedFilterIndex < event.m_triggerObjectMetadata->getMaxFilterIndex(firedHltPosition);
 							     ++firedFilterIndex)
 							{
-								std::string firedFilterName = event.m_triggerObjectMetadata->toFilter[firedFilterIndex];
+								std::string firedFilterName = event.m_triggerObjectMetadata->toFilter.at(firedFilterIndex);
 								//LOG(DEBUG) << "\t\t\t\tfiredFilterIndex, firedFilterName = " << firedFilterIndex << ", " << firedFilterName;
 								
 								// check that the filter regexp given in the config matches the fired filter
@@ -146,20 +146,27 @@ public:
 										//LOG(DEBUG) << "\t\t\t\t\t\tvalidObject = " << *validObject << ", (pt, eta, phi) = (" << (*validObject)->p4.Pt() << ", " << (*validObject)->p4.Eta() << ", " << (*validObject)->p4.Phi() << ")";
 										
 										// loop over all trigger objects for the fired filter
-										for (std::vector<int>::const_iterator triggerObjectIndex = event.m_triggerObjects->toIdxFilter[firedFilterIndex].begin();
-										     triggerObjectIndex != event.m_triggerObjects->toIdxFilter[firedFilterIndex].end();
-										     ++triggerObjectIndex)
+										if (event.m_triggerObjects->toIdxFilter.size() > firedFilterIndex)
 										{
-											KLV* triggerObject = &event.m_triggerObjects->trgObjects.at(*triggerObjectIndex);
-											//LOG(DEBUG) << "\t\t\t\t\t\t\ttriggerObjectIndex, triggerObject = " << *triggerObjectIndex << ", " << triggerObject << ", (pt, eta, phi) = (" << triggerObject->p4.Pt() << ", " << triggerObject->p4.Eta() << ", " << triggerObject->p4.Phi() << ")";
-											
-											// check the matching
-											if (ROOT::Math::VectorUtil::DeltaR(triggerObject->p4, (*validObject)->p4) < (settings.*GetDeltaRTriggerMatchingObjects)() && triggerObject->p4.Pt() > settings.GetTriggerObjectLowerPtCut())
+											for (std::vector<int>::const_iterator triggerObjectIndex = event.m_triggerObjects->toIdxFilter.at(firedFilterIndex).begin();
+												 triggerObjectIndex != event.m_triggerObjects->toIdxFilter.at(firedFilterIndex).end();
+												 ++triggerObjectIndex)
 											{
-												//LOG(DEBUG) << "\t\t\t\t\t\t\t\tobjectMatched";
+												KLV* triggerObject = &event.m_triggerObjects->trgObjects.at(*triggerObjectIndex);
+												//LOG(DEBUG) << "\t\t\t\t\t\t\ttriggerObjectIndex, triggerObject = " << *triggerObjectIndex << ", " << triggerObject << ", (pt, eta, phi) = (" << triggerObject->p4.Pt() << ", " << triggerObject->p4.Eta() << ", " << triggerObject->p4.Phi() << ")";
+											
+												// check the matching
+												if (ROOT::Math::VectorUtil::DeltaR(triggerObject->p4, (*validObject)->p4) < (settings.*GetDeltaRTriggerMatchingObjects)() && triggerObject->p4.Pt() > settings.GetTriggerObjectLowerPtCut())
+												{
+													//LOG(DEBUG) << "\t\t\t\t\t\t\t\tobjectMatched";
 												
-												matchedTriggerObjects.push_back(triggerObject);
+													matchedTriggerObjects.push_back(triggerObject);
+												}
 											}
+										}
+										else
+										{
+											LOG_N_TIMES(20, ERROR) << "No trigger objects found! (This error limited to 20 repetitions.)";
 										}
 										
 										(product.*m_detailedTriggerMatchedObjects)[*validObject][firedHltName][firedFilterName] = matchedTriggerObjects;
@@ -182,7 +189,7 @@ public:
 				if (hltNamesWhereAllFiltersMatched.size() > 0)
 				{
 					// store first trigger object of first filter of first HLT name
-					(product.*m_triggerMatchedObjects)[triggerMatchingResult.first] = ((triggerMatchingResult.second)[hltNamesWhereAllFiltersMatched.front()].begin()->second).front();
+					(product.*m_triggerMatchedObjects)[triggerMatchingResult.first] = ((triggerMatchingResult.second).at(hltNamesWhereAllFiltersMatched.front()).begin()->second).front();
 				}
 				else if (hasAllHltMatches && hasHltAndFilterMatch && (settings.*GetInvalidateNonMatchingObjects)())
 				{
