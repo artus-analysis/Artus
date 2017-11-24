@@ -8,7 +8,8 @@
 class KappaMetadata : public MetadataBase
 {
 public:
-	KappaMetadata() : MetadataBase() {};
+	KappaMetadata();
+	virtual ~KappaMetadata();
 
 };
 

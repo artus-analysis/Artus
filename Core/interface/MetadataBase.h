@@ -28,8 +28,11 @@ typedef std::function<std::vector<std::string>(EventBase const&, ProductBase con
 typedef std::function<std::vector<int>(EventBase const&, ProductBase const&)> vInt_extractor_lambda_base;
 
 
-struct MetadataBase
+class MetadataBase
 {
+public:
+	MetadataBase();
+	virtual ~MetadataBase();
 	
 	std::map<std::string, bool_extractor_lambda_base> m_commonBoolQuantities;
 	std::map<std::string, int_extractor_lambda_base> m_commonIntQuantities;
