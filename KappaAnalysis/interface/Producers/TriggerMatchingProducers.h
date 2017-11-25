@@ -166,7 +166,7 @@ public:
 										}
 										else
 										{
-											LOG_N_TIMES(20, ERROR) << "No trigger objects found! (This error limited to 20 repetitions.)";
+											LOG(FATAL) << "No trigger objects found! This points to a problematic Kappa skim.";
 										}
 										
 										(product.*m_detailedTriggerMatchedObjects)[*validObject][firedHltName][firedFilterName] = matchedTriggerObjects;
