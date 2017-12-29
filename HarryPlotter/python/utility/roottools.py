@@ -312,7 +312,7 @@ class RootTools(object):
 		
 		# ROOT optimisations
 		tree.SetCacheSize(256*1024*1024) # 256 MB
-		tree.AddBranchToCache("*", True)
+		# tree.AddBranchToCache("*", True)
 		
 		tree.SetName(hashlib.md5("".join(root_file_names)).hexdigest())
 		
