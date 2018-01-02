@@ -519,6 +519,8 @@ class ArtusWrapper(object):
 			epilogArguments += "--copy-remote-files "
 		if not self._args.ld_library_paths is None:
 			epilogArguments += ("--ld-library-paths %s" % " ".join(self._args.ld_library_paths))
+		if self._args.n_events:
+			epilogArguments += "-e %d " % self._args.n_events
 
 		sepath = "se path = " + (self._args.se_path if self._args.se_path else sepathRaw)
 		workdir = "workdir = " + os.path.join(self.localProjectPath, "workdir")
