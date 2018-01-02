@@ -175,9 +175,12 @@ class ArtusWrapper(object):
 					filelist = glob.glob(os.path.expandvars(entry))
 					self.setInputFilenames(filelist, alreadyInGridControl)
 				else:
-					self._config["InputFiles"].append(entry)
+					if not (entry in self._config["InputFiles"]):
+						self._config["InputFiles"].append(entry)
 					if not alreadyInGridControl:
-						self._gridControlInputFiles.setdefault(self.extractNickname(entry), []).append(entry + " = 1")
+						tmpEntry = entry + " = 1"
+						if not (tmpEntry in self._gridControlInputFiles.get(self.extractNickname(entry), [])):
+							self._gridControlInputFiles.setdefault(self.extractNickname(entry), []).append(tmpEntry)
 			elif os.path.splitext(entry)[1] == ".dbs":
 				tmpDBS = self.readDbsFile(entry)
 				tmpDBS = self.removeProcessedFiles(tmpDBS, entry)
