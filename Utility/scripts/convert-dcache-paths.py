@@ -29,13 +29,16 @@ def main():
 	logger.initLogger(args)
 	
 	for input_filename in args.input_files:
-		with open(input_filename, "rw" if args.in_place else "r") as input_file:
-			content = input_file.read()
-			content = getattr(dcachetools, args.mode)(content)
-			if args.in_place:
-				input_file.write(content)
-			else:
-				log.info(content)
+		if "://" in input_filename:
+			log.info(getattr(dcachetools, args.mode)(input_filename))
+		else:
+			with open(input_filename, "rw" if args.in_place else "r") as input_file:
+				content = input_file.read()
+				content = getattr(dcachetools, args.mode)(content)
+				if args.in_place:
+					input_file.write(content)
+				else:
+					log.info(content)
 
 
 if __name__ == "__main__":
