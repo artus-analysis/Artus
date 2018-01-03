@@ -27,7 +27,7 @@ def main():
 	logger.initLogger(args)
 	
 	result = tools.download_remote_file(remote=args.remote, local=args.local, offset=args.offset, bandwidth=args.bandwidth)
-	if result is None:
+	if not result:
 		sys.exit(1)
 
 

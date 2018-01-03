@@ -350,10 +350,10 @@ def download_remote_file(remote, local, offset=30, bandwidth=100):
 	log.debug(command)
 	exit_code = logger.subprocessCall(shlex.split(command))
 	if exit_code == 0:
-		return local
+		return True
 	else:
 		log.critical("Could not download \"{remote}\"!".format(remote=remote))
-		return None
+		return False
 
 def pvalue2sigma(pvalue):
 	return ROOT.Math.normal_quantile_c(pvalue/2, 1.0)
