@@ -329,7 +329,7 @@ def subprocessCall(args, **kwargs):
 	return subprocess.Popen(args, **kwargs).communicate()
 
 def download_remote_file(remote, local, offset=30, bandwidth=100):
-	command = "gfal-stat {remote}".format(remote=remote)
+	command = "gfal-stat --timeout {timeout} {remote}".format(timeout=str(offset), remote=remote)
 	stdout, stderr = subprocessCall(shlex.split(command))
 	size = re.search("Size\:\s*(?P<size>\d*)", stdout)
 	if size:
@@ -342,7 +342,7 @@ def download_remote_file(remote, local, offset=30, bandwidth=100):
 		return None
 	
 	timeout = offset + size/1024/bandwidth
-	command = "gfal-copy --abort-on-failure -T {timeout} --force {remote} file://{local}".format(
+	command = "gfal-copy --abort-on-failure --timeout {timeout} --transfer-timeout {timeout} --force {remote} file://{local}".format(
 			timeout=str(timeout),
 			remote=remote,
 			local=local
