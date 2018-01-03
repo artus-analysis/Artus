@@ -328,6 +328,33 @@ def subprocessCall(args, **kwargs):
 	kwargs["stderr"] = subprocess.PIPE
 	return subprocess.Popen(args, **kwargs).communicate()
 
+def download_remote_file(remote, local, offset=30, bandwidth=100):
+	command = "gfal-stat {remote}".format(remote=remote)
+	stdout, stderr = subprocessCall(shlex.split(command))
+	size = re.search("Size\:\s*(?P<size>\d*)", stdout)
+	if size:
+		size = int(size.groupdict().get("size", "0"))
+		if size <= 0:
+			log.critical("Could not get file size of \"{remote}\"!".format(remote=remote))
+			return None
+	else:
+		log.critical("Could not get file size of \"{remote}\"!".format(remote=remote))
+		return None
+	
+	timeout = offset + size/1024/bandwidth
+	command = "gfal-copy --abort-on-failure -T {timeout} --force {remote} file://{local}".format(
+			timeout=str(timeout),
+			remote=remote,
+			local=local
+	)
+	log.debug(command)
+	exit_code = logger.subprocessCall(shlex.split(command))
+	if exit_code == 0:
+		return local
+	else:
+		log.critical("Could not download \"{remote}\"!".format(remote=remote))
+		return None
+
 def pvalue2sigma(pvalue):
 	return ROOT.Math.normal_quantile_c(pvalue/2, 1.0)
 
