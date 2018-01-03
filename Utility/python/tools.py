@@ -342,7 +342,7 @@ def download_remote_file(remote, local, offset=30, bandwidth=100):
 		return None
 	
 	timeout = offset + size/1024/bandwidth
-	command = "gfal-copy --abort-on-failure --timeout {timeout} --transfer-timeout {timeout} --force {remote} file://{local}".format(
+	command = "gfal-copy --abort-on-failure --timeout {timeout} --transfer-timeout {timeout} --force {remote} {local}".format(
 			timeout=str(timeout),
 			remote=remote,
 			local=local
