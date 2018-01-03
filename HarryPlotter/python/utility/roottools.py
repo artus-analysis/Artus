@@ -311,8 +311,7 @@ class RootTools(object):
 			friend_trees[-1].SetDirectory(0)
 		
 		# ROOT optimisations
-		tree.SetCacheSize(256*1024*1024) # 256 MB
-		# tree.AddBranchToCache("*", True)
+		# Performed automatically now.
 		
 		tree.SetName(hashlib.md5("".join(root_file_names)).hexdigest())
 		
