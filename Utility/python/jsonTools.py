@@ -368,25 +368,18 @@ class JsonDict(dict):
 				result.append(JsonDict.deepreplaceremotefiles(item, tmp_directory, remote_identifiers))
 		elif isinstance(jsonDict, basestring):
 			if any([jsonDict.strip().rstrip().startswith(remote_identifier) for remote_identifier in remote_identifiers]):
-				#prefix, suffix = os.path.splitext(jsonDict.strip().rstrip())
-				#result = tempfile.mktemp(prefix=prefix+"_", suffix=suffix, dir=tmp_directory)
 				result = os.path.join(tmp_directory, jsonDict.strip().rstrip().replace(":", "_").replace("/", "__")[-200:])
-				copy_command = "gfal-copy --timeout 1800 --force {remote} file://{local}".format(remote=dcachetools.xrd2srm(jsonDict), local=result)
-				log.debug(copy_command)
-				success = True
-				try:
-					exitCode = logger.subprocessCall(copy_command.split())
-					if exitCode != 0:
-						result = jsonDict
-						success = False
-						log.critical("Could not download \""+jsonDict+"\"!")
-						sys.exit(1)
-				except:
-					result = jsonDict
-					success = False
-				if not success:
+				
+				exit_code = tools.download_remote_file(remote=dcachetools.xrd2srm(jsonDict), local=result)
+				if exit_code is None: # gfal-stat failed
 					log.critical("Could not download \""+jsonDict+"\"!")
+					sys.exit(1)
+				elif exit_code == False: # gfal-copy failed  (after gfal-stat success)
+					log.warning("Could not download \""+jsonDict+"\"!")
 					#sys.exit(1)
+				else:
+					result = jsonDict
+				
 			else:
 				result = jsonDict
 		else:
