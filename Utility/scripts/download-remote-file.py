@@ -8,6 +8,7 @@ log = logging.getLogger(__name__)
 import Artus.Utility.tools as tools
 
 import argparse
+import sys
 
 
 def main():
