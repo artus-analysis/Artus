@@ -143,7 +143,7 @@ class RootTools(object):
 		for root_file_name in root_file_names:
 			with TFileContextManager(root_file_name, "READ") as root_file:
 				for path_to_histogram in path_to_histograms:
-					tmp_root_histogram = root_file.Get(path_to_histogram)
+					tmp_root_histogram = root_file.Get(str(path_to_histogram))
 					if tmp_root_histogram == None:
 						log.critical("Cannot find histogram \"%s\" in file \"%s\"!" % (path_to_histogram, root_file_name))
 						sys.exit(1)
@@ -311,8 +311,7 @@ class RootTools(object):
 			friend_trees[-1].SetDirectory(0)
 		
 		# ROOT optimisations
-		tree.SetCacheSize(256*1024*1024) # 256 MB
-		tree.AddBranchToCache("*", True)
+		# Performed automatically now.
 		
 		tree.SetName(hashlib.md5("".join(root_file_names)).hexdigest())
 		
@@ -763,9 +762,9 @@ class RootTools(object):
 		root_file.cd()
 		root_directory = root_file
 		for directory in path.split("/")[:-1]:
-			if root_directory.Get(directory) == None:
+			if root_directory.Get(str(directory)) == None:
 				root_directory.mkdir(directory)
-			root_directory = root_directory.Get(directory)
+			root_directory = root_directory.Get(str(directory))
 			root_directory.cd()
 		root_object.Write(path.split("/")[-1], ROOT.TObject.kWriteDelete)
 		root_file.cd()
