@@ -372,14 +372,13 @@ class JsonDict(dict):
 				
 				exit_code = tools.download_remote_file(remote=dcachetools.xrd2srm(jsonDict), local=result)
 				if exit_code is None: # gfal-stat failed
+					result = jsonDict
 					log.critical("Could not download \""+jsonDict+"\"!")
 					sys.exit(1)
 				elif exit_code == False: # gfal-copy failed  (after gfal-stat success)
+					result = jsonDict
 					log.warning("Could not download \""+jsonDict+"\"!")
 					#sys.exit(1)
-				else:
-					result = jsonDict
-				
 			else:
 				result = jsonDict
 		else:
