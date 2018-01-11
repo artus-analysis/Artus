@@ -369,16 +369,16 @@ class JsonDict(dict):
 		elif isinstance(jsonDict, basestring):
 			if any([jsonDict.strip().rstrip().startswith(remote_identifier) for remote_identifier in remote_identifiers]):
 				result = os.path.join(tmp_directory, jsonDict.strip().rstrip().replace(":", "_").replace("/", "__")[-200:])
-				
-				exit_code = tools.download_remote_file(remote=dcachetools.xrd2srm(jsonDict), local=result)
-				if exit_code is None: # gfal-stat failed
-					result = jsonDict
-					log.critical("Could not download \""+jsonDict+"\"!")
-					sys.exit(1)
-				elif exit_code == False: # gfal-copy failed  (after gfal-stat success)
-					result = jsonDict
-					log.warning("Could not download \""+jsonDict+"\"!")
-					#sys.exit(1)
+				if not os.path.exists(result):
+					exit_code = tools.download_remote_file(remote=dcachetools.xrd2srm(jsonDict), local=result)
+					if exit_code is None: # gfal-stat failed
+						result = jsonDict
+						log.critical("Could not download \""+jsonDict+"\"!")
+						sys.exit(1)
+					elif exit_code == False: # gfal-copy failed  (after gfal-stat success)
+						result = jsonDict
+						log.warning("Could not download \""+jsonDict+"\"!")
+						#sys.exit(1)
 			else:
 				result = jsonDict
 		else:
