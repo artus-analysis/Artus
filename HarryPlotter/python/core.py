@@ -194,16 +194,23 @@ class HarryCore(object):
 		# prepare aguments for all processors before running them
 		for processor in self.processors:
 			processor.prepare_args(self.parser, plotData)
-			processor.run(plotData)
+			if not plotData.plotdict["dry_run"]:
+				processor.run(plotData)
 		
 		# export arguments into JSON file
+		output_filenames = []
 		if plotData.plotdict["export_json"] != "default" and plotData.plotdict["export_json"] not in [False, "False", None, "None"]:
-			export_args.save(plotData.plotdict["export_json"], indent=4)
+			json_filename = plotData.plotdict["export_json"]
+			export_args.save(json_filename, indent=4)
+			if plotData.plotdict["dry_run"]:
+				output_filenames = [json_filename]
+				log.info("Created config \"%s\"." % json_filename)
 		else:
 			plotData.plotdict["export_json"] = None
 		
 		# save plots
-		output_filenames = plotData.save()
+		if not plotData.plotdict["dry_run"]:
+			output_filenames = plotData.save()
 		return output_filenames
 	
 	def register_processor(self, processor):
