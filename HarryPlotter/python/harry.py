@@ -6,13 +6,17 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import collections
+import datetime
+import os
+import shlex
+import string
+import sys
+import tempfile
+import traceback
 
 import ROOT
-import sys
-import traceback
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gErrorIgnoreLevel = ROOT.kError
-
 for root_type in [
 		ROOT.TFile, ROOT.TDirectory, ROOT.TDirectoryFile,
 		ROOT.TTree, ROOT.TChain, ROOT.TNtuple,
@@ -42,12 +46,13 @@ def pool_plot(args):
 
 
 class HarryPlotter(object):
-	def __init__(self, list_of_config_dicts=None, list_of_args_strings=None, n_processes=1, n_plots=None):
+	def __init__(self, list_of_config_dicts=None, list_of_args_strings=None, n_processes=1, n_plots=None, batch=None):
 		self.output_filenames = self.multi_plots(
 				list_of_config_dicts=list_of_config_dicts,
 				list_of_args_strings=list_of_args_strings,
 				n_processes=n_processes,
-				n_fast_plots=n_plots
+				n_fast_plots=n_plots,
+				batch=batch
 		)
 	
 	def plot(self, plot_index):
@@ -59,7 +64,7 @@ class HarryPlotter(object):
 		self.harry_cores[plot_index] = harry_core # TODO: thread-safe?
 		return output_filenames
 	
-	def multi_plots(self, list_of_config_dicts, list_of_args_strings, n_processes=1, n_fast_plots=None):
+	def multi_plots(self, list_of_config_dicts, list_of_args_strings, n_processes=1, n_fast_plots=None, batch=None):
 		config_dicts = list_of_config_dicts if isinstance(list_of_config_dicts, collections.Iterable) and not isinstance(list_of_config_dicts, basestring) else [list_of_config_dicts]
 		args_strings = list_of_args_strings if isinstance(list_of_args_strings, collections.Iterable) and not isinstance(list_of_args_strings, basestring) else [list_of_args_strings]
 		
@@ -82,6 +87,8 @@ class HarryPlotter(object):
 				self.harry_args.append(None)
 			else:
 				config_dict["comment"] = " ".join(sys.argv)
+				if not batch is None:
+					config_dict["dry_run"] = True
 				if "json_defaults" in config_dict:
 					json_defaults_dict = jsonTools.JsonDict(config_dict["json_defaults"]).doIncludes().doComments()
 					config_dict.pop("json_defaults")
@@ -96,6 +103,8 @@ class HarryPlotter(object):
 					self.harry_args[-1] += (" "+args_string)
 				if config_dict is None:
 					self.harry_args[-1] += (" --comment " + (" ".join(sys.argv)))
+					if not batch is None:
+						self.harry_args[-1] += " --dry-run"
 		
 		if not n_fast_plots is None:
 			self.harry_args = self.harry_args[:n_fast_plots]
@@ -128,6 +137,33 @@ class HarryPlotter(object):
 		# single plot
 		elif n_plots > 0:
 			output_filenames.append(self.plot(0))
+		
+		# batch submission
+		if (not (batch is None)) and (len(failed_plots) < n_plots):
+			workdir = tempfile.mkdtemp(prefix="harry_work_"+datetime.datetime.now().strftime("%Y-%m-%d_%H-%M"))+"_"
+			
+			main_config = ""
+			with open(os.path.expandvars("$CMSSW_BASE/src/Artus/HarryPlotter/data/grid-control_base_config.conf"), "r") as main_config_file:
+				main_config = main_config_file.read()
+			
+			backend_config = ""
+			with open(os.path.expandvars("$CMSSW_BASE/src/Artus/Configuration/data/grid-control_backend_" + batch + ".conf"), "r") as backend_config_file:
+				backend_config = backend_config_file.read()
+			
+			final_config = string.Template(main_config).safe_substitute(
+					cmsswbase=os.path.expandvars("$CMSSW_BASE"),
+					jsonconfigs="\n\t"+("\n\t".join([item[0] for item in output_filenames])),
+					executable=os.path.expandvars("$CMSSW_BASE/src/HiggsAnalysis/KITHiggsToTauTau/scripts/standalone_higgsplot.sh"), # TODO: switch to Artus version
+					workdir=workdir,
+					backend=backend_config
+			)
+			final_config_filename = workdir+".conf"
+			with open(final_config_filename, "w") as final_config_file:
+				final_config_file.write(final_config)
+			
+			command = "go.py " + final_config_filename
+			log.info(command)
+			logger.subprocessCall(shlex.split(command))
 		
 		if len(failed_plots) > 0:
 			log.error("%d failed plots:" % len(failed_plots))
