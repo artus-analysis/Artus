@@ -496,14 +496,13 @@ class ArtusWrapper(object):
 			dbsFile.write(dbsFileContent)
 
 		gcConfigFilePath = os.path.expandvars(self._args.gc_config)
-		gcConfigFile = open(gcConfigFilePath,"r")
-		tmpGcConfigFileBasename = "grid-control_config.conf"
-		tmpGcConfigFileBasepath = os.path.join(self.localProjectPath, tmpGcConfigFileBasename)
+		with open(gcConfigFilePath,"r") as gcConfigFile:
+			tmpGcConfigFileBasename = "grid-control_config.conf"
+			tmpGcConfigFileBasepath = os.path.join(self.localProjectPath, tmpGcConfigFileBasename)
 
-		# open base file and save it to a list
-		tmpGcConfigFile = open(tmpGcConfigFileBasepath,"w")
-		gcConfigFileContent = gcConfigFile.readlines()
-		gcConfigFile.close()
+			# open base file and save it to a list
+			tmpGcConfigFile = open(tmpGcConfigFileBasepath,"w")
+			gcConfigFileContent = gcConfigFile.readlines()
 
 		sepathRaw = os.path.join(self.projectPath, "output")
 
@@ -527,7 +526,11 @@ class ArtusWrapper(object):
 
 		sepath = "se path = " + (self._args.se_path if self._args.se_path else sepathRaw)
 		workdir = "workdir = " + os.path.join(self.localProjectPath, "workdir")
-		backend = open(os.path.expandvars("$CMSSW_BASE/src/Artus/Configuration/data/grid-control_backend_" + self._args.batch + ".conf"), 'r').read()
+		
+		backend = ""
+		with open(os.path.expandvars("$CMSSW_BASE/src/Artus/Configuration/data/grid-control_backend_" + self._args.batch + ".conf"), 'r') as backend_config_file:
+			backend = backend_config_file.read()
+		
 		self.replacingDict = dict(
 				include = ("include = " + " ".join(self._args.gc_config_includes) if self._args.gc_config_includes else ""),
 				epilogexecutable = "epilog executable = " + os.path.basename(sys.argv[0]),
