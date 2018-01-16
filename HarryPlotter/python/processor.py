@@ -59,7 +59,7 @@ class Processor(object):
 		
 		# warn if any input requires replication to match length
 		if any((1 < len(plotData.plotdict[key]) < max_n_inputs) for key in keys_of_list_args):
-			log.warning(
+			(log.debug if plotData.plotdict["dry_run"] else log.warning)(
 				"Parameters '%s' require parameter list length of %d."
 				" Parameters %s will be replicated to match required length." % (
 					"', '".join(key for key in keys_of_list_args if len(plotData.plotdict[key]) == max_n_inputs),
