@@ -39,7 +39,7 @@ def matchingItem(regexItems, string):
 			return item
 	return None
 
-def matching_sublist(input_list, whitelist=[], blacklist=[]):
+def matching_sublist(input_list, whitelist=[], blacklist=[], items_label="items", log_level=log.warn):
 	"""returns subset of input_list (non) matching the regexps."""
 	whitelist_matches = []
 	if len(whitelist) == 0:
@@ -70,8 +70,8 @@ def matching_sublist(input_list, whitelist=[], blacklist=[]):
 	
 	# warn if black/whitelisting changes the order of nicks
 	indices = [input_list.index(out_nick) for out_nick in output_list]
-	if not all(x<y for x, y in zip(indices, indices[1:])):
-		log.warn("White-/blacklisting changed order of nicks!")
+	if not all(x<=y for x, y in zip(indices, indices[1:])):
+		log.warn("White-/blacklisting changed order of {items_label}!".format(items_label=items_label))
 		original_order = [i for i in input_list if i in output_list]
 		log.warn("Original order: "+", ".join(original_order))
 		log.warn("New order     : "+", ".join(output_list))

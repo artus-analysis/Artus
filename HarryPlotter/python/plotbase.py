@@ -309,17 +309,19 @@ class PlotBase(processor.Processor):
 		plotData.plotdict["nicks"] = tools.matching_sublist(
 				plotData.plotdict["nicks"],
 				plotData.plotdict["nicks_whitelist"],
-				plotData.plotdict["nicks_blacklist"]
+				plotData.plotdict["nicks_blacklist"],
+				items_label="nicks"
 		)
 		log.debug("Final order of object nicks for plotting: %s" % ", ".join(plotData.plotdict["nicks"]))
 		if len(plotData.plotdict["nicks"]) == 0:
-			log.critical("No (remaining) objects to be plotted!")
+			log.critical("No (remaining) objects to be plotted! Tru to adjust your white/black lists.")
 			sys.exit(1)
 		
 		# handle subplot regexps
 		plotData.plotdict["subplot_nicks"] = tools.matching_sublist(
 				plotData.plotdict["nicks"],
-				plotData.plotdict["subplot_nicks"]
+				plotData.plotdict["subplot_nicks"],
+				items_label="subplot nicks"
 		)
 		log.debug("Object nicks for the subplot: %s" % ", ".join(plotData.plotdict["subplot_nicks"]))
 		plotData.plotdict["subplots"] = [nick in plotData.plotdict["subplot_nicks"] for nick in plotData.plotdict["nicks"]]
