@@ -42,7 +42,7 @@ def condor_state_string(state):
 def print_stats_table(args, previous_users=[]):
 
 	# call stats
-	stats_command = "qstat -u '*' -s prs" if args.qstat else "condor_q -global -autoformat ClusterId Owner JobStatus"
+	stats_command = "qstat -u '*' -s prs" if args.qstat else "condor_q -global -allusers -autoformat ClusterId Owner JobStatus"
 	stats_output = subprocess.Popen(stats_command, stdout=subprocess.PIPE, shell=True).communicate()[0].split("\n")[2:]
 	stats_output = [job for job in stats_output if job != ""]
 	
