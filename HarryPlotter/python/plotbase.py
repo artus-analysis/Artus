@@ -259,6 +259,16 @@ class PlotBase(processor.Processor):
 		
 		if plotData.plotdict["export_json"] == "default":
 			plotData.plotdict["export_json"] = os.path.join(plotData.plotdict["output_dir"], plotData.plotdict["filename"]+".json")
+		
+		# create output directory if not exisiting
+		try:
+			os.makedirs(plotData.plotdict["output_dir"])
+			log.info("Created output directory \"%s\"." % plotData.plotdict["output_dir"])
+		except OSError as exc:
+			# if target directory already exists, ignore exception:
+			if exc.errno == errno.EEXIST and os.path.isdir(plotData.plotdict["output_dir"]):
+				pass
+			else: raise
 
 		# prepare nicknames for stacked plots
 		plotData.plotdict["stacks"] = [stack if stack != None else ("stack%d" % index) for index, stack in enumerate(plotData.plotdict["stacks"])]
@@ -318,15 +328,7 @@ class PlotBase(processor.Processor):
 		pass
 	
 	def create_canvas(self, plotData):
-		# create output directory if not exisiting
-		try:
-			os.makedirs(plotData.plotdict["output_dir"])
-			log.info("Created output directory \"%s\"." % plotData.plotdict["output_dir"])
-		except OSError as exc:
-			# if target directory already exists, ignore exception:
-			if exc.errno == errno.EEXIST and os.path.isdir(plotData.plotdict["output_dir"]):
-				pass
-			else: raise
+		pass
 	
 	def prepare_histograms(self, plotData):
 		# handle stacks
