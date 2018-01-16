@@ -46,7 +46,11 @@ def pool_plot(args):
 
 
 class HarryPlotter(object):
-	def __init__(self, list_of_config_dicts=None, list_of_args_strings=None, n_processes=1, n_plots=None, batch=None):
+	def __init__(self, list_of_config_dicts=None, list_of_args_strings=None, n_processes=1, n_plots=None, batch=None, standalone_executable=None):
+		if standalone_executable is None:
+			standalone_executable = os.path.expandvars("$CMSSW_BASE/src/Artus/HarryPlotter/scripts/standalone_harry.sh")
+		self.standalone_executable = standalone_executable
+		
 		self.output_filenames = self.multi_plots(
 				list_of_config_dicts=list_of_config_dicts,
 				list_of_args_strings=list_of_args_strings,
@@ -140,7 +144,7 @@ class HarryPlotter(object):
 		
 		# batch submission
 		if (not (batch is None)) and (len(failed_plots) < n_plots):
-			workdir = tempfile.mkdtemp(prefix="harry_work_"+datetime.datetime.now().strftime("%Y-%m-%d_%H-%M"))+"_"
+			workdir = tempfile.mkdtemp(prefix="harry_work_"+datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")+"_")
 			
 			main_config = ""
 			with open(os.path.expandvars("$CMSSW_BASE/src/Artus/HarryPlotter/data/grid-control_base_config.conf"), "r") as main_config_file:
@@ -153,7 +157,7 @@ class HarryPlotter(object):
 			final_config = string.Template(main_config).safe_substitute(
 					cmsswbase=os.path.expandvars("$CMSSW_BASE"),
 					jsonconfigs="\n\t"+("\n\t".join([item[0] for item in output_filenames])),
-					executable=os.path.expandvars("$CMSSW_BASE/src/HiggsAnalysis/KITHiggsToTauTau/scripts/standalone_higgsplot.sh"), # TODO: switch to Artus version
+					executable=self.standalone_executable,
 					workdir=workdir,
 					backend=backend_config
 			)
