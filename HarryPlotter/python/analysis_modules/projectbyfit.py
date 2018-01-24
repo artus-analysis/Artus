@@ -11,7 +11,7 @@ import ROOT
 import hashlib
 import Artus.HarryPlotter.analysisbase as analysisbase
 
-import Artus.HarryPlotter.analysis_modules.functionplot as functionplot
+import Artus.HarryPlotter.analysis_modules.functionfit as functionfit
 import Artus.HarryPlotter.analysis_modules.projectionY as projectionY
 import copy
 
@@ -103,7 +103,7 @@ class ProjectByFit(analysisbase.AnalysisBase):
 
 			if log.isEnabledFor(logging.DEBUG): option.translate(None, "Q")
 			if not histogram_ND.ClassName().startswith("TH3" if fit_slices_z else "TH2"):
-				log.fatal("The ProjectByFit Module only works on projecting " + ("TH3" if fit_slices_z else "TH2") + " histograms to " + ("TH2" if fit_slices_z else "TH1") + " histograms, but " + histogram_ND.ClassName() + " was provided as input.")
+				log.critical("The ProjectByFit Module only works on projecting " + ("TH3" if fit_slices_z else "TH2") + " histograms to " + ("TH2" if fit_slices_z else "TH1") + " histograms, but " + histogram_ND.ClassName() + " was provided as input.")
 				sys.exit(1)
 
 			# Estimating fit range
@@ -120,7 +120,7 @@ class ProjectByFit(analysisbase.AnalysisBase):
 
 			# Getting fitted histogram
 			if fit_backend == "ROOT":
-				root_function = functionplot.FunctionPlot.create_tf1(function, fit_min, fit_max, start_parameters, nick=nick)
+				root_function = functionfit.FunctionFit.create_tf1(function, fit_min, fit_max, start_parameters, nick=nick)
 				if not fit_slices_z:
 					aSlices = ROOT.TObjArray()
 					histogram_ND.FitSlicesY(root_function,  int(bin_minx), int(bins_maxx), int(cut_bins_filled), option, aSlices)
@@ -138,7 +138,7 @@ class ProjectByFit(analysisbase.AnalysisBase):
 			elif fit_backend == "RooFit":
 				fitted_histogram = self.fitSlicesRooFit(histogram_ND, function, start_parameters, parameter_to_plot)
 			else:
-				log.fatal("No such backend")
+				log.critical("No such backend")
 				sys.exit(1)
 
 			if not_override:
@@ -158,7 +158,7 @@ class ProjectByFit(analysisbase.AnalysisBase):
 
 		slice_generator =  projectionY.ProjectionY.histoSlice(histogram_2D)
 		for ibin, fit_histogram in enumerate(slice_generator):
-			val, error = functionplot.FunctionPlot.get_roofit_parameter(function,
+			val, error = functionfit.FunctionFit.get_roofit_parameter(function,
 		                         fit_histogram.GetXaxis().GetXmin(),
 		                         fit_histogram.GetXaxis().GetXmax(),
 		                         start_parameters,
