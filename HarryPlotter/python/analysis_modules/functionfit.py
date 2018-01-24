@@ -6,10 +6,11 @@ import ROOT
 import Artus.HarryPlotter.analysisbase as analysisbase
 import hashlib
 import array
+import sys
 
-class FunctionPlot(analysisbase.AnalysisBase):
+class FunctionFit(analysisbase.AnalysisBase):
 	def __init__(self):
-		super(FunctionPlot, self).__init__()
+		super(FunctionFit, self).__init__()
 
 	def modify_argument_parser(self, parser, args):
 		self.function_options = parser.add_argument_group("Function draw options")
@@ -50,7 +51,7 @@ class FunctionPlot(analysisbase.AnalysisBase):
 						x_low.append( histo.GetXaxis().GetXmin() )
 					tmp_x_range.append( [ min(x_low), min(x_high)] )
 				else:
-					log.fatal("Please provide fucntion ranges for the FunctionPlot Module")
+					log.fatal("Please provide fucntion ranges for the FunctionFit Module")
 					sys.exit(1)
 			else:
 				tmp_x_range.append( [float (x) for x in  x_range.split(",")] )
@@ -64,7 +65,7 @@ class FunctionPlot(analysisbase.AnalysisBase):
 			tmp_function_parameters.append([float (x) for x in  function_parameter.split(",")])
 		plotData.plotdict["function_parameters"] = tmp_function_parameters
 
-		super(FunctionPlot, self).prepare_args(parser, plotData)
+		super(FunctionFit, self).prepare_args(parser, plotData)
 
 		self.n_functions = len(plotData.plotdict["function_collect_result"]) - plotData.plotdict["function_collect_result"].count(None)
 		
@@ -73,10 +74,10 @@ class FunctionPlot(analysisbase.AnalysisBase):
 			plotData.plotdict["nicks"].append("function_fit_result")
 
 	def run(self, plotData=None):
-		super(FunctionPlot, self).run()
+		super(FunctionFit, self).run()
 		if plotData.plotdict["functions"] == None:
-			log.info("You are using the FunctionPlot module. Please provide at least one input function with --function")
-			os.exit(1)
+			log.critical("You are using the FunctionFit module. Please provide at least one input function with --function")
+			sys.exit(1)
 		else:
 			for i, (function, function_nick, function_parameters, fit_nickname, x_range, collect_result, fit_backend) in enumerate(zip( 
 			                                                 plotData.plotdict["functions"], 
@@ -107,7 +108,7 @@ class FunctionPlot(analysisbase.AnalysisBase):
 				elif collect_result.isdigit():
 					plotData.plotdict["root_objects"]["function_fit_result"].SetBinContent(i+1, plotData.fit_results[function_nick].Parameter(int(plotData.plotdict["function_collect_result"])))
 				
-				print "Probability to obtain a Chi2 of " + str(plotData.fit_results[function_nick].Chi2()) + " for an ndf of " + str(plotData.fit_results[function_nick].Ndf()) + " is " + str(ROOT.TMath.Prob(plotData.fit_results[function_nick].Chi2(),plotData.fit_results[function_nick].Ndf()))
+				log.info("Probability to obtain a Chi2 of " + str(plotData.fit_results[function_nick].Chi2()) + " for an ndf of " + str(plotData.fit_results[function_nick].Ndf()) + " is " + str(ROOT.TMath.Prob(plotData.fit_results[function_nick].Chi2(),plotData.fit_results[function_nick].Ndf())))
 
 	def create_function(self, function, x_min, x_max, start_parameters, nick="", root_histogram=None, fit_backend="ROOT"):
 		"""
@@ -122,8 +123,8 @@ class FunctionPlot(analysisbase.AnalysisBase):
 		elif fit_backend == "ROOT":
 			root_function, fit_result = self.do_rootfit(function, x_min, x_max, start_parameters, nick, root_histogram)
 		else:
-			print "No valid fit backend selected"
-			exit()
+			log.critical("No valid fit backend selected!")
+			sys.exit(1)
 		return root_function, fit_result
 
 	@staticmethod
@@ -137,7 +138,7 @@ class FunctionPlot(analysisbase.AnalysisBase):
 
 	@staticmethod
 	def do_rootfit(function, x_min, x_max, start_parameters, nick="", root_histogram=None):
-		root_function = FunctionPlot.create_tf1(function, x_min, x_max, start_parameters, nick, root_histogram)
+		root_function = FunctionFit.create_tf1(function, x_min, x_max, start_parameters, nick, root_histogram)
 		# set parameters for fit or just for drawing the function
 		for parameter_index in range(root_function.GetNpar()):
 			root_function.SetParameter(parameter_index, start_parameters[parameter_index])
@@ -172,8 +173,8 @@ class FunctionPlot(analysisbase.AnalysisBase):
 		elif (function == "gaus"):
 			function = ROOT.RooGaussian("func","func",x,mean,sigma)
 		else:
-			print "selected fit function " + function + " currently not supported from functionplot modul with RooFit backend."
-			exit()
+			log.critical("Selected fit function " + function + " currently not supported from FunctionFit modul with RooFit backend!")
+			sys.exit(1)
 		
 		filters = function.fitTo(dh,ROOT.RooLinkedList())
 		root_function = ROOT.RooCurve(function, x, x_min, x_max, 1000, maximum)
@@ -182,7 +183,7 @@ class FunctionPlot(analysisbase.AnalysisBase):
 	@staticmethod
 	def get_roofit_parameter(function, x_min, x_max, start_parameters, root_histogram, parameter):
 		retVal = [0,0,0]
-		root_function, retVal[0], retVal[1], retVal[2] = FunctionPlot.do_roofit(function, x_min, x_max, start_parameters, root_histogram)
+		root_function, retVal[0], retVal[1], retVal[2] = FunctionFit.do_roofit(function, x_min, x_max, start_parameters, root_histogram)
 		return retVal[parameter].getVal(), retVal[parameter].getError()
 
 	def get_parameters(self, root_function):
