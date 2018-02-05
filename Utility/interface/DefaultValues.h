@@ -60,4 +60,7 @@ public:
 	
 	static const float ChargedPionMass;
 	static const float NeutralPionMass;
+	
+	static const float WBosonMassGeV;
+	static const float ZBosonMassGeV;
 };
