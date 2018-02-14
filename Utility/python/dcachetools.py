@@ -8,6 +8,7 @@ log = logging.getLogger(__name__)
 import copy
 
 
+
 dcap_local_replacements = {
 	"dcap://dcache-cms-dcap.desy.de//pnfs/desy.de/cms/tier2/" : "/pnfs/desy.de/cms/tier2/",
 	"dcap://grid-dcap-extern.physik.rwth-aachen.de/pnfs/physik.rwth-aachen.de/cms/" : "/pnfs/physik.rwth-aachen.de/cms/",
@@ -37,9 +38,9 @@ srm_dcap_replacements = {
 }
 
 xrd_local_replacements = {
-	"root://dcache-cms-xrootd.desy.de:1094/" : "/pnfs/desy.de/cms/tier2/",
-	"root://grid-vo-cms.physik.rwth-aachen.de:1094/" : "/pnfs/physik.rwth-aachen.de/cms/",
-	"root://cmsxrootd.gridka.de//pnfs/gridka.de/dcms/disk-only/" : "/pnfs/gridka.de/dcms/disk-only/",
+	"root://dcache-cms-xrootd.desy.de:1094/" : "/pnfs/desy.de/cms/tier2",
+	"root://grid-vo-cms.physik.rwth-aachen.de:1094/" : "/pnfs/physik.rwth-aachen.de/cms",
+	"root://cmsxrootd.gridka.de//pnfs/gridka.de/dcms/disk-only/" : "/pnfs/gridka.de/dcms/disk-only",
 	#"root://cmsxrootd.gridka.de//" : "",
 }
 
@@ -47,6 +48,13 @@ xrd_srm_replacements = {
 	"root://dcache-cms-xrootd.desy.de:1094/" : "srm://dcache-se-cms.desy.de:8443/srm/managerv2?SFN=/pnfs/desy.de/cms/tier2/",
 	"root://grid-vo-cms.physik.rwth-aachen.de:1094/" : "srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN=/pnfs/physik.rwth-aachen.de/cms/",
 	"root://cmsxrootd.gridka.de//pnfs/gridka.de/dcms/disk-only/" : "srm://dgridsrm-fzk.gridka.de:8443/srm/managerv2?SFN=/pnfs/gridka.de/dcms/disk-only/",
+	#"root://cmsxrootd.gridka.de//" : "",
+}
+
+xrd_xrd_replacements = {
+	"root://dcache-cms-xrootd.desy.de:1094/" : "root://cms-xrd-global.cern.ch/",
+	"root://grid-vo-cms.physik.rwth-aachen.de:1094/" : "root://cms-xrd-global.cern.ch/",
+	"root://cmsxrootd.gridka.de//pnfs/gridka.de/dcms/disk-only/" : "root://cms-xrd-global.cern.ch/",
 	#"root://cmsxrootd.gridka.de//" : "",
 }
 
@@ -120,6 +128,12 @@ def xrd2local(path):
 def xrd2srm(path):
 	result = copy.deepcopy(path)
 	for src, dst in xrd_srm_replacements.iteritems():
+		result = result.replace(src, dst)
+	return result
+
+def xrd2xrd(path):
+	result = copy.deepcopy(path)
+	for src, dst in xrd_xrd_replacements.iteritems():
 		result = result.replace(src, dst)
 	return result
 
