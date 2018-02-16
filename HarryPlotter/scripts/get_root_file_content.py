@@ -8,11 +8,6 @@ log = logging.getLogger(__name__)
 import argparse
 import os
 
-import ROOT
-ROOT.gROOT.SetBatch(True)
-ROOT.PyConfig.IgnoreCommandLineOptions = True
-ROOT.gErrorIgnoreLevel = ROOT.kError
-
 import Artus.HarryPlotter.utility.roottools as roottools
 from Artus.Utility.tfilecontextmanager import TFileContextManager
 
