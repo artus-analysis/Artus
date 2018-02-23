@@ -371,52 +371,17 @@ class RootTools(object):
 				proxy_class_file.write(proxy_class_content)
 		
 		# draw histogram
-		if root_histogram == None:
-			if ("proxy" in option) and (not proxy_call is None):
-				log.critical("Plotting of compliled proxy formulas not yet implemented for the case where no binning is specified!")
-				sys.exit(1)
-			else:
-				draw_option = copy.deepcopy(option)
-				special_options = ["TGraph2D", "TGraphAsymmErrorsX", "TGraphAsymmErrorsY", "TGraphErrors", "TGraph"]
-				for special_option in special_options:
-					draw_option = draw_option.replace(special_option, "")
-			
-				log.debug("ROOT.TTree.Draw(\"" + variable_expression + ">>" + name + binning + "\", \"" + str(weight_selection) + "\", \"" + draw_option + " GOFF\")")
-				tree.Draw(variable_expression + ">>" + name + binning, str(weight_selection), draw_option + " GOFF")
-				
-				if "TGraph2D" in option:
-					root_histogram = ROOT.TGraph2D(tree.GetSelectedRows(), tree.GetV3(), tree.GetV2(), tree.GetV1())
-				elif "TGraphAsymmErrors" in option:
-					n_points = tree.GetSelectedRows()
-					x_values = tree.GetV2() if "TGraphAsymmErrorsX" in option else tree.GetV4()
-					y_values = tree.GetV1()
-					x_errors_low = tree.GetV3() if "TGraphAsymmErrorsX" in option else array.array("d", [0.0]*n_points)
-					x_errors_high = tree.GetV4() if "TGraphAsymmErrorsX" in option else array.array("d", [0.0]*n_points)
-					y_errors_low = array.array("d", [0.0]*n_points) if "TGraphAsymmErrorsX" in option else tree.GetV2()
-					y_errors_high = array.array("d", [0.0]*n_points) if "TGraphAsymmErrorsX" in option else tree.GetV3()
-					root_histogram = ROOT.TGraphAsymmErrors(n_points, x_values, y_values, x_errors_low, x_errors_high, y_errors_low, y_errors_high)
-				elif "TGraphErrors" in option:
-					root_histogram = ROOT.TGraphErrors(tree.GetSelectedRows(), tree.GetV3(), tree.GetV1(), tree.GetV4(), tree.GetV2())
-				elif "TGraph" in option:
-					root_histogram = ROOT.TGraph(tree.GetSelectedRows(), tree.GetV2(), tree.GetV1())
-				else:
-					root_histogram = ROOT.gDirectory.Get(name)
-					
-					# histograms are sometimes empty, although the contain entries after the ROOT.TH1.Print function is called
-					# this is considered as a hack solving this problem.
-					# https://root.cern.ch/doc/master/TH1_8cxx_source.html#l06558
-					if isinstance(root_histogram, ROOT.TH1):
-						root_histogram.GetSumOfWeights()
-		else:
-			if ("proxy" in option) and (not proxy_call is None):
-				log.debug("ROOT.TTree.Process(\"" + proxy_call + "\")")
-				result = tree.Process(proxy_call)
-				if result < 0:
-					log.error("Reading input based on proxy failed. Try preserving all proxy files by using debug logging (--log-level debug).")
-			else:
-				log.debug("ROOT.TTree.Project(\"" + name + "\", \"" + variable_expression + "\", \"" + str(weight_selection) + "\", \"" + option + "\" GOFF\")")
-				tree.Project(name, variable_expression, str(weight_selection), option + " GOFF")
-			root_histogram = ROOT.gDirectory.Get(name)
+		root_histogram = RootTools.tree_draw(
+				tree=tree,
+				root_histogram=root_histogram,
+				variable_expression=variable_expression,
+				name=name,
+				binning=binning,
+				weight_selection=str(weight_selection),
+				option=option,
+				proxy_call=proxy_call
+		)
+		
 		if root_histogram == None:
 			log.critical("Cannot find histogram \"%s\" created from trees %s in files %s!" % (name, str(path_to_trees), str(root_file_names)))
 			sys.exit(1)
@@ -442,7 +407,57 @@ class RootTools(object):
 		if "prof" not in option.lower() and binning_identifier not in self.binning_determined:
 			self.binning_determined.append(binning_identifier)
 		return tree, root_histogram
-
+	
+	@staticmethod
+	def tree_draw(tree, root_histogram, variable_expression, name, binning, weight_selection, option, proxy_call):
+		if root_histogram == None:
+			if ("proxy" in option) and (not proxy_call is None):
+				log.critical("Plotting of compliled proxy formulas not yet implemented for the case where no binning is specified!")
+				sys.exit(1)
+			else:
+				draw_option = copy.deepcopy(option)
+				special_options = ["TGraph2D", "TGraphAsymmErrorsX", "TGraphAsymmErrorsY", "TGraphErrors", "TGraph"]
+				for special_option in special_options:
+					draw_option = draw_option.replace(special_option, "")
+		
+				log.debug("ROOT.TTree.Draw(\"" + variable_expression + ">>" + name + binning + "\", \"" + str(weight_selection) + "\", \"" + draw_option + " GOFF\")")
+				tree.Draw(variable_expression + ">>" + name + binning, str(weight_selection), draw_option + " GOFF")
+			
+				if "TGraph2D" in option:
+					root_histogram = ROOT.TGraph2D(tree.GetSelectedRows(), tree.GetV3(), tree.GetV2(), tree.GetV1())
+				elif "TGraphAsymmErrors" in option:
+					n_points = tree.GetSelectedRows()
+					x_values = tree.GetV2() if "TGraphAsymmErrorsX" in option else tree.GetV4()
+					y_values = tree.GetV1()
+					x_errors_low = tree.GetV3() if "TGraphAsymmErrorsX" in option else array.array("d", [0.0]*n_points)
+					x_errors_high = tree.GetV4() if "TGraphAsymmErrorsX" in option else array.array("d", [0.0]*n_points)
+					y_errors_low = array.array("d", [0.0]*n_points) if "TGraphAsymmErrorsX" in option else tree.GetV2()
+					y_errors_high = array.array("d", [0.0]*n_points) if "TGraphAsymmErrorsX" in option else tree.GetV3()
+					root_histogram = ROOT.TGraphAsymmErrors(n_points, x_values, y_values, x_errors_low, x_errors_high, y_errors_low, y_errors_high)
+				elif "TGraphErrors" in option:
+					root_histogram = ROOT.TGraphErrors(tree.GetSelectedRows(), tree.GetV3(), tree.GetV1(), tree.GetV4(), tree.GetV2())
+				elif "TGraph" in option:
+					root_histogram = ROOT.TGraph(tree.GetSelectedRows(), tree.GetV2(), tree.GetV1())
+				else:
+					root_histogram = ROOT.gDirectory.Get(name)
+				
+					# histograms are sometimes empty, although the contain entries after the ROOT.TH1.Print function is called
+					# this is considered as a hack solving this problem.
+					# https://root.cern.ch/doc/master/TH1_8cxx_source.html#l06558
+					if isinstance(root_histogram, ROOT.TH1):
+						root_histogram.GetSumOfWeights()
+		else:
+			if ("proxy" in option) and (not proxy_call is None):
+				log.debug("ROOT.TTree.Process(\"" + proxy_call + "\")")
+				result = tree.Process(proxy_call)
+				if result < 0:
+					log.error("Reading input based on proxy failed. Try preserving all proxy files by using debug logging (--log-level debug).")
+			else:
+				log.debug("ROOT.TTree.Project(\"" + name + "\", \"" + variable_expression + "\", \"" + str(weight_selection) + "\", \"" + option + "\" GOFF\")")
+				tree.Project(name, variable_expression, str(weight_selection), option + " GOFF")
+			root_histogram = ROOT.gDirectory.Get(name)
+		
+		return root_histogram
 
 	@staticmethod
 	def create_root_histogram(x_bins, y_bins=None, z_bins=None, profile_histogram=False, name=None, profile_error_option=""):
