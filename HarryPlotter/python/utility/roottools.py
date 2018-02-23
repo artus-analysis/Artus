@@ -24,6 +24,7 @@ ROOT.gEnv.SetValue("TFile.AsyncPrefetching", 1)
 import Artus.Utility.geometry as geometry
 import Artus.Utility.tools as tools
 from Artus.Utility.tfilecontextmanager import TFileContextManager
+import Artus.HarryPlotter.utility.rootcache as rootcache
 
 
 class RootTools(object):
@@ -409,6 +410,7 @@ class RootTools(object):
 		return tree, root_histogram
 	
 	@staticmethod
+	@rootcache.RootFileCache()
 	def tree_draw(tree, root_histogram, variable_expression, name, binning, weight_selection, option, proxy_call):
 		if root_histogram == None:
 			if ("proxy" in option) and (not proxy_call is None):
