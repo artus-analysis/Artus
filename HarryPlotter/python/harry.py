@@ -144,7 +144,13 @@ class HarryPlotter(object):
 		
 		# batch submission
 		if (not (batch is None)) and (len(failed_plots) < n_plots):
-			workdir = tempfile.mkdtemp(prefix="harry_work_"+datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")+"_")
+			try:
+				os.makedirs("$HP_WORK_BASE")
+			except OSError:
+				if not os.path.isdir("$HP_WORK_BASE"):
+					raise
+	
+			workdir = tempfile.mkdtemp(prefix="harry_work_"+datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")+"_", dir=os.path.expandvars("$HP_WORK_BASE"))
 			
 			main_config = ""
 			with open(os.path.expandvars("$CMSSW_BASE/src/Artus/HarryPlotter/data/grid-control_base_config.conf"), "r") as main_config_file:
