@@ -145,7 +145,8 @@ class HarryPlotter(object):
 		# batch submission
 		if (not (batch is None)) and (len(failed_plots) < n_plots):
 			try:
-				os.makedirs(os.path.expandvars(("$HP_WORK_BASE"))
+				os.makedirs(os.path.expandvars("$HP_WORK_BASE"))
+
 			except OSError:
 				if not os.path.isdir(os.path.expandvars("$HP_WORK_BASE")):
 					raise
