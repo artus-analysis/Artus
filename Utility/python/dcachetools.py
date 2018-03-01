@@ -6,7 +6,39 @@ import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
 import copy
+import fnmatch
+import os
+import re
+import shlex
 
+import Artus.Utility.tools as tools
+
+
+def list_of_files(path, recursive=False, gfal_ls_args=""):
+	if (not "*" in path) and (not recursive):
+		return [path]
+	
+	splitted_path = re.split("/(?:(?=[^/]*\*))", path, maxsplit=1)
+	command = "gfal-ls {gfal_ls_args} {path}".format(gfal_ls_args=gfal_ls_args, path=splitted_path[0])
+	log.debug(command)
+	stdout, stderr = tools.subprocessCall(shlex.split(command))
+	stdout = stdout.strip()
+	if stdout == "":
+		return []
+	if stdout == path:
+		return [stdout]
+	
+	new_paths = [os.path.join(splitted_path[0], item) for item in stdout.strip().split("\n")]
+	if len(splitted_path) > 1:
+		splitted_path_with_wildcard = re.split("(\*[^/]*/)", path, maxsplit=1)
+		path_to_match = "".join(splitted_path_with_wildcard[:2]).rstrip("/")
+		rest = "".join(splitted_path_with_wildcard[2:])
+		new_paths = [os.path.join(path, rest).rstrip("/") for path in new_paths if fnmatch.fnmatch(path, path_to_match)]
+	
+	results = []
+	for new_path in new_paths:
+		results.extend(list_of_files(path=new_path, recursive=recursive, gfal_ls_args=gfal_ls_args))
+	return sorted(results)
 
 
 dcap_local_replacements = {
