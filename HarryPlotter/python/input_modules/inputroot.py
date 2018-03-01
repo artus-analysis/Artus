@@ -17,6 +17,7 @@ import Artus.HarryPlotter.inputbase as inputbase
 import Artus.HarryPlotter.input_modules.inputfile as inputfile
 import Artus.HarryPlotter.utility.roottools as roottools
 import Artus.Utility.progressiterator as pi
+import Artus.Utility.tools as tools
 import Artus.Utility.jsonTools as jsonTools
 from Artus.Utility.tfilecontextmanager import TFileContextManager
 
@@ -70,6 +71,8 @@ class InputRoot(inputfile.InputFile):
 		                                help="Read in the config stored in Artus ROOT outputs. [Default: %(default)s]")
 		self.input_options.add_argument("--hide-progressbar", nargs ="?", type="bool", default=False, const=True,
 		                                help="Show progress of the individual plot. [Default: %(default)s]")
+		self.input_options.add_argument("--no-cache", nargs ="?", type="bool", default=None, const=True,
+		                                help="Do not use caching for inputs from trees. [Default: False for absolute paths, True for relative paths]")
 
 	def prepare_args(self, parser, plotData):
 		super(InputRoot, self).prepare_args(parser, plotData)
@@ -81,6 +84,9 @@ class InputRoot(inputfile.InputFile):
 			plotData.plotdict[key] = [element.split() if element else [""] for element in plotData.plotdict[key]]
 		for key in ["friend_files", "friend_folders"]:
 			plotData.plotdict[key] = [element.split() if element else element for element in plotData.plotdict[key]]
+		
+		if plotData.plotdict["no_cache"] is None:
+			plotData.plotdict["no_cache"] = not any(tools.flattenList([[input_file.startswith("/") for input_file in files] for files in plotData.plotdict["files"]]))
 		
 		if plotData.plotdict["read_config"]:
 			self.read_input_json_dicts(plotData)
@@ -141,7 +147,8 @@ class InputRoot(inputfile.InputFile):
 						friend_files=friend_files,
 						friend_folders=friend_folders,
 						friend_alias=friend_alias,
-						proxy_prefix=plotData.plotdict["proxy_prefix"]
+						proxy_prefix=plotData.plotdict["proxy_prefix"],
+						use_cache=(not plotData.plotdict["no_cache"])
 				)
 				
 			elif root_folder_type == "TDirectory":
