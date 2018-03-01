@@ -314,7 +314,7 @@ class RootTools(object):
 		# ROOT optimisations
 		# Performed automatically now.
 		
-		tree.SetName(hashlib.md5("".join(root_file_names)).hexdigest())
+		tree.SetName(hashlib.md5("".join([str(item) for item in [root_file_names, path_to_trees, friend_files, friend_folders]])).hexdigest())
 		
 		# treat functions/macros that need to be compiled before drawing
 		tmp_proxy_files = []
@@ -468,7 +468,7 @@ class RootTools(object):
 		"""
 		# prepare unique histogram name
 		if name == None:
-			name = "histogram_{0}".format(hashlib.md5("_".join([str(x_bins), str(y_bins), str(z_bins), str(profile_histogram)])).hexdigest())
+			name = "histogram_{0}".format(hashlib.md5("_".join([str(x_bins), str(y_bins), str(z_bins), str(profile_histogram), str(profile_error_option)])).hexdigest())
 		
 		# prepare bin edges
 		x_bin_edges = None
