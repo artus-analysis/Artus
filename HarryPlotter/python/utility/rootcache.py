@@ -37,17 +37,13 @@ class RootFileCache(Cache):
 	def _determine_cache_file(self, *args, **kwargs):
 		tmp_args = copy.deepcopy(args)
 		for index, arg in enumerate(tmp_args):
-			if isinstance(arg, ROOT.TTree):
-				tmp_args[index] = arg.GetName()
-			elif isinstance(arg, ROOT.TH1):
+			if isinstance(arg, ROOT.TObject):
 				tmp_args[index] = arg.GetName()
 		
 		tmp_kwargs = copy.deepcopy(kwargs)
 		for keyword, arg in tmp_kwargs.iteritems():
-			if isinstance(arg, ROOT.TTree):
-				tmp_kwargs[keyword] = arg.GetName() # TODO: handle input files/folders
-			elif isinstance(arg, ROOT.TH1):
-				tmp_kwargs[keyword] = arg.GetName() # TODO: handle binning
+			if isinstance(arg, ROOT.TObject):
+				tmp_kwargs[keyword] = arg.GetName()
 		
 		args_hash = hashlib.md5("".join([str(a) for a in list(tmp_args)+tmp_kwargs.items()])).hexdigest()
 		cache_file = os.path.join(self.cache_dir, args_hash+".root")
@@ -55,6 +51,7 @@ class RootFileCache(Cache):
 	
 	def _get_cached(self, *args, **kwargs):
 		cache_file = self._determine_cache_file(*args, **kwargs)
+		root_tree = None
 		root_object = None
 		cache_found = False
 		if kwargs.get("use_cache", True) and os.path.exists(cache_file):
@@ -66,7 +63,7 @@ class RootFileCache(Cache):
 					log.debug("Took cached object from \"{root_file}/{path_to_object}\".".format(root_file=cache_file, path_to_object=self.cache_name))
 		
 		if root_object is None:
-			root_object = self._function_to_cache(*args, **kwargs)
+			root_tree, root_object = self._function_to_cache(*args, **kwargs)
 			if not cache_found:
 				with tfilecontextmanager.TFileContextManager(cache_file, "RECREATE") as root_file:
 					root_file.cd()
@@ -74,5 +71,5 @@ class RootFileCache(Cache):
 					log.debug("Created cache in \"{root_file}/{path_to_object}\".".format(root_file=cache_file, path_to_object=self.cache_name))
 					root_object.SetDirectory(0)
 		
-		return root_object
+		return root_tree, root_object
 
