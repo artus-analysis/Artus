@@ -315,7 +315,6 @@ class RootTools(object):
 	@staticmethod
 	@rootcache.RootFileCache("$HP_WORK_BASE/cache")
 	def tree_draw(root_file_names, path_to_trees, friend_files, friend_folders, root_histogram, variable_expression, name, binning, weight_selection, option, use_cache=True):
-		
 		# prepare TChain
 		if isinstance(root_file_names, basestring):
 			root_file_names = [root_file_names]
@@ -350,7 +349,6 @@ class RootTools(object):
 
 		# ROOT optimisations
 		# Performed automatically now.
-		
 		tree.SetName(hashlib.md5("".join([str(item) for item in [root_file_names, path_to_trees, friend_files, friend_folders]])).hexdigest())
 		
 		# treat functions/macros that need to be compiled before drawing
@@ -407,7 +405,6 @@ class RootTools(object):
 			)
 			with open(proxy_class_filename, "w") as proxy_class_file:
 				proxy_class_file.write(proxy_class_content)
-	
 
 		if root_histogram == None:
 			if ("proxy" in option) and (not proxy_call is None):
