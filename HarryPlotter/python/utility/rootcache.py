@@ -56,7 +56,7 @@ class RootFileCache(Cache):
 	def _get_cached(self, *args, **kwargs):
 		cache_file = self._determine_cache_file(*args, **kwargs)
 		root_object = None
-		if os.path.exists(cache_file):
+		if kwargs.get("use_cache", True) and os.path.exists(cache_file):
 			with tfilecontextmanager.TFileContextManager(cache_file, "READ") as root_file:
 				root_object = root_file.Get(self.cache_name)
 				root_object.SetDirectory(0)

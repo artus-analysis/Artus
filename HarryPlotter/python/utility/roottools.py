@@ -208,7 +208,7 @@ class RootTools(object):
 		                    x_bins=None, y_bins=None, z_bins=None,
 		                    weight_selection="", option="", name=None,
 		                    friend_files=None, friend_folders=None, friend_alias=None,
-		                    proxy_prefix=""):
+		                    proxy_prefix="", use_cache=True):
 		"""
 		Read histograms from trees
 	
@@ -381,7 +381,8 @@ class RootTools(object):
 				binning=binning,
 				weight_selection=str(weight_selection),
 				option=option,
-				proxy_call=proxy_call
+				proxy_call=proxy_call,
+				use_cache=use_cache
 		)
 		
 		if root_histogram == None:
@@ -412,7 +413,7 @@ class RootTools(object):
 	
 	@staticmethod
 	@rootcache.RootFileCache()
-	def tree_draw(tree, root_histogram, variable_expression, name, binning, weight_selection, option, proxy_call):
+	def tree_draw(tree, root_histogram, variable_expression, name, binning, weight_selection, option, proxy_call, use_cache=True):
 		if root_histogram == None:
 			if ("proxy" in option) and (not proxy_call is None):
 				log.critical("Plotting of compliled proxy formulas not yet implemented for the case where no binning is specified!")
