@@ -38,9 +38,9 @@ class RootFileCache(Cache):
 		tmp_args = copy.deepcopy(args)
 		for index, arg in enumerate(tmp_args):
 			if isinstance(arg, ROOT.TTree):
-				tmp_args[index] = arg.GetName() # TODO: handle input files/folders
+				tmp_args[index] = arg.GetName()
 			elif isinstance(arg, ROOT.TH1):
-				tmp_args[index] = arg.GetName() # TODO: handle binning
+				tmp_args[index] = arg.GetName()
 		
 		tmp_kwargs = copy.deepcopy(kwargs)
 		for keyword, arg in tmp_kwargs.iteritems():
@@ -51,7 +51,6 @@ class RootFileCache(Cache):
 		
 		args_hash = hashlib.md5("".join([str(a) for a in list(tmp_args)+tmp_kwargs.items()])).hexdigest()
 		cache_file = os.path.join(self.cache_dir, args_hash+".root")
-		print cache_file
 		return cache_file
 	
 	def _get_cached(self, *args, **kwargs):
@@ -61,12 +60,15 @@ class RootFileCache(Cache):
 			with tfilecontextmanager.TFileContextManager(cache_file, "READ") as root_file:
 				root_object = root_file.Get(self.cache_name)
 				root_object.SetDirectory(0)
+				if not root_object is None:
+					log.debug("Took cached object from \"{root_file}/{path_to_object}\".".format(root_file=cache_file, path_to_object=self.cache_name))
 		
 		if root_object is None:
 			root_object = self._function_to_cache(*args, **kwargs)
 			with tfilecontextmanager.TFileContextManager(cache_file, "RECREATE") as root_file:
 				root_file.cd()
 				root_object.Write(self.cache_name, ROOT.TObject.kWriteDelete)
+				log.debug("Created cache in \"{root_file}/{path_to_object}\".".format(root_file=cache_file, path_to_object=self.cache_name))
 				root_object.SetDirectory(0)
 		
 		return root_object
