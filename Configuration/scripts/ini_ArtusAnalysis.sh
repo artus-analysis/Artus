@@ -36,7 +36,7 @@ elif [[ `hostname` == *ekp* ]]; then
 	export HP_WORK_BASE="/storage/a/${USER}/Harry"
 elif [[ `hostname` == *rwth* ]]; then
 	export ARTUS_WORK_BASE="/net/scratch_cms3b/${USER}/artus/"
-	export HP_WORK_BASE="/net/scratch_cms3b/${USER}/artus/"
+	export HP_WORK_BASE="/net/scratch_cms3b/${USER}/Harry"
 elif [[ `hostname` == *cern* ]]; then
 	export ARTUS_WORK_BASE="/afs/cern.ch/work/${USER:0:1}/${USER}/artus/"
 	export HP_WORK_BASE="/afs/cern.ch/work/${USER:0:1}/${USER}/Harry"
