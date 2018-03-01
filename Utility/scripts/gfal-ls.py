@@ -22,7 +22,9 @@ def main():
 	args, unknown_args = parser.parse_known_args()
 	logger.initLogger(args)
 	
-	files = dcachetools.list_of_files(args.files[0], args.recursive, " ".join(unknown_args))
+	files = []
+	for path in args.files:
+		files.extend(dcachetools.list_of_files(path, args.recursive, " ".join(unknown_args)))
 	for path in files:
 		log.info(path)
 
