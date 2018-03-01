@@ -279,6 +279,40 @@ class RootTools(object):
 						profile_error_option=(option.lower().replace("prof", ''))
 					)
 		
+		# draw histogram
+		tree, root_histogram = RootTools.tree_draw(
+				root_file_names=root_file_names,
+				path_to_trees=path_to_trees,
+				friend_files=friend_files,
+				friend_folders=friend_folders,
+				root_histogram=root_histogram,
+				variable_expression=variable_expression,
+				name=name,
+				binning=binning,
+				weight_selection=str(weight_selection),
+				option=option
+		)
+		
+		if root_histogram == None:
+			log.critical("Cannot find histogram \"%s\" created from trees %s in files %s!" % (name, str(path_to_trees), str(root_file_names)))
+			sys.exit(1)
+		
+		if isinstance(root_histogram, ROOT.TH1):
+			root_histogram.SetDirectory(0)
+			self.x_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=0)
+			self.y_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=1)
+			self.z_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=2)
+		elif isinstance(root_histogram, ROOT.TGraph):
+			root_histogram.SetName(name)
+			root_histogram.SetTitle("")
+
+		if "prof" not in option.lower() and binning_identifier not in self.binning_determined:
+			self.binning_determined.append(binning_identifier)
+		return tree, root_histogram
+	
+	@staticmethod
+	def tree_draw(root_file_names, path_to_trees, friend_files, friend_folders, root_histogram, variable_expression, name, binning, weight_selection, option):
+		
 		# prepare TChain
 		if isinstance(root_file_names, basestring):
 			root_file_names = [root_file_names]
@@ -310,10 +344,7 @@ class RootTools(object):
 			tree.AddFriend(friend_trees[-1], (friend_alias if friend_alias else ""))
 			friend_trees[-1].SetDirectory(0)
 		
-		# ROOT optimisations
-		# Performed automatically now.
-		
-		tree.SetName(hashlib.md5("".join(root_file_names)).hexdigest())
+		tree.SetName(hashlib.md5("".join([str(item) for item in [root_file_names, path_to_trees, friend_files, friend_folders]])).hexdigest())
 		
 		# treat functions/macros that need to be compiled before drawing
 		tmp_proxy_files = []
@@ -369,47 +400,7 @@ class RootTools(object):
 			)
 			with open(proxy_class_filename, "w") as proxy_class_file:
 				proxy_class_file.write(proxy_class_content)
-		
-		# draw histogram
-		root_histogram = RootTools.tree_draw(
-				tree=tree,
-				root_histogram=root_histogram,
-				variable_expression=variable_expression,
-				name=name,
-				binning=binning,
-				weight_selection=str(weight_selection),
-				option=option,
-				proxy_call=proxy_call
-		)
-		
-		if root_histogram == None:
-			log.critical("Cannot find histogram \"%s\" created from trees %s in files %s!" % (name, str(path_to_trees), str(root_file_names)))
-			sys.exit(1)
-		
-		# delete possible files from tree proxy
-		if log.isEnabledFor(logging.DEBUG):
-			log.warning("Delete proxy files manually:")
-		for tmp_proxy_file in tmp_proxy_files:
-			for tmp_file in glob.glob(os.path.splitext(tmp_proxy_file)[0]+"*"):
-				log.debug("rm " + tmp_file)
-				if not log.isEnabledFor(logging.DEBUG):
-					os.remove(tmp_file)
-		
-		if isinstance(root_histogram, ROOT.TH1):
-			root_histogram.SetDirectory(0)
-			self.x_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=0)
-			self.y_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=1)
-			self.z_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=2)
-		elif isinstance(root_histogram, ROOT.TGraph):
-			root_histogram.SetName(name)
-			root_histogram.SetTitle("")
 
-		if "prof" not in option.lower() and binning_identifier not in self.binning_determined:
-			self.binning_determined.append(binning_identifier)
-		return tree, root_histogram
-	
-	@staticmethod
-	def tree_draw(tree, root_histogram, variable_expression, name, binning, weight_selection, option, proxy_call):
 		if root_histogram == None:
 			if ("proxy" in option) and (not proxy_call is None):
 				log.critical("Plotting of compliled proxy formulas not yet implemented for the case where no binning is specified!")
@@ -457,7 +448,16 @@ class RootTools(object):
 				tree.Project(name, variable_expression, str(weight_selection), option + " GOFF")
 			root_histogram = ROOT.gDirectory.Get(name)
 		
-		return root_histogram
+		# delete possible files from tree proxy
+		if log.isEnabledFor(logging.DEBUG):
+			log.warning("Delete proxy files manually:")
+		for tmp_proxy_file in tmp_proxy_files:
+			for tmp_file in glob.glob(os.path.splitext(tmp_proxy_file)[0]+"*"):
+				log.debug("rm " + tmp_file)
+				if not log.isEnabledFor(logging.DEBUG):
+					os.remove(tmp_file)
+		
+		return tree, root_histogram
 
 	@staticmethod
 	def create_root_histogram(x_bins, y_bins=None, z_bins=None, profile_histogram=False, name=None, profile_error_option=""):
