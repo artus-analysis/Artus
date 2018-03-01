@@ -312,7 +312,7 @@ class RootTools(object):
 		return tree, root_histogram
 	
 	@staticmethod
-	@rootcache.RootFileCache()
+	@rootcache.RootFileCache("$HP_WORK_BASE/cache")
 	def tree_draw(root_file_names, path_to_trees, friend_files, friend_folders, root_histogram, variable_expression, name, binning, weight_selection, option, use_cache=True):
 		
 		# prepare TChain

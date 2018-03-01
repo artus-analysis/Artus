@@ -28,7 +28,7 @@ class Cache(object):
 class RootFileCache(Cache):
 	def __init__(self, cache_dir=None):
 		self.cache_name = "cached_object"
-		self.cache_dir = cache_dir
+		self.cache_dir = os.path.expandvars(cache_dir)
 		if self.cache_dir is None:
 			self.cache_dir = os.path.join(tempfile.gettempdir(), "root_file_cache")
 		if not os.path.exists(self.cache_dir):
