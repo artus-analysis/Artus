@@ -39,7 +39,7 @@ class RootFileCache(Cache):
 		for index, arg in enumerate(tmp_args):
 			if isinstance(arg, ROOT.TObject):
 				tmp_args[index] = arg.GetName()
-		
+
 		tmp_kwargs = copy.deepcopy(kwargs)
 		for keyword, arg in tmp_kwargs.iteritems():
 			if isinstance(arg, ROOT.TObject):
@@ -63,6 +63,7 @@ class RootFileCache(Cache):
 					log.debug("Took cached object from \"{root_file}/{path_to_object}\".".format(root_file=cache_file, path_to_object=self.cache_name))
 		
 		if root_object is None:
+
 			root_tree, root_object = self._function_to_cache(*args, **kwargs)
 			if not cache_found:
 				with tfilecontextmanager.TFileContextManager(cache_file, "RECREATE") as root_file:
@@ -72,4 +73,7 @@ class RootFileCache(Cache):
 					root_object.SetDirectory(0)
 		
 		return root_tree, root_object
+
+
+
 

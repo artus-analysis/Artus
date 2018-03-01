@@ -291,7 +291,8 @@ class RootTools(object):
 				name=name,
 				binning=binning,
 				weight_selection=str(weight_selection),
-				option=option
+				option=option,
+				use_cache=use_cache
 		)
 		
 		if root_histogram == None:
