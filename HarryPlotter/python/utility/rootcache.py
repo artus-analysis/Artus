@@ -56,20 +56,23 @@ class RootFileCache(Cache):
 	def _get_cached(self, *args, **kwargs):
 		cache_file = self._determine_cache_file(*args, **kwargs)
 		root_object = None
+		cache_found = False
 		if kwargs.get("use_cache", True) and os.path.exists(cache_file):
 			with tfilecontextmanager.TFileContextManager(cache_file, "READ") as root_file:
 				root_object = root_file.Get(self.cache_name)
 				root_object.SetDirectory(0)
 				if not root_object is None:
+					cache_found = True
 					log.debug("Took cached object from \"{root_file}/{path_to_object}\".".format(root_file=cache_file, path_to_object=self.cache_name))
 		
 		if root_object is None:
 			root_object = self._function_to_cache(*args, **kwargs)
-			with tfilecontextmanager.TFileContextManager(cache_file, "RECREATE") as root_file:
-				root_file.cd()
-				root_object.Write(self.cache_name, ROOT.TObject.kWriteDelete)
-				log.debug("Created cache in \"{root_file}/{path_to_object}\".".format(root_file=cache_file, path_to_object=self.cache_name))
-				root_object.SetDirectory(0)
+			if not cache_found:
+				with tfilecontextmanager.TFileContextManager(cache_file, "RECREATE") as root_file:
+					root_file.cd()
+					root_object.Write(self.cache_name, ROOT.TObject.kWriteDelete)
+					log.debug("Created cache in \"{root_file}/{path_to_object}\".".format(root_file=cache_file, path_to_object=self.cache_name))
+					root_object.SetDirectory(0)
 		
 		return root_object
 
