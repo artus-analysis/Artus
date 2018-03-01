@@ -313,7 +313,8 @@ class RootTools(object):
 		return tree, root_histogram
 	
 	@staticmethod
-	def tree_draw(root_file_names, path_to_trees, friend_files, friend_folders, root_histogram, variable_expression, name, binning, weight_selection, option):
+	@rootcache.RootFileCache()
+	def tree_draw(root_file_names, path_to_trees, friend_files, friend_folders, root_histogram, variable_expression, name, binning, weight_selection, option, use_cache=True):
 		
 		# prepare TChain
 		if isinstance(root_file_names, basestring):
