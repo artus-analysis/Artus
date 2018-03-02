@@ -24,6 +24,7 @@ ROOT.gEnv.SetValue("TFile.AsyncPrefetching", 1)
 import Artus.Utility.geometry as geometry
 import Artus.Utility.tools as tools
 from Artus.Utility.tfilecontextmanager import TFileContextManager
+import Artus.HarryPlotter.utility.rootcache as rootcache
 
 
 class RootTools(object):
@@ -207,7 +208,7 @@ class RootTools(object):
 		                    x_bins=None, y_bins=None, z_bins=None,
 		                    weight_selection="", option="", name=None,
 		                    friend_files=None, friend_folders=None, friend_alias=None,
-		                    proxy_prefix=""):
+		                    proxy_prefix="", use_cache=True):
 		"""
 		Read histograms from trees
 	
@@ -290,7 +291,8 @@ class RootTools(object):
 				name=name,
 				binning=binning,
 				weight_selection=str(weight_selection),
-				option=option
+				option=option,
+				use_cache=use_cache
 		)
 		
 		if root_histogram == None:
@@ -311,7 +313,8 @@ class RootTools(object):
 		return tree, root_histogram
 	
 	@staticmethod
-	def tree_draw(root_file_names, path_to_trees, friend_files, friend_folders, root_histogram, variable_expression, name, binning, weight_selection, option):
+	@rootcache.RootFileCache("$HP_WORK_BASE/cache")
+	def tree_draw(root_file_names, path_to_trees, friend_files, friend_folders, root_histogram, variable_expression, name, binning, weight_selection, option, use_cache=True):
 		
 		# prepare TChain
 		if isinstance(root_file_names, basestring):
@@ -466,7 +469,7 @@ class RootTools(object):
 		"""
 		# prepare unique histogram name
 		if name == None:
-			name = "histogram_{0}".format(hashlib.md5("_".join([str(x_bins), str(y_bins), str(z_bins), str(profile_histogram)])).hexdigest())
+			name = "histogram_{0}".format(hashlib.md5("_".join([str(x_bins), str(y_bins), str(z_bins), str(profile_histogram), str(profile_error_option)])).hexdigest())
 		
 		# prepare bin edges
 		x_bin_edges = None
