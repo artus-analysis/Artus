@@ -26,7 +26,8 @@ class ArtusWrapper(object):
 
 	def __init__(self, executable=None, userArgParsers=None):
 
-		self._config = jsonTools.JsonDict()
+		#self._config = jsonTools.JsonDict()
+		self._config = {}
 		self._executable = executable
 
 		self._parser = None
@@ -314,14 +315,61 @@ class ArtusWrapper(object):
 			self.setOutputFilename(self._args.output_file)
 
 		# treat pipeline configs
+		"""		
 		pipelineJsonDict = {}
+		
 		if self._args.pipeline_configs and len(self._args.pipeline_configs) > 0:
 			pipelineJsonDict = []
+			print self._args.pipeline_configs
 			for pipelineConfigs in self._args.pipeline_configs:
 				pipelineJsonDict.append(jsonTools.JsonDict.expandAll(*map(lambda pipelineConfig: jsonTools.JsonDict.mergeAll(*pipelineConfig.split()), pipelineConfigs)))
 			pipelineJsonDict = jsonTools.JsonDict.mergeAll(*pipelineJsonDict)
 			pipelineJsonDict = jsonTools.JsonDict({"Pipelines": pipelineJsonDict})
 		pipelineJsonDict = jsonTools.JsonDict(pipelineJsonDict)
+		"""
+
+		nickname = self.determineNickname(self._args.nick)
+		
+		if self.args.pipelines and len(self._args.pipelines) > 0:
+			for selected_pipeline in self.args.pipelines:
+				if selected_pipeline.startswith("mt"):
+					pipeline_python_config = tt.tt_ArtusConfig() #TODO change to the mt config but for now let it be
+					pipeline_python_config.build_config(nickname)
+					#TODO add the config for the nominal/jetuncertainty. also have to be changed to python code
+				elif selected_pipeline.startswith("et"):
+					pipeline_python_config = tt.tt_ArtusConfig() #TODO change to the et config but for now let it be
+					pipeline_python_config.build_config(nickname)
+					#TODO add the config for the nominal/jetuncertainty. also have to be changed to python code
+				elif selected_pipeline.startswith("em"):
+					pipeline_python_config = tt.tt_ArtusConfig() #TODO change to the em config but for now let it be
+					pipeline_python_config.build_config(nickname)
+					#TODO add the config for the nominal/jetuncertainty. also have to be changed to python code
+				elif selected_pipeline.startswith("tt"):
+					pipeline_python_config = tt.tt_ArtusConfig() 
+					pipeline_python_config.build_config(nickname)
+					#TODO add the config for the nominal/jetuncertainty. also have to be changed to python code
+				elif selected_pipeline.startswith("mm"):
+					pipeline_python_config = tt.tt_ArtusConfig() #TODO change to the mm config but for now let it be
+					pipeline_python_config.build_config(nickname)
+					#TODO add the config for the nominal/jetuncertainty. also have to be changed to python code
+
+			#Ideas:
+			#TODO add function that adds list of quantities to the pipeline_python_config
+			"""
+			if len(args.add_quantities)>0:
+				pipeline_python_config["Quantities"]+= args.add_quantities
+			if len(args.add_processors)>0:
+				pipeline_python_config["Processors"]+= args.add_processors
+			#TODO: add function that lets you run artus for variables which are not in allready processed output files such that you can merge them later into the old outputs
+			if len(args.new_quantities)>0:
+				pipeline_python_config["Quantities"] = args.new_quantities
+			if len(args.new_processors)>0:
+				pipeline_python_config["Processors"] = args.add_processors
+						
+			"""
+
+			self._config[selected_pipeline] = pipeline_python_config
+
 
 		# treat pipeline base configs
 		pipelineBaseJsonDict = jsonTools.JsonDict()
@@ -341,7 +389,6 @@ class ArtusWrapper(object):
 			self._config = self._config.doIncludes().doComments()
 			self._config["BatchMode"] = True
 		else:
-			nickname = self.determineNickname(self._args.nick)
 			log.debug("Prepare config for \""+nickname+"\" sample...")
 			self._config = self._config.doIncludes().doNicks(nickname).doComments()
 			self._config["Nickname"] = nickname
@@ -417,6 +464,8 @@ class ArtusWrapper(object):
 		                                help="JSON pipeline base configurations. All pipeline configs will be merged with these common configs.")
 		configOptionsGroup.add_argument("-p", "--pipeline-configs", nargs="+", action="append",
 		                                help="JSON pipeline configurations. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")
+		configOptionsGroup.add_argument("--pipelines", nargs="+", action="append",
+		                                help="JSON pipelines used for artus. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")		
 		configOptionsGroup.add_argument("--nick", default="auto",
 		                                help="Kappa nickname name that can be used for switch between sample-dependent settings.")
 
