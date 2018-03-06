@@ -58,14 +58,14 @@ class RootFileCache(Cache):
 			with tfilecontextmanager.TFileContextManager(cache_file, "READ") as root_file:
 				root_object = root_file.Get(self.cache_name)
 				root_object.SetDirectory(0)
-				if not root_object is None:
+				if (not root_object is None) and (not root_object == None):
 					cache_found = True
 					log.debug("Took cached object from \"{root_file}/{path_to_object}\".".format(root_file=cache_file, path_to_object=self.cache_name))
 		
 		if root_object is None:
 
 			root_tree, root_object = self._function_to_cache(*args, **kwargs)
-			if not cache_found:
+			if (not cache_found) and (not root_object is None) and (not root_object == None):
 				with tfilecontextmanager.TFileContextManager(cache_file, "RECREATE") as root_file:
 					root_file.cd()
 					root_object.Write(self.cache_name, ROOT.TObject.kWriteDelete)
