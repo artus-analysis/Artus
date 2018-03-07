@@ -130,7 +130,7 @@ public:
 		}
 		
 		// apply jet energy corrections and uncertainty shift (if uncertainties are not to be splitted into individual contributions)
-		float shift = settings.GetJetEnergyCorrectionSplitUncertainty() ? 0.0 : settings.GetJetEnergyCorrectionUncertaintyShift();
+		float shift = settings.GetJetEnergyCorrectionUncertaintyShift();
 		correctJets(&correctJetsForJecTools, factorizedJetCorrector, jetCorrectionUncertainty,
 		            event.m_pileupDensity->rho, event.m_vertexSummary->nVertices, -1,
 		            shift);
