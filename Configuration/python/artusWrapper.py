@@ -21,6 +21,12 @@ import Artus.Utility.tools as tools
 import Artus.Utility.jsonTools as jsonTools
 import Artus.Utility.profile_cpp as profile_cpp
 
+import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.tt as tt
+import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2Analysis.systematics as systematics
+
+import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.baseconfig as baseconfig
+
+
 
 class ArtusWrapper(object):
 
@@ -291,6 +297,7 @@ class ArtusWrapper(object):
 
 		# merge all base configs into the main config
 		self._config += jsonTools.JsonDict.mergeAll(self._args.base_configs)
+		print "hello"
 		self._gridControlInputFiles = {}
 
 		#Set Input Filenames
@@ -330,55 +337,79 @@ class ArtusWrapper(object):
 
 		nickname = self.determineNickname(self._args.nick)
 		
-		if self.args.pipelines and len(self._args.pipelines) > 0:
-			for selected_pipeline in self.args.pipelines:
-				if selected_pipeline.startswith("mt"):
-					pipeline_python_config = tt.tt_ArtusConfig() #TODO change to the mt config but for now let it be
-					pipeline_python_config.build_config(nickname)
+		if self.args.pipelines and len(self._args.channels) > 0:
+			#pipeline_config = {} #TODO add systematic option, extra loop or in pipelines?
+			for selected_channel in self.args.channel:
+				if selected_channel == "mt":
+					channel_python_config = tt.tt_ArtusConfig() #TODO change to the mt config but for now let it be
+					channel_python_config.build_config(nickname, systematic_shift)
 					#TODO add the config for the nominal/jetuncertainty. also have to be changed to python code
-				elif selected_pipeline.startswith("et"):
-					pipeline_python_config = tt.tt_ArtusConfig() #TODO change to the et config but for now let it be
-					pipeline_python_config.build_config(nickname)
+				elif selected_channel == "et":
+					channel_python_config = tt.tt_ArtusConfig() #TODO change to the et config but for now let it be
+					channel_python_config.build_config(nickname, systematic_shift)
 					#TODO add the config for the nominal/jetuncertainty. also have to be changed to python code
-				elif selected_pipeline.startswith("em"):
-					pipeline_python_config = tt.tt_ArtusConfig() #TODO change to the em config but for now let it be
-					pipeline_python_config.build_config(nickname)
+				elif selected_channel == "em":
+					channel_python_config = tt.tt_ArtusConfig() #TODO change to the em config but for now let it be
+					channel_python_config.build_config(nickname, systematic_shift)
 					#TODO add the config for the nominal/jetuncertainty. also have to be changed to python code
-				elif selected_pipeline.startswith("tt"):
-					pipeline_python_config = tt.tt_ArtusConfig() 
-					pipeline_python_config.build_config(nickname)
+				elif selected_channel == "tt":
+					channel_python_config = tt.tt_ArtusConfig() 
+					channel_python_config.build_config(nickname, systematic_shift)
 					#TODO add the config for the nominal/jetuncertainty. also have to be changed to python code
-				elif selected_pipeline.startswith("mm"):
-					pipeline_python_config = tt.tt_ArtusConfig() #TODO change to the mm config but for now let it be
-					pipeline_python_config.build_config(nickname)
+				elif selected_channel == "mm":
+					channel_python_config = tt.tt_ArtusConfig() #TODO change to the mm config but for now let it be
+					channel_python_config.build_config(nickname, systematic_shift)
 					#TODO add the config for the nominal/jetuncertainty. also have to be changed to python code
+				elif selected_channel == "gen":	
+					channel_python_config = tt.tt_ArtusConfig() #TODO change to the gen config but for now let it be
+					channel_python_config.build_config(nickname)
+				else:	
+					log.error("COULD NOT FIND CHANNEL")
+				#Ideas:
+				#TODO add function that adds list of quantities to the pipeline_python_config
+				"""
+				if len(args.add_quantities)>0:
+					pipeline_python_config["Quantities"]+= args.add_quantities
+				if len(args.add_processors)>0:
+					pipeline_python_config["Processors"]+= args.add_processors
+				#TODO: add function that lets you run artus for variables which are not in allready processed output files such that you can merge them later into the old outputs
+				if len(args.new_quantities)>0:
+					pipeline_python_config["Quantities"] = args.new_quantities
+				if len(args.new_processors)>0:
+					pipeline_python_config["Processors"] = args.add_processors
+					
+				"""
+				if selected_channel != "gen":	
+					for systematic_shift in self._args.systematics:
+						if systematic_shift != "nominal":
+							for shiftdirection in ["Up", "Down"]:
+								#TODO make systematic config part
+								systematic_name = systematic_shift+shiftdirection
+								syst_python_config = systematics.Systematics_Config()
+								syst_python_config.build_systematic_config(nickname, systematic_name)
+								pipeline_config[channel+"_"+systematic_name] = channel_python_config + syst_python_config
+						elif systematic_shift == "nominal":
+							syst_python_config = systematics.Systematics_Config()
+							pipeline_config[channel+"_"+systematic_shift+shiftdirection] = channel_python_config + syst_python_config
 
-			#Ideas:
-			#TODO add function that adds list of quantities to the pipeline_python_config
-			"""
-			if len(args.add_quantities)>0:
-				pipeline_python_config["Quantities"]+= args.add_quantities
-			if len(args.add_processors)>0:
-				pipeline_python_config["Processors"]+= args.add_processors
-			#TODO: add function that lets you run artus for variables which are not in allready processed output files such that you can merge them later into the old outputs
-			if len(args.new_quantities)>0:
-				pipeline_python_config["Quantities"] = args.new_quantities
-			if len(args.new_processors)>0:
-				pipeline_python_config["Processors"] = args.add_processors
-						
-			"""
 
-			self._config[selected_pipeline] = pipeline_python_config
-
+				
+			self._config["Pipelines"] = pipeline_config
 
 		# treat pipeline base configs
-		pipelineBaseJsonDict = jsonTools.JsonDict()
+		#TODO change this to python config file
+		pipelineBaseJsonDict = baseconfig.baseconfig
+
 		if self._args.pipeline_base_configs and len(self._args.pipeline_base_configs) > 0:
+			
+			"""
 			pipelineBaseJsonDict = jsonTools.JsonDict({
 				"Pipelines" : {
 					pipeline : jsonTools.JsonDict(*self._args.pipeline_base_configs) for pipeline in pipelineJsonDict["Pipelines"].keys()
 				}
 			})
+			"""
+			
 
 		# merge resulting pipeline config into the main config
 		self._config += (pipelineBaseJsonDict + pipelineJsonDict)
@@ -464,8 +495,10 @@ class ArtusWrapper(object):
 		                                help="JSON pipeline base configurations. All pipeline configs will be merged with these common configs.")
 		configOptionsGroup.add_argument("-p", "--pipeline-configs", nargs="+", action="append",
 		                                help="JSON pipeline configurations. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")
-		configOptionsGroup.add_argument("--pipelines", nargs="+", action="append",
-		                                help="JSON pipelines used for artus. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")		
+		configOptionsGroup.add_argument("--channel", nargs="+", action="append",
+		                                help="channels used for artus. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used.")
+		configOptionsGroup.add_argument("--systematics", nargs="+", action="append",
+		                                help="systematics used for artus. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used.")		
 		configOptionsGroup.add_argument("--nick", default="auto",
 		                                help="Kappa nickname name that can be used for switch between sample-dependent settings.")
 
