@@ -130,10 +130,9 @@ public:
 		}
 		
 		// apply jet energy corrections and uncertainty shift (if uncertainties are not to be splitted into individual contributions)
-		float shift = settings.GetJetEnergyCorrectionUncertaintyShift();
 		correctJets(&correctJetsForJecTools, factorizedJetCorrector, jetCorrectionUncertainty,
 		            event.m_pileupDensity->rho, event.m_vertexSummary->nVertices, -1,
-		            shift);
+		            settings.GetJetEnergyCorrectionUncertaintyShift());
 		
 		// create the shared pointers to store in the product
 		(product.*m_correctedJetsMember).clear();
@@ -152,19 +151,6 @@ public:
 			 jet != (product.*m_correctedJetsMember).end(); ++jet)
 		{
 			// No general correction implemented
-			
-			// total uncertainty shifts
-			if (jetCorrectionUncertainty != nullptr)
-			{
-				double uncertainty = 0.0;
-				if ((std::abs((*jet)->p4.Eta()) < 5.2) && ((*jet)->p4.Pt() > 9.0))
-				{
-					jetCorrectionUncertainty->setJetEta((*jet)->p4.Eta());
-					jetCorrectionUncertainty->setJetPt((*jet)->p4.Pt());
-					uncertainty = jetCorrectionUncertainty->getUncertainty(true);
-				}
-				(*jet)->p4 = (*jet)->p4 * (1.0 + uncertainty * settings.GetJetEnergyCorrectionUncertaintyShift());
-			}
 			
 			// perform possible analysis-specific corrections
 			AdditionalCorrections(jet->get(), event, product, settings, metadata);
