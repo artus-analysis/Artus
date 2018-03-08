@@ -17,6 +17,8 @@ import re
 from string import Template
 from datetime import datetime
 
+import pprint as pprint
+
 import Artus.Utility.tools as tools
 import Artus.Utility.jsonTools as jsonTools
 import Artus.Utility.profile_cpp as profile_cpp
@@ -296,7 +298,7 @@ class ArtusWrapper(object):
 	def expandConfig(self):
 
 		# merge all base configs into the main config
-		self._config += jsonTools.JsonDict.mergeAll(self._args.base_configs)
+		#self._config += jsonTools.JsonDict.mergeAll(self._args.base_configs)
 		print "hello"
 		self._gridControlInputFiles = {}
 
@@ -336,29 +338,31 @@ class ArtusWrapper(object):
 		"""
 
 		nickname = self.determineNickname(self._args.nick)
-		
-		if self.args.pipelines and len(self._args.channels) > 0:
-			#pipeline_config = {} #TODO add systematic option, extra loop or in pipelines?
-			for selected_channel in self.args.channel:
+		print nickname
+		print self._args.channels
+		print self._args.systematics
+		if self._args.channels and len(self._args.channels) > 0:
+			pipeline_config = {} #TODO add systematic option, extra loop or in pipelines?
+			for selected_channel in self._args.channels:
 				if selected_channel == "mt":
 					channel_python_config = tt.tt_ArtusConfig() #TODO change to the mt config but for now let it be
-					channel_python_config.build_config(nickname, systematic_shift)
+					channel_python_config.build_config(nickname)
 					#TODO add the config for the nominal/jetuncertainty. also have to be changed to python code
 				elif selected_channel == "et":
 					channel_python_config = tt.tt_ArtusConfig() #TODO change to the et config but for now let it be
-					channel_python_config.build_config(nickname, systematic_shift)
+					channel_python_config.build_config(nickname)
 					#TODO add the config for the nominal/jetuncertainty. also have to be changed to python code
 				elif selected_channel == "em":
 					channel_python_config = tt.tt_ArtusConfig() #TODO change to the em config but for now let it be
-					channel_python_config.build_config(nickname, systematic_shift)
+					channel_python_config.build_config(nickname)
 					#TODO add the config for the nominal/jetuncertainty. also have to be changed to python code
 				elif selected_channel == "tt":
 					channel_python_config = tt.tt_ArtusConfig() 
-					channel_python_config.build_config(nickname, systematic_shift)
+					channel_python_config.build_config(nickname)
 					#TODO add the config for the nominal/jetuncertainty. also have to be changed to python code
 				elif selected_channel == "mm":
 					channel_python_config = tt.tt_ArtusConfig() #TODO change to the mm config but for now let it be
-					channel_python_config.build_config(nickname, systematic_shift)
+					channel_python_config.build_config(nickname)
 					#TODO add the config for the nominal/jetuncertainty. also have to be changed to python code
 				elif selected_channel == "gen":	
 					channel_python_config = tt.tt_ArtusConfig() #TODO change to the gen config but for now let it be
@@ -380,28 +384,32 @@ class ArtusWrapper(object):
 					
 				"""
 				if selected_channel != "gen":	
+					syst_python_config_start = systematics.Systematics_Config()
 					for systematic_shift in self._args.systematics:
 						if systematic_shift != "nominal":
 							for shiftdirection in ["Up", "Down"]:
-								#TODO make systematic config part
 								systematic_name = systematic_shift+shiftdirection
-								syst_python_config = systematics.Systematics_Config()
+								syst_python_config=syst_python_config_start
 								syst_python_config.build_systematic_config(nickname, systematic_name)
-								pipeline_config[channel+"_"+systematic_name] = channel_python_config + syst_python_config
+								pipeline_config[selected_channel+"_"+systematic_name] = syst_python_config.update(channel_python_config)
+
 						elif systematic_shift == "nominal":
-							syst_python_config = systematics.Systematics_Config()
-							pipeline_config[channel+"_"+systematic_shift+shiftdirection] = channel_python_config + syst_python_config
+							syst_python_config = syst_python_config_start
+							syst_python_config.update(channel_python_config)
+							pipeline_config[selected_channel+"_"+systematic_shift] = syst_python_config
 
+				if selected_channel == "gen":
+					pipeline_config["gen"] = channel_python_config
 
-				
-			self._config["Pipelines"] = pipeline_config
+			self._config["Pipelines"] = pipeline_config	
+			
 
 		# treat pipeline base configs
 		#TODO change this to python config file
-		pipelineBaseJsonDict = baseconfig.baseconfig
+		pipelineBaseDict = baseconfig.Baseconfig
 
 		if self._args.pipeline_base_configs and len(self._args.pipeline_base_configs) > 0:
-			
+			self._config += pipelineBaseDict
 			"""
 			pipelineBaseJsonDict = jsonTools.JsonDict({
 				"Pipelines" : {
@@ -410,9 +418,9 @@ class ArtusWrapper(object):
 			})
 			"""
 			
-
+		pprint.pprint(self._config)
 		# merge resulting pipeline config into the main config
-		self._config += (pipelineBaseJsonDict + pipelineJsonDict)
+		#self._config += (pipelineBaseJsonDict + pipelineJsonDict)
 
 		# treat includes, nicks and comments
 		self.tmp_directory_remote_files = None
@@ -495,9 +503,9 @@ class ArtusWrapper(object):
 		                                help="JSON pipeline base configurations. All pipeline configs will be merged with these common configs.")
 		configOptionsGroup.add_argument("-p", "--pipeline-configs", nargs="+", action="append",
 		                                help="JSON pipeline configurations. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")
-		configOptionsGroup.add_argument("--channel", nargs="+", action="append",
+		configOptionsGroup.add_argument("--channels", nargs="+",
 		                                help="channels used for artus. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used.")
-		configOptionsGroup.add_argument("--systematics", nargs="+", action="append",
+		configOptionsGroup.add_argument("--systematics", nargs="+",
 		                                help="systematics used for artus. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used.")		
 		configOptionsGroup.add_argument("--nick", default="auto",
 		                                help="Kappa nickname name that can be used for switch between sample-dependent settings.")
