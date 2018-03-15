@@ -14,10 +14,11 @@ import json
 import shutil
 import subprocess
 import re
+import copy
 from string import Template
 from datetime import datetime
 
-import pprint as pprint
+from pprint import pprint
 
 import Artus.Utility.tools as tools
 import Artus.Utility.jsonTools as jsonTools
@@ -26,7 +27,7 @@ import Artus.Utility.profile_cpp as profile_cpp
 import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.tt as tt
 import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2Analysis.systematics as systematics
 
-import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.baseconfig as baseconfig
+import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.baseconfigCP as baseconfigcp
 
 
 
@@ -343,27 +344,29 @@ class ArtusWrapper(object):
 		print self._args.systematics
 		if self._args.channels and len(self._args.channels) > 0:
 			pipeline_config = {} #TODO add systematic option, extra loop or in pipelines?
+			syst_python_config = systematics.Systematics_Config()
+
 			for selected_channel in self._args.channels:
 				if selected_channel == "mt":
 					channel_python_config = tt.tt_ArtusConfig() #TODO change to the mt config but for now let it be
 					channel_python_config.build_config(nickname)
-					#TODO add the config for the nominal/jetuncertainty. also have to be changed to python code
+					
 				elif selected_channel == "et":
 					channel_python_config = tt.tt_ArtusConfig() #TODO change to the et config but for now let it be
 					channel_python_config.build_config(nickname)
-					#TODO add the config for the nominal/jetuncertainty. also have to be changed to python code
+					
 				elif selected_channel == "em":
 					channel_python_config = tt.tt_ArtusConfig() #TODO change to the em config but for now let it be
 					channel_python_config.build_config(nickname)
-					#TODO add the config for the nominal/jetuncertainty. also have to be changed to python code
+
 				elif selected_channel == "tt":
 					channel_python_config = tt.tt_ArtusConfig() 
 					channel_python_config.build_config(nickname)
-					#TODO add the config for the nominal/jetuncertainty. also have to be changed to python code
+
 				elif selected_channel == "mm":
 					channel_python_config = tt.tt_ArtusConfig() #TODO change to the mm config but for now let it be
 					channel_python_config.build_config(nickname)
-					#TODO add the config for the nominal/jetuncertainty. also have to be changed to python code
+
 				elif selected_channel == "gen":	
 					channel_python_config = tt.tt_ArtusConfig() #TODO change to the gen config but for now let it be
 					channel_python_config.build_config(nickname)
@@ -384,43 +387,49 @@ class ArtusWrapper(object):
 					
 				"""
 				if selected_channel != "gen":	
-					syst_python_config_start = systematics.Systematics_Config()
 					for systematic_shift in self._args.systematics:
+
 						if systematic_shift != "nominal":
 							for shiftdirection in ["Up", "Down"]:
 								systematic_name = systematic_shift+shiftdirection
-								syst_python_config=syst_python_config_start
+								syst_python_config.clear_config()
 								syst_python_config.build_systematic_config(nickname, systematic_name)
-								pipeline_config[selected_channel+"_"+systematic_name] = syst_python_config.update(channel_python_config)
+								pipeline_config[selected_channel+"_"+systematic_name] = copy.deepcopy(syst_python_config)
+								pipeline_config[selected_channel+"_"+systematic_name].update(channel_python_config)
+
 
 						elif systematic_shift == "nominal":
-							syst_python_config = syst_python_config_start
-							syst_python_config.update(channel_python_config)
-							pipeline_config[selected_channel+"_"+systematic_shift] = syst_python_config
+							syst_python_config.clear_config()
+							pipeline_config[selected_channel+"_"+systematic_shift] = copy.deepcopy(syst_python_config)
+							pipeline_config[selected_channel+"_"+systematic_shift].update(channel_python_config)
 
-				if selected_channel == "gen":
+	
+				elif selected_channel == "gen":
 					pipeline_config["gen"] = channel_python_config
+				
 
-			self._config["Pipelines"] = pipeline_config	
+		self._config["Pipelines"] = pipeline_config	
 			
 
 		# treat pipeline base configs
 		#TODO change this to python config file
-		pipelineBaseDict = baseconfig.Baseconfig
+		pipelineBaseDict = baseconfigcp.Baseconfig_cp(nickname)
 
+		# merge pipeline config and baseline config
+		self._config.update(pipelineBaseDict)
+		"""
 		if self._args.pipeline_base_configs and len(self._args.pipeline_base_configs) > 0:
-			self._config += pipelineBaseDict
-			"""
+			
+			
 			pipelineBaseJsonDict = jsonTools.JsonDict({
 				"Pipelines" : {
 					pipeline : jsonTools.JsonDict(*self._args.pipeline_base_configs) for pipeline in pipelineJsonDict["Pipelines"].keys()
 				}
 			})
-			"""
+		"""
 			
-		pprint.pprint(self._config)
-		# merge resulting pipeline config into the main config
-		#self._config += (pipelineBaseJsonDict + pipelineJsonDict)
+	
+		self._config = jsonTools.JsonDict(self._config)
 
 		# treat includes, nicks and comments
 		self.tmp_directory_remote_files = None
