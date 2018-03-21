@@ -86,7 +86,7 @@ class InputRoot(inputfile.InputFile):
 			plotData.plotdict[key] = [element.split() if element else element for element in plotData.plotdict[key]]
 		
 		if plotData.plotdict["no_cache"] is None:
-			plotData.plotdict["no_cache"] = not any(tools.flattenList([[input_file.startswith("/") for input_file in files] for files in plotData.plotdict["files"]]))
+			plotData.plotdict["no_cache"] = not any(tools.flattenList([[input_file.startswith("/") or ("://" in input_file) for input_file in files] for files in plotData.plotdict["files"]]))
 		
 		if plotData.plotdict["read_config"]:
 			self.read_input_json_dicts(plotData)
