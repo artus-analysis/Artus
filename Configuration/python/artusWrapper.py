@@ -28,7 +28,7 @@ import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.tt as tt
 import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2Analysis.systematics as systematics
 
 import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.baseconfigCP as baseconfigcp
-
+import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.globalProcessors as globalprocessors
 
 
 class ArtusWrapper(object):
@@ -300,7 +300,7 @@ class ArtusWrapper(object):
 
 		# merge all base configs into the main config
 		#self._config += jsonTools.JsonDict.mergeAll(self._args.base_configs)
-		print "hello"
+
 		self._gridControlInputFiles = {}
 
 		#Set Input Filenames
@@ -339,94 +339,93 @@ class ArtusWrapper(object):
 		"""
 
 		nickname = self.determineNickname(self._args.nick)
-		print nickname
-		print self._args.channels
-		print self._args.systematics
-		if self._args.channels and len(self._args.channels) > 0:
-			pipeline_config = {} #TODO add systematic option, extra loop or in pipelines?
-			syst_python_config = systematics.Systematics_Config()
+		if nickname != "auto":
+			if self._args.channels and len(self._args.channels) > 0:
+				pipeline_config = {} #TODO add systematic option, extra loop or in pipelines?
+				syst_python_config = systematics.Systematics_Config()
 
-			for selected_channel in self._args.channels:
-				if selected_channel == "mt":
-					channel_python_config = tt.tt_ArtusConfig() #TODO change to the mt config but for now let it be
-					channel_python_config.build_config(nickname)
+				for selected_channel in self._args.channels:
+					if selected_channel == "mt":
+						channel_python_config = tt.tt_ArtusConfig() #TODO change to the mt config but for now let it be
+						channel_python_config.build_config(nickname)
 					
-				elif selected_channel == "et":
-					channel_python_config = tt.tt_ArtusConfig() #TODO change to the et config but for now let it be
-					channel_python_config.build_config(nickname)
+					elif selected_channel == "et":
+						channel_python_config = tt.tt_ArtusConfig() #TODO change to the et config but for now let it be
+						channel_python_config.build_config(nickname)
 					
-				elif selected_channel == "em":
-					channel_python_config = tt.tt_ArtusConfig() #TODO change to the em config but for now let it be
-					channel_python_config.build_config(nickname)
+					elif selected_channel == "em":
+						channel_python_config = tt.tt_ArtusConfig() #TODO change to the em config but for now let it be
+						channel_python_config.build_config(nickname)
 
-				elif selected_channel == "tt":
-					channel_python_config = tt.tt_ArtusConfig() 
-					channel_python_config.build_config(nickname)
+					elif selected_channel == "tt":
+						channel_python_config = tt.tt_ArtusConfig() 
+						channel_python_config.build_config(nickname)
 
-				elif selected_channel == "mm":
-					channel_python_config = tt.tt_ArtusConfig() #TODO change to the mm config but for now let it be
-					channel_python_config.build_config(nickname)
+					elif selected_channel == "mm":
+						channel_python_config = tt.tt_ArtusConfig() #TODO change to the mm config but for now let it be
+						channel_python_config.build_config(nickname)
 
-				elif selected_channel == "gen":	
-					channel_python_config = tt.tt_ArtusConfig() #TODO change to the gen config but for now let it be
-					channel_python_config.build_config(nickname)
-				else:	
-					log.error("COULD NOT FIND CHANNEL")
-				#Ideas:
-				#TODO add function that adds list of quantities to the pipeline_python_config
-				"""
-				if len(args.add_quantities)>0:
-					pipeline_python_config["Quantities"]+= args.add_quantities
-				if len(args.add_processors)>0:
-					pipeline_python_config["Processors"]+= args.add_processors
-				#TODO: add function that lets you run artus for variables which are not in allready processed output files such that you can merge them later into the old outputs
-				if len(args.new_quantities)>0:
-					pipeline_python_config["Quantities"] = args.new_quantities
-				if len(args.new_processors)>0:
-					pipeline_python_config["Processors"] = args.add_processors
+					elif selected_channel == "gen":	
+						channel_python_config = tt.tt_ArtusConfig() #TODO change to the gen config but for now let it be
+						channel_python_config.build_config(nickname)
+					else:	
+						log.error("COULD NOT FIND CHANNEL")
+					#Ideas:
+					#TODO add function that adds list of quantities to the pipeline_python_config
+					"""
+					if len(args.add_quantities)>0:
+						pipeline_python_config["Quantities"]+= args.add_quantities
+					if len(args.add_processors)>0:
+						pipeline_python_config["Processors"]+= args.add_processors
+					#TODO: add function that lets you run artus for variables which are not in allready processed output files such that you can merge them later into the old outputs
+					if len(args.new_quantities)>0:
+						pipeline_python_config["Quantities"] = args.new_quantities
+					if len(args.new_processors)>0:
+						pipeline_python_config["Processors"] = args.add_processors
 					
-				"""
-				if selected_channel != "gen":	
-					for systematic_shift in self._args.systematics:
+					"""
+					if selected_channel != "gen":	
+						for systematic_shift in self._args.systematics:
 
-						if systematic_shift != "nominal":
-							for shiftdirection in ["Up", "Down"]:
-								systematic_name = systematic_shift+shiftdirection
+							if systematic_shift != "nominal":
+								for shiftdirection in ["Up", "Down"]:
+									systematic_name = systematic_shift+shiftdirection
+									syst_python_config.clear_config()
+									syst_python_config.build_systematic_config(nickname, systematic_name)
+									pipeline_config[selected_channel+"_"+systematic_name] = copy.deepcopy(syst_python_config)
+									pipeline_config[selected_channel+"_"+systematic_name].update(channel_python_config)
+
+
+							elif systematic_shift == "nominal":
 								syst_python_config.clear_config()
-								syst_python_config.build_systematic_config(nickname, systematic_name)
-								pipeline_config[selected_channel+"_"+systematic_name] = copy.deepcopy(syst_python_config)
-								pipeline_config[selected_channel+"_"+systematic_name].update(channel_python_config)
-
-
-						elif systematic_shift == "nominal":
-							syst_python_config.clear_config()
-							pipeline_config[selected_channel+"_"+systematic_shift] = copy.deepcopy(syst_python_config)
-							pipeline_config[selected_channel+"_"+systematic_shift].update(channel_python_config)
+								pipeline_config[selected_channel+"_"+systematic_shift] = copy.deepcopy(syst_python_config)
+								pipeline_config[selected_channel+"_"+systematic_shift].update(channel_python_config)
 
 	
-				elif selected_channel == "gen":
-					pipeline_config["gen"] = channel_python_config
+					elif selected_channel == "gen":
+						pipeline_config["gen"] = channel_python_config
 				
 
-		self._config["Pipelines"] = pipeline_config	
+			self._config["Pipelines"] = pipeline_config	
 			
 
-		# treat pipeline base configs
-		#TODO change this to python config file
-		pipelineBaseDict = baseconfigcp.Baseconfig_cp(nickname)
+			# treat pipeline base configs
+			#TODO change this to python config file
+			pipelineBaseDict = baseconfigcp.Baseconfig_cp(nickname)
+			globalProcessorsDict = globalprocessors.globalProccesors(nickname)
 
-		# merge pipeline config and baseline config
-		self._config.update(pipelineBaseDict)
-		"""
-		if self._args.pipeline_base_configs and len(self._args.pipeline_base_configs) > 0:
+			# merge pipeline config and baseline config
+			self._config.update(pipelineBaseDict)
+			"""
+			if self._args.pipeline_base_configs and len(self._args.pipeline_base_configs) > 0:
 			
 			
-			pipelineBaseJsonDict = jsonTools.JsonDict({
-				"Pipelines" : {
-					pipeline : jsonTools.JsonDict(*self._args.pipeline_base_configs) for pipeline in pipelineJsonDict["Pipelines"].keys()
-				}
-			})
-		"""
+				pipelineBaseJsonDict = jsonTools.JsonDict({
+					"Pipelines" : {
+						pipeline : jsonTools.JsonDict(*self._args.pipeline_base_configs) for pipeline in pipelineJsonDict["Pipelines"].keys()
+					}
+				})
+			"""
 			
 	
 		self._config = jsonTools.JsonDict(self._config)
@@ -613,7 +612,9 @@ class ArtusWrapper(object):
 		else:
 			epilogArguments += r"--log-files log.log --log-stream stdout "
 		epilogArguments += r"--print-envvars ROOTSYS CMSSW_BASE DATASETNICK FILE_NAMES LD_LIBRARY_PATH "
-		epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
+		#epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
+		epilogArguments += r"--channels " + (" ".join(self._args.channels)) + " "
+		epilogArguments += r"--systematics " + (" ".join(self._args.systematics)) + " "
 		epilogArguments += "--nick $DATASETNICK "
 		epilogArguments += "-i $FILE_NAMES "
 		if self._args.copy_remote_files:
