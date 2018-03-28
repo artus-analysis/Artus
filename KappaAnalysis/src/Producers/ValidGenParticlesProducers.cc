@@ -222,6 +222,41 @@ void ValidGenTausProducer::Produce(KappaTypes::KappaTypes::event_type const& eve
 			}
 		}
 		product.m_validGenTausMap[*genParticle] = bestMatchingGenTau;
+		
+		std::pair<std::vector<KGenParticle*>, std::vector<KGenParticle*> > chargedNeutralHadrons = GetChargedNeutralHadrons(event.m_genParticles, *genParticle);
+		product.m_validGenTausChargedHadronsMap[*genParticle] = chargedNeutralHadrons.first;
+		product.m_validGenTausNeutralHadronsMap[*genParticle] = chargedNeutralHadrons.second;
 	}
+}
+
+std::pair<std::vector<KGenParticle*>, std::vector<KGenParticle*> > ValidGenTausProducer::GetChargedNeutralHadrons(KGenParticles* genParticles, KGenParticle* genTau) const
+{
+	std::pair<std::vector<KGenParticle*>, std::vector<KGenParticle*> > chargedNeutralHadrons = std::pair<std::vector<KGenParticle*>, std::vector<KGenParticle*> >(
+			std::vector<KGenParticle*>(), std::vector<KGenParticle*>()
+	);
+	
+	for (std::vector<unsigned int>::iterator daughterIndex = genTau->daughterIndices.begin(); daughterIndex != genTau->daughterIndices.end(); ++daughterIndex)
+	{
+		KGenParticle* daughterGenParticle = &(genParticles->at(*daughterIndex));
+		int absPdgId = std::abs(daughterGenParticle->pdgId);
+		if (absPdgId == DefaultValues::pdgIdPiPlus) // maybe add charged leptons here as well
+		{
+			chargedNeutralHadrons.first.push_back(daughterGenParticle);
+		}
+		else if (absPdgId == DefaultValues::pdgIdPiZero)
+		{
+			chargedNeutralHadrons.second.push_back(daughterGenParticle);
+		}
+		else if (absPdgId != DefaultValues::pdgIdNuTau)
+		{
+			std::pair<std::vector<KGenParticle*>, std::vector<KGenParticle*> > tmpChargedNeutralHadrons = GetChargedNeutralHadrons(genParticles, daughterGenParticle);
+			chargedNeutralHadrons.first.insert(chargedNeutralHadrons.first.end(),
+			                                   tmpChargedNeutralHadrons.first.begin(), tmpChargedNeutralHadrons.first.end());
+			chargedNeutralHadrons.second.insert(chargedNeutralHadrons.second.end(),
+			                                    tmpChargedNeutralHadrons.second.begin(), tmpChargedNeutralHadrons.second.end());
+		}
+	}
+	
+	return chargedNeutralHadrons;
 }
 

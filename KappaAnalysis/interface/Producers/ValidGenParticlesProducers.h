@@ -77,5 +77,8 @@ public:
 	
 	void Produce(KappaTypes::event_type const& event, KappaTypes::product_type& product,
 	             KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) const override;
+
+private:
+	std::pair<std::vector<KGenParticle*>, std::vector<KGenParticle*> > GetChargedNeutralHadrons(KGenParticles* genParticles, KGenParticle* genTau) const;
 };
 
