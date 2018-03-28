@@ -299,7 +299,9 @@ class ArtusWrapper(object):
 	def expandConfig(self):
 
 		# merge all base configs into the main config
-		#self._config += jsonTools.JsonDict.mergeAll(self._args.base_configs)
+		if self._args.base_configs!=None:
+			self._config = jsonTools.JsonDict(self._config)
+			self._config += jsonTools.JsonDict.mergeAll(self._args.base_configs)
 
 		self._gridControlInputFiles = {}
 
@@ -339,6 +341,7 @@ class ArtusWrapper(object):
 		"""
 
 		nickname = self.determineNickname(self._args.nick)
+		print nickname
 		if nickname != "auto":
 			if self._args.channels and len(self._args.channels) > 0:
 				pipeline_config = {} #TODO add systematic option, extra loop or in pipelines?
@@ -416,16 +419,7 @@ class ArtusWrapper(object):
 
 			# merge pipeline config and baseline config
 			self._config.update(pipelineBaseDict)
-			"""
-			if self._args.pipeline_base_configs and len(self._args.pipeline_base_configs) > 0:
-			
-			
-				pipelineBaseJsonDict = jsonTools.JsonDict({
-					"Pipelines" : {
-						pipeline : jsonTools.JsonDict(*self._args.pipeline_base_configs) for pipeline in pipelineJsonDict["Pipelines"].keys()
-					}
-				})
-			"""
+			self._config.update(globalProcessorsDict)
 			
 	
 		self._config = jsonTools.JsonDict(self._config)
@@ -678,6 +672,7 @@ class ArtusWrapper(object):
 			log.error("Exit with code %s.\n\n" % exitCode)
 			log.info("Dump configuration:\n")
 			log.info(self._configFilename)
+			
 
 		return exitCode
 
