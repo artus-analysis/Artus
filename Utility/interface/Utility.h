@@ -176,6 +176,13 @@ namespace Utility {
 		return (it != container.end());
 	}
 	
+	template <template<class, class...> class Container, typename Item, typename... Args>
+	static int Index(Container<Item, Args...> const& container, Item const& item)
+	{
+		typename Container<Item, Args...>::const_iterator it = std::find(container.begin(), container.end(), item);
+		return std::distance(container.begin(), it);
+	}
+	
 	template<class TNumber>
 	bool ApproxEqual(TNumber value1, TNumber value2, double maxDelta=1e-5)
 	{
