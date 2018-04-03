@@ -25,6 +25,7 @@ import Artus.Utility.jsonTools as jsonTools
 import Artus.Utility.profile_cpp as profile_cpp
 
 import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.tt as tt
+import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.mt as mt
 import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2Analysis.systematics as systematics
 
 import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.baseconfigCP as baseconfigcp
@@ -342,6 +343,7 @@ class ArtusWrapper(object):
 
 		nickname = self.determineNickname(self._args.nick)
 		print nickname
+		print self._args.channels
 		if nickname != "auto":
 			if self._args.channels and len(self._args.channels) > 0:
 				pipeline_config = {} #TODO add systematic option, extra loop or in pipelines?
@@ -349,7 +351,7 @@ class ArtusWrapper(object):
 
 				for selected_channel in self._args.channels:
 					if selected_channel == "mt":
-						channel_python_config = tt.tt_ArtusConfig() #TODO change to the mt config but for now let it be
+						channel_python_config = mt.mt_ArtusConfig() #TODO change to the mt config but for now let it be
 						channel_python_config.build_config(nickname)
 					
 					elif selected_channel == "et":
@@ -401,6 +403,7 @@ class ArtusWrapper(object):
 
 							elif systematic_shift == "nominal":
 								syst_python_config.clear_config()
+								pprint(syst_python_config)
 								pipeline_config[selected_channel+"_"+systematic_shift] = copy.deepcopy(syst_python_config)
 								pipeline_config[selected_channel+"_"+systematic_shift].update(channel_python_config)
 
@@ -413,7 +416,7 @@ class ArtusWrapper(object):
 			
 
 			# treat pipeline base configs
-			#TODO change this to python config file
+
 			pipelineBaseDict = baseconfigcp.Baseconfig_cp(nickname)
 			globalProcessorsDict = globalprocessors.globalProccesors(nickname)
 
@@ -507,7 +510,7 @@ class ArtusWrapper(object):
 		                                help="JSON pipeline configurations. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")
 		configOptionsGroup.add_argument("--channels", nargs="+",
 		                                help="channels used for artus. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used.")
-		configOptionsGroup.add_argument("--systematics", nargs="+",
+		configOptionsGroup.add_argument("--systematics", nargs="+", default = ["nominal"],
 		                                help="systematics used for artus. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used.")		
 		configOptionsGroup.add_argument("--nick", default="auto",
 		                                help="Kappa nickname name that can be used for switch between sample-dependent settings.")
