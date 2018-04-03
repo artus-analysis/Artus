@@ -26,6 +26,8 @@ import Artus.Utility.profile_cpp as profile_cpp
 
 import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.tt as tt
 import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.mt as mt
+import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.et as et
+
 import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2Analysis.systematics as systematics
 
 import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.baseconfigCP as baseconfigcp
@@ -355,7 +357,7 @@ class ArtusWrapper(object):
 						channel_python_config.build_config(nickname)
 					
 					elif selected_channel == "et":
-						channel_python_config = tt.tt_ArtusConfig() #TODO change to the et config but for now let it be
+						channel_python_config = et.tt_ArtusConfig() #TODO change to the et config but for now let it be
 						channel_python_config.build_config(nickname)
 					
 					elif selected_channel == "em":
