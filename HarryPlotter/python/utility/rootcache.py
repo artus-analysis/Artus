@@ -39,7 +39,7 @@ class RootFileCache(Cache):
 		for index, arg in enumerate(tmp_args):
 			if isinstance(arg, ROOT.TObject):
 				tmp_args[index] = arg.GetName()
-		
+
 		tmp_kwargs = copy.deepcopy(kwargs)
 		for keyword, arg in tmp_kwargs.iteritems():
 			if isinstance(arg, ROOT.TObject):
@@ -80,4 +80,3 @@ class RootFileCache(Cache):
 					pass
 		
 		return root_tree, root_object
-
