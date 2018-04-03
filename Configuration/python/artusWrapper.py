@@ -27,6 +27,7 @@ import Artus.Utility.profile_cpp as profile_cpp
 import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.tt as tt
 import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.mt as mt
 import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.et as et
+import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.gen as gen
 
 import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2Analysis.systematics as systematics
 
@@ -353,11 +354,11 @@ class ArtusWrapper(object):
 
 				for selected_channel in self._args.channels:
 					if selected_channel == "mt":
-						channel_python_config = mt.mt_ArtusConfig() #TODO change to the mt config but for now let it be
+						channel_python_config = mt.mt_ArtusConfig() 
 						channel_python_config.build_config(nickname)
 					
 					elif selected_channel == "et":
-						channel_python_config = et.tt_ArtusConfig() #TODO change to the et config but for now let it be
+						channel_python_config = et.et_ArtusConfig() 
 						channel_python_config.build_config(nickname)
 					
 					elif selected_channel == "em":
@@ -373,7 +374,7 @@ class ArtusWrapper(object):
 						channel_python_config.build_config(nickname)
 
 					elif selected_channel == "gen":	
-						channel_python_config = tt.tt_ArtusConfig() #TODO change to the gen config but for now let it be
+						channel_python_config = gen.gen_ArtusConfig() #TODO change to the gen config but for now let it be
 						channel_python_config.build_config(nickname)
 					else:	
 						log.error("COULD NOT FIND CHANNEL")
