@@ -12,7 +12,7 @@ import sys
 
 class HarryParser(argparse.ArgumentParser):
 	def __init__(self, **kwargs):
-		logger.initLogger()  # get a basic logger without arguments
+		#logger.initLogger()  # get a basic logger without arguments
 		kwargs["add_help"] = False
 		kwargs["conflict_handler"] = "resolve"
 		kwargs["fromfile_prefix_chars"] = "@"
@@ -71,9 +71,11 @@ class HarryParser(argparse.ArgumentParser):
 		""" Parse string content to bool."""
 		return v.lower() in ("yes", "true", "t", "1")
 	
-	def parse_args(self, args=None, namespace=None):
-		known_args = super(HarryParser, self).parse_args(args=args, namespace=namespace)
-		logger.initLogger(known_args)
+	def parse_args(self, args=None, namespace=None, **kwargs):
+		new_logger = not kwargs.pop("from_script", False)
+		known_args = super(HarryParser, self).parse_args(args=args, namespace=namespace, **kwargs)
+		if new_logger:
+			logger.initLogger(known_args)
 
 		# Add help after first parsing
 		self.add_help = True
@@ -81,9 +83,11 @@ class HarryParser(argparse.ArgumentParser):
 
 		return known_args
 	
-	def parse_known_args(self, args=None, namespace=None):
-		known_args, unknown_args = super(HarryParser, self).parse_known_args(args=args, namespace=namespace)
-		logger.initLogger(known_args)
+	def parse_known_args(self, args=None, namespace=None, **kwargs):
+		new_logger = not kwargs.pop("from_script", False)
+		known_args, unknown_args = super(HarryParser, self).parse_known_args(args=args, namespace=namespace, **kwargs)
+		if new_logger:
+			logger.initLogger(known_args)
 
 		# Add help after first parsing
 		self.add_help = True
