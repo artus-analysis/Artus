@@ -19,6 +19,7 @@ import sys
 import re
 
 import ROOT
+ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gEnv.SetValue("TFile.AsyncPrefetching", 1)
 
 import Artus.Utility.geometry as geometry
