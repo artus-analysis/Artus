@@ -49,8 +49,12 @@ class HarryCore(object):
 		if parser == None:
 			parser = harryparser.HarryParser()
 		self.parser = parser
+		log.debug("Preparing arguments from scripts...")
 		self._args_from_script = shlex.split(args_from_script) if args_from_script else None
+		log.debug("\tdone.")
+		log.debug("First parsing of arguments...")
 		args, unknown_args = self.parser.parse_known_args(self._args_from_script)
+		log.debug("\tdone.")
 		self.args = vars(args)
 
 		# Default directories to be searched for plugins
@@ -161,7 +165,9 @@ class HarryCore(object):
 		if self.args["json_defaults"] != None:
 			self.parser.set_defaults(**(JsonDict(self.args["json_defaults"]).doIncludes().doComments()))
 		
+		log.debug("Second parsing of arguments...")
 		self.args = vars(self.parser.parse_args(self._args_from_script))
+		log.debug("\tdone.")
 		plotData = plotdata.PlotData(self.args)
 		
 		# print the final processor chain
