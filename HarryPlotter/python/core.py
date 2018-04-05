@@ -49,12 +49,15 @@ class HarryCore(object):
 		if parser == None:
 			parser = harryparser.HarryParser()
 		self.parser = parser
-		log.debug("Preparing arguments from scripts...")
+		if args_from_script:
+			log.debug("Preparing arguments from scripts...")
 		self._args_from_script = shlex.split(args_from_script) if args_from_script else None
-		log.debug("\tdone.")
-		log.debug("First parsing of arguments...")
-		args, unknown_args = self.parser.parse_known_args(self._args_from_script)
-		log.debug("\tdone.")
+		if args_from_script:
+			log.debug("\tdone.")
+			log.debug("First parsing of arguments...")
+		args, unknown_args = self.parser.parse_known_args(self._args_from_script, from_script=(not (args_from_script is None)))
+		if args_from_script:
+			log.debug("\tdone.")
 		self.args = vars(args)
 
 		# Default directories to be searched for plugins
