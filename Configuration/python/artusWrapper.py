@@ -27,6 +27,8 @@ import Artus.Utility.profile_cpp as profile_cpp
 import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.tt as tt
 import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.mt as mt
 import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.et as et
+import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.em as em
+import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.mm as mm
 import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.gen as gen
 
 import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2Analysis.systematics as systematics
@@ -362,7 +364,7 @@ class ArtusWrapper(object):
 						channel_python_config.build_config(nickname)
 					
 					elif selected_channel == "em":
-						channel_python_config = tt.tt_ArtusConfig() #TODO change to the em config but for now let it be
+						channel_python_config = em.em_ArtusConfig() #TODO change to the em config but for now let it be
 						channel_python_config.build_config(nickname)
 
 					elif selected_channel == "tt":
@@ -370,11 +372,11 @@ class ArtusWrapper(object):
 						channel_python_config.build_config(nickname)
 
 					elif selected_channel == "mm":
-						channel_python_config = tt.tt_ArtusConfig() #TODO change to the mm config but for now let it be
+						channel_python_config = mm.mm_ArtusConfig() #TODO change to the mm config but for now let it be
 						channel_python_config.build_config(nickname)
 
 					elif selected_channel == "gen":	
-						channel_python_config = gen.gen_ArtusConfig() #TODO change to the gen config but for now let it be
+						channel_python_config = gen.gen_ArtusConfig()
 						channel_python_config.build_config(nickname)
 					else:	
 						log.error("COULD NOT FIND CHANNEL")
@@ -401,7 +403,7 @@ class ArtusWrapper(object):
 									syst_python_config.clear_config()
 									syst_python_config.build_systematic_config(nickname, systematic_name)
 									pipeline_config[selected_channel+"_"+systematic_name] = copy.deepcopy(syst_python_config)
-									pipeline_config[selected_channel+"_"+systematic_name].update(channel_python_config)
+									pipeline_config[selected_channel+"_"+systematic_name].update(copy.deepcopy(channel_python_config))
 
 
 							elif systematic_shift == "nominal":
