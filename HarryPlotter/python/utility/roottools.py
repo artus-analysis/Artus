@@ -945,7 +945,7 @@ class RootTools(object):
 
 	@staticmethod
 	def load_compile_macro(macro):
-		exit_code = ROOT.gROOT.LoadMacro(macro+"+")
+		exit_code = ROOT.gROOT.LoadMacro(str(macro)+"+")
 		if exit_code != 0:
 			macro_splitext = os.path.splitext(macro)
 			macro_base = macro_splitext[0]+(macro_splitext[1].replace(".", "_"))
