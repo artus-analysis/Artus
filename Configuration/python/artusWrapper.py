@@ -436,7 +436,7 @@ class ArtusWrapper(object):
 		                                help="JSON pipeline base configurations. All pipeline configs will be merged with these common configs.")
 		configOptionsGroup.add_argument("-p", "--pipeline-configs", nargs="+", action="append",
 		                                help="JSON pipeline configurations. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")
-		configOptionsGroup.add_argument("--channels", nargs="+",
+		configOptionsGroup.add_argument("--channels", nargs="+", default = ["tt", "mt", "et", "em", "mm", "gen"], 
 		                                help="channels used for artus. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used.")
 		configOptionsGroup.add_argument("--systematics", nargs="+", default = ["nominal"],
 		                                help="systematics used for artus. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used.")		
@@ -467,6 +467,8 @@ class ArtusWrapper(object):
 		                                help="Path to grid-control base config that is replace by the wrapper. [Default: %(default)s]")
 		configOptionsGroup.add_argument("--gc-config-includes", nargs="+",
 		                                help="Path to grid-control configs to include in the base config.")
+		configOptionsGroup.add_argument("--use-json", default=False, action="store_true",
+		                                 help="Use the json configs, has to be used with -c and -p")
 
 		runningOptionsGroup = self._parser.add_argument_group("Running options")
 		runningOptionsGroup.add_argument("--no-run", default=False, action="store_true",
@@ -537,9 +539,11 @@ class ArtusWrapper(object):
 		else:
 			epilogArguments += r"--log-files log.log --log-stream stdout "
 		epilogArguments += r"--print-envvars ROOTSYS CMSSW_BASE DATASETNICK FILE_NAMES LD_LIBRARY_PATH "
-		#epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
-		epilogArguments += r"--channels " + (" ".join(self._args.channels)) + " "
-		epilogArguments += r"--systematics " + (" ".join(self._args.systematics)) + " "
+		if self._args.use_json:
+			epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
+		else:	
+			epilogArguments += r"--channels " + (" ".join(self._args.channels)) + " "
+			epilogArguments += r"--systematics " + (" ".join(self._args.systematics)) + " "
 		epilogArguments += "--nick $DATASETNICK "
 		epilogArguments += "-i $FILE_NAMES "
 		if self._args.copy_remote_files:
