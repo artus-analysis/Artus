@@ -336,7 +336,7 @@ def download_remote_file(remote, local, offset=30, bandwidth=100):
 		size = int(size.groupdict().get("size", "0"))
 		if size <= 0:
 			log.critical("Could not get file size of \"{remote}\"!".format(remote=remote))
-			return None
+			return False
 	else:
 		log.critical("Could not get file size of \"{remote}\"!".format(remote=remote))
 		return None

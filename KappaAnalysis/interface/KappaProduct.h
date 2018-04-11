@@ -60,6 +60,8 @@ public:
 	std::vector<KGenParticle*> m_validGenMuons;
 	std::vector<KGenParticle*> m_validGenTaus;
 	std::map<KGenParticle*, KGenTau*> m_validGenTausMap;
+	std::map<KGenParticle*, std::vector<KGenParticle*> > m_validGenTausChargedHadronsMap;
+	std::map<KGenParticle*, std::vector<KGenParticle*> > m_validGenTausNeutralHadronsMap;
 
 	// filled by the GenTauDecayProducer
 	GenParticleDecayTree m_genBosonTree;
@@ -229,9 +231,21 @@ public:
 		for (; lastJetPos != jets.end() && (*lastJetPos)->p4.Pt() > lowerPtThreshold; ++lastJetPos) {}
 		return lastJetPos;
 	}
+	template<class TJet>
+	static typename std::vector<TJet>::const_iterator GetLastJetAbovePtThreshold(std::vector<TJet> const& jets, float lowerPtThreshold)
+	{
+		typename std::vector<TJet>::const_iterator lastJetPos = jets.begin();
+		for (; lastJetPos != jets.end() && lastJetPos->p4.Pt() > lowerPtThreshold; ++lastJetPos) {}
+		return lastJetPos;
+	}
 
 	template<class TJet>
 	static size_t GetNJetsAbovePtThreshold(std::vector<TJet*> const& jets, float lowerPtThreshold)
+	{
+		return (KappaProduct::GetLastJetAbovePtThreshold(jets, lowerPtThreshold) - jets.begin());
+	}
+	template<class TJet>
+	static size_t GetNJetsAbovePtThreshold(std::vector<TJet> const& jets, float lowerPtThreshold)
 	{
 		return (KappaProduct::GetLastJetAbovePtThreshold(jets, lowerPtThreshold) - jets.begin());
 	}

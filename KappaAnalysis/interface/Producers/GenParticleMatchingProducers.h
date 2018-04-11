@@ -40,14 +40,11 @@ public:
 	void Produce(event_type const& event, product_type& product,
 	             setting_type const& settings, metadata_type const& metadata) const override;
 
-	KGenParticle* Match(event_type const& event, product_type const& product,
-                        setting_type const& settings, KLV* const recoJet) const;
+	static KGenParticle* Match(event_type const& event, product_type const& product,
+                               setting_type const& settings, KLV* const recoJet, JetMatchingAlgorithm jetMatchingAlgorithm);
 
 private:
 	JetMatchingAlgorithm m_jetMatchingAlgorithm;
-	float m_DeltaRMatchingRecoJetGenParticle;
-	bool m_InvalidateNonGenParticleMatchingRecoJets;
-	bool m_InvalidateGenParticleMatchingRecoJets;
 };
 
 

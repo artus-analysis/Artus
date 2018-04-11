@@ -19,11 +19,13 @@ import sys
 import re
 
 import ROOT
+ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gEnv.SetValue("TFile.AsyncPrefetching", 1)
 
 import Artus.Utility.geometry as geometry
 import Artus.Utility.tools as tools
 from Artus.Utility.tfilecontextmanager import TFileContextManager
+import Artus.HarryPlotter.utility.rootcache as rootcache
 
 
 class RootTools(object):
@@ -143,7 +145,7 @@ class RootTools(object):
 		for root_file_name in root_file_names:
 			with TFileContextManager(root_file_name, "READ") as root_file:
 				for path_to_histogram in path_to_histograms:
-					tmp_root_histogram = root_file.Get(path_to_histogram)
+					tmp_root_histogram = root_file.Get(str(path_to_histogram))
 					if tmp_root_histogram == None:
 						log.critical("Cannot find histogram \"%s\" in file \"%s\"!" % (path_to_histogram, root_file_name))
 						sys.exit(1)
@@ -207,7 +209,7 @@ class RootTools(object):
 		                    x_bins=None, y_bins=None, z_bins=None,
 		                    weight_selection="", option="", name=None,
 		                    friend_files=None, friend_folders=None, friend_alias=None,
-		                    proxy_prefix=""):
+		                    proxy_prefix="", use_cache=True):
 		"""
 		Read histograms from trees
 	
@@ -279,6 +281,42 @@ class RootTools(object):
 						profile_error_option=(option.lower().replace("prof", ''))
 					)
 		
+		# draw histogram
+		tree, root_histogram = RootTools.tree_draw(
+				root_file_names=root_file_names,
+				path_to_trees=path_to_trees,
+				friend_files=friend_files,
+				friend_folders=friend_folders,
+				root_histogram=root_histogram,
+				variable_expression=variable_expression,
+				name=name,
+				binning=binning,
+				weight_selection=str(weight_selection),
+				option=option,
+				use_cache=use_cache
+		)
+		
+		if root_histogram == None:
+			log.critical("Cannot find histogram \"%s\" created from trees %s in files %s!" % (name, str(path_to_trees), str(root_file_names)))
+			sys.exit(1)
+		
+		if isinstance(root_histogram, ROOT.TH1):
+			root_histogram.SetDirectory(0)
+			self.x_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=0)
+			self.y_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=1)
+			self.z_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=2)
+		elif isinstance(root_histogram, ROOT.TGraph):
+			root_histogram.SetName(name)
+			root_histogram.SetTitle("")
+
+		if "prof" not in option.lower() and binning_identifier not in self.binning_determined:
+			self.binning_determined.append(binning_identifier)
+		return tree, root_histogram
+	
+	@staticmethod
+	@rootcache.RootFileCache("$HP_WORK_BASE/cache")
+	def tree_draw(root_file_names, path_to_trees, friend_files, friend_folders, root_histogram, variable_expression, name, binning, weight_selection, option, use_cache=True):
+		
 		# prepare TChain
 		if isinstance(root_file_names, basestring):
 			root_file_names = [root_file_names]
@@ -310,11 +348,7 @@ class RootTools(object):
 			tree.AddFriend(friend_trees[-1], (friend_alias if friend_alias else ""))
 			friend_trees[-1].SetDirectory(0)
 		
-		# ROOT optimisations
-		tree.SetCacheSize(256*1024*1024) # 256 MB
-		tree.AddBranchToCache("*", True)
-		
-		tree.SetName(hashlib.md5("".join(root_file_names)).hexdigest())
+		tree.SetName(hashlib.md5("".join([str(item) for item in [root_file_names, path_to_trees, friend_files, friend_folders]])).hexdigest())
 		
 		# treat functions/macros that need to be compiled before drawing
 		tmp_proxy_files = []
@@ -370,8 +404,7 @@ class RootTools(object):
 			)
 			with open(proxy_class_filename, "w") as proxy_class_file:
 				proxy_class_file.write(proxy_class_content)
-		
-		# draw histogram
+
 		if root_histogram == None:
 			if ("proxy" in option) and (not proxy_call is None):
 				log.critical("Plotting of compliled proxy formulas not yet implemented for the case where no binning is specified!")
@@ -381,10 +414,10 @@ class RootTools(object):
 				special_options = ["TGraph2D", "TGraphAsymmErrorsX", "TGraphAsymmErrorsY", "TGraphErrors", "TGraph"]
 				for special_option in special_options:
 					draw_option = draw_option.replace(special_option, "")
-			
+		
 				log.debug("ROOT.TTree.Draw(\"" + variable_expression + ">>" + name + binning + "\", \"" + str(weight_selection) + "\", \"" + draw_option + " GOFF\")")
 				tree.Draw(variable_expression + ">>" + name + binning, str(weight_selection), draw_option + " GOFF")
-				
+			
 				if "TGraph2D" in option:
 					root_histogram = ROOT.TGraph2D(tree.GetSelectedRows(), tree.GetV3(), tree.GetV2(), tree.GetV1())
 				elif "TGraphAsymmErrors" in option:
@@ -402,7 +435,7 @@ class RootTools(object):
 					root_histogram = ROOT.TGraph(tree.GetSelectedRows(), tree.GetV2(), tree.GetV1())
 				else:
 					root_histogram = ROOT.gDirectory.Get(name)
-					
+				
 					# histograms are sometimes empty, although the contain entries after the ROOT.TH1.Print function is called
 					# this is considered as a hack solving this problem.
 					# https://root.cern.ch/doc/master/TH1_8cxx_source.html#l06558
@@ -418,9 +451,6 @@ class RootTools(object):
 				log.debug("ROOT.TTree.Project(\"" + name + "\", \"" + variable_expression + "\", \"" + str(weight_selection) + "\", \"" + option + "\" GOFF\")")
 				tree.Project(name, variable_expression, str(weight_selection), option + " GOFF")
 			root_histogram = ROOT.gDirectory.Get(name)
-		if root_histogram == None:
-			log.critical("Cannot find histogram \"%s\" created from trees %s in files %s!" % (name, str(path_to_trees), str(root_file_names)))
-			sys.exit(1)
 		
 		# delete possible files from tree proxy
 		if log.isEnabledFor(logging.DEBUG):
@@ -431,19 +461,7 @@ class RootTools(object):
 				if not log.isEnabledFor(logging.DEBUG):
 					os.remove(tmp_file)
 		
-		if isinstance(root_histogram, ROOT.TH1):
-			root_histogram.SetDirectory(0)
-			self.x_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=0)
-			self.y_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=1)
-			self.z_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=2)
-		elif isinstance(root_histogram, ROOT.TGraph):
-			root_histogram.SetName(name)
-			root_histogram.SetTitle("")
-
-		if "prof" not in option.lower() and binning_identifier not in self.binning_determined:
-			self.binning_determined.append(binning_identifier)
 		return tree, root_histogram
-
 
 	@staticmethod
 	def create_root_histogram(x_bins, y_bins=None, z_bins=None, profile_histogram=False, name=None, profile_error_option=""):
@@ -452,7 +470,7 @@ class RootTools(object):
 		"""
 		# prepare unique histogram name
 		if name == None:
-			name = "histogram_{0}".format(hashlib.md5("_".join([str(x_bins), str(y_bins), str(z_bins), str(profile_histogram)])).hexdigest())
+			name = "histogram_{0}".format(hashlib.md5("_".join([str(x_bins), str(y_bins), str(z_bins), str(profile_histogram), str(profile_error_option)])).hexdigest())
 		
 		# prepare bin edges
 		x_bin_edges = None
@@ -763,9 +781,9 @@ class RootTools(object):
 		root_file.cd()
 		root_directory = root_file
 		for directory in path.split("/")[:-1]:
-			if root_directory.Get(directory) == None:
+			if root_directory.Get(str(directory)) == None:
 				root_directory.mkdir(directory)
-			root_directory = root_directory.Get(directory)
+			root_directory = root_directory.Get(str(directory))
 			root_directory.cd()
 		root_object.Write(path.split("/")[-1], ROOT.TObject.kWriteDelete)
 		root_file.cd()
@@ -927,7 +945,7 @@ class RootTools(object):
 
 	@staticmethod
 	def load_compile_macro(macro):
-		exit_code = ROOT.gROOT.LoadMacro(macro+"+")
+		exit_code = ROOT.gROOT.LoadMacro(str(macro)+"+")
 		if exit_code != 0:
 			macro_splitext = os.path.splitext(macro)
 			macro_base = macro_splitext[0]+(macro_splitext[1].replace(".", "_"))

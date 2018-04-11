@@ -56,7 +56,14 @@ public:
 	
 	~JetCorrectionsProducerBase()
 	{
-		delete factorizedJetCorrector;
+		if (factorizedJetCorrector != nullptr)
+		{
+			delete factorizedJetCorrector;
+		}
+		if (jetCorrectionUncertainty != nullptr)
+		{
+			delete jetCorrectionUncertainty;
+		}
 	}
 
 	void Init(setting_type const& settings, metadata_type& metadata) override
@@ -69,8 +76,8 @@ public:
 		for (std::vector<std::string>::const_iterator jecParametersFile = settings.GetJetEnergyCorrectionParameters().begin();
 		     jecParametersFile != settings.GetJetEnergyCorrectionParameters().end(); ++jecParametersFile)
 		{
-			jecParameters.push_back(JetCorrectorParameters(*jecParametersFile));
 			LOG(DEBUG) << "\t\t" << *jecParametersFile;
+			jecParameters.push_back(JetCorrectorParameters(*jecParametersFile));
 		}
 		if (jecParameters.size() > 0)
 		{
@@ -82,22 +89,25 @@ public:
 		if ((! settings.GetJetEnergyCorrectionUncertaintyParameters().empty()) &&
 		    (settings.GetJetEnergyCorrectionUncertaintyShift() != 0.0))
 		{
-			JetCorrectorParameters* jecUncertaintyParameters = nullptr;
+			JetCorrectorParameters jecUncertaintyParameters;
 			if (!settings.GetJetEnergyCorrectionUncertaintySource().empty()) {
-				jecUncertaintyParameters = new JetCorrectorParameters(
+				LOG(DEBUG) << "\t\t" << settings.GetJetEnergyCorrectionUncertaintyParameters() << " (" << settings.GetJetEnergyCorrectionUncertaintySource() << ")";
+				jecUncertaintyParameters = JetCorrectorParameters(
 						settings.GetJetEnergyCorrectionUncertaintyParameters(),
 						settings.GetJetEnergyCorrectionUncertaintySource()
 				);
+				jetCorrectionUncertainty = new JetCorrectionUncertainty(jecUncertaintyParameters);
 			}
 			else {
-				jecUncertaintyParameters = new JetCorrectorParameters(settings.GetJetEnergyCorrectionUncertaintyParameters());
+				LOG(DEBUG) << "\t\t" << settings.GetJetEnergyCorrectionUncertaintyParameters();
+				jecUncertaintyParameters = JetCorrectorParameters(settings.GetJetEnergyCorrectionUncertaintyParameters());
+				jetCorrectionUncertainty = new JetCorrectionUncertainty(jecUncertaintyParameters);
 			}
-			if ((!jecUncertaintyParameters->isValid()) || (jecUncertaintyParameters->size() == 0))
+			if ((!jecUncertaintyParameters.isValid()) || (jecUncertaintyParameters.size() == 0))
+			{
 				LOG(FATAL) << "Invalid definition " << settings.GetJetEnergyCorrectionUncertaintySource() 
 				           << " in file " << settings.GetJetEnergyCorrectionUncertaintyParameters();
-			jetCorrectionUncertainty = new JetCorrectionUncertainty(*jecUncertaintyParameters);
-			LOG(DEBUG) << "\t\t" << settings.GetJetEnergyCorrectionUncertaintySource();
-			LOG(DEBUG) << "\t\t" << settings.GetJetEnergyCorrectionUncertaintyParameters();
+			}
 		}
 	}
 
@@ -120,10 +130,9 @@ public:
 		}
 		
 		// apply jet energy corrections and uncertainty shift (if uncertainties are not to be splitted into individual contributions)
-		float shift = settings.GetJetEnergyCorrectionSplitUncertainty() ? 0.0 : settings.GetJetEnergyCorrectionUncertaintyShift();
 		correctJets(&correctJetsForJecTools, factorizedJetCorrector, jetCorrectionUncertainty,
 		            event.m_pileupDensity->rho, event.m_vertexSummary->nVertices, -1,
-		            shift);
+		            settings.GetJetEnergyCorrectionUncertaintyShift());
 		
 		// create the shared pointers to store in the product
 		(product.*m_correctedJetsMember).clear();
@@ -141,8 +150,8 @@ public:
 		for (typename std::vector<std::shared_ptr<TJet> >::iterator jet = (product.*m_correctedJetsMember).begin();
 			 jet != (product.*m_correctedJetsMember).end(); ++jet)
 		{
-			// No general correction available
-		
+			// No general correction implemented
+			
 			// perform possible analysis-specific corrections
 			AdditionalCorrections(jet->get(), event, product, settings, metadata);
 		}

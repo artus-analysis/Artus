@@ -318,13 +318,18 @@ public:
 		return validJet;
 	}
 
+	static bool AdditionalCriteriaStatic(TJet* jet, KappaTypes::event_type const& event, KappaTypes::product_type& product,
+	                                     KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata)
+	{
+		return true;
+	}
 
 protected:
 	// Can be overwritten for analysis-specific use cases
 	virtual bool AdditionalCriteria(TJet* jet, KappaTypes::event_type const& event, KappaTypes::product_type& product,
 	                                KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) const
 	{
-		return true;
+		return ValidJetsProducerBase<TJet, TValidJet>::AdditionalCriteriaStatic(jet, event, product, settings, metadata);
 	}
 
 
@@ -369,19 +374,27 @@ public:
 	ValidTaggedJetsProducer();
 	std::string GetProducerId() const override;
 	void Init(KappaTypes::setting_type const& settings, KappaTypes::metadata_type& metadata) override;
+	
+	static bool AdditionalCriteriaStatic(KJet* jet,
+	                                     std::map<size_t, std::vector<std::string> > const& puJetIdsByIndex,
+	                                     std::map<std::string, std::vector<std::string> > const& puJetIdsByHltName,
+	                                     std::map<std::string, std::vector<float> > const& jetTaggerLowerCutsByTaggerName,
+	                                     std::map<std::string, std::vector<float> > const& jetTaggerUpperCutsByTaggerName,
+	                                     KappaTypes::event_type const& event, KappaTypes::product_type& product,
+	                                     KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata);
 
 protected:
 	// Can be overwritten for analysis-specific use cases
 	virtual bool AdditionalCriteria(KJet* jet, KappaTypes::event_type const& event, KappaTypes::product_type& product,
 	                                KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) const;
 
-private:
 	std::map<size_t, std::vector<std::string> > puJetIdsByIndex;
 	std::map<std::string, std::vector<std::string> > puJetIdsByHltName;
 	std::map<std::string, std::vector<float> > jetTaggerLowerCutsByTaggerName;
 	std::map<std::string, std::vector<float> > jetTaggerUpperCutsByTaggerName;
 
-	bool PassPuJetIds(KJet* jet, std::vector<std::string> const& puJetIds, KJetMetadata* taggerMetadata) const;
+private:
+	static bool PassPuJetIds(KJet* jet, std::vector<std::string> const& puJetIds, KJetMetadata* taggerMetadata);
 };
 
 

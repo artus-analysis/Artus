@@ -162,6 +162,7 @@ class HarryPlotter(object):
 			
 			final_config = string.Template(main_config).safe_substitute(
 					cmsswbase=os.path.expandvars("$CMSSW_BASE"),
+					hpworkbase=os.path.expandvars("$HP_WORK_BASE"),
 					cwd=os.getcwd(),
 					jsonconfigs="\n\t"+("\n\t".join([item[0] for item in output_filenames])),
 					executable=self.standalone_executable,

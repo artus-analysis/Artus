@@ -84,9 +84,23 @@ void ValidTaggedJetsProducer::Init(KappaTypes::setting_type const& settings, Kap
 bool ValidTaggedJetsProducer::AdditionalCriteria(KJet* jet, KappaTypes::event_type const& event, KappaTypes::product_type& product,
                                                  KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) const
 {
+	return ValidTaggedJetsProducer::AdditionalCriteriaStatic(jet,
+	                                                         puJetIdsByIndex, puJetIdsByHltName,
+	                                                         jetTaggerLowerCutsByTaggerName, jetTaggerUpperCutsByTaggerName,
+	                                                         event, product, settings, metadata);
+}
+
+bool ValidTaggedJetsProducer::AdditionalCriteriaStatic(KJet* jet,
+                                                       std::map<size_t, std::vector<std::string> > const& puJetIdsByIndex,
+                                                       std::map<std::string, std::vector<std::string> > const& puJetIdsByHltName,
+                                                       std::map<std::string, std::vector<float> > const& jetTaggerLowerCutsByTaggerName,
+                                                       std::map<std::string, std::vector<float> > const& jetTaggerUpperCutsByTaggerName,
+                                                       KappaTypes::event_type const& event, KappaTypes::product_type& product,
+                                                       KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata)
+{
 	assert(event.m_jetMetadata);
 	
-	bool validJet = ValidJetsProducerBase<KJet, KBasicJet>::AdditionalCriteria(jet, event, product, settings, metadata);
+	bool validJet = ValidJetsProducerBase<KJet, KBasicJet>::AdditionalCriteriaStatic(jet, event, product, settings, metadata);
 	
 	// PU Jet ID
 	for (std::map<size_t, std::vector<std::string> >::const_iterator puJetIdByIndex = puJetIdsByIndex.begin();
@@ -94,7 +108,7 @@ bool ValidTaggedJetsProducer::AdditionalCriteria(KJet* jet, KappaTypes::event_ty
 	{
 		if (puJetIdByIndex->first == product.m_validJets.size())
 		{
-			validJet = validJet && PassPuJetIds(jet, puJetIdByIndex->second, event.m_jetMetadata);
+			validJet = validJet && ValidTaggedJetsProducer::PassPuJetIds(jet, puJetIdByIndex->second, event.m_jetMetadata);
 		}
 	}
 	
@@ -129,7 +143,7 @@ bool ValidTaggedJetsProducer::AdditionalCriteria(KJet* jet, KappaTypes::event_ty
 	return validJet;
 }
 
-bool ValidTaggedJetsProducer::PassPuJetIds(KJet* jet, std::vector<std::string> const& puJetIds, KJetMetadata* taggerMetadata) const
+bool ValidTaggedJetsProducer::PassPuJetIds(KJet* jet, std::vector<std::string> const& puJetIds, KJetMetadata* taggerMetadata)
 {
 	bool validJet = true;
 	
