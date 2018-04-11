@@ -377,8 +377,8 @@ class ArtusWrapper(object):
 
 		# set log level
 		self._config["LogLevel"] = self._args.log_level
-		
-		self._config["Pipelines"]["et_nominal"]["Quantities"] = sorted(self._config["Pipelines"]["et_nominal"]["Quantities"], key=lambda s: s.lower())
+		for pipelinekey in self._config["Pipelines"].keys():
+			self._config["Pipelines"][pipelinekey]["Quantities"] = sorted(self._config["Pipelines"][pipelinekey]["Quantities"], key=lambda s: s.lower())
 
 	
 
