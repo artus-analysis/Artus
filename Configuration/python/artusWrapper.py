@@ -24,17 +24,6 @@ import Artus.Utility.tools as tools
 import Artus.Utility.jsonTools as jsonTools
 import Artus.Utility.profile_cpp as profile_cpp
 
-import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.tt as tt
-import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.mt as mt
-import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.et as et
-import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.em as em
-import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.mm as mm
-import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.gen as gen
-
-import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2Analysis.systematics as systematics
-
-import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.baseconfigCP as baseconfigcp
-import HiggsAnalysis.KITHiggsToTauTau.ArtusConfigs.Run2CPStudies.globalProcessors as globalprocessors
 
 
 class ArtusWrapper(object):
@@ -436,9 +425,9 @@ class ArtusWrapper(object):
 		                                help="JSON pipeline base configurations. All pipeline configs will be merged with these common configs.")
 		configOptionsGroup.add_argument("-p", "--pipeline-configs", nargs="+", action="append",
 		                                help="JSON pipeline configurations. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")
-		configOptionsGroup.add_argument("--channels", nargs="+", default = ["tt", "mt", "et", "em", "mm", "gen"], 
+		configOptionsGroup.add_argument("--channels", nargs="+", default = [["tt", "mt", "et", "em", "mm", "gen"]], action = "append",
 		                                help="channels used for artus. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used.")
-		configOptionsGroup.add_argument("--systematics", nargs="+", default = ["nominal"],
+		configOptionsGroup.add_argument("--systematics", nargs="+", default = [["nominal"]], action = "append",
 		                                help="systematics used for artus. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used.")		
 		configOptionsGroup.add_argument("--nick", default="auto",
 		                                help="Kappa nickname name that can be used for switch between sample-dependent settings.")
@@ -542,8 +531,9 @@ class ArtusWrapper(object):
 		if self._args.use_json:
 			epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
 		else:	
-			epilogArguments += r"--channels " + (" ".join(self._args.channels)) + " "
-			epilogArguments += r"--systematics " + (" ".join(self._args.systematics)) + " "
+			for length_channels in range(len(self._args.channels)):
+				epilogArguments += r"--channels " + (" ".join(self._args.channels[length_channels])) + " "
+				epilogArguments += r"--systematics " + (" ".join(self._args.systematics[length_channels])) + " "
 		epilogArguments += "--nick $DATASETNICK "
 		epilogArguments += "-i $FILE_NAMES "
 		if self._args.copy_remote_files:
