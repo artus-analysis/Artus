@@ -314,8 +314,7 @@ class JsonDict(dict):
 		if isinstance(jsonDict, dict):
 			for key, value in jsonDict.items():
 				if key.strip().startswith(JsonDict.COMMENT_DELIMITER):
-					pass
-					#del jsonDict[key]
+					del jsonDict[key]
 				else:
 					if isinstance(value, dict):
 						JsonDict.deepuncomment(value)
