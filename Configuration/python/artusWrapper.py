@@ -501,6 +501,30 @@ class ArtusWrapper(object):
 		else:
 			self._parser.add_argument("-x", "--executable", help="Artus executable. [Default: %(default)s]", required=True)
 
+
+	def createEpilogArguments(self):
+
+		epilogArguments  = r"epilog arguments = "
+		epilogArguments += r"--disable-repo-versions "
+		epilogArguments += r"--log-level " + self._args.log_level + " "
+		if self._args.log_to_se:
+			epilogArguments += r"--log-files " + os.path.join(sepathRaw, "${DATASETNICK}", "${DATASETNICK}_job_${MY_JOBID}_log.log") + " "
+		else:
+			epilogArguments += r"--log-files log.log --log-stream stdout "
+		epilogArguments += r"--print-envvars ROOTSYS CMSSW_BASE DATASETNICK FILE_NAMES LD_LIBRARY_PATH "
+		if self._args.use_json:
+			epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
+				
+		epilogArguments += "--nick $DATASETNICK "
+		epilogArguments += "-i $FILE_NAMES "
+		if self._args.copy_remote_files:
+			epilogArguments += "--copy-remote-files "
+		if not self._args.ld_library_paths is None:
+			epilogArguments += ("--ld-library-paths %s" % " ".join(self._args.ld_library_paths))
+		if self._args.n_events:
+			epilogArguments += "-e %d " % self._args.n_events
+		return epilogArguments
+
 	def sendToBatchSystem(self):
 
 		# write dbs file
@@ -521,29 +545,8 @@ class ArtusWrapper(object):
 			gcConfigFileContent = gcConfigFile.readlines()
 
 		sepathRaw = os.path.join(self.projectPath, "output")
-
-		epilogArguments  = r"epilog arguments = "
-		epilogArguments += r"--disable-repo-versions "
-		epilogArguments += r"--log-level " + self._args.log_level + " "
-		if self._args.log_to_se:
-			epilogArguments += r"--log-files " + os.path.join(sepathRaw, "${DATASETNICK}", "${DATASETNICK}_job_${MY_JOBID}_log.log") + " "
-		else:
-			epilogArguments += r"--log-files log.log --log-stream stdout "
-		epilogArguments += r"--print-envvars ROOTSYS CMSSW_BASE DATASETNICK FILE_NAMES LD_LIBRARY_PATH "
-		if self._args.use_json:
-			epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
-		else:	
-			for length_channels in range(len(self._args.channels)):
-				epilogArguments += r"--channels " + (" ".join(self._args.channels[length_channels])) + " "
-				epilogArguments += r"--systematics " + (" ".join(self._args.systematics[length_channels])) + " "
-		epilogArguments += "--nick $DATASETNICK "
-		epilogArguments += "-i $FILE_NAMES "
-		if self._args.copy_remote_files:
-			epilogArguments += "--copy-remote-files "
-		if not self._args.ld_library_paths is None:
-			epilogArguments += ("--ld-library-paths %s" % " ".join(self._args.ld_library_paths))
-		if self._args.n_events:
-			epilogArguments += "-e %d " % self._args.n_events
+		epilogArguments = ""
+		epilogArguments = self.createEpilogArguments()
 
 		sepath = "se path = " + (self._args.se_path if self._args.se_path else sepathRaw)
 		workdir = "workdir = " + os.path.join(self.localProjectPath, "workdir")
