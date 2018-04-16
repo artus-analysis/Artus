@@ -410,89 +410,89 @@ class ArtusWrapper(object):
 		self._parser = argparse.ArgumentParser(parents=[logger.loggingParser] + userArgParsers, fromfile_prefix_chars="@",
 		                                       description="Wrapper for Artus executables. JSON configs can be file names pointing to JSON text files or Artus ROOT output files with saved configs or python statements that can be evaluated as dictionary. When JSON configs are merged, the first ones in the list have a higher priority than later ones. In the final config, all includes and comments are replaced accordingly.")
 
-		fileOptionsGroup = self._parser.add_argument_group("File options")
-		fileOptionsGroup.add_argument("-i", "--input-files", nargs="+", required=False,
+		self.fileOptionsGroup = self._parser.add_argument_group("File options")
+		self.fileOptionsGroup.add_argument("-i", "--input-files", nargs="+", required=False,
 		                              help="Input root files. Leave empty (\"\") if input files from root file should be taken.")
-		fileOptionsGroup.add_argument("-o", "--output-file", default="output.root",
+		self.fileOptionsGroup.add_argument("-o", "--output-file", default="output.root",
 		                              help="Output root file. [Default: %(default)s]")
-		fileOptionsGroup.add_argument("-w", "--work", default="$ARTUS_WORK_BASE",
+		self.fileOptionsGroup.add_argument("-w", "--work", default="$ARTUS_WORK_BASE",
 		                              help="Work directory base. [Default: %(default)s]")
-		fileOptionsGroup.add_argument("-n", "--project-name", default="analysis",
+		self.fileOptionsGroup.add_argument("-n", "--project-name", default="analysis",
 		                              help="Name for this Artus project specifies the name of the work subdirectory.")
 
-		configOptionsGroup = self._parser.add_argument_group("Config options")
-		configOptionsGroup.add_argument("-c", "--base-configs", nargs="+", required=False, default={},
+		self.configOptionsGroup = self._parser.add_argument_group("Config options")
+		self.configOptionsGroup.add_argument("-c", "--base-configs", nargs="+", required=False, default={},
 		                                help="JSON base configurations. All configs are merged.")
-		configOptionsGroup.add_argument("-C", "--pipeline-base-configs", nargs="+",
+		self.configOptionsGroup.add_argument("-C", "--pipeline-base-configs", nargs="+",
 		                                help="JSON pipeline base configurations. All pipeline configs will be merged with these common configs.")
-		configOptionsGroup.add_argument("-p", "--pipeline-configs", nargs="+", action="append",
+		self.configOptionsGroup.add_argument("-p", "--pipeline-configs", nargs="+", action="append",
 		                                help="JSON pipeline configurations. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used. Afterwards, all results are merged into the JSON base config.")
-		configOptionsGroup.add_argument("--channels", nargs="+", default = [["tt", "mt", "et", "em", "mm", "gen"]], action = "append",
+		self.configOptionsGroup.add_argument("--channels", nargs="+", default = [["tt", "mt", "et", "em", "mm", "gen"]], action = "append",
 		                                help="channels used for artus. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used.")
-		configOptionsGroup.add_argument("--systematics", nargs="+", default = [["nominal"]], action = "append",
+		self.configOptionsGroup.add_argument("--systematics", nargs="+", default = [["nominal"]], action = "append",
 		                                help="systematics used for artus. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used.")		
-		configOptionsGroup.add_argument("--nick", default="auto",
+		self.configOptionsGroup.add_argument("--nick", default="auto",
 		                                help="Kappa nickname name that can be used for switch between sample-dependent settings.")
 
-		configOptionsGroup.add_argument("--disable-repo-versions", default=False, action="store_true",
+		self.configOptionsGroup.add_argument("--disable-repo-versions", default=False, action="store_true",
 		                                help="Add repository versions to the JSON config.")
-		configOptionsGroup.add_argument("--repo-scan-base-dirs", nargs="+", required=False, default="$CMSSW_BASE/src/",
+		self.configOptionsGroup.add_argument("--repo-scan-base-dirs", nargs="+", required=False, default="$CMSSW_BASE/src/",
 		                                help="Base directories for repositories scan. [Default: $CMSSW_BASE/src/]")
-		configOptionsGroup.add_argument("--repo-scan-depth", required=False, type=int, default=3,
+		self.configOptionsGroup.add_argument("--repo-scan-depth", required=False, type=int, default=3,
 		                                help="Depth of repositories scran. [Default: %(default)s]")
-		configOptionsGroup.add_argument("--enable-envvar-expansion", dest="envvar_expansion", default=True, action="store_true",
+		self.configOptionsGroup.add_argument("--enable-envvar-expansion", dest="envvar_expansion", default=True, action="store_true",
 		                                help="Enable expansion of environment variables in config.")
-		configOptionsGroup.add_argument("--disable-envvar-expansion", dest="envvar_expansion", action="store_false",
+		self.configOptionsGroup.add_argument("--disable-envvar-expansion", dest="envvar_expansion", action="store_false",
 		                                help="Disable expansion of environment variables in config.")
-		configOptionsGroup.add_argument("-P", "--print-config", default=False, action="store_true",
+		self.configOptionsGroup.add_argument("-P", "--print-config", default=False, action="store_true",
 		                                help="Print out the JSON config before running Artus.")
-		configOptionsGroup.add_argument("--print-envvars", nargs="+",
+		self.configOptionsGroup.add_argument("--print-envvars", nargs="+",
 		                                help="Log specified environment variables.")
-		configOptionsGroup.add_argument("-s", "--save-config", default="",
+		self.configOptionsGroup.add_argument("-s", "--save-config", default="",
 		                                help="Save the JSON config to FILENAME.")
-		configOptionsGroup.add_argument("-f", "--fast", type=int,
+		self.configOptionsGroup.add_argument("-f", "--fast", type=int,
 		                                help="Limit number of input files or grid-control jobs. 3=files[0:3].")
-		configOptionsGroup.add_argument("-e", "--n-events", type=int,
+		self.configOptionsGroup.add_argument("-e", "--n-events", type=int,
 		                                help="Limit number of events to process.")
-		configOptionsGroup.add_argument("--gc-config", default="$CMSSW_BASE/src/Artus/Configuration/data/grid-control_base_config.conf",
+		self.configOptionsGroup.add_argument("--gc-config", default="$CMSSW_BASE/src/Artus/Configuration/data/grid-control_base_config.conf",
 		                                help="Path to grid-control base config that is replace by the wrapper. [Default: %(default)s]")
-		configOptionsGroup.add_argument("--gc-config-includes", nargs="+",
+		self.configOptionsGroup.add_argument("--gc-config-includes", nargs="+",
 		                                help="Path to grid-control configs to include in the base config.")
-		configOptionsGroup.add_argument("--use-json", default=False, action="store_true",
+		self.configOptionsGroup.add_argument("--use-json", default=False, action="store_true",
 		                                 help="Use the json configs, has to be used with -c and -p")
 
-		runningOptionsGroup = self._parser.add_argument_group("Running options")
-		runningOptionsGroup.add_argument("--no-run", default=False, action="store_true",
+		self.runningOptionsGroup = self._parser.add_argument_group("Running options")
+		self.runningOptionsGroup.add_argument("--no-run", default=False, action="store_true",
 		                                 help="Exit before running Artus to only check the configs.")
-		runningOptionsGroup.add_argument("--copy-remote-files", default=False, action="store_true",
+		self.runningOptionsGroup.add_argument("--copy-remote-files", default=False, action="store_true",
 		                                 help="Copy remote files first to avoid too many open connections.")
-		runningOptionsGroup.add_argument("--ld-library-paths", nargs="+",
+		self.runningOptionsGroup.add_argument("--ld-library-paths", nargs="+",
 		                                 help="Add paths to environment variable LD_LIBRARY_PATH.")
-		runningOptionsGroup.add_argument("--profile", default="",
+		self.runningOptionsGroup.add_argument("--profile", default="",
 		                                 help="Measure performance with profiler. Choose igprof or valgrind.")
-		runningOptionsGroup.add_argument("--profile-options", default="pp",
+		self.runningOptionsGroup.add_argument("--profile-options", default="pp",
 		                                 help="Additional options for profiling. Choose memory (mp) or performance (pp). [Default: %(default)s]")
-		runningOptionsGroup.add_argument("-r", "--root", default=False, action="store_true",
+		self.runningOptionsGroup.add_argument("-r", "--root", default=False, action="store_true",
 		                                 help="Open output file in ROOT TBrowser after completion.")
-		runningOptionsGroup.add_argument("-b", "--batch", default=False, const="naf", nargs="?",
+		self.runningOptionsGroup.add_argument("-b", "--batch", default=False, const="naf", nargs="?",
 		                                 help="Run with grid-control. Optionally select backend. [Default: %(default)s]")
-		runningOptionsGroup.add_argument("--pilot-job-files", "--pilot-jobs", default=None, const=1, type=int, nargs="?",
+		self.runningOptionsGroup.add_argument("--pilot-job-files", "--pilot-jobs", default=None, const=1, type=int, nargs="?",
 		                                 help="Number of files per sample to be submitted as pilot jobs. [Default: all/1]")
-		runningOptionsGroup.add_argument("--files-per-job", type=int, default=15,
+		self.runningOptionsGroup.add_argument("--files-per-job", type=int, default=15,
 		                                 help="Files per batch job. [Default: %(default)s]")
-		runningOptionsGroup.add_argument("--area-files", default=None,
+		self.runningOptionsGroup.add_argument("--area-files", default=None,
 		                                 help="Additional area files. [Default: %(default)s]")
-		runningOptionsGroup.add_argument("--wall-time", default="24:00:00",
+		self.runningOptionsGroup.add_argument("--wall-time", default="24:00:00",
 		                                 help="Wall time of batch jobs. [Default: %(default)s]")
-		runningOptionsGroup.add_argument("--memory", type=int, default=3000,
+		self.runningOptionsGroup.add_argument("--memory", type=int, default=3000,
 		                                 help="Memory (in MB) for batch jobs. [Default: %(default)s]")
-		runningOptionsGroup.add_argument("--cmdargs", default="-cG -m 3",
+		self.runningOptionsGroup.add_argument("--cmdargs", default="-cG -m 3",
 		                                 help="Command line arguments for go.py. [Default: %(default)s]")
-		runningOptionsGroup.add_argument("--se-path",
+		self.runningOptionsGroup.add_argument("--se-path",
 		                                 help="Custom SE path, if it should different from the work directory.")
-		runningOptionsGroup.add_argument("--log-to-se", default=False, action="store_true",
+		self.runningOptionsGroup.add_argument("--log-to-se", default=False, action="store_true",
 		                                 help="Write logfile in batch mode directly to SE. Does not work with remote batch system")
-		runningOptionsGroup.add_argument("--partition-lfn-modifier", default = None,
+		self.runningOptionsGroup.add_argument("--partition-lfn-modifier", default = None,
 		                                 help="Forces a certain access to input files. See base conf for corresponding dictionary")
 
 
