@@ -4,6 +4,8 @@ import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
+import sys
+
 import Artus.HarryPlotter.analysisbase as analysisbase
 import Artus.HarryPlotter.utility.roottools as roottools
 
@@ -36,6 +38,10 @@ class AddHistograms(analysisbase.AnalysisBase):
 				*[plotData.plotdict[k] for k in ["add_nicks", "add_result_nicks", "add_scale_factors"]]
 		)):
 			plotData.plotdict["add_nicks"][index] = add_nicks.split()
+			not_found_inputs = list(set(plotData.plotdict["add_nicks"][index]) - set(plotData.plotdict["nicks"]))
+			if len(not_found_inputs) > 0:
+				log.critical("--add-nicks \"" + ("\", \"".join(not_found_inputs)) + "\" not found in list of --nicks \"" + ("\", \"".join(plotData.plotdict["nicks"])) + "\"!")
+				sys.exit(1)
 			if add_scale_factors is None:
 				plotData.plotdict["add_scale_factors"][index] = [1] * len(add_nicks.split())
 			else:

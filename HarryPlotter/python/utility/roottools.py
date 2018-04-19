@@ -19,6 +19,7 @@ import sys
 import re
 
 import ROOT
+ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gEnv.SetValue("TFile.AsyncPrefetching", 1)
 
 import Artus.Utility.geometry as geometry
@@ -313,7 +314,7 @@ class RootTools(object):
 		return tree, root_histogram
 	
 	@staticmethod
-	@rootcache.RootFileCache("$HP_WORK_BASE/cache")
+	@rootcache.RootFileCache(os.path.expandvars(os.path.join("$HP_WORK_BASE_COMMON", "caches")))
 	def tree_draw(root_file_names, path_to_trees, friend_files, friend_folders, root_histogram, variable_expression, name, binning, weight_selection, option, use_cache=True):
 		
 		# prepare TChain
@@ -944,7 +945,7 @@ class RootTools(object):
 
 	@staticmethod
 	def load_compile_macro(macro):
-		exit_code = ROOT.gROOT.LoadMacro(macro+"+")
+		exit_code = ROOT.gROOT.LoadMacro(str(macro)+"+")
 		if exit_code != 0:
 			macro_splitext = os.path.splitext(macro)
 			macro_base = macro_splitext[0]+(macro_splitext[1].replace(".", "_"))
