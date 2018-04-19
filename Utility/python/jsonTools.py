@@ -135,6 +135,10 @@ class JsonDict(dict):
 		""" sort quantities alphabetically and returns a new object """
 		return JsonDict.deepsortquantities(JsonDict(copy.deepcopy(self)))
 
+	def doremoveduplicatequantities(self):
+		""" sort quantities alphabetically and returns a new object """
+		return JsonDict.deepremoveduplicatequantities(JsonDict(copy.deepcopy(self)))
+
 	def doExpandvars(self):
 		""" expands environment variables in dictionary values """
 		return JsonDict(JsonDict.deepexpandvars(self))
@@ -339,6 +343,16 @@ class JsonDict(dict):
 					jsonDict[key] = sorted(value)
 				elif isinstance(value, dict):
 					JsonDict.deepsortquantities(value)
+		return jsonDict
+
+	@staticmethod
+	def deepremoveduplicatequantities(jsonDict):
+		if isinstance(jsonDict, dict):
+			for key, value in jsonDict.items():
+				if (key == "Quantities") and isinstance(value, list) and not isinstance(value, basestring):
+					jsonDict[key] = list(set(value))
+				elif isinstance(value, dict):
+					JsonDict.deepremoveduplicatequantities(value)
 		return jsonDict
 
 	@staticmethod
