@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-"""
-"""
-
 import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
+
+import sys
 
 import Artus.HarryPlotter.analysisbase as analysisbase
 import Artus.HarryPlotter.utility.roottools as roottools
@@ -14,9 +13,6 @@ import Artus.HarryPlotter.utility.roottools as roottools
 class SumOfHistograms(analysisbase.AnalysisBase):
 	"""Create sum of histograms. This module does exactly the same as AddHistograms, but is can enable different addition steps together with this module."""
 	
-	def __init__(self):
-		super(SumOfHistograms, self).__init__()
-
 	def modify_argument_parser(self, parser, args):
 		super(SumOfHistograms, self).modify_argument_parser(parser, args)
 
@@ -42,6 +38,10 @@ class SumOfHistograms(analysisbase.AnalysisBase):
 				*[plotData.plotdict[k] for k in ["sum_nicks", "sum_result_nicks", "sum_scale_factors"]]
 		)):
 			plotData.plotdict["sum_nicks"][index] = sum_nicks.split()
+			not_found_inputs = list(set(plotData.plotdict["sum_nicks"][index]) - set(plotData.plotdict["nicks"]))
+			if len(not_found_inputs) > 0:
+				log.critical("--sum-nicks \"" + ("\", \"".join(not_found_inputs)) + "\" not found in list of --nicks \"" + ("\", \"".join(plotData.plotdict["nicks"])) + "\"!")
+				sys.exit(1)
 			if sum_scale_factors is None:
 				plotData.plotdict["sum_scale_factors"][index] = [1] * len(sum_nicks.split())
 			else:
@@ -49,6 +49,11 @@ class SumOfHistograms(analysisbase.AnalysisBase):
 			if sum_result_nick is None:
 				plotData.plotdict["sum_result_nicks"][index] = "sum_{}".format(
 						"_".join(plotData.plotdict["sum_nicks"][index]),
+				)
+			if not plotData.plotdict["sum_result_nicks"][index] in plotData.plotdict["nicks"]:
+				plotData.plotdict["nicks"].insert(
+						plotData.plotdict["nicks"].index(plotData.plotdict["sum_nicks"][index][0]),
+						plotData.plotdict["sum_result_nicks"][index]
 				)
 
 	def run(self, plotData=None):
@@ -63,8 +68,4 @@ class SumOfHistograms(analysisbase.AnalysisBase):
 					*[plotData.plotdict["root_objects"][nick] for nick in sum_nicks],
 					scale_factors=sum_scale_factors
 			)
-			
-			if sum_result_nick not in plotData.plotdict["nicks"]:
-				plotData.plotdict["nicks"].insert(max([plotData.plotdict["nicks"].index(nick) for nick in sum_nicks]),
-												sum_result_nick)
 

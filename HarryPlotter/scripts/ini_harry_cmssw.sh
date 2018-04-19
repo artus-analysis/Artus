@@ -24,14 +24,19 @@ if [[ -z ${WEB_PLOTTING_COPY_COMMAND} ]]; then
 	export WEB_PLOTTING_COPY_COMMAND="xrdcp -s -f {source} root://eosuser.cern.ch//eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
 fi
 
-start_ssh_agent() {
-	echo "Initialising new SSH agent..."
-	/usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}"
-	echo succeeded
-	chmod 600 "${SSH_ENV}"
-	. "${SSH_ENV}" > /dev/null
-	/usr/bin/ssh-add;
-}
+if [[ `hostname` == *naf* ]]; then
+	export HP_WORK_BASE="/nfs/dust/cms/user/${USER}/Harry"
+	export HP_WORK_BASE_COMMON="/nfs/dust/cms/group/higgs-kit/hp"
+elif [[ `hostname` == *ekp* ]]; then
+	export HP_WORK_BASE="/storage/a/${USER}/Harry"
+	export HP_WORK_BASE_COMMON="/storage/a/${USER}/Harry" # no common directory yet
+elif [[ `hostname` == *rwth* ]]; then
+	export HP_WORK_BASE="/net/scratch_cms3b/${USER}/Harry"
+	export HP_WORK_BASE_COMMON="/net/scratch_cms3b/analysis/hp"
+elif [[ `hostname` == *cern* ]]; then
+	export HP_WORK_BASE="/afs/cern.ch/work/${USER:0:1}/${USER}/Harry"
+	export HP_WORK_BASE_COMMON="/afs/cern.ch/work/${USER:0:1}/${USER}/Harry" # no common directory yet
+fi
 
 web_plotting_no_passwd() {
 	kinit ${HARRY_REMOTE_USER}@CERN.CH
