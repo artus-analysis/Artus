@@ -40,7 +40,7 @@ def matchingItem(regexItems, string):
 	return None
 
 def matching_sublist(input_list, whitelist=[], blacklist=[], items_label="items", log_level=log.warn):
-	"""returns subset of input_list (non) matching the regexps."""
+	"""returns subset of input_list (non) matching the regexps. First the witelists are checked. Matching elements (or all if no whitelists is provided) will be checked w.r.t. the blacklists. Matching elements will be removed unless the match exactly with one item of the whitelist."""
 	whitelist_matches = []
 	if len(whitelist) == 0:
 		whitelist_matches = copy.deepcopy(input_list)
@@ -49,7 +49,7 @@ def matching_sublist(input_list, whitelist=[], blacklist=[], items_label="items"
 		for regex in whitelist:
 			indices_to_remove = []
 			for index, item in enumerate(tmp_input_list):
-				if not re.search(regex, item) is None:
+				if (not item is None) and (not re.search(regex, item) is None):
 					whitelist_matches.append(item)
 					indices_to_remove.append(index)
 			for index in indices_to_remove[::-1]:
@@ -62,19 +62,26 @@ def matching_sublist(input_list, whitelist=[], blacklist=[], items_label="items"
 		for item in whitelist_matches:
 			keep = True
 			for regex in blacklist:
-				if not item is None and not re.search(regex, item) is None:
+				if (not item is None) and (not re.search(regex, item) is None):
 					keep = False
 					continue
+			
+			if (not keep) and (len(whitelist) > 0):
+				for regex in whitelist:
+					if (not item is None) and (not re.match(regex, item) is None):
+						keep = True
+						continue
+			
 			if keep:
 				output_list.append(item)
 	
 	# warn if black/whitelisting changes the order of nicks
 	indices = [input_list.index(out_nick) for out_nick in output_list]
 	if not all(x<=y for x, y in zip(indices, indices[1:])):
-		log.warn("White-/blacklisting changed order of {items_label}!".format(items_label=items_label))
+		log_level("White-/blacklisting changed order of {items_label}!".format(items_label=items_label))
 		original_order = [i for i in input_list if i in output_list]
-		log.warn("Original order: "+", ".join(original_order))
-		log.warn("New order     : "+", ".join(output_list))
+		log_level("Original order: "+", ".join(original_order))
+		log_level("New order     : "+", ".join(output_list))
 	
 	return output_list
 
