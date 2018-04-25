@@ -131,6 +131,14 @@ class JsonDict(dict):
 		""" resolves the comments and returns a new object """
 		return JsonDict.deepuncomment(JsonDict(copy.deepcopy(self)))
 
+	def doSortQuantities(self):
+		""" sort quantities alphabetically and returns a new object """
+		return JsonDict.deepsortquantities(JsonDict(copy.deepcopy(self)))
+
+	def doremoveduplicatequantities(self):
+		""" sort quantities alphabetically and returns a new object """
+		return JsonDict.deepremoveduplicatequantities(JsonDict(copy.deepcopy(self)))
+
 	def doExpandvars(self):
 		""" expands environment variables in dictionary values """
 		return JsonDict(JsonDict.deepexpandvars(self))
@@ -310,8 +318,7 @@ class JsonDict(dict):
 		if isinstance(jsonDict, dict):
 			for key, value in jsonDict.items():
 				if key.strip().startswith(JsonDict.COMMENT_DELIMITER):
-					pass
-					#del jsonDict[key]
+					del jsonDict[key]
 				else:
 					if isinstance(value, dict):
 						JsonDict.deepuncomment(value)
@@ -326,6 +333,26 @@ class JsonDict(dict):
 									log.fatal("Error removeing Key %s from Arguments" % element)
 									sys.exit(1)
 
+		return jsonDict
+
+	@staticmethod
+	def deepsortquantities(jsonDict):
+		if isinstance(jsonDict, dict):
+			for key, value in jsonDict.items():
+				if (key == "Quantities") and isinstance(value, list) and not isinstance(value, basestring):
+					jsonDict[key] = sorted(value)
+				elif isinstance(value, dict):
+					JsonDict.deepsortquantities(value)
+		return jsonDict
+
+	@staticmethod
+	def deepremoveduplicatequantities(jsonDict):
+		if isinstance(jsonDict, dict):
+			for key, value in jsonDict.items():
+				if (key == "Quantities") and isinstance(value, list) and not isinstance(value, basestring):
+					jsonDict[key] = list(set(value))
+				elif isinstance(value, dict):
+					JsonDict.deepremoveduplicatequantities(value)
 		return jsonDict
 
 	@staticmethod
