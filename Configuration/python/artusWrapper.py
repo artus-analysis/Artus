@@ -511,6 +511,12 @@ class ArtusWrapper(object):
 		epilogArguments += r"--print-envvars ROOTSYS CMSSW_BASE DATASETNICK FILE_NAMES LD_LIBRARY_PATH "
 		if self._args.use_json:
 			epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
+			epilogArguments += r"--use-json" + " " 
+		else:
+			for grid_channel in self.channels_systematics.keys():
+				epilogArguments += r"--channels " + grid_channel + " "
+				epilogArguments += r"--systematics " + " ".join(self.channels_systematics[grid_channel]) + " "
+			epilogArguments += r"--study " + self._args.study + " "
 				
 		epilogArguments += "--nick $DATASETNICK "
 		epilogArguments += "-i $FILE_NAMES "

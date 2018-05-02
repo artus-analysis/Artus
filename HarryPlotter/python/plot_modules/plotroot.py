@@ -377,8 +377,11 @@ class PlotRoot(plotbase.PlotBase):
 						root_object.GetXaxis().SetTitle(plotData.plotdict["x_label"])
 					if (not plotData.plotdict["y_label"] is None) and (plotData.plotdict["y_label"] != ""):
 						root_object.GetYaxis().SetTitle(plotData.plotdict["y_label"])
-					if (not plotData.plotdict["z_label"] is None) and (plotData.plotdict["z_label"] != "" and hasattr(root_object, "GetZaxis")):
-						root_object.GetZaxis().SetTitle(plotData.plotdict["z_label"])
+					if (not plotData.plotdict["z_label"] is None) and (plotData.plotdict["z_label"] != ""):
+						if isinstance(root_object, ROOT.TGraph2D):
+							root_object.GetHistogram().GetZaxis().SetTitle(plotData.plotdict["z_label"])
+						elif hasattr(root_object, "GetZaxis"):
+							root_object.GetZaxis().SetTitle(plotData.plotdict["z_label"])
 				first_plot_labels_set = True
 			
 			# tick labels (z-axis) TODO: unify this with the x and y bin labels mechanism?
@@ -665,7 +668,11 @@ class PlotRoot(plotbase.PlotBase):
 				root_object.GetZaxis().SetTitleOffset(1.5)
 				palette.SetTitleOffset(1.5)
 				palette.SetTitleSize(root_object.GetYaxis().GetTitleSize())
-				root_object.SetContour(50) # number of divisions
+				n_contour_levels = 50 # number of divisions
+				if isinstance(root_object, ROOT.TH1):
+					root_object.SetContour(n_contour_levels)
+				elif isinstance(root_object, ROOT.TGraph2D):
+					root_object.GetHistogram().SetContour(n_contour_levels)
 		
 		# logaritmic axis
 		if plotData.plotdict["x_log"]:
