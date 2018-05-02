@@ -78,6 +78,16 @@ public:
 		IS_TAU_HAD_DECAY = 5,
 		IS_FAKE          = 6
 	};
+	
+	enum class ZBosonProductionMode : int
+	{
+		NONE   = -1,
+		D_DBAR = 1,
+		U_UBAR = 2,
+		S_SBAR = 3,
+		C_CBAR = 4,
+		B_BBAR = 5
+	};
 
 	enum class ValidJetsInput : int
 	{

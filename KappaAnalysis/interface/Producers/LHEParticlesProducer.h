@@ -11,19 +11,7 @@
 #include "Artus/Utility/interface/Utility.h"
 
 
-/**
-   \brief GlobalProducer, for tau decays on generator level.
-   
-   This producers has the GenParticles as input and will extract the following information from 
-   this collection :
-
-   - tree with three generations of decay products : Boson, Bosondaughters, Bosongranddaughters  
-
-   If need arises to store other decay trees, this code can be made more general and
-   configurable.
-*/
-
-class LHEDiLeptonDecayModeProducer: public ProducerBase<KappaTypes>
+class LHEParticlesProducer: public ProducerBase<KappaTypes>
 {
 public:
 
