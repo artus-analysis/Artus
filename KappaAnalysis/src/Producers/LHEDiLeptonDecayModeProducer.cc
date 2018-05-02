@@ -58,96 +58,98 @@ void LHEDiLeptonDecayModeProducer::Produce(event_type const& event, product_type
 	product.m_lheDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::NONE;
 
 	assert(event.m_lheParticles);
-
-	//std::cout<< event.m_lheParticles->particles.size()<<std::endl;
-	//std::cout<< event.m_lheParticles->particles[3].pdgId<<std::endl;
-	//std::cout<< event.m_lheParticles->particles[4].pdgId<<std::endl;
-	if ((event.m_lheParticles->particles[3].status != 1) || (event.m_lheParticles->particles[4].status != 1))
+	
+	KLHEParticle* lheParticleIn1 = nullptr;
+	KLHEParticle* lheParticleIn2 = nullptr;
+	KLHEParticle* lheParticleBoson = nullptr;
+	KLHEParticle* lheParticleOut1 = nullptr;
+	KLHEParticle* lheParticleOut2 = nullptr;
+	
+	for (std::vector<KLHEParticle>::iterator lheParticle = event.m_lheParticles->particles.begin();
+	     lheParticle != event.m_lheParticles->particles.end(); ++lheParticle)
 	{
-		std::cout<< event.m_lheParticles->particles[3].status<<std::endl;
-		std::cout<< event.m_lheParticles->particles[4].status<<std::endl;
+		if ((lheParticle->status == -1) && (lheParticle->p4.Pt() == 0.0))
+		{
+			if (lheParticleIn1 == nullptr)
+			{
+				lheParticleIn1 = &(*lheParticle);
+			}
+			else if (lheParticleIn2 == nullptr)
+			{
+				lheParticleIn2 = &(*lheParticle);
+			}
+		}
+		else if (lheParticle->status == 2)
+		{
+			if (lheParticleBoson == nullptr)
+			{
+				lheParticleBoson = &(*lheParticle);
+			}
+		}
+		else if ((lheParticle->status == 1) &&
+		         (std::abs(lheParticle->pdgId) >= DefaultValues::pdgIdElectron) &&
+		         (std::abs(lheParticle->pdgId) <= DefaultValues::pdgIdNuTau))
+		{
+			if (lheParticleOut1 == nullptr)
+			{
+				lheParticleOut1 = &(*lheParticle);
+			}
+			else if (lheParticleOut2 == nullptr)
+			{
+				lheParticleOut2 = &(*lheParticle);
+			}
+		}
 	}
-
-	if (event.m_lheParticles->particles[3].pdgId == -(event.m_lheParticles->particles[4].pdgId))
+	assert(lheParticleIn1);
+	assert(lheParticleIn2);
+	assert(lheParticleOut1);
+	assert(lheParticleOut2);
+	
+	int absPdgIdOut1 = std::abs(lheParticleOut1->pdgId);
+	int absPdgIdOut2 = std::abs(lheParticleOut2->pdgId);
+	if (absPdgIdOut1 == DefaultValues::pdgIdElectron)
 	{
-		std::cout<< "no LFV" <<std::endl;
-		std::cout<< event.m_lheParticles->particles[3].pdgId<<std::endl;
-		std::cout<< event.m_lheParticles->particles[4].pdgId<<std::endl;
-	}
-	if ((event.m_lheParticles->particles[3].pdgId == 11) || (event.m_lheParticles->particles[3].pdgId == -11))
-	{
-		if ((event.m_lheParticles->particles[4].pdgId == 11) || (event.m_lheParticles->particles[4].pdgId == -11))
+		if (absPdgIdOut2 == DefaultValues::pdgIdElectron)
 		{
 			product.m_lheDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::EE;
 		}
-
-		if ((event.m_lheParticles->particles[4].pdgId == 13) || (event.m_lheParticles->particles[4].pdgId == -13))
+		else if (absPdgIdOut2 == DefaultValues::pdgIdMuon)
 		{
 			product.m_lheDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::EM;
 		}
-
-		if ((event.m_lheParticles->particles[4].pdgId == 15) || (event.m_lheParticles->particles[4].pdgId == -15))
+		else if (absPdgIdOut2 == DefaultValues::pdgIdTau)
 		{
 			product.m_lheDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::ET;
 		}
 	}
-
-	if ((event.m_lheParticles->particles[3].pdgId == 13) || (event.m_lheParticles->particles[3].pdgId == -13))
+	else if (absPdgIdOut1 == DefaultValues::pdgIdMuon)
 	{
-		if ((event.m_lheParticles->particles[4].pdgId == 11) || (event.m_lheParticles->particles[4].pdgId == -11))
+		if (absPdgIdOut2 == DefaultValues::pdgIdElectron)
 		{
 			product.m_lheDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::EM;
 		}
-
-		if ((event.m_lheParticles->particles[4].pdgId == 13) || (event.m_lheParticles->particles[4].pdgId == -13))
+		else if (absPdgIdOut2 == DefaultValues::pdgIdMuon)
 		{
 			product.m_lheDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::MM;
 		}
-
-		if ((event.m_lheParticles->particles[4].pdgId == 15) || (event.m_lheParticles->particles[4].pdgId == -15))
+		else if (absPdgIdOut2 == DefaultValues::pdgIdTau)
 		{
 			product.m_lheDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::MT;
 		}
 	}
-
-	if ((event.m_lheParticles->particles[3].pdgId == 15) || (event.m_lheParticles->particles[3].pdgId == -15))
+	else if (absPdgIdOut1 == DefaultValues::pdgIdTau)
 	{
-		if ((event.m_lheParticles->particles[4].pdgId == 11) || (event.m_lheParticles->particles[4].pdgId == -11))
+		if (absPdgIdOut2 == DefaultValues::pdgIdElectron)
 		{
 			product.m_lheDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::ET;
 		}
-
-		if ((event.m_lheParticles->particles[4].pdgId == 13) || (event.m_lheParticles->particles[4].pdgId == -13))
+		else if (absPdgIdOut2 == DefaultValues::pdgIdMuon)
 		{
 			product.m_lheDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::MT;
 		}
-
-		if ((event.m_lheParticles->particles[4].pdgId == 15) || (event.m_lheParticles->particles[4].pdgId == -15))
+		else if (absPdgIdOut2 == DefaultValues::pdgIdTau)
 		{
 			product.m_lheDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::TT;
 		}
 	}
-	/*std::map<int, int> nDecayProductsPerType;
-	size_t iDaughter = 0;
-	for (std::vector<KLHEParticle*>::iterator lheParticle = product.m_lheLeptonsFromBosonDecay.begin();
-	     lheParticle != product.m_lheLeptonsFromBosonDecay.end() && (iDaughter < 2); ++lheParticle)
-	{
-		int pdgId = std::abs((*lheParticle)->pdgId);
-		nDecayProductsPerType[pdgId] = SafeMap::GetWithDefault(nDecayProductsPerType, pdgId, 0) + 1;
-		++iDaughter;
-	}
-	
-	if ((SafeMap::GetWithDefault(nDecayProductsPerType, DefaultValues::pdgIdElectron, 0) == 1) && (SafeMap::GetWithDefault(nDecayProductsPerType, DefaultValues::pdgIdMuon, 0) == 1))
-	{
-		product.m_lheDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::EM;
-	}
-	else if ((SafeMap::GetWithDefault(nDecayProductsPerType, DefaultValues::pdgIdMuon, 0) == 1) && (SafeMap::GetWithDefault(nDecayProductsPerType, DefaultValues::pdgIdTau, 0) == 1))
-	{
-		product.m_lheDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::MT;
-	}
-	else if ((SafeMap::GetWithDefault(nDecayProductsPerType, DefaultValues::pdgIdElectron, 0) == 1) && (SafeMap::GetWithDefault(nDecayProductsPerType, DefaultValues::pdgIdTau, 0) == 1))
-	{
-		product.m_lheDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::ET;
-	}
-	*/
 }
