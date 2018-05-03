@@ -66,14 +66,16 @@ class NormalizeColumnsToUnity(analysisbase.AnalysisBase):
 		for nick, root_histogram in plotData.plotdict["root_objects"].iteritems():
 			if isinstance(root_histogram, ROOT.TH2):
 				root_histogram.Sumw2()
-				sumBinContentColumn = 0
+				sumBinContentColumn = 0.0
 				for iBinX in range(1, root_histogram.GetNbinsX()+1):
 					for iBinY in range(1, root_histogram.GetNbinsY()+1):
 						sumBinContentColumn += root_histogram.GetBinContent(iBinX, iBinY)
 					for iBinY in range(1, root_histogram.GetNbinsY()+1):
 						binContent = root_histogram.GetBinContent(iBinX, iBinY)
+						binError = root_histogram.GetBinError(iBinX, iBinY)
 						root_histogram.SetBinContent(iBinX, iBinY, binContent/sumBinContentColumn)
-					sumBinContentColumn = 0
+						root_histogram.SetBinError(iBinX, iBinY, binError/sumBinContentColumn)
+					sumBinContentColumn = 0.0
 
 class NormalizeRowsToUnity(analysisbase.AnalysisBase):
 	"""In a TH2 histo, normalize each row such that sum(columns) = 1."""
@@ -86,14 +88,16 @@ class NormalizeRowsToUnity(analysisbase.AnalysisBase):
 		for nick, root_histogram in plotData.plotdict["root_objects"].iteritems():
 			if isinstance(root_histogram, ROOT.TH2):
 				root_histogram.Sumw2()
-				sumBinContentRow = 0
+				sumBinContentRow = 0.0
 				for iBinY in range(1, root_histogram.GetNbinsY()+1):
 					for iBinX in range(1, root_histogram.GetNbinsX()+1):
 						sumBinContentRow += root_histogram.GetBinContent(iBinX, iBinY)
 					for iBinX in range(1, root_histogram.GetNbinsX()+1):
 						binContent = root_histogram.GetBinContent(iBinX, iBinY)
+						binError = root_histogram.GetBinError(iBinX, iBinY)
 						root_histogram.SetBinContent(iBinX, iBinY, binContent/sumBinContentRow)
-					sumBinContentRow = 0
+						root_histogram.SetBinError(iBinX, iBinY, binError/sumBinContentColumn)
+					sumBinContentRow = 0.0
 
 
 class NormalizeHistogram(analysisbase.AnalysisBase):
