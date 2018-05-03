@@ -73,8 +73,9 @@ class NormalizeColumnsToUnity(analysisbase.AnalysisBase):
 					for iBinY in range(1, root_histogram.GetNbinsY()+1):
 						binContent = root_histogram.GetBinContent(iBinX, iBinY)
 						binError = root_histogram.GetBinError(iBinX, iBinY)
-						root_histogram.SetBinContent(iBinX, iBinY, binContent/sumBinContentColumn)
-						root_histogram.SetBinError(iBinX, iBinY, binError/sumBinContentColumn)
+						if sumBinContentColumn != 0.0:
+							root_histogram.SetBinContent(iBinX, iBinY, binContent/sumBinContentColumn)
+							root_histogram.SetBinError(iBinX, iBinY, binError/sumBinContentColumn)
 					sumBinContentColumn = 0.0
 
 class NormalizeRowsToUnity(analysisbase.AnalysisBase):
@@ -95,8 +96,9 @@ class NormalizeRowsToUnity(analysisbase.AnalysisBase):
 					for iBinX in range(1, root_histogram.GetNbinsX()+1):
 						binContent = root_histogram.GetBinContent(iBinX, iBinY)
 						binError = root_histogram.GetBinError(iBinX, iBinY)
-						root_histogram.SetBinContent(iBinX, iBinY, binContent/sumBinContentRow)
-						root_histogram.SetBinError(iBinX, iBinY, binError/sumBinContentColumn)
+						if sumBinContentRow != 0.0:
+							root_histogram.SetBinContent(iBinX, iBinY, binContent/sumBinContentRow)
+							root_histogram.SetBinError(iBinX, iBinY, binError/sumBinContentRow)
 					sumBinContentRow = 0.0
 
 
