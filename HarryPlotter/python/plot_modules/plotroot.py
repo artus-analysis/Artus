@@ -158,36 +158,16 @@ class PlotRoot(plotbase.PlotBase):
 				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]
 		))
 		
-		# defaults for colors
-		# per plot (up to) two colors are possible: first for lines and markers and second for filled areas
-		for index, colors in enumerate(plotData.plotdict["colors"]):
-			if colors == None:
-				plotData.plotdict["colors"][index] = [index + 1, index + 1]
-			else:
-				colors = [self.predefined_colors.get_predefined_color(color) for color in colors.split()]
-				if len(colors) == 1:
-					colors = [colors[0], copy.deepcopy(colors[0])]
-				
-				for sub_index, color in enumerate(colors):
-					if color.startswith("k"):
-						color = eval("ROOT."+color)
-					elif color.startswith("#"):
-						color = ROOT.TColor.GetColor(color.upper())
-					elif color in newrootcolors.newIdx.keys():
-						color = newrootcolors.newIdx[color]
-					else:
-						color = eval(color)
-					colors[sub_index] = color
-				plotData.plotdict["colors"][index] = colors
-		
-		# defaults for markers
-		for index, (line_width, marker, marker_style, fill_style, stack, legend_marker) in enumerate(zip(
+		# defaults for markers and colors
+		for index, (line_width, marker, marker_style, fill_style, stack, legend_marker, colors, colormap) in enumerate(zip(
 				plotData.plotdict["line_widths"],
 				plotData.plotdict["markers"],
 				plotData.plotdict["marker_styles"],
 				plotData.plotdict["fill_styles"],
 				plotData.plotdict["stacks"],
 				plotData.plotdict["legend_markers"],
+				plotData.plotdict["colors"],
+				plotData.plotdict["colormap"],
 		)):
 			if marker is None:
 				if index == 0:
@@ -220,6 +200,31 @@ class PlotRoot(plotbase.PlotBase):
 			plotData.plotdict["marker_styles"][index] = marker_style
 			plotData.plotdict["fill_styles"][index] = fill_style
 			plotData.plotdict["legend_markers"][index] = legend_marker
+		
+			# defaults for colors
+			# per plot (up to) two colors are possible: first for lines and markers and second for filled areas
+			if (not colormap) and ("COL" in marker.upper()):
+				colormap = True
+				plotData.plotdict["colormap"][index] = colormap
+			
+			if colors == None:
+				plotData.plotdict["colors"][index] = [57, 57] if colormap else [index + 1, index + 1]
+			else:
+				colors = [self.predefined_colors.get_predefined_color(color) for color in colors.split()]
+				if len(colors) == 1:
+					colors = [colors[0], copy.deepcopy(colors[0])]
+				
+				for sub_index, color in enumerate(colors):
+					if color.startswith("k"):
+						color = eval("ROOT."+color)
+					elif color.startswith("#"):
+						color = ROOT.TColor.GetColor(color.upper())
+					elif color in newrootcolors.newIdx.keys():
+						color = newrootcolors.newIdx[color]
+					else:
+						color = eval(color)
+					colors[sub_index] = color
+				plotData.plotdict["colors"][index] = colors
 		
 		# defaults for legend position
 		if not plotData.plotdict["legend"] is None:
