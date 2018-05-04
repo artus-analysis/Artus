@@ -129,6 +129,7 @@ public:
 	KappaEnumTypes::TauTauDecayMode m_genTauTauDecayMode = KappaEnumTypes::TauTauDecayMode::NONE;
 
 	/// added by LHEDiLeptonDecayModeProducer
+	KappaEnumTypes::ZBosonProductionMode m_zBosonProductionMode = KappaEnumTypes::ZBosonProductionMode::NONE;
 	KappaEnumTypes::DiLeptonDecayMode m_lheDiLeptonDecayMode = KappaEnumTypes::DiLeptonDecayMode::NONE;
 
 	/// added by GenDiLeptonDecayModeLFVProducer

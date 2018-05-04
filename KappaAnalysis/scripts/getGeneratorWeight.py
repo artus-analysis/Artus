@@ -23,7 +23,7 @@ def main():
 	                                 parents=[logger.loggingParser])
 
 	parser.add_argument("files", nargs="+", help="Input files.")
-	parser.add_argument("-n", "--nick", default="kappa_(?P<nick>.*)_\d+.root",
+	parser.add_argument("-n", "--nick", default="",
 	                    help="Regular expression to extract nickname from file names. Use 'NONE' to disable nick name matching. [Default: %(default)s]")
 
 	args = parser.parse_args()
@@ -40,8 +40,14 @@ def main():
 		
 		# nickname matching and sum of weights
 		no_regex_match = True if args.nick=='NONE' else False
+
+		if re.match("kappa_(?P<nick>.*)_\d+.root", os.path.basename(file_name)) != None:
+			args.nick = "kappa_(?P<nick>.*)_\d+.root"
+		elif re.match("kappa_(?P<nick>.*)_\d-\d+.root", os.path.basename(file_name)) != None:
+				args.nick = "kappa_(?P<nick>.*)_\d-\d+.root"
+
 		nick = ( re.match(args.nick, os.path.basename(file_name)).groupdict().values()[0] if not no_regex_match else '*')
-		
+
 		for entry in xrange(n_entries):
 			lumiTree.GetEntry(entry)
 			n_entries_per_nick[nick] = n_entries_per_nick.get(nick, 0.0) + lumiTree.filterMetadata.nEventsTotal
