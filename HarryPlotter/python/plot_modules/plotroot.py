@@ -383,10 +383,14 @@ class PlotRoot(plotbase.PlotBase):
 					if (not plotData.plotdict["y_label"] is None) and (plotData.plotdict["y_label"] != ""):
 						root_object.GetYaxis().SetTitle(plotData.plotdict["y_label"])
 					if (not plotData.plotdict["z_label"] is None) and (plotData.plotdict["z_label"] != ""):
+						z_axis = None
 						if isinstance(root_object, ROOT.TGraph2D):
-							root_object.GetHistogram().GetZaxis().SetTitle(plotData.plotdict["z_label"])
+							z_axis = root_object.GetHistogram().GetZaxis()
 						elif hasattr(root_object, "GetZaxis"):
-							root_object.GetZaxis().SetTitle(plotData.plotdict["z_label"])
+							z_axis = root_object.GetZaxis()
+						if z_axis:
+							z_axis.SetTitleSize(0.055) # copy from defaultrootstyle.py, because this is not automatically applied for an unknown reason.
+							z_axis.SetTitle(plotData.plotdict["z_label"])
 				first_plot_labels_set = True
 			
 			# tick labels (z-axis) TODO: unify this with the x and y bin labels mechanism?
