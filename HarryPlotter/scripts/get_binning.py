@@ -29,7 +29,7 @@ if __name__ == "__main__":
 		elements = roottools.RootTools.walk_root_directory(root_file)
 	
 		for key, path in elements:
-			if key.GetClassName().startswith("TH"):
+			if key.GetClassName().startswith("TH") or key.GetClassName().startswith("TProfile"):
 				histogram = root_file.Get(path)
 				if histogram.GetDimension() == 1:
 					log.info("%s: %s" % (
