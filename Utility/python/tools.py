@@ -171,7 +171,7 @@ def get_indented_text(prefix, message, width=None):
 def parallelize(function, arguments_list, n_processes=1, description=None):
 	if n_processes <= 1:
 		results = []
-		for arguments in arguments_list:
+		for arguments in pi.ProgressIterator(arguments_list, description=(description if description else "calling "+str(function))):
 			results.append(function(arguments))
 		return results
 	else:
