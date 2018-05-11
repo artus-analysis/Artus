@@ -1,11 +1,12 @@
 
 # -*- coding: utf-8 -*-
 
-import re
 import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
 
+import copy
+import re
 
 """
 	This module contains a dictionary for expressions.
@@ -33,23 +34,18 @@ class ExpressionsDict(object):
 
 	def replace_expressions(self, expression):
 		"""Replace any known expressions"""
-		# old-style behaviour
-		if not self.expressions_dict:
-			for key, value in self.expressions_dict.iteritems():
-				try:
-					expression = new_expr.replace(key, value)
-				except AttributeError:
-					return expression
-			return expression
-		# iterative substitution
-		if expression is None:
-			return expression
-		old_expr, new_expr = "", expression
-		while new_expr != old_expr:
-			old_expr = new_expr
-			for key in sorted(self.expressions_dict,key=len, reverse=True):
-				new_expr = new_expr.replace(key, self.expressions_dict[key])
+		new_expr = copy.deepcopy(expression)
+		if new_expr:
+			# first: search for complete replacement
+			new_expr = self.expressions_dict.get(new_expr, new_expr)
+			
+			# second: use regex syntax
 			for pattern, repl in self.expressions_regex:
 				new_expr = re.sub(pattern, repl, new_expr)
-		log.debug("expression expansion: %r => %r", expression, new_expr)
+			
+			# last: start from the longest aliases
+			for key in sorted(self.expressions_dict,key=len, reverse=True):
+				new_expr = new_expr.replace(key, self.expressions_dict[key])
+			
+			log.debug("expression expansion: %r => %r", expression, new_expr)
 		return new_expr
