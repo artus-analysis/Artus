@@ -87,6 +87,12 @@ def set_default_root_style():
 	default_root_style.SetLabelSize(0.040, "Y")
 	default_root_style.SetLabelFont(42, "Y")
 
+	default_root_style.SetTitleSize(0.055, "Z")
+	default_root_style.SetTitleOffset(1.600, "Z")
+	default_root_style.SetLabelOffset(0.010, "Z")
+	default_root_style.SetLabelSize(0.040, "Z")
+	default_root_style.SetLabelFont(42, "Z")
+
 	default_root_style.SetTextSize(0.055)
 	default_root_style.SetTextFont(42)
 

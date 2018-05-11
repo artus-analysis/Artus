@@ -45,12 +45,11 @@ class ArtusWrapper(object):
 		if self._args.batch:
 			self._args.envvar_expansion = False
 
-		date_now = datetime.now().strftime("%Y-%m-%d_%H-%M")
-
 		# write repository revisions to the config
 		if not self._args.disable_repo_versions:
 			self.setRepositoryRevisions()
-			self._config["Date"] = date_now
+		
+		self._config["Date"] = self._args.date
 
 		#Expand Config
 		self.expandConfig()
@@ -59,11 +58,11 @@ class ArtusWrapper(object):
 		self.remote_se = False
 
 		if self._args.batch:
-			self.projectPath = os.path.join(os.path.expandvars(self._args.work), date_now+"_"+self._args.project_name)
+			self.projectPath = os.path.join(os.path.expandvars(self._args.work), self._args.date+"_"+self._args.project_name)
 			self.localProjectPath = self.projectPath
 			if self.projectPath.startswith("srm://"):
 				self.remote_se = True
-				self.localProjectPath = os.path.join(os.path.expandvars(self._parser.get_default("work")), date_now+"_"+self._args.project_name)
+				self.localProjectPath = os.path.join(os.path.expandvars(self._parser.get_default("work")), self._args.date+"_"+self._args.project_name)
 
 	def run(self):
 
@@ -416,6 +415,8 @@ class ArtusWrapper(object):
 		                              help="Work directory base. [Default: %(default)s]")
 		self.fileOptionsGroup.add_argument("-n", "--project-name", default="analysis",
 		                              help="Name for this Artus project specifies the name of the work subdirectory.")
+		self.fileOptionsGroup.add_argument("-d", "--date", default=datetime.now().strftime("%Y-%m-%d_%H-%M"),
+		                              help="Date to put in project directory names. [Default: %(default)s]")
 
 		self.configOptionsGroup = self._parser.add_argument_group("Config options")
 		self.configOptionsGroup.add_argument("-c", "--base-configs", nargs="+", required=False, default={},

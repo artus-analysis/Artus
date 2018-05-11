@@ -209,7 +209,7 @@ class RootTools(object):
 		                    x_bins=None, y_bins=None, z_bins=None,
 		                    weight_selection="", option="", name=None,
 		                    friend_files=None, friend_folders=None, friend_alias=None,
-		                    proxy_prefix="", use_cache=True):
+		                    proxy_prefix="", scan=None, use_cache=True):
 		"""
 		Read histograms from trees
 	
@@ -293,6 +293,7 @@ class RootTools(object):
 				binning=binning,
 				weight_selection=str(weight_selection),
 				option=option,
+				scan=scan,
 				use_cache=use_cache
 		)
 		
@@ -315,7 +316,7 @@ class RootTools(object):
 	
 	@staticmethod
 	@rootcache.RootFileCache(os.path.expandvars(os.path.join("$HP_WORK_BASE_COMMON", "caches")))
-	def tree_draw(root_file_names, path_to_trees, friend_files, friend_folders, root_histogram, variable_expression, name, binning, weight_selection, option, use_cache=True):
+	def tree_draw(root_file_names, path_to_trees, friend_files, friend_folders, root_histogram, variable_expression, name, binning, weight_selection, option, scan=None, use_cache=True):
 		
 		# prepare TChain
 		if isinstance(root_file_names, basestring):
@@ -404,7 +405,11 @@ class RootTools(object):
 			)
 			with open(proxy_class_filename, "w") as proxy_class_file:
 				proxy_class_file.write(proxy_class_content)
-
+		
+		if scan:
+			log.debug("ROOT.TTree.Scan(\"" + scan + "\", \"" + str(weight_selection) + "\")")
+			tree.Scan(scan, str(weight_selection))
+		
 		if root_histogram == None:
 			if ("proxy" in option) and (not proxy_call is None):
 				log.critical("Plotting of compliled proxy formulas not yet implemented for the case where no binning is specified!")

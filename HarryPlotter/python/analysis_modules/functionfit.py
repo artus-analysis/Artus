@@ -14,25 +14,25 @@ class FunctionFit(analysisbase.AnalysisBase):
 
 	def modify_argument_parser(self, parser, args):
 		self.function_options = parser.add_argument_group("Function draw options")
-		self.function_options.add_argument("--functions", type=str, nargs="+", default=None,
-						help="Function to include in plot, ROOT syntax.")
-		self.function_options.add_argument("--function-nicknames", type=str, nargs="+",
-						help="Nickname of the function")
-		self.function_options.add_argument("--function-parameters", type=str, nargs="+", default=None,
-						help="Comma-Separated function parameters for functions given with --function. If a fit is performed, these are the starting parameters for the fit.")
-		self.function_options.add_argument("--function-fit", type=str, nargs="+", default=None,
-						help="List of nicknames of histograms one wants to fit.")
-		self.function_options.add_argument("--function-ranges", type=str, nargs="+", default=None,
-						help="Function range. Default is whole plot range if histogram is drawn. Format x_min,x_max.")
-		self.function_options.add_argument("--fit-backend", type=str, nargs="+", default="ROOT",
-						help="Fit backend. ROOT and RooFit are available. Check sourcecode which parts of RooFit are implemented. [Default: %(default)s]")
+		self.function_options.add_argument("--functions", type=str, nargs="+",
+		                                   help="Function to include in plot, ROOT syntax.")
+		self.function_options.add_argument("--function-nicknames", type=str, nargs="+", default=[None],
+		                                   help="Nickname of the function")
+		self.function_options.add_argument("--function-parameters", type=str, nargs="+", default=[None],
+		                                   help="Whitespace-separated function parameters for functions given with --function. If a fit is performed, these are the starting parameters for the fit.")
+		self.function_options.add_argument("--function-fit", type=str, nargs="+", default=[None],
+		                                   help="List of nicknames of histograms one wants to fit.")
+		self.function_options.add_argument("--function-ranges", type=str, nargs="+", default=[None],
+		                                   help="Function range. Default is whole plot range if histogram is drawn. Format x_min,x_max.")
+		self.function_options.add_argument("--fit-backend", type=str, nargs="+", default=["ROOT"],
+		                                   help="Fit backend. ROOT and RooFit are available. Check sourcecode which parts of RooFit are implemented. [Default: %(default)s]")
 		self.function_options.add_argument("--function-display-result", action='store_true',
-						help="Display the parameters of the fit on the plots")
-		self.function_options.add_argument("--function-fit-parameter-names", type=str, nargs="+", default=["Parameter"],
-						help="Names of the parameters (e.g. 'Slope'). Only relevant if --function-display-result is True. [Default: %(default)s]")
+		                                   help="Display the parameters of the fit on the plots")
+		self.function_options.add_argument("--function-fit-parameter-names", type=str, nargs="+", default=[None],
+		                                   help="Names of the parameters (e.g. 'Slope'). Only relevant if --function-display-result is True. [Default: %(default)s]")
 
-		self.function_options.add_argument("--function-collect-result", type=str, nargs="+", default=["None"],
-						help="Collect fit results in a histogram. Save either the parameter with the given number or the Chi2. [Default: %(default)s]")
+		self.function_options.add_argument("--function-collect-result", type=str, nargs="+", default=[None],
+		                                   help="Collect fit results in a histogram. Save either the parameter with the given number or the Chi2. [Default: %(default)s]")
 
 	def prepare_args(self, parser, plotData):
 		self.prepare_list_args(plotData, ["functions", "function_parameters", "function_nicknames",
@@ -62,7 +62,10 @@ class FunctionFit(analysisbase.AnalysisBase):
 
 		tmp_function_parameters = []
 		for function_parameter in plotData.plotdict["function_parameters"]:
-			tmp_function_parameters.append([float (x) for x in  function_parameter.split(",")])
+			if function_parameter:
+				tmp_function_parameters.append([float (x) for x in  function_parameter.split()])
+			else:
+				tmp_function_parameters.append(function_parameter)
 		plotData.plotdict["function_parameters"] = tmp_function_parameters
 
 		super(FunctionFit, self).prepare_args(parser, plotData)
@@ -80,14 +83,15 @@ class FunctionFit(analysisbase.AnalysisBase):
 			sys.exit(1)
 		else:
 			for i, (function, function_nick, function_parameters, fit_nickname, x_range, collect_result, fit_backend) in enumerate(zip( 
-			                                                 plotData.plotdict["functions"], 
-			                                                 plotData.plotdict["function_nicknames"],
-			                                                 plotData.plotdict["function_parameters"],
-			                                                 plotData.plotdict["function_fit"],
-			                                                 plotData.plotdict["function_ranges"],
-			                                                 plotData.plotdict["function_collect_result"],
-			                                                 plotData.plotdict["fit_backend"])):
-				if fit_nickname != None and fit_nickname in plotData.plotdict["root_objects"].keys(): 
+					plotData.plotdict["functions"],
+					plotData.plotdict["function_nicknames"],
+					plotData.plotdict["function_parameters"],
+					plotData.plotdict["function_fit"],
+					plotData.plotdict["function_ranges"],
+					plotData.plotdict["function_collect_result"],
+					plotData.plotdict["fit_backend"])
+			):
+				if fit_nickname and (fit_nickname in plotData.plotdict["root_objects"].keys()):
 					root_histogram = plotData.plotdict["root_objects"][fit_nickname]
 					root_function, fit_result = self.create_function(function, x_range[0], x_range[1],
 					                                           function_parameters, 
@@ -108,7 +112,8 @@ class FunctionFit(analysisbase.AnalysisBase):
 				elif collect_result.isdigit():
 					plotData.plotdict["root_objects"]["function_fit_result"].SetBinContent(i+1, plotData.fit_results[function_nick].Parameter(int(plotData.plotdict["function_collect_result"])))
 				
-				log.info("Probability to obtain a Chi2 of " + str(plotData.fit_results[function_nick].Chi2()) + " for an ndf of " + str(plotData.fit_results[function_nick].Ndf()) + " is " + str(ROOT.TMath.Prob(plotData.fit_results[function_nick].Chi2(),plotData.fit_results[function_nick].Ndf())))
+				if fit_nickname:
+					log.info("Probability to obtain a Chi2 of " + str(plotData.fit_results[function_nick].Chi2()) + " for an ndf of " + str(plotData.fit_results[function_nick].Ndf()) + " is " + str(ROOT.TMath.Prob(plotData.fit_results[function_nick].Chi2(), plotData.fit_results[function_nick].Ndf())))
 
 	def create_function(self, function, x_min, x_max, start_parameters, nick="", root_histogram=None, fit_backend="ROOT"):
 		"""
@@ -133,7 +138,8 @@ class FunctionFit(analysisbase.AnalysisBase):
 		                                                                str(start_parameters), str(nick), 
 		                                                                str(root_histogram.GetName() if root_histogram != None else "")])).hexdigest())
 		ret_tf1 = ROOT.TF1(formula_name, function, x_min, x_max)
-		ret_tf1.SetParameters(array.array('d', start_parameters))
+		if start_parameters:
+			ret_tf1.SetParameters(array.array('d', start_parameters))
 		return ret_tf1
 
 	@staticmethod

@@ -11,5 +11,4 @@ class KappaAnalysisWrapper(artusWrapper.ArtusWrapper):
 
 	def _initArgumentParser(self, userArgParsers=None):
 		super(KappaAnalysisWrapper, self)._initArgumentParser(userArgParsers)
-		#self._parser.set_defaults(ld_library_paths=["$CMSSW_BASE/src/Kappa/lib/"])
 

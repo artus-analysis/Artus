@@ -41,6 +41,8 @@ class InputRoot(inputfile.InputFile):
 		
 		self.input_options.add_argument("-q", "--quantities", nargs="?", type="bool", default=False, const=True,
 		                                help="Print available quantities in given folder. [Default: %(default)s]")
+		self.input_options.add_argument("--scan", nargs="?", default=None, const="*",
+		                                help="Execute TTree.Scan before reading from tree. As arguments a variable list can be passed. [Default: %(default)s]")
 		self.input_options.add_argument("-x", "--x-expressions", type=str, nargs="+",
 		                                help="x-axis variable expression(s)")
 		self.input_options.add_argument("-y", "--y-expressions", type=str, nargs="+",
@@ -148,6 +150,7 @@ class InputRoot(inputfile.InputFile):
 						friend_folders=friend_folders,
 						friend_alias=friend_alias,
 						proxy_prefix=plotData.plotdict["proxy_prefix"],
+						scan=plotData.plotdict["scan"],
 						use_cache=(not plotData.plotdict["no_cache"])
 				)
 				
