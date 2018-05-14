@@ -19,6 +19,8 @@ import subprocess
 import time
 import ROOT
 
+import Artus.Utility.progressiterator as pi
+
 from difflib import SequenceMatcher
 
 
@@ -179,7 +181,6 @@ def parallelize(function, arguments_list, n_processes=1, description=None):
 		results = pool.map_async(function, arguments_list, chunksize=1)
 		n_tasks = len(arguments_list)
 		left = n_tasks-1
-		import Artus.Utility.progressiterator as pi
 		progress_iterator = pi.ProgressIterator(range(n_tasks), description=(description if description else "calling "+str(function)))
 		progress_iterator.next()
 		while (True):
