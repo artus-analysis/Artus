@@ -78,8 +78,8 @@ class Ratio(analysisbase.AnalysisBase):
 			numerator_histogram = self.getHistograms(plotdict=plotData.plotdict["root_objects"], ratio_nicks=ratio_numerator_nicks, ratio_numerator_nicks=ratio_numerator_nicks, ratio_denominator_nicks=ratio_denominator_nicks, ratio_result_nick=ratio_result_nick)
 			denominator_histogram = self.getHistograms(plotdict=plotData.plotdict["root_objects"], ratio_nicks=ratio_denominator_nicks, ratio_numerator_nicks=ratio_numerator_nicks, ratio_denominator_nicks=ratio_denominator_nicks, ratio_result_nick=ratio_result_nick)
 
-			if ratio_numerator_no_errors: scaleerrors.ScaleErrors.scale_errors(numerator_histogram)
-			if ratio_denominator_no_errors: scaleerrors.ScaleErrors.scale_errors(denominator_histogram)
+			if ratio_numerator_no_errors: scaleerrors.ScaleErrors.scale_errors(numerator_histogram, scale_factor=0.0)
+			if ratio_denominator_no_errors: scaleerrors.ScaleErrors.scale_errors(denominator_histogram, scale_factor=0.0)
 
 			# Calculate ratio
 			if isinstance(numerator_histogram, ROOT.TGraph) and isinstance(denominator_histogram, ROOT.TGraph):
