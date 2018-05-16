@@ -3,8 +3,6 @@
 import logging
 import Artus.Utility.logger as logger
 log = logging.getLogger(__name__)
-import pprint
-pp = pprint.PrettyPrinter(indent=4)
 
 import hashlib
 
@@ -53,7 +51,7 @@ class Ratio(analysisbase.AnalysisBase):
 				plotData.plotdict["nicks"].append(plotData.plotdict["ratio_result_nicks"][index])
 
 	@staticmethod
-	def getHistograms(plotdict={}, ratio_nicks=None, ratio_numerator_nicks=None, ratio_denominator_nicks=None, ratio_result_nick=None):
+	def get_histograms(plotdict={}, ratio_nicks=None, ratio_numerator_nicks=None, ratio_denominator_nicks=None, ratio_result_nick=None):
 		histogram = None
 
 		for nick in ratio_nicks:
@@ -61,7 +59,8 @@ class Ratio(analysisbase.AnalysisBase):
 			root_object = plotdict[nick]
 			if histogram is None:
 				histogram = root_object.Clone(
-						"ratio_" + hashlib.md5("_".join([str(ratio_nicks), str(ratio_denominator_nicks), ratio_result_nick])).hexdigest())
+						"ratio_" + hashlib.md5("_".join([str(ratio_nicks), str(ratio_denominator_nicks), ratio_result_nick])).hexdigest()
+				)
 			else: histogram.Add(root_object)
 
 			if hasattr(histogram, "SetDirectory"): histogram.SetDirectory(0)
@@ -75,8 +74,8 @@ class Ratio(analysisbase.AnalysisBase):
 				*[plotData.plotdict[k] for k in ["ratio_numerator_nicks", "ratio_numerator_no_errors", "ratio_denominator_nicks", "ratio_denominator_no_errors", "ratio_result_nicks"]]):
 
 			# Create nick sum histograms
-			numerator_histogram = self.getHistograms(plotdict=plotData.plotdict["root_objects"], ratio_nicks=ratio_numerator_nicks, ratio_numerator_nicks=ratio_numerator_nicks, ratio_denominator_nicks=ratio_denominator_nicks, ratio_result_nick=ratio_result_nick)
-			denominator_histogram = self.getHistograms(plotdict=plotData.plotdict["root_objects"], ratio_nicks=ratio_denominator_nicks, ratio_numerator_nicks=ratio_numerator_nicks, ratio_denominator_nicks=ratio_denominator_nicks, ratio_result_nick=ratio_result_nick)
+			numerator_histogram = self.get_histograms(plotdict=plotData.plotdict["root_objects"], ratio_nicks=ratio_numerator_nicks, ratio_numerator_nicks=ratio_numerator_nicks, ratio_denominator_nicks=ratio_denominator_nicks, ratio_result_nick=ratio_result_nick)
+			denominator_histogram = self.get_histograms(plotdict=plotData.plotdict["root_objects"], ratio_nicks=ratio_denominator_nicks, ratio_numerator_nicks=ratio_numerator_nicks, ratio_denominator_nicks=ratio_denominator_nicks, ratio_result_nick=ratio_result_nick)
 
 			if ratio_numerator_no_errors: scaleerrors.ScaleErrors.scale_errors(numerator_histogram, scale_factor=0.0)
 			if ratio_denominator_no_errors: scaleerrors.ScaleErrors.scale_errors(denominator_histogram, scale_factor=0.0)
@@ -119,7 +118,7 @@ class Ratio(analysisbase.AnalysisBase):
 					ratio_histogram = ROOT.TGraph()
 
 				successful_division = True
-				for point in range(0,numerator_histogram.GetN()):
+				for point in range(0, numerator_histogram.GetN()):
 
 					x_value = ROOT.Double(0)
 					y_value_numerator = ROOT.Double(0)
@@ -128,21 +127,22 @@ class Ratio(analysisbase.AnalysisBase):
 
 					if y_value_denominator != 0.:
 
-						ratio_histogram.SetPoint(point, x_value, y_value_numerator / y_value_denominator)
+						ratio = y_value_numerator / y_value_denominator
+						ratio_histogram.SetPoint(point, x_value, ratio)
 
 						if isinstance(ratio_histogram, ROOT.TGraphAsymmErrors):
 
 							x_err_high = numerator_histogram.GetErrorXhigh(point)
 							x_err_low = numerator_histogram.GetErrorXlow(point)
 
-							y_err_high_numerator = numerator_histogram.GetErrorYhigh(point)
-							y_err_low_numerator = numerator_histogram.GetErrorYlow(point)
+							y_err_high_rel_numerator = numerator_histogram.GetErrorYhigh(point) / y_value_numerator
+							y_err_low_rel_numerator = numerator_histogram.GetErrorYlow(point) / y_value_numerator
 
-							y_err_high_denominator = denominator_histogram.GetErrorYhigh(point)
-							y_err_low_denominator = denominator_histogram.GetErrorYlow(point)
+							y_err_high_rel_denominator = denominator_histogram.GetErrorYhigh(point) / y_value_denominator
+							y_err_low_rel_denominator = denominator_histogram.GetErrorYlow(point) / y_value_denominator
 
-							y_err_high_ratio = sqrt(pow(y_err_high_numerator / y_value_denominator, 2) + pow(y_value_numerator * y_err_high_denominator, 2) / pow(y_value_denominator, 4))
-							y_err_low_ratio = sqrt(pow(y_err_low_numerator / y_value_denominator, 2) + pow(y_value_numerator * y_err_low_denominator, 2) / pow(y_value_denominator, 4))
+							y_err_high_ratio = sqrt(pow(ratio, 2.0) * (pow(y_err_high_rel_numerator, 2) + pow(y_err_high_rel_denominator, 2)))
+							y_err_low_ratio = sqrt(pow(ratio, 2.0) * (pow(y_err_low_rel_numerator, 2) + pow(y_err_low_rel_denominator, 2)))
 
 							ratio_histogram.SetPointEXhigh(point, x_err_high)
 							ratio_histogram.SetPointEXlow(point, x_err_low)
@@ -151,10 +151,10 @@ class Ratio(analysisbase.AnalysisBase):
 
 						elif isinstance(ratio_histogram, ROOT.TGraphErrors):
 
-							x_err = numerator_histogram.GetErrorX(point)
-							y_err_numerator = numerator_histogram.GetErrorY(point)
-							y_err_denominator = denominator_histogram.GetErrorY(point)
-							y_err_ratio = sqrt(pow(y_err_numerator / y_value_denominator, 2) + pow(y_value_numerator * y_err_denominator, 2) / pow(y_value_denominator, 4))
+							x_err = numerator_histogram.GetErrorX(point) / y_value_numerator
+							y_err_rel_numerator = numerator_histogram.GetErrorY(point) / y_value_denominator
+							y_err_rel_denominator = denominator_histogram.GetErrorY(point)
+							y_err_ratio = sqrt(pow(ratio, 2.0) * (pow(y_err_rel_numerator, 2) + pow(y_err_rel_denominator, 2)))
 							ratio_histogram.SetPointError(point, x_err, y_err_ratio)
 
 						else: log.fatal("ratio_histogram is neither ROOT.TGraphAsymmErrors nor ROOT.TGraphErrors")
