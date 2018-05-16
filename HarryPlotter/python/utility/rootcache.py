@@ -32,9 +32,17 @@ class RootFileCache(Cache):
 		if self.cache_dir is None:
 			self.cache_dir = os.path.join(tempfile.gettempdir(), "root_file_cache")
 		if not os.path.exists(self.cache_dir):
-			os.makedirs(self.cache_dir)
+			try:
+				os.makedirs(self.cache_dir)
+			except:
+				# this message does not work due to missing logging handlers
+				#log.warning("Unable to write caches to \"{cache_dir}\"! Run without caching.".format(cache_dir=self.cache_dir))
+				self.cache_dir = None
 		
 	def _determine_cache_file(self, *args, **kwargs):
+		if self.cache_dir is None:
+			return None
+		
 		tmp_args = copy.deepcopy(args)
 		for index, arg in enumerate(tmp_args):
 			if isinstance(arg, ROOT.TObject):
@@ -54,7 +62,7 @@ class RootFileCache(Cache):
 		root_tree = None
 		root_object = None
 		cache_found = False
-		if kwargs.get("use_cache", True) and os.path.exists(cache_file):
+		if kwargs.get("use_cache", True) and cache_file and os.path.exists(cache_file):
 			try:
 				with tfilecontextmanager.TFileContextManager(cache_file, "READ") as root_file:
 					root_object = root_file.Get(self.cache_name)
@@ -69,7 +77,7 @@ class RootFileCache(Cache):
 		
 		if root_object is None:
 			root_tree, root_object = self._function_to_cache(*args, **kwargs)
-			if (not cache_found) and (not root_object is None) and (not root_object == None):
+			if cache_file and (not cache_found) and (not root_object is None) and (not root_object == None):
 				try:
 					with tfilecontextmanager.TFileContextManager(cache_file, "RECREATE") as root_file:
 						root_file.cd()
