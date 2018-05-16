@@ -80,7 +80,34 @@ class Ratio(analysisbase.AnalysisBase):
 
 			if ratio_numerator_no_errors: scaleerrors.ScaleErrors.scale_errors(numerator_histogram, scale_factor=0.0)
 			if ratio_denominator_no_errors: scaleerrors.ScaleErrors.scale_errors(denominator_histogram, scale_factor=0.0)
-
+			
+			# preparations for divisions with one function
+			if ((isinstance(numerator_histogram, ROOT.TGraph) and isinstance(denominator_histogram, ROOT.TF1)) or
+			    (isinstance(numerator_histogram, ROOT.TF1) and isinstance(denominator_histogram, ROOT.TGraph))):
+				graph = numerator_histogram if isinstance(numerator_histogram, ROOT.TGraph) else denominator_histogram
+				function = denominator_histogram if isinstance(numerator_histogram, ROOT.TGraph) else numerator_histogram
+				function_graph = graph.Clone("function_graph_"+function.GetName())
+				scaleerrors.ScaleErrors.scale_errors(function_graph, scale_factor=0.0)
+				
+				x_values = function_graph.GetX()
+				x_values = [x_values[index] for index in xrange(function_graph.GetN())]
+				if not isinstance(function_graph, ROOT.TGraph2D):
+					y_values = [function.Eval(x_value) for x_value in x_values]
+					for index, (x_value, y_value) in enumerate(zip(x_values, y_values)):
+						function_graph.SetPoint(index, x_value, y_value)
+				else:
+					y_values = function_graph.GetY()
+					y_values = [y_values[index] for index in xrange(function_graph.GetN())]
+					
+					z_values = [function.Eval(x_value, y_value) for x_value, y_value in zip(x_values, y_values)]
+					for index, (x_value, y_value, z_value) in enumerate(zip(x_values, y_values, z_values)):
+						function_graph.SetPoint(index, x_value, y_value, z_value)
+				
+				if isinstance(numerator_histogram, ROOT.TGraph):
+					denominator_histogram = function_graph
+				else:
+					numerator_histogram = function_graph
+			
 			# Calculate ratio
 			if isinstance(numerator_histogram, ROOT.TGraph) and isinstance(denominator_histogram, ROOT.TGraph):
 
