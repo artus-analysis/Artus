@@ -19,6 +19,26 @@ void HltProducer::Init(setting_type const& settings, metadata_type& metadata)
 	{
 		return product.m_selectedHltNames;
 	});
+
+	std::vector<std::string> triggerDiscriminators;
+	triggerDiscriminators.push_back("HLT_Ele35_WPTight_Gsf_v7"); //used in et by arthur and hale
+
+	for (std::string triggerDiscriminator : triggerDiscriminators)
+	{
+		std::string hltName = triggerDiscriminator;
+
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, hltName, [hltName](event_type const& event, product_type const& product)
+		{
+			if (std::find(product.m_selectedHltNames.begin(), product.m_selectedHltNames.end(), hltName) != product.m_selectedHltNames.end())
+			{			
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		});
+	}
 }
 
 void HltProducer::Produce(event_type const& event, product_type& product,
