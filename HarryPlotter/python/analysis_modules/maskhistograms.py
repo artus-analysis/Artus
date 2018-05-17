@@ -43,10 +43,10 @@ class MaskHistograms(histogrammanipulationbase.HistogramManipulationBase):
 			self.whitelist = plotData.plotdict["mask_histogram_nicks"]
 		else:
 			self.whitelist = plotData.plotdict["nicks"]
-		if not xor((plotData.plotdict["mask_above_delta_min"] == None), ( plotData.plotdict["mask_above_reference_nick"] == None), ( plotData.plotdict["mask_below_threshold"] == None)):
-			log.fatal("invalid options selected. MaskHistograms is not configured properly. Either both nick and delta mode are selected or none")
-			import sys
-			sys.exit()
+		# if not any(plotData.plotdict[option] != Noneshold):
+		# 	log.fatal("invalid options selected. MaskHistograms is not configured properly. Either both nick and delta mode are selected or none")
+		# 	import sys
+		# 	sys.exit()
 		if(plotData.plotdict["mask_above_delta_min"] != None):
 			self.mode = "delta"
 		elif(plotData.plotdict["mask_below_threshold"] != None):
