@@ -32,7 +32,10 @@ class MaskHistograms(histogrammanipulationbase.HistogramManipulationBase):
 				"--mask-above-reference-value", type=float, default=None,
 				help="Mask if reference histogram is above this value, e.g.  s/sqrt(b)."
 		)
-	
+		self.MaskHistograms_options.add_argument(
+				"--mask-below-threshold", type=float, default=None,
+				help="Mask if reference histogram is below this threshold, e.g.  mT<50."
+		)	
 	def prepare_args(self, parser, plotData):
 		super(MaskHistograms, self).prepare_args(parser, plotData)
 		
@@ -46,6 +49,9 @@ class MaskHistograms(histogrammanipulationbase.HistogramManipulationBase):
 			sys.exit()
 		if(plotData.plotdict["mask_above_delta_min"] != None):
 			self.mode = "delta"
+		elif(plotData.plotdict["mask_below_threshold"] != None):
+			self.mode = "by_upper_threshold"
+			self.reference_value = 	plotData.plotdict["mask_below_threshold"]
 		else:
 			self.mode = "reference"
 			self.reference_value = plotData.plotdict["mask_above_reference_value"]
@@ -72,6 +78,9 @@ class MaskHistograms(histogrammanipulationbase.HistogramManipulationBase):
 			if self.reference_histogram.GetBinContent(global_bin) > self.reference_value:
 				histogram.SetBinContent(global_bin, 0.0)
 				histogram.SetBinError(global_bin, 0.0)
+		elif(self.mode == "by_upper_threshold"):
+			if (histogram.GetBinCenter(global_bin) + histogram.GetBinWidth(global_bin) / 2 ) < self.reference_value:
+				histogram.SetBinContent(global_bin, 0.0)
+				histogram.SetBinError(global_bin, 0.0)				
 		else:
 			log.error("invalid mode selected")
-
