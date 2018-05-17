@@ -43,7 +43,7 @@ class PlotBase(processor.Processor):
 		                                   help="Whitelist of (regexp) nick names for objects to be plotted. This also allows for redefining the order of nicks for the plotting. Use \"^nick$\" for requirering exact matches.")
 		self.plotting_options.add_argument("--nicks-blacklist", nargs="+", default=["noplot"],
 		                                   help="Blacklist of (regexp) nick names for objects to be excluded from plotting. Use \"^nick$\" for requirering exact matches. [Default: %(default)s]")
-		self.plotting_options.add_argument("--subplot-nicks", nargs="+", default=["ratio"],
+		self.plotting_options.add_argument("--subplot-nicks", nargs="+", default=["ratio", "difference"],
 		                                   help="List of (regexp) nick names for objects to be plotted in the subplot. Use \"^nick$\" for requirering exact matches. [Default: %(default)s]")
 		# axis settings
 		self.axis_options = parser.add_argument_group("Axis options")
