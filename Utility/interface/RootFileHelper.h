@@ -106,7 +106,8 @@ public:
 		for (std::vector<std::string>::const_iterator fileName = fileNames.begin();
 		     fileName != fileNames.end(); ++fileName)
 		{
-			TFile* rootFile = new TFile(fileName->c_str(), "READ");
+			TFile* rootFile =  TFile::Open(fileName->c_str(), "READ");
+			
 			objects[index++] = RootFileHelper::SafeGet<T>(rootFile, objectName, detachFromDirectory);
 			if (detachFromDirectory)
 			{
