@@ -20,22 +20,21 @@ void HltProducer::Init(setting_type const& settings, metadata_type& metadata)
 		return product.m_selectedHltNames;
 	});
 
-	std::vector<std::string> triggerDiscriminators;
-	triggerDiscriminators.push_back("HLT_Ele35_WPTight_Gsf_v7"); //used in et by arthur and hale
+	//std::vector<std::string> triggerDiscriminators;
+	//triggerDiscriminators.push_back("HLT_Ele35_WPTight_Gsf_v7"); //used in et by arthur and hale
 
-	for (std::string triggerDiscriminator : triggerDiscriminators)
+	for (std::string triggerDiscriminator : settings.GetHltPaths())
 	{
-		std::string hltName = triggerDiscriminator;
-
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, hltName, [hltName](event_type const& event, product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, triggerDiscriminator, [triggerDiscriminator](event_type const& event, product_type const& product)
 		{
-			if (std::find(product.m_selectedHltNames.begin(), product.m_selectedHltNames.end(), hltName) != product.m_selectedHltNames.end())
-			{			
-				return 1;
+
+			if (std::find(product.m_selectedHltPaths.begin(), product.m_selectedHltPaths.end(), triggerDiscriminator) != product.m_selectedHltPaths.end())
+			{
+				return true;
 			}
 			else
 			{
-				return 0;
+				return false;
 			}
 		});
 	}
@@ -68,11 +67,13 @@ void HltProducer::Produce(event_type const& event, product_type& product,
 	int lowestSelectedPrescale = std::numeric_limits<int>::max();
 	
 	product.m_selectedHltNames.clear();
+	product.m_selectedHltPaths.clear();
 	product.m_selectedHltPositions.clear();
 	product.m_selectedHltPrescales.clear();
 	for (std::vector<std::string>::const_iterator hltPath = product.m_settingsHltPaths.begin(); hltPath != product.m_settingsHltPaths.end(); ++hltPath)
 	{
 		std::string hltName = m_hltInfo.getHLTName(*hltPath);
+
 		if (! hltName.empty())
 		{
 			// look for trigger with lowest prescale
@@ -88,7 +89,7 @@ void HltProducer::Produce(event_type const& event, product_type& product,
 			if (event.m_eventInfo->hltFired(hltName, event.m_lumiInfo) && (settings.GetAllowPrescaledTrigger() || (prescale <= 1)))
 			{
 				product.m_selectedHltNames.push_back(hltName);
-				
+				product.m_selectedHltPaths.push_back(*hltPath);
 				// do not use hltName here as a parameter because *hltPath is already cached.
 				product.m_selectedHltPositions.push_back(static_cast<int>(m_hltInfo.getHLTPosition(*hltPath)));
 				
@@ -101,7 +102,7 @@ void HltProducer::Produce(event_type const& event, product_type& product,
 			}
 		}
 	}
-	
+
 	if ((! settings.GetAllowPrescaledTrigger()) && (lowestPrescale > 1))
 	{
 		LOG(WARNING) << "No unprescaled trigger found for event " << event.m_eventInfo->nEvent
