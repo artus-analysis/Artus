@@ -54,10 +54,4 @@ class ScaleErrors(analysisbase.AnalysisBase):
 					                          scale_factor*root_object.GetErrorYlow(point), scale_factor*root_object.GetErrorYhigh(point))
 				elif isinstance(root_object, ROOT.TGraphErrors):
 					root_object.SetPointError(point, scale_factor*root_object.GetErrorX(point), scale_factor*root_object.GetErrorY(point))
-		
-		else:
-			log.warning("Module \"{name}\" does not support object of type \"{object_type}\"!".format(
-					name=self.name(),
-					object_type=str(type(root_object))
-			))
 

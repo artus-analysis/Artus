@@ -32,7 +32,14 @@ class MaskHistograms(histogrammanipulationbase.HistogramManipulationBase):
 				"--mask-above-reference-value", type=float, default=None,
 				help="Mask if reference histogram is above this value, e.g.  s/sqrt(b)."
 		)
-	
+		self.MaskHistograms_options.add_argument(
+				"--mask-below-threshold", type=float, default=None,
+				help="Mask if reference histogram is below this threshold, e.g.  mT<50."
+		)
+		self.MaskHistograms_options.add_argument(
+				"--mask-above-threshold", type=float, default=None,
+				help="Mask if reference histogram is above this threshold, e.g.  mT>50."
+		)				
 	def prepare_args(self, parser, plotData):
 		super(MaskHistograms, self).prepare_args(parser, plotData)
 		
@@ -40,12 +47,19 @@ class MaskHistograms(histogrammanipulationbase.HistogramManipulationBase):
 			self.whitelist = plotData.plotdict["mask_histogram_nicks"]
 		else:
 			self.whitelist = plotData.plotdict["nicks"]
-		if not xor((plotData.plotdict["mask_above_delta_min"] == None), ( plotData.plotdict["mask_above_reference_nick"] == None)):
-			log.fatal("invalid options selected. MaskHistograms is not configured properly. Either both nick and delta mode are selected or none")
+		# TODO: find a way that counts the number of Not none configs to avoid too many inputs here.
+		if not any(plotData.plotdict[option] != None for option in ["mask_above_delta_min","mask_above_reference_nick","mask_below_threshold","mask_below_threshold"]):
+			log.fatal("invalid options selected. MaskHistograms is not configured properly.")
 			import sys
 			sys.exit()
 		if(plotData.plotdict["mask_above_delta_min"] != None):
 			self.mode = "delta"
+		elif(plotData.plotdict["mask_below_threshold"] != None):
+			self.mode = "below_threshold"
+			self.reference_value = 	plotData.plotdict["mask_below_threshold"]
+		elif(plotData.plotdict["mask_above_threshold"] != None):
+			self.mode = "above_threshold"
+			self.reference_value = 	plotData.plotdict["mask_above_threshold"]			
 		else:
 			self.mode = "reference"
 			self.reference_value = plotData.plotdict["mask_above_reference_value"]
@@ -72,6 +86,13 @@ class MaskHistograms(histogrammanipulationbase.HistogramManipulationBase):
 			if self.reference_histogram.GetBinContent(global_bin) > self.reference_value:
 				histogram.SetBinContent(global_bin, 0.0)
 				histogram.SetBinError(global_bin, 0.0)
+		elif(self.mode == "below_threshold"):
+			if (histogram.GetBinCenter(global_bin) + histogram.GetBinWidth(global_bin) / 2 ) < self.reference_value:
+				histogram.SetBinContent(global_bin, 0.0)
+				histogram.SetBinError(global_bin, 0.0)	
+		elif(self.mode == "above_threshold"):
+			if (histogram.GetBinCenter(global_bin) + histogram.GetBinWidth(global_bin) / 2 ) > self.reference_value:
+				histogram.SetBinContent(global_bin, 0.0)
+				histogram.SetBinError(global_bin, 0.0)								
 		else:
 			log.error("invalid mode selected")
-

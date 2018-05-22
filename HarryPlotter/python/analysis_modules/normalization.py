@@ -18,28 +18,22 @@ class NormalizeByBinWidth(analysisbase.AnalysisBase):
 		super(NormalizeByBinWidth, self).modify_argument_parser(parser, args)
 
 		self.normalizebybinwidth_options = parser.add_argument_group("{} options".format(self.name()))
-		self.normalizebybinwidth_options.add_argument("--histograms-to-normalize-by-binwidth", type=str, nargs="+",
-				help="Nick names of the histogram to normalize to be normalized")
+		self.normalizebybinwidth_options.add_argument("--histograms-to-normalize-by-binwidth", nargs="+", default=None,
+				help="Nick names of the histogram to normalize to be normalized. [Default: all]")
 
 	def prepare_args(self, parser, plotData):
 		super(NormalizeByBinWidth, self).prepare_args(parser, plotData)
-		self.prepare_list_args(plotData, ["histograms_to_normalize_by_binwidth"])
+		if plotData.plotdict["histograms_to_normalize_by_binwidth"] is None:
+			plotData.plotdict["histograms_to_normalize_by_binwidth"] = plotData.plotdict["nicks"]
 
 	def run(self, plotData=None):
 		super(NormalizeByBinWidth, self).run(plotData)
-		print plotData.plotdict["histograms_to_normalize_by_binwidth"]
-		if plotData.plotdict["histograms_to_normalize_by_binwidth"] != [None]:
-			for histo_to_normalize in plotData.plotdict["histograms_to_normalize_by_binwidth"]:
-				root_histogram = plotData.plotdict["root_objects"][histo_to_normalize]
-				if isinstance(root_histogram, ROOT.TH1):
-					root_histogram.Sumw2()
-					root_histogram.Scale(1.0, "width")
-		
-		else:
-			for nick, root_histogram in plotData.plotdict["root_objects"].iteritems():
-				if isinstance(root_histogram, ROOT.TH1):
-					root_histogram.Sumw2()
-					root_histogram.Scale(1.0, "width")
+		for histo_to_normalize in plotData.plotdict["histograms_to_normalize_by_binwidth"]:
+			log.debug("Scale histogram \"{histogram}\" by bin width.".format(histogram=histo_to_normalize))
+			root_histogram = plotData.plotdict["root_objects"][histo_to_normalize]
+			if isinstance(root_histogram, ROOT.TH1):
+				root_histogram.Sumw2()
+				root_histogram.Scale(1.0, "width")
 
 class NormalizeToUnity(analysisbase.AnalysisBase):
 	"""Normalize all histograms to unity."""
@@ -49,7 +43,8 @@ class NormalizeToUnity(analysisbase.AnalysisBase):
 	def run(self, plotData=None):
 		super(NormalizeToUnity, self).run(plotData)
 		
-		for nick, root_histogram in plotData.plotdict["root_objects"].iteritems():
+		for nick in plotData.plotdict["nicks"]:
+			root_histogram = plotData.plotdict["root_objects"][nick]
 			if isinstance(root_histogram, ROOT.TH1):
 				root_histogram.Sumw2()
 				if root_histogram.Integral() != 0.0:
@@ -63,7 +58,8 @@ class NormalizeColumnsToUnity(analysisbase.AnalysisBase):
 	def run(self, plotData=None):
 		super(NormalizeColumnsToUnity, self).run(plotData)
 		
-		for nick, root_histogram in plotData.plotdict["root_objects"].iteritems():
+		for nick in plotData.plotdict["nicks"]:
+			root_histogram = plotData.plotdict["root_objects"][nick]
 			if isinstance(root_histogram, ROOT.TH2):
 				root_histogram.Sumw2()
 				sumBinContentColumn = 0.0
@@ -86,7 +82,8 @@ class NormalizeRowsToUnity(analysisbase.AnalysisBase):
 	def run(self, plotData=None):
 		super(NormalizeRowsToUnity, self).run(plotData)
 		
-		for nick, root_histogram in plotData.plotdict["root_objects"].iteritems():
+		for nick in plotData.plotdict["nicks"]:
+			root_histogram = plotData.plotdict["root_objects"][nick]
 			if isinstance(root_histogram, ROOT.TH2):
 				root_histogram.Sumw2()
 				sumBinContentRow = 0.0
@@ -136,17 +133,19 @@ class NormalizeHistogram(analysisbase.AnalysisBase):
 	def run(self, plotData=None):
 		super(NormalizeHistogram, self).run(plotData)
 		self.normalize_histogram(
-		                    refhisto_nicks = plotData.plotdict["normalization_base_histo"],
-		                    nicks_to_normalize = plotData.plotdict["histograms_to_normalize"],
-		                    plotData = plotData)
+				refhisto_nicks=plotData.plotdict["normalization_base_histo"],
+				nicks_to_normalize=plotData.plotdict["histograms_to_normalize"],
+				plotData=plotData
+		)
 
 class NormalizeToFirstHisto(NormalizeHistogram):
 	"""Normalize histograms to first histogram."""
 	def run(self, plotData=None):
 		self.normalize_histogram(
-		                    refhisto_nicks = [plotData.plotdict["nicks"][0]], # take nickname at first position
-		                    nicks_to_normalize = [" ".join(plotData.plotdict["nicks"][1:])], # all other nicknames apart from the first one. Join them to one string to be consistent with parser
-		                    plotData=plotData)
+				refhisto_nicks=[plotData.plotdict["nicks"][0]], # take nickname at first position
+				nicks_to_normalize=[" ".join(plotData.plotdict["nicks"][1:])], # all other nicknames apart from the first one. Join them to one string to be consistent with parser
+				plotData=plotData
+		)
 
 class NormalizeStackToFirstHisto(analysisbase.AnalysisBase):
 	"""Normalize stacked histograms to first histogram."""
@@ -188,3 +187,4 @@ class NormalizeStacksToUnity(analysisbase.AnalysisBase):
 				stack_values[stack] += plotData.plotdict["root_objects"][nick].Integral()
 		for stack, nick in zip(plot_stacks, plot_nicks):
 			plotData.plotdict["root_objects"][nick].Scale(1./stack_values[stack])
+
