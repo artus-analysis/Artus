@@ -72,7 +72,11 @@ class LikelihoodScan(analysisbase.AnalysisBase):
 							x_crossings=", ".join([str(x_crossing) for x_crossing in x_crossings]),
 							result=likelihood_scan_result_nick
 					))
-					crossings_graph = LikelihoodScan.crossings_graph(x_crossings, likelihood_crossing if likelihood_crossing!= 0.0 else max(likelihood_crossings))
+					crossings_graph = LikelihoodScan.crossings_graph(
+							x_crossings,
+							likelihood_crossing if likelihood_crossing != 0.0 else max(likelihood_crossings),
+							[likelihood_graph.GetX()[0], likelihood_graph.GetX()[likelihood_graph.GetN()-1]] if likelihood_crossing != 0.0 else None
+					)
 					plotData.plotdict["root_objects"][likelihood_scan_result_nick] = crossings_graph
 				
 	@staticmethod
@@ -105,10 +109,13 @@ class LikelihoodScan(analysisbase.AnalysisBase):
 		return x_crossings
 				
 	@staticmethod
-	def crossings_graph(x_crossings, y_crossing):
-		x_values = array.array("d", tools.flattenList(zip(*([x_crossings]*3))))
-		y_values = array.array("d", [y_crossing, 0.0, y_crossing]*len(x_crossings))
-		graph = ROOT.TGraph(len(x_values), x_values, y_values)
+	def crossings_graph(x_crossings, y_crossing, x_lims=None):
+		x_values = tools.flattenList(zip(*([x_crossings]*3)))
+		y_values = [y_crossing, 0.0, y_crossing]*len(x_crossings)
+		if x_lims:
+			x_values = [x_lims[0]]+x_values+[x_lims[1]]
+			y_values = [y_crossing]+y_values+[y_crossing]
+		graph = ROOT.TGraph(len(x_values), array.array("d", x_values), array.array("d", y_values))
 		graph.SetName("graph_" + hashlib.md5("_".join([str(x_crossings), str(y_crossing)])).hexdigest())
 		return graph
 
