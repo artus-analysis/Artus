@@ -115,3 +115,16 @@ std::vector<uint64_t> PropertyTreeSupport::GetAsUInt64List(boost::property_tree:
 	}
 	return vec;
 }
+
+std::map<std::string, std::vector<std::string>> PropertyTreeSupport::GetAsMapStringToListOfStrings(boost::property_tree::ptree * propTree,
+                                                  std::string path)
+{
+	std::map<std::string, std::vector<std::string>> map;
+	BOOST_FOREACH(boost::property_tree::ptree::value_type & v,
+			propTree->get_child(path))
+	{
+        map[v.first.c_str()].push_back(v.second.data());
+        
+	}
+	return map;
+}

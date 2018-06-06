@@ -129,6 +129,22 @@ virtual std::vector<std::string>& Get##SNAME () const { \
 	} \
 }
 
+#define IMPL_SETTING_STRINGMAP_DEFAULT( SNAME, DEFAULT_VAL ) \
+VarCache<std::map<std::string, std::vector<std::string>>> m_##SNAME; \
+virtual std::map<std::string, std::vector<std::string>>& Get##SNAME () const { \
+	try { \
+		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsMapStringToListOfStrings(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
+	} \
+	catch(...) { \
+		try { \
+			RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsMapStringToListOfStrings(GetPropTree(), #SNAME )) \
+		} \
+		catch(...) { \
+			RETURN_CACHED(m_##SNAME, DEFAULT_VAL ) \
+		} \
+	} \
+}
+
 #define IMPL_SETTING_SORTED_STRINGLIST( SNAME ) \
 VarCache<std::vector<std::string>> m_##SNAME; \
 virtual std::vector<std::string>& Get##SNAME () const { \
