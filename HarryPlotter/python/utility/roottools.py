@@ -337,9 +337,9 @@ class RootTools(object):
 		
 		#Add Friends
 		friend_trees = []
-		if friend_aliases is None:
-			friend_aliases = [friend_aliases]*len(friend_folders)
 		if friend_files and friend_folders:
+			if friend_aliases is None:
+				friend_aliases = [friend_aliases]*len(friend_folders)
 			friend_trees.append(ROOT.TChain())
 			for root_file_name in friend_files:
 				for path_to_tree, friend_alias in zip(friend_folders, friend_aliases):
