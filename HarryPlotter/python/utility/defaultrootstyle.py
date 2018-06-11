@@ -41,12 +41,12 @@ def set_default_root_style():
 	default_root_style.SetPadTickY(1)
 
 	# Frames
-	default_root_style.SetLineWidth(3)
+	default_root_style.SetLineWidth(1)
 	default_root_style.SetFrameFillStyle(0)
 	default_root_style.SetFrameFillColor(0)
 	default_root_style.SetFrameLineColor(1)
 	default_root_style.SetFrameLineStyle(0)
-	default_root_style.SetFrameLineWidth(2)
+	default_root_style.SetFrameLineWidth(1)
 	default_root_style.SetFrameBorderSize(10)
 	default_root_style.SetFrameBorderMode(0)
 
@@ -189,4 +189,3 @@ def set_legend_style(legend):
 	legend.SetFillStyle(0)
 	legend.SetFillColor(0)
 	legend.SetBorderSize(0)
-
