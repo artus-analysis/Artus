@@ -131,14 +131,30 @@ def getRunLumiEvent(tree):
 	"""get list of (run, lumi, event, entry index) from a tree"""
 	result = []
 	nevt = tree.GetEntries()
-	eventbranch = 'event'
-	for name in ['event', 'evt', 'eventnr']:
-		if not hasattr(tree, eventbranch) and hasattr(tree, name):
+	
+	runbranch = None
+	for name in ['run', 'Run']:
+		if hasattr(tree, name):
+			runbranch = name
+	
+	lumibranch = None
+	for name in ['lumi', 'Lumi', 'LumiSection']:
+		if hasattr(tree, name):
+			lumibranch = name
+			break
+	
+	eventbranch = None
+	for name in ['event', 'Event', 'evt', 'eventnr', 'EventNumber']:
+		if hasattr(tree, name):
 			eventbranch = name
+			break
 
 	for i in xrange(nevt):
 		tree.GetEntry(i)
-		result.append((int(tree.run), int(tree.lumi), int(getattr(tree, eventbranch)), i))
+		run = int(getattr(tree, runbranch)) if runbranch else 1
+		lumi = int(getattr(tree, lumibranch)) if lumibranch else 1
+		event = int(getattr(tree, eventbranch)) if eventbranch else 1
+		result.append((run, lumi, event, i))
 		if i % 1000 == 0:
 			print "\r  %7d/%d" % (i, nevt),
 			sys.stdout.flush() 

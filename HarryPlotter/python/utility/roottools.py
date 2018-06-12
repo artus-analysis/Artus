@@ -208,7 +208,7 @@ class RootTools(object):
 		                    x_expression, y_expression=None, z_expression=None,
 		                    x_bins=None, y_bins=None, z_bins=None,
 		                    weight_selection="", option="", name=None,
-		                    friend_files=None, friend_folders=None, friend_alias=None,
+		                    friend_files=None, friend_folders=None, friend_aliases=None,
 		                    proxy_prefix="", scan=None, use_cache=True):
 		"""
 		Read histograms from trees
@@ -287,6 +287,7 @@ class RootTools(object):
 				path_to_trees=path_to_trees,
 				friend_files=friend_files,
 				friend_folders=friend_folders,
+				friend_aliases=friend_aliases,
 				root_histogram=root_histogram,
 				variable_expression=variable_expression,
 				name=name,
@@ -316,7 +317,7 @@ class RootTools(object):
 	
 	@staticmethod
 	@rootcache.RootFileCache(os.path.expandvars(os.path.join("$HP_WORK_BASE_COMMON", "caches")))
-	def tree_draw(root_file_names, path_to_trees, friend_files, friend_folders, root_histogram, variable_expression, name, binning, weight_selection, option, scan=None, use_cache=True):
+	def tree_draw(root_file_names, path_to_trees, friend_files, friend_folders, friend_aliases, root_histogram, variable_expression, name, binning, weight_selection, option, scan=None, use_cache=True):
 		
 		# prepare TChain
 		if isinstance(root_file_names, basestring):
@@ -337,9 +338,11 @@ class RootTools(object):
 		#Add Friends
 		friend_trees = []
 		if friend_files and friend_folders:
+			if friend_aliases is None:
+				friend_aliases = [friend_aliases]*len(friend_folders)
 			friend_trees.append(ROOT.TChain())
 			for root_file_name in friend_files:
-				for path_to_tree in friend_folders:
+				for path_to_tree, friend_alias in zip(friend_folders, friend_aliases):
 					complete_path_to_tree = os.path.join(root_file_name, path_to_tree)
 					log.debug("Reading friend from ntuple %s ..." % complete_path_to_tree)
 					n_trees_added = friend_trees[-1].Add(complete_path_to_tree, -1)

@@ -111,7 +111,7 @@ class InputRoot(inputfile.InputFile):
 				nick,
 				friend_files,
 				friend_folders,
-				friend_alias,
+				friend_aliases,
 				option
 		) in enumerate(pi.ProgressIterator(zip(
 				plotData.plotdict["files"],
@@ -148,7 +148,7 @@ class InputRoot(inputfile.InputFile):
 						weight_selection=weight, option=option, name=None,
 						friend_files=friend_files,
 						friend_folders=friend_folders,
-						friend_alias=friend_alias,
+						friend_aliases=friend_aliases,
 						proxy_prefix=plotData.plotdict["proxy_prefix"],
 						scan=plotData.plotdict["scan"],
 						use_cache=(not plotData.plotdict["no_cache"])
