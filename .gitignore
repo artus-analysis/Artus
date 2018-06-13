@@ -25,3 +25,5 @@ plots
 *.spl
 wiki
 *.pcm
+
+.vs*
