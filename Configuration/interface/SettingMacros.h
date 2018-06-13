@@ -129,7 +129,7 @@ virtual std::vector<std::string>& Get##SNAME () const { \
 	} \
 }
 
-#define IMPL_SETTING_STRINGMAP_DEFAULT( SNAME, DEFAULT_VAL ) \
+#define IMPL_SETTING_STRINGMAP( SNAME ) \
 VarCache<std::map<std::string, std::vector<std::string>>> m_##SNAME; \
 virtual std::map<std::string, std::vector<std::string>>& Get##SNAME () const { \
 	try { \
@@ -140,7 +140,8 @@ virtual std::map<std::string, std::vector<std::string>>& Get##SNAME () const { \
 			RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsMapStringToListOfStrings(GetPropTree(), #SNAME )) \
 		} \
 		catch(...) { \
-			RETURN_CACHED(m_##SNAME, DEFAULT_VAL ) \
+			LOG(FATAL) << "Could not read value for config tag \"" << (#SNAME) << "\" in pipeline or global settings! It is either not specified or the specified type is incompatible!"; \
+			throw; \
 		} \
 	} \
 }
