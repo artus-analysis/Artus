@@ -79,27 +79,30 @@ def main():
 			if not dir_name == "":
 				root_file.Get(dir_name)
 			
-			elements = zip(*roottools.RootTools.walk_root_directory(root_file))[-1]
-			friend_tree_name = None
-			n_trials = 0
-			while friend_tree_name is None:
-				tmp_friend_tree_name = (tree.GetName()+"_friend_"+str(n_trials)).rstrip("_0")
-				if not tmp_friend_tree_name in elements:
-					friend_tree_name = tmp_friend_tree_name
-				n_trials += 1
-			friend_tree = ROOT.TTree(friend_tree_name, tree.GetTitle()+" (friend)")
+			elements = zip(*roottools.RootTools.walk_root_directory(root_file))
+			if len(elements) > 0:
+				elements = elements[-1]
+				
+				friend_tree_name = None
+				n_trials = 0
+				while friend_tree_name is None:
+					tmp_friend_tree_name = (tree.GetName()+"_friend_"+str(n_trials)).rstrip("_0")
+					if not tmp_friend_tree_name in elements:
+						friend_tree_name = tmp_friend_tree_name
+					n_trials += 1
+				friend_tree = ROOT.TTree(friend_tree_name, tree.GetTitle()+" (friend)")
 			
-			values = []
-			for branch, value_type, value in zip(args.branches, value_types, args.values):
-				values.append(numpy.zeros(1, dtype=value_type))
-				values[-1][0] = value
-				friend_tree.Branch(branch, values[-1], "%s/%s" % (branch, types[value_type]))
+				values = []
+				for branch, value_type, value in zip(args.branches, value_types, args.values):
+					values.append(numpy.zeros(1, dtype=value_type))
+					values[-1][0] = value
+					friend_tree.Branch(branch, values[-1], "%s/%s" % (branch, types[value_type]))
 			
-			for entry in xrange(tree.GetEntries()):
-				friend_tree.Fill()
+				for entry in xrange(tree.GetEntries()):
+					friend_tree.Fill()
 			
-			friend_tree.AddFriend(tree, tree.GetName())
-			tree.AddFriend(friend_tree, friend_tree.GetName())
+				friend_tree.AddFriend(tree, tree.GetName())
+				tree.AddFriend(friend_tree, friend_tree.GetName())
 			
 			root_file.Write()
 
