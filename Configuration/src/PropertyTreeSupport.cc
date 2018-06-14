@@ -123,11 +123,9 @@ std::map<std::string, std::vector<std::string>> PropertyTreeSupport::GetAsMapStr
 	BOOST_FOREACH(boost::property_tree::ptree::value_type & v,
 			propTree->get_child(path))
 	{
-        std::cout << "Key: " << v.first.c_str() << "\n";
         BOOST_FOREACH(boost::property_tree::ptree::value_type & w,
                 v.second)
         {
-            std::cout << "Value: " << w.second.data() << "\n";
             map[v.first.c_str()].push_back(w.second.data());
         }                        
 	}
