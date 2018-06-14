@@ -129,7 +129,7 @@ virtual std::vector<std::string>& Get##SNAME () const { \
 	} \
 }
 
-#define IMPL_SETTING_STRINGMAP( SNAME ) \
+#define IMPL_SETTING_MAPSTRINGTOLISTOFSTRINGS( SNAME ) \
 VarCache<std::map<std::string, std::vector<std::string>>> m_##SNAME; \
 virtual std::map<std::string, std::vector<std::string>>& Get##SNAME () const { \
 	try { \
