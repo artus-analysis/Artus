@@ -410,8 +410,10 @@ class RootTools(object):
 				proxy_class_file.write(proxy_class_content)
 		
 		if scan:
+			# https://root.cern.ch/doc/master/classTTreePlayer.html#aa0149b416e4b812a8762ec1e389ba2db
+			tree.SetScanField(0)
 			log.debug("ROOT.TTree.Scan(\"" + scan + "\", \"" + str(weight_selection) + "\")")
-			tree.Scan(scan, str(weight_selection))
+			tree.Scan(scan, str(weight_selection), "colsize=12")
 		
 		if root_histogram == None:
 			if ("proxy" in option) and (not proxy_call is None):
