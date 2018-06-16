@@ -60,6 +60,7 @@ public:
 	std::vector<KGenParticle*> m_validGenMuons;
 	std::vector<KGenParticle*> m_validGenTaus;
 	std::map<KGenParticle*, KGenTau*> m_validGenTausMap;
+	std::map<KGenTau*, KGenParticle*> m_validGenParticlesMap;
 	std::map<KGenParticle*, std::vector<KGenParticle*> > m_validGenTausChargedHadronsMap;
 	std::map<KGenParticle*, std::vector<KGenParticle*> > m_validGenTausNeutralHadronsMap;
 
