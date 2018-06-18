@@ -52,7 +52,7 @@ def merge_local(args):
 		if(args.project_subdir != None):
 			target_filename = "merged.root"
 
-		hadd_arguments.append({"target_file": target_filename, "source_files": output_files, "hadd_args" : " -f -k -O -v0", "max_files" : 500})
+		hadd_arguments.append({"target_file": target_filename, "source_files": output_files, "hadd_args" : " -f -k -O -v 0", "max_files" : 500})
 
 	tools.parallelize(hadd2, hadd_arguments, n_processes=args.n_processes, description="Merging Artus outputs")
 
