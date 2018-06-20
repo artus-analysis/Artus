@@ -34,6 +34,8 @@ def main():
 		help="verbose comparison of common trees")
 	parser.add_argument('-i', '--ignore', type=str, nargs='+', default=None,
 		help="List of quantities to be ignored in the verbose comparison")
+	parser.add_argument('--n-max-entries', type=int, default=-1,
+		help="Max. number of entries to be copied to only1/2 output trees. (default: all)")
 	parser.add_argument('-d', '--dictionary', type=str, nargs='+', default=None,
 		help="Translation of branchnames between the trees in the form branchname1:branchname2")
 
@@ -83,11 +85,11 @@ def main():
 		c3 = cpTree(com123, trees[2], "common" + args.nicks[2], 2, jsonConfigsDir=args.json_output_dir)
 		stopWatch()
 		if not args.common:
-			cpTree(o1, trees[0], "only" + args.nicks[0], 0, jsonConfigsDir=args.json_output_dir)
+			cpTree(o1, trees[0], "only" + args.nicks[0], 0, jsonConfigsDir=args.json_output_dir, nMaxEntries=args.n_max_entries)
 			stopWatch()
-			cpTree(o2, trees[1], "only" + args.nicks[1], 0, jsonConfigsDir=args.json_output_dir)  # treeIndex 0 is correct
+			cpTree(o2, trees[1], "only" + args.nicks[1], 0, jsonConfigsDir=args.json_output_dir, nMaxEntries=args.n_max_entries)  # treeIndex 0 is correct
 			stopWatch()
-			cpTree(o3, trees[2], "only" + args.nicks[2], 0, jsonConfigsDir=args.json_output_dir)  # treeIndex 0 is correct
+			cpTree(o3, trees[2], "only" + args.nicks[2], 0, jsonConfigsDir=args.json_output_dir, nMaxEntries=args.n_max_entries)  # treeIndex 0 is correct
 			stopWatch()
 	else:
 		c1 = cpTree(com12, trees[0], "common" + args.nicks[0], 0, jsonConfigsDir=args.json_output_dir)
@@ -95,9 +97,9 @@ def main():
 		c2 = cpTree(com12, trees[1], "common" + args.nicks[1], 1, jsonConfigsDir=args.json_output_dir)
 		stopWatch()
 		if not args.common:
-			cpTree(o1, trees[0], "only" + args.nicks[0], 0, jsonConfigsDir=args.json_output_dir)
+			cpTree(o1, trees[0], "only" + args.nicks[0], 0, jsonConfigsDir=args.json_output_dir, nMaxEntries=args.n_max_entries)
 			stopWatch()
-			cpTree(o2, trees[1], "only" + args.nicks[1], 0, jsonConfigsDir=args.json_output_dir)  # treeIndex 0 is correct
+			cpTree(o2, trees[1], "only" + args.nicks[1], 0, jsonConfigsDir=args.json_output_dir, nMaxEntries=args.n_max_entries)  # treeIndex 0 is correct
 			stopWatch()
 
 	fout.Write()
@@ -191,7 +193,7 @@ def compareLists(list1, list2):
 	return common, only1, only2
 
 
-def cpTree(eventList, tree, name, treeIndex=0, deactivate=None, jsonConfigsDir=None):
+def cpTree(eventList, tree, name, treeIndex=0, deactivate=None, jsonConfigsDir=None, nMaxEntries=-1):
 	"""Copy the events in eventList[i][3+treeIndex] from tree to a new tree of name 'name'"""
 	if deactivate:
 		for q in quantities:
@@ -206,9 +208,11 @@ def cpTree(eventList, tree, name, treeIndex=0, deactivate=None, jsonConfigsDir=N
 	assert outputTree.GetEntries() == 0
 	sys.stdout.flush()
 	
-	
 	nevt = len(eventList)
-	for i, evt in zip(range(nevt), eventList):
+	iterations = zip(range(nevt), eventList)
+	if nMaxEntries >= 0:
+		iterations = iterations[:nMaxEntries]
+	for i, evt in iterations:
 		# evt is (run, lumi, event, index in tree1, index in tree2)
 		tree.GetEntry(evt[3 + treeIndex])
 		if 'TNtuple' in str(type(tree)):
