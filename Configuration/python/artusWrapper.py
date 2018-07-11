@@ -590,11 +590,12 @@ class ArtusWrapper(object):
 			tmpGcConfigFile.write(line)
 		tmpGcConfigFile.close()
 
-		exitCode = 0
+		exitCode = 1
 		command = "go.py " + tmpGcConfigFileBasepath
 		log.info("Execute \"%s\"." % command)
 		if not self._args.no_run:
-			exitCode = logger.subprocessCall(command.split())
+			while exitCode != 0:
+				exitCode = logger.subprocessCall(command.split())
 
 		log.info("Output is written to directory \"%s\"" % sepathRaw)
 		log.info("\nMerge outputs in one file per nick using")
