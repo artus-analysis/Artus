@@ -39,16 +39,18 @@ def webplot(input_dir, **kwargs):
 	for var in ["overview", "description", "subdir", "plot", "link"]:
 		with open(os.path.expandvars("$ARTUSPATH/HarryPlotter/data/template_webplot_{}.html".format(var))) as htmlfile:
 			html_texts[var] = string.Template(htmlfile.read())
+	with open(os.path.expandvars("$ARTUSPATH/HarryPlotter/data/template_webplotting_{}.html".format("plot"))) as htmlfile:
+		html_texts["plotjson"] = string.Template(htmlfile.read())
 
 	# create remote dir
-	if not kwargs.get("copy", False):
+	if kwargs.get("copy"):
 		print "Creating directory",input_dir,"..."
 		mkdir_command = os.path.expandvars("$WEB_PLOTTING_MKDIR_COMMAND").format(subdir=input_dir)
 		os.system(mkdir_command)
 
 	# treat subdirs recursively
 	html_desciption = ""
-	if kwargs.get("recursive", False):
+	if kwargs.get("recursive"):
 		html_subdirs = ""
 		for subdir in subdirs:
 			webplot(subdir, **kwargs)
@@ -59,27 +61,40 @@ def webplot(input_dir, **kwargs):
 	
 	html_plots = ""
 	for filename, extensions in plot_files.iteritems():
-		html_plots += html_texts["plot"].substitute(
-				plot=filename+"."+extensions[0],
-				title=filename,
-				links=" ".join([html_texts["link"].substitute(
-						plot=filename+"."+extension,
-						title=filename,
-						extension=extension
-				) for extension in extensions])
-		)
+		if os.path.isfile(os.path.join(input_dir, filename+".json")):
+			html_plots += html_texts["plotjson"].substitute(
+					image=filename+"."+extensions[0],
+					json=filename+".json",
+					title=filename,
+					links=" ".join([html_texts["link"].substitute(
+							plot=filename+"."+extension,
+							title=filename,
+							extension=extension
+					) for extension in extensions])
+			)
+		else:
+			html_plots += html_texts["plot"].substitute(
+					image=filename+"."+extensions[0],
+					title=filename,
+					links=" ".join([html_texts["link"].substitute(
+							plot=filename+"."+extension,
+							title=filename,
+							extension=extension
+					) for extension in extensions])
+			)
 	
-	html_index_filename = os.path.join(input_dir, "index.html")
-	with open(html_index_filename, "w") as html_index_file:
-		html_index_file.write(html_texts["overview"].substitute(
-				title=kwargs.get("title", input_dir),
-				description=html_desciption,
-				plots=html_plots
-		))
-		#print "Created", html_index_filename
+	if not plot_files == {}:
+		html_index_filename = os.path.join(input_dir, "index.html")
+		with open(html_index_filename, "w") as html_index_file:
+			html_index_file.write(html_texts["overview"].substitute(
+					title=kwargs.get("title", input_dir),
+					description=html_desciption,
+					plots=html_plots
+			))
+			print "Created", html_index_filename
 
 	# copy files
-	if not kwargs.get("copy", False):
+	if kwargs.get("copy"):
 		full_input_dir = os.path.abspath(input_dir)
 		input_dir_content = os.listdir(full_input_dir)
 		for input_object in input_dir_content:
