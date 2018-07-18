@@ -246,71 +246,123 @@ public:
 	static bool passesJetID(TJet* jet, KappaEnumTypes::JetIDVersion jetIDVersion, KappaEnumTypes::JetID jetID)
 	{
 		bool validJet = true;
-
-		float maxMuFraction = 1.0f;
-		float maxCEMFraction = 0.99f;
-		float maxFraction = 1.0f;
-		if (jetID == KappaEnumTypes::JetID::TIGHT || jetID == KappaEnumTypes::JetID::TIGHTLEPVETO)
-			maxFraction = 0.90f;
-		else if (jetID ==  KappaEnumTypes::JetID::MEDIUM)
-			maxFraction = 0.95f;
-		else if (jetID ==  KappaEnumTypes::JetID::LOOSE || jetID == KappaEnumTypes::JetID::LOOSELEPVETO)
-			maxFraction = 0.99f;
-		// special rules
-		if (jetIDVersion == KappaEnumTypes::JetIDVersion::ID2014 ||
-			jetIDVersion == KappaEnumTypes::JetIDVersion::ID73X ||
-			jetIDVersion == KappaEnumTypes::JetIDVersion::ID73Xtemp ||
-			jetIDVersion == KappaEnumTypes::JetIDVersion::ID73XnoHF ||
-			(jetIDVersion == KappaEnumTypes::JetIDVersion::ID2015 && (jetID == KappaEnumTypes::JetID::TIGHTLEPVETO || jetID == KappaEnumTypes::JetID::LOOSELEPVETO)) ||
-			((jetIDVersion == KappaEnumTypes::JetIDVersion::ID2016 && (jetID == KappaEnumTypes::JetID::TIGHTLEPVETO || jetID == KappaEnumTypes::JetID::LOOSELEPVETO))))
+		if (jetIDVersion != KappaEnumTypes::JetIDVersion::ID2017)
 		{
-			maxMuFraction = 0.8f;
-			maxCEMFraction = maxFraction;
-		}
+			float maxMuFraction = 1.0f;
+			float maxCEMFraction = 0.99f;
+			float maxFraction = 1.0f;
+			if (jetID == KappaEnumTypes::JetID::TIGHT || jetID == KappaEnumTypes::JetID::TIGHTLEPVETO)
+				maxFraction = 0.90f;
+			else if (jetID ==  KappaEnumTypes::JetID::MEDIUM)
+				maxFraction = 0.95f;
+			else if (jetID ==  KappaEnumTypes::JetID::LOOSE || jetID == KappaEnumTypes::JetID::LOOSELEPVETO)
+				maxFraction = 0.99f;
+			// special rules
+			if (jetIDVersion == KappaEnumTypes::JetIDVersion::ID2014 ||
+				jetIDVersion == KappaEnumTypes::JetIDVersion::ID73X ||
+				jetIDVersion == KappaEnumTypes::JetIDVersion::ID73Xtemp ||
+				jetIDVersion == KappaEnumTypes::JetIDVersion::ID73XnoHF ||
+				(jetIDVersion == KappaEnumTypes::JetIDVersion::ID2015 && (jetID == KappaEnumTypes::JetID::TIGHTLEPVETO || jetID == KappaEnumTypes::JetID::LOOSELEPVETO)) ||
+				((jetIDVersion == KappaEnumTypes::JetIDVersion::ID2016 && (jetID == KappaEnumTypes::JetID::TIGHTLEPVETO || jetID == KappaEnumTypes::JetID::LOOSELEPVETO))))
+			{
+				maxMuFraction = 0.8f;
+				maxCEMFraction = maxFraction;
+			}
 
-		// JetID
-		// https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
-		// https://github.com/cms-sw/cmssw/blob/CMSSW_7_5_X/PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h
-		// jets, all eta
-		validJet = validJet
-				   && (jet->neutralHadronFraction < maxFraction)
-				   && (jet->photonFraction + jet->hfEMFraction < maxFraction)
-				   && (jet->nConstituents > 1)
-				   && (jet->muonFraction < maxMuFraction);
-		if (jetIDVersion == KappaEnumTypes::JetIDVersion::ID2010 || jetIDVersion == KappaEnumTypes::JetIDVersion::ID2014)  // CMSSW <7.3.X
-			validJet = validJet && (jet->neutralHadronFraction + jet->hfHadronFraction < maxFraction);
-
-
-		// jets, |eta| < 2.4 (tracker)
-		if (std::abs(jet->p4.eta()) <= 2.4f)
-		{
+			// JetID
+			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
+			// https://github.com/cms-sw/cmssw/blob/CMSSW_7_5_X/PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h
+			// jets, all eta
 			validJet = validJet
-					   && (jet->chargedHadronFraction > 0.0f)
-					   && (jet->nCharged > 0)
-					   && (jet->electronFraction < maxCEMFraction);  // == CEM
+					   && (jet->neutralHadronFraction < maxFraction)
+					   && (jet->photonFraction + jet->hfEMFraction < maxFraction)
+					   && (jet->nConstituents > 1)
+					   && (jet->muonFraction < maxMuFraction);
+			if (jetIDVersion == KappaEnumTypes::JetIDVersion::ID2010 || jetIDVersion == KappaEnumTypes::JetIDVersion::ID2014)  // CMSSW <7.3.X
+				validJet = validJet && (jet->neutralHadronFraction + jet->hfHadronFraction < maxFraction);
+
+
+			// jets, |eta| < 2.4 (tracker)
+			if (std::abs(jet->p4.eta()) <= 2.4f)
+			{
+				validJet = validJet
+						   && (jet->chargedHadronFraction > 0.0f)
+						   && (jet->nCharged > 0)
+						   && (jet->electronFraction < maxCEMFraction);  // == CEM
+			}
+			// for run2: new jet ID between 2.7 < |eta| <= 3.0
+			if (jetIDVersion == KappaEnumTypes::JetIDVersion::ID2015 && std::abs(jet->p4.eta()) > 2.7f && std::abs(jet->p4.eta()) <= 3.0f)
+			{
+				validJet = (jet->photonFraction + jet->hfEMFraction < 0.90f)
+						   && (jet->nConstituents - jet->nCharged > 2);
+			}
+			if (jetIDVersion == KappaEnumTypes::JetIDVersion::ID2016 && std::abs(jet->p4.eta()) > 2.7f && std::abs(jet->p4.eta()) <= 3.0f)
+			{
+				validJet = (jet->photonFraction + jet->hfEMFraction > 0.01f)
+							&& (jet->neutralHadronFraction < 0.98f)
+							&& (jet->nConstituents - jet->nCharged > 2);
+			}
+			// for run 2 startup: temporarily no jet ID in forward region
+			if (jetIDVersion == KappaEnumTypes::JetIDVersion::ID73Xtemp && std::abs(jet->p4.eta()) > 3.0f)
+				validJet = true;
+			if (jetIDVersion == KappaEnumTypes::JetIDVersion::ID73XnoHF && std::abs(jet->p4.eta()) > 3.0f)
+				validJet = false;
+			// for run 2: new jet ID in forward region
+			if ((jetIDVersion == KappaEnumTypes::JetIDVersion::ID2015 || jetIDVersion == KappaEnumTypes::JetIDVersion::ID2016) && std::abs(jet->p4.eta()) > 3.0f)
+			{
+				validJet = (jet->photonFraction + jet->hfEMFraction < 0.90f)
+						   && (jet->nConstituents - jet->nCharged > 10);
+			}
 		}
-		// for run2: new jet ID between 2.7 < |eta| <= 3.0
-		if (jetIDVersion == KappaEnumTypes::JetIDVersion::ID2015 && std::abs(jet->p4.eta()) > 2.7f && std::abs(jet->p4.eta()) <= 3.0f)
+		else if (jetIDVersion == KappaEnumTypes::JetIDVersion::ID2017)  //https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2017
 		{
-			validJet = (jet->photonFraction + jet->hfEMFraction < 0.90f)
-					   && (jet->nConstituents - jet->nCharged > 2);
-		}
-		if (jetIDVersion == KappaEnumTypes::JetIDVersion::ID2016 && std::abs(jet->p4.eta()) > 2.7f && std::abs(jet->p4.eta()) <= 3.0f)
-		{
-			validJet = (jet->photonFraction + jet->hfEMFraction > 0.01f)
-						&& (jet->neutralHadronFraction < 0.98f)
-						&& (jet->nConstituents - jet->nCharged > 2);
-		}
-		// for run 2 startup: temporarily no jet ID in forward region
-		if (jetIDVersion == KappaEnumTypes::JetIDVersion::ID73Xtemp && std::abs(jet->p4.eta()) > 3.0f)
-			validJet = true;
-		if (jetIDVersion == KappaEnumTypes::JetIDVersion::ID73XnoHF && std::abs(jet->p4.eta()) > 3.0f)
-			validJet = false;
-		// for run 2: new jet ID in forward region
-		if ((jetIDVersion == KappaEnumTypes::JetIDVersion::ID2015 || jetIDVersion == KappaEnumTypes::JetIDVersion::ID2016) && std::abs(jet->p4.eta()) > 3.0f)
-		{
-			validJet = (jet->photonFraction + jet->hfEMFraction < 0.90f)
-					   && (jet->nConstituents - jet->nCharged > 10);
+			//only implemented the ak4chs tight
+			// criteria |eta|<2.7
+			if (std::abs(jet->p4.eta()) <= 2.7f)
+			{
+				float MaxNeutralHadronFraction = 0.90f; //smaller
+				float MaxNeutralEMFraction = 0.90f; //smaller
+				int MinNumberOfConstituens = 1; //larger
+
+				validJet = validJet
+						&& (jet->neutralHadronFraction < MaxNeutralHadronFraction)
+						&& ((jet->photonFraction + jet->hfEMFraction) < MaxNeutralEMFraction)
+						&& (jet->nConstituents > MinNumberOfConstituens);
+				//extra criteria for |eta|<2.4
+				if (std::abs(jet->p4.eta()) <= 2.4f)
+				{
+					float MinChargedHadronFraction = 0.f;
+					int MinChargedMultiplicity = 0;
+
+					validJet = validJet
+							&& (jet->chargedHadronFraction > MinChargedHadronFraction)
+							&& (jet->nCharged > MinChargedMultiplicity);
+				}
+			}
+			//criteria 2.7<|eta|<=3.0
+			else if ((std::abs(jet->p4.eta()) > 2.7f) && (std::abs(jet->p4.eta()) <= 3.0f))
+			{
+				float MaxNeutralEMFraction = 0.99f;
+				float MinNeutralEMFraction = 0.02f;
+				int MinNumberOfNeutralParticles = 2;
+
+				validJet = validJet
+						&& ((jet->photonFraction + jet->hfEMFraction) < MaxNeutralEMFraction)
+						&& ((jet->photonFraction + jet->hfEMFraction) > MinNeutralEMFraction)
+						&& ((jet->nConstituents - jet->nCharged) > MinNumberOfNeutralParticles);
+			}
+			//criteria |eta|>3.0
+			else if (std::abs(jet->p4.eta()) > 3.0f)
+			{
+				float MaxNeutralEMFraction = 0.90f;
+				float MinNeutralEMFraction = 0.02f;
+				int MinNumberOfNeutralParticles = 10;
+
+				validJet = validJet
+						&& ((jet->photonFraction + jet->hfEMFraction) < MaxNeutralEMFraction)
+						&& ((jet->photonFraction + jet->hfEMFraction) > MinNeutralEMFraction)
+						&& ((jet->nConstituents - jet->nCharged) > MinNumberOfNeutralParticles);
+			} 
 		}
 		// ability to apply no jet ID
 		validJet = validJet || (jetID == KappaEnumTypes::JetID::NONE);

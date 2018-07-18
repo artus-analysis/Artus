@@ -145,6 +145,7 @@ public:
 	// selected means fired (and unprescaled if requested)
 	std::vector<std::string> m_selectedHltNames;
 	std::vector<std::string> m_selectedHltPaths;
+	std::map<std::string,std::string> m_HltPathsNamesMap;
 	std::vector<int> m_selectedHltPositions;
 	std::vector<int> m_selectedHltPrescales;
 

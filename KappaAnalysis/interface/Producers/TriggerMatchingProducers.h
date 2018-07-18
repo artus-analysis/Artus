@@ -196,7 +196,7 @@ public:
 					// invalidate the object if the trigger has not matched
 					(product.*m_invalidObjects).push_back(triggerMatchingResult.first);
 					(product.*m_validObjects).erase(std::find((product.*m_validObjects).begin(), (product.*m_validObjects).end(), &(*triggerMatchingResult.first)));
-				}
+				} 
 			}
 			
 			// preserve sorting of invalid objects
