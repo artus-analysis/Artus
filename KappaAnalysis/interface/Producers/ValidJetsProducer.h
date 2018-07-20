@@ -355,14 +355,14 @@ public:
 			else if (std::abs(jet->p4.eta()) > 3.0f)
 			{
 				float MaxNeutralEMFraction = 0.90f;
-				float MinNeutralEMFraction = 0.02f;
+				float MinNeutralHadronFraction = 0.02f;
 				int MinNumberOfNeutralParticles = 10;
 
 				validJet = validJet
 						&& ((jet->photonFraction + jet->hfEMFraction) < MaxNeutralEMFraction)
-						&& ((jet->photonFraction + jet->hfEMFraction) > MinNeutralEMFraction)
+						&& (jet->neutralHadronFraction > MinNeutralHadronFraction)
 						&& ((jet->nConstituents - jet->nCharged) > MinNumberOfNeutralParticles);
-			} 
+			}
 		}
 		// ability to apply no jet ID
 		validJet = validJet || (jetID == KappaEnumTypes::JetID::NONE);
