@@ -27,7 +27,8 @@ def main():
 	parser = argparse.ArgumentParser(description="Check the validity of Artus outputs in a project directory.", parents=[logger.loggingParser])
 	
 	parser.add_argument("project_directory", help="Artus project directory")
-	parser.add_argument("--dry-run", help="Only print invalid job numbers", default=False, action="store_true")
+	parser.add_argument("--dry-run", help="Only print problematic job numbers", default=False, action="store_true")
+	parser.add_argument("--no-resubmission", help="Only print and invalidate problematic jobs", default=False, action="store_true")
 
 	args = parser.parse_args()
 	logger.initLogger(args)
@@ -77,15 +78,19 @@ def main():
 				if len(elements) <= 1:
 					failed_job_numbers.append(str(job_number))
 	
-	gc_reset_command = "go.py --reset id:"+(",".join(failed_job_numbers))+" "+artus_gc_config
-	log.info(gc_reset_command)
+	if len(failed_job_numbers) == 0:
+		log.info("No problematic Artus outputs found.")
+	else:
+		gc_reset_command = "go.py --reset id:"+(",".join(failed_job_numbers))+" "+artus_gc_config
+		log.info(gc_reset_command)
 	
-	if not args.dry_run:
-		logger.subprocessCall(shlex.split(gc_reset_command))
+		if not args.dry_run:
+			logger.subprocessCall(shlex.split(gc_reset_command))
 		
-		gc_run_command = "go.py "+artus_gc_config
-		log.info(gc_run_command)
-		logger.subprocessCall(shlex.split(gc_run_command))
+			if not args.no_resubmission:
+				gc_run_command = "go.py "+artus_gc_config
+				log.info(gc_run_command)
+				logger.subprocessCall(shlex.split(gc_run_command))
 	
 
 if __name__ == "__main__":
