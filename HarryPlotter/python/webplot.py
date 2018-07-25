@@ -60,7 +60,7 @@ def webplot(input_dir, **kwargs):
 		html_desciption = html_texts["description"].substitute(subdirs="")
 	
 	html_plots = ""
-	for filename, extensions in plot_files.iteritems():
+	for filename, extensions in sorted(plot_files.iteritems()):
 		if os.path.isfile(os.path.join(input_dir, filename+".json")):
 			html_plots += html_texts["plotjson"].substitute(
 					image=filename+"."+extensions[0],
