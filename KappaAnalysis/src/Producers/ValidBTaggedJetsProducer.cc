@@ -96,10 +96,11 @@ void ValidBTaggedJetsProducer::Produce(event_type const& event, product_type& pr
 			//float combinedSecondaryVertex = 0.f;
 			//float bTagWorkingPoint= 0.f;
 			//float deepCSVValue = 0.f;
+			/*			
 			for (unsigned int i = 0; i < event.m_jetMetadata->tagNames.size(); ++i)
 			{
 				std::cout << event.m_jetMetadata->idNames[i] << std::endl;
-			}
+			}*/
 
 			if (m_BTagger == KappaEnumTypes::BTagger::PFCISVV2BJETTAGS)
 			{
