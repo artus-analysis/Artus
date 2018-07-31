@@ -130,6 +130,14 @@ public:
 	};
 	static BTagScaleFactorMethod ToBTagScaleFactorMethod(std::string const& bTagSFMethod);
 
+	enum class BTagger : int
+	{
+		NONE = -1,
+		PFCISVV2BJETTAGS = 0,
+		DEEPCSV = 1,
+	};
+	static BTagger ToBTagger(std::string const& bTagSFMethod);
+
 	enum class GenCollectionToPrint : int
 	{
 		NONE = -1,

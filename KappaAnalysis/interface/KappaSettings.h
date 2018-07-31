@@ -301,6 +301,8 @@ public:
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetUpperAbsEtaCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(GenJetUpperAbsEtaCuts, {});
 
+	IMPL_SETTING(std::string, BTagger);
+	IMPL_SETTING(std::string, BTaggedJetDdeepCSVName);
 	IMPL_SETTING_DEFAULT(float, BTaggedJetAbsEtaCut, 0.0f);
 	IMPL_SETTING_DEFAULT(std::string, BTaggedJetTrackCountingHighEffName, "TrackCountingHighEffBJetTags");
 	IMPL_SETTING_DEFAULT(std::string, BTaggedJetCombinedSecondaryVertexName, "CombinedSecondaryVertexBJetTags");

@@ -74,6 +74,13 @@ KappaEnumTypes::BTagScaleFactorMethod KappaEnumTypes::ToBTagScaleFactorMethod(st
 	else if (bTagSFMethod == "other") return KappaEnumTypes::BTagScaleFactorMethod::OTHER;
 	else return KappaEnumTypes::BTagScaleFactorMethod::NONE;
 }
+KappaEnumTypes::BTagger KappaEnumTypes::ToBTagger(std::string const& bTagger)
+{
+	if (bTagger == "pfCombinedInclusiveSecondaryVertexV2BJetTags") return KappaEnumTypes::BTagger::PFCISVV2BJETTAGS;
+	else if (bTagger == "deepcsv") return KappaEnumTypes::BTagger::DEEPCSV;
+	else return KappaEnumTypes::BTagger::NONE;
+}
+
 
 KappaEnumTypes::GenCollectionToPrint KappaEnumTypes::ToGenCollectionToPrint(std::string const& genCollectionToPrint)
 {

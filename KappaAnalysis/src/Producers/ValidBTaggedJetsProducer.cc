@@ -15,6 +15,7 @@ void ValidBTaggedJetsProducer::Init(setting_type const& settings, metadata_type&
 	);
 
 	BTagSF bTagSFBase(settings.GetBTagScaleFactorFile(), settings.GetBTagEfficiencyFile());
+	m_BTagger = KappaEnumTypes::ToBTagger(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetBTagger())));
 	for (std::pair<std::string, std::vector<float> > bTagWorkingPoint : bTagWorkingPointsTmp)
 	{
 		m_bTagWorkingPoints[bTagWorkingPoint.first] = bTagWorkingPoint.second.at(0);
@@ -92,52 +93,74 @@ void ValidBTaggedJetsProducer::Produce(event_type const& event, product_type& pr
 		{
 			bool validBJet = true;
 			KJet* tjet = static_cast<KJet*>(*jet);
-
-			float combinedSecondaryVertex = tjet->getTag(settings.GetBTaggedJetCombinedSecondaryVertexName(), event.m_jetMetadata);
-			float bTagWorkingPoint = SafeMap::Get(m_bTagWorkingPoints, *workingPoint);
-
-			if (combinedSecondaryVertex < bTagWorkingPoint ||
-				std::abs(tjet->p4.eta()) > settings.GetBTaggedJetAbsEtaCut()) {
-				validBJet = false;
+			//float combinedSecondaryVertex = 0.f;
+			//float bTagWorkingPoint= 0.f;
+			//float deepCSVValue = 0.f;
+			for (unsigned int i = 0; i < event.m_jetMetadata->tagNames.size(); ++i)
+			{
+				std::cout << event.m_jetMetadata->idNames[i] << std::endl;
 			}
 
-			validBJet = validBJet && AdditionalCriteria(tjet, event, product, settings, metadata);
-			
-			//entry point for Scale Factor (SF) of btagged jets
-			if (settings.GetApplyBTagSF() && !settings.GetInputIsData())
+			if (m_BTagger == KappaEnumTypes::BTagger::PFCISVV2BJETTAGS)
 			{
-				// https://twiki.cern.ch/twiki/bin/view/CMS/BTagSFMethods#2a_Jet_by_jet_updating_of_the_b
-				if (m_bTagSFMethod == KappaEnumTypes::BTagScaleFactorMethod::PROMOTIONDEMOTION)
-				{
-					int jetHadronFlavor = tjet->hadronFlavour;
-					int jetPartonFlavor = tjet->partonFlavour;
-					int jetflavor = jetHadronFlavor + (jetHadronFlavor == 0) * (jetPartonFlavor);
-					unsigned int btagSys = BTagSF::kNo;
-					unsigned int bmistagSys = BTagSF::kNo;
-					
-					if (settings.GetBTagShift() < 0)    btagSys = BTagSF::kDown;
-					if (settings.GetBTagShift() > 0)    btagSys = BTagSF::kUp;
-					if (settings.GetBMistagShift() < 0) bmistagSys = BTagSF::kDown;
-					if (settings.GetBMistagShift() > 0) bmistagSys = BTagSF::kUp;
+					float combinedSecondaryVertex = tjet->getTag(settings.GetBTaggedJetCombinedSecondaryVertexName(), event.m_jetMetadata);
+					float bTagWorkingPoint = SafeMap::Get(m_bTagWorkingPoints, *workingPoint);
 
-					LOG_N_TIMES(1, DEBUG) << "Btagging shifts tag/mistag : " << settings.GetBTagShift() << " " << settings.GetBMistagShift(); 
+					if (combinedSecondaryVertex < bTagWorkingPoint ||
+						std::abs(tjet->p4.eta()) > settings.GetBTaggedJetAbsEtaCut()) {
+						validBJet = false;
+					}
+			
+				validBJet = validBJet && AdditionalCriteria(tjet, event, product, settings, metadata);
+			
+				//entry point for Scale Factor (SF) of btagged jets
+				if (settings.GetApplyBTagSF() && !settings.GetInputIsData())
+				{
+					// https://twiki.cern.ch/twiki/bin/view/CMS/BTagSFMethods#2a_Jet_by_jet_updating_of_the_b
+					if (m_bTagSFMethod == KappaEnumTypes::BTagScaleFactorMethod::PROMOTIONDEMOTION)
+					{
+						int jetHadronFlavor = tjet->hadronFlavour;
+						int jetPartonFlavor = tjet->partonFlavour;
+						int jetflavor = jetHadronFlavor + (jetHadronFlavor == 0) * (jetPartonFlavor);
+						unsigned int btagSys = BTagSF::kNo;
+						unsigned int bmistagSys = BTagSF::kNo;
 					
-					bool taggedBefore = validBJet;
-					validBJet = m_bTagSfMap.at(*workingPoint).isbtagged(
-							tjet->p4.pt(),
-							tjet->p4.eta(),
-							combinedSecondaryVertex,
-							jetflavor,
-							btagSys,
-							bmistagSys,
-							settings.GetYear(),
-							bTagWorkingPoint
-					);
+						if (settings.GetBTagShift() < 0)    btagSys = BTagSF::kDown;
+						if (settings.GetBTagShift() > 0)    btagSys = BTagSF::kUp;
+						if (settings.GetBMistagShift() < 0) bmistagSys = BTagSF::kDown;
+						if (settings.GetBMistagShift() > 0) bmistagSys = BTagSF::kUp;
+
+						LOG_N_TIMES(1, DEBUG) << "Btagging shifts tag/mistag : " << settings.GetBTagShift() << " " << settings.GetBMistagShift(); 
 					
-					if (taggedBefore != validBJet) LOG_N_TIMES(20, DEBUG) << "Promoted/demoted : " << validBJet;
+						bool taggedBefore = validBJet;
+						validBJet = m_bTagSfMap.at(*workingPoint).isbtagged(
+								tjet->p4.pt(),
+								tjet->p4.eta(),
+								combinedSecondaryVertex,
+								jetflavor,
+								btagSys,
+								bmistagSys,
+								settings.GetYear(),
+								bTagWorkingPoint
+						);
+					
+						if (taggedBefore != validBJet) LOG_N_TIMES(20, DEBUG) << "Promoted/demoted : " << validBJet;
+					}
+					//todo
+					else if (m_bTagSFMethod == KappaEnumTypes::BTagScaleFactorMethod::OTHER) {}
 				}
-				//todo
-				else if (m_bTagSFMethod == KappaEnumTypes::BTagScaleFactorMethod::OTHER) {}
+			}
+			else if (m_BTagger == KappaEnumTypes::BTagger::DEEPCSV)
+			{
+				float combinedSecondaryVertex = tjet->getTag(settings.GetBTaggedJetCombinedSecondaryVertexName(), event.m_jetMetadata);
+				std::cout << settings.GetBTaggedJetDdeepCSVName() << std::endl;
+				float deepCSVValue = tjet->getTag(settings.GetBTaggedJetDdeepCSVName(), event.m_jetMetadata);
+				std::cout << "deep value: " << deepCSVValue << "        csv value: " << combinedSecondaryVertex << std::endl;
+				float bTagWorkingPoint = SafeMap::Get(m_bTagWorkingPoints, *workingPoint);
+				if (deepCSVValue < bTagWorkingPoint ||
+					std::abs(tjet->p4.eta()) > settings.GetBTaggedJetAbsEtaCut()) {
+					validBJet = false;
+				}
 			}
 
 			if (validBJet)

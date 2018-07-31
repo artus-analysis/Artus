@@ -40,6 +40,7 @@ protected:
 private:
 
  	KappaEnumTypes::BTagScaleFactorMethod m_bTagSFMethod;
+	KappaEnumTypes::BTagger m_BTagger;
 	std::map<std::string, float> m_bTagWorkingPoints;
 	std::map<std::string, BTagSF> m_bTagSfMap;
 
