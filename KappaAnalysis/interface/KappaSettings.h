@@ -28,6 +28,7 @@ public:
 
 	/// name of tau collection in kappa tuple
 	IMPL_SETTING_DEFAULT(std::string, Taus, "");
+	IMPL_SETTING_DEFAULT(std::string, L1Taus, "");
 	IMPL_SETTING_DEFAULT(std::string, TauMetadata, "");
 	IMPL_SETTING_DEFAULT(std::string, GenTaus, "");
 	IMPL_SETTING_DEFAULT(std::string, GenTauJets, "");
@@ -134,6 +135,8 @@ public:
 	IMPL_SETTING_DEFAULT(bool, AllowPrescaledTrigger, true);
 
 	IMPL_SETTING_DEFAULT(bool, NoHltFiltering, false);
+
+	IMPL_SETTING_STRINGLIST_DEFAULT(TauTriggerCheckL1Match, {});
 
 	IMPL_SETTING_STRINGLIST_DEFAULT(ElectronTriggerFilterNames, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(MuonTriggerFilterNames, {});
