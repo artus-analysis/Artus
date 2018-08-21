@@ -102,6 +102,9 @@ def longest_common_substring(S1, S2):
 				M[x][y] = 0
 	return S1[x_longest-longest: x_longest]
 
+def longest_common_substring_from_list(list_of_strings):
+	return reduce(lambda S1, S2: longest_common_substring(S1, S2), list_of_strings)
+
 # http://codereview.stackexchange.com/questions/21532/python-3-finding-common-patterns-in-pairs-of-strings
 def find_common_patterns(s1, s2): # used recursively
 	if s1 == '' or s2 == '':

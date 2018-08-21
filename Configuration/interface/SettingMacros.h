@@ -129,6 +129,23 @@ virtual std::vector<std::string>& Get##SNAME () const { \
 	} \
 }
 
+#define IMPL_SETTING_MAPSTRINGTOLISTOFSTRINGS( SNAME ) \
+VarCache<std::map<std::string, std::vector<std::string>>> m_##SNAME; \
+virtual std::map<std::string, std::vector<std::string>>& Get##SNAME () const { \
+	try { \
+		RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsMapStringToListOfStrings(GetPropTree(), GetPipelinePrefix() + #SNAME )) \
+	} \
+	catch(...) { \
+		try { \
+			RETURN_CACHED(m_##SNAME, PropertyTreeSupport::GetAsMapStringToListOfStrings(GetPropTree(), #SNAME )) \
+		} \
+		catch(...) { \
+			LOG(FATAL) << "Could not read value for config tag \"" << (#SNAME) << "\" in pipeline or global settings! It is either not specified or the specified type is incompatible!"; \
+			throw; \
+		} \
+	} \
+}
+
 #define IMPL_SETTING_SORTED_STRINGLIST( SNAME ) \
 VarCache<std::vector<std::string>> m_##SNAME; \
 virtual std::vector<std::string>& Get##SNAME () const { \

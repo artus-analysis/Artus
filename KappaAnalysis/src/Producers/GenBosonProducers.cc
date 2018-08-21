@@ -170,6 +170,29 @@ void GenBosonDiLeptonDecayModeProducer::Init(setting_type const& settings, metad
 			}
 		});
 		
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, lepQuantityNameBase+"PdgId", [leptonIndex](event_type const& event, product_type const& product)
+		{
+			if (product.m_genLeptonsFromBosonDecay.size() > leptonIndex)
+			{
+				return product.m_genLeptonsFromBosonDecay.at(leptonIndex)->pdgId;
+			}
+			else
+			{
+				return DefaultValues::UndefinedInt;
+			}
+		});
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, tauQuantityNameBase+"PdgId", [leptonIndex](event_type const& event, product_type const& product)
+		{
+			if (product.m_genLeptonsFromBosonDecay.size() > leptonIndex)
+			{
+				return ((std::abs(product.m_genLeptonsFromBosonDecay.at(leptonIndex)->pdgId) == DefaultValues::pdgIdTau) ? product.m_genLeptonsFromBosonDecay.at(leptonIndex)->pdgId : DefaultValues::UndefinedInt);
+			}
+			else
+			{
+				return DefaultValues::UndefinedInt;
+			}
+		});
+		
 		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, tauQuantityNameBase+"VisibleLV", [leptonIndex](event_type const& event, product_type const& product)
 		{
 			if ((product.m_genLeptonsFromBosonDecay.size() > leptonIndex) &&

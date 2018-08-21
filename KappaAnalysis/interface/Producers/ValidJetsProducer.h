@@ -270,25 +270,29 @@ public:
 			}
 
 			// JetID
+			// outdated
 			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
 			// https://github.com/cms-sw/cmssw/blob/CMSSW_7_5_X/PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h
 			// jets, all eta
+			if (jetIDVersion == KappaEnumTypes::JetIDVersion::ID2010 || jetIDVersion == KappaEnumTypes::JetIDVersion::ID2014)  // CMSSW <7.3.X
+				validJet = validJet && (jet->neutralHadronFraction + jet->hfHadronFraction < maxFraction);
+		
+			if (std::abs(jet->p4.eta()) <= 2.7f)
+			{
 			validJet = validJet
 					   && (jet->neutralHadronFraction < maxFraction)
 					   && (jet->photonFraction + jet->hfEMFraction < maxFraction)
 					   && (jet->nConstituents > 1)
 					   && (jet->muonFraction < maxMuFraction);
-			if (jetIDVersion == KappaEnumTypes::JetIDVersion::ID2010 || jetIDVersion == KappaEnumTypes::JetIDVersion::ID2014)  // CMSSW <7.3.X
-				validJet = validJet && (jet->neutralHadronFraction + jet->hfHadronFraction < maxFraction);
-
-
-			// jets, |eta| < 2.4 (tracker)
-			if (std::abs(jet->p4.eta()) <= 2.4f)
-			{
-				validJet = validJet
+					   
+				// jets, |eta| < 2.4 (tracker) then additional criteria need to be applied		   
+				if (std::abs(jet->p4.eta()) <= 2.4f)
+				{
+					validJet = validJet
 						   && (jet->chargedHadronFraction > 0.0f)
 						   && (jet->nCharged > 0)
 						   && (jet->electronFraction < maxCEMFraction);  // == CEM
+				}
 			}
 			// for run2: new jet ID between 2.7 < |eta| <= 3.0
 			if (jetIDVersion == KappaEnumTypes::JetIDVersion::ID2015 && std::abs(jet->p4.eta()) > 2.7f && std::abs(jet->p4.eta()) <= 3.0f)

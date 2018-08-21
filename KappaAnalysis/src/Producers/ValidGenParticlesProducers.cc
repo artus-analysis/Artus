@@ -222,6 +222,7 @@ void ValidGenTausProducer::Produce(KappaTypes::KappaTypes::event_type const& eve
 			}
 		}
 		product.m_validGenTausMap[*genParticle] = bestMatchingGenTau;
+		product.m_validGenParticlesMap[bestMatchingGenTau] = *genParticle;
 		
 		std::pair<std::vector<KGenParticle*>, std::vector<KGenParticle*> > chargedNeutralHadrons = GetChargedNeutralHadrons(event.m_genParticles, *genParticle);
 		product.m_validGenTausChargedHadronsMap[*genParticle] = chargedNeutralHadrons.first;
