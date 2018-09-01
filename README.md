@@ -6,6 +6,7 @@ Documentation is found in the [wiki](https://github.com/artus-analysis/Artus/wik
 
 (a dedicated documentation for HarryPlotter can be found [here](https://github.com/artus-analysis/Artus/blob/master/HarryPlotter/README.md "HarryPlotter documentation"))
 
+<!--
 Example
 -------
 
@@ -65,3 +66,4 @@ Code checks and static analysis
 -------------------------------
 
 Information about compiler warnings and static code analysis can be found at [Core/docs/linter.md](Core/docs/linter.md).
+-->

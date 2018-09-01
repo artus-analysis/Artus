@@ -800,13 +800,21 @@ class RootTools(object):
 	
 	@staticmethod
 	def walk_root_directory(root_directory, path=""):
-		elements = []
-		for key in root_directory.GetListOfKeys():
-			if key.GetClassName().startswith("TDirectory"):
-				elements.extend(RootTools.walk_root_directory(root_directory.Get(key.GetName()),
-					                                          os.path.join(path, key.GetName())))
-			else:
-				elements.append((key, os.path.join(path, key.GetName())))
+		def _walk_root_directory(root_directory, path=""):
+			elements = []
+			for key in root_directory.GetListOfKeys():
+				if key.GetClassName().startswith("TDirectory"):
+					elements.extend(_walk_root_directory(root_directory.Get(key.GetName()), os.path.join(path, key.GetName())))
+				else:
+					elements.append((key, os.path.join(path, key.GetName())))
+			return elements
+		
+		elements = None
+		if isinstance(root_directory, str):
+			with tfilecontextmanager.TFileContextManager(root_directory, "READ") as root_file:
+				elements = _walk_root_directory(root_file, path)
+		else:
+			elements = _walk_root_directory(root_directory, path)
 		return elements
 	
 	@staticmethod
