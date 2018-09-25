@@ -405,7 +405,7 @@ class RootTools(object):
 			).replace(
 					"htemp->SetTitle", "//htemp->SetTitle"
 			).replace(
-					"using namespace ROOT;", proxy_prefix+"\nusing namespace ROOT;"
+					"using namespace ROOT", proxy_prefix.replace("\\n", "\n")+"\nusing namespace ROOT"
 			)
 			with open(proxy_class_filename, "w") as proxy_class_file:
 				proxy_class_file.write(proxy_class_content)
