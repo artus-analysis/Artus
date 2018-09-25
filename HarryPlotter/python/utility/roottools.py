@@ -294,6 +294,7 @@ class RootTools(object):
 				binning=binning,
 				weight_selection=str(weight_selection),
 				option=option,
+				proxy_prefix=proxy_prefix,
 				scan=scan,
 				use_cache=use_cache
 		)
@@ -317,7 +318,7 @@ class RootTools(object):
 	
 	@staticmethod
 	@rootcache.RootFileCache(os.path.expandvars(os.path.join("$HP_WORK_BASE_COMMON", "caches")))
-	def tree_draw(root_file_names, path_to_trees, friend_files, friend_folders, friend_aliases, root_histogram, variable_expression, name, binning, weight_selection, option, scan=None, use_cache=True):
+	def tree_draw(root_file_names, path_to_trees, friend_files, friend_folders, friend_aliases, root_histogram, variable_expression, name, binning, weight_selection, option, proxy_prefix="", scan=None, use_cache=True):
 		
 		# prepare TChain
 		if isinstance(root_file_names, basestring):
