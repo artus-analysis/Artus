@@ -34,8 +34,8 @@ elif [[ `hostname` == *rwth* ]]; then
 	export HP_WORK_BASE="/net/scratch_cms3b/${USER}/Harry"
 	export HP_WORK_BASE_COMMON="/net/scratch_cms3b/analysis/hp"
 elif [[ `hostname` == *cern* ]]; then
-	export HP_WORK_BASE="/afs/cern.ch/work/${USER:0:1}/${USER}/Harry"
-	export HP_WORK_BASE_COMMON="/afs/cern.ch/work/${USER:0:1}/${USER}/Harry" # no common directory yet
+	export HP_WORK_BASE="/eos/user/${USER:0:1}/${USER}/Harry"
+	export HP_WORK_BASE_COMMON="/eos/user/${USER:0:1}/${USER}/Harry" # no common directory yet
 fi
 
 web_plotting_no_passwd() {
