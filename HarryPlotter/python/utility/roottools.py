@@ -715,6 +715,29 @@ class RootTools(object):
 				histogram_sum.Add(histogram, scale_factor)
 		return histogram_sum
 
+	@staticmethod
+	def histogram_calculation(bin_content_function=None, bin_error_function=None, *input_histograms):
+		assert len(input_histograms) > 0
+		
+		new_name = "histogram_{0}.json".format(hashlib.md5("_".join([str(hist) for hist in input_histograms])).hexdigest())
+		result_histogram = input_histograms[0].Clone(new_name)
+		result_histogram.Reset()
+		
+		for x_bin in xrange(1, input_histograms[0].GetNbinsX()+1):
+			for y_bin in xrange(1, input_histograms[0].GetNbinsY()+1):
+				for z_bin in xrange(1, input_histograms[0].GetNbinsZ()+1):
+					global_bin = input_histograms[0].GetBin(x_bin, y_bin, z_bin)
+					
+					if bin_content_function:
+						new_bin_content = bin_content_function(*[histogram.GetBinContent(global_bin) for histogram in input_histograms])
+						result_histogram.SetBinContent(global_bin, new_bin_content)
+					
+					if bin_error_function:
+						new_bin_error = bin_error_function(*[histogram.GetBinError(global_bin) for histogram in input_histograms])
+						result_histogram.SetBinError(global_bin, new_bin_error)
+		
+		return result_histogram
+
 
 	@staticmethod
 	def to_histogram(root_object):
