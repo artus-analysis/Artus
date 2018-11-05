@@ -120,7 +120,7 @@ class PlotBase(processor.Processor):
 		self.formatting_options.add_argument("--subplot-grid", nargs="?", default=False, const=True,
 		                                     help="Place an axes grid on the subplot. Optional arguments are 'vertical'/'horizontal' for only vertical/horizontal lines. [Default: %(default)s]")
 		self.formatting_options.add_argument("--stacks", type=str, nargs="+", default=[None],
-		                                     help="Defines nick names for stacking. Inputs with the same nick name will be stacked. By default, every input gets a unique nick name. [Default: %(default)s]")
+		                                     help="Defines stack names for stacking. Inputs with the same stack name will be stacked. By default, every input gets a unique nick name. [Default: %(default)s]")
 		self.formatting_options.add_argument("--lines", type=float, nargs="+", default=[],
 		                                     help="Place auxiliary lines at given y-values.")
 		self.formatting_options.add_argument("--vertical-lines", type=float, nargs="+", default=[],
