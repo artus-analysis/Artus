@@ -204,27 +204,25 @@ public:
 			          [](TValidObject const* object1, TValidObject const* object2) -> bool
 			          { return object1->p4.Pt() > object2->p4.Pt(); });
 			
-			/*
+			
 			// debug output
-			LOG(INFO) << "Result of trigger matching (Run: " << event.m_eventInfo->nRun << ", Lumi: " << event.m_eventInfo->nLumi << ", Event: " << event.m_eventInfo->nEvent << "):";
+			/*LOG(INFO) << "Result of trigger matching (Run: " << event.m_eventInfo->nRun << ", Lumi: " << event.m_eventInfo->nLumi << ", Event: " << event.m_eventInfo->nEvent << "):";
 			for (typename std::pair<TValidObject*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > > validObject : (product.*m_detailedTriggerMatchedObjects))
 			{
-				LOG(INFO) << "Reco object: (pt = " << validObject.first->p4.Pt() << ", eta = " << validObject.first->p4.Eta() << ", phi = " << validObject.first->p4.Phi() << ", mass = " << validObject.first->p4.mass() << ")";
+				//LOG(INFO) << "Reco object: (pt = " << validObject.first->p4.Pt() << ", eta = " << validObject.first->p4.Eta() << ", phi = " << validObject.first->p4.Phi() << ", mass = " << validObject.first->p4.mass() << ")";
 				for (std::pair<std::string, std::map<std::string, std::vector<KLV*> > > hltName : validObject.second)
 				{
-					LOG(INFO) << "\tHLT name: " << hltName.first;
+					//LOG(INFO) << "\tHLT name: " << hltName.first;
 					for (std::pair<std::string, std::vector<KLV*> > filterName : hltName.second)
 					{
-						LOG(INFO) << "\t\tFilter name: " << filterName.first;
+						//LOG(INFO) << "\t\tFilter name: " << filterName.first;
 						for (KLV* triggerObject : filterName.second)
 						{
-							LOG(INFO) << "\t\t\tTrigger object: (pt = " << triggerObject->p4.Pt() << ", eta = " << triggerObject->p4.Eta() << ", phi = " << triggerObject->p4.Phi() << ", mass = " << triggerObject->p4.mass() << ")";
+							//LOG(INFO) << "\t\t\tTrigger object: (pt = " << triggerObject->p4.Pt() << ", eta = " << triggerObject->p4.Eta() << ", phi = " << triggerObject->p4.Phi() << ", mass = " << triggerObject->p4.mass() << ")";
 						}
 					}
 				}
-			}
-			LOG(INFO) << "==================================================";
-			*/
+			}*/
 		}
 	}
 

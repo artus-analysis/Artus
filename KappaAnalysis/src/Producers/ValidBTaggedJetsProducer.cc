@@ -101,7 +101,7 @@ void ValidBTaggedJetsProducer::Produce(event_type const& event, product_type& pr
 			{
 				std::cout << event.m_jetMetadata->idNames[i] << std::endl;
 			}*/
-
+			//TODO cleanup and be less confusing
 			if (m_BTagger == KappaEnumTypes::BTagger::PFCISVV2BJETTAGS)
 			{
 					float combinedSecondaryVertex = tjet->getTag(settings.GetBTaggedJetCombinedSecondaryVertexName(), event.m_jetMetadata);
@@ -154,9 +154,9 @@ void ValidBTaggedJetsProducer::Produce(event_type const& event, product_type& pr
 			else if (m_BTagger == KappaEnumTypes::BTagger::DEEPCSV)
 			{
 				float combinedSecondaryVertex = tjet->getTag(settings.GetBTaggedJetCombinedSecondaryVertexName(), event.m_jetMetadata);
-				std::cout << settings.GetBTaggedJetDdeepCSVName() << std::endl;
+				//std::cout << settings.GetBTaggedJetDdeepCSVName() << std::endl;
 				float deepCSVValue = tjet->getTag(settings.GetBTaggedJetDdeepCSVName(), event.m_jetMetadata);
-				std::cout << "deep value: " << deepCSVValue << "        csv value: " << combinedSecondaryVertex << std::endl;
+				//std::cout << "deep value: " << deepCSVValue << "        csv value: " << combinedSecondaryVertex << std::endl;
 				float bTagWorkingPoint = SafeMap::Get(m_bTagWorkingPoints, *workingPoint);
 				if (deepCSVValue < bTagWorkingPoint ||
 					std::abs(tjet->p4.eta()) > settings.GetBTaggedJetAbsEtaCut()) {

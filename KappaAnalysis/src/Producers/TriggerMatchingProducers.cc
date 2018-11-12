@@ -59,9 +59,9 @@ MuonTriggerMatchingProducer::MuonTriggerMatchingProducer() :
 
 void MuonTriggerMatchingProducer::Produce(event_type const& event, product_type& product,
                                           setting_type const& settings, metadata_type const& metadata) const
-{
+{	
 	TriggerMatchingProducerBase<KMuon>::Produce(event, product, settings, metadata);
-	
+
 	for (std::map<KMuon*, KLV*>::iterator it = product.m_triggerMatchedMuons.begin();
 	     it != product.m_triggerMatchedMuons.end(); ++it)
 	{
@@ -110,6 +110,33 @@ void TauTriggerMatchingProducer::Produce(event_type const& event, product_type& 
 	{
 		product.m_detailedTriggerMatchedLeptons[&(*(it->first))] = &(it->second);
 	}
+/*
+	if (settings.GetTauTriggerCheckL1Match().size() > 0)
+        {
+                for (std::map<KTau*, KLV*>::iterator it = product.m_triggerMatchedTaus.begin();
+                     it != product.m_triggerMatchedTaus.end(); ++it)
+                {
+                        float deltaRMax = 0.5;
+                        float bestL1Pt = -1.0;
+                        bool l1matched = false;
+                        for (std::vector<KL1Tau>::iterator l1o = event.m_l1taus->begin(); l1o != event.m_l1taus->end(); ++l1o)
+                        {
+                                float currentDeltaR = ROOT::Math::VectorUtil::DeltaR((it->first)->p4, l1o->p4);
+                                if(currentDeltaR < deltaRMax)
+                                {
+                                        bestL1Pt = l1o->p4.Pt();
+                                        deltaRMax = currentDeltaR;
+                                }
+                        }
+                        if(bestL1Pt >= 32.0) l1matched = true;
+                        std::map<std::string, bool> hlt_to_l1;
+                        for (std::vector<std::string>::iterator hlt = settings.GetTauTriggerCheckL1Match().begin(); hlt != settings.GetTauTriggerCheckL1Match().end(); ++hlt)
+                        {
+                                hlt_to_l1[*hlt] = l1matched;
+                        }
+                        product.m_detailedL1MatchedLeptons[&(*(it->first))] = hlt_to_l1;
+                }
+	}*/
 }
 
 

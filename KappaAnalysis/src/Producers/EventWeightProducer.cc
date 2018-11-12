@@ -36,7 +36,7 @@ void EventWeightProducer::Produce(event_type const& event, product_type& product
 		weight != product.m_weights.end(); ++weight)
 	{
 		eventWeight *= weight->second;
-		
+		LOG(DEBUG) << weight->first <<" : " << weight->second << "    total eventweight : " << eventWeight << std::endl;
 		if (firstRun)
 		{
 			m_weightNames.push_back(weight->first);
