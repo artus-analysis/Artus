@@ -31,6 +31,9 @@ void EventWeightProducer::Produce(event_type const& event, product_type& product
 	double eventWeight = settings.GetBaseWeight();
 	bool firstRun = m_weightNames.empty();
 
+	//global eventweight 
+	product.m_weights["globalWeight"] = settings.GetGlobalWeight();
+
 	// loop over all previously calculated weights and multiply them
 	for(std::map<std::string, double>::const_iterator weight = product.m_weights.begin();
 		weight != product.m_weights.end(); ++weight)

@@ -399,4 +399,6 @@ public:
 
 	IMPL_SETTING_DEFAULT(std::string, DatabasePDG, "$ROOTSYS/etc/pdg_table.txt");
 	IMPL_SETTING_DEFAULT(std::string, GenCollectionToPrint, "all");
+	//global weight
+	IMPL_SETTING_DEFAULT(float, GlobalWeight, 1.0f);
 };
