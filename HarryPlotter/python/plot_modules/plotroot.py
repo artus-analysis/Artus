@@ -342,10 +342,11 @@ class PlotRoot(plotbase.PlotBase):
 		
 		first_plot_labels_set = False
 		first_subplot_labels_set = False
-		for nick, subplot, colors, marker, marker_style, marker_size, fill_style, line_style, line_width in zip(
+		for nick, subplot, colors, colormap, marker, marker_style, marker_size, fill_style, line_style, line_width in zip(
 				plotData.plotdict["nicks"],
 				plotData.plotdict["subplots"],
 				plotData.plotdict["colors"],
+				plotData.plotdict["colormap"],
 				plotData.plotdict["markers"],
 				plotData.plotdict["marker_styles"],
 				plotData.plotdict["marker_sizes"],
@@ -359,7 +360,7 @@ class PlotRoot(plotbase.PlotBase):
 			root_object.SetLineStyle(line_style)
 			root_object.SetLineWidth(line_width)
 			
-			root_object.SetMarkerColor(colors[0])
+			root_object.SetMarkerColor(1 if colormap else colors[0])
 			root_object.SetMarkerStyle(marker_style)
 			root_object.SetMarkerSize(marker_size)
 			
