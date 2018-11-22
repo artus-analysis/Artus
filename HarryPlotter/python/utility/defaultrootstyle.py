@@ -105,6 +105,8 @@ def set_default_root_style():
 	
 	default_root_style.SetPalette(1)
 	
+	default_root_style.SetPaintTextFormat("1.2g")
+	
 	default_root_style.cd()
 	default_root_style.SetLineScalePS(1)
 	ROOT.gStyle = default_root_style
