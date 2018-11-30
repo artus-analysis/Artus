@@ -14,14 +14,25 @@ if [[ -z ${HARRY_SSHPC} ]]; then
 	export HARRY_SSHPC=$HARRY_USERPC
 fi
 
-export HARRY_URL=http://${HARRY_REMOTE_USER}.web.cern.ch/${HARRY_REMOTE_USER}/plots_archive
+if ! grep -q harry_sshpc $HOME/.ssh/config; then
+    echo -e "" >> $HOME/.ssh/config
+    echo -e "Host harry_sshpc" >> $HOME/.ssh/config
+    echo -e "\tHostname = lxplus.cern.ch" >> $HOME/.ssh/config
+    echo -e "\tCompression = yes" >> $HOME/.ssh/config
+    echo -e "\tUser = ${HARRY_REMOTE_USER}" >> $HOME/.ssh/config
+    echo -e "\tGSSAPITrustDns = yes" >> $HOME/.ssh/config
+    echo -e "\tGSSAPIAuthentication = yes" >> $HOME/.ssh/config
+    echo -e "\tGSSAPIDelegateCredentials = yes" >> $HOME/.ssh/config
+fi
 
+export HARRY_URL=http://${HARRY_REMOTE_USER}.web.cern.ch/${HARRY_REMOTE_USER}/plots_archive
+export WEB_PLOTTING_MKDIR_COMMAND="ssh harry_sshpc mkdir -p /eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
 if [[ -z ${WEB_PLOTTING_MKDIR_COMMAND} ]]; then
-	export WEB_PLOTTING_MKDIR_COMMAND="xrdfs eosuser.cern.ch mkdir -p /eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
+    export WEB_PLOTTING_MKDIR_COMMAND="ssh harry_sshpc mkdir -p /eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
 fi
 
 if [[ -z ${WEB_PLOTTING_COPY_COMMAND} ]]; then
-	export WEB_PLOTTING_COPY_COMMAND="xrdcp -s -f {source} root://eosuser.cern.ch//eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
+    export WEB_PLOTTING_COPY_COMMAND="rsync {source} harry_sshpc:/eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
 fi
 
 if [[ `hostname` == *naf* ]]; then
