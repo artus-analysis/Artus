@@ -49,6 +49,7 @@ class RootFileCache(Cache):
 				tmp_args[index] = arg.GetName()
 
 		tmp_kwargs = copy.deepcopy(kwargs)
+		tmp_kwargs.pop('redo_cache')
 		for keyword, arg in tmp_kwargs.iteritems():
 			if isinstance(arg, ROOT.TObject):
 				tmp_kwargs[keyword] = arg.GetName()
@@ -62,7 +63,7 @@ class RootFileCache(Cache):
 		root_tree = None
 		root_object = None
 		cache_found = False
-		if kwargs.get("use_cache", True) and cache_file and os.path.exists(cache_file):
+		if kwargs.get("use_cache", True) and (not kwargs.get("redo_cache", False)) and cache_file and os.path.exists(cache_file):
 			try:
 				with tfilecontextmanager.TFileContextManager(cache_file, "READ") as root_file:
 					root_object = root_file.Get(self.cache_name)

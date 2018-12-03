@@ -209,7 +209,7 @@ class RootTools(object):
 		                    x_bins=None, y_bins=None, z_bins=None,
 		                    weight_selection="", option="", name=None,
 		                    friend_files=None, friend_folders=None, friend_aliases=None,
-		                    proxy_prefix="", scan=None, use_cache=True):
+		                    proxy_prefix="", scan=None, use_cache=True, redo_cache=False):
 		"""
 		Read histograms from trees
 	
@@ -296,7 +296,8 @@ class RootTools(object):
 				option=option,
 				proxy_prefix=proxy_prefix,
 				scan=scan,
-				use_cache=use_cache
+				use_cache=use_cache,
+				redo_cache=redo_cache
 		)
 		
 		if root_histogram == None:
@@ -318,7 +319,7 @@ class RootTools(object):
 	
 	@staticmethod
 	@rootcache.RootFileCache(os.path.expandvars(os.path.join("$HP_WORK_BASE_COMMON", "caches")))
-	def tree_draw(root_file_names, path_to_trees, friend_files, friend_folders, friend_aliases, root_histogram, variable_expression, name, binning, weight_selection, option, proxy_prefix="", scan=None, use_cache=True):
+	def tree_draw(root_file_names, path_to_trees, friend_files, friend_folders, friend_aliases, root_histogram, variable_expression, name, binning, weight_selection, option, proxy_prefix="", scan=None, use_cache=True, redo_cache=False):
 		
 		# prepare TChain
 		if isinstance(root_file_names, basestring):

@@ -75,6 +75,8 @@ class InputRoot(inputfile.InputFile):
 		                                help="Show progress of the individual plot. [Default: %(default)s]")
 		self.input_options.add_argument("--no-cache", nargs ="?", type="bool", default=None, const=True,
 		                                help="Do not use caching for inputs from trees. [Default: False for absolute paths, True for relative paths]")
+		self.input_options.add_argument("--redo-cache", nargs ="?", type="bool", default=None, const=True,
+		                                help="Redo caches, incase the content of an inputfile changed. [Default: False]")
 
 	def prepare_args(self, parser, plotData):
 		super(InputRoot, self).prepare_args(parser, plotData)
@@ -151,7 +153,8 @@ class InputRoot(inputfile.InputFile):
 						friend_aliases=friend_aliases,
 						proxy_prefix=plotData.plotdict["proxy_prefix"],
 						scan=plotData.plotdict["scan"],
-						use_cache=(not plotData.plotdict["no_cache"])
+						use_cache=(not plotData.plotdict["no_cache"]),
+						redo_cache=(plotData.plotdict["redo_cache"])
 				)
 				
 			elif root_folder_type == "TDirectory":
