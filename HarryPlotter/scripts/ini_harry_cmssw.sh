@@ -14,15 +14,15 @@ if [[ -z ${HARRY_SSHPC} ]]; then
 	export HARRY_SSHPC=$HARRY_USERPC
 fi
 
-if ! grep -q harry_sshpc $HOME/.ssh/config; then
-    echo -e "" >> $HOME/.ssh/config
-    echo -e "Host harry_sshpc" >> $HOME/.ssh/config
-    echo -e "\tHostname = lxplus.cern.ch" >> $HOME/.ssh/config
-    echo -e "\tCompression = yes" >> $HOME/.ssh/config
-    echo -e "\tUser = ${HARRY_REMOTE_USER}" >> $HOME/.ssh/config
-    echo -e "\tGSSAPITrustDns = yes" >> $HOME/.ssh/config
-    echo -e "\tGSSAPIAuthentication = yes" >> $HOME/.ssh/config
-    echo -e "\tGSSAPIDelegateCredentials = yes" >> $HOME/.ssh/config
+if ! grep -q harry_sshpc ~/.ssh/config; then
+    echo -e "" >> ~/.ssh/config
+    echo -e "Host harry_sshpc" >> ~/.ssh/config
+    echo -e "\tHostname = lxplus.cern.ch" >> ~/.ssh/config
+    echo -e "\tCompression = yes" >> ~/.ssh/config
+    echo -e "\tUser = ${HARRY_REMOTE_USER}" >> ~/.ssh/config
+    echo -e "\tGSSAPITrustDns = yes" >> ~/.ssh/config
+    echo -e "\tGSSAPIAuthentication = yes" >> ~/.ssh/config
+    echo -e "\tGSSAPIDelegateCredentials = yes" >> ~/.ssh/config
 fi
 
 export HARRY_URL=http://${HARRY_REMOTE_USER}.web.cern.ch/${HARRY_REMOTE_USER}/plots_archive
