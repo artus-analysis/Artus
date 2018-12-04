@@ -73,10 +73,8 @@ class InputRoot(inputfile.InputFile):
 		                                help="Read in the config stored in Artus ROOT outputs. [Default: %(default)s]")
 		self.input_options.add_argument("--hide-progressbar", nargs ="?", type="bool", default=False, const=True,
 		                                help="Show progress of the individual plot. [Default: %(default)s]")
-		self.input_options.add_argument("--no-cache", nargs ="?", type="bool", default=None, const=True,
-		                                help="Do not use caching for inputs from trees. [Default: False for absolute paths, True for relative paths]")
 		self.input_options.add_argument("--redo-cache", nargs ="?", type="bool", default=None, const=True,
-		                                help="Redo caches, incase the content of an inputfile changed. [Default: False]")
+		                                help="Do not use inputs from cached trees, but overwrite them. [Default: False for absolute paths, True for relative paths]")
 
 	def prepare_args(self, parser, plotData):
 		super(InputRoot, self).prepare_args(parser, plotData)
@@ -89,8 +87,8 @@ class InputRoot(inputfile.InputFile):
 		for key in ["friend_files", "friend_folders"]:
 			plotData.plotdict[key] = [element.split() if element else element for element in plotData.plotdict[key]]
 		
-		if plotData.plotdict["no_cache"] is None:
-			plotData.plotdict["no_cache"] = not any(tools.flattenList([[input_file.startswith("/") or ("://" in input_file) for input_file in files] for files in plotData.plotdict["files"]]))
+		if plotData.plotdict["redo_cache"] is None:
+			plotData.plotdict["redo_cache"] = not any(tools.flattenList([[input_file.startswith("/") or ("://" in input_file) for input_file in files] for files in plotData.plotdict["files"]]))
 		
 		if plotData.plotdict["read_config"]:
 			self.read_input_json_dicts(plotData)
@@ -153,7 +151,6 @@ class InputRoot(inputfile.InputFile):
 						friend_aliases=friend_aliases,
 						proxy_prefix=plotData.plotdict["proxy_prefix"],
 						scan=plotData.plotdict["scan"],
-						use_cache=(not plotData.plotdict["no_cache"]),
 						redo_cache=(plotData.plotdict["redo_cache"])
 				)
 				

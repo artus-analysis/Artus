@@ -63,7 +63,7 @@ class RootFileCache(Cache):
 		root_tree = None
 		root_object = None
 		cache_found = False
-		if kwargs.get("use_cache", True) and (not kwargs.get("redo_cache", False)) and cache_file and os.path.exists(cache_file):
+		if (not kwargs.get("redo_cache", False)) and cache_file and os.path.exists(cache_file):
 			try:
 				with tfilecontextmanager.TFileContextManager(cache_file, "READ") as root_file:
 					root_object = root_file.Get(self.cache_name)
