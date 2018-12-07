@@ -321,8 +321,13 @@ public:
 		else if (jetIDVersion == KappaEnumTypes::JetIDVersion::ID2017)  //https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2017
 		{
 			//only implemented the ak4chs tight
+			//Veto ECAL noise jets
+			if( std::abs(std::abs(jet->p4.eta()) >= 2.65 && jet->p4.eta()) <= 3.139f && jet->p4.Pt()<50.f)
+			{
+				validJet = false;
+			}
 			// criteria |eta|<2.7
-			if (std::abs(jet->p4.eta()) <= 2.7f)
+			else if (std::abs(jet->p4.eta()) <= 2.7f)
 			{
 				float MaxNeutralHadronFraction = 0.90f; //smaller
 				float MaxNeutralEMFraction = 0.90f; //smaller
