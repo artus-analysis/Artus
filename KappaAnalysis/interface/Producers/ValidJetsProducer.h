@@ -322,7 +322,7 @@ public:
 		{
 			//only implemented the ak4chs tight
 			//Veto ECAL noise jets
-			if( std::abs(std::abs(jet->p4.eta()) >= 2.65 && jet->p4.eta()) <= 3.139f && jet->p4.Pt()<50.f)
+			if( (std::abs(jet->p4.eta()) >= 2.65) && (std::abs(jet->p4.eta())) <= 3.139f && (jet->p4.Pt()<50.f))
 			{
 				validJet = false;
 			}
