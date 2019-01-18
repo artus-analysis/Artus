@@ -19,7 +19,7 @@ if __name__ == "__main__":
 
 	parser.add_argument("root_file", help="Input ROOT file")
 	parser.add_argument("-e", "--elements", nargs="+", help="Regexes for elements for which the code should be executed.", default=[])
-	parser.add_argument("-c", "--codes", nargs="+", help="Code to be executed for matching elements. \"element\" is replaced by the matching element.", default=[])
+	parser.add_argument("-c", "--codes", nargs="+", help="Codes to be executed for matching elements. \"element\" is replaced by the matching element.", default=[])
 
 	args = parser.parse_args()
 	logger.initLogger(args)
@@ -34,7 +34,7 @@ if __name__ == "__main__":
 					root_object = root_file.Get(path)
 					eval(code.replace("element", "root_object"))
 					if index < len(elements)-1:
-						log.debug("\n" + (100*"-") + "\n")
+						log.info("\n" + (100*"-") + "\n")
 			if log.isEnabledFor(logging.DEBUG):
 				root_object = root_file.Get(path)
 				log.debug("")
