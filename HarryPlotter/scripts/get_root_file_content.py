@@ -7,6 +7,7 @@ log = logging.getLogger(__name__)
 
 import argparse
 import os
+import re
 
 import Artus.HarryPlotter.utility.roottools as roottools
 from Artus.Utility.tfilecontextmanager import TFileContextManager
@@ -17,6 +18,8 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="Print content of ROOT file", parents=[logger.loggingParser])
 
 	parser.add_argument("root_file", help="Input ROOT file")
+	parser.add_argument("-e", "--elements", nargs="+", help="Regexes for elements for which the code should be executed.", default=[])
+	parser.add_argument("-c", "--codes", nargs="+", help="Code to be executed for matching elements. \"element\" is replaced by the matching element.", default=[])
 
 	args = parser.parse_args()
 	logger.initLogger(args)
@@ -26,6 +29,12 @@ if __name__ == "__main__":
 		for index, (key, path) in enumerate(elements):
 			class_name = key.GetClassName()
 			log.info("%s (%s)" % (path, class_name))
+			for regex, code in zip(args.elements, args.codes):
+				if re.match(regex, path):
+					root_object = root_file.Get(path)
+					eval(code.replace("element", "root_object"))
+					if index < len(elements)-1:
+						log.debug("\n" + (100*"-") + "\n")
 			if log.isEnabledFor(logging.DEBUG):
 				root_object = root_file.Get(path)
 				log.debug("")
