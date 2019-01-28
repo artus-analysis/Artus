@@ -32,7 +32,10 @@ if __name__ == "__main__":
 			for regex, code in zip(args.elements, args.codes):
 				if re.match(regex, path):
 					root_object = root_file.Get(path)
-					eval(code.replace("element", "root_object"))
+					result = eval(code.replace("element", "root_object"))
+					if result:
+						log.info(code.replace("element", path))
+						log.info(result)
 					if index < len(elements)-1:
 						log.info("\n" + (100*"-") + "\n")
 			if log.isEnabledFor(logging.DEBUG):
