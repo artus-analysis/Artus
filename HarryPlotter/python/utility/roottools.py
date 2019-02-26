@@ -738,6 +738,30 @@ class RootTools(object):
 		
 		return result_histogram
 
+	@staticmethod
+	def histogram_calculation_2d(bin_content_function=None, bin_error_function=None, *input_histograms):
+		assert len(input_histograms) > 0
+		
+		if input_histograms[0].GetDimension() != 1:
+			log.error("The RootTools.histogram_calculation_2d function in multidim-mode is only implemented for 1D input histograms!")
+		new_name = "histogram_{0}.json".format(hashlib.md5("_".join([str(hist) for hist in input_histograms])).hexdigest())
+		binning = RootTools.get_binning(input_histograms[0], 0)
+		result_histogram = ROOT.TH2F(new_name, new_name, len(binning)-1, binning, len(binning)-1, binning)
+		result_histogram.Reset()
+		
+		for x_bin in xrange(1, input_histograms[0].GetNbinsX()+1):
+			for y_bin in xrange(1, input_histograms[0].GetNbinsX()+1):
+				if bin_content_function:
+					new_bin_content = bin_content_function([histogram.GetBinContent(x_bin) for histogram in input_histograms],
+					                                       [histogram.GetBinContent(y_bin) for histogram in input_histograms])
+					result_histogram.SetBinContent(x_bin, y_bin, new_bin_content)
+				
+				if bin_error_function:
+					new_bin_content = bin_content_function([histogram.GetBinError(x_bin) for histogram in input_histograms],
+					                                       [histogram.GetBinError(y_bin) for histogram in input_histograms])
+					result_histogram.SetBinError(x_bin, y_bin, new_bin_error)
+		
+		return result_histogram
 
 	@staticmethod
 	def to_histogram(root_object):
