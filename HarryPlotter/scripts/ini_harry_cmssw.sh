@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ -z ${HARRY_USERPC} ]]; then
-	export HARRY_USERPC=`who am i | sed 's/.*(\([^]]*\)).*/\1/g'`
+	export HARRY_USERPC=$HOSTNAME
 fi
 
 # set some variables needed for --userpc and web plotting
