@@ -24,19 +24,19 @@ import Artus.HarryPlotter.utility.roottools as roottools
 import Artus.HarryPlotter.utility.colors as colors
 
 class PlotBase(processor.Processor):
-	
+
 	def __init__(self):
 		super(PlotBase, self).__init__()
-		
+
 		self.predefined_colors = None
 		self.rel_y_lim_default={
 			"lin":[0.9, 1.1],
 			"log":[0.5, 2.0],
 		}
-	
+
 	def modify_argument_parser(self, parser, args):
 		super(PlotBase, self).modify_argument_parser(parser, args)
-		
+
 		# plotting settings
 		self.plotting_options = parser.add_argument_group("Plotting options")
 		self.plotting_options.add_argument("--nicks-whitelist", nargs="+", default=[],
@@ -57,7 +57,7 @@ class PlotBase(processor.Processor):
 		                               help="Custom ticks for the X-axis")
 		self.axis_options.add_argument("--x-tick-labels", type=str, nargs="+",
 		                               help="Custom tick labels for the X-axis")
-		
+
 		self.axis_options.add_argument("--y-lims", type=float, nargs=2,
 		                               help="Lower and Upper limit for y-axis.")
 		self.axis_options.add_argument("--y-rel-lims", type=float, nargs=2,
@@ -76,7 +76,7 @@ class PlotBase(processor.Processor):
 		                               help="Custom ticks for the Y-axis of the subplot")
 		self.axis_options.add_argument("--y-tick-labels", type=str, nargs="+",
 		                               help="Custom tick labels for the Y-axis")
-		
+
 		self.axis_options.add_argument("--z-lims", type=float, nargs=2,
 		                               help="Lower and Upper limit for z-axis.")
 		self.axis_options.add_argument("--z-label", type=str, default="Events",
@@ -150,7 +150,7 @@ class PlotBase(processor.Processor):
 		                                     help="X-coordinate(s) of text(s) on plot. Ranges from 0 to 1. [Default: %(default)s]")
 		self.formatting_options.add_argument("--texts-size", type=float, nargs="+", default=[None],
 		                                     help="Font size for the text labels. [Default: %(default)s]")
-		
+
 		# output settings
 		self.output_options = parser.add_argument_group("Output options")
 		self.output_options.add_argument("-o", "--output-dir", default="plots",
@@ -182,10 +182,13 @@ class PlotBase(processor.Processor):
 		                                 help="Command for creating the directory for the gallery. This command must contain {subdir} as placeholder for the gallery sub-directory to be created. [Default: %(default)s]")
 		self.other_options.add_argument("--www-copy-command", type=str, default="$WEB_PLOTTING_COPY_COMMAND",
 		                                 help="Command for copying the gallery. This command must contain {source} as placeholder for the files to be copied and {subdir} as placeholder for the gallery sub-directory. [Default: %(default)s]")
-	
+		self.other_options.add_argument("--www-no-overwrite", "--keep-both", "--keep", "-k", action='store_true', default=False,
+		                                 help="Don't overwrite remote file. [Default: %(default)s]")
+
+
 	def prepare_args(self, parser, plotData):
 		super(PlotBase, self).prepare_args(parser, plotData)
-		
+
 		if self.predefined_colors is None:
 			self.predefined_colors = colors.ColorsDict(color_scheme=plotData.plotdict["color_scheme"])
 
@@ -195,7 +198,7 @@ class PlotBase(processor.Processor):
 
 		# delete nicks that do not need to be used for plotting
 		self.select_histograms(plotData)
-		
+
 		# construct labels from x/y/z expressions if not specified by user
 		for label_key, expression_key in zip(["x_label", "y_label", "z_label"],
 		                                   ["x_expressions", "y_expressions", "z_expressions"]):
@@ -216,23 +219,23 @@ class PlotBase(processor.Processor):
 		# formatting options
 		if plotData.plotdict["labels"] == None or all([i == None for i in plotData.plotdict["labels"]]):
 			plotData.plotdict["labels"] = plotData.plotdict["nicks"]
-		
+
 		self.prepare_list_args(plotData, ["nicks", "stacks", "colors", "labels", "markers", "line_styles", "line_widths"],
 				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]),
 				help="Plotting style options")
-		
+
 		# defaults for axis ranges
 		if plotData.plotdict["y_rel_lims"] is None:
 			plotData.plotdict["y_rel_lims"] = self.rel_y_lim_default[('log' if plotData.plotdict['y_log'] else 'lin')]
-		
+
 		# stacks are expanded by appending None's
 		plotData.plotdict["stacks"] = plotData.plotdict["stacks"]+[None]*(len(plotData.plotdict["nicks"])-len(plotData.plotdict["stacks"]))
-		
+
 		plotData.plotdict["colors"] = [None if color is None else self.predefined_colors.get_predefined_color(color) for color in plotData.plotdict["colors"]]
-		
+
 		if plotData.plotdict["www"] != None:
 			plotData.plotdict["output_dir"] = os.path.join("websync", datetime.date.today().strftime("%Y_%m_%d") if (plotData.plotdict["www"] == "" or not plotData.plotdict["www_nodate"]) else "", (plotData.plotdict["www"] or ""))
-		
+
 		# construct file name from x/y/z expressions if not specified by user
 		if plotData.plotdict["filename"] == None:
 			filename = ""
@@ -256,10 +259,10 @@ class PlotBase(processor.Processor):
 		plotData.plotdict["output_filenames"] = []
 		for plot_format in plotData.plotdict["formats"]:
 			plotData.plotdict["output_filenames"].append(os.path.join(plotData.plotdict["output_dir"], plotData.plotdict["filename"]+"."+plot_format))
-		
+
 		if plotData.plotdict["export_json"] == "default":
 			plotData.plotdict["export_json"] = os.path.join(plotData.plotdict["output_dir"], plotData.plotdict["filename"]+".json")
-		
+
 		# create output directory if not exisiting
 		try:
 			os.makedirs(plotData.plotdict["output_dir"])
@@ -290,7 +293,7 @@ class PlotBase(processor.Processor):
 
 	def run(self, plotData):
 		super(PlotBase, self).run(plotData)
-		
+
 		self.set_style(plotData)
 		self.create_canvas(plotData)
 		self.prepare_histograms(plotData)
@@ -304,7 +307,7 @@ class PlotBase(processor.Processor):
 
 	def select_histograms(self, plotData):
 		sorted_nicks_to_keep = []
-		
+
 		# handle regexps in white/black lists for nicks
 		plotData.plotdict["nicks"] = tools.matching_sublist(
 				plotData.plotdict["nicks"],
@@ -316,7 +319,7 @@ class PlotBase(processor.Processor):
 		if len(plotData.plotdict["nicks"]) == 0:
 			log.critical("No (remaining) objects to be plotted! Tru to adjust your white/black lists.")
 			sys.exit(1)
-		
+
 		# handle subplot regexps
 		plotData.plotdict["subplot_nicks"] = tools.matching_sublist(
 				plotData.plotdict["nicks"],
@@ -328,10 +331,10 @@ class PlotBase(processor.Processor):
 
 	def set_style(self, plotData):
 		pass
-	
+
 	def create_canvas(self, plotData):
 		pass
-	
+
 	def prepare_histograms(self, plotData):
 		# handle stacks
 		# TODO: define how functions should act when stacked
@@ -349,7 +352,7 @@ class PlotBase(processor.Processor):
 			if log.isEnabledFor(logging.DEBUG):
 				log.debug("\nContents of nick {0} (type {2}, stack {1}):".format(nick1, stack1, type(plotData.plotdict["root_objects"][nick1])))
 				plotData.plotdict["root_objects"][nick1].Print("range")
-		
+
 		# remove underflow/overflow bin contents
 		for nick in plotData.plotdict["nicks"]:
 			root_object = plotData.plotdict["root_objects"][nick]
@@ -371,13 +374,13 @@ class PlotBase(processor.Processor):
 		self.z_min = None
 		self.z_max = None
 		self.max_dim = 2
-		
+
 		self.y_sub_min = None
 		self.y_sub_max = None
 		self.z_sub_min = None
 		self.z_sub_max = None
 		self.max_sub_dim = 2
-		
+
 		for nick, subplot in zip(plotData.plotdict["nicks"], plotData.plotdict["subplots"]):
 			plot_x_min, plot_x_max, plot_y_min, plot_y_max, plot_z_min, plot_z_max, max_dim = PlotBase.get_plot_lims(
 					plotData.plotdict["root_objects"][nick],
@@ -385,7 +388,7 @@ class PlotBase(processor.Processor):
 					y_log=plotData.plotdict["y_log"],
 					z_log=plotData.plotdict["z_log"]
 			)
-			
+
 			self.x_min, self.x_max = PlotBase.update_lims(self.x_min, self.x_max, plot_x_min, plot_x_max)
 			if subplot == True:
 				if (max_dim > self.max_sub_dim):
@@ -400,16 +403,16 @@ class PlotBase(processor.Processor):
 
 	def make_plots(self, plotData):
 		pass
-	
+
 	def modify_axes(self, plotData):
 		pass
-	
+
 	def add_grid(self, plotData):
 		pass
-	
+
 	def add_labels(self, plotData):
 		pass
-	
+
 	def add_texts(self, plotData):
 		self.dataset_title = ""
 		run_periods = []
@@ -429,7 +432,7 @@ class PlotBase(processor.Processor):
 				run_periods.append("\sqrt{s} = %s \,TeV" % str(int(energy)))
 		if len(run_periods) > 0:
 			self.dataset_title = "$" + (" + ".join(run_periods)) + "$"
-	
+
 	def plot_end(self, plotData):
 		if plotData.plotdict["dict"]:
 			pprint.pprint(plotData.plotdict)
@@ -437,23 +440,23 @@ class PlotBase(processor.Processor):
 	@staticmethod
 	def get_plot_lims(root_object, x_log=False, y_log=False, z_log=False):
 		max_dim = roottools.RootTools.get_dimension(root_object)
-		
+
 		x_min, x_max = roottools.RootTools.get_min_max(root_object, 0)
 		if x_log and (x_min * x_max <= 0.0):
 			x_min, x_max = roottools.RootTools.get_min_max(root_object, 0, lower_threshold=0.0)
-		
+
 		y_min, y_max = roottools.RootTools.get_min_max(root_object, 1)
 		if y_log and (y_min * y_max <= 0.0):
 			y_min, y_max = roottools.RootTools.get_min_max(root_object, 1, lower_threshold=0.0)
-		
+
 		z_min, z_max = None, None
 		if max_dim > 2:
 			z_min, z_max = roottools.RootTools.get_min_max(root_object, 2)
 			if z_log and (z_min * z_max <= 0.0):
 				z_min, z_max = roottools.RootTools.get_min_max(root_object, 2, lower_threshold=0.0)
-		
+
 		return x_min, x_max, y_min, y_max, z_min, z_max, max_dim
-	
+
 	@staticmethod
 	def update_lims(min_1, max_1, min_2, max_2):
 		result_min = None
@@ -463,7 +466,7 @@ class PlotBase(processor.Processor):
 			result_min = min_2
 		else:
 			result_min = min(min_1, min_2)
-		
+
 		result_max = None
 		if max_2 is None:
 			result_max = max_1
@@ -471,5 +474,5 @@ class PlotBase(processor.Processor):
 			result_max = max_2
 		else:
 			result_max = max(max_1, max_2)
-		
+
 		return result_min, result_max

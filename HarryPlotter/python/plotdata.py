@@ -60,7 +60,7 @@ class PlotData(object):
 			'DISPLAY=:0 %s /usr/users/%s/plot.%s &' % (viewer, user, filename.split(".")[-1])])
 
 	@staticmethod
-	def webplotting(www, output_dir, output_filenames=False, www_text = False, www_title="plots_archive", www_nodate = False, additional_output_files=False, save_legend=False, export_json = False, no_publish=False):
+	def webplotting(www, output_dir, output_filenames=False, www_text = False, www_title="plots_archive", www_nodate = False, additional_output_files=False, save_legend=False, export_json = False, no_publish=False, www_no_overwrite=False):
 		# set some needed variables
 		user = tools.get_environment_variable("HARRY_REMOTE_USER")
 		html_content = ""
@@ -121,7 +121,10 @@ class PlotData(object):
 
 		# create remote dir, copy files
 		mkdir_command = os.path.expandvars("$WEB_PLOTTING_MKDIR_COMMAND").format(subdir=remote_subdir)
-		copy_command = os.path.expandvars("$WEB_PLOTTING_COPY_COMMAND").format(source=" ".join(files_to_copy), subdir=remote_subdir)
+		if www_no_overwrite:
+			copy_command = os.path.expandvars("$WEB_PLOTTING_COPY_COMMAND").replace(' -f ', ' ').format(source=" ".join(files_to_copy), subdir=remote_subdir)
+		else:
+			copy_command = os.path.expandvars("$WEB_PLOTTING_COPY_COMMAND").format(source=" ".join(files_to_copy), subdir=remote_subdir)
 
 		log.debug("Copying plots to webspace...")
 		log.debug("\nIssueing mkdir command: " + mkdir_command)
@@ -162,7 +165,8 @@ class PlotData(object):
 				             www_nodate = self.plotdict["www_nodate"],
 				             additional_output_files = self.plotdict["additional_output_files"] if "additional_output_files" in self.plotdict else False,
 				             save_legend = self.plotdict.get("save_legend", False),
-				             export_json = self.plotdict["export_json"]
+				             export_json = self.plotdict["export_json"],
+				             www_no_overwrite=self.plotdict["www_no_overwrite"],
 				             )
 
 			return self.plotdict["output_filenames"]
