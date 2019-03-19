@@ -315,7 +315,18 @@ class RootTools(object):
 		if "prof" not in option.lower() and binning_identifier not in self.binning_determined:
 			self.binning_determined.append(binning_identifier)
 		return tree, root_histogram
-	
+
+	@staticmethod
+	def prepare_proxy_command(s):
+		from six import string_types
+		if not isinstance(s, string_types):
+			s = str(s)
+			logger.warning("prepare_proxy_command  manual string conversion: " + s)
+		s = s.rstrip()
+		if s.endswith(';'):
+			s = s[:-1]
+		return 'return ' + s if 'return' not in s else s
+
 	@staticmethod
 	@rootcache.RootFileCache(os.path.expandvars(os.path.join("$HP_WORK_BASE_COMMON", "caches")))
 	def tree_draw(root_file_names, path_to_trees, friend_files, friend_folders, friend_aliases, root_histogram, variable_expression, name, binning, weight_selection, option, proxy_prefix="", scan=None, redo_cache=False):
@@ -374,19 +385,17 @@ class RootTools(object):
 			tmp_proxy_files.append(proxy_cutmacro_filename)
 			
 			# write macros with variable and cut expression containing the plotting information
+			variable_expression = RootTools.prepare_proxy_command(variable_expression)
+			weight_selection = RootTools.prepare_proxy_command(weight_selection)
 			with open(proxy_macro_filename, "w") as proxy_macro_file:
-				proxy_macro_file.write("double {function}() {a} return {content}; {b}".format(
+				proxy_macro_file.write("double {function}() {{ {content}; }}".format(
 						function=proxy_macro_name,
-						a="{",
 						content=variable_expression,
-						b="}"
 				))
 			with open(proxy_cutmacro_filename, "w") as proxy_cutmacro_file:
-				proxy_cutmacro_file.write("bool {function}() {a} return {content}; {b}".format(
+				proxy_cutmacro_file.write("bool {function}() {{ {content}; }}".format(
 						function=proxy_cutmacro_name,
-						a="{",
-						content=str(weight_selection),
-						b="}"
+						content=weight_selection,
 				))
 			
 			# create tree proxy
