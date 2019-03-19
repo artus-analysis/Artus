@@ -119,12 +119,14 @@ class PlotData(object):
 		if save_legend:
 			files_to_copy += [os.path.join(output_dir, save_legend + _format) for _format in formats]
 
+		# prepare the executed copy command
+		web_plotting_copy_command = os.path.expandvars("$WEB_PLOTTING_COPY_COMMAND")
+		if www_no_overwrite:
+			web_plotting_copy_command = web_plotting_copy_command.replace(' -f ', ' ')
+
 		# create remote dir, copy files
 		mkdir_command = os.path.expandvars("$WEB_PLOTTING_MKDIR_COMMAND").format(subdir=remote_subdir)
-		if www_no_overwrite:
-			copy_command = os.path.expandvars("$WEB_PLOTTING_COPY_COMMAND").replace(' -f ', ' ').format(source=" ".join(files_to_copy), subdir=remote_subdir)
-		else:
-			copy_command = os.path.expandvars("$WEB_PLOTTING_COPY_COMMAND").format(source=" ".join(files_to_copy), subdir=remote_subdir)
+		copy_command = web_plotting_copy_command.format(source=" ".join(files_to_copy), subdir=remote_subdir)
 
 		log.debug("Copying plots to webspace...")
 		log.debug("\nIssueing mkdir command: " + mkdir_command)
