@@ -479,7 +479,8 @@ class RootTools(object):
 			for tmp_file in glob.glob(os.path.splitext(tmp_proxy_file)[0]+"*"):
 				log.debug("rm " + tmp_file)
 				if not log.isEnabledFor(logging.DEBUG):
-					os.remove(tmp_file)
+					pass
+					# os.remove(tmp_file)
 
 		return tree, root_histogram
 
