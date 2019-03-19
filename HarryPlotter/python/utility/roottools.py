@@ -400,7 +400,7 @@ class RootTools(object):
 
 			# create tree proxy
 			tree.MakeProxy(proxy_class_name, proxy_macro_filename, proxy_cutmacro_filename)
-			proxy_call = proxy_class_filename+"+"
+			proxy_call = proxy_class_filename + "+"
 
 			# fix histogram name used in the proxy class
 			# TODO: only do this when ROOT.TTree.Project is called afterwards, not for ROOT.TTree.Draw, when the histogram cannot be renamed before the plotting?
@@ -426,7 +426,7 @@ class RootTools(object):
 			tree.Scan(scan, str(weight_selection), "colsize=12")
 
 		if root_histogram == None:
-			if ("proxy" in option) and (not proxy_call is None):
+			if "proxy" in option and proxy_call is not None:
 				log.critical("Plotting of compliled proxy formulas not yet implemented for the case where no binning is specified!")
 				sys.exit(1)
 			else:
@@ -476,7 +476,7 @@ class RootTools(object):
 		if log.isEnabledFor(logging.DEBUG):
 			log.warning("Delete proxy files manually:")
 		for tmp_proxy_file in tmp_proxy_files:
-			for tmp_file in glob.glob(os.path.splitext(tmp_proxy_file)[0]+"*"):
+			for tmp_file in glob.glob(os.path.splitext(tmp_proxy_file)[0] + "*"):
 				log.debug("rm " + tmp_file)
 				if not log.isEnabledFor(logging.DEBUG):
 					pass
