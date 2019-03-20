@@ -50,15 +50,17 @@ class PrintCPAPhi(analysisbase.AnalysisBase):
 						root_object.GetBinLowEdge(iBin), root_object.GetBinContent(iBin)))
 						bincontent.append(root_object.GetBinContent(iBin))
 				if root_object.GetNbinsX() == 3:
-					aphi=(bincontent[0]-bincontent[1]+bincontent[2])/(bincontent[0]+bincontent[1]+bincontent[2])
+					aphi = self.aphi(bincontent[0],bincontent[1],bincontent[2])
+					sAphi = self.saphi(bincontent[0],bincontent[1],bincontent[2]) 
 					log.info("\n")
-					log.info("{0:<10} {1:<22.3f}".format("APhi", aphi))
+					log.info("{0:<10} {1:<22.3f} +- {2:<22.3f}".format("APhi", aphi, sAphi))
 					log.info("\n")
 
 				elif root_object.GetNbinsX() == 4:
-					aphi=(bincontent[0]-bincontent[1]-bincontent[2]+bincontent[3])/(bincontent[0]+bincontent[1]+bincontent[2]+bincontent[3])
+					aphi = self.aphi(bincontent[0],bincontent[1],bincontent[3], bincontent[2])
+					sAphi = self.saphi(bincontent[0],bincontent[1],bincontent[3], bincontent[2])
 					log.info("\n")
-					log.info("{0:<10} {1:<22.3f}".format("APhi", aphi))
+					log.info("{0:<10} {1:<22.3f} +- {2:<22.3f}".format("APhi", aphi, sAphi))
 					log.info("\n")
 				
 			elif isinstance(root_object, ROOT.TGraph):
@@ -72,5 +74,15 @@ class PrintCPAPhi(analysisbase.AnalysisBase):
 					d1, d2 = ROOT.Double(0), ROOT.Double(0)
 					root_object.GetPoint(iBin, d1, d2)
 					log.info("{0:<10} {1:<22.3f} {2:<22.3f}".format(iBin,d1, d2))
+
+	def aphi(self,a,b,c,b2=0.):
+		bf = float(b+b2)
+		Aphi = (a-bf+c)/(a+bf+c)
+		return Aphi
+	#error on aphi calculated with error propagation
+	def saphi(self,a,b,c,b2=0.):
+		bf=float(b+b2)
+		sAphi = (1/(a+bf+c)**2)*((4*bf**2)*(a+c)+(bf)*4*(a+c)**2)**(0.5)
+		return sAphi
 
 
