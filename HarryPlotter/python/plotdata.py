@@ -60,13 +60,18 @@ class PlotData(object):
 			'DISPLAY=:0 %s /usr/users/%s/plot.%s &' % (viewer, user, filename.split(".")[-1])])
 
 	@staticmethod
-	def webplotting(www, output_dir, output_filenames=False, www_text = False, www_title="plots_archive", www_nodate = False, additional_output_files=False, save_legend=False, export_json = False, no_publish=False, www_no_overwrite=False):
+	def webplotting(www, output_dir, output_filenames=False,
+			www_text=False, www_title="plots_archive",
+			www_nodate=False, additional_output_files=False,
+			save_legend=False, export_json=False, no_publish=False,
+			www_no_overwrite=False, remote_subdir=None):
 		# set some needed variables
 		# user = tools.get_environment_variable("HARRY_REMOTE_USER")
 		html_content = ""
 		overview_filename = "index.html"
 		date = datetime.date.today().strftime('%Y_%m_%d')
-		remote_subdir = os.path.expandvars(os.path.join((date if (www == "" or not www_nodate) else ""), (www if type(www)==str else "")))
+		if remote_subdir is None:
+			remote_subdir = os.path.expandvars(os.path.join((date if (www == "" or not www_nodate) else ""), (www if type(www)==str else "")))
 		url = os.path.expandvars(os.path.join("$HARRY_URL", remote_subdir, overview_filename))
 		plots_for_gallery = [p for p in sorted(os.listdir(output_dir)) if (os.path.isfile(os.path.join(output_dir, p)) and all([not p.endswith("." + ext) for ext in ["json", "html", "root"]]))]
 		# get the html templates
@@ -160,6 +165,11 @@ class PlotData(object):
 			# web plotting
 			# TODO: make this more configurable if users want to user other webspaces etc.
 			if self.plotdict["www"] is not None:
+				try:
+					remote_subdir = self.plotdict["output_dir"].split('websync/')[1]
+				except:
+					logger.warning("Remote subdir may not reflect local gallery structure")
+					remote_subdir = None
 
 				self.webplotting(
 					www=self.plotdict["www"],
@@ -172,6 +182,7 @@ class PlotData(object):
 					save_legend=self.plotdict.get("save_legend", False),
 					export_json=self.plotdict["export_json"],
 					www_no_overwrite=self.plotdict["www_no_overwrite"],
+					remote_subdir=remote_subdir,
 				)
 
 			return self.plotdict["output_filenames"]

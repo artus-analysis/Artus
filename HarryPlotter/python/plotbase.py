@@ -180,6 +180,15 @@ class PlotBase(processor.Processor):
 		                                 help="Text for the web gallery. [Default: download-link]")
 		self.other_options.add_argument("--www-nodate", nargs="?", type="bool", default=False, const=True,
 		                                 help="Does not create a folder with the current date. [Default: %(default)s]")
+		self.other_options.add_argument("--www-dir", type=str, default=None,
+		                                 help="""Directory structure where the plots will be uploaded.
+		                                 {date} expressions will be replaced by date.
+		                                 Overwrites arguments of --www and --www-noplot.
+		                                 Examples:
+		                                 `--www-dir mydir_{date}/sub` locates plots under mydir_<date>/sub;
+		                                 `--www-dir {date}/sub` is equivalent to `--www sub`;
+		                                 `--www-dir sub` is equivalent to `--www sub ---www-noplot`;
+		                                 [Default: %(default)s]""")
 		self.other_options.add_argument("--www-mkdir-command", type=str, default="$WEB_PLOTTING_MKDIR_COMMAND",
 		                                 help="Command for creating the directory for the gallery. This command must contain {subdir} as placeholder for the gallery sub-directory to be created. [Default: %(default)s]")
 		self.other_options.add_argument("--www-copy-command", type=str, default="$WEB_PLOTTING_COPY_COMMAND",
@@ -237,6 +246,12 @@ class PlotBase(processor.Processor):
 		# webplotting setup
 		if plotData.plotdict["www"] is not None:
 			plotData.plotdict["output_dir"] = os.path.join("websync", datetime.date.today().strftime("%Y_%m_%d") if (plotData.plotdict["www"] == "" or not plotData.plotdict["www_nodate"]) else "", (plotData.plotdict["www"] or ""))
+
+		if plotData.plotdict["www_dir"] is not None:
+			# turn on webplotting if it wasn't
+			plotData.plotdict["www"] = "" if plotData.plotdict["www"] is None else plotData.plotdict["www"]
+			# set the new output dir
+			plotData.plotdict["output_dir"] = os.path.join("websync", plotData.plotdict["www_dir"].format(date=datetime.date.today().strftime("%Y_%m_%d")))
 
 		# construct file name from x/y/z expressions if not specified by user
 		if plotData.plotdict["filename"] == None:
