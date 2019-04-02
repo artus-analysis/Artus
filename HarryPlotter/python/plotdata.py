@@ -62,13 +62,13 @@ class PlotData(object):
 	@staticmethod
 	def webplotting(www, output_dir, output_filenames=False, www_text = False, www_title="plots_archive", www_nodate = False, additional_output_files=False, save_legend=False, export_json = False, no_publish=False, www_no_overwrite=False):
 		# set some needed variables
-		user = tools.get_environment_variable("HARRY_REMOTE_USER")
+		# user = tools.get_environment_variable("HARRY_REMOTE_USER")
 		html_content = ""
 		overview_filename = "index.html"
 		date = datetime.date.today().strftime('%Y_%m_%d')
 		remote_subdir = os.path.expandvars(os.path.join((date if (www == "" or not www_nodate) else ""), (www if type(www)==str else "")))
 		url = os.path.expandvars(os.path.join("$HARRY_URL", remote_subdir, overview_filename))
-		plots_for_gallery = [p for p in sorted(os.listdir(output_dir)) if (os.path.isfile(os.path.join(output_dir, p)) and all([not p.endswith("."+ext) for ext in ["json", "html", "root"]]))]
+		plots_for_gallery = [p for p in sorted(os.listdir(output_dir)) if (os.path.isfile(os.path.join(output_dir, p)) and all([not p.endswith("." + ext) for ext in ["json", "html", "root"]]))]
 		# get the html templates
 		files_to_copy = []
 		for galleryplot in plots_for_gallery:
@@ -93,10 +93,10 @@ class PlotData(object):
 				links +=' <a href="{}">{}</a>'.format(plot+fileformat, fileformat[1:])
 
 			html_content += html_texts['plot'].substitute(
-					title=plot,
-					image=image,
-					links=links,
-					json=plot+".json"
+				title=plot,
+				image=image,
+				links=links,
+				json=plot + ".json"
 			)
 
 		# put the html parts together and write
@@ -107,14 +107,16 @@ class PlotData(object):
 				text=html_texts['description']
 			))
 		if no_publish:
-			return  0
+			return 0
+
 		# find out which files to copy
-		if(output_filenames != False):
-			files_to_copy = ( output_filenames )
+		if output_filenames is not False:
+			files_to_copy = (output_filenames)
 		files_to_copy += [os.path.join(output_dir, overview_filename)]
-		if additional_output_files != False:
+
+		if additional_output_files is not False:
 			files_to_copy += additional_output_files
-		if export_json != False:
+		if export_json is not False:
 			files_to_copy += [export_json]
 		if save_legend:
 			files_to_copy += [os.path.join(output_dir, save_legend + _format) for _format in formats]
@@ -157,19 +159,20 @@ class PlotData(object):
 
 			# web plotting
 			# TODO: make this more configurable if users want to user other webspaces etc.
-			if self.plotdict["www"] != None:
+			if self.plotdict["www"] is not None:
+
 				self.webplotting(
-				             www = self.plotdict["www"],
-				             output_dir = self.plotdict["output_dir"],
-				             output_filenames = self.plotdict["output_filenames"],
-				             www_text= self.plotdict["www_text"],
-				             www_title = self.plotdict["www_title"],
-				             www_nodate = self.plotdict["www_nodate"],
-				             additional_output_files = self.plotdict["additional_output_files"] if "additional_output_files" in self.plotdict else False,
-				             save_legend = self.plotdict.get("save_legend", False),
-				             export_json = self.plotdict["export_json"],
-				             www_no_overwrite=self.plotdict["www_no_overwrite"],
-				             )
+					www=self.plotdict["www"],
+					output_dir=self.plotdict["output_dir"],
+					output_filenames=self.plotdict["output_filenames"],
+					www_text=self.plotdict["www_text"],
+					www_title=self.plotdict["www_title"],
+					www_nodate=self.plotdict["www_nodate"],
+					additional_output_files=self.plotdict["additional_output_files"] if "additional_output_files" in self.plotdict else False,
+					save_legend=self.plotdict.get("save_legend", False),
+					export_json=self.plotdict["export_json"],
+					www_no_overwrite=self.plotdict["www_no_overwrite"],
+				)
 
 			return self.plotdict["output_filenames"]
 

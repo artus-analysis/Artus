@@ -168,6 +168,8 @@ class PlotBase(processor.Processor):
 		                                 help="If 'live' is enabled, the image will be copied to the user desktop (via ssh) and the image viewer will be started on the user desktop with this option. [Default: %(default)s]")
 		self.other_options.add_argument("--dict", nargs="?", type="bool", default=False, const=True,
 		                                 help="Print out plot dictionary when plotting. [Default: %(default)s]")
+
+		# webplotting
 		self.other_options.add_argument("--www", type=str, default=None, nargs='?', const="",
 		                                 help="""Push output plots directly to your public EKP webspace.
 		                                 Default location is http://www-ekp.physik.uni-karlsruhe.de/~<USER>/plots_archive/<DATE>
@@ -184,7 +186,6 @@ class PlotBase(processor.Processor):
 		                                 help="Command for copying the gallery. This command must contain {source} as placeholder for the files to be copied and {subdir} as placeholder for the gallery sub-directory. [Default: %(default)s]")
 		self.other_options.add_argument("--www-no-overwrite", "--keep-both", "--keep", "-k", action='store_true', default=False,
 		                                 help="Don't overwrite remote file. [Default: %(default)s]")
-
 
 	def prepare_args(self, parser, plotData):
 		super(PlotBase, self).prepare_args(parser, plotData)
@@ -233,7 +234,8 @@ class PlotBase(processor.Processor):
 
 		plotData.plotdict["colors"] = [None if color is None else self.predefined_colors.get_predefined_color(color) for color in plotData.plotdict["colors"]]
 
-		if plotData.plotdict["www"] != None:
+		# webplotting setup
+		if plotData.plotdict["www"] is not None:
 			plotData.plotdict["output_dir"] = os.path.join("websync", datetime.date.today().strftime("%Y_%m_%d") if (plotData.plotdict["www"] == "" or not plotData.plotdict["www_nodate"]) else "", (plotData.plotdict["www"] or ""))
 
 		# construct file name from x/y/z expressions if not specified by user
