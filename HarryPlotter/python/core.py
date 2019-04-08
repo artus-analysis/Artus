@@ -124,7 +124,7 @@ class HarryCore(object):
 		if self.args["list_available_modules"]:
 			self._print_available_modules()
 			sys.exit(0)
-		
+
 		# handle input modules (first)
 		if isinstance(self.args["input_modules"], basestring):
 			self.args["input_modules"] = [self.args["input_modules"]]
@@ -139,7 +139,7 @@ class HarryCore(object):
 		# handle analysis modules (second)
 		if self.args["analysis_modules"] is None:
 			self.args["analysis_modules"] = []
-		
+
 		for module in self.args["analysis_modules"]:
 			if self._isvalid_processor(module, processor_type=AnalysisBase):
 				self.processors.append(self.available_processors[module]())
@@ -163,16 +163,16 @@ class HarryCore(object):
 		# let processors modify the parser and then parse the arguments again
 		for processor in self.processors:
 			processor.modify_argument_parser(self.parser, self.args)
-		
+
 		# overwrite defaults by defaults from json files
 		if self.args["json_defaults"] != None:
 			self.parser.set_defaults(**(JsonDict(self.args["json_defaults"]).doIncludes().doComments()))
-		
+
 		log.debug("Second parsing of arguments...")
 		self.args = vars(self.parser.parse_args(self._args_from_script))
 		log.debug("\tdone.")
 		plotData = plotdata.PlotData(self.args)
-		
+
 		# print the final processor chain
 		log.debug('Processors will be run in the following order')
 		log.debug(' => '.join([processor.name() for processor in self.processors]))
@@ -184,7 +184,7 @@ class HarryCore(object):
 		log.debug("Setting ROOT TH1 DefaultSumw2 to True.")
 		ROOT.TH1.SetDefaultSumw2(True)
 		ROOT.gROOT.SetBatch(True)
-		
+
 		# export arguments into JSON file (1)
 		# remove entries from dictionary that are not meant to be exported
 		export_args = JsonDict(copy.deepcopy(plotData.plotdict))
@@ -199,13 +199,13 @@ class HarryCore(object):
 
 		if plotData.plotdict["export_json"] == "update":
 			plotData.plotdict["export_json"] = "default" if plotData.plotdict["json_defaults"] is None else plotData.plotdict["json_defaults"][0]
-		
+
 		# prepare aguments for all processors before running them
 		for processor in self.processors:
 			processor.prepare_args(self.parser, plotData)
 			if not plotData.plotdict["dry_run"]:
 				processor.run(plotData)
-		
+
 		# export arguments into JSON file
 		output_filenames = []
 		if plotData.plotdict["export_json"] != "default" and plotData.plotdict["export_json"] not in [False, "False", None, "None"]:
@@ -221,12 +221,12 @@ class HarryCore(object):
 				output_filenames = [json_filename]
 		else:
 			plotData.plotdict["export_json"] = None
-		
+
 		# save plots
 		if not plotData.plotdict["dry_run"]:
 			output_filenames = plotData.save()
 		return output_filenames
-	
+
 	def register_processor(self, processor):
 		"""Add processor to list of available processors."""
 		if (issubclass(obj, AnalysisBase) or issubclass(obj, InputBase) or
@@ -252,7 +252,7 @@ class HarryCore(object):
 		"""Check if a processor is valid."""
 		if not processor_name in self.available_processors:
 			return False
-		elif not (issubclass(self.available_processors[processor_name], AnalysisBase) or 
+		elif not (issubclass(self.available_processors[processor_name], AnalysisBase) or
 			      issubclass(self.available_processors[processor_name], InputBase) or
 			      issubclass(self.available_processors[processor_name], PlotBase)):
 			return False
