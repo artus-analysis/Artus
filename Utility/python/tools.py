@@ -24,6 +24,20 @@ import Artus.Utility.progressiterator as pi
 from difflib import SequenceMatcher
 
 
+def get_checked_and_renamed(file_name, suffix=''):
+	if not os.path.isfile(file_name):
+		return file_name, suffix
+	ext = '.' + file_name.split('.')[-1]
+	name = ".".join(file_name.split(".")[:-1])
+	if '__copy_' not in name:
+		name += '__copy_0'
+		suffix = '__copy_0'
+	else:
+		suffix = '__copy_' + str(int(name.split('__copy_')[-1]) + 1)
+		name = '__copy_'.join(name.split('__copy_')[:-1]) + suffix
+	return get_checked_and_renamed(name + ext, suffix)
+
+
 def flattenList(listOfLists):
 	"""
 	flatten 2D list

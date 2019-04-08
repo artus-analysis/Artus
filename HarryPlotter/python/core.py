@@ -209,11 +209,16 @@ class HarryCore(object):
 		# export arguments into JSON file
 		output_filenames = []
 		if plotData.plotdict["export_json"] != "default" and plotData.plotdict["export_json"] not in [False, "False", None, "None"]:
+			if self.args["no_overwrite"] and os.path.isfile(plotData.plotdict["export_json"]):
+				plotData.plotdict["export_json"], suffix = tools.get_checked_and_renamed(plotData.plotdict["export_json"])
+				add_suff = lambda x: '.'.join(x.split('.')[:-1]) + suffix + '.' + x.split('.')[-1]
+				plotData.plotdict["output_filenames"] = [add_suff(x) for x in plotData.plotdict["output_filenames"]]
+
 			json_filename = plotData.plotdict["export_json"]
 			export_args.save(json_filename, indent=4)
+			log.info("Created config \"%s\"." % json_filename)
 			if plotData.plotdict["dry_run"]:
 				output_filenames = [json_filename]
-				log.info("Created config \"%s\"." % json_filename)
 		else:
 			plotData.plotdict["export_json"] = None
 		

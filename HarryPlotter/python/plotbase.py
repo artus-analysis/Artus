@@ -159,6 +159,8 @@ class PlotBase(processor.Processor):
 		                                 help="Filename of the plot without extension. By default, it is constructed from the x/y/z expressions.")
 		self.output_options.add_argument("--formats", nargs="+", default=["png"],
 		                                 help="Format of the plots. [Default: %(default)s]")
+		self.output_options.add_argument("--no-overwrite", "--keep-both", "--keep", "-k", action='store_true', default=False,
+		                                 help="Don't overwrite output file. [Default: %(default)s]")
 
 		# settings to increase usability
 		self.other_options = parser.add_argument_group("Other features")
@@ -193,7 +195,7 @@ class PlotBase(processor.Processor):
 		                                 help="Command for creating the directory for the gallery. This command must contain {subdir} as placeholder for the gallery sub-directory to be created. [Default: %(default)s]")
 		self.other_options.add_argument("--www-copy-command", type=str, default="$WEB_PLOTTING_COPY_COMMAND",
 		                                 help="Command for copying the gallery. This command must contain {source} as placeholder for the files to be copied and {subdir} as placeholder for the gallery sub-directory. [Default: %(default)s]")
-		self.other_options.add_argument("--www-no-overwrite", "--keep-both", "--keep", "-k", action='store_true', default=False,
+		self.other_options.add_argument("--www-no-overwrite", action='store_true', default=False,
 		                                 help="Don't overwrite remote file. [Default: %(default)s]")
 
 	def prepare_args(self, parser, plotData):

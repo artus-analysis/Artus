@@ -194,7 +194,7 @@ class PlotData(object):
 					additional_output_files=self.plotdict["additional_output_files"] if "additional_output_files" in self.plotdict else False,
 					save_legend=self.plotdict.get("save_legend", False),
 					export_json=self.plotdict["export_json"],
-					www_no_overwrite=self.plotdict["www_no_overwrite"],
+					www_no_overwrite=self.plotdict["www_no_overwrite"] or self.plotdict["no_overwrite"],
 					remote_subdir=remote_subdir,
 				)
 
