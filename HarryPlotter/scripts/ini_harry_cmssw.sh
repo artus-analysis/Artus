@@ -24,6 +24,11 @@ if [[ -z ${WEB_PLOTTING_COPY_COMMAND} ]]; then
 	export WEB_PLOTTING_COPY_COMMAND="xrdcp -s -f {source} root://eosuser.cern.ch//eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
 fi
 
+
+if [[ -z ${WEB_PLOTTING_LS_COMMAND} ]]; then
+	export WEB_PLOTTING_LS_COMMAND="xrdfs eosuser.cern.ch ls /eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
+fi
+
 if [[ `hostname` == *naf* ]]; then
 	export HP_WORK_BASE="/nfs/dust/cms/user/${USER}/Harry"
 	export HP_WORK_BASE_COMMON="/nfs/dust/cms/group/higgs-kit/hp"

@@ -128,8 +128,21 @@ class PlotData(object):
 
 		# prepare the executed copy command
 		web_plotting_copy_command = os.path.expandvars("$WEB_PLOTTING_COPY_COMMAND")
+
+		# no overwriting
 		if www_no_overwrite:
-			web_plotting_copy_command = web_plotting_copy_command.replace(' -f ', ' ')
+			web_plotting_ls_command = os.path.expandvars("$WEB_PLOTTING_LS_COMMAND").format(subdir=remote_subdir)
+			process = subprocess.Popen(web_plotting_ls_command.split(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+			remote_files, error = process.communicate()
+			if error is not None or '[ERROR]' in remote_files:
+				log.error('Error occured during web ls! Exiting. Output: %s' % (remote_files))
+				raise
+			remote_dir = web_plotting_ls_command.split()[-1]
+			remote_files = [i[len(remote_dir):].strip('/') if i.startswith(remote_dir) else i for i in remote_files.split()]
+			for i in files_to_copy:
+				if 'index.html' not in i and i in remote_files:
+					log.error('File %s already existing at %s. Exiting' % (i, remote_dir))
+					raise
 
 		# create remote dir, copy files
 		mkdir_command = os.path.expandvars("$WEB_PLOTTING_MKDIR_COMMAND").format(subdir=remote_subdir)
