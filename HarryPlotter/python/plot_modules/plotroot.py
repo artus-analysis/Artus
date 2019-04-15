@@ -357,8 +357,6 @@ class PlotRoot(plotbase.PlotBase):
 			root_object = plotData.plotdict["root_objects"][nick]
 
 			root_object.SetLineColor(colors[0])
-			line_style= 1;line_width=2
-			print 'line_style:', line_style
 			root_object.SetLineStyle(line_style)
 			root_object.SetLineWidth(line_width)
 
