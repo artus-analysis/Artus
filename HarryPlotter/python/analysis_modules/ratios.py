@@ -32,6 +32,9 @@ class Ratio(analysisbase.AnalysisBase):
 				help="Remove errors of denominator histograms before calculating the ratio. [Default: %(default)s]")
 		self.ratio_options.add_argument("--ratio-result-nicks", nargs="+",
 				help="Nick names for the resulting ratio graphs.")
+		self.ratio_options.add_argument("--ratio-compatibility-test-methods", nargs="+", default=[],
+				choices=["AndersonDarlingTest", "Chi2Test", "KolmogorovTest"],
+				help="Perform compatibility tests with test functions of ROOT.TH1. [Default: %(default)s]")
 
 	def prepare_args(self, parser, plotData):
 		super(Ratio, self).prepare_args(parser, plotData)
@@ -76,6 +79,16 @@ class Ratio(analysisbase.AnalysisBase):
 			# Create nick sum histograms
 			numerator_histogram = self.get_histograms(plotdict=plotData.plotdict["root_objects"], ratio_nicks=ratio_numerator_nicks, ratio_numerator_nicks=ratio_numerator_nicks, ratio_denominator_nicks=ratio_denominator_nicks, ratio_result_nick=ratio_result_nick)
 			denominator_histogram = self.get_histograms(plotdict=plotData.plotdict["root_objects"], ratio_nicks=ratio_denominator_nicks, ratio_numerator_nicks=ratio_numerator_nicks, ratio_denominator_nicks=ratio_denominator_nicks, ratio_result_nick=ratio_result_nick)
+			
+			# run compatibility tests if configured
+			for test_method in plotData.plotdict["ratio_compatibility_test_methods"]:
+				test_result = getattr(numerator_histogram, test_method)(denominator_histogram)
+				log.info("{test_method} ( {ratio_numerator_nicks}, {ratio_denominator_nicks} ) = {test_result}".format(
+						test_method=test_method,
+						ratio_numerator_nicks="+".join(ratio_numerator_nicks),
+						ratio_denominator_nicks="+".join(ratio_denominator_nicks),
+						test_result=str(test_result)
+				))
 
 			if ratio_numerator_no_errors: scaleerrors.ScaleErrors.scale_errors(numerator_histogram, scale_factor=0.0)
 			if ratio_denominator_no_errors: scaleerrors.ScaleErrors.scale_errors(denominator_histogram, scale_factor=0.0)
