@@ -140,6 +140,12 @@ class NormalizeHistogram(analysisbase.AnalysisBase):
 
 class NormalizeToFirstHisto(NormalizeHistogram):
 	"""Normalize histograms to first histogram."""
+	
+	def modify_argument_parser(self, parser, args):
+		pass # do not copy parameters from upper class
+	def prepare_args(self, parser, args):
+		pass # do not copy parameters from upper class
+	
 	def run(self, plotData=None):
 		self.normalize_histogram(
 				refhisto_nicks=[plotData.plotdict["nicks"][0]], # take nickname at first position
