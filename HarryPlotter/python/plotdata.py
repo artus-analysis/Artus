@@ -73,7 +73,7 @@ class PlotData(object):
 		if remote_subdir is None:
 			remote_subdir = os.path.expandvars(os.path.join((date if (www == "" or not www_nodate) else ""), (www if type(www)==str else "")))
 		url = os.path.expandvars(os.path.join("$HARRY_URL", remote_subdir, overview_filename))
-		plots_for_gallery = [p for p in sorted(os.listdir(output_dir)) if (os.path.isfile(os.path.join(output_dir, p)) and all([not p.endswith("." + ext) for ext in ["json", "html", "root"]]))]
+		plots_for_gallery = [p for p in sorted(os.listdir(output_dir)) if (os.path.isfile(os.path.join(output_dir, p)) and all([not p.endswith("." + ext) for ext in ["json", "html"]]))]
 		# get the html templates
 		files_to_copy = []
 		for galleryplot in plots_for_gallery:
