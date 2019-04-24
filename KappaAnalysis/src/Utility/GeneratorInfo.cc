@@ -82,37 +82,65 @@ KappaEnumTypes::GenMatchingCode GeneratorInfo::GetGenMatchingCodeUW(
 {
 	if(event.m_genParticles && event.m_genParticles->size() > 0)
 	{
+		LOG(DEBUG) << "*************** START UW GEN MATCHING CODE ***************";
+		LOG(DEBUG) << "Reco lepton p4: " << lepton->p4;
 		KGenParticle closest = event.m_genParticles->at(0);
 		double closestDR = 999;
 		for (typename std::vector<KGenParticle>::iterator genParticle = event.m_genParticles->begin();
 			genParticle != event.m_genParticles->end(); ++genParticle)
 		{
-			double tmpDR = ROOT::Math::VectorUtil::DeltaR(lepton->p4, genParticle->p4);
-			if (tmpDR < closestDR)
+			// https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsToTauTauWorking2017#MC_Matching
+			// check first whether there is a gen e/mu (prompt or tau decay product) closer than delta R < 0.2 with pt > 8 GeV
+			if ( (genParticle->p4.Pt() > 8.) && (std::abs(genParticle->pdgId) == 11 || std::abs(genParticle->pdgId) == 13) && (genParticle->isPrompt() || genParticle->isDirectPromptTauDecayProduct()) )
 			{
-				closest = *genParticle;
-				closestDR = tmpDR;
+				double tmpDR = ROOT::Math::VectorUtil::DeltaR(lepton->p4, genParticle->p4);
+				if (tmpDR < closestDR)
+				{
+					closest = *genParticle;
+					closestDR = tmpDR;
+				}
 			}
 		}
+		LOG(DEBUG) << "found closest e/mu with smallest dR = " << closestDR;
 		int pdgId = std::abs(closest.pdgId);
-		if (pdgId == 11 && closest.p4.Pt() > 8. && closest.isPrompt())
-			return KappaEnumTypes::GenMatchingCode::IS_ELE_PROMPT;
-		else if (pdgId == 13 && closest.p4.Pt() > 8. && closest.isPrompt())
-			return KappaEnumTypes::GenMatchingCode::IS_MUON_PROMPT;
-		else if (pdgId == 11 && closest.p4.Pt() > 8. && closest.isDirectPromptTauDecayProduct())
-			return KappaEnumTypes::GenMatchingCode::IS_ELE_FROM_TAU;
-		else if (pdgId == 13 && closest.p4.Pt() > 8. && closest.isDirectPromptTauDecayProduct())
-			return KappaEnumTypes::GenMatchingCode::IS_MUON_FROM_TAU;
-		else
+		// build "gen-tau jet" from visible gen tau decay products
+		LOG(DEBUG) << "BuildGenTausUW: Build 'gen-tau jet' from visible decay products:";
+		std::vector<RMFLV> genTaus = BuildGenTausUW(event);
+		for(auto genTau : genTaus)
 		{
-			std::vector<RMFLV> genTaus = BuildGenTausUW(event);
-			for(auto genTau : genTaus)
+			double gentauDR = ROOT::Math::VectorUtil::DeltaR(lepton->p4, genTau);
+			// check if gen-tau jets are closer than e/mu
+			if (gentauDR < 0.2 && genTau.Pt() > 15. && gentauDR < closestDR)
 			{
-				if (ROOT::Math::VectorUtil::DeltaR(lepton->p4, genTau) < 0.2)
-					return KappaEnumTypes::GenMatchingCode::IS_TAU_HAD_DECAY;
+				LOG(DEBUG) << "GenMatchingCode: IS_TAU_HAD_DECAY, smallest dR = " << gentauDR;
+				return KappaEnumTypes::GenMatchingCode::IS_TAU_HAD_DECAY;
 			}
-			return KappaEnumTypes::GenMatchingCode::IS_FAKE;
 		}
+		if (closestDR < 0.2)
+		{
+			if (pdgId == 11 && closest.isPrompt())
+			{
+				LOG(DEBUG) << "GenMatchingCode: IS_ELE_PROMPT";
+				return KappaEnumTypes::GenMatchingCode::IS_ELE_PROMPT;
+			}
+			else if (pdgId == 13 && closest.isPrompt())
+			{
+				LOG(DEBUG) << "GenMatchingCode: IS_MUON_PROMPT";
+				return KappaEnumTypes::GenMatchingCode::IS_MUON_PROMPT;
+			}
+			else if (pdgId == 11 && closest.isDirectPromptTauDecayProduct())
+			{
+				LOG(DEBUG) << "GenMatchingCode: IS_ELE_FROM_TAU";
+				return KappaEnumTypes::GenMatchingCode::IS_ELE_FROM_TAU;
+			}
+			else if (pdgId == 13 && closest.isDirectPromptTauDecayProduct())
+			{
+				LOG(DEBUG) << "GenMatchingCode: IS_MUON_FROM_TAU";
+				return KappaEnumTypes::GenMatchingCode::IS_MUON_FROM_TAU;
+			}
+		}
+		LOG(DEBUG) << "GenMatchingCode: IS_FAKE , smallest dR = " << closestDR << " > 0.2";
+		return KappaEnumTypes::GenMatchingCode::IS_FAKE;
 	}
 	return KappaEnumTypes::GenMatchingCode::NONE;
 }
@@ -151,6 +179,7 @@ std::vector<RMFLV> GeneratorInfo::BuildGenTausUW(
 						{
 							assert(genParticle->daughterIndex(dau) >= 0);
 							int pdgId = std::abs(event.m_genParticles->at(genParticle->daughterIndex(dau)).pdgId);
+							LOG(DEBUG) << "\tdaughter " << dau << " pdgId: " << event.m_genParticles->at(genParticle->daughterIndex(dau)).pdgId;
 							if (pdgId == 12 || pdgId == 14 || pdgId == 16) continue;
 							genTau += event.m_genParticles->at(genParticle->daughterIndex(dau)).p4;
 						}
