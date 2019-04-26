@@ -597,12 +597,13 @@ class PlotRoot(plotbase.PlotBase):
 
 		if plotData.plot.subplot_pad:
 			plotData.plot.subplot_pad.cd()
+
 			if self.max_sub_dim == 2:
 				self.subplot_axes_histogram = ROOT.TH2F("subplot_axes_histogram", "", n_sub_binsX, self.x_min, self.x_max, n_sub_binsY, self.y_sub_min, self.y_sub_max)
 				self.subplot_axes_histogram.SetMinimum(self.y_sub_min)
 				self.subplot_axes_histogram.SetMaximum(self.y_sub_max)
 			else:
-				self.subplot_axes_histogram = ROOT.TH2F("subplot_axes_histogram", "", n_sub_bins, self.x_min, self.x_max, n_sub_bins, self.y_sub_min, self.y_sub_max)
+				self.subplot_axes_histogram = ROOT.TH2F("subplot_axes_histogram", "", n_sub_binsX, self.x_min, self.x_max, n_sub_binsY, self.y_sub_min, self.y_sub_max)
 				self.subplot_axes_histogram.SetMinimum(self.z_sub_min)
 				self.subplot_axes_histogram.SetMaximum(self.z_sub_max)
 
