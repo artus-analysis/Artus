@@ -263,7 +263,7 @@ class RootTools(object):
 			if not binning.endswith(")"):
 				binning = binning + ")"
 			if binning == "()":
-				binning == ""
+				binning = ""
 
 			if any([bin_edges != None for bin_edges in [self.x_bin_edges[binning_identifier], self.y_bin_edges[binning_identifier], self.z_bin_edges[binning_identifier]]]):
 				if any([bin_edges == None and expression != None for (bin_edges, expression) in zip(
