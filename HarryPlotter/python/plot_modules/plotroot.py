@@ -827,8 +827,8 @@ class PlotRoot(plotbase.PlotBase):
 					plotData.plotdict["legend_markers"],
 			):
 				if subplot == True:
-					# TODO handle possible subplot legends
-					continue
+					pass # legend entries are currently added to the upper plot legend
+				
 				root_object = plotData.plotdict["root_objects"][nick]
 				if legend_marker is None:
 					# TODO: defaults should be defined in prepare_args function
