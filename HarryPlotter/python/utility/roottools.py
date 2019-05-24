@@ -400,7 +400,7 @@ class RootTools(object):
 
 			# create tree proxy
 			tree.MakeProxy(proxy_class_name, proxy_macro_filename, proxy_cutmacro_filename)
-			proxy_call = proxy_class_filename + "+"
+			proxy_call = proxy_class_filename + "++"
 
 			# fix histogram name used in the proxy class
 			# TODO: only do this when ROOT.TTree.Project is called afterwards, not for ROOT.TTree.Draw, when the histogram cannot be renamed before the plotting?
@@ -465,24 +465,20 @@ class RootTools(object):
 						root_histogram.GetSumOfWeights()
 		else:
 			if ("proxy" in option) and (not proxy_call is None):
-				log.debug("ROOT.TTree.Process(\"" + proxy_call + "\")")
-				result = tree.Process(proxy_call)
+				log.debug("ROOT.TTree.Process(ROOT.TSelector.GetSelector(\"" + proxy_call + "\"))")
+				result = tree.Process(ROOT.TSelector.GetSelector(proxy_call))
 				if result < 0:
-					log.error("Reading input based on proxy failed. Try preserving all proxy files by using debug logging (--log-level debug).")
+					log.error("Reading input based on proxy failed. Proxy files will be kept for debugging.")
+					tmp_proxy_files = []
 			else:
 				log.debug("ROOT.TTree.Project(\"" + name + "\", \"" + variable_expression + "\", \"" + str(weight_selection) + "\", \"" + option + "\" GOFF\")")
 				tree.Project(name, variable_expression, str(weight_selection), option + " GOFF")
 			root_histogram = ROOT.gDirectory.Get(name)
 
-		# delete possible files from tree proxy
-		if log.isEnabledFor(logging.DEBUG):
-			log.warning("Delete proxy files manually:")
 		for tmp_proxy_file in tmp_proxy_files:
 			for tmp_file in glob.glob(os.path.splitext(tmp_proxy_file)[0] + "*"):
 				log.debug("rm " + tmp_file)
-				if not log.isEnabledFor(logging.DEBUG):
-					pass
-					# os.remove(tmp_file)
+				#os.remove(tmp_file)
 
 		return tree, root_histogram
 
