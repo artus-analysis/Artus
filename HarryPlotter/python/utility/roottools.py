@@ -331,6 +331,8 @@ class RootTools(object):
 	@rootcache.RootFileCache(os.path.expandvars(os.path.join("$HP_WORK_BASE_COMMON", "caches")))
 	def tree_draw(root_file_names, path_to_trees, friend_files, friend_folders, friend_aliases, root_histogram, variable_expression, name, binning, weight_selection, option, proxy_prefix="", scan=None, redo_cache=False):
 
+		hash_name = hashlib.md5("".join(map(str, [root_file_names, path_to_trees, friend_files, friend_folders, friend_aliases, root_histogram, variable_expression, name, binning, weight_selection, option, proxy_prefix, scan, redo_cache]))).hexdigest()
+
 		# prepare TChain
 		if isinstance(root_file_names, basestring):
 			root_file_names = [root_file_names]
@@ -364,17 +366,15 @@ class RootTools(object):
 			tree.AddFriend(friend_trees[-1], (friend_alias if friend_alias else ""))
 			friend_trees[-1].SetDirectory(0)
 
-		tree.SetName(hashlib.md5("".join([str(item) for item in [root_file_names, path_to_trees, friend_files, friend_folders]])).hexdigest())
+		tree.SetName(hash_name)
 
 		# treat functions/macros that need to be compiled before drawing
 		tmp_proxy_files = []
 		proxy_call = None
 		if "proxy" in option:
-			proxy_name = hashlib.md5(variable_expression+"__"+str(weight_selection)).hexdigest()
-
-			proxy_class_name = "proxy_class_"+proxy_name
-			proxy_macro_name = "proxy_macro_"+proxy_name
-			proxy_cutmacro_name = "proxy_cutmacro_"+proxy_name
+			proxy_class_name = "proxy_class_"+hash_name
+			proxy_macro_name = "proxy_macro_"+hash_name
+			proxy_cutmacro_name = "proxy_cutmacro_"+hash_name
 
 			proxy_class_filename = proxy_class_name+".h"
 			proxy_macro_filename = proxy_macro_name+".C"
