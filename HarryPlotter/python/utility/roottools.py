@@ -393,7 +393,7 @@ class RootTools(object):
 						content=variable_expression,
 				))
 			with open(proxy_cutmacro_filename, "w") as proxy_cutmacro_file:
-				proxy_cutmacro_file.write("bool {function}() {{ {content}; }}".format(
+				proxy_cutmacro_file.write("double {function}() {{ {content}; }}".format(
 						function=proxy_cutmacro_name,
 						content=weight_selection,
 				))
@@ -415,6 +415,8 @@ class RootTools(object):
 					"htemp->SetTitle", "//htemp->SetTitle"
 			).replace(
 					"using namespace ROOT", proxy_prefix.replace("\\n", "\n")+"\nusing namespace ROOT"
+			).replace(
+					"htemp->Fill("+proxy_macro_name+"())", "htemp->Fill("+proxy_macro_name+"(), "+proxy_cutmacro_name+"())"
 			)
 			with open(proxy_class_filename, "w") as proxy_class_file:
 				proxy_class_file.write(proxy_class_content)
