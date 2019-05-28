@@ -64,8 +64,8 @@ class InputRoot(inputfile.InputFile):
 		
 		self.input_options.add_argument("--tree-draw-options", nargs='+', type=str, default="",
 		                                help="Optional argument for TTree:Draw() call. Use e.g. \"prof\" or \"profs\" for projections of 2D-Histograms to 1D. See also http://root.cern.ch/ooot/html/TTree.html#TTree:Draw. Specify \"TGraph\" for plotting y- vs. x-values into a TGraph. \"TGraphErrors\" leads to a graph with errors by specifying inputs with --x-expressions <x values>:<x errors> --y-expressions <y values>:<y errors>. \"TGraphAsymmErrorsX\" leads to a graph with asymmetric x-errors by specifying inputs with --x-expressions <x values>:<x errors (down)>:<x errors (up)> --y-expressions <y values>. \"TGraphAsymmErrorsY\" leads to a graph with asymmetric y-errors by specifying inputs with --x-expressions <x values> --y-expressions <y values>:<y errors (down)>:<y errors (up)>. \"TGraph2D\" leads to a 2D graph by specifying inputs with --x-expressions <x values> --y-expressions <y values> --z-expressions <z values>. ROOT.TTree.MakeProxy and ROOT.TTree.Process is usued to fill the histograms from a tree instead of ROOT.TTree.Draw or ROOT.TTree.Project in case you specify the option \"proxy\" This is needed e.g. for formulas containing two branches/leafs with different non-fundamental types.")
-		self.input_options.add_argument("--proxy-prefix", type=str, default="",
-		                                help="Additional C++ code (e.g. include statements) to be put in the proxy macros. [Default: %(default)s]")
+		self.input_options.add_argument("--proxy-prefixes", nargs='+', type=str, default="",
+		                                help="Additional C++ code(s) (e.g. include statements) to be put in the proxy macros. [Default: %(default)s]")
 		
 		self.input_options.add_argument("--keep-trees", nargs="?", type="bool", default=False, const=True,
 		                                help="Keep trees in the plot data object during the complete run. [Default: %(default)s]")
@@ -79,7 +79,7 @@ class InputRoot(inputfile.InputFile):
 	def prepare_args(self, parser, plotData):
 		super(InputRoot, self).prepare_args(parser, plotData)
 
-		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "files", "directories", "folders", "weights", "friend_files", "friend_folders", "friend_aliases", "tree_draw_options"], help="InputRoot options")
+		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "files", "directories", "folders", "weights", "friend_files", "friend_folders", "friend_aliases", "tree_draw_options", "proxy_prefixes"], help="InputRoot options")
 		inputbase.InputBase.prepare_nicks(plotData)
 		
 		for key in ["folders"]:
@@ -112,7 +112,8 @@ class InputRoot(inputfile.InputFile):
 				friend_files,
 				friend_folders,
 				friend_aliases,
-				option
+				option,
+				proxy_prefix
 		) in enumerate(pi.ProgressIterator(zip(
 				plotData.plotdict["files"],
 				plotData.plotdict["folders"],
@@ -127,7 +128,8 @@ class InputRoot(inputfile.InputFile):
 				plotData.plotdict["friend_files"],
 				plotData.plotdict["friend_folders"],
 				plotData.plotdict["friend_aliases"],
-				plotData.plotdict["tree_draw_options"]
+				plotData.plotdict["tree_draw_options"],
+				plotData.plotdict["proxy_prefixes"]
 		), description="Reading ROOT inputs", visible=not self.hide_progressbar )):
 			# check whether to read from TTree or from TDirectory
 			root_folder_type = roottools.RootTools.check_type(root_files, folders,
@@ -149,7 +151,7 @@ class InputRoot(inputfile.InputFile):
 						friend_files=friend_files,
 						friend_folders=friend_folders,
 						friend_aliases=friend_aliases,
-						proxy_prefix=plotData.plotdict["proxy_prefix"],
+						proxy_prefix=proxy_prefix,
 						scan=plotData.plotdict["scan"],
 						redo_cache=(plotData.plotdict["redo_cache"])
 				)
