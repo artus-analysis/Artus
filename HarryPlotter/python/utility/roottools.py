@@ -16,11 +16,16 @@ import hashlib
 import numpy
 import os
 import sys
+import shlex
 import re
 
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gEnv.SetValue("TFile.AsyncPrefetching", 1)
+
+# https://root-forum.cern.ch/t/multiple-proxies-to-process-trees-in-one-script/34267/9
+ROOT.gEnv.SetValue("ACLiC.LinkLibs", 0)
+ROOT.gROOT.ProcessLine("gEnv->SetValue(\"ACLiC.LinkLibs\", 0)")
 
 import Artus.Utility.geometry as geometry
 import Artus.Utility.tools as tools
@@ -370,7 +375,6 @@ class RootTools(object):
 
 		# treat functions/macros that need to be compiled before drawing
 		tmp_proxy_files = []
-		proxy_call = None
 		if "proxy" in option:
 			proxy_class_name = "proxy_class_"+hash_name
 			proxy_macro_name = "proxy_macro_"+hash_name
@@ -400,7 +404,6 @@ class RootTools(object):
 
 			# create tree proxy
 			tree.MakeProxy(proxy_class_name, proxy_macro_filename, proxy_cutmacro_filename)
-			proxy_call = proxy_class_filename + "++"
 
 			# fix histogram name used in the proxy class
 			# TODO: only do this when ROOT.TTree.Project is called afterwards, not for ROOT.TTree.Draw, when the histogram cannot be renamed before the plotting?
@@ -420,6 +423,11 @@ class RootTools(object):
 			)
 			with open(proxy_class_filename, "w") as proxy_class_file:
 				proxy_class_file.write(proxy_class_content)
+
+			# proxy_compilation = "root -b -l -q -e \".L "+proxy_class_filename+"+\""
+			# log.debug(proxy_compilation)
+			# logger.subprocessCall(shlex.split(proxy_compilation), shell=True)
+			# os.system(proxy_compilation)
 
 		if scan:
 			# https://root.cern.ch/doc/master/classTTreePlayer.html#aa0149b416e4b812a8762ec1e389ba2db
@@ -464,9 +472,11 @@ class RootTools(object):
 					if isinstance(root_histogram, ROOT.TH1):
 						root_histogram.GetSumOfWeights()
 		else:
-			if ("proxy" in option) and (not proxy_call is None):
-				log.debug("ROOT.TTree.Process(ROOT.TSelector.GetSelector(\"" + proxy_call + "\"))")
-				result = tree.Process(ROOT.TSelector.GetSelector(proxy_call))
+			if "proxy" in option:
+				log.debug("ROOT.TTree.Process(\""+proxy_class_filename+"+\")") # ROOT.TSelector.GetSelector(\""+proxy_class_filename+"+\"))")
+				result = tree.Process(proxy_class_filename+"+") # ROOT.TSelector.GetSelector(proxy_class_filename+"+"))
+				# ROOT.gROOT.Reset()
+				# ROOT.gSystem.Unload(proxy_class_filename)
 				if result < 0:
 					log.error("Reading input based on proxy failed. Proxy files will be kept for debugging.")
 					tmp_proxy_files = []
@@ -478,7 +488,7 @@ class RootTools(object):
 		for tmp_proxy_file in tmp_proxy_files:
 			for tmp_file in glob.glob(os.path.splitext(tmp_proxy_file)[0] + "*"):
 				log.debug("rm " + tmp_file)
-				#os.remove(tmp_file)
+				# os.remove(tmp_file)
 
 		return tree, root_histogram
 
