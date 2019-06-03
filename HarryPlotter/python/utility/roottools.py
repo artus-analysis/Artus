@@ -287,7 +287,7 @@ class RootTools(object):
 					)
 
 		# draw histogram
-		tree, root_histogram = RootTools.tree_draw(
+		tree, root_histogram, tmp_files = RootTools.tree_draw(
 				root_file_names=root_file_names,
 				path_to_trees=path_to_trees,
 				friend_files=friend_files,
@@ -319,7 +319,7 @@ class RootTools(object):
 
 		if "prof" not in option.lower() and binning_identifier not in self.binning_determined:
 			self.binning_determined.append(binning_identifier)
-		return tree, root_histogram
+		return tree, root_histogram, tmp_files
 
 	@staticmethod
 	def prepare_proxy_command(s):
@@ -424,11 +424,6 @@ class RootTools(object):
 			with open(proxy_class_filename, "w") as proxy_class_file:
 				proxy_class_file.write(proxy_class_content)
 
-			# proxy_compilation = "root -b -l -q -e \".L "+proxy_class_filename+"+\""
-			# log.debug(proxy_compilation)
-			# logger.subprocessCall(shlex.split(proxy_compilation), shell=True)
-			# os.system(proxy_compilation)
-
 		if scan:
 			# https://root.cern.ch/doc/master/classTTreePlayer.html#aa0149b416e4b812a8762ec1e389ba2db
 			tree.SetScanField(0)
@@ -475,8 +470,6 @@ class RootTools(object):
 			if "proxy" in option:
 				log.debug("ROOT.TTree.Process(\""+proxy_class_filename+"+\")") # ROOT.TSelector.GetSelector(\""+proxy_class_filename+"+\"))")
 				result = tree.Process(proxy_class_filename+"+") # ROOT.TSelector.GetSelector(proxy_class_filename+"+"))
-				# ROOT.gROOT.Reset()
-				# ROOT.gSystem.Unload(proxy_class_filename)
 				if result < 0:
 					log.error("Reading input based on proxy failed. Proxy files will be kept for debugging.")
 					tmp_proxy_files = []
@@ -485,12 +478,11 @@ class RootTools(object):
 				tree.Project(name, variable_expression, str(weight_selection), option + " GOFF")
 			root_histogram = ROOT.gDirectory.Get(name)
 
+		tmp_files = []
 		for tmp_proxy_file in tmp_proxy_files:
-			for tmp_file in glob.glob(os.path.splitext(tmp_proxy_file)[0] + "*"):
-				log.debug("rm " + tmp_file)
-				# os.remove(tmp_file)
+			tmp_files += glob.glob(os.path.splitext(tmp_proxy_file)[0] + "*")
 
-		return tree, root_histogram
+		return tree, root_histogram, tmp_files
 
 	@staticmethod
 	def create_root_histogram(x_bins, y_bins=None, z_bins=None, profile_histogram=False, name=None, profile_error_option=""):

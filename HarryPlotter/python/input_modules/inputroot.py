@@ -98,6 +98,8 @@ class InputRoot(inputfile.InputFile):
 		root_tools = roottools.RootTools()
 		self.hide_progressbar = plotData.plotdict["hide_progressbar"]
 		del(plotData.plotdict["hide_progressbar"])
+		files_to_remove = []
+		
 		for index, (
 				root_files,
 				folders,
@@ -141,7 +143,7 @@ class InputRoot(inputfile.InputFile):
 				variable_expression = "%s%s%s" % (z_expression + ":" if z_expression else "",
 				                                  y_expression + ":" if y_expression else "",
 				                                  x_expression)
-				root_tree_chain, root_histogram = root_tools.histogram_from_tree(
+				root_tree_chain, root_histogram, tmp_files = root_tools.histogram_from_tree(
 						root_files, folders,
 						x_expression, y_expression, z_expression,
 						x_bins=["25"] if x_bins is None else x_bins,
@@ -155,6 +157,7 @@ class InputRoot(inputfile.InputFile):
 						scan=plotData.plotdict["scan"],
 						redo_cache=(plotData.plotdict["redo_cache"])
 				)
+				files_to_remove += tmp_files
 				
 			elif root_folder_type == "TDirectory":
 				if x_expression is None:
@@ -189,6 +192,10 @@ class InputRoot(inputfile.InputFile):
 			# save histogram in plotData
 			# merging histograms with same nick names is done in upper class
 			plotData.plotdict.setdefault("root_objects", {}).setdefault(nick, []).append(root_histogram)
+			
+		for tmp_file in files_to_remove:
+			log.debug("rm "+tmp_file)
+			os.remove(tmp_file)
 
 		# run upper class function at last
 		

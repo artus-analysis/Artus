@@ -62,6 +62,7 @@ class RootFileCache(Cache):
 		cache_file = self._determine_cache_file(*args, **kwargs)
 		root_tree = None
 		root_object = None
+		tmp_files = []
 		cache_found = False
 		if (not kwargs.get("redo_cache", False)) and cache_file and os.path.exists(cache_file):
 			try:
@@ -77,7 +78,7 @@ class RootFileCache(Cache):
 				cache_found = False
 		
 		if root_object is None:
-			root_tree, root_object = self._function_to_cache(*args, **kwargs)
+			root_tree, root_object, tmp_files = self._function_to_cache(*args, **kwargs)
 			if cache_file and (not cache_found) and (not root_object is None) and (not root_object == None):
 				try:
 					with tfilecontextmanager.TFileContextManager(cache_file, "RECREATE") as root_file:
@@ -88,4 +89,4 @@ class RootFileCache(Cache):
 				except:
 					pass
 		
-		return root_tree, root_object
+		return root_tree, root_object, tmp_files
