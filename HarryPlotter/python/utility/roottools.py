@@ -471,6 +471,7 @@ class RootTools(object):
 				log.debug("ROOT.TTree.Process(\""+proxy_class_filename+"+\")") # ROOT.TSelector.GetSelector(\""+proxy_class_filename+"+\"))")
 				result = tree.Process(proxy_class_filename+"+") # ROOT.TSelector.GetSelector(proxy_class_filename+"+"))
 				if result < 0:
+					ROOT.gDirectory.Delete(name+";*")
 					log.error("Reading input based on proxy failed. Proxy files will be kept for debugging.")
 					tmp_proxy_files = []
 			else:
