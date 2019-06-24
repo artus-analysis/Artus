@@ -49,13 +49,27 @@ void GenParticleDecayTreePrinter::PrintGenParticlesDecayTree(std::vector<KGenPar
 {
 	if (currentIndex < 0)
 	{
+		bool foundgenProton = false;
+		int genTauIndex_1 = DefaultValues::UndefinedInt; // save tau indices if they are no protons on gen level (used in embedding)
+		int genTauIndex_2 = DefaultValues::UndefinedInt;
 		for (unsigned int genParticleIndex = 0; genParticleIndex < genParticles->size(); ++genParticleIndex)
 		{
 			if (genParticles->at(genParticleIndex).pdgId == 2212)
 			{
+				foundgenProton = true;
 				PrintGenParticlesDecayTree(genParticles, genParticleIndex, 0);
 			}
+			else if (genParticles->at(genParticleIndex).pdgId == DefaultValues::pdgIdTau && !foundgenProton && genTauIndex_1 == DefaultValues::UndefinedInt)
+			{
+				genTauIndex_1 = genParticleIndex;
+			}
+			else if (genParticles->at(genParticleIndex).pdgId == -DefaultValues::pdgIdTau && !foundgenProton && genTauIndex_2 == DefaultValues::UndefinedInt)
+			{
+				genTauIndex_2 = genParticleIndex;
+			}
 		}
+		if(!foundgenProton && genTauIndex_1 != DefaultValues::UndefinedInt) PrintGenParticlesDecayTree(genParticles, genTauIndex_1, 0);
+		if(!foundgenProton && genTauIndex_2 != DefaultValues::UndefinedInt) PrintGenParticlesDecayTree(genParticles, genTauIndex_2, 0);
 	}
 	else
 	{
