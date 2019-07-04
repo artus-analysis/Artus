@@ -394,12 +394,12 @@ class RootTools(object):
 			with open(proxy_macro_filename, "w") as proxy_macro_file:
 				proxy_macro_file.write("double {function}() {{ {content}; }}".format(
 						function=proxy_macro_name,
-						content=variable_expression,
+						content=variable_expression.replace("HASH_NAME", hash_name)
 				))
 			with open(proxy_cutmacro_filename, "w") as proxy_cutmacro_file:
 				proxy_cutmacro_file.write("double {function}() {{ {content}; }}".format(
 						function=proxy_cutmacro_name,
-						content=weight_selection,
+						content=weight_selection.replace("HASH_NAME", hash_name)
 				))
 
 			# create tree proxy
@@ -420,6 +420,8 @@ class RootTools(object):
 					"using namespace ROOT", proxy_prefix.replace("\\n", "\n")+"\nusing namespace ROOT"
 			).replace(
 					"htemp->Fill("+proxy_macro_name+"())", "htemp->Fill("+proxy_macro_name+"(), "+proxy_cutmacro_name+"())"
+			).replace(
+					"HASH_NAME", hash_name
 			)
 			with open(proxy_class_filename, "w") as proxy_class_file:
 				proxy_class_file.write(proxy_class_content)
