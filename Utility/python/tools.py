@@ -24,6 +24,11 @@ import Artus.Utility.progressiterator as pi
 from difflib import SequenceMatcher
 
 
+# https://stackoverflow.com/a/17215533
+class SafeStringFormatter(dict):
+	def __missing__(self, key):
+		return "{" + key + "}"
+
 def get_checked_and_renamed(file_name, suffix=''):
 	if not os.path.isfile(file_name):
 		return file_name, suffix
