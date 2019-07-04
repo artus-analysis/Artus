@@ -157,7 +157,7 @@ class InputRoot(inputfile.InputFile):
 						scan=plotData.plotdict["scan"],
 						redo_cache=(plotData.plotdict["redo_cache"])
 				)
-				files_to_remove += tmp_files
+				plotData.plotdict.setdefault("tmp_files", []).extend(tmp_files)
 				
 			elif root_folder_type == "TDirectory":
 				if x_expression is None:
@@ -195,10 +195,9 @@ class InputRoot(inputfile.InputFile):
 			
 		for tmp_file in files_to_remove:
 			log.debug("rm "+tmp_file)
-			os.remove(tmp_file)
+			#os.remove(tmp_file) # has to be deleted even later (after all multiplots finished)
 
 		# run upper class function at last
-		
 		super(InputRoot, self).run(plotData)
 
 
