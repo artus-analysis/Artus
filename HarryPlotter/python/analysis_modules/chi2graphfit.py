@@ -48,25 +48,25 @@ class Chi2GraphFit(analysisbase.AnalysisBase):
 #		self.prepare_list_args(plotData, ["graph_nicks", "chi2_functions", "chi2_start_parameters", "chi2_parameter_ranges"])
 		self.prepare_list_args(plotData, ["graph_nicks", "chi2_functions", "chi2_start_parameters"])
 		
-#		for index, (chi2_start_parameters, chi2_parameter_ranges) in enumerate(zip(*[plotData.plotdict[k] for k in ["chi2_start_parameters", "chi2_parameter_ranges"]])):
-		for index, chi2_start_parameters in enumerate(plotData.plotdict["chi2_start_parameters"]):
-			if chi2_start_parameters is None:
+#		for index, (start_parameters, parameter_ranges) in enumerate(zip(*[plotData.plotdict[k] for k in ["chi2_start_parameters", "chi2_parameter_ranges"]])):
+		for index, start_parameters in enumerate(plotData.plotdict["chi2_start_parameters"]):
+			if start_parameters is None:
 				log.error("Parameter --chi2-start-parameters missing for iteration {index}!".format(index=index))
 			else:
-				plotData.plotdict["chi2_start_parameters"][index] = array.array("d", map(float, chi2_start_parameters.split()))
+				plotData.plotdict["chi2_start_parameters"][index] = array.array("d", map(float, start_parameters.split()))
 			
-#			if chi2_parameter_ranges is None:
+#			if parameter_ranges is None:
 #				log.error("Parameter --chi2-parameter-ranges missing for iteration {index}!".format(index=index))
 #			else:
-#				plotData.plotdict["chi2_parameter_ranges"][index] = map(lambda item: map(float, item.split(",")), chi2_parameter_ranges.split())
+#				plotData.plotdict["chi2_parameter_ranges"][index] = map(lambda item: map(float, item.split(",")), parameter_ranges.split())
 
 	def run(self, plotData=None):
 		super(Chi2GraphFit, self).run()
 		
-#		for index, (graph_nick, chi2_function, chi2_start_parameters, chi2_parameter_ranges) in enumerate(zip(*[plotData.plotdict[k] for k in ["graph_nicks", "chi2_functions", "chi2_start_parameters", "chi2_parameter_ranges"]])):
-		for index, (graph_nick, chi2_function, chi2_start_parameters) in enumerate(zip(*[plotData.plotdict[k] for k in ["graph_nicks", "chi2_functions", "chi2_start_parameters"]])):
-#			hash_name = hashlib.md5("_".join(map(str, [graph_nick, chi2_function, chi2_start_parameters, chi2_parameter_ranges]))).hexdigest()
-			hash_name = hashlib.md5("_".join(map(str, [graph_nick, chi2_function, chi2_start_parameters]))).hexdigest()
+#		for index, (graph_nick, chi2_function, start_parameters, parameter_ranges) in enumerate(zip(*[plotData.plotdict[k] for k in ["graph_nicks", "chi2_functions", "chi2_start_parameters", "chi2_parameter_ranges"]])):
+		for index, (graph_nick, chi2_function, start_parameters) in enumerate(zip(*[plotData.plotdict[k] for k in ["graph_nicks", "chi2_functions", "chi2_start_parameters"]])):
+#			hash_name = hashlib.md5("_".join(map(str, [graph_nick, chi2_function, start_parameters, parameter_ranges]))).hexdigest()
+			hash_name = hashlib.md5("_".join(map(str, [graph_nick, chi2_function, start_parameters]))).hexdigest()
 			
 			graph = plotData.plotdict["root_objects"].get(graph_nick)
 			if graph is None:
@@ -85,6 +85,14 @@ class Chi2GraphFit(analysisbase.AnalysisBase):
 				fitter.Config().MinimizerOptions().SetMinimizerAlgorithm("Migrad")
 				
 				chi2_function  = Chi2Function(points, formula)
-				fitter.FitFCN(chi2_function, chi2_start_parameters)
+				fitter.SetFCN(chi2_function, start_parameters)
+#				for index_parameter, (start_parameter, parameter_ranges) in enumerate(zip(start_parameters, parameter_ranges)):
+#					error_low = start_parameter - parameter_ranges[0]
+#					error_high = parameter_ranges[1] - start_parameter
+#					fitter.SetParameter(index_parameter, "Parameter "+index_parameter, start_parameter, max(error_low, error_high), error_low, error_high)
+				
+				fitter.FitFCN(chi2_function, start_parameters)
+				
+				
 				fitter.Result().Print(ROOT.cout, True)
 
