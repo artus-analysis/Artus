@@ -181,7 +181,8 @@ class PlotRoot(plotbase.PlotBase):
 			if fill_style is None:
 				fill_style = 0
 				if ("HIST" in marker.upper()) and (not "E" in marker.upper()):
-					line_width = 0
+					if line_width is None:
+						line_width = 0
 					fill_style = 1001
 				elif "LINE" in marker.upper():
 					marker = marker.upper().replace("LINE", "HIST")
