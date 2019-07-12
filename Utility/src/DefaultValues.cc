@@ -1,15 +1,18 @@
 
 #include "Artus/Utility/interface/DefaultValues.h"
+#include <Math/Point3D.h>
 
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > RMFLV;
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > CartesianRMFLV;
+typedef ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<float> > RMPoint;
 
 const int DefaultValues::UndefinedInt = -999;
 const float DefaultValues::UndefinedFloat = -999.0f;
 const double DefaultValues::UndefinedDouble = -999.0;
 const RMFLV DefaultValues::UndefinedRMFLV = RMFLV(99999.0, 0.0, 0.0, 99999.0);
 const CartesianRMFLV DefaultValues::UndefinedCartesianRMFLV = CartesianRMFLV(99999.0, 0.0, 0.0, 99999.0);
+const RMPoint DefaultValues::UndefinedRMPoint = RMPoint(-999, -999, -999);
 
 const float DefaultValues::EtaBorderEB = 1.479f;
 

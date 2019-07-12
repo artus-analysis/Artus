@@ -1,14 +1,16 @@
 #pragma once
 
 #include "Artus/Utility/interface/Utility.h"
+#include <Math/Point3D.h>
 
 // a set of default values that can be used in your physics analysis
-// be aware. Comparing 2 floating point values like ( a == b ) is 
+// be aware. Comparing 2 floating point values like ( a == b ) is
 // never a good idea and the outcome can depend of compile and platform
 class DefaultValues {
 public:
 	typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > RMFLV;
 	typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > CartesianRMFLV;
+	typedef ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<float> > RMPoint;
 
 	// values set in .cc file
 	static const int UndefinedInt;
@@ -16,9 +18,10 @@ public:
 	static const double UndefinedDouble;
 	static const RMFLV UndefinedRMFLV;
 	static const CartesianRMFLV UndefinedCartesianRMFLV;
-	
+	static const RMPoint UndefinedRMPoint;
+
 	static const float EtaBorderEB;
-	
+
 	static const int pdgIdGluon;
 	static const int pdgIdGamma;
 	static const int pdgIdZ;

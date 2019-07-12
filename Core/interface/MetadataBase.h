@@ -4,6 +4,7 @@
 
 #include <Math/Vector4D.h>
 #include <Math/Vector4Dfwd.h>
+#include <Math/Point3D.h>
 
 #include "Artus/Core/interface/EventBase.h"
 #include "Artus/Core/interface/ProductBase.h"
@@ -11,6 +12,7 @@
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > RMFLV;
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > CartesianRMFLV;
+typedef ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<float> > RMPoint;
 
 typedef std::function<bool(EventBase const&, ProductBase const&)> bool_extractor_lambda_base;
 typedef std::function<int(EventBase const&, ProductBase const&)> int_extractor_lambda_base;
@@ -20,6 +22,7 @@ typedef std::function<double(EventBase const&, ProductBase const&)> double_extra
 typedef std::function<ROOT::Math::PtEtaPhiMVector(EventBase const&, ProductBase const&)> ptEtaPhiMVector_extractor_lambda_base;
 typedef std::function<RMFLV(EventBase const&, ProductBase const&)> rmflv_extractor_lambda_base;
 typedef std::function<CartesianRMFLV(EventBase const&, ProductBase const&)> cartesianRMFLV_extractor_lambda_base;
+typedef std::function<RMPoint(EventBase const&, ProductBase const&)> rmpoint_extractor_lambda_base;
 typedef std::function<std::string(EventBase const&, ProductBase const&)> string_extractor_lambda_base;
 typedef std::function<std::vector<double>(EventBase const&, ProductBase const&)> vDouble_extractor_lambda_base;
 typedef std::function<std::vector<float>(EventBase const&, ProductBase const&)> vFloat_extractor_lambda_base;
@@ -33,7 +36,7 @@ class MetadataBase
 public:
 	MetadataBase();
 	virtual ~MetadataBase();
-	
+
 	std::map<std::string, bool_extractor_lambda_base> m_commonBoolQuantities;
 	std::map<std::string, int_extractor_lambda_base> m_commonIntQuantities;
 	std::map<std::string, uint64_extractor_lambda_base> m_commonUInt64Quantities;
@@ -42,6 +45,7 @@ public:
 	std::map<std::string, ptEtaPhiMVector_extractor_lambda_base> m_commonPtEtaPhiMVectorQuantities;
 	std::map<std::string, rmflv_extractor_lambda_base> m_commonRMFLVQuantities;
 	std::map<std::string, cartesianRMFLV_extractor_lambda_base> m_commonCartesianRMFLVQuantities;
+	std::map<std::string, rmpoint_extractor_lambda_base> m_commonRMPointQuantities;
 	std::map<std::string, string_extractor_lambda_base> m_commonStringQuantities;
 	std::map<std::string, vDouble_extractor_lambda_base> m_commonVDoubleQuantities;
 	std::map<std::string, vFloat_extractor_lambda_base> m_commonVFloatQuantities;
