@@ -116,6 +116,35 @@ public:
 		{
 			return (event.m_lheParticles->particles.size() >= 5) ? event.m_lheParticles->particles.at(4).p4 : DefaultValues::UndefinedCartesianRMFLV;
 		});
+		
+		LambdaNtupleConsumer<TTypes>::AddIntQuantity(metadata, "LHE_SPINUP_pos_lepton", [](event_type const& event, product_type const& product)
+		{
+			for (std::vector<KLHEParticle>::iterator lheParticle = event.m_lheParticles->particles.begin();
+			     lheParticle != event.m_lheParticles->particles.end(); ++lheParticle)
+			{
+				if ((lheParticle->pdgId == -DefaultValues::pdgIdElectron) ||
+				    (lheParticle->pdgId == -DefaultValues::pdgIdMuon) ||
+				    (lheParticle->pdgId == -DefaultValues::pdgIdTau))
+				{
+					return (lheParticle->spinInfo > 0 ? +1 : -1);
+				}
+			}
+			return DefaultValues::UndefinedInt;
+		});
+		LambdaNtupleConsumer<TTypes>::AddIntQuantity(metadata, "LHE_SPINUP_neg_lepton", [](event_type const& event, product_type const& product)
+		{
+			for (std::vector<KLHEParticle>::iterator lheParticle = event.m_lheParticles->particles.begin();
+			     lheParticle != event.m_lheParticles->particles.end(); ++lheParticle)
+			{
+				if (((lheParticle->pdgId == DefaultValues::pdgIdElectron) ||
+				     (lheParticle->pdgId == DefaultValues::pdgIdMuon) ||
+				     (lheParticle->pdgId == DefaultValues::pdgIdTau)) && (lheParticle->status == 1))
+				{
+					return (lheParticle->spinInfo > 0 ? +1 : -1);
+				}
+			}
+			return DefaultValues::UndefinedInt;
+		});
 
 		// loop over all quantities containing "weight" (case-insensitive)
 		// and try to find them in the weights map to write them out
