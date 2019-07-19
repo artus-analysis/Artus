@@ -30,7 +30,9 @@ if __name__ == "__main__":
 	#if oldestfileage > agecutoff:
 	old = int(subprocess.check_output("find $HP_WORK_BASE_COMMON/caches -mtime +"+str(args.agecutoff)+" -user ${USER} -type f -name '*.root' | wc -l", shell=True))
 	log.info("Files older than "+str(args.agecutoff)+" days: "+str(old))
+	log.info("Remove these files?")
 
+	"""
 	if old > total/2:
 		midfileage = args.agecutoff
 		log.info("There are plenty of old files. Remove these?")
@@ -40,10 +42,11 @@ if __name__ == "__main__":
 		currenttime = subprocess.check_output("date +%s", shell=True)
 		midfileage = (int(currenttime)-int(midfiletime))/60/60/24 #Output in seconds, calculate to days
 		log.info("There are many files that aren't too old. Remove the older half? (Files older than "+str(midfileage)+" days)")
+	"""
 
 	answer = raw_input("[y|N]: ")
 	if answer in ["y","Y"]:
 		log.info("Removing old files...")
-		delete = subprocess.check_output("find $HP_WORK_BASE_COMMON/caches -mtime +"+str(midfileage)+" -user ${USER} -type f -name '*.root' -delete", shell=True)
+		delete = subprocess.check_output("find $HP_WORK_BASE_COMMON/caches -mtime +"+str(args.agecutoff)+" -user ${USER} -type f -name '*.root' -delete", shell=True)
 		log.info("Done!")
 
