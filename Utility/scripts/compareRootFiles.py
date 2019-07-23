@@ -53,18 +53,41 @@ def main():
 		exit(1)
 
 
-def compareBin(histo1, histo2, idx):
+def compareBin(histo1, histo2, idx, binx=0, biny=0):
 	result = True
-	if histo1.GetBinCenter(idx) != histo2.GetBinCenter(idx):
-		log.info("center of bin %d not identical: %f vs %f" % (idx, histo1.GetBinCenter(idx), histo2.GetBinCenter(idx)))
-		if not opt_all:
-			return False
-		result = False
-	if histo1.GetBinWidth(idx) != histo2.GetBinWidth(idx):
-		log.info("widths of bin %d not identical: %f vs %f" % (idx, histo1.GetBinWidth(idx), histo2.GetBinWidth(idx)))
-		if not opt_all:
-			return False
-		result = False
+	if isinstance(histo1, ROOT.TH2): # For TH2, but probably needs different treatment for TH3 again?
+		if histo1.GetXaxis().GetBinCenter(binx) != histo2.GetXaxis().GetBinCenter(binx):
+			log.info("center of bin %d on X-axis not identical: %f vs %f" % (idx, histo1.GetBinCenter(idx), histo2.GetBinCenter(idx)))
+			if not opt_all:
+				return False
+			result = False
+		if histo1.GetXaxis().GetBinWidth(binx) != histo2.GetXaxis().GetBinWidth(binx):
+			log.info("widths of bin %d on X-axis not identical: %f vs %f" % (idx, histo1.GetBinWidth(idx), histo2.GetBinWidth(idx)))
+			if not opt_all:
+				return False
+			result = False
+		if histo1.GetYaxis().GetBinCenter(biny) != histo2.GetYaxis().GetBinCenter(biny):
+			log.info("center of bin %d on Y-axis not identical: %f vs %f" % (idx, histo1.GetBinCenter(idx), histo2.GetBinCenter(idx)))
+			if not opt_all:
+				return False
+			result = False
+		if histo1.GetYaxis().GetBinWidth(biny) != histo2.GetYaxis().GetBinWidth(biny):
+			log.info("widths of bin %d on Y-axis not identical: %f vs %f" % (idx, histo1.GetBinWidth(idx), histo2.GetBinWidth(idx)))
+			if not opt_all:
+				return False
+			result = False
+	else:
+		if histo1.GetBinCenter(idx) != histo2.GetBinCenter(idx):
+			log.info("center of bin %d not identical: %f vs %f" % (idx, histo1.GetBinCenter(idx), histo2.GetBinCenter(idx)))
+			if not opt_all:
+				return False
+			result = False
+		if histo1.GetBinWidth(idx) != histo2.GetBinWidth(idx):
+			log.info("widths of bin %d not identical: %f vs %f" % (idx, histo1.GetBinWidth(idx), histo2.GetBinWidth(idx)))
+			if not opt_all:
+				return False
+			result = False
+
 	if histo1.GetBinError(idx) != histo2.GetBinError(idx):
 		log.info("errors in bin %d not identical: %f vs %f" % (idx, histo1.GetBinError(idx), histo2.GetBinError(idx)))
 		if not opt_all:
@@ -110,7 +133,7 @@ def compareTH2(directory1, directory2, histoID):
 				if idx1 != idx2:
 					log.info("binning not identical")
 					return False
-				if not compareBin(histo1, histo2, idx1):
+				if not compareBin(histo1, histo2, idx1, binx, biny):
 					return False
 	except:
 		log.info("general error")

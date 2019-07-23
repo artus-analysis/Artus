@@ -64,8 +64,8 @@ class InputRoot(inputfile.InputFile):
 		
 		self.input_options.add_argument("--tree-draw-options", nargs='+', type=str, default="",
 		                                help="Optional argument for TTree:Draw() call. Use e.g. \"prof\" or \"profs\" for projections of 2D-Histograms to 1D. See also http://root.cern.ch/ooot/html/TTree.html#TTree:Draw. Specify \"TGraph\" for plotting y- vs. x-values into a TGraph. \"TGraphErrors\" leads to a graph with errors by specifying inputs with --x-expressions <x values>:<x errors> --y-expressions <y values>:<y errors>. \"TGraphAsymmErrorsX\" leads to a graph with asymmetric x-errors by specifying inputs with --x-expressions <x values>:<x errors (down)>:<x errors (up)> --y-expressions <y values>. \"TGraphAsymmErrorsY\" leads to a graph with asymmetric y-errors by specifying inputs with --x-expressions <x values> --y-expressions <y values>:<y errors (down)>:<y errors (up)>. \"TGraph2D\" leads to a 2D graph by specifying inputs with --x-expressions <x values> --y-expressions <y values> --z-expressions <z values>. ROOT.TTree.MakeProxy and ROOT.TTree.Process is usued to fill the histograms from a tree instead of ROOT.TTree.Draw or ROOT.TTree.Project in case you specify the option \"proxy\" This is needed e.g. for formulas containing two branches/leafs with different non-fundamental types.")
-		self.input_options.add_argument("--proxy-prefix", type=str, default="",
-		                                help="Additional C++ code (e.g. include statements) to be put in the proxy macros. [Default: %(default)s]")
+		self.input_options.add_argument("--proxy-prefixes", nargs='+', type=str, default="",
+		                                help="Additional C++ code(s) (e.g. include statements) to be put in the proxy macros. [Default: %(default)s]")
 		
 		self.input_options.add_argument("--keep-trees", nargs="?", type="bool", default=False, const=True,
 		                                help="Keep trees in the plot data object during the complete run. [Default: %(default)s]")
@@ -73,13 +73,13 @@ class InputRoot(inputfile.InputFile):
 		                                help="Read in the config stored in Artus ROOT outputs. [Default: %(default)s]")
 		self.input_options.add_argument("--hide-progressbar", nargs ="?", type="bool", default=False, const=True,
 		                                help="Show progress of the individual plot. [Default: %(default)s]")
-		self.input_options.add_argument("--no-cache", nargs ="?", type="bool", default=None, const=True,
-		                                help="Do not use caching for inputs from trees. [Default: False for absolute paths, True for relative paths]")
+		self.input_options.add_argument("--redo-cache", nargs ="?", type="bool", default=None, const=True,
+		                                help="Do not use inputs from cached trees, but overwrite them. [Default: False for absolute paths, True for relative paths]")
 
 	def prepare_args(self, parser, plotData):
 		super(InputRoot, self).prepare_args(parser, plotData)
 
-		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "files", "directories", "folders", "weights", "friend_files", "friend_folders", "friend_aliases", "tree_draw_options"], help="InputRoot options")
+		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "files", "directories", "folders", "weights", "friend_files", "friend_folders", "friend_aliases", "tree_draw_options", "proxy_prefixes"], help="InputRoot options")
 		inputbase.InputBase.prepare_nicks(plotData)
 		
 		for key in ["folders"]:
@@ -87,8 +87,8 @@ class InputRoot(inputfile.InputFile):
 		for key in ["friend_files", "friend_folders"]:
 			plotData.plotdict[key] = [element.split() if element else element for element in plotData.plotdict[key]]
 		
-		if plotData.plotdict["no_cache"] is None:
-			plotData.plotdict["no_cache"] = not any(tools.flattenList([[input_file.startswith("/") or ("://" in input_file) for input_file in files] for files in plotData.plotdict["files"]]))
+		if plotData.plotdict["redo_cache"] is None:
+			plotData.plotdict["redo_cache"] = not any(tools.flattenList([[input_file.startswith("/") or ("://" in input_file) for input_file in files] for files in plotData.plotdict["files"]]))
 		
 		if plotData.plotdict["read_config"]:
 			self.read_input_json_dicts(plotData)
@@ -98,6 +98,8 @@ class InputRoot(inputfile.InputFile):
 		root_tools = roottools.RootTools()
 		self.hide_progressbar = plotData.plotdict["hide_progressbar"]
 		del(plotData.plotdict["hide_progressbar"])
+		files_to_remove = []
+		
 		for index, (
 				root_files,
 				folders,
@@ -112,7 +114,8 @@ class InputRoot(inputfile.InputFile):
 				friend_files,
 				friend_folders,
 				friend_aliases,
-				option
+				option,
+				proxy_prefix
 		) in enumerate(pi.ProgressIterator(zip(
 				plotData.plotdict["files"],
 				plotData.plotdict["folders"],
@@ -127,7 +130,8 @@ class InputRoot(inputfile.InputFile):
 				plotData.plotdict["friend_files"],
 				plotData.plotdict["friend_folders"],
 				plotData.plotdict["friend_aliases"],
-				plotData.plotdict["tree_draw_options"]
+				plotData.plotdict["tree_draw_options"],
+				plotData.plotdict["proxy_prefixes"]
 		), description="Reading ROOT inputs", visible=not self.hide_progressbar )):
 			# check whether to read from TTree or from TDirectory
 			root_folder_type = roottools.RootTools.check_type(root_files, folders,
@@ -139,7 +143,7 @@ class InputRoot(inputfile.InputFile):
 				variable_expression = "%s%s%s" % (z_expression + ":" if z_expression else "",
 				                                  y_expression + ":" if y_expression else "",
 				                                  x_expression)
-				root_tree_chain, root_histogram = root_tools.histogram_from_tree(
+				root_tree_chain, root_histogram, tmp_files = root_tools.histogram_from_tree(
 						root_files, folders,
 						x_expression, y_expression, z_expression,
 						x_bins=["25"] if x_bins is None else x_bins,
@@ -149,10 +153,11 @@ class InputRoot(inputfile.InputFile):
 						friend_files=friend_files,
 						friend_folders=friend_folders,
 						friend_aliases=friend_aliases,
-						proxy_prefix=plotData.plotdict["proxy_prefix"],
+						proxy_prefix=proxy_prefix,
 						scan=plotData.plotdict["scan"],
-						use_cache=(not plotData.plotdict["no_cache"])
+						redo_cache=(plotData.plotdict["redo_cache"])
 				)
+				plotData.plotdict.setdefault("tmp_files", []).extend(tmp_files)
 				
 			elif root_folder_type == "TDirectory":
 				if x_expression is None:
@@ -187,9 +192,12 @@ class InputRoot(inputfile.InputFile):
 			# save histogram in plotData
 			# merging histograms with same nick names is done in upper class
 			plotData.plotdict.setdefault("root_objects", {}).setdefault(nick, []).append(root_histogram)
+			
+		for tmp_file in files_to_remove:
+			log.debug("rm "+tmp_file)
+			#os.remove(tmp_file) # has to be deleted even later (after all multiplots finished)
 
 		# run upper class function at last
-		
 		super(InputRoot, self).run(plotData)
 
 

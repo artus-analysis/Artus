@@ -24,6 +24,25 @@ import Artus.Utility.progressiterator as pi
 from difflib import SequenceMatcher
 
 
+# https://stackoverflow.com/a/17215533
+class SafeStringFormatter(dict):
+	def __missing__(self, key):
+		return "{" + key + "}"
+
+def get_checked_and_renamed(file_name, suffix=''):
+	if not os.path.isfile(file_name):
+		return file_name, suffix
+	ext = '.' + file_name.split('.')[-1]
+	name = ".".join(file_name.split(".")[:-1])
+	if '__copy_' not in name:
+		name += '__copy_0'
+		suffix = '__copy_0'
+	else:
+		suffix = '__copy_' + str(int(name.split('__copy_')[-1]) + 1)
+		name = '__copy_'.join(name.split('__copy_')[:-1]) + suffix
+	return get_checked_and_renamed(name + ext, suffix)
+
+
 def flattenList(listOfLists):
 	"""
 	flatten 2D list
@@ -56,7 +75,7 @@ def matching_sublist(input_list, whitelist=[], blacklist=[], items_label="items"
 					indices_to_remove.append(index)
 			for index in indices_to_remove[::-1]:
 				tmp_input_list.pop(index)
-	
+
 	output_list = []
 	if len(blacklist) == 0:
 		output_list = copy.deepcopy(whitelist_matches)
@@ -67,16 +86,16 @@ def matching_sublist(input_list, whitelist=[], blacklist=[], items_label="items"
 				if (not item is None) and (not re.search(regex, item) is None):
 					keep = False
 					continue
-			
+
 			if (not keep) and (len(whitelist) > 0):
 				for regex in whitelist:
 					if (not item is None) and (not re.match(regex, item) is None):
 						keep = True
 						continue
-			
+
 			if keep:
 				output_list.append(item)
-	
+
 	# warn if black/whitelisting changes the order of nicks
 	indices = [input_list.index(out_nick) for out_nick in output_list]
 	if not all(x<=y for x, y in zip(indices, indices[1:])):
@@ -84,7 +103,7 @@ def matching_sublist(input_list, whitelist=[], blacklist=[], items_label="items"
 		original_order = [i for i in input_list if i in output_list]
 		log_level("Original order: "+", ".join(original_order))
 		log_level("New order     : "+", ".join(output_list))
-	
+
 	return output_list
 
 # http://codereview.stackexchange.com/questions/21532/python-3-finding-common-patterns-in-pairs-of-strings
@@ -210,21 +229,21 @@ def hadd(target_file, source_files, hadd_args="", max_files=500):
 		log.critical("No source files specified to be merged!")
 		sys.exit(1)
 	source_files_chunks = [source_files[start_chunk_index:start_chunk_index+max_files] for start_chunk_index in xrange(0, len(source_files), max_files)]
-	
+
 	exit_code = 0
 	for chunk_index, tmp_source_files in enumerate(source_files_chunks):
 		tmp_target_file = "%s.hadd_%d.root" % (target_file, chunk_index)
 		if chunk_index == len(source_files_chunks)-1:
 			tmp_target_file = target_file
-		
+
 		last_target_file = ""
 		if chunk_index > 0:
 			last_target_file = "%s.hadd_%d.root" % (target_file, chunk_index-1)
-		
+
 		command = "hadd %s %s %s %s" % (hadd_args, tmp_target_file, " ".join(tmp_source_files), last_target_file)
 		log.debug(command)
 		exit_code = max(exit_code, logger.subprocessCall(shlex.split(command)))
-		
+
 		# remove last temp. merge result
 		if len(last_target_file) > 0:
 			os.remove(last_target_file)
@@ -351,7 +370,7 @@ def download_remote_file(remote, local, offset=30, bandwidth=100):
 	else:
 		log.critical("Could not get file size of \"{remote}\"!".format(remote=remote))
 		return None
-	
+
 	timeout = offset + size/1024/bandwidth
 	command = "gfal-copy --abort-on-failure --timeout {timeout} --transfer-timeout {timeout} --force {remote} {local}".format(
 			timeout=str(timeout),

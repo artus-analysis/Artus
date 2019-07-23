@@ -16,11 +16,16 @@ import hashlib
 import numpy
 import os
 import sys
+import shlex
 import re
 
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gEnv.SetValue("TFile.AsyncPrefetching", 1)
+
+# https://root-forum.cern.ch/t/multiple-proxies-to-process-trees-in-one-script/34267/9
+ROOT.gEnv.SetValue("ACLiC.LinkLibs", 0)
+ROOT.gROOT.ProcessLine("gEnv->SetValue(\"ACLiC.LinkLibs\", 0)")
 
 import Artus.Utility.geometry as geometry
 import Artus.Utility.tools as tools
@@ -49,8 +54,8 @@ class RootTools(object):
 			root_file_names = [root_file_names]
 		if isinstance(path_to_objects, basestring):
 			path_to_objects = [path_to_objects]
-		
-		with TFileContextManager(root_file_names[0], "READ") as root_file: 
+
+		with TFileContextManager(root_file_names[0], "READ") as root_file:
 			root_object = root_file.Get(str(path_to_objects[0])) if str(path_to_objects[0]) != "" else root_file
 			if root_object:
 				if isinstance(root_object, ROOT.TTree):
@@ -105,16 +110,16 @@ class RootTools(object):
 		"""
 		if len(binning) == 1:
 			binning = binning[0]
-		
+
 		prepared_binning = binning
 		if prepared_binning == None:
 			prepared_binning = ""
 		if isinstance(prepared_binning, basestring):
 			prepared_binning.replace("(", "")
 			prepared_binning.replace(")", "")
-			
+
 		binning_string, bin_edges = RootTools.binning_to_bin_edges(prepared_binning)
-		
+
 		return binning_string, bin_edges
 
 
@@ -122,10 +127,10 @@ class RootTools(object):
 	def histogram_from_file(root_file_names, path_to_histograms, x_bins=None, y_bins=None, z_bins=None, name=None):
 		"""
 		Read histograms from files
-	
+
 		root_file_names: string (or list of strings)
 		path_to_histograms: string (or list of strings) of path to root histogram in root file
-	
+
 		This function looks for the same histograms in all files and sums them up
 		The name (string) of the resulting histogram can be passed as a parameter
 		"""
@@ -134,12 +139,12 @@ class RootTools(object):
 			root_file_names = [root_file_names]
 		if isinstance(path_to_histograms, basestring):
 			path_to_histograms = [path_to_histograms]
-	
+
 		# prepare unique histogram name
 		if name == None:
 			name = "histogram_{0}.json".format(hashlib.md5("_".join([str(root_file_names),
 				                                                     str(path_to_histograms)])).hexdigest())
-	
+
 		# loop over files and try to read histograms
 		root_histogram = None
 		for root_file_name in root_file_names:
@@ -149,18 +154,18 @@ class RootTools(object):
 					if tmp_root_histogram == None:
 						log.critical("Cannot find histogram \"%s\" in file \"%s\"!" % (path_to_histogram, root_file_name))
 						sys.exit(1)
-				
+
 					if tmp_root_histogram is None:
 						log.error("Could not find histogram \"" + path_to_histogram + "\" in file \"" + root_file_name + "\"!")
 					else:
 						if isinstance(tmp_root_histogram, ROOT.TH1):
 							tmp_root_histogram.SetDirectory(0)
-					
+
 						if root_histogram == None:
 							root_histogram = tmp_root_histogram.Clone(name)
 						else:
 							root_histogram.Add(tmp_root_histogram)
-					
+
 						if isinstance(root_histogram, ROOT.TH1):
 							root_histogram.SetDirectory(0)
 
@@ -174,7 +179,7 @@ class RootTools(object):
 					rebinning_x = int(root_histogram.GetNbinsX() / int(x_bins[0]))
 				else:
 					rebinning_x = x_bin_edges
-			
+
 			rebinning_y = 1
 			if not y_bins is None:
 				y_binning_string, y_bin_edges = RootTools.prepare_binning(y_bins)
@@ -183,7 +188,7 @@ class RootTools(object):
 					rebinning_y = int(root_histogram.GetNbinsY() / int(y_bins[0]))
 				else:
 					rebinning_y = y_bin_edges
-			
+
 			rebinning_z = 1
 			if not z_bins is None:
 				z_binning_string, z_bin_edges = RootTools.prepare_binning(z_bins)
@@ -192,7 +197,7 @@ class RootTools(object):
 					rebinning_z = int(root_histogram.GetNbinsZ() / int(z_bins[0]))
 				else:
 					rebinning_z = z_bin_edges
-			
+
 			root_histogram = RootTools.rebin_root_histogram(
 					root_histogram,
 					rebinningX=rebinning_x,
@@ -200,7 +205,7 @@ class RootTools(object):
 					rebinningZ=rebinning_z,
 					name=name
 			)
-			
+
 		return root_histogram
 
 
@@ -209,29 +214,29 @@ class RootTools(object):
 		                    x_bins=None, y_bins=None, z_bins=None,
 		                    weight_selection="", option="", name=None,
 		                    friend_files=None, friend_folders=None, friend_aliases=None,
-		                    proxy_prefix="", scan=None, use_cache=True):
+		                    proxy_prefix="", scan=None, redo_cache=False):
 		"""
 		Read histograms from trees
-	
+
 		root_file_names: string or list of strings
 		path_to_tree: string of path to root tree in root file
-	
+
 		This will build up a TChain to read out all trees from all files
-	
+
 		variable_expression: Used as varexp parameter of ROOT.TTree.Draw
 		binning: string, can be empty, "<nbins>", "<nbins>, <low>, <up>", ...
 		weight_selection: Used as cut parameter of ROOT.TTree.Draw
 		option: Used as option parameter of ROOT.TTree.Draw, "GOFF" is added
-	
+
 		The name (string) of the resulting histogram can be passed as a parameter
 		"""
-	
+
 		variable_expression = "%s%s%s" % (z_expression + ":" if z_expression else "",
 			                              y_expression + ":" if y_expression else "",
 			                              x_expression)
 		#determine histotype
 		binning_identifier = "x".join([str(bins) for bins in [x_bins, y_bins, z_bins]])
-	
+
 		# prepare unique histogram name
 		if name == None:
 			name = "histogram_{0}".format(hashlib.md5("_".join([str(root_file_names),
@@ -239,8 +244,8 @@ class RootTools(object):
 				                                                variable_expression,
 				                                                str(x_bins), str(y_bins), str(z_bins),
 				                                                str(weight_selection)])).hexdigest())
-		
-		
+
+
 		# prepare binning ROOT.TTree.Draw/Project
 		x_binning_string, y_binning_string, z_binning_string = ("",)*3
 
@@ -263,8 +268,8 @@ class RootTools(object):
 			if not binning.endswith(")"):
 				binning = binning + ")"
 			if binning == "()":
-				binning == ""
-			
+				binning = ""
+
 			if any([bin_edges != None for bin_edges in [self.x_bin_edges[binning_identifier], self.y_bin_edges[binning_identifier], self.z_bin_edges[binning_identifier]]]):
 				if any([bin_edges == None and expression != None for (bin_edges, expression) in zip(
 						[self.x_bin_edges[binning_identifier], self.y_bin_edges[binning_identifier], self.z_bin_edges[binning_identifier]],
@@ -280,9 +285,9 @@ class RootTools(object):
 						name=name,
 						profile_error_option=(option.lower().replace("prof", ''))
 					)
-		
+
 		# draw histogram
-		tree, root_histogram = RootTools.tree_draw(
+		tree, root_histogram, tmp_files = RootTools.tree_draw(
 				root_file_names=root_file_names,
 				path_to_trees=path_to_trees,
 				friend_files=friend_files,
@@ -294,14 +299,15 @@ class RootTools(object):
 				binning=binning,
 				weight_selection=str(weight_selection),
 				option=option,
+				proxy_prefix=proxy_prefix,
 				scan=scan,
-				use_cache=use_cache
+				redo_cache=redo_cache
 		)
-		
+
 		if root_histogram == None:
 			log.critical("Cannot find histogram \"%s\" created from trees %s in files %s!" % (name, str(path_to_trees), str(root_file_names)))
 			sys.exit(1)
-		
+
 		if isinstance(root_histogram, ROOT.TH1):
 			root_histogram.SetDirectory(0)
 			self.x_bin_edges[binning_identifier] = RootTools.get_binning(root_histogram, axisNumber=0)
@@ -313,18 +319,31 @@ class RootTools(object):
 
 		if "prof" not in option.lower() and binning_identifier not in self.binning_determined:
 			self.binning_determined.append(binning_identifier)
-		return tree, root_histogram
-	
+		return tree, root_histogram, tmp_files
+
+	@staticmethod
+	def prepare_proxy_command(s):
+		from six import string_types
+		if not isinstance(s, string_types):
+			s = str(s)
+			logger.warning("prepare_proxy_command  manual string conversion: " + s)
+		s = s.rstrip()
+		if s.endswith(';'):
+			s = s[:-1]
+		return 'return ' + s if 'return' not in s else s
+
 	@staticmethod
 	@rootcache.RootFileCache(os.path.expandvars(os.path.join("$HP_WORK_BASE_COMMON", "caches")))
-	def tree_draw(root_file_names, path_to_trees, friend_files, friend_folders, friend_aliases, root_histogram, variable_expression, name, binning, weight_selection, option, scan=None, use_cache=True):
-		
+	def tree_draw(root_file_names, path_to_trees, friend_files, friend_folders, friend_aliases, root_histogram, variable_expression, name, binning, weight_selection, option, proxy_prefix="", scan=None, redo_cache=False):
+
+		hash_name = hashlib.md5("".join(map(str, [root_file_names, path_to_trees, friend_files, friend_folders, friend_aliases, root_histogram, variable_expression, name, binning, weight_selection, option, proxy_prefix, scan, redo_cache]))).hexdigest()
+
 		# prepare TChain
 		if isinstance(root_file_names, basestring):
 			root_file_names = [root_file_names]
 		if isinstance(path_to_trees, basestring):
 			path_to_trees = [path_to_trees]
-	
+
 		tree = ROOT.TChain()
 		for root_file_name in root_file_names:
 			for path_to_tree in path_to_trees:
@@ -334,7 +353,7 @@ class RootTools(object):
 				if n_trees_added == 0:
 					log.error("Input %s does not contain any trees!" % complete_path_to_tree)
 		tree.SetDirectory(0)
-		
+
 		#Add Friends
 		friend_trees = []
 		if friend_files and friend_folders:
@@ -351,47 +370,41 @@ class RootTools(object):
 			log.debug("ROOT.TTree.AddFriend(" + str(friend_trees[-1]) + ", \"" + (friend_alias if friend_alias else "") + "\")")
 			tree.AddFriend(friend_trees[-1], (friend_alias if friend_alias else ""))
 			friend_trees[-1].SetDirectory(0)
-		
-		tree.SetName(hashlib.md5("".join([str(item) for item in [root_file_names, path_to_trees, friend_files, friend_folders]])).hexdigest())
-		
+
+		tree.SetName(hash_name)
+
 		# treat functions/macros that need to be compiled before drawing
 		tmp_proxy_files = []
-		proxy_call = None
 		if "proxy" in option:
-			proxy_name = hashlib.md5(variable_expression+"__"+str(weight_selection)).hexdigest()
-			
-			proxy_class_name = "proxy_class_"+proxy_name
-			proxy_macro_name = "proxy_macro_"+proxy_name
-			proxy_cutmacro_name = "proxy_cutmacro_"+proxy_name
-			
+			proxy_class_name = "proxy_class_"+hash_name
+			proxy_macro_name = "proxy_macro_"+hash_name
+			proxy_cutmacro_name = "proxy_cutmacro_"+hash_name
+
 			proxy_class_filename = proxy_class_name+".h"
 			proxy_macro_filename = proxy_macro_name+".C"
 			proxy_cutmacro_filename = proxy_cutmacro_name+".C"
-			
+
 			tmp_proxy_files.append(proxy_class_filename)
 			tmp_proxy_files.append(proxy_macro_filename)
 			tmp_proxy_files.append(proxy_cutmacro_filename)
-			
+
 			# write macros with variable and cut expression containing the plotting information
+			variable_expression = RootTools.prepare_proxy_command(variable_expression)
+			weight_selection = RootTools.prepare_proxy_command(weight_selection)
 			with open(proxy_macro_filename, "w") as proxy_macro_file:
-				proxy_macro_file.write("double {function}() {a} return {content}; {b}".format(
+				proxy_macro_file.write("double {function}() {{ {content}; }}".format(
 						function=proxy_macro_name,
-						a="{",
-						content=variable_expression,
-						b="}"
+						content=variable_expression.replace("HASH_NAME", hash_name)
 				))
 			with open(proxy_cutmacro_filename, "w") as proxy_cutmacro_file:
-				proxy_cutmacro_file.write("bool {function}() {a} return {content}; {b}".format(
+				proxy_cutmacro_file.write("double {function}() {{ {content}; }}".format(
 						function=proxy_cutmacro_name,
-						a="{",
-						content=str(weight_selection),
-						b="}"
+						content=weight_selection.replace("HASH_NAME", hash_name)
 				))
-			
+
 			# create tree proxy
 			tree.MakeProxy(proxy_class_name, proxy_macro_filename, proxy_cutmacro_filename)
-			proxy_call = proxy_class_filename+"+"
-			
+
 			# fix histogram name used in the proxy class
 			# TODO: only do this when ROOT.TTree.Project is called afterwards, not for ROOT.TTree.Draw, when the histogram cannot be renamed before the plotting?
 			proxy_class_content = None
@@ -404,19 +417,23 @@ class RootTools(object):
 			).replace(
 					"htemp->SetTitle", "//htemp->SetTitle"
 			).replace(
-					"using namespace ROOT;", proxy_prefix+"\nusing namespace ROOT;"
+					"using namespace ROOT", proxy_prefix.replace("\\n", "\n")+"\nusing namespace ROOT"
+			).replace(
+					"htemp->Fill("+proxy_macro_name+"())", "htemp->Fill("+proxy_macro_name+"(), "+proxy_cutmacro_name+"())"
+			).replace(
+					"HASH_NAME", hash_name
 			)
 			with open(proxy_class_filename, "w") as proxy_class_file:
 				proxy_class_file.write(proxy_class_content)
-		
+
 		if scan:
 			# https://root.cern.ch/doc/master/classTTreePlayer.html#aa0149b416e4b812a8762ec1e389ba2db
 			tree.SetScanField(0)
 			log.debug("ROOT.TTree.Scan(\"" + scan + "\", \"" + str(weight_selection) + "\")")
 			tree.Scan(scan, str(weight_selection), "colsize=12")
-		
+
 		if root_histogram == None:
-			if ("proxy" in option) and (not proxy_call is None):
+			if "proxy" in option and proxy_call is not None:
 				log.critical("Plotting of compliled proxy formulas not yet implemented for the case where no binning is specified!")
 				sys.exit(1)
 			else:
@@ -424,10 +441,10 @@ class RootTools(object):
 				special_options = ["TGraph2D", "TGraphAsymmErrorsX", "TGraphAsymmErrorsY", "TGraphErrors", "TGraph"]
 				for special_option in special_options:
 					draw_option = draw_option.replace(special_option, "")
-		
+
 				log.debug("ROOT.TTree.Draw(\"" + variable_expression + ">>" + name + binning + "\", \"" + str(weight_selection) + "\", \"" + draw_option + " GOFF\")")
 				tree.Draw(variable_expression + ">>" + name + binning, str(weight_selection), draw_option + " GOFF")
-			
+
 				if "TGraph2D" in option:
 					root_histogram = ROOT.TGraph2D(tree.GetSelectedRows(), tree.GetV3(), tree.GetV2(), tree.GetV1())
 				elif "TGraphAsymmErrors" in option:
@@ -445,33 +462,30 @@ class RootTools(object):
 					root_histogram = ROOT.TGraph(tree.GetSelectedRows(), tree.GetV2(), tree.GetV1())
 				else:
 					root_histogram = ROOT.gDirectory.Get(name)
-				
+
 					# histograms are sometimes empty, although the contain entries after the ROOT.TH1.Print function is called
 					# this is considered as a hack solving this problem.
 					# https://root.cern.ch/doc/master/TH1_8cxx_source.html#l06558
 					if isinstance(root_histogram, ROOT.TH1):
 						root_histogram.GetSumOfWeights()
 		else:
-			if ("proxy" in option) and (not proxy_call is None):
-				log.debug("ROOT.TTree.Process(\"" + proxy_call + "\")")
-				result = tree.Process(proxy_call)
+			if "proxy" in option:
+				log.debug("ROOT.TTree.Process(\""+proxy_class_filename+"+\")") # ROOT.TSelector.GetSelector(\""+proxy_class_filename+"+\"))")
+				result = tree.Process(proxy_class_filename+"+") # ROOT.TSelector.GetSelector(proxy_class_filename+"+"))
 				if result < 0:
-					log.error("Reading input based on proxy failed. Try preserving all proxy files by using debug logging (--log-level debug).")
+					ROOT.gDirectory.Delete(name+";*")
+					log.error("Reading input based on proxy failed. Proxy files will be kept for debugging.")
+					tmp_proxy_files = []
 			else:
 				log.debug("ROOT.TTree.Project(\"" + name + "\", \"" + variable_expression + "\", \"" + str(weight_selection) + "\", \"" + option + "\" GOFF\")")
 				tree.Project(name, variable_expression, str(weight_selection), option + " GOFF")
 			root_histogram = ROOT.gDirectory.Get(name)
-		
-		# delete possible files from tree proxy
-		if log.isEnabledFor(logging.DEBUG):
-			log.warning("Delete proxy files manually:")
+
+		tmp_files = []
 		for tmp_proxy_file in tmp_proxy_files:
-			for tmp_file in glob.glob(os.path.splitext(tmp_proxy_file)[0]+"*"):
-				log.debug("rm " + tmp_file)
-				if not log.isEnabledFor(logging.DEBUG):
-					os.remove(tmp_file)
-		
-		return tree, root_histogram
+			tmp_files += glob.glob(os.path.splitext(tmp_proxy_file)[0] + "*")
+
+		return tree, root_histogram, tmp_files
 
 	@staticmethod
 	def create_root_histogram(x_bins, y_bins=None, z_bins=None, profile_histogram=False, name=None, profile_error_option=""):
@@ -481,28 +495,28 @@ class RootTools(object):
 		# prepare unique histogram name
 		if name == None:
 			name = "histogram_{0}".format(hashlib.md5("_".join([str(x_bins), str(y_bins), str(z_bins), str(profile_histogram), str(profile_error_option)])).hexdigest())
-		
+
 		# prepare bin edges
 		x_bin_edges = None
 		if isinstance(x_bins, basestring) or ((len(x_bins) == 1) and isinstance(x_bins[0], basestring)):
 			x_binning_string, x_bin_edges = RootTools.prepare_binning(x_bins[0])
 		else:
 			x_bin_edges = array.array('d', x_bins)
-		
+
 		y_bin_edges = None
 		if not y_bins is None:
 			if isinstance(y_bins, basestring) or ((len(y_bins) == 1) and isinstance(y_bins[0], basestring)):
 				y_binning_string, y_bin_edges = RootTools.prepare_binning(y_bins[0])
 			else:
 				y_bin_edges = y_bins
-		
+
 		z_bin_edges = None
 		if not z_bins is None:
 			if isinstance(z_bins, basestring) or ((len(z_bins) == 1) and isinstance(z_bins[0], basestring)):
 				z_binning_string, z_bin_edges = RootTools.prepare_binning(z_bins[0])
 			else:
 				z_bin_edges = z_bins
-		
+
 		histogram_class = None
 		histogram_class_name = None
 		if not z_bins is None:
@@ -514,7 +528,7 @@ class RootTools(object):
 		else:
 			histogram_class = ROOT.TProfile if profile_histogram else ROOT.TH1D
 			histogram_class_name = "ROOT.TProfile" if profile_histogram else "ROOT.TH1D"
-		
+
 		histogram_args = [name, ""]
 		histogram_args.extend([len(x_bin_edges)-1, x_bin_edges])
 		if not y_bins is None:
@@ -523,20 +537,20 @@ class RootTools(object):
 				histogram_args.extend([len(z_bin_edges)-1, z_bin_edges])
 		if profile_histogram:
 			histogram_args.append(profile_error_option)
-		
+
 		log.debug(histogram_class_name+"("+", ".join(["\""+arg+"\"" if isinstance(arg, basestring) else str(arg) for arg in histogram_args])+")")
 		root_histogram = histogram_class(*histogram_args)
-		
+
 		return root_histogram
 
 	@staticmethod
 	def rebin_root_histogram(root_histogram, rebinningX=1, rebinningY=1, rebinningZ=1, name=None):
 		"""
 		Rebin root histogram with well established root functions
-	
+
 		rebinningX/rebinningY/rebinningZ can either be of type int (number of neighbouring bins to merge into one bin)
 		or lists of bin edges.
-	
+
 		The name (string) of the resulting histogram can be passed as a parameter
 		"""
 
@@ -557,7 +571,7 @@ class RootTools(object):
 			1 : array.array("d", list(rebinningY)) if type(rebinningY) != int else None,
 			2 : array.array("d", list(rebinningZ)) if type(rebinningZ) != int else None,
 		}
-	
+
 		# simple rebinning
 		tmp_root_histogram = root_histogram.Clone(name+"clone")
 		if simpleRebinning[0]:
@@ -566,27 +580,27 @@ class RootTools(object):
 			tmp_root_histogram.RebinY(simpleRebinning[1])
 		if simpleRebinning[2] and tmp_root_histogram.GetDimension() > 2:
 			tmp_root_histogram.RebinZ(simpleRebinning[2])
-	
+
 		# complex rebinning (non-constant bin widths)
 		rebinned_root_histogram = tmp_root_histogram.Clone(name)
 		if any(complexRebinning.values()):
-	
+
 			# create exmpty histogram with correct final binning
 			rebinned_root_histogram.Reset()
-		
+
 			complexRebinning = { axisNumber : rebinning if rebinning else RootTools.get_binning(rebinned_root_histogram, axisNumber)
 				                 for axisNumber, rebinning in complexRebinning.items() }
-		
+
 			rebinned_root_histogram.GetXaxis().Set(len(complexRebinning[0])-1, complexRebinning[0])
 			rebinned_root_histogram.GetYaxis().Set(len(complexRebinning[1])-1, complexRebinning[1])
 			rebinned_root_histogram.GetZaxis().Set(len(complexRebinning[2])-1, complexRebinning[2])
-		
+
 			# use THnSparse to correctly sum up histograms with different binnings
 			sparse_rebinned_root_histogram = ROOT.THnSparse.CreateSparse(name+"sparse", "", rebinned_root_histogram)
 			for axisNumber, rebinning in complexRebinning.items():
 				if axisNumber < rebinned_root_histogram.GetDimension():
 					sparse_rebinned_root_histogram.GetAxis(axisNumber).Set(len(rebinning)-1, rebinning)
-		
+
 			sparse_tmp_root_histogram = ROOT.THnSparse.CreateSparse(name+"sparsetmp", "", tmp_root_histogram)
 			binning = RootTools.get_binning(tmp_root_histogram, 0)
 			if not RootTools.rebinning_possible(binning, complexRebinning[0]):
@@ -608,7 +622,7 @@ class RootTools(object):
 					log.debug("Old binning in Z: " + RootTools.binning_formatted(binning))
 					log.debug("New binning in Z: " + RootTools.binning_formatted(complexRebinning[2]))
 				sparse_tmp_root_histogram.GetAxis(2).Set(len(binning)-1, binning)
-		
+
 			# retrieve rebinned histogram
 			sparse_rebinned_root_histogram.RebinnedAdd(sparse_tmp_root_histogram)
 			if rebinned_root_histogram.GetDimension() > 2:
@@ -618,11 +632,11 @@ class RootTools(object):
 				rebinned_root_histogram = sparse_rebinned_root_histogram.Projection(1, 0, "EO")
 			else:
 				rebinned_root_histogram = sparse_rebinned_root_histogram.Projection(0, "EO")
-			
+
 			rebinned_root_histogram.GetXaxis().Set(len(complexRebinning[0])-1, complexRebinning[0])
 			rebinned_root_histogram.GetYaxis().Set(len(complexRebinning[1])-1, complexRebinning[1])
 			rebinned_root_histogram.GetZaxis().Set(len(complexRebinning[2])-1, complexRebinning[2])
-		
+
 		# projections in case of only one bin for certain axes
 		# TODO: this code might need a config option to be switched off by default
 		if rebinned_root_histogram.GetDimension() == 2:
@@ -648,7 +662,7 @@ class RootTools(object):
 			elif rebinned_root_histogram.GetNbinsX() == 1:
 				rebinned_root_histogram.GetXaxis().SetRange(1, 1)
 				rebinned_root_histogram = rebinned_root_histogram.Project3D("zy", "EO")
-		
+
 		rebinned_root_histogram.SetName(name)
 		return rebinned_root_histogram
 
@@ -658,7 +672,7 @@ class RootTools(object):
 		"""
 		Returns the bin edges of a certain axis for a given root histogram
 		"""
-	
+
 		axis = None
 		if axisNumber == 0:
 			axis = root_histogram.GetXaxis()
@@ -667,7 +681,7 @@ class RootTools(object):
 		elif axisNumber == 2:
 			axis = root_histogram.GetZaxis()
 		return array.array("d", [axis.GetBinLowEdge(binIndex) for binIndex in xrange(1, axis.GetNbins()+2)])
-	
+
 	@staticmethod
 	def binning_formatted(binning):
 		if len(set([str(upper-lower) for lower, upper in zip(binning[:-1], binning[1:])])) == 1:
@@ -681,12 +695,12 @@ class RootTools(object):
 					n_bins=len(binning)-1,
 					binning=str(list(binning))
 			)
-	
+
 	@staticmethod
 	def rebinning_possible(src_bin_edges, dst_bin_edges):
 		if len(dst_bin_edges) > len(src_bin_edges):
 			return False
-		
+
 		str_src_bin_edges = [str(bin_edge) for bin_edge in src_bin_edges]
 		str_dst_bin_edges = [str(bin_edge) for bin_edge in dst_bin_edges]
 		return set(str_dst_bin_edges).issubset(set(str_src_bin_edges))
@@ -697,14 +711,14 @@ class RootTools(object):
 		Sums up all histograms in the list of args.
 		The returned histogram will have the name kwargs.get("name", "histogram_sum_"+hashlib.md5("_".join([histogram.GetName() for histogram in root_histograms])).hexdigest())
 		"""
-		
+
 		histogram_name = kwargs.get("name", "histogram_sum_"+hashlib.md5("_".join([histogram.GetName() for histogram in root_histograms])).hexdigest())
 		scale_factors = kwargs.get("scale_factors")
 		if scale_factors is None:
 			scale_factors = [1.0]*len(root_histograms)
 		else:
 			assert(len(scale_factors) == len(root_histograms))
-		
+
 		histogram_sum = None
 		for histogram, scale_factor in zip(root_histograms, scale_factors):
 			if histogram_sum == None:
@@ -714,6 +728,53 @@ class RootTools(object):
 				histogram_sum.Add(histogram, scale_factor)
 		return histogram_sum
 
+	@staticmethod
+	def histogram_calculation(bin_content_function=None, bin_error_function=None, *input_histograms):
+		assert len(input_histograms) > 0
+
+		new_name = "histogram_{0}.json".format(hashlib.md5("_".join([str(hist) for hist in input_histograms])).hexdigest())
+		result_histogram = input_histograms[0].Clone(new_name)
+		result_histogram.Reset()
+
+		for x_bin in xrange(1, input_histograms[0].GetNbinsX()+1):
+			for y_bin in xrange(1, input_histograms[0].GetNbinsY()+1):
+				for z_bin in xrange(1, input_histograms[0].GetNbinsZ()+1):
+					global_bin = input_histograms[0].GetBin(x_bin, y_bin, z_bin)
+
+					if bin_content_function:
+						new_bin_content = bin_content_function(*[histogram.GetBinContent(global_bin) for histogram in input_histograms])
+						result_histogram.SetBinContent(global_bin, new_bin_content)
+
+					if bin_error_function:
+						new_bin_error = bin_error_function(*[histogram.GetBinError(global_bin) for histogram in input_histograms])
+						result_histogram.SetBinError(global_bin, new_bin_error)
+
+		return result_histogram
+
+	@staticmethod
+	def histogram_calculation_2d(bin_content_function=None, bin_error_function=None, *input_histograms):
+		assert len(input_histograms) > 0
+
+		if input_histograms[0].GetDimension() != 1:
+			log.error("The RootTools.histogram_calculation_2d function in multidim-mode is only implemented for 1D input histograms!")
+		new_name = "histogram_{0}.json".format(hashlib.md5("_".join([str(hist) for hist in input_histograms])).hexdigest())
+		binning = RootTools.get_binning(input_histograms[0], 0)
+		result_histogram = ROOT.TH2F(new_name, new_name, len(binning)-1, binning, len(binning)-1, binning)
+		result_histogram.Reset()
+
+		for x_bin in xrange(1, input_histograms[0].GetNbinsX()+1):
+			for y_bin in xrange(1, input_histograms[0].GetNbinsX()+1):
+				if bin_content_function:
+					new_bin_content = bin_content_function([histogram.GetBinContent(x_bin) for histogram in input_histograms],
+					                                       [histogram.GetBinContent(y_bin) for histogram in input_histograms])
+					result_histogram.SetBinContent(x_bin, y_bin, new_bin_content)
+
+				if bin_error_function:
+					new_bin_content = bin_content_function([histogram.GetBinError(x_bin) for histogram in input_histograms],
+					                                       [histogram.GetBinError(y_bin) for histogram in input_histograms])
+					result_histogram.SetBinError(x_bin, y_bin, new_bin_error)
+
+		return result_histogram
 
 	@staticmethod
 	def to_histogram(root_object):
@@ -731,10 +792,10 @@ class RootTools(object):
 				# first retrieve all values and errors (if available) and then sort them by increasing x values
 				x_values = root_object.GetX()
 				x_values = [x_values[index] for index in xrange(root_object.GetN())]
-				
+
 				y_values = root_object.GetY()
 				y_values = [y_values[index] for index in xrange(root_object.GetN())]
-				
+
 				y_errors = [0.0] * root_object.GetN()
 				if isinstance(root_object, ROOT.TGraphAsymmErrors):
 					y_errors_high = root_object.GetEYhigh()
@@ -743,16 +804,16 @@ class RootTools(object):
 				elif isinstance(root_object, ROOT.TGraphErrors):
 					y_errors = root_object.GetEY()
 					y_errors = [y_errors[index] for index in xrange(root_object.GetN())]
-				
+
 				x_values, y_values, y_errors = (list(values) for values in zip(*sorted(zip(x_values, y_values, y_errors))))
-				
+
 				# determining the bin edges for the histogram
 				bin_edges = [(x_low+x_high)/2.0 for x_low, x_high in zip(x_values[:-1], x_values[1:])]
 				bin_edges.insert(0, x_values[0] - ((bin_edges[0]-x_values[0]) / 2.0))
 				bin_edges.append(x_values[-1] + ((x_values[-1]-bin_edges[-1]) / 2.0))
 				if isinstance(root_object, ROOT.TGraphAsymmErrors) or isinstance(root_object, ROOT.TGraphErrors):
 					bin_edges = RootTools.tgrapherr_get_binedges(root_object)
-				
+
 				root_histogram = ROOT.TH1F("histogram_"+root_object.GetName(), root_object.GetTitle(), len(bin_edges)-1, array.array("d", bin_edges))
 				for index, (y_value, y_error) in enumerate(zip(y_values, y_errors)):
 					root_histogram.SetBinContent(index+1, y_value)
@@ -770,22 +831,22 @@ class RootTools(object):
 		"""
 		if len(graphs) == 0:
 			return None
-		
+
 		points = []
 		for graph in graphs:
 			x_values = graph.GetX()
 			y_values = graph.GetY()
 			points.append([[x_values[index], y_values[index]] for index in xrange(graph.GetN())])
-		
+
 		if allow_shuffle:
 			points = geometry.order_lists_for_smallest_distances(points, allow_reversed=allow_reversed)
-		
+
 		merged_x_values, merged_y_values = zip(*tools.flattenList(points))
 		merged_x_values = array.array("d", merged_x_values)
 		merged_y_values = array.array("d", merged_y_values)
 		graph = ROOT.TGraph(len(merged_x_values), merged_x_values, merged_y_values)
 		return graph
-	
+
 	@staticmethod
 	def write_object(root_file, root_object, path):
 		root_file.cd()
@@ -797,7 +858,7 @@ class RootTools(object):
 			root_directory.cd()
 		root_object.Write(path.split("/")[-1], ROOT.TObject.kWriteDelete)
 		root_file.cd()
-	
+
 	@staticmethod
 	def walk_root_directory(root_directory, path=""):
 		def _walk_root_directory(root_directory, path=""):
@@ -808,7 +869,7 @@ class RootTools(object):
 				else:
 					elements.append((key, os.path.join(path, key.GetName())))
 			return elements
-		
+
 		elements = None
 		if isinstance(root_directory, str):
 			with tfilecontextmanager.TFileContextManager(root_directory, "READ") as root_file:
@@ -816,7 +877,7 @@ class RootTools(object):
 		else:
 			elements = _walk_root_directory(root_directory, path)
 		return elements
-	
+
 	@staticmethod
 	def get_global_bins(root_histogram):
 		assert isinstance(root_histogram, ROOT.TH1)
@@ -857,7 +918,7 @@ class RootTools(object):
 				values = [root_object.GetBinContent(global_bin) for global_bin in RootTools.get_global_bins(root_object)]
 				errors = [root_object.GetBinError(global_bin) for global_bin in RootTools.get_global_bins(root_object)]
 				return RootTools.get_min(values, errors, lower_threshold), RootTools.get_max(values, errors, upper_threshold)
-		
+
 		elif (isinstance(root_object, ROOT.TGraph) or isinstance(root_object, ROOT.TGraph2D)):
 			values = None
 			errors_low = None
@@ -896,7 +957,7 @@ class RootTools(object):
 				return None, None
 			else:
 				return RootTools.get_min(values, errors_low, lower_threshold), RootTools.get_max(values, errors_high, upper_threshold)
-		
+
 		elif isinstance(root_object, ROOT.TF1):
 			if axis == 0:
 				return root_object.GetXmin(), root_object.GetXmax()
@@ -906,25 +967,25 @@ class RootTools(object):
 				return root_object.GetMinimum(array.array("d", [float("nan")])), root_object.GetMaximum(array.array("d", [float("nan")]))
 			else:
 				return root_object.GetMinimum(), root_object.GetMaximum()
-		
+
 		else:
 			log.warning("Retrieving the plot limits is not yet implemented for objects of type %s!." % str(type(root_object)))
 			return None, None
-	
+
 	@staticmethod
 	def get_min(values, errors, lower_threshold=None):
 		combined_values = [v-e for v, e in zip(values, errors)]
 		if not lower_threshold is None:
 			combined_values = [v for v in combined_values if v > lower_threshold]
 		return (min(combined_values) if len(combined_values) > 0 else 0.)
-	
+
 	@staticmethod
 	def get_max(values, errors, upper_threshold=None):
 		combined_values = [v+e for v, e in zip(values, errors)]
 		if not upper_threshold is None:
 			combined_values = [v for v in combined_values if v < upper_threshold]
 		return (max(combined_values) if len(combined_values) > 0 else 1.)
-	
+
 	@staticmethod
 	def scale_tgraph(tgraph, scalefactor):
 		N = tgraph.GetN()

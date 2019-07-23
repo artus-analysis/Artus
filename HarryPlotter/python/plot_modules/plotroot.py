@@ -35,7 +35,7 @@ class RootPlotContainer(plotdata.PlotContainer):
 		self.canvas = canvas
 		self.plot_pad = plot_pad
 		self.subplot_pad = subplot_pad
-	
+
 	def finish(self):
 		self.canvas.RedrawAxis("g")
 		if not self.plot_pad is None:
@@ -45,7 +45,7 @@ class RootPlotContainer(plotdata.PlotContainer):
 			self.subplot_pad.RedrawAxis("g")
 			self.subplot_pad.Update()
 		self.canvas.Update()
-		
+
 	def save(self, filename):
 		self.canvas.SaveAs(filename)
 
@@ -53,22 +53,22 @@ class RootPlotContainer(plotdata.PlotContainer):
 class PlotRoot(plotbase.PlotBase):
 	def __init__(self):
 		super(PlotRoot, self).__init__()
-		
+
 		self.plot_subplot_slider_y = 0.35
-		
+
 		self.text_boxes = []
-		
+
 		self.axes_histogram = None
 		self.subplot_axes_histogram = None
-		
+
 		self.subplot_line_graphs = []
 		self.plot_vertical_lines = []
-		
+
 		self.nice_labels = labels.LabelsDict(latex_version="root")
-	
+
 	def modify_argument_parser(self, parser, args):
 		super(PlotRoot, self).modify_argument_parser(parser, args)
-		
+
 		self.axis_options.add_argument("--x-lims", type=float, nargs="+",
 		                               help="Lower and Upper limit for x-axis.")
 		self.axis_options.add_argument("--x-rel-lims", type=float, nargs=2, default=[1.0, 1.0],
@@ -105,7 +105,7 @@ class PlotRoot(plotbase.PlotBase):
 		                               help="Manually set title offset for Y axis. [Default: %(default)s]")
 		self.axis_options.add_argument("--y-subplot-title-offset", type=float, default=None,
 		                               help="Manually set title offset for Y axis of subplot. [Default: %(default)s]")
-		
+
 		self.canvas_options.add_argument("--left-pad-margin", type=float, default=None,
 		                               help="Left margin of pad. [Default: automatically determined]")
 		self.canvas_options.add_argument("--right-pad-margin", type=float, default=None,
@@ -114,7 +114,7 @@ class PlotRoot(plotbase.PlotBase):
 		                               help="Top margin of pad. [Default: automatically determined]")
 		self.canvas_options.add_argument("--bottom-pad-margin", type=float, default=None,
 		                               help="Bottom margin of pad. [Default: automatically determined]")
-		
+
 		self.formatting_options.add_argument("-C", "--colors", type=str, nargs="+",
 		                                     help="Colors for the plots. For each plot up to two colors (whitespace separated) can be specified, the first for lines and markers and the second for filled areas.")
 		self.formatting_options.add_argument("--colormap", nargs="+", type="bool", default=[False],
@@ -149,7 +149,7 @@ class PlotRoot(plotbase.PlotBase):
 											help="Set the number of digits that are printed when using the draw option TEXT. [Default: ROOT default]")
 		self.formatting_options.add_argument("--no-fit-results-box", action="store_true", default=False,
 											help="Do not display fit results. [Default: ROOT default]")
-		
+
 	def prepare_args(self, parser, plotData):
 		super(PlotRoot, self).prepare_args(parser, plotData)
 		self.prepare_list_args(
@@ -157,7 +157,7 @@ class PlotRoot(plotbase.PlotBase):
 				["nicks", "stacks", "colors", "colormap", "labels", "markers", "line_styles", "line_widths", "marker_styles", "marker_sizes", "legend_markers", "fill_styles"],
 				n_items = max([len(plotData.plotdict[l]) for l in ["nicks", "stacks"] if plotData.plotdict[l] is not None]
 		))
-		
+
 		# defaults for markers and colors
 		for index, (line_width, marker, marker_style, fill_style, stack, legend_marker, colors, colormap) in enumerate(zip(
 				plotData.plotdict["line_widths"],
@@ -174,14 +174,15 @@ class PlotRoot(plotbase.PlotBase):
 					marker = "E" if len(plotData.plotdict["markers"]) > 1 else "HIST"
 				else:
 					marker = "LINE" if plotData.plotdict["stacks"].count(stack) == 1 else "HIST"
-				
+
 				if any([y_expression is not None for y_expression in plotData.plotdict.get("y_expressions", [])]):
 					marker = "COLZ"
-			
+
 			if fill_style is None:
 				fill_style = 0
 				if ("HIST" in marker.upper()) and (not "E" in marker.upper()):
-					line_width = 0
+					if line_width is None:
+						line_width = 0
 					fill_style = 1001
 				elif "LINE" in marker.upper():
 					marker = marker.upper().replace("LINE", "HIST")
@@ -189,31 +190,31 @@ class PlotRoot(plotbase.PlotBase):
 				elif ("E" in marker.upper()) and (not "HIST" in marker.upper()) and (marker.upper() != "E"):
 					marker_style = 0
 					fill_style = 3001
-			
+
 			if legend_marker is None:
 				# TODO: implement defaults here
 				#legend_marker = "FLP"
 				pass
-			
+
 			plotData.plotdict["line_widths"][index] = line_width
 			plotData.plotdict["markers"][index] = marker
 			plotData.plotdict["marker_styles"][index] = marker_style
 			plotData.plotdict["fill_styles"][index] = fill_style
 			plotData.plotdict["legend_markers"][index] = legend_marker
-		
+
 			# defaults for colors
 			# per plot (up to) two colors are possible: first for lines and markers and second for filled areas
 			if (not colormap) and ("COL" in marker.upper()):
 				colormap = True
 				plotData.plotdict["colormap"][index] = colormap
-			
+
 			if colors == None:
 				plotData.plotdict["colors"][index] = [57, 57] if colormap else [index + 1, index + 1]
 			else:
 				colors = [self.predefined_colors.get_predefined_color(color) for color in colors.split()]
 				if len(colors) == 1:
 					colors = [colors[0], copy.deepcopy(colors[0])]
-				
+
 				for sub_index, color in enumerate(colors):
 					if color.startswith("k"):
 						color = eval("ROOT."+color)
@@ -225,48 +226,48 @@ class PlotRoot(plotbase.PlotBase):
 						color = eval(color)
 					colors[sub_index] = color
 				plotData.plotdict["colors"][index] = colors
-		
+
 		# defaults for legend position
 		if not plotData.plotdict["legend"] is None:
 			plotData.plotdict["legend"] += [0.6, 0.6, 0.9, 0.9][len(plotData.plotdict["legend"]):]
 			plotData.plotdict["legend"] = plotData.plotdict["legend"][:4]
-		
+
 		for key in ["labels", "x_label", "y_label", "x_tick_labels", "y_tick_labels", "z_label", "title"]:
 			if isinstance(plotData.plotdict[key], basestring):
 				plotData.plotdict[key] = self.nice_labels.get_nice_label(plotData.plotdict[key])
 			elif isinstance(plotData.plotdict[key], collections.Iterable):
 				plotData.plotdict[key] = [self.nice_labels.get_nice_label(label) for label in plotData.plotdict[key]]
-	
+
 	def run(self, plotData):
 		super(PlotRoot, self).run(plotData)
 
 	def set_style(self, plotData):
 		super(PlotRoot, self).set_style(plotData)
-		
+
 		tdrstyle.setTDRStyle()
 		defaultrootstyle.set_default_root_style()
-		
+
 		if plotData.plotdict["set_paint_text_format"] != None:
 			ROOT.gStyle.SetPaintTextFormat(plotData.plotdict["set_paint_text_format"])
-		
+
 		if plotData.plotdict["no_fit_results_box"]:
 			ROOT.gStyle.SetOptFit(0)
-		
+
 		# load custom painter (fixes for horizontal histograms)
 		roottools.RootTools.load_compile_macro(os.path.expandvars("$ARTUSPATH/HarryPlotter/python/utility/customhistogrampainter.C"))
 
 	def create_canvas(self, plotData):
 		super(PlotRoot, self).create_canvas(plotData)
-		
+
 		canvas = None if plotData.plot is None else plotData.plot.canvas
 		plot_pad = None if plotData.plot is None else plotData.plot.plot_pad
 		subplot_pad = None if plotData.plot is None else plotData.plot.subplot_pad
-		
+
 		if canvas is None:
 			# TODO: Creating the canvas like this leads to segmentation faults
 			canvas = defaultrootstyle.make_canvas("canvas", "", dx=plotData.plotdict["canvas_width"], dy=plotData.plotdict["canvas_height"])
 			canvas.Draw()
-		
+
 		if len(plotData.plotdict["subplot_nicks"]) > 0:
 			if subplot_pad is None:
 				canvas.cd()
@@ -282,19 +283,19 @@ class PlotRoot(plotbase.PlotBase):
 				subplot_pad.SetNumber(2)
 				subplot_pad.Draw()
 				defaultrootstyle.init_sub_pad(subplot_pad)
-			
+
 			plot_pad.SetTopMargin(0.122)
 			plot_pad.SetBottomMargin(0.031)
 			subplot_pad.SetBottomMargin(0.35)
-			
+
 			for index, y_line in enumerate(plotData.plotdict["subplot_lines"]):
 				line_graph = ROOT.TGraph(2)
 				line_graph.SetName("line_graph_"+str(index)+"_"+str(y_line))
 				line_graph.SetTitle()
-				
+
 				line_graph.SetPoint(0, -sys.float_info.max, y_line)
 				line_graph.SetPoint(1, +sys.float_info.max, y_line)
-				
+
 				line_graph.SetLineColor(ROOT.TColor.GetColor("#808080"))
 				line_graph.SetLineWidth(3)
 				line_graph.SetLineStyle(2)
@@ -314,7 +315,7 @@ class PlotRoot(plotbase.PlotBase):
 			line_graph.SetLineWidth(3)
 			line_graph.SetLineStyle(2)
 			self.plot_vertical_lines.append(line_graph)
-		
+
 		self.plot_pad_right_margin = plot_pad.GetRightMargin()
 		plot_pad.SetRightMargin(0.25)
 		if not subplot_pad is None:
@@ -334,18 +335,19 @@ class PlotRoot(plotbase.PlotBase):
 				plot_pad.SetBottomMargin(plotData.plotdict["bottom_pad_margin"])
 			else:
 				subplot_pad.SetBottomMargin(plotData.plotdict["bottom_pad_margin"])
-		
+
 		plotData.plot = RootPlotContainer(canvas, plot_pad, subplot_pad)
 
 	def prepare_histograms(self, plotData):
 		super(PlotRoot, self).prepare_histograms(plotData)
-		
+
 		first_plot_labels_set = False
 		first_subplot_labels_set = False
-		for nick, subplot, colors, marker, marker_style, marker_size, fill_style, line_style, line_width in zip(
+		for nick, subplot, colors, colormap, marker, marker_style, marker_size, fill_style, line_style, line_width in zip(
 				plotData.plotdict["nicks"],
 				plotData.plotdict["subplots"],
 				plotData.plotdict["colors"],
+				plotData.plotdict["colormap"],
 				plotData.plotdict["markers"],
 				plotData.plotdict["marker_styles"],
 				plotData.plotdict["marker_sizes"],
@@ -354,18 +356,18 @@ class PlotRoot(plotbase.PlotBase):
 				plotData.plotdict["line_widths"]
 		):
 			root_object = plotData.plotdict["root_objects"][nick]
-			
+
 			root_object.SetLineColor(colors[0])
 			root_object.SetLineStyle(line_style)
 			root_object.SetLineWidth(line_width)
-			
-			root_object.SetMarkerColor(colors[0])
+
+			root_object.SetMarkerColor(1 if colormap else colors[0])
 			root_object.SetMarkerStyle(marker_style)
 			root_object.SetMarkerSize(marker_size)
-			
+
 			root_object.SetFillColor(colors[1])
 			root_object.SetFillStyle(fill_style)
-			
+
 			# axis labels
 			if subplot:
 				if (not first_subplot_labels_set) or (not isinstance(root_object, ROOT.TF1)):
@@ -392,17 +394,17 @@ class PlotRoot(plotbase.PlotBase):
 							z_axis.SetTitleSize(0.055) # copy from defaultrootstyle.py, because this is not automatically applied for an unknown reason.
 							z_axis.SetTitle(plotData.plotdict["z_label"])
 				first_plot_labels_set = True
-			
+
 			# tick labels (z-axis) TODO: unify this with the x and y bin labels mechanism?
 			if plotData.plotdict["z_tick_labels"] and len(plotData.plotdict["z_tick_labels"]) > 0:
 				for z_bin in range(min(root_object.GetNbinsZ(), len(plotData.plotdict["z_tick_labels"]))):
 					root_object.GetZaxis().SetBinLabel(z_bin+1, plotData.plotdict["z_tick_labels"][z_bin])
-			
+
 			ROOT.TGaxis.SetMaxDigits(3)
 
 	def determine_plot_lims(self, plotData):
 		super(PlotRoot, self).determine_plot_lims(plotData)
-		
+
 		# x lims
 		if plotData.plotdict["sym_x_lims"] and (not plotData.plotdict["x_log"]):
 			if not plotData.plotdict["x_lims"] is None and len(plotData.plotdict["x_lims"]) > 1:
@@ -411,7 +413,7 @@ class PlotRoot(plotbase.PlotBase):
 			else:
 				tmp_x_min = self.x_min * (plotData.plotdict["x_rel_lims"][0] if self.x_min > 0.0 else 2.0-plotData.plotdict["x_rel_lims"][0])
 				tmp_x_max = self.x_max * (plotData.plotdict["x_rel_lims"][1] if self.x_max > 0.0 else 2.0-plotData.plotdict["x_rel_lims"][1])
-				
+
 				if not plotData.plotdict["x_lims"] is None:
 					center = plotData.plotdict["x_lims"][0]
 					width = max([abs(x - center) for x in [tmp_x_min, tmp_x_max]])
@@ -423,7 +425,7 @@ class PlotRoot(plotbase.PlotBase):
 		else:
 			if plotData.plotdict["sym_x_lims"]:
 				log.warning("Symmetric limits are not yet implemented for logarithmic axes!")
-			
+
 			if not plotData.plotdict["x_lims"] is None:
 				self.x_min = plotData.plotdict["x_lims"][0]
 				if len(plotData.plotdict["x_lims"]) > 1:
@@ -436,7 +438,7 @@ class PlotRoot(plotbase.PlotBase):
 		if self.x_min == self.x_max:
 			self.x_min -= 1.0
 			self.x_max += 1.0
-		
+
 		# y lims
 		if plotData.plotdict["sym_y_lims"] and (not plotData.plotdict["y_log"]):
 			if not plotData.plotdict["y_lims"] is None and len(plotData.plotdict["y_lims"]) > 1:
@@ -456,12 +458,12 @@ class PlotRoot(plotbase.PlotBase):
 		else:
 			if plotData.plotdict["sym_y_lims"]:
 				log.warning("Symmetric limits are not yet implemented for logarithmic axes!")
-			
+
 			if not plotData.plotdict["y_lims"] is None:
 				self.y_min = plotData.plotdict["y_lims"][0]
 			elif self.max_dim < 3:
 				self.y_min *= (plotData.plotdict["y_rel_lims"][0] if self.y_min > 0.0 else 2.0-plotData.plotdict["y_rel_lims"][0])
-		
+
 			if not plotData.plotdict["y_lims"] is None and len(plotData.plotdict["y_lims"]) > 1:
 				self.y_max = plotData.plotdict["y_lims"][1]
 			elif self.max_dim < 3:
@@ -471,7 +473,7 @@ class PlotRoot(plotbase.PlotBase):
 
 		if self.y_min == self.y_max:
 			self.y_max += 1.0
-		
+
 		# z lims
 		if plotData.plotdict["sym_z_lims"] and (not plotData.plotdict["z_log"]):
 			if not plotData.plotdict["z_lims"] is None and len(plotData.plotdict["z_lims"]) > 1:
@@ -491,7 +493,7 @@ class PlotRoot(plotbase.PlotBase):
 		else:
 			if plotData.plotdict["sym_z_lims"]:
 				log.warning("Symmetric limits are not yet implemented for logarithmic axes!")
-			
+
 			if not plotData.plotdict["z_lims"] is None:
 				self.z_min = plotData.plotdict["z_lims"][0]
 			elif not self.z_min is None:
@@ -499,7 +501,7 @@ class PlotRoot(plotbase.PlotBase):
 					self.z_min *= (0.9 if self.z_min > 0.0 else 1.1)
 				else:
 					self.z_min *= (0.99 if self.z_min > 0.0 else 1.01)
-			
+
 			if not plotData.plotdict["z_lims"] is None and len(plotData.plotdict["z_lims"]) > 1:
 				self.z_max = plotData.plotdict["z_lims"][1]
 			elif not self.z_max is None:
@@ -509,7 +511,7 @@ class PlotRoot(plotbase.PlotBase):
 					self.z_max *= (1.01 if self.z_max > 0.0 else 0.99)
 		if (not self.z_min is None) and (not self.z_max is None) and (self.z_min == self.z_max):
 			self.z_max += 1.0
-		
+
 		# y subplot lims
 		if plotData.plotdict["sym_y_subplot_lims"]:
 			if not plotData.plotdict["y_subplot_lims"] is None and len(plotData.plotdict["y_subplot_lims"]) > 1:
@@ -531,14 +533,14 @@ class PlotRoot(plotbase.PlotBase):
 				self.y_sub_min = plotData.plotdict["y_subplot_lims"][0]
 			elif not self.y_sub_min is None:
 				self.y_sub_min *= (0.9 if self.y_sub_min > 0.0 else 1.1)
-		
+
 			if not plotData.plotdict["y_subplot_lims"] is None and len(plotData.plotdict["y_subplot_lims"]) > 1:
 				self.y_sub_max = plotData.plotdict["y_subplot_lims"][1]
 			elif not self.y_sub_max is None:
 				self.y_sub_max *= (1.1 if self.y_sub_max > 0.0 else 0.9)
 		if (not self.y_sub_min is None) and (not self.y_sub_max is None) and (self.y_sub_min == self.y_sub_max):
 			self.y_sub_max += 1.0
-		
+
 		# z subplot lims
 		if not self.z_sub_min is None:
 			self.z_sub_min *= (0.9 if self.z_sub_min > 0.0 else 1.1)
@@ -546,16 +548,16 @@ class PlotRoot(plotbase.PlotBase):
 			self.z_sub_max *= (1.1 if self.z_sub_max > 0.0 else 0.9)
 		if (not self.z_sub_min is None) and (not self.z_sub_max is None) and (self.z_sub_min == self.z_sub_max):
 			self.z_sub_max += 1.0
-		
+
 	def make_plots(self, plotData):
 		super(PlotRoot, self).make_plots(plotData)
-		
+
 		# draw empty histograms for the axes
 		n_binsX = len(plotData.plotdict["x_tick_labels"]) if plotData.plotdict["x_tick_labels"] else 1
 		n_binsY = len(plotData.plotdict["y_tick_labels"]) if plotData.plotdict["y_tick_labels"] else 1
 		n_sub_binsX = len(plotData.plotdict["x_tick_labels"]) if plotData.plotdict["x_tick_labels"] else 1
 		n_sub_binsY = len(plotData.plotdict["y_tick_labels"]) if plotData.plotdict["y_tick_labels"] else 1
-		
+
 		if plotData.plot.plot_pad:
 			plotData.plot.plot_pad.cd()
 			if self.max_dim == 2:
@@ -566,7 +568,7 @@ class PlotRoot(plotbase.PlotBase):
 				self.axes_histogram = ROOT.TH2F("axes_histogram", "", n_binsX, self.x_min, self.x_max, n_binsY, self.y_min, self.y_max)
 				self.axes_histogram.SetMinimum(self.z_min)
 				self.axes_histogram.SetMaximum(self.z_max)
-			
+
 			# axis labels
 			if (not plotData.plotdict["x_label"] is None) and (plotData.plotdict["x_label"] != ""):
 				self.axes_histogram.GetXaxis().SetTitle(plotData.plotdict["x_label"])
@@ -582,29 +584,30 @@ class PlotRoot(plotbase.PlotBase):
 			if plotData.plotdict["y_tick_labels"] and len(plotData.plotdict["y_tick_labels"]) > 0:
 				for y_bin in range(n_binsY):
 					self.axes_histogram.GetYaxis().SetBinLabel(y_bin+1, plotData.plotdict["y_tick_labels"][y_bin])
-							
+
 			# avoid scientific notation for x-axis
 			self.axes_histogram.GetXaxis().SetNoExponent(True)
-			
+
 			# shift the exponent for y-axis to avoid overlapping with title
 			ROOT.TGaxis.SetExponentOffset(-0.069,0.015,"y")
-			
+
 			self.axes_histogram.Draw("AXIS")
 
 			for line_graph in self.plot_vertical_lines:
 				line_graph.Draw("L SAME")
-		
+
 		if plotData.plot.subplot_pad:
 			plotData.plot.subplot_pad.cd()
+
 			if self.max_sub_dim == 2:
 				self.subplot_axes_histogram = ROOT.TH2F("subplot_axes_histogram", "", n_sub_binsX, self.x_min, self.x_max, n_sub_binsY, self.y_sub_min, self.y_sub_max)
 				self.subplot_axes_histogram.SetMinimum(self.y_sub_min)
 				self.subplot_axes_histogram.SetMaximum(self.y_sub_max)
 			else:
-				self.subplot_axes_histogram = ROOT.TH2F("subplot_axes_histogram", "", n_sub_bins, self.x_min, self.x_max, n_sub_bins, self.y_sub_min, self.y_sub_max)
+				self.subplot_axes_histogram = ROOT.TH2F("subplot_axes_histogram", "", n_sub_binsX, self.x_min, self.x_max, n_sub_binsY, self.y_sub_min, self.y_sub_max)
 				self.subplot_axes_histogram.SetMinimum(self.z_sub_min)
 				self.subplot_axes_histogram.SetMaximum(self.z_sub_max)
-			
+
 			# axis labels
 			if (not plotData.plotdict["x_label"] is None) and (plotData.plotdict["x_label"] != ""):
 				self.subplot_axes_histogram.GetXaxis().SetTitle(plotData.plotdict["x_label"])
@@ -612,20 +615,20 @@ class PlotRoot(plotbase.PlotBase):
 				self.subplot_axes_histogram.GetYaxis().SetTitle(plotData.plotdict["y_subplot_label"])
 			#if (self.max_sub_dim > 2) and (not plotData.plotdict["z_subplot_label"] is None) and (plotData.plotdict["z_subplot_label"] != ""):
 			#	self.subplot_axes_histogram.GetZaxis().SetTitle(plotData.plotdict["z_subplot_label"])
-			
+
 			# tick labels
 			if plotData.plotdict["x_tick_labels"] and len(plotData.plotdict["x_tick_labels"]) > 0:
 				for x_bin in range(n_sub_binsX):
 					self.subplot_axes_histogram.GetXaxis().SetBinLabel(x_bin+1, plotData.plotdict["x_tick_labels"][x_bin])
-			
+
 			# avoid scientific notation for x-axis
 			self.subplot_axes_histogram.GetXaxis().SetNoExponent(True)
-			
+
 			self.subplot_axes_histogram.Draw("AXIS")
-			
+
 			for line_graph in self.subplot_line_graphs:
 				line_graph.Draw("L SAME")
-		
+
 		for nick, subplot, marker, colors, colormap in zip(
 				plotData.plotdict["nicks"],
 				plotData.plotdict["subplots"],
@@ -636,7 +639,7 @@ class PlotRoot(plotbase.PlotBase):
 			# select pad to plot on
 			pad = plotData.plot.subplot_pad if subplot else plotData.plot.plot_pad
 			pad.cd()
-			
+
 			# set color map
 			if colormap:
 				if len(set(colors)) == 1:
@@ -653,26 +656,26 @@ class PlotRoot(plotbase.PlotBase):
 							array.array("d", blues),
 							ROOT.gStyle.GetNdivisions("Z")
 					)
-			
+
 			# draw
 			root_object = plotData.plotdict["root_objects"][nick]
 			if "RTOL" in marker.upper() and isinstance(root_object, ROOT.TH1):
 				root_object.__class__ = ROOT.CustomHistogram
 				root_object.GetPainter()
-			
+
 			root_object.Draw(marker + " SAME")
 			pad.Update()
-	
+
 	def modify_axes(self, plotData):
 		super(PlotRoot, self).modify_axes(plotData)
-		
+
 		# setting for Z axis
 		for root_object in plotData.plotdict["root_objects"].values():
 			if isinstance(root_object, ROOT.TH1):
 				palette = root_object.GetListOfFunctions().FindObject("palette")
 			else:
 				palette = root_object.GetHistogram().GetListOfFunctions().FindObject("palette")
-			
+
 			if palette != None:
 				root_object.GetZaxis().SetTitleOffset(1.5)
 				palette.SetTitleOffset(1.5)
@@ -682,7 +685,7 @@ class PlotRoot(plotbase.PlotBase):
 					root_object.SetContour(n_contour_levels)
 				elif isinstance(root_object, ROOT.TGraph2D):
 					root_object.GetHistogram().SetContour(n_contour_levels)
-		
+
 		# logaritmic axis
 		if plotData.plotdict["x_log"]:
 			plotData.plot.plot_pad.SetLogx()
@@ -693,7 +696,7 @@ class PlotRoot(plotbase.PlotBase):
 		if plotData.plotdict["z_log"]:
 			plotData.plot.plot_pad.SetLogz()
 			self.axes_histogram.GetZaxis().SetMoreLogLabels((math.log10(self.z_max) - math.log10(self.z_min)) < 3.0)
-		
+
 		if not plotData.plot.subplot_pad is None:
 			if plotData.plotdict["x_log"]:
 				plotData.plot.subplot_pad.SetLogx()
@@ -704,12 +707,12 @@ class PlotRoot(plotbase.PlotBase):
 			if plotData.plotdict["z_subplot_log"]:
 				plotData.plot.subplot_pad.SetLogz()
 				self.subplot_axes_histogram.GetZaxis().SetMoreLogLabels((math.log10(self.z_sub_max) - math.log10(self.z_sub_min)) < 3.0)
-		
+
 		if not self.axes_histogram is None:
 			self.reversed_axes = PlotRoot._set_axis_limits(plotData.plot.plot_pad, self.axes_histogram, self.max_dim, [self.x_min, self.x_max], [self.y_min, self.y_max], [self.z_min, self.z_max], reverse_x_axis=plotData.plotdict["reverse_x_axis"], reverse_y_axis=plotData.plotdict["reverse_y_axis"], reverse_z_axis=plotData.plotdict["reverse_z_axis"])
 		if not self.subplot_axes_histogram is None:
 			self.reversed_subplot_axes = PlotRoot._set_axis_limits(plotData.plot.subplot_pad, self.subplot_axes_histogram, self.max_dim, [self.x_min, self.x_max], [self.y_sub_min, self.y_sub_max], [self.z_sub_min, self.z_sub_max], reverse_x_axis=plotData.plotdict["reverse_x_axis"], reverse_y_axis=False, reverse_z_axis=False)
-		
+
 		for nick, subplot, marker in zip(
 				plotData.plotdict["nicks"],
 				plotData.plotdict["subplots"],
@@ -720,7 +723,7 @@ class PlotRoot(plotbase.PlotBase):
 				PlotRoot._set_axis_limits(plotData.plot.subplot_pad, root_object, self.max_dim, [self.x_min, self.x_max], [self.y_sub_min, self.y_sub_max], [self.z_sub_min, self.z_sub_max], reverse_x_axis=plotData.plotdict["reverse_x_axis"], reverse_y_axis=False, reverse_z_axis=False)
 			else:
 				PlotRoot._set_axis_limits(plotData.plot.plot_pad, root_object, self.max_dim, [self.x_min, self.x_max], [self.y_min, self.y_max], [self.z_min, self.z_max], reverse_x_axis=plotData.plotdict["reverse_x_axis"], reverse_y_axis=plotData.plotdict["reverse_y_axis"], reverse_z_axis=plotData.plotdict["reverse_z_axis"])
-		
+
 		if not self.subplot_axes_histogram is None:
 			self.axes_histogram.GetXaxis().SetLabelSize(0)
 			self.axes_histogram.GetXaxis().SetTitleSize(0)
@@ -728,16 +731,16 @@ class PlotRoot(plotbase.PlotBase):
 			self.axes_histogram.GetYaxis().SetTitleSize((self.axes_histogram.GetYaxis().GetTitleSize() / (1.0 - self.plot_subplot_slider_y))-0.01)
 
 			self.axes_histogram.GetYaxis().SetTitleOffset(self.axes_histogram.GetYaxis().GetTitleOffset() * (1.0 - self.plot_subplot_slider_y))
-			
+
 			self.subplot_axes_histogram.GetXaxis().SetLabelSize(self.subplot_axes_histogram.GetXaxis().GetLabelSize() / self.plot_subplot_slider_y)
 			self.subplot_axes_histogram.GetXaxis().SetTitleSize((self.subplot_axes_histogram.GetXaxis().GetTitleSize() / self.plot_subplot_slider_y) - 0.01)
 			self.subplot_axes_histogram.GetYaxis().SetLabelSize(self.subplot_axes_histogram.GetYaxis().GetLabelSize() / self.plot_subplot_slider_y)
 			self.subplot_axes_histogram.GetYaxis().SetTitleSize((self.subplot_axes_histogram.GetYaxis().GetTitleSize() / self.plot_subplot_slider_y) - 0.01)
-			
+
 			self.subplot_axes_histogram.GetXaxis().SetTitleOffset(2.0 * self.subplot_axes_histogram.GetXaxis().GetTitleOffset() * self.plot_subplot_slider_y+0.2)
 			self.subplot_axes_histogram.GetYaxis().SetTitleOffset(self.subplot_axes_histogram.GetYaxis().GetTitleOffset() * self.plot_subplot_slider_y)
 			self.subplot_axes_histogram.GetYaxis().SetNdivisions(5, 0, 0)
-		
+
 		if not plotData.plotdict["x_title_offset"] is None:
 			if not self.subplot_axes_histogram is None:
 				self.subplot_axes_histogram.GetXaxis().SetTitleOffset(plotData.plotdict["x_title_offset"])
@@ -747,13 +750,13 @@ class PlotRoot(plotbase.PlotBase):
 			self.axes_histogram.GetYaxis().SetTitleOffset(plotData.plotdict["y_title_offset"])
 		if not self.subplot_axes_histogram is None and not plotData.plotdict["y_subplot_title_offset"] is None:
 			self.subplot_axes_histogram.GetYaxis().SetTitleOffset(plotData.plotdict["y_subplot_title_offset"])
-		
+
 		if plotData.plotdict["x_labels_vertical"]:
 			if not self.subplot_axes_histogram is None:
 				self.subplot_axes_histogram.LabelsOption("v", "X")
 			else:
 				self.axes_histogram.LabelsOption("v", "X")
-		
+
 		palettes = [(root_object if isinstance(root_object, ROOT.TH1) else root_object.GetHistogram()).GetListOfFunctions().FindObject("palette") for root_object in plotData.plotdict["root_objects"].values()]
 		if all([palette == None for palette in palettes]) and (plotData.plotdict["right_pad_margin"] is None):
 			plotData.plot.plot_pad.SetRightMargin(0.05)
@@ -764,38 +767,38 @@ class PlotRoot(plotbase.PlotBase):
 			plotData.plot.plot_pad.SetRightMargin(0.05)
 			if not plotData.plot.subplot_pad is None:
 				plotData.plot.subplot_pad.SetRightMargin(0.05)
-		
+
 		# redraw axes only and update the canvas
 		plotData.plot.plot_pad.cd()
 		self.axes_histogram.Draw("AXIS SAME")
 		plotData.plot.plot_pad.Update()
-		
+
 		if not plotData.plot.subplot_pad is None:
 			plotData.plot.subplot_pad.cd()
 			if not self.subplot_axes_histogram is None:
 				self.subplot_axes_histogram.Draw("AXIS SAME")
 			plotData.plot.subplot_pad.Update()
-		
+
 		plotData.plot.canvas.Update()
 		#tdrstyle.fixOverlay(self.plot_pad)
-		
+
 	def add_grid(self, plotData):
 		super(PlotRoot, self).add_grid(plotData)
-		
+
 		plotData.plot.plot_pad.cd()
 		if (plotData.plotdict["grid"] or plotData.plotdict["x_grid"]):
 			plotData.plot.plot_pad.SetGridx()
 		if (plotData.plotdict["grid"] or plotData.plotdict["y_grid"]):
 			plotData.plot.plot_pad.SetGridy()
-		
+
 		if not plotData.plot.subplot_pad is None:
 			plotData.plot.subplot_pad.cd()
 			if (plotData.plotdict["subplot_grid"] == True):
 				plotData.plot.subplot_pad.SetGrid()
-	
+
 	def add_labels(self, plotData):
 		super(PlotRoot, self).add_labels(plotData)
-		
+
 		# TODO: transform legend coordinates so that same values for plots with subplots can be specified
 		"""
 		pad_pos_x_pixel = [plotData.plot.plot_pad.UtoPixel(x) for x in [0.0, 1.0]]
@@ -809,7 +812,7 @@ class PlotRoot(plotbase.PlotBase):
 		transformed_legend_pos = tools.flattenList(zip(legend_pos_x_user, legend_pos_y_user))
 		"""
 		transformed_legend_pos = plotData.plotdict["legend"]
-		
+
 		plotData.plot.plot_pad.cd()
 		self.legend = None
 		if plotData.plotdict["legend"] != None:
@@ -817,7 +820,7 @@ class PlotRoot(plotbase.PlotBase):
 			self.legend = ROOT.TLegend(*transformed_legend_pos)
 			self.legend.SetNColumns(plotData.plotdict["legend_cols"])
 			self.legend.SetColumnSeparation(0.1)
-			
+
 			for subplot, nick, label, legend_marker in zip(
 					plotData.plotdict["subplots"],
 					plotData.plotdict["nicks"],
@@ -825,8 +828,8 @@ class PlotRoot(plotbase.PlotBase):
 					plotData.plotdict["legend_markers"],
 			):
 				if subplot == True:
-					# TODO handle possible subplot legends
-					continue
+					pass # legend entries are currently added to the upper plot legend
+				
 				root_object = plotData.plotdict["root_objects"][nick]
 				if legend_marker is None:
 					# TODO: defaults should be defined in prepare_args function
@@ -839,10 +842,10 @@ class PlotRoot(plotbase.PlotBase):
 						legend_marker = "L"
 				if (not label is None) and (label != ""):
 					self.legend.AddEntry(root_object, label, legend_marker)
-			
+
 			defaultrootstyle.set_legend_style(self.legend)
 			self.legend.Draw()
-	
+
 	def add_texts(self, plotData):
 		super(PlotRoot, self).add_texts(plotData)
 
@@ -898,19 +901,19 @@ class PlotRoot(plotbase.PlotBase):
 		# Draw the text box on the main plot in plot_pad
 		plotData.plot.plot_pad.cd()
 		self.text_box.Draw()
-	
+
 	@staticmethod
 	def _set_axis_limits(pad, root_object, max_dim, x_lims=None, y_lims=None, z_lims=None, reverse_x_axis=False, reverse_y_axis=False, reverse_z_axis=False):
 		""" not needed here due to axis histogram
 		if not x_lims is None:
 			root_object.GetXaxis().SetRangeUser(*x_lims)
 			root_object.GetXaxis().SetLimits(*x_lims)
-		
+
 		if (max_dim > 1) and (not y_lims is None):
 			root_object.GetYaxis().SetRangeUser(*y_lims)
 			root_object.GetYaxis().SetLimits(*y_lims)
 		"""
-		
+
 		if (max_dim > 2) and (not z_lims is None):
 			try:
 				root_object.GetZaxis().SetRangeUser(*z_lims)
@@ -922,7 +925,7 @@ class PlotRoot(plotbase.PlotBase):
 			except:
 				#catch AttributeError for ROOT objects having lower dimensions
 				pass
-		
+
 		if reverse_x_axis:
 			pad.Update()
 			reversed_x_axis = ROOT.TGaxis(
@@ -935,16 +938,16 @@ class PlotRoot(plotbase.PlotBase):
 					root_object.GetXaxis().GetNdivisions(),
 					"-"
 			)
-			
+
 			reversed_x_axis.ImportAxisAttributes(root_object.GetXaxis())
 			reversed_x_axis.SetLabelOffset((-7.5)*root_object.GetXaxis().GetLabelOffset())
-			
+
 			root_object.GetXaxis().SetLabelSize(0.0)
 			reversed_x_axis.SetTitleSize(0.0)
-			
+
 			reversed_x_axis.Draw()
 			return reversed_x_axis
-		
+
 		if reverse_y_axis or reverse_z_axis:
 			#TODO: https://root.cern.ch/root/html/tutorials/hist/reverseaxis.C.html#38
 			log.warning("Reversing the Y/Z-axis is not yet implemented")

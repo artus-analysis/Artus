@@ -20,12 +20,12 @@ import Artus.Utility.tfilecontextmanager as tfilecontextmanager
 class PlotConfigs(object):
 	def __init__(self):
 		super(PlotConfigs, self).__init__()
-	
+
 	@staticmethod
 	def all_histograms(root_filename, plot_config_template=None):
 		if plot_config_template is None:
 			plot_config_template = {}
-		
+
 		plot_configs = []
 		with tfilecontextmanager.TFileContextManager(root_filename, "READ") as root_file:
 			elements = roottools.RootTools.walk_root_directory(root_file)
@@ -41,12 +41,12 @@ class PlotConfigs(object):
 					plot_config["filename"] = os.path.basename(path)
 					plot_configs.append(plot_config)
 		return plot_configs
-	
+
 	@staticmethod
 	def all_runtimes(root_filename, plot_config_template=None):
 		if plot_config_template is None:
 			plot_config_template = {}
-		
+
 		plot_configs = []
 		with tfilecontextmanager.TFileContextManager(root_filename, "READ") as root_file:
 			elements = roottools.RootTools.walk_root_directory(root_file)
@@ -54,7 +54,7 @@ class PlotConfigs(object):
 				if path.endswith("runTime") and (key.GetClassName().startswith("TTree") or key.GetClassName().startswith("TNtuple")):
 					tree = root_file.Get(path)
 					branches = [branch.GetName() for branch in tree.GetListOfBranches()]
-					
+
 					plot_config = copy.deepcopy(plot_config_template)
 					plot_config["files"] = [root_filename]
 					plot_config["folders"] = [path]
@@ -78,7 +78,7 @@ class PlotConfigs(object):
 					if "www" in plot_config:
 						plot_config["www"] = os.path.join(plot_config.get("www", ""), os.path.dirname(path))
 					plot_configs.append(plot_config)
-					
+
 					plot_config = copy.deepcopy(plot_config_template)
 					plot_config["files"] = [root_filename]
 					plot_config["folders"] = [path]
@@ -99,7 +99,7 @@ class PlotConfigs(object):
 					if "www" in plot_config:
 						plot_config["www"] = os.path.join(plot_config.get("www", ""), os.path.dirname(path))
 					plot_configs.append(plot_config)
-					
+
 					for branch in branches:
 						plot_config = copy.deepcopy(plot_config_template)
 						plot_config["files"] = [root_filename]

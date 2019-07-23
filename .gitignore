@@ -27,3 +27,11 @@ wiki
 *.pcm
 
 .vs*
+
+# Folder created with HP when using --www
+websync/
+
+# Files created when runnning HP with proxy option
+proxy_macro_*.C
+proxy_class_*.h
+proxy_cutmacro_*.C

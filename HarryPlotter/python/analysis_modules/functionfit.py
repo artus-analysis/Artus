@@ -23,7 +23,7 @@ class FunctionFit(analysisbase.AnalysisBase):
 		self.function_options.add_argument("--function-fit", type=str, nargs="+", default=[None],
 		                                   help="List of nicknames of histograms one wants to fit.")
 		self.function_options.add_argument("--function-ranges", type=str, nargs="+", default=[None],
-		                                   help="Function range. Default is whole plot range if histogram is drawn. Format x_min,x_max.")
+		                                   help="Function range. Default is whole plot range if histogram is drawn. Format \"x_min x_max\".")
 		self.function_options.add_argument("--fit-backend", type=str, nargs="+", default=["ROOT"],
 		                                   help="Fit backend. ROOT and RooFit are available. Check sourcecode which parts of RooFit are implemented. [Default: %(default)s]")
 		self.function_options.add_argument("--function-display-result", action='store_true',
@@ -54,7 +54,7 @@ class FunctionFit(analysisbase.AnalysisBase):
 					log.fatal("Please provide fucntion ranges for the FunctionFit Module")
 					sys.exit(1)
 			else:
-				tmp_x_range.append( [float (x) for x in  x_range.split(",")] )
+				tmp_x_range.append( [float (x) for x in  x_range.split()] )
 		plotData.plotdict["function_ranges"] = tmp_x_range
 		
 		plotData.plotdict["function_nicknames"] = [nick if nick != None else ("function_nick%d" % index) for index, nick in enumerate(plotData.plotdict["function_nicknames"])]

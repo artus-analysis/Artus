@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ -z ${HARRY_USERPC} ]]; then
-	export HARRY_USERPC=`who am i | sed 's/.*(\([^]]*\)).*/\1/g'`
+	export HARRY_USERPC=$HOSTNAME
 fi
 
 # set some variables needed for --userpc and web plotting
@@ -24,6 +24,11 @@ if [[ -z ${WEB_PLOTTING_COPY_COMMAND} ]]; then
 	export WEB_PLOTTING_COPY_COMMAND="xrdcp -s -f {source} root://eosuser.cern.ch//eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
 fi
 
+
+if [[ -z ${WEB_PLOTTING_LS_COMMAND} ]]; then
+	export WEB_PLOTTING_LS_COMMAND="xrdfs eosuser.cern.ch ls /eos/user/${HARRY_REMOTE_USER:0:1}/${HARRY_REMOTE_USER}/www/plots_archive/{subdir}"
+fi
+
 if [[ `hostname` == *naf* ]]; then
 	export HP_WORK_BASE="/nfs/dust/cms/user/${USER}/Harry"
 	export HP_WORK_BASE_COMMON="/nfs/dust/cms/group/higgs-kit/hp"
@@ -34,8 +39,8 @@ elif [[ `hostname` == *rwth* ]]; then
 	export HP_WORK_BASE="/net/scratch_cms3b/${USER}/Harry"
 	export HP_WORK_BASE_COMMON="/net/scratch_cms3b/analysis/hp"
 elif [[ `hostname` == *cern* ]]; then
-	export HP_WORK_BASE="/afs/cern.ch/work/${USER:0:1}/${USER}/Harry"
-	export HP_WORK_BASE_COMMON="/afs/cern.ch/work/${USER:0:1}/${USER}/Harry" # no common directory yet
+	export HP_WORK_BASE="/eos/user/${USER:0:1}/${USER}/Harry"
+	export HP_WORK_BASE_COMMON="/eos/user/${USER:0:1}/${USER}/Harry" # no common directory yet
 fi
 
 web_plotting_no_passwd() {
