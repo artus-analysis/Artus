@@ -26,6 +26,10 @@ class CorrectNegativeBinContents(histogrammanipulationbase.HistogramManipulation
 				"--nicks-correct-negative-bins", nargs="+", default=[],
 				help="Nicks of histograms to be corrected. [Default: all]"
 		)
+		self.correctnegbincontent_options.add_argument(
+				"--no-integral-preservation", nargs="+", type="bool", default=False,
+				help="Do not preserve integral. [Default: %(default)s]]"
+		)
 	
 	def prepare_args(self, parser, plotData):
 		super(CorrectNegativeBinContents, self).prepare_args(parser, plotData)
@@ -34,6 +38,11 @@ class CorrectNegativeBinContents(histogrammanipulationbase.HistogramManipulation
 			self.whitelist = plotData.plotdict["nicks_correct_negative_bins"]
 		else:
 			self.whitelist = plotData.plotdict["nicks"]
+	
+		if plotData.plotdict["no_integral_preservation"] == False:
+			self.mode = "preserve_integral"
+		else:
+			self.mode = "do_not_preserve_integral"
 	
 	def _selector(self, nick, root_histogram, plotData):
 		if isinstance(root_histogram, ROOT.TH1):
@@ -47,7 +56,8 @@ class CorrectNegativeBinContents(histogrammanipulationbase.HistogramManipulation
 			histogram.SetBinContent(global_bin, 0.0)
 			
 			# preserve original integral
-			new_integral = histogram.Integral()
-			if new_integral > 0.0:
-				histogram.Scale(abs(self.original_integral / new_integral))
+			if self.mode == "preserve_integral":
+				new_integral = histogram.Integral()
+				if new_integral > 0.0:
+					histogram.Scale(abs(self.original_integral / new_integral))
 
