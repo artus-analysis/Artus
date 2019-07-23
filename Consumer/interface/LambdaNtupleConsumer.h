@@ -48,6 +48,7 @@ public:
 	typedef std::function<ROOT::Math::PtEtaPhiMVector(event_type const&, product_type const&)> ptEtaPhiMVector_extractor_lambda_spec;
 	typedef std::function<RMFLV(event_type const&, product_type const&)> rmflv_extractor_lambda_spec;
 	typedef std::function<CartesianRMFLV(event_type const&, product_type const&)> cartesianRMFLV_extractor_lambda_spec;
+	typedef std::function<RMPoint(event_type const&, product_type const&)> rmpoint_extractor_lambda_spec;
 	typedef std::function<std::string(event_type const&, product_type const&)> string_extractor_lambda_spec;
 	typedef std::function<std::vector<double>(event_type const&, product_type const&)> vDouble_extractor_lambda_spec;
 	typedef std::function<std::vector<float>(event_type const&, product_type const&)> vFloat_extractor_lambda_spec;
@@ -127,6 +128,15 @@ public:
 			return valueExtractor(specEvent, specProduct);
 		};
 	}
+	static void AddRMPointQuantity(metadata_type& metadata, std::string const& name, rmpoint_extractor_lambda_spec valueExtractor)
+	{
+		metadata.m_commonRMPointQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product) -> RMPoint
+		{
+			event_type const& specEvent = static_cast<event_type const&>(event);
+			product_type const& specProduct = static_cast<product_type const&>(product);
+			return valueExtractor(specEvent, specProduct);
+		};
+	}
 	static void AddStringQuantity(metadata_type& metadata, std::string const& name, string_extractor_lambda_spec valueExtractor)
 	{
 		metadata.m_commonStringQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product) -> std::string
@@ -194,13 +204,14 @@ public:
 		m_ptEtaPhiMVectorValueExtractors.clear();
 		m_rmflvValueExtractors.clear();
 		m_cartesianRMFLVValueExtractors.clear();
+		m_rmpointValueExtractors.clear();
 		m_stringValueExtractors.clear();
 		m_vDoubleValueExtractors.clear();
 		m_vFloatValueExtractors.clear();
 		m_vRMFLVValueExtractors.clear();
 		m_vStringValueExtractors.clear();
 		m_vIntValueExtractors.clear();
-		
+
 		m_boolQuantities.clear();
 		m_intQuantities.clear();
 		m_uint64Quantities.clear();
@@ -209,13 +220,14 @@ public:
 		m_ptEtaPhiMVectorQuantities.clear();
 		m_rmflvQuantities.clear();
 		m_cartesianRMFLVQuantities.clear();
+		m_rmpointQuantities.clear();
 		m_stringQuantities.clear();
 		m_vDoubleQuantities.clear();
 		m_vFloatQuantities.clear();
 		m_vRMFLVQuantities.clear();
 		m_vStringQuantities.clear();
 		m_vIntQuantities.clear();
-		
+
 		size_t quantityIndex = 0;
 		for (std::vector<std::string>::iterator quantity = settings.GetQuantities().begin();
 		     quantity != settings.GetQuantities().end(); ++quantity)
@@ -286,6 +298,12 @@ public:
 				m_cartesianRMFLVValueExtractors.push_back(SafeMap::Get(metadata.m_commonCartesianRMFLVQuantities, *quantity));
 				m_cartesianRMFLVQuantities.push_back(*quantity);
 			}
+			else if (metadata.m_commonRMPointQuantities.count(*quantity) > 0)
+			{
+				//LOG(DEBUG) << "Init RMPoint quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
+				m_rmpointValueExtractors.push_back(SafeMap::Get(metadata.m_commonRMPointQuantities, *quantity));
+				m_rmpointQuantities.push_back(*quantity);
+			}
 			else if (metadata.m_commonVRMFLVQuantities.count(*quantity) > 0)
 			{
 				//LOG(DEBUG) << "Init vRMFLV quantity: " <<  << *quantity << " (index " << m_floatValueExtractors.size() << ")");
@@ -327,6 +345,7 @@ public:
 		m_ptEtaPhiMVectorValues.resize(m_ptEtaPhiMVectorValueExtractors.size());
 		m_rmflvValues.resize(m_rmflvValueExtractors.size());
 		m_cartesianRMFLVValues.resize(m_cartesianRMFLVValueExtractors.size());
+		m_rmpointValues.resize(m_rmpointValueExtractors.size());
 		m_stringValues.resize(m_stringValueExtractors.size());
 		m_vDoubleValues.resize(m_vDoubleValueExtractors.size());
 		m_vFloatValues.resize(m_vFloatValueExtractors.size());
@@ -342,6 +361,7 @@ public:
 		size_t ptEtaPhiMVectorQuantityIndex = 0;
 		size_t rmflvQuantityIndex = 0;
 		size_t cartesianRMFLVQuantityIndex = 0;
+		size_t rmpointQuantityIndex = 0;
 		size_t stringQuantityIndex = 0;
 		size_t vDoubleQuantityIndex = 0;
 		size_t vFloatQuantityIndex = 0;
@@ -400,6 +420,11 @@ public:
 			{
 				m_tree->Branch(quantity->c_str(), &(m_cartesianRMFLVValues[cartesianRMFLVQuantityIndex]));
 				++cartesianRMFLVQuantityIndex;
+			}
+			else if (metadata.m_commonRMPointQuantities.count(*quantity) > 0)
+			{
+				m_tree->Branch(quantity->c_str(), &(m_rmpointValues[rmpointQuantityIndex]));
+				++rmpointQuantityIndex;
 			}
 			else if (metadata.m_commonVRMFLVQuantities.count(*quantity) > 0)
 			{
@@ -548,7 +573,23 @@ public:
 			}
 			++cartesianRMFLVValueIndex;
 		}
-		
+
+		size_t rmpointValueIndex = 0;
+		for(typename std::vector<rmpoint_extractor_lambda_base>::iterator valueExtractor = m_rmpointValueExtractors.begin();
+		    valueExtractor != m_rmpointValueExtractors.end(); ++valueExtractor)
+		{
+			try
+			{
+				m_rmpointValues[rmpointValueIndex] = (*valueExtractor)(event, product);
+			}
+			catch (...)
+			{
+				LOG(FATAL) << "Could not call lambda function for RMPoint quantity \"" << m_rmpointQuantities.at(rmpointValueIndex) << "\" (pipeline \"" << settings.GetName() << "\")!";
+			}
+			++rmpointValueIndex;
+		}
+
+
 		size_t stringValueIndex = 0;
 		for(typename std::vector<string_extractor_lambda_base>::iterator valueExtractor = m_stringValueExtractors.begin();
 		    valueExtractor != m_stringValueExtractors.end(); ++valueExtractor)
@@ -661,6 +702,7 @@ private:
 	std::vector<ptEtaPhiMVector_extractor_lambda_base> m_ptEtaPhiMVectorValueExtractors;
 	std::vector<rmflv_extractor_lambda_base> m_rmflvValueExtractors;
 	std::vector<cartesianRMFLV_extractor_lambda_base> m_cartesianRMFLVValueExtractors;
+	std::vector<rmpoint_extractor_lambda_base> m_rmpointValueExtractors;
 	std::vector<string_extractor_lambda_base> m_stringValueExtractors;
 	std::vector<vDouble_extractor_lambda_base> m_vDoubleValueExtractors;
 	std::vector<vFloat_extractor_lambda_base> m_vFloatValueExtractors;
@@ -676,6 +718,7 @@ private:
 	std::vector<std::string> m_ptEtaPhiMVectorQuantities;
 	std::vector<std::string> m_rmflvQuantities;
 	std::vector<std::string> m_cartesianRMFLVQuantities;
+	std::vector<std::string> m_rmpointQuantities;
 	std::vector<std::string> m_stringQuantities;
 	std::vector<std::string> m_vDoubleQuantities;
 	std::vector<std::string> m_vFloatQuantities;
@@ -691,10 +734,12 @@ private:
 	std::vector<ROOT::Math::PtEtaPhiMVector> m_ptEtaPhiMVectorValues;
 	std::vector<RMFLV> m_rmflvValues;
 	std::vector<CartesianRMFLV> m_cartesianRMFLVValues;
+	std::vector<RMPoint> m_rmpointValues;
 	std::vector<std::string> m_stringValues;
 	std::vector<std::vector<double> > m_vDoubleValues;
 	std::vector<std::vector<float> > m_vFloatValues;
 	std::vector<std::vector<RMFLV> > m_vRMFLVValues;
+	std::vector<std::vector<RMPoint> > m_vRMPointValues;
 	std::vector<std::vector<std::string> > m_vStringValues;
 	std::vector<std::vector<int> > m_vIntValues;
 };
