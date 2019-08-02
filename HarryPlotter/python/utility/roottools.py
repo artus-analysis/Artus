@@ -433,7 +433,7 @@ class RootTools(object):
 			tree.Scan(scan, str(weight_selection), "colsize=12")
 
 		if root_histogram == None:
-			if "proxy" in option and proxy_call is not None:
+			if "proxy" in option and proxy_class_filename is not None:
 				log.critical("Plotting of compliled proxy formulas not yet implemented for the case where no binning is specified!")
 				sys.exit(1)
 			else:
