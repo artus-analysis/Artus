@@ -28,12 +28,10 @@ class Divide(analysisbase.AnalysisBase):
 				help="Nick names for the denominator of the divide.")
 		self.divide_options.add_argument("--divide-result-nicks", type=str, nargs="+",
 				help="Nick names for the resulting divide graphs.")
-		self.divide_options.add_argument(
-				"--divide-tgraphs", nargs="+", type="bool", default=[False],
+		self.divide_options.add_argument("--divide-tgraphs", nargs="+", type="bool", default=[False],
 				help="Do TGraph division instead of implicite conversion to Histogram.")
-		self.divide_options.add_argument(
-                                "--divide-denominator-no-errors", nargs="+", type="bool", default=[False],
-                                help="Remove errors from denominator histo before division.")
+		self.divide_options.add_argument("--divide-denominator-no-errors", nargs="+", type="bool", default=[False],
+				help="Remove errors from denominator histo before division.")
 		
 	def prepare_args(self, parser, plotData):
 		super(Divide, self).prepare_args(parser, plotData)
@@ -69,16 +67,17 @@ class Divide(analysisbase.AnalysisBase):
 			new_name = "histogram_" + hashlib.md5("_".join([numerator, denominator, new])).hexdigest()
 			numerator_histo = plotData.plotdict["root_objects"][numerator].Clone('numerator_'+new_name)
 			denominator_histo = plotData.plotdict["root_objects"][denominator].Clone('denominator_'+new_name)
-			if(tgraph):
+			if tgraph:
 				if isinstance(numerator_histo,ROOT.TGraph) and isinstance(denominator_histo,ROOT.TGraph):
 					new_histo = plotData.plotdict["root_objects"][numerator].Clone(new_name)
 					self.divide_tgraph(new_histo, denominator_histo)
 				else:
 					log.error("Divide: Chose TGraph division but input is no TGraph!")
 			else:
-				if(denominator_no_errors):
+				if denominator_no_errors:
 					scaleerrors.ScaleErrors.scale_errors(denominator_histo)
 				new_histo = roottools.RootTools.to_histogram(plotData.plotdict["root_objects"][numerator]).Clone(new_name)
 				new_histo.Divide(roottools.RootTools.to_histogram(denominator_histo))
 			plotData.plotdict["root_objects"][new] = new_histo
 			plotData.plotdict["nicks"].append(new)
+
