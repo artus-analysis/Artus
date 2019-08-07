@@ -108,7 +108,7 @@ class Processor(object):
 					if result_name is not None:
 						plotData.plotdict[result_argument] = [result_name]
 						string += ". New nick: '{}'".format(result_name)
-				log.info(string)
+				log.debug(string)
 			else:
 				log.critical("No arguments for analysis module {}!".format(self.__class__.__name__))
 				sys.exit(1)
