@@ -41,17 +41,17 @@ class Divide(analysisbase.AnalysisBase):
 				"divide_result_nicks", "divide")
 		
 	def divide_tgraph(self, graph1, graph2):
-			assert (graph1.GetN() == graph2.GetN())
-			for i in xrange(graph1.GetN()):
-					graph1X, graph1Y = ROOT.Double(0), ROOT.Double(0)
-					graph1.GetPoint(i, graph1X, graph1Y)
-					graph2X, graph2Y = ROOT.Double(0), ROOT.Double(0)
-					graph2.GetPoint(i, graph2X, graph2Y)
-					graph1.SetPoint(i, graph1X, graph1Y / graph2Y if graph2Y != 0. else 0.)
-					if isinstance(graph1, ROOT.TGraphAsymmErrors):
-						graph1.SetPointEYlow(i, abs(graph1.GetErrorYlow(i) / graph2Y) if graph2Y != 0. else 0.)
-					graph1.SetPointEYhigh(i, abs(graph1.GetErrorYhigh(i) / graph2Y) if graph2Y != 0. else 0.)
-				else:
+		assert (graph1.GetN() == graph2.GetN())
+		for i in xrange(graph1.GetN()):
+			graph1X, graph1Y = ROOT.Double(0), ROOT.Double(0)
+			graph1.GetPoint(i, graph1X, graph1Y)
+			graph2X, graph2Y = ROOT.Double(0), ROOT.Double(0)
+			graph2.GetPoint(i, graph2X, graph2Y)
+			graph1.SetPoint(i, graph1X, graph1Y / graph2Y if graph2Y != 0. else 0.)
+			if isinstance(graph1, ROOT.TGraphAsymmErrors):
+				graph1.SetPointEYlow(i, abs(graph1.GetErrorYlow(i) / graph2Y) if graph2Y != 0. else 0.)
+				graph1.SetPointEYhigh(i, abs(graph1.GetErrorYhigh(i) / graph2Y) if graph2Y != 0. else 0.)
+			else:
 				graph1.SetPointError(i, 0.0, abs(graph1.GetErrorYlow(i) / graph2Y) if graph2Y != 0. else 0.)
 
 	def run(self, plotData=None):
