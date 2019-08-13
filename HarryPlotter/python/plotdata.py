@@ -130,6 +130,7 @@ class PlotData(object):
 		web_plotting_copy_command = os.path.expandvars("$WEB_PLOTTING_COPY_COMMAND")
 
 		# no overwriting
+
 		if www_no_overwrite:
 			web_plotting_ls_command = os.path.expandvars("$WEB_PLOTTING_LS_COMMAND").format(subdir=remote_subdir)
 			process = subprocess.Popen(web_plotting_ls_command.split(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -154,6 +155,7 @@ class PlotData(object):
 		log.debug("\nIssueing copy command: " + copy_command)
 		logger.subprocessCall(copy_command.split())
 		log.debug("Copied {0}".format(" ".join([f.split("/")[-1] for f in files_to_copy])))
+		log.info("Copied to: {0}".format(copy_command.split()[-1]))
 		log.info("Website: {0}".format(url))
 
 
