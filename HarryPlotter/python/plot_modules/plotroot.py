@@ -829,7 +829,7 @@ class PlotRoot(plotbase.PlotBase):
 			):
 				if subplot == True:
 					pass # legend entries are currently added to the upper plot legend
-				
+
 				root_object = plotData.plotdict["root_objects"][nick]
 				if legend_marker is None:
 					# TODO: defaults should be defined in prepare_args function
@@ -849,6 +849,15 @@ class PlotRoot(plotbase.PlotBase):
 	def add_texts(self, plotData):
 		super(PlotRoot, self).add_texts(plotData)
 
+		if plotData.plotdict["extra_text"] is not None and plotData.plotdict["extra_text"].startswith('YIELD:'):
+			nicks = [nick.replace('YIELD:', "") for nick in plotData.plotdict["extra_text"].split()]
+			plotData.plotdict["extra_text"] = ''
+			yields = ['Yields:']
+			for nick, root_object in plotData.plotdict["root_objects"].iteritems():
+				if nick in nicks:
+					yields.append(nick + ':' + str(root_object.Integral()))
+			plotData.plotdict["extra_text"] = '\n'.join(yields)
+
 		self.text_box = ROOT.TPaveText(0.0, 0.0, 1.0, 1.0, "NDC")
 		self.text_box.SetFillStyle(0)
 		self.text_box.SetBorderSize(0)
@@ -864,6 +873,8 @@ class PlotRoot(plotbase.PlotBase):
 			text_object = self.text_box.AddText(x, y, text)
 			if not size is None:
 				text_object.SetTextSize(size)
+
+
 
 		# lumi and energy: outside plot, top right, with best possible offset
 		if self.dataset_title != "":
@@ -881,6 +892,7 @@ class PlotRoot(plotbase.PlotBase):
 
 		# normal plot title (e.g., 'own work', name of the channel...): outside plot, top left
 		y_title = 0.95 if self.subplot_axes_histogram is None else 0.923
+
 		if (not plotData.plotdict["title"] is None) and (plotData.plotdict["title"] != ""):
 			x_title = 0.2
 			title = self.text_box.AddText(x_title, y_title, plotData.plotdict["title"])

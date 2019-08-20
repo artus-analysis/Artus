@@ -17,16 +17,16 @@ class PrintInfos(analysisbase.AnalysisBase):
 For histograms, it provides the number of entries and the total weighted sum over the bins."""
 	def __init__(self):
 		super(PrintInfos, self).__init__()
-	
+
 	def modify_argument_parser(self, parser, args):
 		super(PrintInfos, self).modify_argument_parser(parser, args)
-	
+
 	def prepare_args(self, parser, plotData):
 		super(PrintInfos, self).prepare_args(parser, plotData)
-	
+
 	def run(self, plotData=None):
 		super(PrintInfos, self).run(plotData)
-		
+
 		for nick, root_object in plotData.plotdict["root_objects"].iteritems():
 			log.info("\nInfos for object with nick \"{nick}\":".format(nick=nick))
 			if log.isEnabledFor(logging.DEBUG):
