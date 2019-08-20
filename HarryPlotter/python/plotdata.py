@@ -140,6 +140,8 @@ class PlotData(object):
 				raise
 			remote_dir = web_plotting_ls_command.split()[-1]
 			remote_files = [i[len(remote_dir):].strip('/') if i.startswith(remote_dir) else i for i in remote_files.split()]
+			log.info('remote_files:', ', '.join(remote_files))
+			log.info('files_to_copy:', ', '.join(files_to_copy))
 			for i in files_to_copy:
 				if 'index.html' not in i and i in remote_files:
 					log.error('File %s already existing at %s. Exiting' % (i, remote_dir))
@@ -156,7 +158,7 @@ class PlotData(object):
 		logger.subprocessCall(copy_command.split())
 		log.debug("Copied {0}".format(" ".join([f.split("/")[-1] for f in files_to_copy])))
 		log.info("Copied to: {0}".format(copy_command.split()[-1]))
-		log.info("Website: {0}".format(url))
+		log.info("Website:\n{0}".format(url))
 
 
 	def save(self):
