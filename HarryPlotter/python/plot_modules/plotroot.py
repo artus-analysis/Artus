@@ -856,6 +856,8 @@ class PlotRoot(plotbase.PlotBase):
 			for nick, root_object in plotData.plotdict["root_objects"].iteritems():
 				if nick in nicks:
 					yields.append(nick + ':' + str(root_object.Integral()))
+				else:
+					log.warning("No matching nics found for : %s" % nick)
 			plotData.plotdict["extra_text"] = '\n'.join(yields)
 
 		self.text_box = ROOT.TPaveText(0.0, 0.0, 1.0, 1.0, "NDC")
@@ -870,8 +872,15 @@ class PlotRoot(plotbase.PlotBase):
 		self.text_box.SetTextSize(text_size)
 
 		for x, y, text, size in zip(plotData.plotdict["texts_x"], plotData.plotdict["texts_y"], plotData.plotdict["texts"], plotData.plotdict["texts_size"]):
+			if text.startswith('YIELD:'):
+				for nick, root_object in plotData.plotdict["root_objects"].iteritems():
+					if nick in text.replace('YIELD:', ""):
+						text = nick + ':' + format(root_object.Integral(), '.2f')
+						break
+					else:
+						log.warning("No matching nics found for : %s" % nick)
 			text_object = self.text_box.AddText(x, y, text)
-			if not size is None:
+			if size is not None:
 				text_object.SetTextSize(size)
 
 

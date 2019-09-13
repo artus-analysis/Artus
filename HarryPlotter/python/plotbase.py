@@ -373,6 +373,7 @@ class PlotBase(processor.Processor):
 				plotData.plotdict["root_objects"][nick1].Print("range")
 
 		# remove underflow/overflow bin contents
+		log.debug("\nremove underflow/overflow bin contents")
 		for nick in plotData.plotdict["nicks"]:
 			root_object = plotData.plotdict["root_objects"][nick]
 			if isinstance(root_object, ROOT.TH1):
