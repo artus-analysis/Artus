@@ -94,7 +94,7 @@ void HltProducer::Produce(event_type const& event, product_type& product,
 			}
 			
 			// look for (unprescaled if requested) fired trigger
-			if (event.m_eventInfo->hltFired(hltName, event.m_lumiInfo) && (settings.GetAllowPrescaledTrigger() || (prescale <= 1)))
+			if ((event.m_eventInfo->hltFired(hltName, event.m_lumiInfo) || !settings.GetRequireFiredHlt()) && (settings.GetAllowPrescaledTrigger() || (prescale <= 1)))
 			{
 				product.m_selectedHltNames.push_back(hltName);
 				product.m_selectedHltPaths.push_back(*hltPath);
