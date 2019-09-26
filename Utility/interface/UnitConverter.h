@@ -30,6 +30,7 @@ public:
 	static double TimeNU2SI(double, double MetricPrefixIn = 1e9, double MetricPrefixOut = 1);
 	static double VelocityNU2SI(double, double MetricPrefixIn = 1, double MetricPrefixOut = 1);
 	static double MassNU2SI(double, double MetricPrefixIn = 1e9, double MetricPrefixOut = 1);
+	static double MagneticFieldNU2SI(double , double MetricPrefixIn=1, double MetricPrefixOut=1);
 
 	static double MomentumSI2NU(double, double MetricPrefixIn = 1, double MetricPrefixOut = 1e9);
 	static double EnergySI2NU(double, double MetricPrefixIn = 1, double MetricPrefixOut = 1e9);
@@ -37,5 +38,5 @@ public:
 	static double TimeSI2NU(double, double MetricPrefixIn = 1, double MetricPrefixOut = 1e9);
 	static double VelocitySI2NU(double, double MetricPrefixIn = 1, double MetricPrefixOut = 1);
 	static double MassSI2NU(double, double MetricPrefixIn = 1, double MetricPrefixOut = 1e9);
-
+	static double MagneticFieldSI2NU(double , double MetricPrefixIn=1, double MetricPrefixOut=1);
 };

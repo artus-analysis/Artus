@@ -32,6 +32,10 @@ double UnitConverter::MassNU2SI(double m, double MetricPrefixIn, double MetricPr
 	return m * UnitConverter::eQ / UnitConverter::c / UnitConverter::c * MetricPrefixIn / MetricPrefixOut;
 }
 
+double UnitConverter::MagneticFieldNU2SI(double B, double MetricPrefixIn, double MetricPrefixOut){
+	return B * 1e3 / (UnitConverter::c * 1e-8) * MetricPrefixIn / MetricPrefixOut;
+}
+
 double UnitConverter::MomentumSI2NU(double p, double MetricPrefixIn, double MetricPrefixOut){
 	return p * UnitConverter::c / UnitConverter::eQ * MetricPrefixIn / MetricPrefixOut;
 }
@@ -56,3 +60,6 @@ double UnitConverter::MassSI2NU(double m, double MetricPrefixIn, double MetricPr
 	return m / UnitConverter::eQ * UnitConverter::c * UnitConverter::c * MetricPrefixIn / MetricPrefixOut;
 }
 
+double UnitConverter::MagneticFieldSI2NU(double B, double MetricPrefixIn, double MetricPrefixOut){
+	return B / 1e3 * (UnitConverter::c * 1e-8) * MetricPrefixIn / MetricPrefixOut;
+}
