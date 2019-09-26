@@ -419,7 +419,7 @@ class RootTools(object):
 			).replace(
 					"using namespace ROOT", proxy_prefix.replace("\\n", "\n")+"\nusing namespace ROOT"
 			).replace(
-					"htemp->Fill("+proxy_macro_name+"())", "htemp->Fill("+proxy_macro_name+"(), "+proxy_cutmacro_name+"())"
+					"if ("+proxy_cutmacro_name+"()) htemp->Fill("+proxy_macro_name+"())", "htemp->Fill("+proxy_macro_name+"(), "+proxy_cutmacro_name+"())"
 			).replace(
 					"HASH_NAME", hash_name
 			)
