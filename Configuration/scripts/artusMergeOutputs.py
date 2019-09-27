@@ -21,6 +21,18 @@ from Artus.Utility.tools import hadd2, get_folder_size
 
 def folders_to_merge(args):
 	outputs_per_nick = {}
+	has_any_valid_dirs = False
+	for dir_index, project_dir in enumerate(args.project_dir):
+		if not os.path.isdir(project_dir):
+			if dir_index == 0:
+				log.warning(str(project_dir) + " is not an existing directory. It will be created and all inputs from other directories will be merged into this one.")
+			else:
+				log.error(str(project_dir) + " is not an existing directory.")
+		else:
+			has_any_valid_dirs = True
+	if not has_any_valid_dirs:
+		log.critical(str(args.project_dir) + " does not contain any existing directories. Exiting artusMergeOutputs.")
+		sys.exit(1)
 	for project_dir in args.project_dir:
 		extra_path = "output/" if (os.path.isdir(os.path.join(project_dir, "output"))) else ""
 		output_dirs = glob.glob(os.path.join(project_dir, extra_path+"*"))
@@ -39,7 +51,7 @@ def merge_local(args):
 	for nick, files in outputs_per_nick.iteritems():
 		outputs_per_nick[nick] = [file for file in files if ("SvfitCache" not in file)]
 	outputs_per_nick = {nick : files for nick, files in outputs_per_nick.iteritems() if len(files) > 0}
-	
+
 	hadd_arguments = []
 	for nick_name, output_files in pi.ProgressIterator(outputs_per_nick.iteritems(),
 	                                                   length=len(outputs_per_nick),
@@ -48,7 +60,7 @@ def merge_local(args):
 		if not os.path.exists(merged_dir):
 			os.makedirs(merged_dir)
 
-		target_filename = os.path.join(merged_dir, nick_name+".root") 
+		target_filename = os.path.join(merged_dir, nick_name+".root")
 		if(args.project_subdir != None):
 			target_filename = "merged.root"
 
@@ -71,7 +83,7 @@ def merge_batch(args):
 	cfg.usertask.executable = 'Artus/Utility/scripts/artus_userjob_epilog.sh'
 	cmssw_base = os.getenv("CMSSW_BASE") + "/src/"
 	executable = 'artusMergeOutputs.py '
-	cfg.usertask.input_files= [cmssw_base + "Artus/Configuration/scripts/artusMergeOutputs.py"] 
+	cfg.usertask.input_files= [cmssw_base + "Artus/Configuration/scripts/artusMergeOutputs.py"]
 
 	project_dirs = "-i " + " ".join(args.project_dir)
 	outputs_per_nick = folders_to_merge(args)
@@ -87,10 +99,10 @@ def merge_batch(args):
 			input_dir = os.path.join(project_dir, "output", nick)
 			if os.path.exists(input_dir):
 				input_dirs.append(input_dir)
-	
+
 	required_scratch_space = max(map(get_folder_size, input_dirs)) * 2 + 100 * 1024 * 1024
 	cfg.backend.submit_options = "-l h_fsize=" + str(required_scratch_space / 1024 / 1024 / 1024)+"G"
-	cfg.parameters.NICK = nicks_to_process 
+	cfg.parameters.NICK = nicks_to_process
 	cfg.jobs.jobs = len(nicks_to_process)
 
 	arguments = cmssw_base
@@ -99,10 +111,10 @@ def merge_batch(args):
 	arguments = arguments + " --project-subdir @NICK@ "
 	if(args.output_dir != None):
 		arguments = arguments + " --output-dir " + args.output_dir
-		
+
 	cfg.usertask.arguments = "%s"%arguments
 	merged_directory = os.path.join(args.project_dir[0] if(args.output_dir == None) else args.output_dir, "merged")
-	cfg.storage.se_path = merged_directory 
+	cfg.storage.se_path = merged_directory
 	cfg.storage.scratch_space_used = required_scratch_space / 1024 / 1024
 	cfg.storage.se_output_files = "merged.root"
 	cfg.storage.se_output_pattern = "@NICK@/@NICK@.root"
@@ -114,11 +126,11 @@ def merge_batch(args):
 
 	workflow = gc_create_workflow(config)
 	#activate for large verbosity
-	#logging.getLogger('process').setLevel(logging.DEBUG1) 
+	#logging.getLogger('process').setLevel(logging.DEBUG1)
 	workflow.run()
 
 def main():
-	
+
 	parser = argparse.ArgumentParser(description="Merge Artus outputs per nick name.", parents=[logger.loggingParser])
 
 	parser.add_argument("project_dir", help="Artus Project directory containing the files \"output/*/*.root\" to merge in case there is an output dir, */*.root else", nargs="*")
@@ -139,4 +151,3 @@ def main():
 
 if __name__ == "__main__":
 	main()
-
