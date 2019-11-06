@@ -26,14 +26,16 @@ public:
 	double getSFc(double pt, float eta, unsigned int btagsys, int year) const;
 	double getSFl(double pt, float eta, unsigned int mistagsys, int year) const;
 	double getMistag(double pt, float eta) const;
-	double getEfficiencyFromFile(int flavour, double pt, float eta) const;
+	double getEfficiencyFromHistogram(int flavour, double pt, float eta) const;
 
 	enum { kNo, kDown, kUp }; // systematic variations
 
 private:
 	mutable TRandom3 randm;
 	BTagCalibration calib;
-	TFile* effFile = nullptr;
+	TH2D* effHisto_b = nullptr;
+	TH2D* effHisto_c = nullptr;
+	TH2D* effHisto_oth = nullptr;
 	BTagCalibrationReader reader_mujets;
 	BTagCalibrationReader reader_mujets_up;
 	BTagCalibrationReader reader_mujets_do;

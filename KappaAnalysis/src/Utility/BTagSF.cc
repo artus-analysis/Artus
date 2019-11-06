@@ -7,19 +7,29 @@ BTagSF::BTagSF()
 
 BTagSF::BTagSF(std::string csvfile, std::string efficiencyfile) :
 	randm(TRandom3(0)),
-	calib(BTagCalibration("csvv2", csvfile)),
-	effFile(new TFile(efficiencyfile.c_str()))
+	calib(BTagCalibration("csvv2", csvfile))
 {
 	TDirectory *savedir(gDirectory);
 	TFile *savefile(gFile);
 
-	if (effFile->IsZombie()) {
+	TFile effFile(efficiencyfile.c_str(), "READ");
+
+	if (effFile.IsZombie()) {
 		std::cout << "BTagSF: file " << efficiencyfile << " is not found...   quitting " << std::endl;
 		exit(-1);
 	}
 
+	effHisto_b = static_cast<TH2D*>(effFile.Get("btag_eff_b"));
+	effHisto_b->SetDirectory(nullptr);
+	effHisto_c = static_cast<TH2D*>(effFile.Get("btag_eff_c"));
+	effHisto_c->SetDirectory(nullptr);
+	effHisto_oth = static_cast<TH2D*>(effFile.Get("btag_eff_oth"));
+	effHisto_oth->SetDirectory(nullptr);
+	effFile.Close();
+
 	gDirectory = savedir;
 	gFile = savefile;
+
 }
 
 BTagSF::BTagSF(std::string csvfile, std::string efficiencyfile, std::string btagwp) :
@@ -160,7 +170,7 @@ bool BTagSF::isbtagged(double pt, float eta, float csv, Int_t jetflavor,
 	{
 		if (year == 2015 || year == 2016 || year == 2017)
 		{
-			eff = getEfficiencyFromFile(jetflavor, pt, eta);
+			eff = getEfficiencyFromHistogram(jetflavor, pt, eta);
 		}
 		else
 		{
@@ -534,22 +544,22 @@ double BTagSF::getMistag(double pt, float eta) const
 	return 0.0;
 }
 
-double BTagSF::getEfficiencyFromFile(int flavour, double pt, float eta) const
+double BTagSF::getEfficiencyFromHistogram(int flavour, double pt, float eta) const
 {
 	TH2D * effHisto;
 	double eff = 0.0;
 
 	if (flavour == 5)
 	{
-		effHisto = (TH2D*) effFile->Get("btag_eff_b");
+		effHisto = effHisto_b;
 	}
 	else if (flavour == 4)
 	{
-		effHisto = (TH2D*) effFile->Get("btag_eff_c");
+		effHisto = effHisto_c;
 	}
 	else
 	{
-		effHisto = (TH2D*) effFile->Get("btag_eff_oth");
+		effHisto = effHisto_oth;
 	}
 
 	if (pt > effHisto->GetXaxis()->GetBinLowEdge(effHisto->GetNbinsX()+1))
