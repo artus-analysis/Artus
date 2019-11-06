@@ -33,7 +33,7 @@ public:
 		auto methodNameIndex = std::find(mvaOutputs.begin(), mvaOutputs.end(), methodName);
 		return (methodNameIndex == mvaOutputs.end() ? DefaultValues::UndefinedDouble : mvaOutputs[methodNameIndex - mvaOutputs.begin()]);
 	}
-	
+
 	TmvaClassificationMultiReaderBase(std::vector<std::string>& (setting_type::*GetTmvaInputQuantities)(void) const,
 								 std::vector<std::string>& (setting_type::*GetTmvaMethods)(void) const,
 								 std::vector<std::string>& (setting_type::*GetTmvaWeights)(void) const,
@@ -45,7 +45,7 @@ public:
 		m_mvaOutputsMember(mvaOutputs)
 	{
 	}
-	
+
 	void Init(setting_type const& settings, metadata_type& metadata) override
 	{
 		ProducerBase<TTypes>::Init(settings, metadata);
@@ -125,7 +125,7 @@ public:
 			mvaMethodIndex += 1;
 		}
 	}
-	
+
 	void Produce(event_type const& event, product_type& product,
 	             setting_type const& settings, metadata_type const& metadata) const override
 	{
@@ -154,7 +154,7 @@ public:
 			mvaMethodIndex += 1;
 		}
 	}
-	
+
 private:
 	std::vector<std::string>& (setting_type::*GetTmvaInputQuantities)(void) const;
 	std::vector<std::string>& (setting_type::*GetTmvaMethods)(void) const;

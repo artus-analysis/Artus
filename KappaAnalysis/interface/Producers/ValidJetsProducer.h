@@ -276,7 +276,7 @@ public:
 			// jets, all eta
 			if (jetIDVersion == KappaEnumTypes::JetIDVersion::ID2010 || jetIDVersion == KappaEnumTypes::JetIDVersion::ID2014)  // CMSSW <7.3.X
 				validJet = validJet && (jet->neutralHadronFraction + jet->hfHadronFraction < maxFraction);
-		
+
 			if (std::abs(jet->p4.eta()) <= 2.7f)
 			{
 			validJet = validJet
@@ -284,8 +284,8 @@ public:
 					   && (jet->photonFraction + jet->hfEMFraction < maxFraction)
 					   && (jet->nConstituents > 1)
 					   && (jet->muonFraction < maxMuFraction);
-					   
-				// jets, |eta| < 2.4 (tracker) then additional criteria need to be applied		   
+
+				// jets, |eta| < 2.4 (tracker) then additional criteria need to be applied
 				if (std::abs(jet->p4.eta()) <= 2.4f)
 				{
 					validJet = validJet
@@ -457,5 +457,3 @@ protected:
 private:
 	static bool PassPuJetIds(KJet* jet, std::vector<std::string> const& puJetIds, KJetMetadata* taggerMetadata);
 };
-
-

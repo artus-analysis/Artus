@@ -17,7 +17,7 @@ template<class TTypes>
 class Pipeline;
 
 /**
-   \brief Base class for your custom PipelineInitializer. 
+   \brief Base class for your custom PipelineInitializer.
 
    Your custom code can add Filters and Consumers to newly created pipelines.
  */
@@ -43,35 +43,35 @@ public:
 /**
    \brief Base implementation of the Pipeline paradigm.
 
-   The Pipline contains settings, producer, filter and consumer which, when combined, produce the 
-   desired output of a pipeline as soon as Events are send to the pipeline. An incoming event must 
-   not be changed by the pipeline but the pipeline can create additional data for an event using 
-   Producers. Most of the time, the Pipeline will not be used stand-alone but by an PipelineRunner 
-   class. 
+   The Pipline contains settings, producer, filter and consumer which, when combined, produce the
+   desired output of a pipeline as soon as Events are send to the pipeline. An incoming event must
+   not be changed by the pipeline but the pipeline can create additional data for an event using
+   Producers. Most of the time, the Pipeline will not be used stand-alone but by an PipelineRunner
+   class.
 
    The intention of the different components is outlined in the following:
-   
-   
+
+
    - Settings
-   Contain all specifics for the behaviour of this pipeline. The Settings object of type TSettings 
+   Contain all specifics for the behaviour of this pipeline. The Settings object of type TSettings
    must be used to steer the behaviour of the Producers, Filters and Consumers.
-   
+
    - Producers
-   Create additional, pipeline-specific, data for an event and stores this information in a TProduct 
+   Create additional, pipeline-specific, data for an event and stores this information in a TProduct
    object.
-   
+
    - Filters
-   Decide whether an input event is suitable to be processed by this pipeline. An event might not be 
-   in the desired PtRange and is therefore not useful for this pipeline. The FilterResult is stored 
+   Decide whether an input event is suitable to be processed by this pipeline. An event might not be
+   in the desired PtRange and is therefore not useful for this pipeline. The FilterResult is stored
    and Consumers can access the outcome of the Filter process.
-   
+
    - Consumers
-   Can access the input event, the created products, the settings and the filter result and produce 
+   Can access the input event, the created products, the settings and the filter result and produce
    the output they desire, like Histograms -> PLOTS PLOTS PLOTS
-   
-   Execution order is: Producers -> Filters -> Consumers. Each pipeline can have several Producers, 
+
+   Execution order is: Producers -> Filters -> Consumers. Each pipeline can have several Producers,
    Filters or Consumers.
-   
+
 */
 
 template<class TTypes>
@@ -99,7 +99,7 @@ public:
 	{
 	}
 
-	/// Initialize the pipeline using a custom PipelineInitilizer. This PipelineInitilizerBase 
+	/// Initialize the pipeline using a custom PipelineInitilizer. This PipelineInitilizerBase
 	/// can create specific Filters and Consumers
 	virtual void InitPipeline(setting_type pset, metadata_type globalMetadata, PipelineInitilizerBase<TTypes> const& initializer)
 	{
@@ -108,7 +108,7 @@ public:
 
 		m_pipelineSettings = pset;
 		m_metadata = globalMetadata;
-		
+
 		initializer.InitPipeline(this, pset, m_metadata);
 
 		for(ProcessNodeIterator processNode = m_nodes.begin(); processNode != m_nodes.end(); ++processNode)
@@ -166,7 +166,7 @@ public:
 		}
 	}
 
-	/// Run the pipeline without specific event input. This is most useful for Pipelines which 
+	/// Run the pipeline without specific event input. This is most useful for Pipelines which
 	/// process output from Pipelines already run.
 	virtual void Run()
 	{
@@ -176,7 +176,7 @@ public:
 		}
 	}
 
-	/// Run the pipeline with one specific event as input. GlobalProduct are products which are 
+	/// Run the pipeline with one specific event as input. GlobalProduct are products which are
 	/// common for all pipelines and have therefore been created only once.
 	virtual bool RunEvent(event_type const& evt, product_type const& globalProduct, FilterResult const& globalFilterResult)
 	{
@@ -206,7 +206,7 @@ public:
 			{
 				ProducerForThisPipeline& prod = static_cast<ProducerForThisPipeline&>(*processNode);
 				gettimeofday(&tStart, nullptr);
-				
+
 				if (globalProduct.newRun)
 				{
 					ProducerBaseAccess(prod).OnRun(evt, m_pipelineSettings, m_metadata);
@@ -216,7 +216,7 @@ public:
 						ProducerBaseAccess(prod).OnLumi(evt, m_pipelineSettings, m_metadata);
 				}
 				ProducerBaseAccess(prod).Produce(evt, localProduct, m_pipelineSettings, m_metadata);
-				
+
 				gettimeofday(&tEnd, nullptr);
 				runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);  // a long int might be needed here but SafeMaps for long ints are not yet working
 				localProduct.processorRunTime[prod.GetProducerId()] = runTime;
@@ -225,7 +225,7 @@ public:
 			{
 				FilterForThisPipeline& flt = static_cast<FilterForThisPipeline&>(*processNode);
 				gettimeofday(&tStart, nullptr);
-				
+
 				if(globalProduct.newRun)
 				{
 					FilterBaseAccess(flt).OnRun(evt, m_pipelineSettings, m_metadata);
@@ -236,7 +236,7 @@ public:
 				}
 				const bool filterResult = FilterBaseAccess(flt).DoesEventPass(evt, localProduct, m_pipelineSettings, m_metadata);
 				localFilterResult.SetFilterDecision(flt.GetFilterId(), filterResult);
-				
+
 				gettimeofday(&tEnd, nullptr);
 				runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);  // a long int might be needed here but SafeMaps for long ints are not yet working
 				localProduct.processorRunTime[flt.GetFilterId()] = runTime;
@@ -321,7 +321,7 @@ public:
 	{
 		return m_nodes;
 	}
-	
+
 	metadata_type& GetMetadata()
 	{
 		return m_metadata;
@@ -342,4 +342,3 @@ private:
 	std::vector<std::string> m_taggingFilters;
 	metadata_type m_metadata;
 };
-

@@ -12,14 +12,14 @@ std::string GenDiLeptonDecayModeFilter::GetFilterId() const {
 void GenDiLeptonDecayModeFilter::Init(setting_type const& settings, metadata_type& metadata)
 {
 	FilterBase<KappaTypes>::Init(settings, metadata);
-	
+
 	m_genDiLeptonDecayMode = KappaEnumTypes::ToDiLeptonDecayMode(boost::algorithm::to_lower_copy(
 			boost::algorithm::trim_copy(settings.GetGenDiLeptonDecayMode())
 	));
 }
 
 bool GenDiLeptonDecayModeFilter::DoesEventPass(event_type const& event, product_type const& product,
-                                               setting_type const& settings, metadata_type const& metadata) const 
+                                               setting_type const& settings, metadata_type const& metadata) const
 {
 	bool valid = true;
 	if (m_genDiLeptonDecayMode == KappaEnumTypes::DiLeptonDecayMode::LL)
@@ -41,4 +41,3 @@ bool GenDiLeptonDecayModeFilter::DoesEventPass(event_type const& event, product_
 	}
 	return (valid != settings.GetInvertGenDiLeptonDecayMode());
 }
-

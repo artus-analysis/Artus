@@ -68,13 +68,13 @@ void ValidGenParticlesProducer::Produce(KappaTypes::KappaTypes::event_type const
 	     genParticle != (product.*m_genParticlesMember).end();)
 	{
 		bool validLepton = (std::abs((*genParticle)->pdgId) == m_absPdgId);
-		
+
 		// kinematic cuts
 		validLepton = validLepton && this->PassKinematicCuts(*genParticle, event, product);
-		
+
 		// check possible analysis-specific criteria
 		validLepton = validLepton && AdditionalCriteria(*genParticle, event, product, settings, metadata);
-		
+
 		if (validLepton)
 		{
 			(product.*m_validLeptonsMember).push_back(*genParticle);
@@ -85,7 +85,7 @@ void ValidGenParticlesProducer::Produce(KappaTypes::KappaTypes::event_type const
 			++genParticle; // genParticle = (product.*m_genParticlesMember).erase(genParticle);
 		}
 	}
-	
+
 	// preserve Pt sorting of valid gen. leptons
 	std::sort(
 			(product.*m_validLeptonsMember).begin(),
@@ -200,7 +200,7 @@ void ValidGenTausProducer::Produce(KappaTypes::KappaTypes::event_type const& eve
                                    KappaTypes::KappaTypes::setting_type const& settings, KappaTypes::KappaTypes::metadata_type const& metadata) const
 {
 	ValidGenParticlesProducer::Produce(event, product, settings, metadata);
-	
+
 	// matching of KGenParticle to KGenTau
 	for (std::vector<KGenParticle*>::iterator genParticle = (product.*m_validLeptonsMember).begin();
 	     genParticle != (product.*m_validLeptonsMember).end(); ++genParticle)
@@ -208,7 +208,7 @@ void ValidGenTausProducer::Produce(KappaTypes::KappaTypes::event_type const& eve
 		float minAbsDeltaR = std::numeric_limits<float>::max();
 		float minAbsDeltaPt = std::numeric_limits<float>::max();
 		KGenTau* bestMatchingGenTau = nullptr;
-		
+
 		for (std::vector<KGenTau>::iterator genTau = event.m_genTaus->begin();
 		     genTau != event.m_genTaus->end(); ++genTau)
 		{
@@ -223,7 +223,7 @@ void ValidGenTausProducer::Produce(KappaTypes::KappaTypes::event_type const& eve
 		}
 		product.m_validGenTausMap[*genParticle] = bestMatchingGenTau;
 		product.m_validGenParticlesMap[bestMatchingGenTau] = *genParticle;
-		
+
 		std::pair<std::vector<KGenParticle*>, std::vector<KGenParticle*> > chargedNeutralHadrons = GetChargedNeutralHadrons(event.m_genParticles, *genParticle);
 		product.m_validGenTausChargedHadronsMap[*genParticle] = chargedNeutralHadrons.first;
 		product.m_validGenTausNeutralHadronsMap[*genParticle] = chargedNeutralHadrons.second;
@@ -235,7 +235,7 @@ std::pair<std::vector<KGenParticle*>, std::vector<KGenParticle*> > ValidGenTausP
 	std::pair<std::vector<KGenParticle*>, std::vector<KGenParticle*> > chargedNeutralHadrons = std::pair<std::vector<KGenParticle*>, std::vector<KGenParticle*> >(
 			std::vector<KGenParticle*>(), std::vector<KGenParticle*>()
 	);
-	
+
 	for (std::vector<unsigned int>::iterator daughterIndex = genTau->daughterIndices.begin(); daughterIndex != genTau->daughterIndices.end(); ++daughterIndex)
 	{
 		KGenParticle* daughterGenParticle = &(genParticles->at(*daughterIndex));
@@ -257,7 +257,6 @@ std::pair<std::vector<KGenParticle*>, std::vector<KGenParticle*> > ValidGenTausP
 			                                    tmpChargedNeutralHadrons.second.begin(), tmpChargedNeutralHadrons.second.end());
 		}
 	}
-	
+
 	return chargedNeutralHadrons;
 }
-

@@ -14,7 +14,7 @@
 	void JsonFilter::Init(setting_type const& settings, metadata_type& metadata)
 	{
 		FilterBase<KappaTypes>::Init(settings, metadata);
-		
+
 		m_runLumiSelector = RunLumiSelector(settings.GetJsonFiles(),
 		                                    settings.GetPassRunLow(),
 		                                    settings.GetPassRunHigh());
@@ -24,6 +24,6 @@
 	                               setting_type const& settings, metadata_type const& metadata) const
 	{
 		assert(event.m_eventInfo);
-		
+
 		return m_runLumiSelector.accept(event.m_eventInfo->nRun, (event.m_eventInfo->nLumi & 0x0000FFFF));
 	}

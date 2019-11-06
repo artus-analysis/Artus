@@ -45,11 +45,11 @@ void GenTauJetProducer::Produce(event_type const& event, product_type& product,
                                 setting_type const& settings, metadata_type const& metadata) const
 {
 	assert(event.m_genTauJets);
-	
+
 	for (KGenJets::iterator part = event.m_genTauJets->begin(); part != event.m_genTauJets->end(); ++part)
 	{
 		int decayMode = part->genTauDecayMode;
-		
+
 		// select only 1-prong and 3-prong decay modes
 		if (((decayMode >= 0) && (decayMode <= 4)) || (decayMode == 7) || (decayMode == 8))
 		{

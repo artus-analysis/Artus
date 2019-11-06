@@ -17,7 +17,7 @@ public:
 	BTagSF(std::string csvfile, std::string efficiencyfile);
 	BTagSF(std::string csvfile, std::string efficiencyfile, std::string btagwp);
 	~BTagSF();
-	
+
 	void initBtagwp(std::string btagwp);
 
 	bool isbtagged(double pt, float eta, float csv, Int_t jetflavor,

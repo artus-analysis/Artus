@@ -24,4 +24,3 @@ bool BeamScrapingFilter::DoesEventPass(event_type const& event, product_type con
 	return (static_cast<double>(event.m_trackSummary->nTracksHQ) /
 	        static_cast<double>(event.m_trackSummary->nTracks) > m_purityRatio);
 }
-

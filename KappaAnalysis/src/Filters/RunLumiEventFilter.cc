@@ -5,12 +5,12 @@ std::string RunLumiEventFilter::GetFilterId() const {
 }
 
 bool RunLumiEventFilter::DoesEventPass(event_type const& event, product_type const& product,
-                                       setting_type const& settings, metadata_type const& metadata) const 
+                                       setting_type const& settings, metadata_type const& metadata) const
 {
 	assert(event.m_eventInfo);
-	
+
 	bool match = false;
-	
+
 	if (settings.GetMatchRunLumiEventTuples())
 	{
 		match = true;

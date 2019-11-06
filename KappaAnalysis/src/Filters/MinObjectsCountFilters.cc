@@ -97,7 +97,7 @@ std::string MinBTaggedJetsCountFilter::GetFilterId() const
 void MinBTaggedJetsCountFilter::Init(setting_type const& settings, metadata_type& metadata)
 {
 	FilterBase<KappaTypes>::Init(settings, metadata);
-	
+
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 			[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 				return product.m_bTaggedJets.size();
@@ -118,7 +118,7 @@ std::string MinNonBTaggedJetsCountFilter::GetFilterId() const
 void MinNonBTaggedJetsCountFilter::Init(setting_type const& settings, metadata_type& metadata)
 {
 	FilterBase<KappaTypes>::Init(settings, metadata);
-	
+
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
 			[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 				return product.m_nonBTaggedJets.size();
@@ -126,4 +126,3 @@ void MinNonBTaggedJetsCountFilter::Init(setting_type const& settings, metadata_t
 			CutRange::LowerThresholdCut(double(settings.GetMinNNonBTaggedJets()))
 	));
 }
-

@@ -142,12 +142,12 @@ void ValidGenJetsProducer::Produce(KappaTypes::event_type const& event, KappaTyp
                                    KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) const
 {
 	assert(event.m_genJets);
-	
+
 	for (std::vector<KGenJet>::iterator jet = event.m_genJets->begin();
 	     jet != event.m_genJets->end(); ++jet)
 	{
 		bool validJet = true;
-		
+
 		// remove leptons from list of jets via simple DeltaR isolation
 		for (std::vector<KGenParticle*>::iterator lepton = product.m_genLeptonsFromBosonDecay.begin();
 		     lepton != product.m_genLeptonsFromBosonDecay.end(); ++lepton)
@@ -161,7 +161,7 @@ void ValidGenJetsProducer::Produce(KappaTypes::event_type const& event, KappaTyp
 					visibleP4 = &(genTau->visible.p4);
 				}
 			}
-			
+
 			validJet = validJet && ROOT::Math::VectorUtil::DeltaR(jet->p4, *visibleP4) > settings.GetJetLeptonLowerDeltaRCut();
 		}
 
@@ -187,4 +187,3 @@ bool ValidGenJetsProducer::AdditionalCriteria(KGenJet* jet, KappaTypes::event_ty
 {
 	return true;
 }
-

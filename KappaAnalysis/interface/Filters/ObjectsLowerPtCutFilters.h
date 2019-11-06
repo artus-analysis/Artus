@@ -29,7 +29,7 @@ protected:
 
 	void Initialise(std::vector<std::string> const& leptonLowerPtCutsVector) {
 		std::map<std::string, std::vector<std::string> > leptonLowerPtCuts = Utility::ParseVectorToMap(leptonLowerPtCutsVector);
-	
+
 		std::vector<int> defaultIndices = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
 		for (std::map<std::string, std::vector<std::string> >::const_iterator leptonLowerPtCut = leptonLowerPtCuts.begin();
 		     leptonLowerPtCut != leptonLowerPtCuts.end(); ++leptonLowerPtCut)
@@ -48,12 +48,12 @@ protected:
 					hltNames.push_back(leptonLowerPtCut->first);
 				}
 			}
-			
+
 			for (std::vector<std::string>::const_iterator ptCut = leptonLowerPtCut->second.begin();
 			     ptCut != leptonLowerPtCut->second.end(); ++ptCut)
 			{
 				double ptCutValue = std::stod(*ptCut);
-				
+
 				for (std::vector<int>::iterator index = indices.begin(); index != indices.end(); ++index)
 				{
 					size_t tmpIndex(*index); // TODO
@@ -66,7 +66,7 @@ protected:
 							CutRange::LowerThresholdCut(ptCutValue)
 					));
 				}
-				
+
 				for (std::vector<std::string>::iterator hltName = hltNames.begin(); hltName != hltNames.end(); ++hltName)
 				{
 					std::string tmpHltName(*hltName); // TODO
@@ -89,7 +89,7 @@ protected:
 					}
 				}
 			}
-		}	
+		}
 	}
 
 
@@ -102,11 +102,11 @@ private:
  */
 class ElectronLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KElectron> {
 public:
-	
+
 	std::string GetFilterId() const override;
-	
+
 	ElectronLowerPtCutsFilter();
-	
+
 	void Init(setting_type const& settings, metadata_type& metadata) override;
 };
 
@@ -115,11 +115,11 @@ public:
  */
 class MuonLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KMuon> {
 public:
-	
+
 	std::string GetFilterId() const override;
-	
+
 	MuonLowerPtCutsFilter();
-	
+
 	void Init(setting_type const& settings, metadata_type& metadata) override;
 };
 
@@ -128,11 +128,11 @@ public:
  */
 class TauLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KTau> {
 public:
-	
+
 	std::string GetFilterId() const override;
-	
+
 	TauLowerPtCutsFilter();
-	
+
 	void Init(setting_type const& settings, metadata_type& metadata) override;
 };
 
@@ -141,11 +141,11 @@ public:
  */
 class JetLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KBasicJet> {
 public:
-	
+
 	std::string GetFilterId() const override;
-	
+
 	JetLowerPtCutsFilter();
-	
+
 	void Init(setting_type const& settings, metadata_type& metadata) override;
 };
 
@@ -154,10 +154,10 @@ public:
  */
 class NonBTaggedJetLowerPtCutsFilter: public LeptonLowerPtCutsFilter<KJet> {
 public:
-	
+
 	std::string GetFilterId() const override;
-	
+
 	NonBTaggedJetLowerPtCutsFilter();
-	
+
 	void Init(setting_type const& settings, metadata_type& metadata) override;
 };

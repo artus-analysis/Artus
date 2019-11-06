@@ -7,9 +7,9 @@
 /**
    \brief Defines the content of the kappa ntuple.
 
-   Defines the objects which are contained in a kappa ntuple. Members are pointer to the corresponding 
+   Defines the objects which are contained in a kappa ntuple. Members are pointer to the corresponding
    collections of objects in the input file. This class derives from KapaEventBase, which contains
-   pointers to the eventMetadata and genEventMetadata, the minimal content of a kappa ntuple. 
+   pointers to the eventMetadata and genEventMetadata, the minimal content of a kappa ntuple.
 */
 
 class KappaEvent : public EventBase
@@ -88,19 +88,17 @@ public:
 	/// pointer to metadata // TODO: move to Artus/Provider
 	KEventInfo* m_eventInfo = nullptr;
 	KGenEventInfo* m_genEventInfo = nullptr;
-	
+
 	KLumiInfo* m_lumiInfo = nullptr;
 	KGenLumiInfo* m_genLumiInfo = nullptr;
 	KDataLumiInfo* m_dataLumiInfo = nullptr;
-	
+
 	KRunInfo* m_runInfo = nullptr;
 	KGenRunInfo* m_genRunInfo = nullptr;
 	KDataRunInfo* m_dataRunInfo = nullptr;
-	
+
 	KFilterMetadata* m_filterMetadata = nullptr;
 	KFilterSummary* m_filterSummary = nullptr;
 	KJetMetadata* m_jetMetadata = nullptr;
 	KGenEventInfoMetadata *m_genEventInfoMetadata = nullptr;
 };
-
-

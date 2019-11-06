@@ -162,7 +162,7 @@ public:
 			}
 		}
 	}
-	
+
 private:
 	std::vector<TLepton1*> product_type::*m_validLeptonsMember1;
 	std::vector<TLepton2*> product_type::*m_validLeptonsMember2;
@@ -266,4 +266,3 @@ public:
 	std::string GetProducerId() const override;
 	ZeemmProducer();
 };
-

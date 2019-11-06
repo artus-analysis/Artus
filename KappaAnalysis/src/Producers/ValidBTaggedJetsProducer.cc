@@ -32,7 +32,7 @@ void ValidBTaggedJetsProducer::Init(setting_type const& settings, metadata_type&
 			return it != product.m_bTaggedJetsByWp.end() ? product.m_bTaggedJetsByWp.at(bTagWorkingPoint.first).size() : 0;
 		});
 	}
-	
+
 	// add possible quantities for the lambda ntuples consumers
 	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "nBJets", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 		return product.m_bTaggedJets.size();
@@ -96,7 +96,7 @@ void ValidBTaggedJetsProducer::Produce(event_type const& event, product_type& pr
 			//float combinedSecondaryVertex = 0.f;
 			//float bTagWorkingPoint= 0.f;
 			//float deepCSVValue = 0.f;
-			/*			
+			/*
 			for (unsigned int i = 0; i < event.m_jetMetadata->tagNames.size(); ++i)
 			{
 				std::cout << event.m_jetMetadata->idNames[i] << std::endl;
@@ -111,9 +111,9 @@ void ValidBTaggedJetsProducer::Produce(event_type const& event, product_type& pr
 						std::abs(tjet->p4.eta()) > settings.GetBTaggedJetAbsEtaCut()) {
 						validBJet = false;
 					}
-			
+
 				validBJet = validBJet && AdditionalCriteria(tjet, event, product, settings, metadata);
-			
+
 				//entry point for Scale Factor (SF) of btagged jets
 				if (settings.GetApplyBTagSF() && !settings.GetInputIsData())
 				{
@@ -125,14 +125,14 @@ void ValidBTaggedJetsProducer::Produce(event_type const& event, product_type& pr
 						int jetflavor = jetHadronFlavor + (jetHadronFlavor == 0) * (jetPartonFlavor);
 						unsigned int btagSys = BTagSF::kNo;
 						unsigned int bmistagSys = BTagSF::kNo;
-					
+
 						if (settings.GetBTagShift() < 0)    btagSys = BTagSF::kDown;
 						if (settings.GetBTagShift() > 0)    btagSys = BTagSF::kUp;
 						if (settings.GetBMistagShift() < 0) bmistagSys = BTagSF::kDown;
 						if (settings.GetBMistagShift() > 0) bmistagSys = BTagSF::kUp;
 
-						LOG_N_TIMES(1, DEBUG) << "Btagging shifts tag/mistag : " << settings.GetBTagShift() << " " << settings.GetBMistagShift(); 
-					
+						LOG_N_TIMES(1, DEBUG) << "Btagging shifts tag/mistag : " << settings.GetBTagShift() << " " << settings.GetBMistagShift();
+
 						bool taggedBefore = validBJet;
 						validBJet = m_bTagSfMap.at(*workingPoint).isbtagged(
 								tjet->p4.pt(),
@@ -144,7 +144,7 @@ void ValidBTaggedJetsProducer::Produce(event_type const& event, product_type& pr
 								settings.GetYear(),
 								bTagWorkingPoint
 						);
-					
+
 						if (taggedBefore != validBJet) LOG_N_TIMES(20, DEBUG) << "Promoted/demoted : " << validBJet;
 					}
 					//todo
@@ -173,14 +173,14 @@ void ValidBTaggedJetsProducer::Produce(event_type const& event, product_type& pr
 						int jetflavor = jetHadronFlavor + (jetHadronFlavor == 0) * (jetPartonFlavor);
 						unsigned int btagSys = BTagSF::kNo;
 						unsigned int bmistagSys = BTagSF::kNo;
-					
+
 						if (settings.GetBTagShift() < 0)    btagSys = BTagSF::kDown;
 						if (settings.GetBTagShift() > 0)    btagSys = BTagSF::kUp;
 						if (settings.GetBMistagShift() < 0) bmistagSys = BTagSF::kDown;
 						if (settings.GetBMistagShift() > 0) bmistagSys = BTagSF::kUp;
 
-						LOG_N_TIMES(1, DEBUG) << "Btagging shifts tag/mistag : " << settings.GetBTagShift() << " " << settings.GetBMistagShift(); 
-					
+						LOG_N_TIMES(1, DEBUG) << "Btagging shifts tag/mistag : " << settings.GetBTagShift() << " " << settings.GetBMistagShift();
+
 						bool taggedBefore = validBJet;
 						validBJet = m_bTagSfMap.at(*workingPoint).isbtagged(
 								tjet->p4.pt(),
@@ -192,7 +192,7 @@ void ValidBTaggedJetsProducer::Produce(event_type const& event, product_type& pr
 								settings.GetYear(),
 								bTagWorkingPoint
 						);
-					
+
 						if (taggedBefore != validBJet) LOG_N_TIMES(20, DEBUG) << "Promoted/demoted : " << validBJet;
 					}
 					//todo
@@ -216,4 +216,3 @@ bool ValidBTaggedJetsProducer::AdditionalCriteria(KJet* jet, event_type const& e
 	bool validBJet = true;
 	return validBJet;
 }
-

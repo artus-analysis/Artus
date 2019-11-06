@@ -18,7 +18,7 @@
 
 /**
    \brief GlobalProducer, for valid taus.
-   
+
    Required config tags in addtion to the ones of the base class:
    - ValidTausInput (default: auto)
    - TauDiscriminators
@@ -62,7 +62,7 @@ public:
 	std::string GetProducerId() const override {
 		return "ValidTausProducer";
 	}
-	
+
 	ValidTausProducer() :
 		KappaProducerBase(),
 		ValidPhysicsObjectTools<KappaTypes, KTau>(&KappaTypes::setting_type::GetTauLowerPtCuts,
@@ -71,14 +71,14 @@ public:
 		tauID(TauID::NONE)
 	{
 	}
-	
+
 	void Init(KappaTypes::setting_type const& settings, KappaTypes::metadata_type& metadata)  override
 	{
 		KappaProducerBase::Init(settings, metadata);
 		ValidPhysicsObjectTools<KappaTypes, KTau>::Init(settings);
-		
+
 		validTausInput = ToValidTausInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidTausInput())));
-	
+
 		// parse additional config tags
 		discriminatorsByIndex = Utility::ParseMapTypes<size_t, std::string>(Utility::ParseVectorToMap(settings.GetTauDiscriminators()),
 		                                                                    discriminatorsByHltName);
@@ -209,7 +209,7 @@ public:
 	{
 		assert(event.m_taus);
 		assert(event.m_tauMetadata);
-	
+
 		// select input source
 		std::vector<KTau*> taus;
 		if ((validTausInput == ValidTausInput::AUTO && (product.m_correctedTaus.size() > 0)) || (validTausInput == ValidTausInput::CORRECTED))
@@ -233,11 +233,11 @@ public:
 				++tauIndex;
 			}
 		}
-		
+
 		for (std::vector<KTau*>::iterator tau = taus.begin(); tau != taus.end(); ++tau)
 		{
 			bool validTau = true;
-			
+
 			// check discriminators
 			for (std::map<size_t, std::vector<std::string> >::const_iterator discriminatorByIndex = discriminatorsByIndex.begin();
 				 validTau && (discriminatorByIndex != discriminatorsByIndex.end()); ++discriminatorByIndex)
@@ -247,7 +247,7 @@ public:
 					validTau = validTau && ApplyDiscriminators(*tau, discriminatorByIndex->second, event);
 				}
 			}
-			
+
 			for (std::map<std::string, std::vector<std::string> >::const_iterator discriminatorByHltName = discriminatorsByHltName.begin();
 				 validTau && (discriminatorByHltName != discriminatorsByHltName.end()); ++discriminatorByHltName)
 			{
@@ -260,17 +260,17 @@ public:
 					validTau = validTau && ApplyDiscriminators(*tau, discriminatorByHltName->second, event);
 				}
 			}
-			
+
 			if(tauID == TauID::RECOMMENDATION13TEV)
 					validTau = validTau && IsTauIDRecommendation13TeV(*tau, event, oldTauDMs);
 			if(tauID == TauID::RECOMMENDATION13TEVAOD)
 					validTau = validTau && IsTauIDRecommendation13TeV(*tau, event, oldTauDMs, true);
 			// kinematic cuts
 			validTau = validTau && this->PassKinematicCuts(*tau, event, product);
-			
+
 			// check possible analysis-specific criteria
 			validTau = validTau && AdditionalCriteria(*tau, event, product, settings, metadata);
-			
+
 			if (validTau)
 			{
 				product.m_validTaus.push_back(*tau);
@@ -284,7 +284,7 @@ public:
 
 
 protected:
-	
+
 	// Can be overwritten for analysis-specific use cases
 	virtual bool AdditionalCriteria(KTau* tau, KappaTypes::event_type const& event, KappaTypes::product_type& product,
 	                                KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) const
@@ -296,21 +296,21 @@ protected:
 
 private:
 	ValidTausInput validTausInput;
-	
+
 	std::map<size_t, std::vector<std::string> > discriminatorsByIndex;
 	std::map<std::string, std::vector<std::string> > discriminatorsByHltName;
-	
+
 	bool ApplyDiscriminators(KTau* tau, std::vector<std::string> const& discriminators,
 	                         KappaTypes::event_type const& event) const
 	{
 		bool validTau = true;
-		
+
 		for (std::vector<std::string>::const_iterator discriminator = discriminators.begin();
 		     validTau && (discriminator != discriminators.end()); ++discriminator)
 		{
 			validTau = validTau && tau->getId(*discriminator, event.m_tauMetadata);
 		}
-		
+
 		return validTau;
 	}
 
@@ -340,4 +340,3 @@ private:
 		}
 	}
 };
-

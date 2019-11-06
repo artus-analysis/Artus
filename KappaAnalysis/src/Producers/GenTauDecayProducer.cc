@@ -12,7 +12,7 @@ void GenTauDecayProducer::Init(setting_type const& settings, metadata_type& meta
 	KappaProducerBase::Init(settings, metadata);
 
 	// add possible quantities for the lambda ntuples consumers
-	
+
 	///*
 	// Boson daughters
 	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "1genBosonDaughterSize", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
@@ -439,14 +439,14 @@ void GenTauDecayProducer::Produce(event_type const& event, product_type& product
                                   setting_type const& settings, metadata_type const& metadata) const
 {
 	assert(event.m_genParticles);
-	
+
 	// A generator level boson or its leptonic decay products must exist
 	// This is searched for by a GenBosonProducer
 	if (product.m_genBosonParticle != nullptr)
 	{
 		product.m_genBosonTree = GenParticleDecayTree(product.m_genBosonParticle);
 		product.m_genTauDecayTrees[product.m_genBosonParticle] = &product.m_genBosonTree;
-		
+
 		if (product.m_genBosonParticle->daughterIndices.empty())
 		{
 			product.m_genBosonTree.m_finalState = true;
@@ -473,14 +473,14 @@ void GenTauDecayProducer::Produce(event_type const& event, product_type& product
 			}
 		}
 	}
-	
+
 	for (std::vector<GenParticleDecayTree>::iterator bosonDecayProduct = product.m_genBosonTree.m_daughters.begin();
 	     bosonDecayProduct != product.m_genBosonTree.m_daughters.end(); ++bosonDecayProduct)
 	{
 		product.m_genTauDecayTrees[bosonDecayProduct->m_genParticle] = &(*bosonDecayProduct);
 	}
 }
-	
+
 void GenTauDecayProducer::BuildDecayTree(GenParticleDecayTree& currentDecayTree, KGenParticle* currentGenParticle, event_type const& event) const
 {
 	for (std::vector<unsigned int>::iterator daughterIndex = currentGenParticle->daughterIndices.begin();

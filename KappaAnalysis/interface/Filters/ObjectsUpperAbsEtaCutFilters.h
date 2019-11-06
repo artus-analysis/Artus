@@ -30,7 +30,7 @@ protected:
 
 	void Initialise(std::vector<std::string> const& leptonUpperAbsEtaCutsVector) {
 		std::map<std::string, std::vector<std::string> > leptonUpperAbsEtaCuts = Utility::ParseVectorToMap(leptonUpperAbsEtaCutsVector);
-	
+
 		std::vector<int> defaultIndices = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
 		for (std::map<std::string, std::vector<std::string> >::const_iterator leptonUpperAbsEtaCut = leptonUpperAbsEtaCuts.begin();
 		     leptonUpperAbsEtaCut != leptonUpperAbsEtaCuts.end(); ++leptonUpperAbsEtaCut)
@@ -49,12 +49,12 @@ protected:
 					hltNames.push_back(leptonUpperAbsEtaCut->first);
 				}
 			}
-			
+
 			for (std::vector<std::string>::const_iterator absEtaCut = leptonUpperAbsEtaCut->second.begin();
 			     absEtaCut != leptonUpperAbsEtaCut->second.end(); ++absEtaCut)
 			{
 				double absEtaCutValue = std::stod(*absEtaCut);
-				
+
 				for (std::vector<int>::iterator index = indices.begin(); index != indices.end(); ++index)
 				{
 					size_t tmpIndex(*index); // TODO
@@ -67,7 +67,7 @@ protected:
 							CutRange::UpperThresholdCut(absEtaCutValue)
 					));
 				}
-				
+
 				for (std::vector<std::string>::iterator hltName = hltNames.begin(); hltName != hltNames.end(); ++hltName)
 				{
 					std::string tmpHltName(*hltName); // TODO
@@ -90,7 +90,7 @@ protected:
 					}
 				}
 			}
-		}	
+		}
 	}
 
 
@@ -103,11 +103,11 @@ private:
  */
 class ElectronUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KElectron> {
 public:
-	
+
 	std::string GetFilterId() const override;
-	
+
 	ElectronUpperAbsEtaCutsFilter();
-	
+
 	void Init(setting_type const& settings, metadata_type& metadata) override;
 };
 
@@ -116,11 +116,11 @@ public:
  */
 class MuonUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KMuon> {
 public:
-	
+
 	std::string GetFilterId() const override;
-	
+
 	MuonUpperAbsEtaCutsFilter();
-	
+
 	void Init(setting_type const& settings, metadata_type& metadata) override;
 };
 
@@ -129,11 +129,11 @@ public:
  */
 class TauUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KTau> {
 public:
-	
+
 	std::string GetFilterId() const override;
-	
+
 	TauUpperAbsEtaCutsFilter();
-	
+
 	void Init(setting_type const& settings, metadata_type& metadata) override;
 };
 
@@ -142,11 +142,10 @@ public:
  */
 class JetUpperAbsEtaCutsFilter: public LeptonUpperAbsEtaCutsFilter<KBasicJet> {
 public:
-	
+
 	std::string GetFilterId() const override;
-	
+
 	JetUpperAbsEtaCutsFilter();
-	
+
 	void Init(setting_type const& settings, metadata_type& metadata) override;
 };
-

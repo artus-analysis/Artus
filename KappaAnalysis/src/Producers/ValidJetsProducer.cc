@@ -99,9 +99,9 @@ bool ValidTaggedJetsProducer::AdditionalCriteriaStatic(KJet* jet,
                                                        KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata)
 {
 	assert(event.m_jetMetadata);
-	
+
 	bool validJet = ValidJetsProducerBase<KJet, KBasicJet>::AdditionalCriteriaStatic(jet, event, product, settings, metadata);
-	
+
 	// PU Jet ID
 	for (std::map<size_t, std::vector<std::string> >::const_iterator puJetIdByIndex = puJetIdsByIndex.begin();
 	     puJetIdByIndex != puJetIdsByIndex.end() && validJet; ++puJetIdByIndex)
@@ -111,7 +111,7 @@ bool ValidTaggedJetsProducer::AdditionalCriteriaStatic(KJet* jet,
 			validJet = validJet && ValidTaggedJetsProducer::PassPuJetIds(jet, puJetIdByIndex->second, event.m_jetMetadata);
 		}
 	}
-	
+
 	for (std::map<std::string, std::vector<std::string> >::const_iterator puJetIdByHltName = puJetIdsByHltName.begin();
 	     puJetIdByHltName != puJetIdsByHltName.end() && validJet; ++puJetIdByHltName)
 	{
@@ -124,7 +124,7 @@ bool ValidTaggedJetsProducer::AdditionalCriteriaStatic(KJet* jet,
 			LOG(FATAL) << "HLT name dependent PU Jet is not yet implemented!";
 		}
 	}
-	
+
 	// Jet taggers
 	for (std::map<std::string, std::vector<float> >::const_iterator jetTaggerLowerCut = jetTaggerLowerCutsByTaggerName.begin();
 	     jetTaggerLowerCut != jetTaggerLowerCutsByTaggerName.end() && validJet; ++jetTaggerLowerCut)
@@ -132,27 +132,26 @@ bool ValidTaggedJetsProducer::AdditionalCriteriaStatic(KJet* jet,
 		float maxLowerCut = *std::max_element(jetTaggerLowerCut->second.begin(), jetTaggerLowerCut->second.end());
 		validJet = validJet && jet->getTag(jetTaggerLowerCut->first, event.m_jetMetadata) > maxLowerCut;
 	}
-	
+
 	for (std::map<std::string, std::vector<float> >::const_iterator jetTaggerUpperCut = jetTaggerUpperCutsByTaggerName.begin();
 	     jetTaggerUpperCut != jetTaggerUpperCutsByTaggerName.end() && validJet; ++jetTaggerUpperCut)
 	{
 		float minUpperCut = *std::min_element(jetTaggerUpperCut->second.begin(), jetTaggerUpperCut->second.end());
 		validJet = validJet && jet->getTag(jetTaggerUpperCut->first, event.m_jetMetadata) < minUpperCut;
 	}
-	
+
 	return validJet;
 }
 
 bool ValidTaggedJetsProducer::PassPuJetIds(KJet* jet, std::vector<std::string> const& puJetIds, KJetMetadata* taggerMetadata)
 {
 	bool validJet = true;
-	
+
 	for (std::vector<std::string>::const_iterator puJetId = puJetIds.begin();
 	     puJetId != puJetIds.end() && validJet; ++puJetId)
 	{
 		validJet = validJet && jet->getId(*puJetId, taggerMetadata);
 	}
-	
+
 	return validJet;
 }
-
