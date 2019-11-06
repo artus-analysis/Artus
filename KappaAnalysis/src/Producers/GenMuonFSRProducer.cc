@@ -10,11 +10,11 @@ void GenMuonFSRProducer::Init(setting_type const& settings, metadata_type& metad
 {
 	KappaProducerBase::Init(settings, metadata);
 	
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "leadingMuonFSR", [](event_type const& event, product_type const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "leadingMuonFSR", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
 		return product.m_sumMuonFSRPt[0];
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "trailingMuonFSR", [](event_type const& event, product_type const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "trailingMuonFSR", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
 		return product.m_sumMuonFSRPt[1];
 	});

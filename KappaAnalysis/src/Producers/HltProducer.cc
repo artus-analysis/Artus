@@ -11,11 +11,11 @@ void HltProducer::Init(setting_type const& settings, metadata_type& metadata)
 	KappaProducerBase::Init(settings, metadata);
 	
 	// add possible quantities for the lambda ntuples consumers
-	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "nSelectedHltPaths", [](event_type const& event, product_type const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "nSelectedHltPaths", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
 		return static_cast<int>(product.m_selectedHltNames.size());
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddVStringQuantity(metadata, "selectedHltPaths", [](event_type const& event, product_type const& product)
+	LambdaNtupleConsumer<KappaTypes>::AddVStringQuantity(metadata, "selectedHltPaths", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
 		return product.m_selectedHltNames;
 	});
@@ -25,7 +25,7 @@ void HltProducer::Init(setting_type const& settings, metadata_type& metadata)
 
 	for (std::string triggerDiscriminator : settings.GetHltPaths())
 	{
-		LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, triggerDiscriminator, [triggerDiscriminator](event_type const& event, product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, triggerDiscriminator, [triggerDiscriminator](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 
 			if (std::find(product.m_selectedHltPaths.begin(), product.m_selectedHltPaths.end(), triggerDiscriminator) != product.m_selectedHltPaths.end())

@@ -12,18 +12,18 @@ std::string DiMuonSystemProducer::GetProducerId() const
 void DiMuonSystemProducer::Init(setting_type const& settings, metadata_type& metadata)
 {
 	ProducerBase<KappaExampleTypes>::Init(settings, metadata);
-	
+
 	// add possible quantities for the lambda ntuples consumers
-	LambdaNtupleConsumer<KappaExampleTypes>::AddFloatQuantity(metadata, "diMuonPt", [](event_type const& event, product_type const& product) {
+	LambdaNtupleConsumer<KappaExampleTypes>::AddFloatQuantity(metadata, "diMuonPt", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 		return product.m_diMuonSystem.Pt();
 	});
-	LambdaNtupleConsumer<KappaExampleTypes>::AddFloatQuantity(metadata, "diMuonEta", [](event_type const& event, product_type const& product) {
+	LambdaNtupleConsumer<KappaExampleTypes>::AddFloatQuantity(metadata, "diMuonEta", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 		return product.m_diMuonSystem.Eta();
 	});
-	LambdaNtupleConsumer<KappaExampleTypes>::AddFloatQuantity(metadata, "diMuonPhi", [](event_type const& event, product_type const& product) {
+	LambdaNtupleConsumer<KappaExampleTypes>::AddFloatQuantity(metadata, "diMuonPhi", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 		return product.m_diMuonSystem.Phi();
 	});
-	LambdaNtupleConsumer<KappaExampleTypes>::AddFloatQuantity(metadata, "diMuonMass", [](event_type const& event, product_type const& product) {
+	LambdaNtupleConsumer<KappaExampleTypes>::AddFloatQuantity(metadata, "diMuonMass", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 		return product.m_diMuonSystem.mass();
 	});
 }

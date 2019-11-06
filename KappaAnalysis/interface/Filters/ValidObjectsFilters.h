@@ -10,9 +10,9 @@
  */
 class ValidElectronsFilter: public CutRangeFilterBase<KappaTypes> {
 public:
-	
-	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
-	
+
+	typedef typename std::function<double(event_type const&, product_type const&, setting_type const&, metadata_type const&)> double_extractor_lambda;
+
 	std::string GetFilterId() const override;
 	void Init(setting_type const& settings, metadata_type& metadata) override;
 };
@@ -22,9 +22,9 @@ public:
  */
 class ValidMuonsFilter: public CutRangeFilterBase<KappaTypes> {
 public:
-	
-	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
-	
+
+	typedef typename std::function<double(event_type const&, product_type const&, setting_type const&, metadata_type const&)> double_extractor_lambda;
+
 	std::string GetFilterId() const override;
 	void Init(setting_type const& settings, metadata_type& metadata) override;
 };
@@ -34,9 +34,9 @@ public:
  */
 class ValidTausFilter: public CutRangeFilterBase<KappaTypes> {
 public:
-	
-	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
-	
+
+	typedef typename std::function<double(event_type const&, product_type const&, setting_type const&, metadata_type const&)> double_extractor_lambda;
+
 	std::string GetFilterId() const override;
 	void Init(setting_type const& settings, metadata_type& metadata) override;
 };
@@ -46,9 +46,9 @@ public:
  */
 class ValidJetsFilter: public CutRangeFilterBase<KappaTypes> {
 public:
-	
-	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
-	
+
+	typedef typename std::function<double(event_type const&, product_type const&, setting_type const&, metadata_type const&)> double_extractor_lambda;
+
 	std::string GetFilterId() const override;
 	void Init(setting_type const& settings, metadata_type& metadata) override;
 };
@@ -58,9 +58,9 @@ public:
  */
 class ValidBTaggedJetsFilter: public CutRangeFilterBase<KappaTypes> {
 public:
-	
-	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
-	
+
+	typedef typename std::function<double(event_type const&, product_type const&, setting_type const&, metadata_type const&)> double_extractor_lambda;
+
 	std::string GetFilterId() const override;
 	void Init(setting_type const& settings, metadata_type& metadata) override;
 };
@@ -69,9 +69,9 @@ public:
  */
 class GenElectronsFilter: public CutRangeFilterBase<KappaTypes> {
 public:
-	
-	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
-	
+
+	typedef typename std::function<double(event_type const&, product_type const&, setting_type const&, metadata_type const&)> double_extractor_lambda;
+
 	std::string GetFilterId() const override;
 	void Init(setting_type const& settings, metadata_type& metadata) override;
 };
@@ -80,9 +80,9 @@ public:
  */
 class GenMuonsFilter: public CutRangeFilterBase<KappaTypes> {
 public:
-	
-	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
-	
+
+	typedef typename std::function<double(event_type const&, product_type const&, setting_type const&, metadata_type const&)> double_extractor_lambda;
+
 	std::string GetFilterId() const override;
 	void Init(setting_type const& settings, metadata_type& metadata) override;
 };
@@ -91,9 +91,9 @@ public:
  */
 class GenTausFilter: public CutRangeFilterBase<KappaTypes> {
 public:
-	
-	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
-	
+
+	typedef typename std::function<double(event_type const&, product_type const&, setting_type const&, metadata_type const&)> double_extractor_lambda;
+
 	std::string GetFilterId() const override;
 	void Init(setting_type const& settings, metadata_type& metadata) override;
 };
@@ -102,9 +102,9 @@ public:
  */
 class GenTauJetsFilter: public CutRangeFilterBase<KappaTypes> {
 public:
-	
-	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
-	
+
+	typedef typename std::function<double(event_type const&, product_type const&, setting_type const&, metadata_type const&)> double_extractor_lambda;
+
 	std::string GetFilterId() const override;
 	void Init(setting_type const& settings, metadata_type& metadata) override;
 };

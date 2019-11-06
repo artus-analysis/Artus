@@ -15,9 +15,9 @@
 template<class TLepton>
 class LeptonLowerPtCutsFilter: public CutRangeFilterBase<KappaTypes> {
 public:
-	
-	typedef typename std::function<double(event_type const&, product_type const&)> double_extractor_lambda;
-	
+
+	typedef typename std::function<double(event_type const&, product_type const&, setting_type const&, metadata_type const&)> double_extractor_lambda;
+
 	explicit LeptonLowerPtCutsFilter(std::vector<TLepton*> product_type::*validLeptons) :
 		CutRangeFilterBase<KappaTypes>(),
 		m_validLeptonsMember(validLeptons)
@@ -58,7 +58,7 @@ protected:
 				{
 					size_t tmpIndex(*index); // TODO
 					this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-							[this, tmpIndex](event_type const& event, product_type const& product) -> double {
+							[this, tmpIndex](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) -> double {
 								return (((product.*m_validLeptonsMember).size() > tmpIndex) ?
 								        (product.*m_validLeptonsMember).at(tmpIndex)->p4.Pt() :
 								        0.99*std::numeric_limits<double>::max());
@@ -75,7 +75,7 @@ protected:
 					{
 						size_t tmpIndex(*index);
 						this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-								[this, tmpHltName, pattern, tmpIndex](event_type const& event, product_type const& product) -> double {
+								[this, tmpHltName, pattern, tmpIndex](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) -> double {
 									bool hasMatch = false;
 									for (unsigned int iHlt = 0; iHlt < product.m_selectedHltNames.size(); ++iHlt)
 										hasMatch = hasMatch || boost::regex_search(product.m_selectedHltNames.at(iHlt), pattern);

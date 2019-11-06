@@ -8,8 +8,8 @@ std::string GenTauJetProducer::GetProducerId() const{
 void GenTauJetProducer::Init(setting_type const& settings, metadata_type& metadata)
 {
 	KappaProducerBase::Init(settings, metadata);
-	
-	LambdaNtupleConsumer<KappaTypes>::AddVFloatQuantity(metadata, "genTauJetVisPt", [](event_type const & event, product_type const & product)
+
+	LambdaNtupleConsumer<KappaTypes>::AddVFloatQuantity(metadata, "genTauJetVisPt", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
 		std::vector<float> genTauJetPt;
 		for (typename std::vector<KGenJet*>::const_iterator genJet = (product.m_genTauJets).begin();
@@ -19,7 +19,7 @@ void GenTauJetProducer::Init(setting_type const& settings, metadata_type& metada
 		}
 		return genTauJetPt;
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddVFloatQuantity(metadata, "genTauJetEta", [](event_type const & event, product_type const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddVFloatQuantity(metadata, "genTauJetEta", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
 		std::vector<float> genTauJetEta;
 		for (typename std::vector<KGenJet*>::const_iterator genJet = (product.m_genTauJets).begin();
@@ -29,7 +29,7 @@ void GenTauJetProducer::Init(setting_type const& settings, metadata_type& metada
 		}
 		return genTauJetEta;
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddVIntQuantity(metadata, "genTauJetDM", [](event_type const & event, product_type const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddVIntQuantity(metadata, "genTauJetDM", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
 		std::vector<int> genTauJetDM;
 		for (typename std::vector<KGenJet*>::const_iterator genJet = (product.m_genTauJets).begin();

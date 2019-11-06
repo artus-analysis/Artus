@@ -39,156 +39,188 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 	typedef typename TTypes::metadata_type metadata_type;
-	
-	typedef std::function<bool(event_type const&, product_type const&)> bool_extractor_lambda_spec;
-	typedef std::function<int(event_type const&, product_type const&)> int_extractor_lambda_spec;
-	typedef std::function<uint64_t(event_type const&, product_type const&)> uint64_extractor_lambda_spec;
-	typedef std::function<float(event_type const&, product_type const&)> float_extractor_lambda_spec;
-	typedef std::function<double(event_type const&, product_type const&)> double_extractor_lambda_spec;
-	typedef std::function<ROOT::Math::PtEtaPhiMVector(event_type const&, product_type const&)> ptEtaPhiMVector_extractor_lambda_spec;
-	typedef std::function<RMFLV(event_type const&, product_type const&)> rmflv_extractor_lambda_spec;
-	typedef std::function<CartesianRMFLV(event_type const&, product_type const&)> cartesianRMFLV_extractor_lambda_spec;
-	typedef std::function<RMPoint(event_type const&, product_type const&)> rmpoint_extractor_lambda_spec;
-	typedef std::function<std::string(event_type const&, product_type const&)> string_extractor_lambda_spec;
-	typedef std::function<std::vector<double>(event_type const&, product_type const&)> vDouble_extractor_lambda_spec;
-	typedef std::function<std::vector<float>(event_type const&, product_type const&)> vFloat_extractor_lambda_spec;
-	typedef std::function<std::vector<RMFLV>(event_type const&, product_type const&)> vRMFLV_extractor_lambda_spec;
-	typedef std::function<std::vector<std::string>(event_type const&, product_type const&)> vString_extractor_lambda_spec;
-	typedef std::function<std::vector<int>(event_type const&, product_type const&)> vInt_extractor_lambda_spec;
+
+	typedef std::function<bool(event_type const&, product_type const&, setting_type const&, metadata_type const&)> bool_extractor_lambda_spec;
+	typedef std::function<int(event_type const&, product_type const&, setting_type const&, metadata_type const&)> int_extractor_lambda_spec;
+	typedef std::function<uint64_t(event_type const&, product_type const&, setting_type const&, metadata_type const&)> uint64_extractor_lambda_spec;
+	typedef std::function<float(event_type const&, product_type const&, setting_type const&, metadata_type const&)> float_extractor_lambda_spec;
+	typedef std::function<double(event_type const&, product_type const&, setting_type const&, metadata_type const&)> double_extractor_lambda_spec;
+	typedef std::function<ROOT::Math::PtEtaPhiMVector(event_type const&, product_type const&, setting_type const&, metadata_type const&)> ptEtaPhiMVector_extractor_lambda_spec;
+	typedef std::function<RMFLV(event_type const&, product_type const&, setting_type const&, metadata_type const&)> rmflv_extractor_lambda_spec;
+	typedef std::function<CartesianRMFLV(event_type const&, product_type const&, setting_type const&, metadata_type const&)> cartesianRMFLV_extractor_lambda_spec;
+	typedef std::function<RMPoint(event_type const&, product_type const&, setting_type const&, metadata_type const&)> rmpoint_extractor_lambda_spec;
+	typedef std::function<std::string(event_type const&, product_type const&, setting_type const&, metadata_type const&)> string_extractor_lambda_spec;
+	typedef std::function<std::vector<double>(event_type const&, product_type const&, setting_type const&, metadata_type const&)> vDouble_extractor_lambda_spec;
+	typedef std::function<std::vector<float>(event_type const&, product_type const&, setting_type const&, metadata_type const&)> vFloat_extractor_lambda_spec;
+	typedef std::function<std::vector<RMFLV>(event_type const&, product_type const&, setting_type const&, metadata_type const&)> vRMFLV_extractor_lambda_spec;
+	typedef std::function<std::vector<std::string>(event_type const&, product_type const&, setting_type const&, metadata_type const&)> vString_extractor_lambda_spec;
+	typedef std::function<std::vector<int>(event_type const&, product_type const&, setting_type const&, metadata_type const&)> vInt_extractor_lambda_spec;
 
 	static void AddBoolQuantity(metadata_type& metadata, std::string const& name, bool_extractor_lambda_spec valueExtractor)
 	{
-		metadata.m_commonBoolQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product) -> bool
+		metadata.m_commonBoolQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product, SettingsBase const& settings, MetadataBase const& metadata) -> bool
+		// metadata.m_commonBoolQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product) -> bool
 		{
 			event_type const& specEvent = static_cast<event_type const&>(event);
 			product_type const& specProduct = static_cast<product_type const&>(product);
-			return valueExtractor(specEvent, specProduct);
+			setting_type const& specSettings = static_cast<setting_type const&>(settings);
+			metadata_type const& specMetaData = static_cast<metadata_type const&>(metadata);
+			return valueExtractor(specEvent, specProduct, specSettings, specMetaData);
+			// return valueExtractor(specEvent, specProduct);
 		};
 	}
 	static void AddIntQuantity(metadata_type& metadata, std::string const& name, int_extractor_lambda_spec valueExtractor)
 	{
-		metadata.m_commonIntQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product) -> int
+		metadata.m_commonIntQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product, SettingsBase const& settings, MetadataBase const& metadata) -> int
 		{
 			event_type const& specEvent = static_cast<event_type const&>(event);
 			product_type const& specProduct = static_cast<product_type const&>(product);
-			return valueExtractor(specEvent, specProduct);
+			setting_type const& specSettings = static_cast<setting_type const&>(settings);
+			metadata_type const& specMetaData = static_cast<metadata_type const&>(metadata);
+			return valueExtractor(specEvent, specProduct, specSettings, specMetaData);
 		};
 	}
 	static void AddUInt64Quantity(metadata_type& metadata, std::string const& name, uint64_extractor_lambda_spec valueExtractor)
 	{
-		metadata.m_commonUInt64Quantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product) -> uint64_t
+		metadata.m_commonUInt64Quantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product, SettingsBase const& settings, MetadataBase const& metadata) -> uint64_t
 		{
 			event_type const& specEvent = static_cast<event_type const&>(event);
 			product_type const& specProduct = static_cast<product_type const&>(product);
-			return valueExtractor(specEvent, specProduct);
+			setting_type const& specSettings = static_cast<setting_type const&>(settings);
+			metadata_type const& specMetaData = static_cast<metadata_type const&>(metadata);
+			return valueExtractor(specEvent, specProduct, specSettings, specMetaData);
 		};
 	}
 	static void AddFloatQuantity(metadata_type& metadata, std::string const& name, float_extractor_lambda_spec valueExtractor)
 	{
-		metadata.m_commonFloatQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product) -> float
+		metadata.m_commonFloatQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product, SettingsBase const& settings, MetadataBase const& metadata) -> float
 		{
 			event_type const& specEvent = static_cast<event_type const&>(event);
 			product_type const& specProduct = static_cast<product_type const&>(product);
-			return valueExtractor(specEvent, specProduct);
+			setting_type const& specSettings = static_cast<setting_type const&>(settings);
+			metadata_type const& specMetaData = static_cast<metadata_type const&>(metadata);
+			return valueExtractor(specEvent, specProduct, specSettings, specMetaData);
 		};
 	}
 	static void AddDoubleQuantity(metadata_type& metadata, std::string const& name, double_extractor_lambda_spec valueExtractor)
 	{
-		metadata.m_commonDoubleQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product) -> double
+		metadata.m_commonDoubleQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product, SettingsBase const& settings, MetadataBase const& metadata) -> double
 		{
 			event_type const& specEvent = static_cast<event_type const&>(event);
 			product_type const& specProduct = static_cast<product_type const&>(product);
-			return valueExtractor(specEvent, specProduct);
+			setting_type const& specSettings = static_cast<setting_type const&>(settings);
+			metadata_type const& specMetaData = static_cast<metadata_type const&>(metadata);
+			return valueExtractor(specEvent, specProduct, specSettings, specMetaData);
 		};
 	}
 	static void AddPtEtaPhiMVectorQuantity(metadata_type& metadata, std::string const& name, ptEtaPhiMVector_extractor_lambda_spec valueExtractor)
 	{
-		metadata.m_commonPtEtaPhiMVectorQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product) -> ROOT::Math::PtEtaPhiMVector
+		metadata.m_commonPtEtaPhiMVectorQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product, SettingsBase const& settings, MetadataBase const& metadata) -> ROOT::Math::PtEtaPhiMVector
 		{
 			event_type const& specEvent = static_cast<event_type const&>(event);
 			product_type const& specProduct = static_cast<product_type const&>(product);
-			return valueExtractor(specEvent, specProduct);
+			setting_type const& specSettings = static_cast<setting_type const&>(settings);
+			metadata_type const& specMetaData = static_cast<metadata_type const&>(metadata);
+			return valueExtractor(specEvent, specProduct, specSettings, specMetaData);
 		};
 	}
 	static void AddRMFLVQuantity(metadata_type& metadata, std::string const& name, rmflv_extractor_lambda_spec valueExtractor)
 	{
-		metadata.m_commonRMFLVQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product) -> RMFLV
+		metadata.m_commonRMFLVQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product, SettingsBase const& settings, MetadataBase const& metadata) -> RMFLV
 		{
 			event_type const& specEvent = static_cast<event_type const&>(event);
 			product_type const& specProduct = static_cast<product_type const&>(product);
-			return valueExtractor(specEvent, specProduct);
+			setting_type const& specSettings = static_cast<setting_type const&>(settings);
+			metadata_type const& specMetaData = static_cast<metadata_type const&>(metadata);
+			return valueExtractor(specEvent, specProduct, specSettings, specMetaData);
 		};
 	}
 	static void AddCartesianRMFLVQuantity(metadata_type& metadata, std::string const& name, cartesianRMFLV_extractor_lambda_spec valueExtractor)
 	{
-		metadata.m_commonCartesianRMFLVQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product) -> CartesianRMFLV
+		metadata.m_commonCartesianRMFLVQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product, SettingsBase const& settings, MetadataBase const& metadata) -> CartesianRMFLV
 		{
 			event_type const& specEvent = static_cast<event_type const&>(event);
 			product_type const& specProduct = static_cast<product_type const&>(product);
-			return valueExtractor(specEvent, specProduct);
+			setting_type const& specSettings = static_cast<setting_type const&>(settings);
+			metadata_type const& specMetaData = static_cast<metadata_type const&>(metadata);
+			return valueExtractor(specEvent, specProduct, specSettings, specMetaData);
 		};
 	}
 	static void AddRMPointQuantity(metadata_type& metadata, std::string const& name, rmpoint_extractor_lambda_spec valueExtractor)
 	{
-		metadata.m_commonRMPointQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product) -> RMPoint
+		metadata.m_commonRMPointQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product, SettingsBase const& settings, MetadataBase const& metadata) -> RMPoint
 		{
 			event_type const& specEvent = static_cast<event_type const&>(event);
 			product_type const& specProduct = static_cast<product_type const&>(product);
-			return valueExtractor(specEvent, specProduct);
+			setting_type const& specSettings = static_cast<setting_type const&>(settings);
+			metadata_type const& specMetaData = static_cast<metadata_type const&>(metadata);
+			return valueExtractor(specEvent, specProduct, specSettings, specMetaData);
 		};
 	}
 	static void AddStringQuantity(metadata_type& metadata, std::string const& name, string_extractor_lambda_spec valueExtractor)
 	{
-		metadata.m_commonStringQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product) -> std::string
+		metadata.m_commonStringQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product, SettingsBase const& settings, MetadataBase const& metadata) -> std::string
 		{
 			event_type const& specEvent = static_cast<event_type const&>(event);
 			product_type const& specProduct = static_cast<product_type const&>(product);
-			return valueExtractor(specEvent, specProduct);
+			setting_type const& specSettings = static_cast<setting_type const&>(settings);
+			metadata_type const& specMetaData = static_cast<metadata_type const&>(metadata);
+			return valueExtractor(specEvent, specProduct, specSettings, specMetaData);
 		};
 	}
 	static void AddVDoubleQuantity(metadata_type& metadata, std::string const& name, vDouble_extractor_lambda_spec valueExtractor)
 	{
-		metadata.m_commonVDoubleQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product) -> std::vector<double>
+		metadata.m_commonVDoubleQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product, SettingsBase const& settings, MetadataBase const& metadata) -> std::vector<double>
 		{
 			event_type const& specEvent = static_cast<event_type const&>(event);
 			product_type const& specProduct = static_cast<product_type const&>(product);
-			return valueExtractor(specEvent, specProduct);
+			setting_type const& specSettings = static_cast<setting_type const&>(settings);
+			metadata_type const& specMetaData = static_cast<metadata_type const&>(metadata);
+			return valueExtractor(specEvent, specProduct, specSettings, specMetaData);
 		};
 	}
 	static void AddVFloatQuantity(metadata_type& metadata, std::string const& name, vFloat_extractor_lambda_spec valueExtractor)
 	{
-		metadata.m_commonVFloatQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product) -> std::vector<float>
+		metadata.m_commonVFloatQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product, SettingsBase const& settings, MetadataBase const& metadata) -> std::vector<float>
 		{
 			event_type const& specEvent = static_cast<event_type const&>(event);
 			product_type const& specProduct = static_cast<product_type const&>(product);
-			return valueExtractor(specEvent, specProduct);
+			setting_type const& specSettings = static_cast<setting_type const&>(settings);
+			metadata_type const& specMetaData = static_cast<metadata_type const&>(metadata);
+			return valueExtractor(specEvent, specProduct, specSettings, specMetaData);
 		};
 	}
 	static void AddVRMFLVQuantity(metadata_type& metadata, std::string const& name, vRMFLV_extractor_lambda_spec valueExtractor)
 	{
-		metadata.m_commonVRMFLVQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product) -> std::vector<RMFLV>
+		metadata.m_commonVRMFLVQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product, SettingsBase const& settings, MetadataBase const& metadata) -> std::vector<RMFLV>
 		{
 			event_type const& specEvent = static_cast<event_type const&>(event);
 			product_type const& specProduct = static_cast<product_type const&>(product);
-			return valueExtractor(specEvent, specProduct);
+			setting_type const& specSettings = static_cast<setting_type const&>(settings);
+			metadata_type const& specMetaData = static_cast<metadata_type const&>(metadata);
+			return valueExtractor(specEvent, specProduct, specSettings, specMetaData);
 		};
 	}
 	static void AddVStringQuantity(metadata_type& metadata, std::string const& name, vString_extractor_lambda_spec valueExtractor)
 	{
-		metadata.m_commonVStringQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product) -> std::vector<std::string>
+		metadata.m_commonVStringQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product, SettingsBase const& settings, MetadataBase const& metadata) -> std::vector<std::string>
 		{
 			event_type const& specEvent = static_cast<event_type const&>(event);
 			product_type const& specProduct = static_cast<product_type const&>(product);
-			return valueExtractor(specEvent, specProduct);
+			setting_type const& specSettings = static_cast<setting_type const&>(settings);
+			metadata_type const& specMetaData = static_cast<metadata_type const&>(metadata);
+			return valueExtractor(specEvent, specProduct, specSettings, specMetaData);
 		};
 	}
 	static void AddVIntQuantity(metadata_type& metadata, std::string const& name, vInt_extractor_lambda_spec valueExtractor)
 	{
-		metadata.m_commonVIntQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product) -> std::vector<int>
+		metadata.m_commonVIntQuantities[name] = [valueExtractor](EventBase const& event, ProductBase const& product, SettingsBase const& settings, MetadataBase const& metadata) -> std::vector<int>
 		{
 			event_type const& specEvent = static_cast<event_type const&>(event);
 			product_type const& specProduct = static_cast<product_type const&>(product);
-			return valueExtractor(specEvent, specProduct);
+			setting_type const& specSettings = static_cast<setting_type const&>(settings);
+			metadata_type const& specMetaData = static_cast<metadata_type const&>(metadata);
+			return valueExtractor(specEvent, specProduct, specSettings, specMetaData);
 		};
 	}
 
@@ -460,7 +492,7 @@ public:
 		{
 			try
 			{
-				m_boolValues[boolValueIndex] = (*valueExtractor)(event, product);
+				m_boolValues[boolValueIndex] = (*valueExtractor)(event, product, settings, metadata);
 			}
 			catch (...)
 			{
@@ -475,7 +507,7 @@ public:
 		{
 			try
 			{
-				m_intValues[intValueIndex] = (*valueExtractor)(event, product);
+				m_intValues[intValueIndex] = (*valueExtractor)(event, product, settings, metadata);
 			}
 			catch (...)
 			{
@@ -490,7 +522,7 @@ public:
 		{
 			try
 			{
-				m_uint64Values[uint64ValueIndex] = (*valueExtractor)(event, product);
+				m_uint64Values[uint64ValueIndex] = (*valueExtractor)(event, product, settings, metadata);
 			}
 			catch (...)
 			{
@@ -505,7 +537,7 @@ public:
 		{
 			try
 			{
-				m_floatValues[floatValueIndex] = (*valueExtractor)(event, product);
+				m_floatValues[floatValueIndex] = (*valueExtractor)(event, product, settings, metadata);
 			}
 			catch (...)
 			{
@@ -520,7 +552,7 @@ public:
 		{
 			try
 			{
-				m_doubleValues[doubleValueIndex] = (*valueExtractor)(event, product);
+				m_doubleValues[doubleValueIndex] = (*valueExtractor)(event, product, settings, metadata);
 			}
 			catch (...)
 			{
@@ -528,14 +560,14 @@ public:
 			}
 			++doubleValueIndex;
 		}
-		
+
 		size_t ptEtaPhiMVectorValueIndex = 0;
 		for(typename std::vector<ptEtaPhiMVector_extractor_lambda_base>::iterator valueExtractor = m_ptEtaPhiMVectorValueExtractors.begin();
 		    valueExtractor != m_ptEtaPhiMVectorValueExtractors.end(); ++valueExtractor)
 		{
 			try
 			{
-				m_ptEtaPhiMVectorValues[ptEtaPhiMVectorValueIndex] = (*valueExtractor)(event, product);
+				m_ptEtaPhiMVectorValues[ptEtaPhiMVectorValueIndex] = (*valueExtractor)(event, product, settings, metadata);
 			}
 			catch (...)
 			{
@@ -543,14 +575,14 @@ public:
 			}
 			++ptEtaPhiMVectorValueIndex;
 		}
-		
+
 		size_t rmflvValueIndex = 0;
 		for(typename std::vector<rmflv_extractor_lambda_base>::iterator valueExtractor = m_rmflvValueExtractors.begin();
 		    valueExtractor != m_rmflvValueExtractors.end(); ++valueExtractor)
 		{
 			try
 			{
-				m_rmflvValues[rmflvValueIndex] = (*valueExtractor)(event, product);
+				m_rmflvValues[rmflvValueIndex] = (*valueExtractor)(event, product, settings, metadata);
 			}
 			catch (...)
 			{
@@ -558,14 +590,14 @@ public:
 			}
 			++rmflvValueIndex;
 		}
-		
+
 		size_t cartesianRMFLVValueIndex = 0;
 		for(typename std::vector<cartesianRMFLV_extractor_lambda_base>::iterator valueExtractor = m_cartesianRMFLVValueExtractors.begin();
 		    valueExtractor != m_cartesianRMFLVValueExtractors.end(); ++valueExtractor)
 		{
 			try
 			{
-				m_cartesianRMFLVValues[cartesianRMFLVValueIndex] = (*valueExtractor)(event, product);
+				m_cartesianRMFLVValues[cartesianRMFLVValueIndex] = (*valueExtractor)(event, product, settings, metadata);
 			}
 			catch (...)
 			{
@@ -580,7 +612,7 @@ public:
 		{
 			try
 			{
-				m_rmpointValues[rmpointValueIndex] = (*valueExtractor)(event, product);
+				m_rmpointValues[rmpointValueIndex] = (*valueExtractor)(event, product, settings, metadata);
 			}
 			catch (...)
 			{
@@ -596,7 +628,7 @@ public:
 		{
 			try
 			{
-				m_stringValues[stringValueIndex] = (*valueExtractor)(event, product);
+				m_stringValues[stringValueIndex] = (*valueExtractor)(event, product, settings, metadata);
 			}
 			catch (...)
 			{
@@ -604,14 +636,14 @@ public:
 			}
 			++stringValueIndex;
 		}
-		
+
 		size_t vDoubleValueIndex = 0;
 		for(typename std::vector<vDouble_extractor_lambda_base>::iterator valueExtractor = m_vDoubleValueExtractors.begin();
 		    valueExtractor != m_vDoubleValueExtractors.end(); ++valueExtractor)
 		{
 			try
 			{
-				m_vDoubleValues[vDoubleValueIndex] = (*valueExtractor)(event, product);
+				m_vDoubleValues[vDoubleValueIndex] = (*valueExtractor)(event, product, settings, metadata);
 			}
 			catch (...)
 			{
@@ -619,14 +651,14 @@ public:
 			}
 			++vDoubleValueIndex;
 		}
-		
+
 		size_t vFloatValueIndex = 0;
 		for(typename std::vector<vFloat_extractor_lambda_base>::iterator valueExtractor = m_vFloatValueExtractors.begin();
 		    valueExtractor != m_vFloatValueExtractors.end(); ++valueExtractor)
 		{
 			try
 			{
-				m_vFloatValues[vFloatValueIndex] = (*valueExtractor)(event, product);
+				m_vFloatValues[vFloatValueIndex] = (*valueExtractor)(event, product, settings, metadata);
 			}
 			catch (...)
 			{
@@ -634,14 +666,14 @@ public:
 			}
 			++vFloatValueIndex;
 		}
-		
+
 		size_t vRMFLVValueIndex = 0;
 		for(typename std::vector<vRMFLV_extractor_lambda_base>::iterator valueExtractor = m_vRMFLVValueExtractors.begin();
 		    valueExtractor != m_vRMFLVValueExtractors.end(); ++valueExtractor)
 		{
 			try
 			{
-				m_vRMFLVValues[vRMFLVValueIndex] = (*valueExtractor)(event, product);
+				m_vRMFLVValues[vRMFLVValueIndex] = (*valueExtractor)(event, product, settings, metadata);
 			}
 			catch (...)
 			{
@@ -649,14 +681,14 @@ public:
 			}
 			++vRMFLVValueIndex;
 		}
-		
+
 		size_t vStringValueIndex = 0;
 		for(typename std::vector<vString_extractor_lambda_base>::iterator valueExtractor = m_vStringValueExtractors.begin();
 		    valueExtractor != m_vStringValueExtractors.end(); ++valueExtractor)
 		{
 			try
 			{
-				m_vStringValues[vStringValueIndex] = (*valueExtractor)(event, product);
+				m_vStringValues[vStringValueIndex] = (*valueExtractor)(event, product, settings, metadata);
 			}
 			catch (...)
 			{
@@ -671,7 +703,7 @@ public:
 		{
 			try
 			{
-				m_vIntValues[vIntValueIndex] = (*valueExtractor)(event, product);
+				m_vIntValues[vIntValueIndex] = (*valueExtractor)(event, product, settings, metadata);
 			}
 			catch (...)
 			{
@@ -743,4 +775,3 @@ private:
 	std::vector<std::vector<std::string> > m_vStringValues;
 	std::vector<std::vector<int> > m_vIntValues;
 };
-

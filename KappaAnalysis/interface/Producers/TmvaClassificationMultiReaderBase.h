@@ -26,8 +26,8 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 	typedef typename TTypes::metadata_type metadata_type;
-	typedef std::function<float(event_type const&, product_type const&)> float_extractor_lambda;
-	
+	typedef std::function<float(event_type const&, product_type const&, setting_type const& settings, metadata_type const& metadata)> float_extractor_lambda;
+
 	static double GetMvaOutput(std::string const& methodName, std::vector<double> const& mvaOutputs)
 	{
 		auto methodNameIndex = std::find(mvaOutputs.begin(), mvaOutputs.end(), methodName);
@@ -138,7 +138,7 @@ public:
 			for(typename std::vector<float_extractor_lambda>::const_iterator inputExtractor = Extractor_vec.begin();
 				inputExtractor != Extractor_vec.end(); ++inputExtractor)
 			{
-				*(tmvaInputs[input_index][inputQuantityIndex]) = (*inputExtractor)(event, product);
+				*(tmvaInputs[input_index][inputQuantityIndex]) = (*inputExtractor)(event, product, settings, metadata);
 				++inputQuantityIndex;
 			}
 		}

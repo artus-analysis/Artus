@@ -14,33 +14,33 @@ void GenBosonFromGenParticlesProducer::Init(setting_type const& settings, metada
 	ProducerBase<KappaTypes>::Init(settings, metadata);
 
 	// add possible quantities for the lambda ntuples consumers
-	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, "genBosonParticleFound", [](event_type const & event, product_type const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, "genBosonParticleFound", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
 		return (product.m_genBosonParticle != nullptr);
 	});
-	
-	LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, "genBosonLV", [](event_type const & event, product_type const & product)
+
+	LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, "genBosonLV", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
 		return product.m_genBosonLV;
 	});
-	
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "genBosonPt", [](event_type const & event, product_type const & product)
+
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "genBosonPt", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
 		return product.m_genBosonLV.Pt();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "genBosonEta", [](event_type const & event, product_type const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "genBosonEta", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
 		return product.m_genBosonLV.Eta();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "genBosonPhi", [](event_type const & event, product_type const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "genBosonPhi", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
 		return product.m_genBosonLV.Phi();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "genBosonMass", [](event_type const & event, product_type const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "genBosonMass", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
 		return product.m_genBosonLV.M();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, "genBosonLVFound", [](event_type const & event, product_type const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, "genBosonLVFound", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
 		return product.m_genBosonLVFound;
 	});
@@ -146,8 +146,8 @@ void GenBosonDiLeptonDecayModeProducer::Init(setting_type const& settings, metad
 	{
 		std::string lepQuantityNameBase = "genBosonLep" + std::to_string(leptonIndex+1);
 		std::string tauQuantityNameBase = "genBosonTau" + std::to_string(leptonIndex+1);
-		
-		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, lepQuantityNameBase+"LV", [leptonIndex](event_type const& event, product_type const& product)
+
+		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, lepQuantityNameBase+"LV", [leptonIndex](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			if (product.m_genLeptonsFromBosonDecay.size() > leptonIndex)
 			{
@@ -158,7 +158,7 @@ void GenBosonDiLeptonDecayModeProducer::Init(setting_type const& settings, metad
 				return DefaultValues::UndefinedRMFLV;
 			}
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, tauQuantityNameBase+"LV", [leptonIndex](event_type const& event, product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, tauQuantityNameBase+"LV", [leptonIndex](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			if (product.m_genLeptonsFromBosonDecay.size() > leptonIndex)
 			{
@@ -169,8 +169,8 @@ void GenBosonDiLeptonDecayModeProducer::Init(setting_type const& settings, metad
 				return DefaultValues::UndefinedRMFLV;
 			}
 		});
-		
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, lepQuantityNameBase+"PdgId", [leptonIndex](event_type const& event, product_type const& product)
+
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, lepQuantityNameBase+"PdgId", [leptonIndex](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			if (product.m_genLeptonsFromBosonDecay.size() > leptonIndex)
 			{
@@ -181,7 +181,7 @@ void GenBosonDiLeptonDecayModeProducer::Init(setting_type const& settings, metad
 				return DefaultValues::UndefinedInt;
 			}
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, tauQuantityNameBase+"PdgId", [leptonIndex](event_type const& event, product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, tauQuantityNameBase+"PdgId", [leptonIndex](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			if (product.m_genLeptonsFromBosonDecay.size() > leptonIndex)
 			{
@@ -192,8 +192,8 @@ void GenBosonDiLeptonDecayModeProducer::Init(setting_type const& settings, metad
 				return DefaultValues::UndefinedInt;
 			}
 		});
-		
-		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, tauQuantityNameBase+"VisibleLV", [leptonIndex](event_type const& event, product_type const& product)
+
+		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, tauQuantityNameBase+"VisibleLV", [leptonIndex](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			if ((product.m_genLeptonsFromBosonDecay.size() > leptonIndex) &&
 			    (std::abs(product.m_genLeptonsFromBosonDecay.at(leptonIndex)->pdgId) == DefaultValues::pdgIdTau))
@@ -206,7 +206,7 @@ void GenBosonDiLeptonDecayModeProducer::Init(setting_type const& settings, metad
 				return DefaultValues::UndefinedRMFLV;
 			}
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, tauQuantityNameBase+"DecayMode", [leptonIndex](event_type const& event, product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, tauQuantityNameBase+"DecayMode", [leptonIndex](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			if ((product.m_genLeptonsFromBosonDecay.size() > leptonIndex) &&
 			    (std::abs(product.m_genLeptonsFromBosonDecay.at(leptonIndex)->pdgId) == DefaultValues::pdgIdTau))
@@ -219,7 +219,7 @@ void GenBosonDiLeptonDecayModeProducer::Init(setting_type const& settings, metad
 				return DefaultValues::UndefinedInt;
 			}
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, tauQuantityNameBase+"NProngs", [leptonIndex](event_type const& event, product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, tauQuantityNameBase+"NProngs", [leptonIndex](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			if ((product.m_genLeptonsFromBosonDecay.size() > leptonIndex) &&
 			    (std::abs(product.m_genLeptonsFromBosonDecay.at(leptonIndex)->pdgId) == DefaultValues::pdgIdTau))
@@ -232,7 +232,7 @@ void GenBosonDiLeptonDecayModeProducer::Init(setting_type const& settings, metad
 				return DefaultValues::UndefinedInt;
 			}
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, tauQuantityNameBase+"NPi0s", [leptonIndex](event_type const& event, product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, tauQuantityNameBase+"NPi0s", [leptonIndex](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			if ((product.m_genLeptonsFromBosonDecay.size() > leptonIndex) &&
 			    (std::abs(product.m_genLeptonsFromBosonDecay.at(leptonIndex)->pdgId) == DefaultValues::pdgIdTau))
