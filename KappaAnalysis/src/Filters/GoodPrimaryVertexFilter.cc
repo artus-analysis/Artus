@@ -18,7 +18,7 @@ void GoodPrimaryVertexFilter::Init(setting_type const& settings, metadata_type& 
 }
 
 bool GoodPrimaryVertexFilter::DoesEventPass(event_type const& event, product_type const& product,
-                                            setting_type const& settings, metadata_type const& metadata) const 
+                                            setting_type const& settings, metadata_type const& metadata) const
 {
 	assert(event.m_vertexSummary);
 	return (!(event.m_vertexSummary->pv.fake()) &&
@@ -26,4 +26,3 @@ bool GoodPrimaryVertexFilter::DoesEventPass(event_type const& event, product_typ
 	   (std::abs(event.m_vertexSummary->pv.position.Rho()) < m_maxPrimaryVertexRho) &&
 	   (event.m_vertexSummary->pv.nDOF >= m_minPrimaryVertexFitnDOF));
 }
-

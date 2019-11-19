@@ -29,7 +29,7 @@ void HCALNoiseFilter::Init(setting_type const& settings, metadata_type& metadata
 }
 
 bool HCALNoiseFilter::DoesEventPass(event_type const& event, product_type const& product,
-                                    setting_type const& settings, metadata_type const& metadata) const 
+                                    setting_type const& settings, metadata_type const& metadata) const
 {
 	assert(event.m_hcalNoiseSummary);
 	bool pass;
@@ -48,4 +48,3 @@ bool HCALNoiseFilter::DoesEventPass(event_type const& event, product_type const&
 	       (!event.m_hcalNoiseSummary->hasBadRBXTS4TS5 || !useTS4TS5);
 	return pass;
 }
-

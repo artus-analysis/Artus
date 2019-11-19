@@ -147,22 +147,22 @@ public:
 		muonIso = ToMuonIso(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy((settings.*GetMuonIso)())));
 
 		// add possible quantities for the lambda ntuples consumers
-		LambdaNtupleConsumer<TTypes>::AddIntQuantity(metadata, "nMuons", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddIntQuantity(metadata, "nMuons", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 			return product.m_validMuons.size();
 		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "leadingMuonPt", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "leadingMuonPt", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 			return product.m_validMuons.size() >= 1 ? product.m_validMuons[0]->p4.Pt() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "leadingMuonEta", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "leadingMuonEta", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 			return product.m_validMuons.size() >= 1 ? product.m_validMuons[0]->p4.Eta() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "trailingMuonPt", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "trailingMuonPt", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 			return product.m_validMuons.size() >= 2 ? product.m_validMuons[1]->p4.Pt() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "trailingMuonEta", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "trailingMuonEta", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 			return product.m_validMuons.size() >= 2 ? product.m_validMuons[1]->p4.Eta() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "leadingMuMinusPt", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "leadingMuMinusPt", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 			for (unsigned int i = 0; i < product.m_validMuons.size(); ++i)
 			{
 				if (product.m_validMuons[i]->charge() < 0)
@@ -172,7 +172,7 @@ public:
 			}
 			return DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "leadingMuPlusPt", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "leadingMuPlusPt", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 			for (unsigned int i = 0; i < product.m_validMuons.size(); ++i)
 			{
 				if (product.m_validMuons[i]->charge() > 0)
@@ -182,7 +182,7 @@ public:
 			}
 			return DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "leadingMuMinusEta", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "leadingMuMinusEta", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 			for (unsigned int i = 0; i < product.m_validMuons.size(); ++i)
 			{
 				if (product.m_validMuons[i]->charge() < 0)
@@ -192,7 +192,7 @@ public:
 			}
 			return DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "leadingMuPlusEta", [](event_type const& event, product_type const& product) {
+		LambdaNtupleConsumer<TTypes>::AddFloatQuantity(metadata, "leadingMuPlusEta", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 			for (unsigned int i = 0; i < product.m_validMuons.size(); ++i)
 			{
 				if (product.m_validMuons[i]->charge() > 0)
@@ -460,4 +460,3 @@ private:
 		return validMuon;
 	}
 };
-

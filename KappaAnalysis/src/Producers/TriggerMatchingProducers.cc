@@ -24,13 +24,13 @@ void ElectronTriggerMatchingProducer::Produce(event_type const& event, product_t
                                               setting_type const& settings, metadata_type const& metadata) const
 {
 	TriggerMatchingProducerBase<KElectron>::Produce(event, product, settings, metadata);
-	
+
 	for (std::map<KElectron*, KLV*>::iterator it = product.m_triggerMatchedElectrons.begin();
 	     it != product.m_triggerMatchedElectrons.end(); ++it)
 	{
 		product.m_triggerMatchedLeptons[&(*(it->first))] = &(*(it->second));
 	}
-	
+
 	for (std::map<KElectron*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > >::iterator it = product.m_detailedTriggerMatchedElectrons.begin();
 	     it != product.m_detailedTriggerMatchedElectrons.end(); ++it)
 	{
@@ -67,7 +67,7 @@ void MuonTriggerMatchingProducer::Produce(event_type const& event, product_type&
 	{
 		product.m_triggerMatchedLeptons[&(*(it->first))] = &(*(it->second));
 	}
-	
+
 	for (std::map<KMuon*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > >::iterator it = product.m_detailedTriggerMatchedMuons.begin();
 	     it != product.m_detailedTriggerMatchedMuons.end(); ++it)
 	{
@@ -98,13 +98,13 @@ void TauTriggerMatchingProducer::Produce(event_type const& event, product_type& 
                                          setting_type const& settings, metadata_type const& metadata) const
 {
 	TriggerMatchingProducerBase<KTau>::Produce(event, product, settings, metadata);
-	
+
 	for (std::map<KTau*, KLV*>::iterator it = product.m_triggerMatchedTaus.begin();
 	     it != product.m_triggerMatchedTaus.end(); ++it)
 	{
 		product.m_triggerMatchedLeptons[&(*(it->first))] = &(*(it->second));
 	}
-	
+
 	for (std::map<KTau*, std::map<std::string, std::map<std::string, std::vector<KLV*> > > >::iterator it = product.m_detailedTriggerMatchedTaus.begin();
 	     it != product.m_detailedTriggerMatchedTaus.end(); ++it)
 	{
@@ -156,4 +156,3 @@ JetTriggerMatchingProducer::JetTriggerMatchingProducer() :
 	                                       &setting_type::GetInvalidateNonMatchingJets)
 {
 }
-

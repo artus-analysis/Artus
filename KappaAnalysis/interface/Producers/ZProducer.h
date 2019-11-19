@@ -44,49 +44,49 @@ public:
 	{
 		KappaProducerBase::Init(settings, metadata);
 
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "ZMass", [](event_type const & event, product_type const & product)
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "ZMass", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			return product.m_z.p4.M();
 		});
 
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "leadingLeptonFromZPt", [](event_type const & event, product_type const & product)
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "leadingLeptonFromZPt", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			return product.m_zValid ? product.m_zLeptons.first->p4.Pt() : DefaultValues::UndefinedFloat;
 		});
 
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "leadingLeptonFromZEta", [](event_type const & event, product_type const & product)
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "leadingLeptonFromZEta", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			return product.m_zValid ? product.m_zLeptons.first->p4.Eta() : DefaultValues::UndefinedFloat;
 		});
 
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "leadingLeptonFromZPhi", [](event_type const & event, product_type const & product)
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "leadingLeptonFromZPhi", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			return product.m_zValid ? product.m_zLeptons.first->p4.Phi() : DefaultValues::UndefinedFloat;
 		});
 
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "trailingLeptonFromZPt", [](event_type const & event, product_type const & product)
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "trailingLeptonFromZPt", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			return product.m_zValid ? product.m_zLeptons.second->p4.Pt() : DefaultValues::UndefinedFloat;
 		});
 
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "trailingLeptonFromZEta", [](event_type const & event, product_type const & product)
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "trailingLeptonFromZEta", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			return product.m_zValid ? product.m_zLeptons.second->p4.Eta() : DefaultValues::UndefinedFloat;
 		});
 
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "trailingLeptonFromZPhi", [](event_type const & event, product_type const & product)
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "trailingLeptonFromZPhi", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			return product.m_zValid ? product.m_zLeptons.second->p4.Phi() : DefaultValues::UndefinedFloat;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "thetaZLepMinus", [](event_type const & event, product_type const & product)
+		LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "thetaZLepMinus", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			return product.m_theta_Z_LepMinus;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, "validZ", [](event_type const & event, product_type const & product)
+		LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, "validZ", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			return product.m_zValid;
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "nZCandidates", [](event_type const & event, product_type const & product)
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "nZCandidates", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			return product.m_found_zs;
 		});
@@ -162,7 +162,7 @@ public:
 			}
 		}
 	}
-	
+
 private:
 	std::vector<TLepton1*> product_type::*m_validLeptonsMember1;
 	std::vector<TLepton2*> product_type::*m_validLeptonsMember2;
@@ -266,4 +266,3 @@ public:
 	std::string GetProducerId() const override;
 	ZeemmProducer();
 };
-

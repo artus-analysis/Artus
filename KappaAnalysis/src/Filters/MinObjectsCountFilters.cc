@@ -14,7 +14,7 @@ void MinElectronsCountFilter::Init(setting_type const& settings, metadata_type& 
 	FilterBase<KappaTypes>::Init(settings, metadata);
 
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-			[](event_type const& event, product_type const& product) {
+			[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 				return product.m_validElectrons.size();
 			},
 			CutRange::LowerThresholdCut(double(settings.GetMinNElectrons()))
@@ -35,7 +35,7 @@ void MinMuonsCountFilter::Init(setting_type const& settings, metadata_type& meta
 	FilterBase<KappaTypes>::Init(settings, metadata);
 
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-			[](event_type const& event, product_type const& product) {
+			[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 				return product.m_validMuons.size();
 			},
 			CutRange::LowerThresholdCut(double(settings.GetMinNMuons()))
@@ -56,7 +56,7 @@ void MinTausCountFilter::Init(setting_type const& settings, metadata_type& metad
 	FilterBase<KappaTypes>::Init(settings, metadata);
 
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-			[](event_type const& event, product_type const& product) {
+			[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 				return product.m_validTaus.size();
 			},
 			CutRange::LowerThresholdCut(double(settings.GetMinNTaus()))
@@ -78,7 +78,7 @@ void MinJetsCountFilter::Init(setting_type const& settings, metadata_type& metad
 	FilterBase<KappaTypes>::Init(settings, metadata);
 
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-			[](event_type const& event, product_type const& product) {
+			[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 				return product.m_validJets.size();
 			},
 			CutRange::LowerThresholdCut(double(settings.GetMinNJets()))
@@ -97,9 +97,9 @@ std::string MinBTaggedJetsCountFilter::GetFilterId() const
 void MinBTaggedJetsCountFilter::Init(setting_type const& settings, metadata_type& metadata)
 {
 	FilterBase<KappaTypes>::Init(settings, metadata);
-	
+
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-			[](event_type const& event, product_type const& product) {
+			[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 				return product.m_bTaggedJets.size();
 			},
 			CutRange::LowerThresholdCut(double(settings.GetMinNBTaggedJets()))
@@ -118,12 +118,11 @@ std::string MinNonBTaggedJetsCountFilter::GetFilterId() const
 void MinNonBTaggedJetsCountFilter::Init(setting_type const& settings, metadata_type& metadata)
 {
 	FilterBase<KappaTypes>::Init(settings, metadata);
-	
+
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-			[](event_type const& event, product_type const& product) {
+			[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 				return product.m_nonBTaggedJets.size();
 			},
 			CutRange::LowerThresholdCut(double(settings.GetMinNNonBTaggedJets()))
 	));
 }
-

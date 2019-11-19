@@ -35,10 +35,10 @@ public:
 protected:
 
 	virtual void baseInit(SettingsBase const& settings, MetadataBase& metadata) = 0;
-	
+
 	virtual void baseOnRun(EventBase const& event, SettingsBase const& settings, MetadataBase const& metadata) = 0;
 	virtual void baseOnLumi(EventBase const& event, SettingsBase const& settings, MetadataBase const& metadata) = 0;
-	
+
 	virtual bool baseDoesEventPass(EventBase const& event, ProductBase const& product, SettingsBase const& settings, MetadataBase const& metadata) const = 0;
 
 };
@@ -49,10 +49,10 @@ public:
 	explicit FilterBaseAccess(FilterBaseUntemplated& filter);
 
 	void Init(SettingsBase const& settings, MetadataBase& metadata);
-	
+
 	void OnLumi(EventBase const& event, SettingsBase const& settings, MetadataBase const& metadata) const;
 	void OnRun(EventBase const& event, SettingsBase const& settings, MetadataBase const& metadata) const;
-	
+
 	bool DoesEventPass(EventBase const& event, ProductBase const& product, SettingsBase const& settings, MetadataBase const& metadata) const;
 
 private:
@@ -77,11 +77,11 @@ public:
 	{
 		LOG(DEBUG) << "Initialize filter \"" << this->GetFilterId() << "\".";
 	}
-	
+
 	virtual void OnLumi(event_type const& event, setting_type const& settings, metadata_type const& metadata)
 	{
 	}
-	
+
 	virtual void OnRun(event_type const& event, setting_type const& settings, metadata_type const& metadata)
 	{
 	}

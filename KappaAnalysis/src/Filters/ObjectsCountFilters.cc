@@ -12,7 +12,7 @@
 		FilterBase<KappaTypes>::Init(settings, metadata);
 
 		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-				[](event_type const& event, product_type const& product) {
+				[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 					return product.m_validElectrons.size();
 				},
 				CutRange::EqualsCut(double(settings.GetNElectrons()))
@@ -33,7 +33,7 @@
 		FilterBase<KappaTypes>::Init(settings, metadata);
 
 		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-				[](event_type const& event, product_type const& product) {
+				[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 					return product.m_validMuons.size();
 				},
 				CutRange::EqualsCut(double(settings.GetNMuons()))
@@ -54,7 +54,7 @@
 		FilterBase<KappaTypes>::Init(settings, metadata);
 
 		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-				[](event_type const& event, product_type const& product) {
+				[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 					return product.m_validTaus.size();
 				},
 				CutRange::EqualsCut(double(settings.GetNTaus()))
@@ -75,7 +75,7 @@
 		FilterBase<KappaTypes>::Init(settings, metadata);
 
 		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-				[](event_type const& event, product_type const& product) {
+				[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 					return product.m_validJets.size();
 				},
 				CutRange::EqualsCut(double(settings.GetNJets()))
@@ -96,7 +96,7 @@
 		FilterBase<KappaTypes>::Init(settings, metadata);
 
 		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-				[](event_type const& event, product_type const& product) {
+				[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 					return product.m_bTaggedJets.size();
 				},
 				CutRange::EqualsCut(double(settings.GetNBTaggedJets()))
@@ -117,7 +117,7 @@
 		FilterBase<KappaTypes>::Init(settings, metadata);
 
 		this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-				[](event_type const& event, product_type const& product) {
+				[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 					return product.m_nonBTaggedJets.size();
 				},
 				CutRange::EqualsCut(double(settings.GetNNonBTaggedJets()))

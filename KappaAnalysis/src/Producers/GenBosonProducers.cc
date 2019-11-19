@@ -14,33 +14,33 @@ void GenBosonFromGenParticlesProducer::Init(setting_type const& settings, metada
 	ProducerBase<KappaTypes>::Init(settings, metadata);
 
 	// add possible quantities for the lambda ntuples consumers
-	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, "genBosonParticleFound", [](event_type const & event, product_type const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, "genBosonParticleFound", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
 		return (product.m_genBosonParticle != nullptr);
 	});
-	
-	LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, "genBosonLV", [](event_type const & event, product_type const & product)
+
+	LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, "genBosonLV", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
 		return product.m_genBosonLV;
 	});
-	
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "genBosonPt", [](event_type const & event, product_type const & product)
+
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "genBosonPt", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
 		return product.m_genBosonLV.Pt();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "genBosonEta", [](event_type const & event, product_type const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "genBosonEta", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
 		return product.m_genBosonLV.Eta();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "genBosonPhi", [](event_type const & event, product_type const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "genBosonPhi", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
 		return product.m_genBosonLV.Phi();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "genBosonMass", [](event_type const & event, product_type const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "genBosonMass", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
 		return product.m_genBosonLV.M();
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, "genBosonLVFound", [](event_type const & event, product_type const & product)
+	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, "genBosonLVFound", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
 		return product.m_genBosonLVFound;
 	});
@@ -59,7 +59,7 @@ void GenBosonFromGenParticlesProducer::FindGenBoson(event_type const& event, pro
 	product.m_genBosonParticle = nullptr;
 	product.m_genBosonLV = RMFLV();
 	product.m_genBosonLVFound = false;
-	
+
 	for (unsigned int genParticleIndex = startIndex; genParticleIndex < event.m_genParticles->size(); ++genParticleIndex)
 	{
 		KGenParticle* genParticle = &(event.m_genParticles->at(genParticleIndex));
@@ -87,7 +87,7 @@ void GenBosonProductionProducer::Produce(event_type const& event, product_type& 
                                          setting_type const& settings, metadata_type const& metadata) const
 {
 	assert(product.m_genBosonParticle != nullptr);
-	
+
 	// search for boson index
 	unsigned int bosonIndex = 0;
 	for (KGenParticles::const_iterator genParticle = event.m_genParticles->begin();
@@ -99,7 +99,7 @@ void GenBosonProductionProducer::Produce(event_type const& event, product_type& 
 		}
 		++bosonIndex;
 	}
-	
+
 	product.m_genParticlesProducingBoson = FindMothersWithDifferentPdgId(event.m_genParticles, bosonIndex, product.m_genBosonParticle->pdgId);
 }
 
@@ -109,7 +109,7 @@ std::vector<KGenParticle*> GenBosonProductionProducer::FindMothersWithDifferentP
 		int currentPdgId) const
 {
 	std::vector<KGenParticle*> mothers;
-	
+
 	unsigned int index = 0;
 	for (KGenParticles::iterator genParticle = genParticles->begin();
 		 genParticle != genParticles->end(); ++genParticle)
@@ -128,7 +128,7 @@ std::vector<KGenParticle*> GenBosonProductionProducer::FindMothersWithDifferentP
 		}
 		++index;
 	}
-	
+
 	return mothers;
 }
 
@@ -146,8 +146,8 @@ void GenBosonDiLeptonDecayModeProducer::Init(setting_type const& settings, metad
 	{
 		std::string lepQuantityNameBase = "genBosonLep" + std::to_string(leptonIndex+1);
 		std::string tauQuantityNameBase = "genBosonTau" + std::to_string(leptonIndex+1);
-		
-		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, lepQuantityNameBase+"LV", [leptonIndex](event_type const& event, product_type const& product)
+
+		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, lepQuantityNameBase+"LV", [leptonIndex](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			if (product.m_genLeptonsFromBosonDecay.size() > leptonIndex)
 			{
@@ -158,7 +158,7 @@ void GenBosonDiLeptonDecayModeProducer::Init(setting_type const& settings, metad
 				return DefaultValues::UndefinedRMFLV;
 			}
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, tauQuantityNameBase+"LV", [leptonIndex](event_type const& event, product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, tauQuantityNameBase+"LV", [leptonIndex](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			if (product.m_genLeptonsFromBosonDecay.size() > leptonIndex)
 			{
@@ -169,8 +169,8 @@ void GenBosonDiLeptonDecayModeProducer::Init(setting_type const& settings, metad
 				return DefaultValues::UndefinedRMFLV;
 			}
 		});
-		
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, lepQuantityNameBase+"PdgId", [leptonIndex](event_type const& event, product_type const& product)
+
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, lepQuantityNameBase+"PdgId", [leptonIndex](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			if (product.m_genLeptonsFromBosonDecay.size() > leptonIndex)
 			{
@@ -181,7 +181,7 @@ void GenBosonDiLeptonDecayModeProducer::Init(setting_type const& settings, metad
 				return DefaultValues::UndefinedInt;
 			}
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, tauQuantityNameBase+"PdgId", [leptonIndex](event_type const& event, product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, tauQuantityNameBase+"PdgId", [leptonIndex](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			if (product.m_genLeptonsFromBosonDecay.size() > leptonIndex)
 			{
@@ -192,8 +192,8 @@ void GenBosonDiLeptonDecayModeProducer::Init(setting_type const& settings, metad
 				return DefaultValues::UndefinedInt;
 			}
 		});
-		
-		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, tauQuantityNameBase+"VisibleLV", [leptonIndex](event_type const& event, product_type const& product)
+
+		LambdaNtupleConsumer<KappaTypes>::AddRMFLVQuantity(metadata, tauQuantityNameBase+"VisibleLV", [leptonIndex](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			if ((product.m_genLeptonsFromBosonDecay.size() > leptonIndex) &&
 			    (std::abs(product.m_genLeptonsFromBosonDecay.at(leptonIndex)->pdgId) == DefaultValues::pdgIdTau))
@@ -206,7 +206,7 @@ void GenBosonDiLeptonDecayModeProducer::Init(setting_type const& settings, metad
 				return DefaultValues::UndefinedRMFLV;
 			}
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, tauQuantityNameBase+"DecayMode", [leptonIndex](event_type const& event, product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, tauQuantityNameBase+"DecayMode", [leptonIndex](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			if ((product.m_genLeptonsFromBosonDecay.size() > leptonIndex) &&
 			    (std::abs(product.m_genLeptonsFromBosonDecay.at(leptonIndex)->pdgId) == DefaultValues::pdgIdTau))
@@ -219,7 +219,7 @@ void GenBosonDiLeptonDecayModeProducer::Init(setting_type const& settings, metad
 				return DefaultValues::UndefinedInt;
 			}
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, tauQuantityNameBase+"NProngs", [leptonIndex](event_type const& event, product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, tauQuantityNameBase+"NProngs", [leptonIndex](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			if ((product.m_genLeptonsFromBosonDecay.size() > leptonIndex) &&
 			    (std::abs(product.m_genLeptonsFromBosonDecay.at(leptonIndex)->pdgId) == DefaultValues::pdgIdTau))
@@ -232,7 +232,7 @@ void GenBosonDiLeptonDecayModeProducer::Init(setting_type const& settings, metad
 				return DefaultValues::UndefinedInt;
 			}
 		});
-		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, tauQuantityNameBase+"NPi0s", [leptonIndex](event_type const& event, product_type const& product)
+		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, tauQuantityNameBase+"NPi0s", [leptonIndex](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 		{
 			if ((product.m_genLeptonsFromBosonDecay.size() > leptonIndex) &&
 			    (std::abs(product.m_genLeptonsFromBosonDecay.at(leptonIndex)->pdgId) == DefaultValues::pdgIdTau))
@@ -258,7 +258,7 @@ void GenBosonDiLeptonDecayModeProducer::FindGenDiLeptons(event_type const& event
                                                          setting_type const& settings) const
 {
 	product.m_genLeptonsFromBosonDecay.clear();
-	
+
 	// If no boson has been found in the event, try to reconstruct it from the first two decay
 	// products available in the list of gen. particles
 	// https://hypernews.cern.ch/HyperNews/CMS/get/generators/2802/1.html
@@ -266,7 +266,7 @@ void GenBosonDiLeptonDecayModeProducer::FindGenDiLeptons(event_type const& event
 	{
 		size_t iDaughter = 0;
 		RMFLV genBosonLV;
-		
+
 		for (KGenParticles::iterator genParticle = event.m_genParticles->begin();
 		     genParticle != event.m_genParticles->end() && (iDaughter < 2); ++genParticle)
 		{
@@ -280,7 +280,7 @@ void GenBosonDiLeptonDecayModeProducer::FindGenDiLeptons(event_type const& event
 				++iDaughter;
 			}
 		}
-		
+
 		product.m_genBosonLV = genBosonLV;
 		product.m_genBosonLVFound = (iDaughter == 2);
 	}
@@ -309,7 +309,7 @@ void GenBosonDiLeptonDecayModeProducer::FindGenDiLeptons(event_type const& event
 		{
 			rerun = true;
 		}
-		
+
 		if (rerun)
 		{
 			// search for boson index
@@ -323,10 +323,10 @@ void GenBosonDiLeptonDecayModeProducer::FindGenDiLeptons(event_type const& event
 				}
 				++bosonIndex;
 			}
-			
+
 			// search for next boson
 			FindGenBoson(event, product, settings, bosonIndex+1);
-			
+
 			// restart search for leptons with next boson
 			FindGenDiLeptons(event, product, settings);
 		}

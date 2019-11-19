@@ -11,7 +11,7 @@ void ValidElectronsFilter::Init(setting_type const& settings, metadata_type& met
 {
 	CutRangeFilterBase::Init(settings, metadata);
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-			[](event_type const& event, product_type const& product) {
+			[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 				return product.m_validElectrons.size();
 			},
 			CutRange::LowerThresholdCut(1.0)
@@ -27,7 +27,7 @@ void ValidMuonsFilter::Init(setting_type const& settings, metadata_type& metadat
 {
 	CutRangeFilterBase::Init(settings, metadata);
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-			[](event_type const& event, product_type const& product) {
+			[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 				return product.m_validMuons.size();
 			},
 			CutRange::LowerThresholdCut(1.0)
@@ -43,7 +43,7 @@ void ValidTausFilter::Init(setting_type const& settings, metadata_type& metadata
 {
 	CutRangeFilterBase::Init(settings, metadata);
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-			[](event_type const& event, product_type const& product) {
+			[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 				return product.m_validTaus.size();
 			},
 			CutRange::LowerThresholdCut(1.0)
@@ -60,7 +60,7 @@ void ValidJetsFilter::Init(setting_type const& settings, metadata_type& metadata
 {
 	CutRangeFilterBase::Init(settings, metadata);
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-			[](event_type const& event, product_type const& product) {
+			[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 				return product.m_validJets.size();
 			},
 			CutRange::LowerThresholdCut(1.0)
@@ -77,7 +77,7 @@ void ValidBTaggedJetsFilter::Init(setting_type const& settings, metadata_type& m
 {
 	CutRangeFilterBase::Init(settings, metadata);
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-			[](event_type const& event, product_type const& product) {
+			[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 				return product.m_bTaggedJets.size();
 			},
 			CutRange::LowerThresholdCut(1.0)
@@ -94,7 +94,7 @@ void GenElectronsFilter::Init(setting_type const& settings, metadata_type& metad
 {
 	CutRangeFilterBase::Init(settings, metadata);
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-			[](event_type const& event, product_type const& product) {
+			[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 				return product.m_genElectrons.size();
 			},
 			CutRange::LowerThresholdCut(1.0)
@@ -111,7 +111,7 @@ void GenMuonsFilter::Init(setting_type const& settings, metadata_type& metadata)
 {
 	CutRangeFilterBase::Init(settings, metadata);
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-			[](event_type const& event, product_type const& product) {
+			[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 				return product.m_genMuons.size();
 			},
 			CutRange::LowerThresholdCut(1.0)
@@ -127,7 +127,7 @@ void GenTausFilter::Init(setting_type const& settings, metadata_type& metadata)
 {
 	CutRangeFilterBase::Init(settings, metadata);
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-			[](event_type const& event, product_type const& product) {
+			[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 				return product.m_genTaus.size();
 			},
 			CutRange::LowerThresholdCut(1.0)
@@ -144,7 +144,7 @@ void GenTauJetsFilter::Init(setting_type const& settings, metadata_type& metadat
 {
 	CutRangeFilterBase::Init(settings, metadata);
 	this->m_cuts.push_back(std::pair<double_extractor_lambda, CutRange>(
-			[](event_type const& event, product_type const& product) {
+			[](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata) {
 				return product.m_genTauJets.size();
 			},
 			CutRange::LowerThresholdCut(1.0)

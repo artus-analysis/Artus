@@ -25,14 +25,14 @@ public:
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;
 	typedef typename TTypes::metadata_type metadata_type;
-	typedef std::function<float(event_type const&, product_type const&)> float_extractor_lambda;
-	
+	typedef std::function<float(event_type const&, product_type const&, setting_type const& settings, metadata_type const& metadata)> float_extractor_lambda;
+
 	static double GetMvaOutput(std::string const& methodName, std::vector<double> const& mvaOutputs)
 	{
 		auto methodNameIndex = std::find(mvaOutputs.begin(), mvaOutputs.end(), methodName);
 		return (methodNameIndex == mvaOutputs.end() ? DefaultValues::UndefinedDouble : mvaOutputs[methodNameIndex - mvaOutputs.begin()]);
 	}
-	
+
 	TmvaClassificationReaderBase(std::vector<std::string>& (setting_type::*GetTmvaInputQuantities)(void) const,
 								 std::vector<std::string>& (setting_type::*GetTmvaMethods)(void) const,
 								 std::vector<std::string>& (setting_type::*GetTmvaWeights)(void) const,
@@ -48,7 +48,7 @@ public:
 	void Init(setting_type const& settings, metadata_type& metadata) override
 	{
 		ProducerBase<TTypes>::Init(settings, metadata);
-		
+
 		// construct extractors vector
 		m_inputExtractors.clear();
 		for (std::vector<std::string>::const_iterator quantity = (settings.*GetTmvaInputQuantities)().begin();
@@ -59,7 +59,7 @@ public:
 			transform(splitted.begin(), splitted.end(), splitted.begin(),
 					  [](std::string s) { return boost::algorithm::trim_copy(s); });
 			std::string lambdaQuantity = splitted.front();
-			
+
 			if (metadata.m_commonFloatQuantities.count(lambdaQuantity) > 0)
 			{
 				m_inputExtractors.push_back(SafeMap::Get(metadata.m_commonFloatQuantities, lambdaQuantity));
@@ -73,14 +73,14 @@ public:
 				LOG(FATAL) << "The TMVA interface currently only supports float-type and int-type input variables!";
 			}
 		}
-		
+
 		// register TMVA input variables
 		for (std::vector<std::string>::const_iterator quantity = (settings.*GetTmvaInputQuantities)().begin();
 			 quantity != (settings.*GetTmvaInputQuantities)().end(); ++quantity)
 		{
 			tmvaReader.AddVariable(*quantity, static_cast<float*>(nullptr));
 		}
-		
+
 		// loading TMVA weight files
 		assert((settings.*GetTmvaMethods)().size() == (settings.*GetTmvaWeights)().size());
 		LOG(INFO) << "\tLoading TMVA weight files...";
@@ -102,10 +102,10 @@ public:
 		for(typename std::vector<float_extractor_lambda>::const_iterator inputExtractor = m_inputExtractors.begin();
 			inputExtractor != m_inputExtractors.end(); ++inputExtractor)
 		{
-			tmvaInputs[inputQuantityIndex] = (*inputExtractor)(event, product);
+			tmvaInputs[inputQuantityIndex] = (*inputExtractor)(event, product, settings, metadata);
 			++inputQuantityIndex;
 		}
-		
+
 		// retrieve MVA outputs
 		(product.*m_mvaOutputsMember) = std::vector<double>((settings.*GetTmvaMethods)().size());
 		for (size_t mvaMethodIndex = 0; mvaMethodIndex < (settings.*GetTmvaMethods)().size(); ++mvaMethodIndex)
@@ -121,7 +121,7 @@ private:
 	std::vector<std::string>& (setting_type::*GetTmvaMethods)(void) const;
 	std::vector<std::string>& (setting_type::*GetTmvaWeights)(void) const;
 	std::vector<double> product_type::*m_mvaOutputsMember;
-	
+
 	std::vector<float_extractor_lambda> m_inputExtractors;
 	mutable TMVA::Reader tmvaReader;
 
@@ -130,7 +130,7 @@ private:
 
 /**
    \brief Producer for general MVA discriminators
-   
+
    Required config tags:
    - TmvaInputQuantities
    - TmvaMethods
@@ -141,7 +141,7 @@ class GeneralTmvaClassificationReader: public TmvaClassificationReaderBase<Kappa
 public:
 
 	std::string GetProducerId() const override;
-	
+
 	GeneralTmvaClassificationReader();
-	
+
 };
