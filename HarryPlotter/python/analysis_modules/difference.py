@@ -69,6 +69,8 @@ class Difference(analysisbase.AnalysisBase):
 		for difference_minuend_nicks, difference_subtrahend_nicks, difference_result_nick in zip(
 				*[plotData.plotdict[k] for k in ["difference_minuend_nicks", "difference_subtrahend_nicks", "difference_result_nicks"]]):
 
+			new_name = "histogram_" + hashlib.md5("_".join(map(str, [difference_minuend_nicks, difference_subtrahend_nicks, difference_result_nick]))).hexdigest()
+
 			# Create nick sum histograms
 			minuend_histogram = self.get_histograms(plotdict=plotData.plotdict["root_objects"], difference_nicks=difference_minuend_nicks, difference_minuend_nicks=difference_minuend_nicks, difference_subtrahend_nicks=difference_subtrahend_nicks, difference_result_nick=difference_result_nick)
 			subtrahend_histogram = self.get_histograms(plotdict=plotData.plotdict["root_objects"], difference_nicks=difference_subtrahend_nicks, difference_minuend_nicks=difference_minuend_nicks, difference_subtrahend_nicks=difference_subtrahend_nicks, difference_result_nick=difference_result_nick)
@@ -150,10 +152,76 @@ class Difference(analysisbase.AnalysisBase):
 					else: log.fatal("difference_histogram is neither ROOT.TGraphAsymmErrors nor ROOT.TGraphErrors")
 
 			else:
-				difference_histogram = roottools.RootTools.to_histogram(minuend_histogram)
-				difference_histogram.Add(roottools.RootTools.to_histogram(subtrahend_histogram), -1.0)
-
+				minuend_histogram = roottools.RootTools.to_histogram(minuend_histogram)
+				subtrahend_histogram = roottools.RootTools.to_histogram(subtrahend_histogram)
+				
+				# check for same binning
+				minuend_histogram_binning = [roottools.RootTools.get_binning(minuend_histogram, 0), roottools.RootTools.get_binning(minuend_histogram, 1), roottools.RootTools.get_binning(minuend_histogram, 2)]
+				subtrahend_histogram_binning = [roottools.RootTools.get_binning(subtrahend_histogram, 0), roottools.RootTools.get_binning(subtrahend_histogram, 1), roottools.RootTools.get_binning(subtrahend_histogram, 2)]
+				
+				minuend_histogram_n_bins = reduce(lambda a, b: a*b, map(len, minuend_histogram_binning))
+				subtrahend_histogram_n_bins = reduce(lambda a, b: a*b, map(len, subtrahend_histogram_binning))
+				
+				for axis in range(minuend_histogram.GetDimension(), 3):
+					minuend_histogram_binning[axis] = 1
+				for axis in range(subtrahend_histogram.GetDimension(), 3):
+					subtrahend_histogram_binning[axis] = 1
+				
+				if minuend_histogram_n_bins == subtrahend_histogram_n_bins:
+					difference_histogram = minuend_histogram.Clone(new_name)
+					difference_histogram.Add(subtrahend_histogram, -1.0)
+				else:
+					if minuend_histogram_n_bins < subtrahend_histogram_n_bins:
+						difference_histogram = subtrahend_histogram.Clone(new_name)
+					else:
+						difference_histogram = minuend_histogram.Clone(new_name)
+					
+					difference_histogram.Reset()
+					for x_bin in xrange(0, difference_histogram.GetNbinsX()+2):
+						x_bin_center = difference_histogram.GetXaxis().GetBinCenter(x_bin)
+						x_bin_minuend = minuend_histogram.GetXaxis().FindBin(x_bin_center)
+						x_bin_subtrahend = subtrahend_histogram.GetXaxis().FindBin(x_bin_center)
+						
+						if difference_histogram.GetDimension() > 1:
+							for y_bin in xrange(0, difference_histogram.GetNbinsY()+2):
+								y_bin_center = difference_histogram.GetYaxis().GetBinCenter(y_bin)
+								y_bin_minuend = minuend_histogram.GetYaxis().FindBin(y_bin_center)
+								y_bin_subtrahend = subtrahend_histogram.GetYaxis().FindBin(y_bin_center)
+								
+								if difference_histogram.GetDimension() > 2:
+									for z_bin in xrange(0, difference_histogram.GetNbinsZ()+2):
+										z_bin_center = difference_histogram.GetZaxis().GetBinCenter(z_bin)
+										z_bin_minuend = minuend_histogram.GetZaxis().FindBin(z_bin_center)
+										z_bin_subtrahend = subtrahend_histogram.GetZaxis().FindBin(z_bin_center)
+										
+										ratio, ratio_error = Difference.subtract_bin_contents(minuend_histogram, [x_bin_minuend, y_bin_minuend, z_bin_minuend], subtrahend_histogram, [x_bin_subtrahend, y_bin_subtrahend, z_bin_subtrahend])
+										difference_histogram.SetBinContent(x_bin, y_bin, z_bin, ratio)
+										difference_histogram.SetBinError(x_bin, y_bin, z_bin, ratio_error)
+								
+								else:
+									ratio, ratio_error = Difference.subtract_bin_contents(minuend_histogram, [x_bin_minuend, y_bin_minuend], subtrahend_histogram, [x_bin_subtrahend, y_bin_subtrahend])
+									difference_histogram.SetBinContent(x_bin, y_bin, ratio)
+									difference_histogram.SetBinError(x_bin, y_bin, ratio_error)
+						
+						else:
+							ratio, ratio_error = Difference.subtract_bin_contents(minuend_histogram, [x_bin_minuend], subtrahend_histogram, [x_bin_subtrahend])
+							difference_histogram.SetBinContent(x_bin, ratio)
+							difference_histogram.SetBinError(x_bin, ratio_error)
+			
 			if hasattr(difference_histogram, "SetDirectory"): difference_histogram.SetDirectory(0)
 			difference_histogram.SetTitle("")
 
 			plotData.plotdict["root_objects"][difference_result_nick] = difference_histogram
+
+	@staticmethod
+	def subtract_bin_contents(minuend_histogram, minuend_bins, subtrahend_histogram, subtrahend_bins):
+		content_minuend = minuend_histogram.GetBinContent(*minuend_bins)
+		error_minuend = minuend_histogram.GetBinError(*minuend_bins)
+		content_subtrahend = subtrahend_histogram.GetBinContent(*subtrahend_bins)
+		error_subtrahend = subtrahend_histogram.GetBinError(*subtrahend_bins)
+		
+		difference = content_minuend - content_subtrahend
+		difference_error = sqrt(pow(error_minuend, 2) + pow(error_subtrahend, 2))
+		
+		return difference, difference_error
+

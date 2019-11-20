@@ -115,7 +115,7 @@ void GenParticleDecayTreePrinter::PrintLHEParticlesDecayTree(KLHEParticles* lheP
 		{
 			name = pdgParticle->GetName();
 		}
-		LOG(INFO) << indent << "-> " << name << ", PDG ID = " << lheParticle.pdgId << ", status = " << lheParticle.status << ", p4 = " << lheParticle.p4 << ", kappa index = " << currentIndex; // << ", daughter indices = " << lheParticle.firstLastMotherIDs.first << " - " << lheParticle.firstLastMotherIDs.second;
+		LOG(INFO) << indent << "-> " << name << ", PDG ID = " << lheParticle.pdgId << ", status = " << lheParticle.status << ", p4 = " << lheParticle.p4 << ", spin = " << lheParticle.spinInfo << ", kappa index = " << currentIndex; // << ", daughter indices = " << lheParticle.firstLastMotherIDs.first << " - " << lheParticle.firstLastMotherIDs.second;
 
 		/*for (int daughterIndex = lheParticle.firstLastMotherIDs.first; daughterIndex <= lheParticle.firstLastMotherIDs.second; ++daughterIndex)
 		{
