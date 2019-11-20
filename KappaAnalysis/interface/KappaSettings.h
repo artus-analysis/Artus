@@ -247,6 +247,8 @@ public:
 	IMPL_SETTING_STRINGLIST_DEFAULT(TauDiscriminators, {});
 	IMPL_SETTING_DEFAULT(std::string, TauID, "none");
 	IMPL_SETTING_DEFAULT(bool, TauUseOldDMs, false);
+	std::vector<int> TauAllowedDMs = {0,1,2,5,6,10,11};
+	IMPL_SETTING_INTLIST_DEFAULT(TauAllowedDMs, TauAllowedDMs);
 
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetEnergyCorrectionParameters, {});
 	IMPL_SETTING_DEFAULT(std::string, JetEnergyCorrectionUncertaintyParameters, "");
