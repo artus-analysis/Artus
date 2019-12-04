@@ -14,21 +14,29 @@ from Artus.Utility.tfilecontextmanager import TFileContextManager
 
 
 if __name__ == "__main__":
-	
+
 	parser = argparse.ArgumentParser(description="Print content of ROOT file", parents=[logger.loggingParser])
 
 	parser.add_argument("root_file", help="Input ROOT file")
 	parser.add_argument("-e", "--elements", nargs="+", help="Regexes for elements for which the code should be executed.", default=[])
 	parser.add_argument("-c", "--codes", nargs="+", help="Codes to be executed for matching elements. \"element\" is replaced by the matching element.", default=[])
+	parser.add_argument("-t", "--tree", "--trees", nargs="*", help="trees", default=[])
+	parser.add_argument("--verbosity", type=int, help="trees", default=0)
 
 	args = parser.parse_args()
 	logger.initLogger(args)
-	
+
+
+
 	with TFileContextManager(args.root_file, "READ") as root_file:
 		elements = roottools.RootTools.walk_root_directory(root_file)
 		for index, (key, path) in enumerate(elements):
 			class_name = key.GetClassName()
 			log.info("%s (%s)" % (path, class_name))
+			if (len(args.tree) != 0 and path in args.tree) or (args.verbosity > 0):
+				roottools.RootTools.check_type(root_file_names=args.root_file,
+							path_to_objects=path,
+							print_quantities=True)
 			for regex, code in zip(args.elements, args.codes):
 				if re.match(regex, path):
 					root_object = root_file.Get(path)
@@ -52,4 +60,3 @@ if __name__ == "__main__":
 				elif class_name.startswith("TGraph"):
 					log.debug("%s (%s, points=%d)" % (path, class_name, root_object.GetN()))
 				"""
-
