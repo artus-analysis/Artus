@@ -86,15 +86,15 @@ class InputRoot(inputfile.InputFile):
 			plotData.plotdict[key] = [element.split() if element else [""] for element in plotData.plotdict[key]]
 		for key in ["friend_files", "friend_folders"]:
 			plotData.plotdict[key] = [element.split() if element else element for element in plotData.plotdict[key]]
-		
+
 		if plotData.plotdict["redo_cache"] is None:
 			plotData.plotdict["redo_cache"] = not any(tools.flattenList([[input_file.startswith("/") or ("://" in input_file) for input_file in files] for files in plotData.plotdict["files"]]))
-		
+
 		if plotData.plotdict["read_config"]:
 			self.read_input_json_dicts(plotData)
 
 	def run(self, plotData):
-		
+
 		root_tools = roottools.RootTools()
 		self.hide_progressbar = plotData.plotdict["hide_progressbar"]
 		del(plotData.plotdict["hide_progressbar"])

@@ -30,9 +30,29 @@ class FunctionFit(analysisbase.AnalysisBase):
 		                                   help="Display the parameters of the fit on the plots")
 		self.function_options.add_argument("--function-fit-parameter-names", type=str, nargs="+", default=[None],
 		                                   help="Names of the parameters (e.g. 'Slope'). Only relevant if --function-display-result is True. [Default: %(default)s]")
+		self.function_options.add_argument("--function-fit-parameter-names-x", type=float, nargs="+", default=[None],
+		                                   help="x of the parameters (e.g. 'Slope'). Only relevant if --function-display-result is True. [Default: %(default)s]")
+		self.function_options.add_argument("--function-fit-parameter-names-y", type=float, nargs="+", default=[None],
+		                                   help="x of the parameters (e.g. 'Slope'). Only relevant if --function-display-result is True. [Default: %(default)s]")
+		self.function_options.add_argument("--function-fit-parameter-chi2-x", type=float, nargs="+", default=[0.5],
+		                                   help="x of the parameters (e.g. 'Slope'). Only relevant if --function-display-result is True. [Default: %(default)s]")
+		self.function_options.add_argument("--function-fit-parameter-chi2-y", type=float, nargs="+", default=[0.8],
+		                                   help="x of the parameters (e.g. 'Slope'). Only relevant if --function-display-result is True. [Default: %(default)s]")
 
 		self.function_options.add_argument("--function-collect-result", type=str, nargs="+", default=[None],
 		                                   help="Collect fit results in a histogram. Save either the parameter with the given number or the Chi2. [Default: %(default)s]")
+		self.function_options.add_argument("--function-collect-result-no-chi2", action='store_true', default=False,
+		                                   help="Collect fit results in a histogram. Save either the parameter with the given number or the Chi2. [Default: %(default)s]")
+
+		self.function_options.add_argument("--functions-text", type=str, nargs="+",
+		                                   help="...")
+		self.function_options.add_argument("--functions-text-names", type=str, nargs="+",
+		                                   help="...")
+		self.function_options.add_argument("--functions-text-names-x", type=float, nargs="+", default=[None],
+		                                   help="x of the parameters (e.g. 'Slope'). Only relevant if --function-display-result is True. [Default: %(default)s]")
+		self.function_options.add_argument("--functions-text-names-y", type=float, nargs="+", default=[None],
+		                                   help="x of the parameters (e.g. 'Slope'). Only relevant if --function-display-result is True. [Default: %(default)s]")
+
 
 	def prepare_args(self, parser, plotData):
 		self.prepare_list_args(plotData, ["functions", "function_parameters", "function_nicknames",
@@ -56,7 +76,7 @@ class FunctionFit(analysisbase.AnalysisBase):
 			else:
 				tmp_x_range.append( [float (x) for x in  x_range.split()] )
 		plotData.plotdict["function_ranges"] = tmp_x_range
-		
+
 		plotData.plotdict["function_nicknames"] = [nick if nick != None else ("function_nick%d" % index) for index, nick in enumerate(plotData.plotdict["function_nicknames"])]
 		plotData.plotdict["nicks"] += plotData.plotdict["function_nicknames"]
 
@@ -71,18 +91,20 @@ class FunctionFit(analysisbase.AnalysisBase):
 		super(FunctionFit, self).prepare_args(parser, plotData)
 
 		self.n_functions = len(plotData.plotdict["function_collect_result"]) - plotData.plotdict["function_collect_result"].count(None)
-		
+
 		if self.n_functions > 0:
 			plotData.plotdict["root_objects"]["function_fit_result"] = ROOT.TH1F("function_fit_result", "function_fit_result", self.n_functions, 0, self.n_functions)
 			plotData.plotdict["nicks"].append("function_fit_result")
 
 	def run(self, plotData=None):
 		super(FunctionFit, self).run()
+		ROOT.gStyle.SetOptStat(0)
+
 		if plotData.plotdict["functions"] == None:
 			log.critical("You are using the FunctionFit module. Please provide at least one input function with --function")
 			sys.exit(1)
 		else:
-			for i, (function, function_nick, function_parameters, fit_nickname, x_range, collect_result, fit_backend) in enumerate(zip( 
+			for i, (function, function_nick, function_parameters, fit_nickname, x_range, collect_result, fit_backend) in enumerate(zip(
 					plotData.plotdict["functions"],
 					plotData.plotdict["function_nicknames"],
 					plotData.plotdict["function_parameters"],
@@ -94,8 +116,8 @@ class FunctionFit(analysisbase.AnalysisBase):
 				if fit_nickname and (fit_nickname in plotData.plotdict["root_objects"].keys()):
 					root_histogram = plotData.plotdict["root_objects"][fit_nickname]
 					root_function, fit_result = self.create_function(function, x_range[0], x_range[1],
-					                                           function_parameters, 
-					                                           nick=fit_nickname, 
+					                                           function_parameters,
+					                                           nick=fit_nickname,
 					                                           root_histogram=root_histogram,
 					                                           fit_backend=fit_backend)
 					plotData.plotdict["root_objects"][function_nick] = root_function
@@ -135,7 +157,7 @@ class FunctionFit(analysisbase.AnalysisBase):
 	@staticmethod
 	def create_tf1(function, x_min, x_max, start_parameters, nick="", root_histogram=None):
 		formula_name = ("function_" + nick).format(hashlib.md5("_".join([str(function), str(x_min), str(x_max),
-		                                                                str(start_parameters), str(nick), 
+		                                                                str(start_parameters), str(nick),
 		                                                                str(root_histogram.GetName() if root_histogram != None else "")])).hexdigest())
 		ret_tf1 = ROOT.TF1(formula_name, function, x_min, x_max)
 		if start_parameters:
@@ -181,7 +203,7 @@ class FunctionFit(analysisbase.AnalysisBase):
 		else:
 			log.critical("Selected fit function " + function + " currently not supported from FunctionFit modul with RooFit backend!")
 			sys.exit(1)
-		
+
 		filters = function.fitTo(dh,ROOT.RooLinkedList())
 		root_function = ROOT.RooCurve(function, x, x_min, x_max, 1000, maximum)
 		return root_function, mean, sigma, width
@@ -210,18 +232,48 @@ class FunctionFit(analysisbase.AnalysisBase):
 
 		# expand paramter_names if necessary
 		if len(plotData.plotdict["function_fit_parameter_names"]) < plotData.plotdict["root_objects"][function_nick].GetNpar():
-			plotData.plotdict["function_fit_parameter_names"] *= plotData.plotdict["root_objects"][function_nick].GetNpar()/len(plotData.plotdict["function_fit_parameter_names"])
+			plotData.plotdict["function_fit_parameter_names"] *= plotData.plotdict["root_objects"][function_nick].GetNpar() / len(plotData.plotdict["function_fit_parameter_names"])
+			plotData.plotdict["function_fit_parameter_names_x"] *= plotData.plotdict["root_objects"][function_nick].GetNpar() / len(plotData.plotdict["function_fit_parameter_names"])
+			plotData.plotdict["function_fit_parameter_names_y"] *= plotData.plotdict["root_objects"][function_nick].GetNpar() / len(plotData.plotdict["function_fit_parameter_names"])
 		l = max([len(s) for s in plotData.plotdict["function_fit_parameter_names"]])
 
 		for i_par in range(plotData.plotdict["root_objects"][function_nick].GetNpar()):
 			#TODO automatically adjust decimal precision
-			text += "\n  ${} = {:.3f} \pm {:.3f}$".format(plotData.plotdict["function_fit_parameter_names"][i_par],
+			text = "\n${} = {:.3f} \pm {:.3f}$".format(plotData.plotdict["function_fit_parameter_names"][i_par],
 			        plotData.plotdict["root_objects"][function_nick].GetParameter(i_par),
 			        plotData.plotdict["root_objects"][function_nick].GetParError(i_par))
-		text += "\n  $\chi^2 / \mathit{{n.d.f}} = {:.2f} / {}$".format(
-		        plotData.fit_results[function_nick].Chi2(),
-		        plotData.fit_results[function_nick].Ndf())
-		if plotData.plotdict["texts"] == [None]:
-			plotData.plotdict["texts"] = [text]
-		else:
-			plotData.plotdict["texts"] += [text]
+			if plotData.plotdict["texts"] == [None]:
+				plotData.plotdict["texts"] = [text]
+				plotData.plotdict["texts_x"] = [plotData.plotdict["function_fit_parameter_names_x"][i_par]]
+				plotData.plotdict["texts_y"] = [plotData.plotdict["function_fit_parameter_names_y"][i_par]]
+			else:
+				plotData.plotdict["texts"] += [text]
+				plotData.plotdict["texts_x"] += [plotData.plotdict["function_fit_parameter_names_x"][i_par]]
+				plotData.plotdict["texts_y"] += [plotData.plotdict["function_fit_parameter_names_y"][i_par]]
+		for i, expr in enumerate(plotData.plotdict["functions_text"]):
+			for i_par in range(plotData.plotdict["root_objects"][function_nick].GetNpar()):
+				expr = expr.replace('[' + str(i_par) + ']', str(plotData.plotdict["root_objects"][function_nick].GetParameter(i_par)))
+			import math
+			text = "\n{} = {:.3f}".format(
+				plotData.plotdict["functions_text_names"][i],
+			        eval(expr),
+			)
+			if plotData.plotdict["texts"] == [None]:
+				plotData.plotdict["texts"] = [text]
+				plotData.plotdict["texts_x"] = [plotData.plotdict["functions_text_names_x"][i]]
+				plotData.plotdict["texts_y"] = [plotData.plotdict["functions_text_names_y"][i]]
+			else:
+				plotData.plotdict["texts"] += [text]
+				plotData.plotdict["texts_x"] += [plotData.plotdict["functions_text_names_x"][i]]
+				plotData.plotdict["texts_y"] += [plotData.plotdict["functions_text_names_y"][i]]
+
+		if not plotData.plotdict["function_collect_result_no_chi2"]:
+			text = "\n$\chi^2 / \mathit{{n.d.f}} = {:.2f} / {}$".format(
+			        plotData.fit_results[function_nick].Chi2(),
+			        plotData.fit_results[function_nick].Ndf())
+			if plotData.plotdict["texts"] == [None]:
+				plotData.plotdict["texts"] = [text]
+			else:
+				plotData.plotdict["texts"] += [text]
+			plotData.plotdict["texts_x"] += [plotData.plotdict["function_fit_parameter_chi2_x"][0]]
+			plotData.plotdict["texts_y"] += [plotData.plotdict["function_fit_parameter_chi2_y"][0]]
