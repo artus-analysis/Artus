@@ -199,6 +199,8 @@ void ValidBTaggedJetsProducer::Produce(event_type const& event, product_type& pr
 					else if (m_bTagSFMethod == KappaEnumTypes::BTagScaleFactorMethod::OTHER) {}
 				}
 			}
+			//check again non-btag related jet selection criteria as promote/demote scaling ignores them
+			validBJet = validBJet && AdditionalCriteria(tjet, event, product, settings, metadata) && (std::abs(tjet->p4.eta()) <= settings.GetBTaggedJetAbsEtaCut());
 
 			if (validBJet)
 				product.m_bTaggedJetsByWp[*workingPoint].push_back(tjet);
