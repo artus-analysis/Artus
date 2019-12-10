@@ -27,6 +27,10 @@ class PipelineInitilizerBase
 {
 public:
 
+	virtual ~PipelineInitilizerBase()
+	{
+	}
+
 	typedef typename TTypes::event_type event_type;
 	typedef typename TTypes::product_type product_type;
 	typedef typename TTypes::setting_type setting_type;

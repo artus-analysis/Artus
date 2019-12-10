@@ -7,6 +7,10 @@ template<class TTypes>
 class EventProviderBase: public boost::noncopyable {
 public:
 
+	virtual ~EventProviderBase()
+	{
+	}
+
 	typedef typename TTypes::event_type event_type;
 
 	virtual event_type const& GetCurrentEvent() const = 0;
