@@ -28,7 +28,7 @@ if __name__ == "__main__":
 	with TFileContextManager(args.root_file, "READ") as root_file:
 		elements = roottools.RootTools.walk_root_directory(root_file)
 	
-		for key, path in elements:
+		for key, path in sorted(elements, key=lambda x: (x[1])):
 			if key.GetClassName().startswith("TTree") or key.GetClassName().startswith("TNtuple"):
 				tree = root_file.Get(path)
 				log.info("%s: %d entries" % (path, tree.GetEntries()))
