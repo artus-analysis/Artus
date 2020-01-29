@@ -441,6 +441,9 @@ public:
 	                                     std::map<std::string, std::vector<std::string> > const& puJetIdsByHltName,
 	                                     std::map<std::string, std::vector<float> > const& jetTaggerLowerCutsByTaggerName,
 	                                     std::map<std::string, std::vector<float> > const& jetTaggerUpperCutsByTaggerName,
+	                                     std::string const& jetPuJetIDName,
+	                                     KappaEnumTypes::JetID const& pujetID,
+	                                     KappaEnumTypes::JetIDVersion const& pujetIDVersion,
 	                                     KappaTypes::event_type const& event, KappaTypes::product_type& product,
 	                                     KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata);
 
@@ -453,7 +456,11 @@ protected:
 	std::map<std::string, std::vector<std::string> > puJetIdsByHltName;
 	std::map<std::string, std::vector<float> > jetTaggerLowerCutsByTaggerName;
 	std::map<std::string, std::vector<float> > jetTaggerUpperCutsByTaggerName;
+	KappaEnumTypes::JetIDVersion pujetIDVersion;
+	KappaEnumTypes::JetID pujetID;
+	std::string jetPuJetIDName;
 
 private:
 	static bool PassPuJetIds(KJet* jet, std::vector<std::string> const& puJetIds, KJetMetadata* taggerMetadata);
+	static bool PassPuJetId(KJet* jet, std::string const& puJetIDFullDiscr, KappaEnumTypes::JetID const& PileupJetID, KappaEnumTypes::JetIDVersion const& PileupJetIDVersion, KJetMetadata* taggerMetadata);
 };
