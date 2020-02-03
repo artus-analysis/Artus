@@ -74,14 +74,6 @@ void HltProducer::Produce(event_type const& event, product_type& product,
 	{
 		std::string hltName = m_hltInfo.getHLTName(*hltPath);
 		product.m_HltPathsNamesMap.insert(std::make_pair(hltName,*hltPath));
-
-		std::map<std::string, std::string>::iterator it = product.m_HltPathsNamesMap.begin();
-   		/* while(it != product.m_HltPathsNamesMap.end())
-    		{
-      			std::cout<<it->first<<" :: "<<it->second<<std::endl;
-        		it++;
-    		}*/
-
 		if (! hltName.empty())
 		{
 			// look for trigger with lowest prescale

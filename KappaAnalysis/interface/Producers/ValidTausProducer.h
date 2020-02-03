@@ -84,6 +84,7 @@ public:
 		                                                                    discriminatorsByHltName);
 		tauID = ToTauID(settings.GetTauID());
 		oldTauDMs = settings.GetTauUseOldDMs();
+		allowedDMs = settings.GetTauAllowedDMs();
 
 		// add possible quantities for the lambda ntuples consumers
 		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "nTaus", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product, KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) {
@@ -262,9 +263,9 @@ public:
 			}
 
 			if(tauID == TauID::RECOMMENDATION13TEV)
-					validTau = validTau && IsTauIDRecommendation13TeV(*tau, event, oldTauDMs);
+					validTau = validTau && IsTauIDRecommendation13TeV(*tau, event, oldTauDMs, allowedDMs);
 			if(tauID == TauID::RECOMMENDATION13TEVAOD)
-					validTau = validTau && IsTauIDRecommendation13TeV(*tau, event, oldTauDMs, true);
+					validTau = validTau && IsTauIDRecommendation13TeV(*tau, event, oldTauDMs, allowedDMs, true);
 			// kinematic cuts
 			validTau = validTau && this->PassKinematicCuts(*tau, event, product);
 
@@ -316,16 +317,19 @@ private:
 
 	TauID tauID;
 	bool oldTauDMs;
+	std::vector<int> allowedDMs;
 
-	bool IsTauIDRecommendation13TeV(KTau* tau, KappaTypes::event_type const& event, bool const& oldTauDMs, bool const& isAOD=false) const
+	bool IsTauIDRecommendation13TeV(KTau* tau, KappaTypes::event_type const& event, bool const& oldTauDMs, std::vector<int> const& allowedDMs, bool const& isAOD=false) const
 	{
 		const KVertex* vertex = new KVertex(event.m_vertexSummary->pv);
 		float decayModeDiscriminator = (oldTauDMs ? tau->getDiscriminator("decayModeFinding", event.m_tauMetadata)
 							  : tau->getDiscriminator("decayModeFindingNewDMs", event.m_tauMetadata));
+		int tauDM = tau->decayMode;
 		if(isAOD)
 		{
 			return ( decayModeDiscriminator > 0.5
 				 && (std::abs(tau->track.ref.z() - vertex->position.z()) < 0.2)
+				 && (find(allowedDMs.begin(), allowedDMs.end(), tauDM) != allowedDMs.end())
 				// tau dZ requirement for Phys14 sync
 				//&& (Utility::ApproxEqual(tau->track.ref.z(), vertex->position.z()))
 			);
@@ -334,6 +338,7 @@ private:
 		{
 			return ( decayModeDiscriminator > 0.5
 				 && std::abs(tau->dz) < 0.2
+				 && (find(allowedDMs.begin(), allowedDMs.end(), tauDM) != allowedDMs.end())
 				// tau dZ requirement for Phys14 sync
 				//&& (Utility::ApproxEqual(tau->track.ref.z(), vertex->position.z()))
 			);

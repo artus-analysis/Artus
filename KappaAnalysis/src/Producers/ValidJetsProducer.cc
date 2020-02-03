@@ -44,39 +44,41 @@ void ValidTaggedJetsProducer::Init(KappaTypes::setting_type const& settings, Kap
 	// add possible quantities for the lambda ntuples consumers
 	std::string bTaggedJetCSVName = settings.GetBTaggedJetCombinedSecondaryVertexName();
 	std::string bTaggedJetTCHEName = settings.GetBTaggedJetTrackCountingHighEffName();
-	std::string jetPuJetIDName = settings.GetPuJetIDFullDiscrName();
+	jetPuJetIDName = settings.GetPuJetIDFullDiscrName();
+	pujetIDVersion = KappaEnumTypes::ToJetIDVersion(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetPuJetIDVersion())));
+	pujetID = KappaEnumTypes::ToJetID(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetPuJetID())));
 
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "leadingJetCSV",[bTaggedJetCSVName](KappaTypes::event_type const& event, KappaTypes::product_type const& product, KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) {
-		return product.m_validJets.size() >= 1 ? static_cast<KJet*>(product.m_validJets.at(0))->getTag(bTaggedJetCSVName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "leadingJetCSV",[](KappaTypes::event_type const& event, KappaTypes::product_type const& product, KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) {
+		return product.m_validJets.size() >= 1 ? static_cast<KJet*>(product.m_validJets.at(0))->getTag(settings.GetBTaggedJetCombinedSecondaryVertexName(), event.m_jetMetadata) : DefaultValues::UndefinedFloat;
 	} );
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "leadingJetTCHE",[bTaggedJetTCHEName](KappaTypes::event_type const& event, KappaTypes::product_type const& product, KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) {
-		return product.m_validJets.size() >= 1 ? static_cast<KJet*>(product.m_validJets.at(0))->getTag(bTaggedJetTCHEName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "leadingJetTCHE",[](KappaTypes::event_type const& event, KappaTypes::product_type const& product, KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) {
+		return product.m_validJets.size() >= 1 ? static_cast<KJet*>(product.m_validJets.at(0))->getTag(settings.GetBTaggedJetTrackCountingHighEffName(), event.m_jetMetadata) : DefaultValues::UndefinedFloat;
 	} );
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "leadingJetPuID",[jetPuJetIDName](KappaTypes::event_type const& event, KappaTypes::product_type const& product, KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) {
-		return product.m_validJets.size() >= 1 ? static_cast<KJet*>(product.m_validJets.at(0))->getTag(jetPuJetIDName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "leadingJetPuID",[](KappaTypes::event_type const& event, KappaTypes::product_type const& product, KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) {
+		return product.m_validJets.size() >= 1 ? static_cast<KJet*>(product.m_validJets.at(0))->getTag(settings.GetPuJetIDFullDiscrName(), event.m_jetMetadata) : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, "leadingJetGenMatch", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product, KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) {
 		return product.m_validJets.size() >= 1 ? static_cast<KJet*>(product.m_validJets.at(0))->genMatch : false;
 	});
 
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "trailingJetCSV",[bTaggedJetCSVName](KappaTypes::event_type const& event, KappaTypes::product_type const& product, KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) {
-		return product.m_validJets.size() >= 2 ? static_cast<KJet*>(product.m_validJets.at(1))->getTag(bTaggedJetCSVName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "trailingJetCSV",[](KappaTypes::event_type const& event, KappaTypes::product_type const& product, KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) {
+		return product.m_validJets.size() >= 2 ? static_cast<KJet*>(product.m_validJets.at(1))->getTag(settings.GetBTaggedJetCombinedSecondaryVertexName(), event.m_jetMetadata) : DefaultValues::UndefinedFloat;
 	} );
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "trailingJetTCHE",[bTaggedJetTCHEName](KappaTypes::event_type const& event, KappaTypes::product_type const& product, KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) {
-		return product.m_validJets.size() >= 2 ? static_cast<KJet*>(product.m_validJets.at(1))->getTag(bTaggedJetTCHEName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "trailingJetTCHE",[](KappaTypes::event_type const& event, KappaTypes::product_type const& product, KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) {
+		return product.m_validJets.size() >= 2 ? static_cast<KJet*>(product.m_validJets.at(1))->getTag(settings.GetBTaggedJetTrackCountingHighEffName(), event.m_jetMetadata) : DefaultValues::UndefinedFloat;
 	} );
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "trailingJetPuID",[jetPuJetIDName](KappaTypes::event_type const& event, KappaTypes::product_type const& product, KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) {
-		return product.m_validJets.size() >= 2 ? static_cast<KJet*>(product.m_validJets.at(1))->getTag(jetPuJetIDName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "trailingJetPuID",[](KappaTypes::event_type const& event, KappaTypes::product_type const& product, KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) {
+		return product.m_validJets.size() >= 2 ? static_cast<KJet*>(product.m_validJets.at(1))->getTag(settings.GetPuJetIDFullDiscrName(), event.m_jetMetadata) : DefaultValues::UndefinedFloat;
 	} );
 	LambdaNtupleConsumer<KappaTypes>::AddBoolQuantity(metadata, "trailingJetGenMatch", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product, KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) {
 		return product.m_validJets.size() >= 2 ? static_cast<KJet*>(product.m_validJets.at(1))->genMatch : false;
 	});
 
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "thirdJetCSV",[bTaggedJetCSVName](KappaTypes::event_type const& event, KappaTypes::product_type const& product, KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) {
-		return product.m_validJets.size() >= 3 ? static_cast<KJet*>(product.m_validJets.at(2))->getTag(bTaggedJetCSVName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "thirdJetCSV",[](KappaTypes::event_type const& event, KappaTypes::product_type const& product, KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) {
+		return product.m_validJets.size() >= 3 ? static_cast<KJet*>(product.m_validJets.at(2))->getTag(settings.GetBTaggedJetCombinedSecondaryVertexName(), event.m_jetMetadata) : DefaultValues::UndefinedFloat;
 	});
-	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "fourthJetCSV",[bTaggedJetCSVName](KappaTypes::event_type const& event, KappaTypes::product_type const& product, KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) {
-		return product.m_validJets.size() >= 4 ? static_cast<KJet*>(product.m_validJets.at(3))->getTag(bTaggedJetCSVName, event.m_jetMetadata) : DefaultValues::UndefinedFloat;
+	LambdaNtupleConsumer<KappaTypes>::AddFloatQuantity(metadata, "fourthJetCSV",[](KappaTypes::event_type const& event, KappaTypes::product_type const& product, KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) {
+		return product.m_validJets.size() >= 4 ? static_cast<KJet*>(product.m_validJets.at(3))->getTag(settings.GetBTaggedJetCombinedSecondaryVertexName(), event.m_jetMetadata) : DefaultValues::UndefinedFloat;
 	});
 }
 
@@ -87,6 +89,7 @@ bool ValidTaggedJetsProducer::AdditionalCriteria(KJet* jet, KappaTypes::event_ty
 	return ValidTaggedJetsProducer::AdditionalCriteriaStatic(jet,
 	                                                         puJetIdsByIndex, puJetIdsByHltName,
 	                                                         jetTaggerLowerCutsByTaggerName, jetTaggerUpperCutsByTaggerName,
+	                                                         jetPuJetIDName, pujetID, pujetIDVersion,
 	                                                         event, product, settings, metadata);
 }
 
@@ -95,6 +98,9 @@ bool ValidTaggedJetsProducer::AdditionalCriteriaStatic(KJet* jet,
                                                        std::map<std::string, std::vector<std::string> > const& puJetIdsByHltName,
                                                        std::map<std::string, std::vector<float> > const& jetTaggerLowerCutsByTaggerName,
                                                        std::map<std::string, std::vector<float> > const& jetTaggerUpperCutsByTaggerName,
+                                                       std::string const& jetPuJetIDName,
+                                                       KappaEnumTypes::JetID const& pujetID,
+                                                       KappaEnumTypes::JetIDVersion const& pujetIDVersion,
                                                        KappaTypes::event_type const& event, KappaTypes::product_type& product,
                                                        KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata)
 {
@@ -125,6 +131,11 @@ bool ValidTaggedJetsProducer::AdditionalCriteriaStatic(KJet* jet,
 		}
 	}
 
+	if(!jetPuJetIDName.empty())
+	{
+		validJet = validJet && PassPuJetId(jet, jetPuJetIDName, pujetID, pujetIDVersion, event.m_jetMetadata);
+	}
+
 	// Jet taggers
 	for (std::map<std::string, std::vector<float> >::const_iterator jetTaggerLowerCut = jetTaggerLowerCutsByTaggerName.begin();
 	     jetTaggerLowerCut != jetTaggerLowerCutsByTaggerName.end() && validJet; ++jetTaggerLowerCut)
@@ -153,5 +164,68 @@ bool ValidTaggedJetsProducer::PassPuJetIds(KJet* jet, std::vector<std::string> c
 		validJet = validJet && jet->getId(*puJetId, taggerMetadata);
 	}
 
+	return validJet;
+}
+
+bool ValidTaggedJetsProducer::PassPuJetId(KJet* jet, std::string const& puJetIDFullDiscr, KappaEnumTypes::JetID const& PileupJetID, KappaEnumTypes::JetIDVersion const& PileupJetIDVersion, KJetMetadata* taggerMetadata)
+{
+	bool validJet = true;
+
+	 if (PileupJetID ==  KappaEnumTypes::JetID::LOOSE)
+	 {
+		if (PileupJetIDVersion == KappaEnumTypes::JetIDVersion::ID2016)
+		{
+			if (std::abs(jet->p4.eta()) < 2.5f)
+			{
+				if (jet->p4.Pt()<30.f)
+				{
+					validJet = validJet && (jet->getTag(puJetIDFullDiscr, taggerMetadata) > -0.97);
+				}
+				else if (jet->p4.Pt()>=30.f && jet->p4.Pt()<50.f)
+				{
+					validJet = validJet && (jet->getTag(puJetIDFullDiscr, taggerMetadata) > -0.89);
+				}
+			}
+			else if (std::abs(jet->p4.eta()) >= 2.5f && std::abs(jet->p4.eta()) < 3.0f)
+			{
+				if (jet->p4.Pt()<30.f)
+				{
+					validJet = validJet && (jet->getTag(puJetIDFullDiscr, taggerMetadata) > -0.68);
+				}
+				else if (jet->p4.Pt()>=30.f && jet->p4.Pt()<50.f)
+				{
+					validJet = validJet && (jet->getTag(puJetIDFullDiscr, taggerMetadata) > -0.52);
+				}
+			}
+			else if (std::abs(jet->p4.eta()) >= 2.75f && std::abs(jet->p4.eta()) < 3.0f)
+			{
+				if (jet->p4.Pt()<30.f)
+				{
+					validJet = validJet && (jet->getTag(puJetIDFullDiscr, taggerMetadata) > -0.53);
+				}
+				else if (jet->p4.Pt()>=30.f && jet->p4.Pt()<50.f)
+				{
+					validJet = validJet && (jet->getTag(puJetIDFullDiscr, taggerMetadata) > -0.38);
+				}
+			}
+			else if (std::abs(jet->p4.eta()) >= 3.0f && std::abs(jet->p4.eta()) < 5.0f)
+			{
+				if (jet->p4.Pt()<30.f)
+				{
+					validJet = validJet && (jet->getTag(puJetIDFullDiscr, taggerMetadata) > -0.47);
+				}
+				else if (jet->p4.Pt()>=30.f && jet->p4.Pt()<50.f)
+				{
+					validJet = validJet && (jet->getTag(puJetIDFullDiscr, taggerMetadata) > -0.30);
+				}
+			}
+		}
+		else{
+			LOG(WARNING) << "PileupJetID NOT implemented for current era.";
+		}
+	}
+	else{
+		LOG(WARNING) << "PileupJetID NOT implemented for current working point.";
+	}
 	return validJet;
 }
