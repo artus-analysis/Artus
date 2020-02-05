@@ -27,9 +27,10 @@ for root_type in [
 		ROOT.TGraph, ROOT.TGraphErrors, ROOT.TGraphAsymmErrors,
 		ROOT.TGraph2D, ROOT.TGraph2DErrors,
 		ROOT.TF1, ROOT.TF2, ROOT.TF3,
-		ROOT.TCanvas, ROOT.TPad, ROOT.TLegend,
+		ROOT.TCanvas, ROOT.TPad, ROOT.TLegend, ROOT.TText, ROOT.TLatex
 ]:
-	root_type.__init__._creates = True # https://root.cern.ch/phpBB3/viewtopic.php?t=9786
+	root_type.__init__._creates = False # https://root.cern.ch/phpBB3/viewtopic.php?t=9786
+# ROOT.TChain.__init__._creates = False
 
 import Artus.Utility.jsonTools as jsonTools
 import Artus.Utility.tools as tools
