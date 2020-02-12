@@ -132,17 +132,20 @@ public:
 		// apply jet energy corrections and uncertainty shift (if uncertainties are not to be splitted into individual contributions)
 		correctJets(&correctJetsForJecTools, factorizedJetCorrector, jetCorrectionUncertainty,
 		            event.m_pileupDensity->rho, event.m_vertexSummary->nVertices, -1,
-		            settings.GetJetEnergyCorrectionUncertaintyShift());
-		
+		            settings.GetJetEnergyCorrectionUncertaintyShift(), false);
+
 		// create the shared pointers to store in the product
 		(product.*m_correctedJetsMember).clear();
 		(product.*m_correctedJetsMember).resize(correctJetsForJecTools.size());
 		jetIndex = 0;
-		for (typename std::vector<TJet>::const_iterator jet = correctJetsForJecTools.begin();
+		for (typename std::vector<TJet>::iterator jet = correctJetsForJecTools.begin();
 			 jet != correctJetsForJecTools.end(); ++jet)
 		{
-			(product.*m_correctedJetsMember)[jetIndex] = std::shared_ptr<TJet>(new TJet(*jet));
-			product.m_originalJets[(product.*m_correctedJetsMember)[jetIndex].get()] = &(*jet);
+			jet->uncorrectedP4 = RMFLV((event.*m_basicJetsMember)->at(jetIndex).p4.pt(),
+			                           (event.*m_basicJetsMember)->at(jetIndex).p4.eta(),
+			                           (event.*m_basicJetsMember)->at(jetIndex).p4.phi(),
+			                           (event.*m_basicJetsMember)->at(jetIndex).p4.mass());
+			(product.*m_correctedJetsMember)[jetIndex] = std::make_shared<TJet> (*jet);
 			++jetIndex;
 		}
 		
