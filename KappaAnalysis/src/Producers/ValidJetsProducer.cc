@@ -131,7 +131,7 @@ bool ValidTaggedJetsProducer::AdditionalCriteriaStatic(KJet* jet,
 		}
 	}
 
-	if(!jetPuJetIDName.empty())
+	if(!jetPuJetIDName.empty() && settings.GetApplyPuJetID())
 	{
 		validJet = validJet && PassPuJetId(jet, jetPuJetIDName, pujetID, pujetIDVersion, event.m_jetMetadata);
 	}
