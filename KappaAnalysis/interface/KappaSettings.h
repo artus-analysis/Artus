@@ -262,6 +262,7 @@ public:
 	IMPL_SETTING(std::string, PuJetID);
 	IMPL_SETTING_DEFAULT(std::string, PuJetIDVersion, "2016");
 	IMPL_SETTING_DEFAULT(std::string, PuJetIDFullDiscrName, "puJetIDFullDiscriminant");
+	IMPL_SETTING_DEFAULT(bool, ApplyPuJetID, false);
 	IMPL_SETTING_STRINGLIST_DEFAULT(PuJetIDs, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetTaggerLowerCuts, {});
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetTaggerUpperCuts, {});

@@ -106,12 +106,11 @@ public:
 	/// added by JetEnergyCorrectionProducer
 	std::vector<std::shared_ptr<KBasicJet> > m_correctedJets;
 	std::vector<std::shared_ptr<KJet> > m_correctedTaggedJets;
-	std::map<const KBasicJet*, const KBasicJet*> m_originalJets; // key: corrected, value: original
 
 	/// added by ValidJetsProducer
 	std::vector<KBasicJet*> m_validJets;
 	std::vector<KBasicJet*> m_invalidJets;
-	
+
 	/// added by ValidGenJetsProducer
 	std::vector<KGenJet*> m_validGenJets;
 	std::vector<KGenJet*> m_invalidGenJets;
