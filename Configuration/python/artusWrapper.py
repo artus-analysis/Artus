@@ -24,6 +24,7 @@ import Artus.Utility.tools as tools
 import Artus.Utility.jsonTools as jsonTools
 import Artus.Utility.profile_cpp as profile_cpp
 
+import ROOT
 
 
 class ArtusWrapper(object):
@@ -51,6 +52,10 @@ class ArtusWrapper(object):
 		
 		self._config["Date"] = self._args.date
 
+	def run(self):
+
+		exitCode = 0
+
 		#Expand Config
 		self.expandConfig()
 		self.projectPath = None
@@ -63,10 +68,6 @@ class ArtusWrapper(object):
 			if self.projectPath.startswith("srm://"):
 				self.remote_se = True
 				self.localProjectPath = os.path.join(os.path.expandvars(self._parser.get_default("work")), self._args.date+"_"+self._args.project_name)
-
-	def run(self):
-
-		exitCode = 0
 
 		# save final config
 		if self._args.save_config:
@@ -170,21 +171,75 @@ class ArtusWrapper(object):
 		log.info("Final dbs consists of %i files" %length)
 		return dbs
 
+	def gfal_copy(self, from_path="", where_path="", force=False):
+		bashCommand = "gfal-copy " + force * " -f " + from_path + " " + where_path
+		if self._args.no_run:
+			log.debug("\tWould call with subprocess: " + bashCommand)
+		else:
+			process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+			output, error = process.communicate()
+			log.debug(output)
+			if error is not None:
+				print "\tsubprocess copy call error:", error
+				exit(1)
+
 	def setInputFilenames(self, filelist, alreadyInGridControl = False):
 		if (not (isinstance(self._config["InputFiles"], list)) and not isinstance(self._config["InputFiles"], basestring)):
 			self._config["InputFiles"] = []
+
+		if self._args.hashed_rootfiles_info:
+			log.debug('self._args.hashed_rootfiles_info_path: ' + self._args.hashed_rootfiles_info_path)
+			self._args.hashed_rootfiles_info_path = os.path.expandvars(self._args.hashed_rootfiles_info_path)
+			log.info("Hashes file : " + self._args.hashed_rootfiles_info_path +
+				"\n\t will" + (not self._args.hashed_rootfiles_info_force) * " NOT" + " be updated")
+
+			hashed_data_path = self._args.hashed_rootfiles_info_path
+
+			# a way to check that gfal-tools should be used - maybe there is smtg more intelligent
+			# if "://" in self._args.hashed_rootfiles_info_path:
+			hashed_data_path = "temp_hashed_samples_{0}".format(hashlib.md5(str(self._config)).hexdigest())
+			log.debug("hashed_data_path: " + hashed_data_path)
+			# self.gfal_copy(from_path=self._args.hashed_rootfiles_info_path, where_path=hashed_data_path)
+
+			import shelve
+			hashed_data_path = os.path.abspath(hashed_data_path)
+			log.debug("hashed_data_path: " + hashed_data_path)
+			d = shelve.open(hashed_data_path)
+
 		for entry in filelist:
+			store_entry = entry[entry.find('/store'):]
+			if set(entry).issubset({'\t', ' ', '\n'}) or entry[0]=='#':
+				continue
+
 			if os.path.splitext(entry)[1] == ".root":
 				if entry.find("*") != -1:
 					filelist = glob.glob(os.path.expandvars(entry))
 					self.setInputFilenames(filelist, alreadyInGridControl)
 				else:
-					if not (entry in self._config["InputFiles"]):
-						self._config["InputFiles"].append(entry)
+					self._config["InputFiles"].append(entry)
+
 					if not alreadyInGridControl:
-						tmpEntry = entry + " = 1"
-						if not (tmpEntry in self._gridControlInputFiles.get(self.extractNickname(entry), [])):
-							self._gridControlInputFiles.setdefault(self.extractNickname(entry), []).append(tmpEntry)
+						fileevents = 1
+						if self._args.n_events and self._args.batch:
+							if self._args.hashed_rootfiles_info and store_entry in d:
+								fileevents = d[store_entry]
+								log.debug("hashed_data_path for " + entry + " : " + str(fileevents))
+							else:
+								try:
+									f = ROOT.TFile.Open(entry)
+									fileevents = f.Get("Events").GetEntries()
+									f.Close()
+									log.info("Checking events that are not found in the cashes for " + str(entry) + " : " + str(fileevents))
+								except:
+									if self._args.hashed_rootfiles_info:
+										d.close()
+									log.error("File could not be read: " + str(entry))
+									raise
+
+								if self._args.hashed_rootfiles_info and self._args.hashed_rootfiles_info_force:
+									d[store_entry] = fileevents
+
+						self._gridControlInputFiles.setdefault(self.extractNickname(entry), []).append(entry + " = " + str(fileevents))
 			elif os.path.splitext(entry)[1] == ".dbs":
 				tmpDBS = self.readDbsFile(entry)
 				tmpDBS = self.removeProcessedFiles(tmpDBS, entry)
@@ -309,6 +364,8 @@ class ArtusWrapper(object):
 
 		if not self._args.n_events is None:
 			self._config["ProcessNEvents"] = self._args.n_events
+		if not self._args.skip_events is None:
+			self._config["FirstEvent"] = self._args.skip_events
 
 		# shrink Input Files to requested Number
 		self.removeUnwantedInputFiles()
@@ -367,7 +424,7 @@ class ArtusWrapper(object):
 		self._config = self._config.doSortQuantities()
 
 		# set log level
-		self._config["LogLevel"] = self._args.log_level	
+		self._config["LogLevel"] = self._args.log_level
 
 	def determineNickname(self, nickname):
 		if nickname.find("auto") != -1: # automatic determination of nicknames
@@ -428,7 +485,7 @@ class ArtusWrapper(object):
 		self.configOptionsGroup.add_argument("--channels", nargs="+", default = [["tt", "mt", "et", "em", "mm", "gen"]], action = "append",
 		                                help="channels used for artus. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used.")
 		self.configOptionsGroup.add_argument("--systematics", nargs="+", default = [["nominal"]], action = "append",
-		                                help="systematics used for artus. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used.")		
+		                                help="systematics used for artus. Single entries (whitespace separated strings) are first merged. Then all entries are expanded to get all possible combinations. For each expansion, this option has to be used.")
 		self.configOptionsGroup.add_argument("--nick", default="auto",
 		                                help="Kappa nickname name that can be used for switch between sample-dependent settings.")
 
@@ -452,6 +509,8 @@ class ArtusWrapper(object):
 		                                help="Limit number of input files or grid-control jobs. 3=files[0:3].")
 		self.configOptionsGroup.add_argument("-e", "--n-events", type=int,
 		                                help="Limit number of events to process.")
+		self.configOptionsGroup.add_argument("--skip-events", type=int,
+		                                help="Skip number of events to process.")
 		self.configOptionsGroup.add_argument("--gc-config", default="$CMSSW_BASE/src/Artus/Configuration/data/grid-control_base_config.conf",
 		                                help="Path to grid-control base config that is replace by the wrapper. [Default: %(default)s]")
 		self.configOptionsGroup.add_argument("--gc-config-includes", nargs="+",
@@ -492,7 +551,14 @@ class ArtusWrapper(object):
 		                                 help="Write logfile in batch mode directly to SE. Does not work with remote batch system")
 		self.runningOptionsGroup.add_argument("--partition-lfn-modifier", default = None,
 		                                 help="Forces a certain access to input files. See base conf for corresponding dictionary")
-
+		self.runningOptionsGroup.add_argument("--hashed-rootfiles-info", action='store_true', default=False,
+		                                 help="Use the hashed root-files info. "
+		                                 "Hashes have to be DELETED FIRST in case an update is needed and the path of the inputs is unchanged "
+		                                 "[Default: %(default)s]")
+		self.runningOptionsGroup.add_argument("--hashed-rootfiles-info-path", type=str,
+		                                 help="Path to root files info hashes. Also supporting srm:// pathes. [Default: %(default)s]")
+		self.runningOptionsGroup.add_argument("--hashed-rootfiles-info-force", action='store_true', default=False,
+		                                 help="Force to update the file that is set by hashed-rootfiles-info-path [Default: %(default)s]")
 
 		if self._executable:
 			self._parser.add_argument("-x", "--executable", help="Artus executable. [Default: %(default)s]", default=self._executable)
@@ -512,21 +578,23 @@ class ArtusWrapper(object):
 		epilogArguments += r"--print-envvars ROOTSYS CMSSW_BASE DATASETNICK FILE_NAMES LD_LIBRARY_PATH "
 		if self._args.use_json:
 			epilogArguments += r"-c " + os.path.basename(self._configFilename) + " "
-			epilogArguments += r"--use-json" + " " 
+			epilogArguments += r"--use-json" + " "
 		else:
 			for grid_channel in self.channels_systematics.keys():
 				epilogArguments += r"--channels " + grid_channel + " "
 				epilogArguments += r"--systematics " + " ".join(self.channels_systematics[grid_channel]) + " "
 			epilogArguments += r"--study " + self._args.study + " "
-				
+
 		epilogArguments += "--nick $DATASETNICK "
 		epilogArguments += "-i $FILE_NAMES "
+		if self._args.n_events:
+			epilogArguments += "-e " + str(self._args.n_events) + " --skip-events $SKIP_EVENTS "
 		if self._args.copy_remote_files:
 			epilogArguments += "--copy-remote-files "
 		if not self._args.ld_library_paths is None:
 			epilogArguments += ("--ld-library-paths %s" % " ".join(self._args.ld_library_paths))
-		if self._args.n_events:
-			epilogArguments += "-e %d " % self._args.n_events
+		# if self._args.n_events:
+		# 	epilogArguments += "-e %d " % self._args.n_events
 		return epilogArguments
 
 	def sendToBatchSystem(self):
@@ -567,6 +635,8 @@ class ArtusWrapper(object):
 				jobs = "" if self._args.fast is None else "jobs = " + str(self._args.fast),
 				inputfiles = "input files = \n\t" + self._configFilename + "\n\t" + os.path.expandvars(os.path.join("$CMSSW_BASE/bin/$SCRAM_ARCH", os.path.basename(sys.argv[0]))),
 				filesperjob = "files per job = " + str(self._args.files_per_job),
+				eventsperjob = "events per job = " + str(self._args.n_events) if (self._args.n_events and not self._args.pilot_job_files) else "",
+				datasetsplitter = "dataset splitter = EventBoundarySplitter" if (self._args.n_events and not self._args.pilot_job_files) else "dataset splitter = FileBoundarySplitter",
 				areafiles = self._args.area_files if (self._args.area_files != None) else "",
 				walltime = "wall time = " + self._args.wall_time,
 				memory = "memory = " + str(self._args.memory),
