@@ -107,6 +107,10 @@ public:
 	std::vector<std::shared_ptr<KBasicJet> > m_correctedJets;
 	std::vector<std::shared_ptr<KJet> > m_correctedTaggedJets;
 
+	/// added by SmearedJetProducer
+	std::vector<std::shared_ptr<KBasicJet> > m_smearedJets;
+	std::vector<std::shared_ptr<KJet> > m_smearedTaggedJets;
+
 	/// added by ValidJetsProducer
 	std::vector<KBasicJet*> m_validJets;
 	std::vector<KBasicJet*> m_invalidJets;

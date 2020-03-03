@@ -5,6 +5,7 @@
 <use name="root" />
 <use name="roottmva"/>
 <use name="CondFormats/JetMETObjects" />
+<use name="JetMETCorrections/Modules"/>
 <use name="Artus/Configuration"/>
 <use name="Artus/Consumer"/>
 <use name="Artus/KappaTools"/>
