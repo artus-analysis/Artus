@@ -29,12 +29,13 @@
    - JERFile (file containing jet energy resolution (JER) information)
    - JERScaleFactorFile (file containing JER scale factors)
    - JERVariation (default: 0, 1: up, 1: down)
+   - JERUncertaintySource (default: "")
    - JERSeed (default: 37428479)
-   - JERUseDeterministicSeed (default: true);
+   - JERUseDeterministicSeed (default: true)
    
    Documentation:
    https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyResolution
-   https://github.com/cms-sw/cmssw/blob/CMSSW_10_2_17/PhysicsTools/PatUtils/interface/SmearedJetProducerT.h // note: in newer version of the producer a new parameter for "uncertainty source" is added.
+   https://github.com/cms-sw/cmssw/blob/CMSSW_10_2_X/PhysicsTools/PatUtils/interface/SmearedJetProducerT.h
 
    Input files:
    https://github.com/cms-jet/JRDatabase
@@ -107,6 +108,8 @@ public:
 	    m_systematic_variation = Variation::NOMINAL;
 	  }
 
+	  m_uncertaintySource = settings.GetJERUncertaintySource();
+
 	}
 
 	void Produce(event_type const& event, product_type& product,
@@ -166,7 +169,8 @@ public:
 	      {{JME::Binning::JetPt, (*jet)->p4.pt()}, {JME::Binning::JetEta, (*jet)->p4.eta()}, {JME::Binning::Rho, event.m_pileupDensity->rho}});
 	    double jer_sf = resolution_sf.getScaleFactor(
 	       {{JME::Binning::JetPt, (*jet)->p4.pt()}, {JME::Binning::JetEta, (*jet)->p4.eta()}},
-	       m_systematic_variation);
+	       m_systematic_variation,
+	       m_uncertaintySource);
 
 	    //match genJet
 	    int genJetIndex = matchedGenJetIndex(event, (*jet), (*jet)->p4.pt() * jet_resolution);
@@ -256,6 +260,7 @@ private:
 	static constexpr const double MIN_JET_ENERGY = 1e-2;
 	bool m_enabled;
 	Variation m_systematic_variation;
+	std::string m_uncertaintySource;
 	bool m_useDeterministicSeed;
 	std::unique_ptr<JME::JetResolution> m_resolution_from_file;
 	std::unique_ptr<JME::JetResolutionScaleFactor> m_scale_factor_from_file;

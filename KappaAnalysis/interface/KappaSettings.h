@@ -260,6 +260,7 @@ public:
 	IMPL_SETTING_DEFAULT(std::string, JERFile, "");
 	IMPL_SETTING_DEFAULT(std::string, JERScaleFactorFile, "");
 	IMPL_SETTING_DEFAULT(int, JERVariation, 0);
+	IMPL_SETTING_DEFAULT(std::string, JERUncertaintySource, "");
 	IMPL_SETTING_DEFAULT(unsigned int, JERSeed, 37428479);
 	IMPL_SETTING_DEFAULT(bool, JERUseDeterministicSeed, true);
 
