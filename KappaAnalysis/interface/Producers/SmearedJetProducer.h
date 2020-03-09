@@ -24,15 +24,17 @@
    resolution (JER) between Monte Carlo simulation and Data.
 
    Required config tags:
-   - JERUseKappaJets (selects input jets, default: false)
+   - JERUseKappaJets (selects input jets; default: false)
    - JEREnabled (default: false)
    - JERFile (file containing jet energy resolution (JER) information)
    - JERScaleFactorFile (file containing JER scale factors)
-   - JERVariation (default: 0, 1: up, 1: down)
+   - JERVariation (default: 0; 1: up, 1: down)
    - JERUncertaintySource (default: "")
    - JERSeed (default: 37428479)
    - JERUseDeterministicSeed (default: true)
-   
+   - JERGenJetdRMax (max dR to match with genJet; default: 0.2)
+   - JERdPtMaxFactor (max dPt (in resolution units) to match with genJet; default: 3)
+
    Documentation:
    https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyResolution
    https://github.com/cms-sw/cmssw/blob/CMSSW_10_2_X/PhysicsTools/PatUtils/interface/SmearedJetProducerT.h
@@ -56,7 +58,8 @@ public:
 		m_basicJetsMember(jets),
 		m_correctedJetsMember(correctedJets),
 		m_smearedJetsMember(smearedJets),
-		m_random_generator(0) {}
+		m_random_generator(nullptr),
+		m_verbose(false) {}
 
 	~SmearedJetProducerBase() {
 	  
@@ -76,11 +79,21 @@ public:
 	  std::string resolutionFile = settings.GetJERFile();
 	  LOG(DEBUG) << "Loading JetEnergyResolution from file "
 		     << resolutionFile;
-	  m_resolution_from_file.reset(new JME::JetResolution(resolutionFile));
+	  if (!resolutionFile.empty())
+	    m_resolution_from_file.reset(new JME::JetResolution(resolutionFile));
+	  else {
+	    m_enabled = false;
+	    LOG(DEBUG) << "Disabling JetEnergyResolution corrections due to unspecified file ";
+	  }
 	  std::string scaleFactorFile = settings.GetJERScaleFactorFile();
 	  LOG(DEBUG) << "\tLoading JetEnergyResolution scale factor from file "
 		     << scaleFactorFile;
-	  m_scale_factor_from_file.reset(new JME::JetResolutionScaleFactor(scaleFactorFile));
+	  if (!scaleFactorFile.empty())
+	    m_scale_factor_from_file.reset(new JME::JetResolutionScaleFactor(scaleFactorFile));
+	  else {
+	    m_enabled = false;
+	    LOG(DEBUG) << "Disabling JetEnergyResolution corrections due to unspecified file ";
+	  }
 
 	  std::uint32_t seed = settings.GetJERSeed();
 	  if (m_random_generator == nullptr)
@@ -110,6 +123,21 @@ public:
 
 	  m_uncertaintySource = settings.GetJERUncertaintySource();
 
+	  m_dR_max = settings.GetJERdRMax();
+	  m_dPt_max_factor = settings.GetJERdPtMaxFactor();
+
+	  if (m_verbose) {
+	    std::cout<<"[SmearedJetProducer::Init]: params: "<<std::endl
+		     <<"\tuse KappaJets: "<<m_useKappaJets<<std::endl
+		     <<"\tenable JER: "<<m_enabled<<std::endl
+		     <<"\tresolution file: "<<resolutionFile<<std::endl
+		     <<"\tSF file: "<<scaleFactorFile<<std::endl
+		     <<"\tseed: "<<seed<<std::endl
+		     <<"\tuse deterministic seed: "<<m_useDeterministicSeed<<std::endl
+		     <<"\tdR_max: "<<m_dR_max<<std::endl
+		     <<"\tdPt_max_factor: "<<m_dPt_max_factor<<std::endl
+		     <<std::endl;
+	  }
 	}
 
 	void Produce(event_type const& event, product_type& product,
@@ -152,6 +180,10 @@ public:
 	      unsigned int jet0eta = uint32_t(jets.empty() ? 0 : jets[0]->p4.eta() / 0.01);
 	      std::uint32_t seed = jet0eta + m_nomVar + (lumiNum_uint<<10) + (runNum_uint<<20) + evNum_uint;
 	      m_random_generator->seed(seed);
+	      if (m_verbose) {
+		std::cout<<"[SmearedJetProducer::Produce]: deterministic seed: "
+			 <<seed<<std::endl;
+	      }
 	    }
 	  }
 
@@ -162,7 +194,14 @@ public:
 	       jet != jets.end(); ++jet) {
 	    if ((!m_enabled) || ((*jet)->p4.pt() == 0)) {
 	      // Module disabled or invalid p4. Simply copy the input jet.
-	      (product.*m_smearedJetsMember).push_back(std::shared_ptr<TJet>(*jet));
+	      std::shared_ptr<TJet> smearedJet(new TJet(**jet));
+	      (product.*m_smearedJetsMember).push_back(smearedJet);
+	      if (m_verbose) {
+		std::cout<<"[SmearedJetProducer::Produce]: no smearing: "
+			 <<"original Pt = "<<(*jet)->p4.pt()
+			 <<", smeared Pt = "<<smearedJet->p4.pt()
+			 <<std::endl;
+	      }
 	      continue;
 	    }
 	    double jet_resolution = resolution.getResolution(
@@ -171,7 +210,12 @@ public:
 	       {{JME::Binning::JetPt, (*jet)->p4.pt()}, {JME::Binning::JetEta, (*jet)->p4.eta()}},
 	       m_systematic_variation,
 	       m_uncertaintySource);
-
+	    if (m_verbose) {
+	      std::cout<<"[SmearedJetProducer::Produce]: smearing params: "
+		       <<"jet_resolution = "<<jet_resolution
+		       <<", jer_sf = "<<jer_sf
+		       <<std::endl;
+	    }
 	    //match genJet
 	    int genJetIndex = matchedGenJetIndex(event, (*jet), (*jet)->p4.pt() * jet_resolution);
 	    double smearFactor = 1.;
@@ -181,6 +225,12 @@ public:
 	       */
 	      double dPt = (*jet)->p4.pt() - event.m_genJets->at(genJetIndex).p4.pt();
 	      smearFactor = 1 + m_nomVar * (jer_sf - 1.) * dPt / (*jet)->p4.pt();
+	      if (m_verbose) {
+		std::cout<<"[SmearedJetProducer::Produce]: matched to gen: "
+			 <<"original Pt = "<<(*jet)->p4.pt()
+			 <<", gen Pt = "<<event.m_genJets->at(genJetIndex).p4.pt()
+			 <<std::endl;
+	      }
 	    } else if (jer_sf > 1) {
 	      /*
 	       * Case 2: we don't have a gen jet. Smear jet pt using a random gaussian variation
@@ -188,6 +238,11 @@ public:
 	      double sigma = jet_resolution * std::sqrt(jer_sf * jer_sf - 1);
 	      std::normal_distribution<> d(0, sigma);
 	      smearFactor = 1. + m_nomVar * d(*m_random_generator);
+	      if (m_verbose) {
+		std::cout<<"[SmearedJetProducer::Produce]: no matched to gen: "
+			 <<"gaussian width: "<<sigma
+			 <<std::endl;
+	      }
 	    }
 	    if ((*jet)->p4.energy() * smearFactor < MIN_JET_ENERGY) {
 	      /* 
@@ -202,6 +257,12 @@ public:
 	    std::shared_ptr<TJet> smearedJet(new TJet(**jet));
 	    smearedJet->p4 = smearFactor * (*jet)->p4;
 	    (product.*m_smearedJetsMember).push_back(smearedJet);
+	    if (m_verbose) {
+	      std::cout<<"[SmearedJetProducer::Produce]: smearing: "
+		       <<"original Pt = "<<(*jet)->p4.pt()
+		       <<", smeared Pt = "<<smearedJet->p4.pt()
+		       <<std::endl;
+	    }
 	  }
 
 	  // perform corrections on copied jets
@@ -271,6 +332,8 @@ private:
 	
 	double m_dR_max;
 	double m_dPt_max_factor;
+
+	bool m_verbose;
 };
 
 
