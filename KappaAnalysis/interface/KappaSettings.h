@@ -255,7 +255,6 @@ public:
 	IMPL_SETTING_DEFAULT(std::string, JetEnergyCorrectionUncertaintySource, "");
 	IMPL_SETTING_DEFAULT(float, JetEnergyCorrectionUncertaintyShift, 0.0f);
 
-	IMPL_SETTING_DEFAULT(bool, JERUseKappaJets, false);
 	IMPL_SETTING_DEFAULT(bool, JEREnabled, false);
 	IMPL_SETTING_DEFAULT(std::string, JERFile, "");
 	IMPL_SETTING_DEFAULT(std::string, JERScaleFactorFile, "");

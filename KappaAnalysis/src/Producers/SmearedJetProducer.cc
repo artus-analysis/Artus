@@ -3,9 +3,7 @@
 
 
 SmearedJetProducer::SmearedJetProducer() :
-  SmearedJetProducerBase<KBasicJet>(&KappaTypes::event_type::m_basicJets,
-				    &KappaTypes::product_type::m_correctedJets,
-				    &KappaTypes::product_type::m_smearedJets) {}
+  SmearedJetProducerBase<KBasicJet>(&KappaTypes::product_type::m_correctedJets) {}
 
 std::string SmearedJetProducer::GetProducerId() const {
   return "SmearedJetProducer";
@@ -13,9 +11,7 @@ std::string SmearedJetProducer::GetProducerId() const {
 
 
 SmearedTaggedJetProducer::SmearedTaggedJetProducer() :
-  SmearedJetProducerBase<KJet>(&KappaTypes::event_type::m_tjets,
-			       &KappaTypes::product_type::m_correctedTaggedJets,
-			       &KappaTypes::product_type::m_smearedTaggedJets) {}
+  SmearedJetProducerBase<KJet>(&KappaTypes::product_type::m_correctedTaggedJets) {}
 
 std::string SmearedTaggedJetProducer::GetProducerId() const {
   return "SmearedTaggedJetProducer";

@@ -24,7 +24,6 @@
    resolution (JER) between Monte Carlo simulation and Data.
 
    Required config tags:
-   - JERUseKappaJets (selects input jets; default: false)
    - JEREnabled (default: false)
    - JERFile (file containing jet energy resolution (JER) information)
    - JERScaleFactorFile (file containing JER scale factors)
@@ -51,13 +50,9 @@ class SmearedJetProducerBase: public KappaProducerBase
 {
 
 public:
-         SmearedJetProducerBase(std::vector<TJet>* KappaTypes::event_type::*jets,
-				std::vector<std::shared_ptr<TJet> > KappaTypes::product_type::*correctedJets,
-				std::vector<std::shared_ptr<TJet> > product_type::*smearedJets) :
+         SmearedJetProducerBase(std::vector<std::shared_ptr<TJet> > KappaTypes::product_type::*correctedJets) :
 		KappaProducerBase(),
-		m_basicJetsMember(jets),
 		m_correctedJetsMember(correctedJets),
-		m_smearedJetsMember(smearedJets),
 		m_random_generator(nullptr),
 		m_verbose(false) {}
 
@@ -72,7 +67,6 @@ public:
 
 	  KappaProducerBase::Init(settings, metadata);
 
-	  m_useKappaJets = settings.GetJERUseKappaJets();
 	  m_enabled = settings.GetJEREnabled();
 
 	  // load correction parameters
@@ -128,7 +122,6 @@ public:
 
 	  if (m_verbose) {
 	    std::cout<<"[SmearedJetProducer::Init]: params: "<<std::endl
-		     <<"\tuse KappaJets: "<<m_useKappaJets<<std::endl
 		     <<"\tenable JER: "<<m_enabled<<std::endl
 		     <<"\tresolution file: "<<resolutionFile<<std::endl
 		     <<"\tSF file: "<<scaleFactorFile<<std::endl
@@ -146,26 +139,6 @@ public:
 	  assert((!m_enabled||(event.m_genJets)));
 	  assert(event.m_pileupDensity);
 
-	  // select input source
-	  std::vector<TJet*> jets;
-	  if (!m_useKappaJets) {//use jets JES corrected with Artus
-	    jets.resize((product.*m_correctedJetsMember).size());
-	    size_t jetIndex = 0;
-	    for (typename std::vector<std::shared_ptr<TJet> >::iterator jet = (product.*m_correctedJetsMember).begin();
-		 jet != (product.*m_correctedJetsMember).end(); ++jet) {
-	      jets[jetIndex] = jet->get();
-	      ++jetIndex;
-	    }
-	  } else {//use jets from Kappa (JES corrected at CMSSW level)	    
-	    jets.resize((event.*m_basicJetsMember)->size());
-	    size_t jetIndex = 0;
-	    for (typename std::vector<TJet>::iterator jet = (event.*m_basicJetsMember)->begin(); jet != (event.*m_basicJetsMember)->end(); ++jet)
-	      {
-		jets[jetIndex] = &(*jet);
-		++jetIndex;
-	      }
-	  }
-
 	  JME::JetResolution resolution;
 	  JME::JetResolutionScaleFactor resolution_sf;
 	  if (m_enabled) {
@@ -177,7 +150,7 @@ public:
 	      unsigned int lumiNum_uint = static_cast<unsigned int>(event.m_eventInfo->nLumi);
 	      unsigned int evNum_uint = static_cast<unsigned int>(event.m_eventInfo->nEvent);
 	      //it assumes that jets are sorted in pt.
-	      unsigned int jet0eta = uint32_t(jets.empty() ? 0 : jets[0]->p4.eta() / 0.01);
+	      unsigned int jet0eta = uint32_t((product.*m_correctedJetsMember).empty() ? 0 : (product.*m_correctedJetsMember)[0]->p4.eta() / 0.01);
 	      std::uint32_t seed = jet0eta + m_nomVar + (lumiNum_uint<<10) + (runNum_uint<<20) + evNum_uint;
 	      m_random_generator->seed(seed);
 	      if (m_verbose) {
@@ -188,18 +161,14 @@ public:
 	  }
 
 
-	  // create a smeared copy of each jet in the event
-	  (product.*m_smearedJetsMember).clear();
-	  for (typename std::vector<TJet*>::iterator jet = jets.begin(); 
-	       jet != jets.end(); ++jet) {
+	  // smear each jet in the event
+	  for (typename std::vector<std::shared_ptr<TJet> >::iterator jet = (product.*m_correctedJetsMember).begin();
+	       jet != (product.*m_correctedJetsMember).end(); ++jet) {
 	    if ((!m_enabled) || ((*jet)->p4.pt() == 0)) {
-	      // Module disabled or invalid p4. Simply copy the input jet.
-	      std::shared_ptr<TJet> smearedJet(new TJet(**jet));
-	      (product.*m_smearedJetsMember).push_back(smearedJet);
+	      // Module disabled or invalid p4: Simply preserve input jet.
 	      if (m_verbose) {
 		std::cout<<"[SmearedJetProducer::Produce]: no smearing: "
 			 <<"original Pt = "<<(*jet)->p4.pt()
-			 <<", smeared Pt = "<<smearedJet->p4.pt()
 			 <<std::endl;
 	      }
 	      continue;
@@ -217,7 +186,7 @@ public:
 		       <<std::endl;
 	    }
 	    //match genJet
-	    int genJetIndex = matchedGenJetIndex(event, (*jet), (*jet)->p4.pt() * jet_resolution);
+	    int genJetIndex = matchedGenJetIndex(event, jet->get(), (*jet)->p4.pt() * jet_resolution);
 	    double smearFactor = 1.;
 	    if (genJetIndex>-1) {
 	      /*
@@ -254,20 +223,19 @@ public:
 	      smearFactor = newSmearFactor;
 	    }
 
-	    std::shared_ptr<TJet> smearedJet(new TJet(**jet));
-	    smearedJet->p4 = smearFactor * (*jet)->p4;
-	    (product.*m_smearedJetsMember).push_back(smearedJet);
+	    float origPt = (*jet)->p4.pt();
+	    (*jet)->p4 = smearFactor * (*jet)->p4;
 	    if (m_verbose) {
 	      std::cout<<"[SmearedJetProducer::Produce]: smearing: "
-		       <<"original Pt = "<<(*jet)->p4.pt()
-		       <<", smeared Pt = "<<smearedJet->p4.pt()
+		       <<"original Pt = "<<origPt
+		       <<", smeared Pt = "<<(*jet)->p4.pt()
 		       <<std::endl;
 	    }
 	  }
 
 	  // perform corrections on copied jets
-	  for (typename std::vector<std::shared_ptr<TJet> >::iterator jet = (product.*m_smearedJetsMember).begin();
-	       jet != (product.*m_smearedJetsMember).end(); ++jet) {
+	  for (typename std::vector<std::shared_ptr<TJet> >::iterator jet = (product.*m_correctedJetsMember).begin();
+	       jet != (product.*m_correctedJetsMember).end(); ++jet) {
 	    // No general correction implemented
 
 	    // perform possible analysis-specific corrections
@@ -275,7 +243,7 @@ public:
 	  }
 
 	  // sort vectors of corrected jets by pt
-	  std::sort((product.*m_smearedJetsMember).begin(), (product.*m_smearedJetsMember).end(),
+	  std::sort((product.*m_correctedJetsMember).begin(), (product.*m_correctedJetsMember).end(),
 		    [](std::shared_ptr<TJet> jet1, std::shared_ptr<TJet> jet2) -> bool
 		    { return jet1->p4.pt() > jet2->p4.pt(); });
 	}
@@ -313,11 +281,8 @@ protected:
 	}
 
 private:
-	std::vector<TJet>* KappaTypes::event_type::*m_basicJetsMember;
 	std::vector<std::shared_ptr<TJet> > KappaTypes::product_type::*m_correctedJetsMember;
-	std::vector<std::shared_ptr<TJet> > product_type::*m_smearedJetsMember;
 
-	bool m_useKappaJets;
 	static constexpr const double MIN_JET_ENERGY = 1e-2;
 	bool m_enabled;
 	Variation m_systematic_variation;
@@ -341,7 +306,7 @@ private:
 /**
    \brief Producer of smeared jets for Jet Energy Resolution (JER) correction
    
-   Operates on the vector event.m_basicJets or product::m_correctedJets, and product::m_smearedJets.
+   Operates on the vector product::m_correctedJets to smear them accordingly to JER.
 */
 class SmearedJetProducer: public SmearedJetProducerBase<KBasicJet>
 {
@@ -356,7 +321,7 @@ public:
 /**
    \brief Producer of smeared jets for Jet Energy Resolution (JER) correction
    
-   Operates on the vector event.m_tjets or product::m_correctedTaggedjets and product::m_smearedTaggedJets.
+   Operates on the vector product::m_correctedTaggedjets to smear them accordingly to.
 */
 class SmearedTaggedJetProducer: public SmearedJetProducerBase<KJet>
 {
