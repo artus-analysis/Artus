@@ -10,6 +10,7 @@
 #include "Artus/KappaAnalysis/interface/Producers/MuonCorrectionsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/TauCorrectionsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/JetCorrectionsProducer.h"
+#include "Artus/KappaAnalysis/interface/Producers/SmearedJetProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidElectronsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidMuonsProducer.h"
 #include "Artus/KappaAnalysis/interface/Producers/ValidTausProducer.h"
@@ -106,6 +107,10 @@ ProducerBaseUntemplated * KappaFactory::createProducer ( std::string const& id )
 		return new JetCorrectionsProducer();
 	else if(id == TaggedJetCorrectionsProducer().GetProducerId())
 		return new TaggedJetCorrectionsProducer();
+	else if(id == SmearedJetProducer().GetProducerId())
+                return new SmearedJetProducer();
+	else if(id == SmearedTaggedJetProducer().GetProducerId())
+                return new SmearedTaggedJetProducer();
 	else if(id == ValidElectronsProducer<KappaTypes>().GetProducerId())
 		return new ValidElectronsProducer<KappaTypes>();
 	else if(id == ValidMuonsProducer<KappaTypes>().GetProducerId())
