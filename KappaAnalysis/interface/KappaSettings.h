@@ -255,6 +255,16 @@ public:
 	IMPL_SETTING_DEFAULT(std::string, JetEnergyCorrectionUncertaintySource, "");
 	IMPL_SETTING_DEFAULT(float, JetEnergyCorrectionUncertaintyShift, 0.0f);
 
+	IMPL_SETTING_DEFAULT(bool, JEREnabled, false);
+	IMPL_SETTING_DEFAULT(std::string, JERFile, "");
+	IMPL_SETTING_DEFAULT(std::string, JERScaleFactorFile, "");
+	IMPL_SETTING_DEFAULT(int, JERVariation, 0);
+	IMPL_SETTING_DEFAULT(std::string, JERUncertaintySource, "");
+	IMPL_SETTING_DEFAULT(unsigned int, JERSeed, 37428479);
+	IMPL_SETTING_DEFAULT(bool, JERUseDeterministicSeed, true);
+	IMPL_SETTING_DEFAULT(float, JERdRMax, 0.2f);
+	IMPL_SETTING_DEFAULT(float, JERdPtMaxFactor, 3.0f);
+
 	IMPL_SETTING_DEFAULT(std::string, ValidJetsInput, "auto");
 	IMPL_SETTING(std::string, JetID);
 	IMPL_SETTING_DEFAULT(float, JetLeptonLowerDeltaRCut, -1.0f);
