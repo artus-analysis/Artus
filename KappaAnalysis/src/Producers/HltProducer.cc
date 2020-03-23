@@ -9,7 +9,7 @@ std::string HltProducer::GetProducerId() const {
 void HltProducer::Init(setting_type const& settings, metadata_type& metadata)
 {
 	KappaProducerBase::Init(settings, metadata);
-	
+
 	// add possible quantities for the lambda ntuples consumers
 	LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "nSelectedHltPaths", [](event_type const& event, product_type const& product, setting_type const& settings, metadata_type const& metadata)
 	{
@@ -45,7 +45,7 @@ void HltProducer::Produce(event_type const& event, product_type& product,
 {
 	assert(event.m_lumiInfo);
 	assert(event.m_eventInfo);
-	
+
 	if (product.m_settingsHltPaths.empty())
 	{
 		product.m_settingsHltPaths.insert(product.m_settingsHltPaths.begin(),
@@ -58,14 +58,14 @@ void HltProducer::Produce(event_type const& event, product_type& product,
 
 	// set LumiMetadat, needs to be done here for the case running over multiple files
 	m_hltInfo.setLumiInfo(event.m_lumiInfo);
-	
+
 	// search (independently) for trigger with lowest prescale and for fired triggers
 	std::string lowestPrescaleHltName;
 	int lowestPrescale = std::numeric_limits<int>::max();
-	
+
 	std::string lowestSelectedPrescaleHltName;
 	int lowestSelectedPrescale = std::numeric_limits<int>::max();
-	
+
 	product.m_selectedHltNames.clear();
 	product.m_selectedHltPaths.clear();
 	product.m_selectedHltPositions.clear();
@@ -84,7 +84,7 @@ void HltProducer::Produce(event_type const& event, product_type& product,
 				lowestPrescale = prescale;
 				lowestPrescaleHltName = hltName;
 			}
-			
+
 			// look for (unprescaled if requested) fired trigger
 			if ((event.m_eventInfo->hltFired(hltName, event.m_lumiInfo) || !settings.GetRequireFiredHlt()) && (settings.GetAllowPrescaledTrigger() || (prescale <= 1)))
 			{
@@ -92,7 +92,7 @@ void HltProducer::Produce(event_type const& event, product_type& product,
 				product.m_selectedHltPaths.push_back(*hltPath);
 				// do not use hltName here as a parameter because *hltPath is already cached.
 				product.m_selectedHltPositions.push_back(static_cast<int>(m_hltInfo.getHLTPosition(*hltPath)));
-				
+
 				product.m_selectedHltPrescales.push_back(prescale);
 				if ((prescale < lowestSelectedPrescale) && (prescale > 0))
 				{
@@ -108,7 +108,7 @@ void HltProducer::Produce(event_type const& event, product_type& product,
 		LOG(WARNING) << "No unprescaled trigger found for event " << event.m_eventInfo->nEvent
 		             << "! Lowest prescale: " << lowestPrescale << " (\"" << lowestPrescaleHltName << "\").";
 	}
-	
+
 	if (! (lowestPrescale > 0))
 	{
 		lowestPrescale = 1;

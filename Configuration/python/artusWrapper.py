@@ -32,7 +32,7 @@ class ArtusWrapper(object):
 	def __init__(self, executable=None, userArgParsers=None):
 
 		self._config = jsonTools.JsonDict()
-		
+
 		self._executable = executable
 
 		self._parser = None
@@ -49,7 +49,7 @@ class ArtusWrapper(object):
 		# write repository revisions to the config
 		if not self._args.disable_repo_versions:
 			self.setRepositoryRevisions()
-		
+
 		self._config["Date"] = self._args.date
 
 	def run(self):
@@ -622,11 +622,11 @@ class ArtusWrapper(object):
 
 		sepath = "se path = " + (self._args.se_path if self._args.se_path else sepathRaw)
 		workdir = "workdir = " + os.path.join(self.localProjectPath, "workdir")
-		
+
 		backend = ""
 		with open(os.path.expandvars("$CMSSW_BASE/src/Artus/Configuration/data/grid-control_backend_" + self._args.batch + ".conf"), 'r') as backend_config_file:
 			backend = backend_config_file.read()
-		
+
 		self.replacingDict = dict(
 				include = ("include = " + " ".join(self._args.gc_config_includes) if self._args.gc_config_includes else ""),
 				epilogexecutable = "epilog executable = " + os.path.basename(sys.argv[0]),
@@ -677,7 +677,7 @@ class ArtusWrapper(object):
 			log.error("Exit with code %s.\n\n" % exitCode)
 			log.info("Dump configuration:\n")
 			log.info(self._configFilename)
-			
+
 
 		return exitCode
 

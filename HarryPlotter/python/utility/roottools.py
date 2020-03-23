@@ -1038,4 +1038,3 @@ class RootTools(object):
 	@staticmethod
 	def get_root_version():
 		return [int(version) for version in re.findall("\d+", ROOT.gROOT.GetVersion())]
-

@@ -137,7 +137,7 @@ public:
 		{
 			LOG(FATAL)<< "Pipeline name '" << *itUnq << "' is not unique, but pipeline names must be unique";
 		}
-		
+
 		// apparently evtProvider.GetEntries() is not reliable. Therefore, if 'ProcessNEvents' is not set (=-1), the loop condition
 		// always evaluates to true (processNEvents<0) = (-1<0) and is terminated via the 'if (!evtProvider.GetEntry(i)) break' statement
 		for (long long iEvent = firstEvent; (iEvent < (firstEvent + nEvents)); ++iEvent)
@@ -153,7 +153,7 @@ public:
 			{
 				break;
 			}
-			
+
 			for (ProgressReportIterator report = m_progressReport.begin(); report != m_progressReport.end(); ++report)
 			{
 				report->update(iEvent-firstEvent, nEvents);
@@ -179,12 +179,12 @@ public:
 				event_type currentEvent = evtProvider.GetCurrentEvent();
 				productGlobal.newRun = evtProvider.NewRun();
 				productGlobal.newLumisection = evtProvider.NewLumisection();
-				
+
 				if (processNode->GetProcessNodeType() == ProcessNodeType::Producer)
 				{
 					producer_base_type& prod = static_cast<producer_base_type&>(*processNode);
 					gettimeofday(&tStart, nullptr);
-					
+
 					if (productGlobal.newRun)
 					{
 						ProducerBaseAccess(prod).OnRun(currentEvent, settings, m_globalMetadata);
@@ -194,7 +194,7 @@ public:
 						ProducerBaseAccess(prod).OnLumi(currentEvent, settings, m_globalMetadata);
 					}
 					ProducerBaseAccess(prod).Produce(currentEvent, productGlobal, settings, m_globalMetadata);
-					
+
 					gettimeofday(&tEnd, nullptr);
 					runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);
 					productGlobal.processorRunTime[prod.GetProducerId()] = runTime;
@@ -203,7 +203,7 @@ public:
 				{
 					filter_base_type& flt = static_cast<filter_base_type&>(*processNode);
 					gettimeofday(&tStart, nullptr);
-					
+
 					if (productGlobal.newRun)
 					{
 						FilterBaseAccess(flt).OnRun(currentEvent, settings, m_globalMetadata);
@@ -214,7 +214,7 @@ public:
 					}
 					const bool filterResult = FilterBaseAccess(flt).DoesEventPass(evtProvider.GetCurrentEvent(), productGlobal, settings, m_globalMetadata);
 					globalFilterResult.SetFilterDecision(flt.GetFilterId(), filterResult);
-					
+
 					gettimeofday(&tEnd, nullptr);
 					runTime = static_cast<int>(tEnd.tv_sec * 1000000 + tEnd.tv_usec - tStart.tv_sec * 1000000 - tStart.tv_usec);
 					productGlobal.processorRunTime[flt.GetFilterId()] = runTime;
@@ -301,7 +301,7 @@ public:
 	{
 		return m_globalNodes;
 	}
-	
+
 	metadata_type& GetGlobalMetadata()
 	{
 		return m_globalMetadata;
@@ -315,4 +315,3 @@ private:
 	bool m_registerSignalHandler;
 	metadata_type m_globalMetadata;
 };
-
