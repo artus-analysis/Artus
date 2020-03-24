@@ -249,6 +249,11 @@ public:
 	IMPL_SETTING_DEFAULT(bool, TauUseOldDMs, false);
 	std::vector<int> TauAllowedDMs = {0,1,2,5,6,10,11};
 	IMPL_SETTING_INTLIST_DEFAULT(TauAllowedDMs, TauAllowedDMs);
+	//empty list of allowed MvaDMs means accept all MvaDMs including undefined ones (-1)
+	std::vector<int> TauAllowedMvaDMs = {};
+	IMPL_SETTING_INTLIST_DEFAULT(TauAllowedMvaDMs, TauAllowedMvaDMs);
+	//empty name of MVaDMs tauID/discriminant means that all taus are accepted regardless if MvaDMs are stored or not
+	IMPL_SETTING_DEFAULT(std::string, TauMvaDMsName, "");
 
 	IMPL_SETTING_STRINGLIST_DEFAULT(JetEnergyCorrectionParameters, {});
 	IMPL_SETTING_DEFAULT(std::string, JetEnergyCorrectionUncertaintyParameters, "");

@@ -85,6 +85,8 @@ public:
 		tauID = ToTauID(settings.GetTauID());
 		oldTauDMs = settings.GetTauUseOldDMs();
 		allowedDMs = settings.GetTauAllowedDMs();
+		allowedMvaDMs = settings.GetTauAllowedMvaDMs();
+		mvaDMsName = settings.GetTauMvaDMsName();
 
 		// add possible quantities for the lambda ntuples consumers
 		LambdaNtupleConsumer<KappaTypes>::AddIntQuantity(metadata, "nTaus", [](KappaTypes::event_type const& event, KappaTypes::product_type const& product, KappaTypes::setting_type const& settings, KappaTypes::metadata_type const& metadata) {
@@ -261,13 +263,15 @@ public:
 					validTau = validTau && ApplyDiscriminators(*tau, discriminatorByHltName->second, event);
 				}
 			}
-
+			// minimal tauID
 			if(tauID == TauID::RECOMMENDATION13TEV)
 					validTau = validTau && IsTauIDRecommendation13TeV(*tau, event, oldTauDMs, allowedDMs);
 			if(tauID == TauID::RECOMMENDATION13TEVAOD)
 					validTau = validTau && IsTauIDRecommendation13TeV(*tau, event, oldTauDMs, allowedDMs, true);
 			// kinematic cuts
 			validTau = validTau && this->PassKinematicCuts(*tau, event, product);
+			// MvaDMs
+			validTau = validTau && CheckMvaDMs(*tau, event, allowedMvaDMs, mvaDMsName);
 
 			// check possible analysis-specific criteria
 			validTau = validTau && AdditionalCriteria(*tau, event, product, settings, metadata);
@@ -343,5 +347,21 @@ private:
 				//&& (Utility::ApproxEqual(tau->track.ref.z(), vertex->position.z()))
 			);
 		}
+	}
+
+	std::vector<int> allowedMvaDMs;
+	std::string mvaDMsName;
+	bool CheckMvaDMs(KTau* tau, KappaTypes::event_type const& event, std::vector<int> const& allowedMvaDMs, std::string const& mvaDMsName) const
+	{
+	  //pass if not defined
+	  if (mvaDMsName.empty() || allowedMvaDMs.empty() )
+	    return true;
+
+	  float tauMvaDM = tau->getDiscriminator(mvaDMsName, event.m_tauMetadata);
+	  if (tauMvaDM == -999.0)
+	    return true; //pass if MvaDM discriminat not found
+
+	  return (find(allowedMvaDMs.begin(), allowedMvaDMs.end(), (int)tauMvaDM) != allowedMvaDMs.end());
+
 	}
 };
