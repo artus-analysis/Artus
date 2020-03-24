@@ -477,8 +477,8 @@ class RootTools(object):
 					log.error("Reading input based on proxy failed. Proxy files will be kept for debugging.")
 					tmp_proxy_files = []
 			else:
-				log.debug("ROOT.TTree.Project(\"" + name + "\", \"" + variable_expression + "\", \"" + str(weight_selection) + "\", \"" + option + "\" GOFF\")")
-				tree.Project(name, variable_expression, str(weight_selection), option + " GOFF")
+				log.debug("ROOT.TTree.Project(\"" + name + "\", \"" + variable_expression + "\", \"" + str(weight_selection) + "\", \"" + option + " GOFF\")")
+				tree.Project(name, variable_expression, str(weight_selection), option + "GOFF")
 			root_histogram = ROOT.gDirectory.Get(name)
 
 		tmp_files = []
@@ -1038,4 +1038,3 @@ class RootTools(object):
 	@staticmethod
 	def get_root_version():
 		return [int(version) for version in re.findall("\d+", ROOT.gROOT.GetVersion())]
-
