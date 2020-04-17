@@ -186,7 +186,7 @@ bool ValidTaggedJetsProducer::PassPuJetId(KJet* jet, std::string const& puJetIDF
 					validJet = validJet && (jet->getTag(puJetIDFullDiscr, taggerMetadata) > -0.89);
 				}
 			}
-			else if (std::abs(jet->p4.eta()) >= 2.5f && std::abs(jet->p4.eta()) < 3.0f)
+			else if (std::abs(jet->p4.eta()) >= 2.5f && std::abs(jet->p4.eta()) < 2.75f)
 			{
 				if (jet->p4.Pt()<30.f)
 				{
