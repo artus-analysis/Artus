@@ -71,6 +71,8 @@ class RootTools(object):
 							if key.GetClassName().startswith("TH") or key.GetClassName().startswith("TF") or key.GetClassName().startswith("Roo") or "Graph" in key.GetClassName():
 								log.info("\t%s (%s)" % (path, key.GetClassName()))
 					return "TDirectory"
+				elif isinstance(root_object, ROOT.TH1) or isinstance(root_object, ROOT.TH2) or isinstance(root_object, ROOT.THn):
+					return "THist"
 				else:
 					log.error("Usage of ROOT objects of Type \"" + root_object.ClassName() + "\" is not yet implemented!")
 					return None
