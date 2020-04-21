@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 import argparse
 import os
 import re
-
+import copy
 import Artus.HarryPlotter.utility.roottools as roottools
 from Artus.Utility.tfilecontextmanager import TFileContextManager
 
@@ -27,13 +27,39 @@ if __name__ == "__main__":
     args = parser.parse_args()
     logger.initLogger(args)
 
+    if len(args.tree) > 0:
+        lookup_trees = [t.split('*') for t in args.tree]
+
     with TFileContextManager(args.root_file, "READ") as root_file:
         elements = roottools.RootTools.walk_root_directory(root_file)
         for index, (key, path) in enumerate(elements):
+
+            printout = True if args.verbosity > 0 else False
+
             class_name = key.GetClassName()
             if not args.minimal:
                 log.info("%s (%s)" % (path, class_name))
-            if (len(args.tree) != 0 and (path in args.tree or any(t in path for t in args.tree))) or (args.verbosity > 0):
+
+            if not printout and len(args.tree) != 0:
+                for t in lookup_trees:
+                    if len(t) == 1:
+                        if t[0] in path:
+                            printout = True
+                            break
+                    else:
+                        wc = True
+                        path_copy = copy.deepcopy(path)
+                        for t2 in t:
+                            if t2 not in path_copy:
+                                wc = False
+                                break
+                            elif t2 != '':
+                                path_copy = path_copy.split(t2)[1]
+
+                        if wc:
+                            printout = True
+
+            if printout:
                 if args.minimal:
                     log.info("%s (%s)" % (path, class_name))
                 roottools.RootTools.check_type(
