@@ -137,6 +137,7 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Legend position. The four arguments define the rectangle (x1 y1 x2 y2) for the legend. Without (or with too few) arguments, the default values from [0.6, 0.6, 0.9, 0.9] are used. [Default: %(default)s]")
 		self.formatting_options.add_argument("--legend-markers", type=str, nargs="+",
 		                                     help="Draw options for legend entries.")
+		self.formatting_options.add_argument("--legend-fill-style", type=int, default=0, help="Legend fill stayle. 3001 - for transparent. [Default: %(default)s]")
 		self.formatting_options.add_argument("--extra-text", type=str, nargs="?", default = "",
 		                                     help="Extra text written on plot, e.g. \"Preliminary\" ")
 		self.formatting_options.add_argument("--cms", nargs="?", type="bool", default=False, const=True,
@@ -798,7 +799,6 @@ class PlotRoot(plotbase.PlotBase):
 
 	def add_labels(self, plotData):
 		super(PlotRoot, self).add_labels(plotData)
-
 		# TODO: transform legend coordinates so that same values for plots with subplots can be specified
 		"""
 		pad_pos_x_pixel = [plotData.plot.plot_pad.UtoPixel(x) for x in [0.0, 1.0]]
@@ -844,6 +844,9 @@ class PlotRoot(plotbase.PlotBase):
 					self.legend.AddEntry(root_object, label, legend_marker)
 
 			defaultrootstyle.set_legend_style(self.legend)
+			if plotData.plotdict["legend_fill_style"]:
+				self.legend.SetFillStyle(plotData.plotdict["legend_fill_style"])
+
 			self.legend.Draw()
 
 	def add_texts(self, plotData):
