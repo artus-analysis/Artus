@@ -57,6 +57,8 @@ class InputRoot(inputfile.InputFile):
 		                                      --x-bins \"25\" for nBins; --x-bins \"20,0,1000\" for nBins, lower and upper limit;\
 		                                      --x-bins \"0 10 20 30 50 100 100\" for custom bin widths.\
 		                                      [Default: [\"25\"] for trees, no rebinning for histograms]")
+		self.input_options.add_argument("--overflow", action="store_true", default=False,
+		                               help="Add overflow bin. [Default: %(default)s]")
 		self.input_options.add_argument("--y-bins", type=str, nargs='+', default=[None],
 		                                help="Binnings for y-axis of 2D/3D histograms. See help for --x-bins for more information. [Default: [\"25\"] for trees, no rebinning for histograms]")
 		self.input_options.add_argument("--z-bins", type=str, nargs='+', default=[None],
@@ -171,7 +173,8 @@ class InputRoot(inputfile.InputFile):
 						x_bins=x_bins,
 						y_bins=y_bins,
 						z_bins=z_bins,
-						name=None)
+						name=None,
+						overflow=plotData.plotdict["overflow"])
 				if hasattr(root_histogram, "Sumw2"):
 					root_histogram.Sumw2()
 			else:

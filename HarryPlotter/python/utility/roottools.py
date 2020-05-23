@@ -126,7 +126,15 @@ class RootTools(object):
 
 
 	@staticmethod
-	def histogram_from_file(root_file_names, path_to_histograms, x_bins=None, y_bins=None, z_bins=None, name=None):
+	def getshorterbins(x):
+		if isinstance(x, array.array):
+			return x[:-1]
+		elif x > 1:
+			return x - 1
+		return x
+
+	@staticmethod
+	def histogram_from_file(root_file_names, path_to_histograms, x_bins=None, y_bins=None, z_bins=None, name=None, overflow=None):
 		"""
 		Read histograms from files
 
@@ -200,6 +208,17 @@ class RootTools(object):
 				else:
 					rebinning_z = z_bin_edges
 
+
+
+			if overflow:
+				root_histogram = RootTools.rebin_root_histogram(
+					root_histogram,
+					rebinningX=RootTools.getshorterbins(rebinning_x),
+					rebinningY=RootTools.getshorterbins(rebinning_y),
+					rebinningZ=RootTools.getshorterbins(rebinning_z),
+					name=name
+				)
+
 			root_histogram = RootTools.rebin_root_histogram(
 					root_histogram,
 					rebinningX=rebinning_x,
@@ -207,6 +226,10 @@ class RootTools(object):
 					rebinningZ=rebinning_z,
 					name=name
 			)
+
+			# potential solution
+			# if overflow:
+			# 	root_histogram.GetXaxis().SetRange(1, root_histogram.GetNbinsX() + 1)
 
 		return root_histogram
 
