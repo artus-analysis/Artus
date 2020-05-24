@@ -225,11 +225,6 @@ class RootTools(object):
                     name=name
                 )
 
-            if x_bins_blinded_limit and x_bins_blinded_limit < rebinning_x[-1] and isinstance(root_histogram, ROOT.TH1):
-                for x_bin in xrange(root_histogram.FindFirstBinAbove(x_bins_blinded_limit), root_histogram.GetNbinsX() + 1):
-                    if root_histogram.GetBinLowEdge(x_bin) + root_histogram.GetBinWidth(x_bin) > x_bins_blinded_limit:
-                        root_histogram.SetBinContent(x_bin, 0.0)
-                        root_histogram.SetBinError(x_bin, 0.0)
 
             root_histogram = RootTools.rebin_root_histogram(
                 root_histogram,
@@ -238,6 +233,11 @@ class RootTools(object):
                 rebinningZ=rebinning_z,
                 name=name
             )
+            if x_bins_blinded_limit and x_bins_blinded_limit < rebinning_x[-1] and isinstance(root_histogram, ROOT.TH1):
+                for x_bin in xrange(root_histogram.FindFirstBinAbove(x_bins_blinded_limit), root_histogram.GetNbinsX() + 1):
+                    if root_histogram.GetBinLowEdge(x_bin) + root_histogram.GetBinWidth(x_bin) > x_bins_blinded_limit:
+                        root_histogram.SetBinContent(x_bin, 0.0)
+                        root_histogram.SetBinError(x_bin, 0.0)
 
             # potential solution
             # if overflow:

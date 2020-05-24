@@ -83,7 +83,7 @@ class InputRoot(inputfile.InputFile):
 	def prepare_args(self, parser, plotData):
 		super(InputRoot, self).prepare_args(parser, plotData)
 
-		self.prepare_list_args(plotData, ["x_bins_blinded_limit", "nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "files", "directories", "folders", "weights", "friend_files", "friend_folders", "friend_aliases", "tree_draw_options", "proxy_prefixes"], help="InputRoot options")
+		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "files", "directories", "folders", "weights", "friend_files", "friend_folders", "friend_aliases", "tree_draw_options", "proxy_prefixes"], help="InputRoot options")
 		inputbase.InputBase.prepare_nicks(plotData)
 
 		for key in ["folders"]:
@@ -120,7 +120,6 @@ class InputRoot(inputfile.InputFile):
 				friend_aliases,
 				option,
 				proxy_prefix,
-				x_bins_blinded_limit,
 		) in enumerate(pi.ProgressIterator(zip(
 				plotData.plotdict["files"],
 				plotData.plotdict["folders"],
@@ -137,7 +136,6 @@ class InputRoot(inputfile.InputFile):
 				plotData.plotdict["friend_aliases"],
 				plotData.plotdict["tree_draw_options"],
 				plotData.plotdict["proxy_prefixes"],
-				plotData.plotdict["x_bins_blinded_limit"],
 		), description="Reading ROOT inputs", visible=not self.hide_progressbar )):
 			# check whether to read from TTree or from TDirectory
 			root_folder_type = roottools.RootTools.check_type(root_files, folders,
@@ -179,7 +177,7 @@ class InputRoot(inputfile.InputFile):
 						z_bins=z_bins,
 						name=None,
 						overflow=plotData.plotdict["overflow"],
-						x_bins_blinded_limit=x_bins_blinded_limit)
+						x_bins_blinded_limit=plotData.plotdict["x_bins_blinded_limit"][index % len(plotData.plotdict["x_bins_blinded_limit"])])
 				if hasattr(root_histogram, "Sumw2"):
 					root_histogram.Sumw2()
 			else:
