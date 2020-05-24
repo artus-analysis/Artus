@@ -83,7 +83,7 @@ class InputRoot(inputfile.InputFile):
 	def prepare_args(self, parser, plotData):
 		super(InputRoot, self).prepare_args(parser, plotData)
 
-		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "files", "directories", "folders", "weights", "friend_files", "friend_folders", "friend_aliases", "tree_draw_options", "proxy_prefixes"], help="InputRoot options")
+		self.prepare_list_args(plotData, ["x_bins_blinded_limit", "nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors", "files", "directories", "folders", "weights", "friend_files", "friend_folders", "friend_aliases", "tree_draw_options", "proxy_prefixes"], help="InputRoot options")
 		inputbase.InputBase.prepare_nicks(plotData)
 
 		for key in ["folders"]:

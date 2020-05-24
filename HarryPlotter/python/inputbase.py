@@ -17,10 +17,10 @@ from Artus.HarryPlotter.utility.expressions import ExpressionsDict
 class InputBase(processor.Processor):
 	def __init__(self):
 		super(InputBase, self).__init__()
-		
+
 		self.binnings = BinningsDict()
 		self.expressions = ExpressionsDict()
-	
+
 	def modify_argument_parser(self, parser, args):
 		self.input_options = parser.add_argument_group("Input options")
 		self.input_options.add_argument("--nicks", type=str, nargs="+",
@@ -31,29 +31,29 @@ class InputBase(processor.Processor):
 		                                help="y-value(s)")
 		self.input_options.add_argument("-z", "--z-expressions", type=str, nargs="+",
 		                                help="z-value(s)")
-		
+
 		self.input_options.add_argument("--x-bins", type=str, nargs='+', default=[None],
 		                                help="Binings for x-axis. [Default: %(default)s]")
 		self.input_options.add_argument("--y-bins", type=str, nargs='+', default=[None],
 		                                help="Binings for y-axis of 2D/3D histograms. [Default: %(default)s]")
 		self.input_options.add_argument("--z-bins", type=str, nargs='+', default=[None],
 		                                help="Binings for z-axis of 3D histograms. [Default: %(default)s]")
-		
+
 		self.input_options.add_argument("-s", "--scale-factors", nargs="+",
 		                                help="Scale factors.")
-	
+
 	def prepare_args(self, parser, plotData):
 		super(InputBase, self).prepare_args(parser, plotData)
-		
+
 		self.prepare_list_args(plotData, ["nicks", "x_expressions", "y_expressions", "z_expressions", "x_bins", "y_bins", "z_bins", "scale_factors"], help="Input options")
-		
+
 		# replace binnings with values from dictionaries
 		for axis in ['x', 'y', 'z']:
 			plotData.plotdict[axis+"_bins"] = [bins if bins is None else self.binnings.get_binning(bins).split() for bins in plotData.plotdict[axis+"_bins"]]
-		
+
 		# prepare scale factors
 		plotData.plotdict["scale_factors"] = [float(scale) if scale != None else 1.0 for scale in plotData.plotdict["scale_factors"]]
-	
+
 	def run(self, plotData):
 		super(InputBase, self).run(plotData)
 
@@ -80,7 +80,7 @@ class InputBase(processor.Processor):
 						else:
 							log.warning("Merging not yet implemented for objects of type %s!" % str(type(root_object)))
 					plotData.plotdict["root_objects"][nick] = merged_object
-		
+
 		# remove all nick name copies
 		tmp_nicks = []
 		for nick in plotData.plotdict["nicks"]:
