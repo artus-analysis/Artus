@@ -57,6 +57,8 @@ class InputRoot(inputfile.InputFile):
 		                                      --x-bins \"25\" for nBins; --x-bins \"20,0,1000\" for nBins, lower and upper limit;\
 		                                      --x-bins \"0 10 20 30 50 100 100\" for custom bin widths.\
 		                                      [Default: [\"25\"] for trees, no rebinning for histograms]")
+		self.input_options.add_argument("--x-bins-blinded-limit", type=float, nargs='+', default=[None],
+		                                help="Bins after which TH1 hist will be set to 0.")
 		self.input_options.add_argument("--overflow", action="store_true", default=False,
 		                               help="Add overflow bin. [Default: %(default)s]")
 		self.input_options.add_argument("--y-bins", type=str, nargs='+', default=[None],
@@ -117,7 +119,8 @@ class InputRoot(inputfile.InputFile):
 				friend_folders,
 				friend_aliases,
 				option,
-				proxy_prefix
+				proxy_prefix,
+				x_bins_blinded_limit,
 		) in enumerate(pi.ProgressIterator(zip(
 				plotData.plotdict["files"],
 				plotData.plotdict["folders"],
@@ -133,7 +136,8 @@ class InputRoot(inputfile.InputFile):
 				plotData.plotdict["friend_folders"],
 				plotData.plotdict["friend_aliases"],
 				plotData.plotdict["tree_draw_options"],
-				plotData.plotdict["proxy_prefixes"]
+				plotData.plotdict["proxy_prefixes"],
+				plotData.plotdict["x_bins_blinded_limit"],
 		), description="Reading ROOT inputs", visible=not self.hide_progressbar )):
 			# check whether to read from TTree or from TDirectory
 			root_folder_type = roottools.RootTools.check_type(root_files, folders,
@@ -174,7 +178,8 @@ class InputRoot(inputfile.InputFile):
 						y_bins=y_bins,
 						z_bins=z_bins,
 						name=None,
-						overflow=plotData.plotdict["overflow"])
+						overflow=plotData.plotdict["overflow"],
+						x_bins_blinded_limit=x_bins_blinded_limit)
 				if hasattr(root_histogram, "Sumw2"):
 					root_histogram.Sumw2()
 			else:

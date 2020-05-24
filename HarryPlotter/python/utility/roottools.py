@@ -129,12 +129,20 @@ class RootTools(object):
     def getshorterbins(x):
         if isinstance(x, array.array):
             return x[:-1]
-        elif x > 1:
-            return x - 1
+        log.critical("Overflow inclusion with rebinning works only when the bins are explicitly set")
         return x
 
     @staticmethod
-    def histogram_from_file(root_file_names, path_to_histograms, x_bins=None, y_bins=None, z_bins=None, name=None, overflow=None):
+    def getblindedbins(x, maxx):
+        if isinstance(x, array.array):
+            return array.array("d", [i for i in x if i <= maxx])
+        log.critical("Blinding with rebinning works only when the bins are explicitly set")
+        return x
+
+    @staticmethod
+    def histogram_from_file(root_file_names, path_to_histograms,
+        x_bins=None, y_bins=None, z_bins=None, name=None, overflow=None,
+        x_bins_blinded_limit=None):
         """
         Read histograms from files
 
@@ -182,7 +190,7 @@ class RootTools(object):
         # rebinning
         if isinstance(root_histogram, ROOT.TH1) and root_histogram.GetNbinsX()*root_histogram.GetNbinsY()*root_histogram.GetNbinsZ() > 1:
             rebinning_x = 1
-            if not x_bins is None:
+            if x_bins is not None:
                 x_binning_string, x_bin_edges = RootTools.prepare_binning(x_bins)
                 rebinning_x = x_bin_edges
                 if x_bin_edges is None:
@@ -191,7 +199,7 @@ class RootTools(object):
                     rebinning_x = x_bin_edges
 
             rebinning_y = 1
-            if not y_bins is None:
+            if y_bins is not None:
                 y_binning_string, y_bin_edges = RootTools.prepare_binning(y_bins)
                 rebinning_y = y_bin_edges
                 if y_bin_edges is None:
@@ -200,7 +208,7 @@ class RootTools(object):
                     rebinning_y = y_bin_edges
 
             rebinning_z = 1
-            if not z_bins is None:
+            if z_bins is not None:
                 z_binning_string, z_bin_edges = RootTools.prepare_binning(z_bins)
                 rebinning_z = z_bin_edges
                 if z_bin_edges is None:
@@ -217,12 +225,18 @@ class RootTools(object):
                     name=name
                 )
 
+            if x_bins_blinded_limit and x_bins_blinded_limit < rebinning_x[-1] and isinstance(root_histogram, ROOT.TH1):
+                for x_bin in xrange(root_histogram.FindFirstBinAbove(x_bins_blinded_limit), root_histogram.GetNbinsX() + 1):
+                    if root_histogram.GetBinLowEdge(x_bin) + root_histogram.GetBinWidth(x_bin) > x_bins_blinded_limit:
+                        root_histogram.SetBinContent(x_bin, 0.0)
+                        root_histogram.SetBinError(x_bin, 0.0)
+
             root_histogram = RootTools.rebin_root_histogram(
-                    root_histogram,
-                    rebinningX=rebinning_x,
-                    rebinningY=rebinning_y,
-                    rebinningZ=rebinning_z,
-                    name=name
+                root_histogram,
+                rebinningX=rebinning_x,
+                rebinningY=rebinning_y,
+                rebinningZ=rebinning_z,
+                name=name
             )
 
             # potential solution

@@ -460,7 +460,8 @@ class PlotRoot(plotbase.PlotBase):
 			if plotData.plotdict["sym_y_lims"]:
 				log.warning("Symmetric limits are not yet implemented for logarithmic axes!")
 
-			if not plotData.plotdict["y_lims"] is None:
+			if plotData.plotdict["y_lims"] is not None:
+				print plotData.plotdict["y_lims"]
 				self.y_min = plotData.plotdict["y_lims"][0]
 			elif self.max_dim < 3:
 				self.y_min *= (plotData.plotdict["y_rel_lims"][0] if self.y_min > 0.0 else 2.0-plotData.plotdict["y_rel_lims"][0])
