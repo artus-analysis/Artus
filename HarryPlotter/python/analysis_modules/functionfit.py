@@ -28,6 +28,8 @@ class FunctionFit(analysisbase.AnalysisBase):
 		                                   help="Fit backend. ROOT and RooFit are available. Check sourcecode which parts of RooFit are implemented. [Default: %(default)s]")
 		self.function_options.add_argument("--function-display-result", action='store_true',
 		                                   help="Display the parameters of the fit on the plots")
+		self.function_options.add_argument("--function-fit-parameter-precision", type=int, nargs=1, default=3,
+		                                   help="Precision of the parameters (number of digits after comma). Negative values stand for maximal precision. [Default: %(default)s]")
 		self.function_options.add_argument("--function-fit-parameter-names", type=str, nargs="+", default=[None],
 		                                   help="Names of the parameters (e.g. 'Slope'). Only relevant if --function-display-result is True. [Default: %(default)s]")
 		self.function_options.add_argument("--function-fit-parameter-names-x", type=float, nargs="+", default=[None],
@@ -56,7 +58,8 @@ class FunctionFit(analysisbase.AnalysisBase):
 
 	def prepare_args(self, parser, plotData):
 		self.prepare_list_args(plotData, ["functions", "function_parameters", "function_nicknames",
-						                  "function_fit", "function_ranges", "fit_backend", "function_collect_result"])
+						                  "function_fit", "function_ranges", "fit_backend", "function_collect_result",
+						                  "function_fit_parameter_precision"])
 		tmp_x_range = []
 		for x_range in plotData.plotdict["function_ranges"]:
 			if x_range==None:
@@ -133,7 +136,7 @@ class FunctionFit(analysisbase.AnalysisBase):
 					plotData.plotdict["root_objects"]["function_fit_result"].SetBinContent(i+1, plotData.fit_results[function_nick].Chi2())
 				elif collect_result.isdigit():
 					plotData.plotdict["root_objects"]["function_fit_result"].SetBinContent(i+1, plotData.fit_results[function_nick].Parameter(int(plotData.plotdict["function_collect_result"])))
-				
+
 				if fit_nickname:
 					log.info("Probability to obtain a Chi2 of " + str(plotData.fit_results[function_nick].Chi2()) + " for an ndf of " + str(plotData.fit_results[function_nick].Ndf()) + " is " + str(ROOT.TMath.Prob(plotData.fit_results[function_nick].Chi2(), plotData.fit_results[function_nick].Ndf())))
 
@@ -237,9 +240,14 @@ class FunctionFit(analysisbase.AnalysisBase):
 			plotData.plotdict["function_fit_parameter_names_y"] *= plotData.plotdict["root_objects"][function_nick].GetNpar() / len(plotData.plotdict["function_fit_parameter_names"])
 		l = max([len(s) for s in plotData.plotdict["function_fit_parameter_names"]])
 
+		precision = plotData.plotdict["function_fit_parameter_precision"][0]
+		if precision > 0:
+			text_str = "\n${} = {:.%df} \pm {:.%df}$" % (precision, precision)
+		else:
+			text_str = "\n${} = {:f} \pm {:f}$"
 		for i_par in range(plotData.plotdict["root_objects"][function_nick].GetNpar()):
 			#TODO automatically adjust decimal precision
-			text = "\n${} = {:.3f} \pm {:.3f}$".format(plotData.plotdict["function_fit_parameter_names"][i_par],
+			text = text_str.format(plotData.plotdict["function_fit_parameter_names"][i_par],
 			        plotData.plotdict["root_objects"][function_nick].GetParameter(i_par),
 			        plotData.plotdict["root_objects"][function_nick].GetParError(i_par))
 			if plotData.plotdict["texts"] == [None]:
@@ -250,22 +258,28 @@ class FunctionFit(analysisbase.AnalysisBase):
 				plotData.plotdict["texts"] += [text]
 				plotData.plotdict["texts_x"] += [plotData.plotdict["function_fit_parameter_names_x"][i_par]]
 				plotData.plotdict["texts_y"] += [plotData.plotdict["function_fit_parameter_names_y"][i_par]]
-		for i, expr in enumerate(plotData.plotdict["functions_text"]):
-			for i_par in range(plotData.plotdict["root_objects"][function_nick].GetNpar()):
-				expr = expr.replace('[' + str(i_par) + ']', str(plotData.plotdict["root_objects"][function_nick].GetParameter(i_par)))
-			import math
-			text = "\n{} = {:.3f}".format(
-				plotData.plotdict["functions_text_names"][i],
-			        eval(expr),
-			)
-			if plotData.plotdict["texts"] == [None]:
-				plotData.plotdict["texts"] = [text]
-				plotData.plotdict["texts_x"] = [plotData.plotdict["functions_text_names_x"][i]]
-				plotData.plotdict["texts_y"] = [plotData.plotdict["functions_text_names_y"][i]]
-			else:
-				plotData.plotdict["texts"] += [text]
-				plotData.plotdict["texts_x"] += [plotData.plotdict["functions_text_names_x"][i]]
-				plotData.plotdict["texts_y"] += [plotData.plotdict["functions_text_names_y"][i]]
+
+		if precision > 0:
+			text_str = "\n{} = {:.%df}" % (precision)
+		else:
+			text_str = "\n{} = {:f}"
+		if plotData.plotdict["functions_text"]:
+			for i, expr in enumerate(plotData.plotdict["functions_text"]):
+				for i_par in range(plotData.plotdict["root_objects"][function_nick].GetNpar()):
+					expr = expr.replace('[' + str(i_par) + ']', str(plotData.plotdict["root_objects"][function_nick].GetParameter(i_par)))
+				import math
+				text = text_str.format(
+					plotData.plotdict["functions_text_names"][i],
+				        eval(expr),
+				)
+				if plotData.plotdict["texts"] == [None]:
+					plotData.plotdict["texts"] = [text]
+					plotData.plotdict["texts_x"] = [plotData.plotdict["functions_text_names_x"][i]]
+					plotData.plotdict["texts_y"] = [plotData.plotdict["functions_text_names_y"][i]]
+				else:
+					plotData.plotdict["texts"] += [text]
+					plotData.plotdict["texts_x"] += [plotData.plotdict["functions_text_names_x"][i]]
+					plotData.plotdict["texts_y"] += [plotData.plotdict["functions_text_names_y"][i]]
 
 		if not plotData.plotdict["function_collect_result_no_chi2"]:
 			text = "\n$\chi^2 / \mathit{{n.d.f}} = {:.2f} / {}$".format(
