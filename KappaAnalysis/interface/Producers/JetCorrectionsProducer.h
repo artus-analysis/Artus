@@ -119,7 +119,7 @@ public:
 		assert(event.m_vertexSummary);
 		
 		// create a copy of all jets in the event (first temporarily for the JEC)
-		(product.*m_correctedJetsMember).clear();
+		// (product.*m_correctedJetsMember).clear();
 		std::vector<TJet> correctJetsForJecTools((event.*m_basicJetsMember)->size());
 		size_t jetIndex = 0;
 		for (typename std::vector<TJet>::const_iterator jet = (event.*m_basicJetsMember)->begin();

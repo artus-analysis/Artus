@@ -50,8 +50,10 @@ class SmearedJetProducerBase: public KappaProducerBase
 {
 
 public:
-         SmearedJetProducerBase(std::vector<std::shared_ptr<TJet> > KappaTypes::product_type::*correctedJets) :
+	SmearedJetProducerBase(std::vector<TJet>* KappaTypes::event_type::*jets,
+	                       std::vector<std::shared_ptr<TJet> > KappaTypes::product_type::*correctedJets) :
 		KappaProducerBase(),
+		m_basicJetsMember(jets),
 		m_correctedJetsMember(correctedJets),
 		m_random_generator(nullptr),
 		m_verbose(false) {}
@@ -67,6 +69,7 @@ public:
 
 	  KappaProducerBase::Init(settings, metadata);
 
+	  validJetsInput = KappaEnumTypes::ToValidJetsInput(boost::algorithm::to_lower_copy(boost::algorithm::trim_copy(settings.GetValidJetsInput())));
 	  m_enabled = settings.GetJEREnabled();
 
 	  // load correction parameters
@@ -138,6 +141,20 @@ public:
 
 	  assert((!m_enabled||(event.m_genJets)));
 	  assert(event.m_pileupDensity);
+
+	  // copy jets from m_basicJetsMember into m_correctedJetsMember, if m_correctedJetsMember is empty.
+	  if (validJetsInput == KappaEnumTypes::ValidJetsInput::AUTO && ((product.*m_correctedJetsMember).size() == 0))
+	  {
+	    // LOG(DEBUG) << "Jets not corrected yet. Copying basic jets.";
+	    (product.*m_correctedJetsMember).clear();
+	    (product.*m_correctedJetsMember).resize((event.*m_basicJetsMember)->size());
+	    size_t jetIndex = 0;
+	    for (typename std::vector<TJet>::iterator jet = (event.*m_basicJetsMember)->begin(); jet != (event.*m_basicJetsMember)->end(); ++jet)
+	    {
+	      (product.*m_correctedJetsMember)[jetIndex] = std::make_shared<TJet> (*jet);
+	      ++jetIndex;
+	    }
+	  }
 
 	  JME::JetResolution resolution;
 	  JME::JetResolutionScaleFactor resolution_sf;
@@ -281,7 +298,11 @@ protected:
 	}
 
 private:
+
+	std::vector<TJet>* KappaTypes::event_type::*m_basicJetsMember;
 	std::vector<std::shared_ptr<TJet> > KappaTypes::product_type::*m_correctedJetsMember;
+
+	KappaEnumTypes::ValidJetsInput validJetsInput;
 
 	static constexpr const double MIN_JET_ENERGY = 1e-2;
 	bool m_enabled;
