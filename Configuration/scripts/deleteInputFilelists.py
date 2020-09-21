@@ -8,6 +8,7 @@ log = logging.getLogger(__name__)
 import argparse
 import shlex
 import os
+import subprocess
 
 
 filename_replacements = {
@@ -28,7 +29,9 @@ def delete_filelist(filelist):
 	if filelist.endswith(".root"):
 		for src, dst in filename_replacements.iteritems():
 			filelist = filelist.replace(src, dst)
-		command = "gfal-rm " + filelist
+		# command = "gfal-rm " + filelist
+		command = "srmrm " + filelist
+		# print(command)
 		log.debug(command)
 		logger.subprocessCall(shlex.split(command))
 	else:
