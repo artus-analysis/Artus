@@ -57,7 +57,7 @@ class ArtusWrapper(object):
 		exitCode = 0
 
 		#Expand Config
-		# self.expandConfig()
+		self.expandConfig()
 		self.projectPath = None
 		self.localProjectPath = None
 		self.remote_se = False
@@ -197,12 +197,13 @@ class ArtusWrapper(object):
 
 			# a way to check that gfal-tools should be used - maybe there is smtg more intelligent
 			# if "://" in self._args.hashed_rootfiles_info_path:
-			hashed_data_path = "temp_hashed_samples_{0}".format(hashlib.md5(str(self._config)).hexdigest())
+			hashed_data_filename = "temp_hashed_samples_{0}".format(hashlib.md5(str(self._config)).hexdigest())
 			log.debug("hashed_data_path: " + hashed_data_path)
 			# self.gfal_copy(from_path=self._args.hashed_rootfiles_info_path, where_path=hashed_data_path)
 
 			import shelve
-			hashed_data_path = os.path.abspath(hashed_data_path)
+			# hashed_data_path = os.path.abspath(hashed_data_path)
+			hashed_data_path = os.path.join(hashed_data_path, hashed_data_filename)
 			log.debug("hashed_data_path: " + hashed_data_path)
 			d = shelve.open(hashed_data_path)
 
