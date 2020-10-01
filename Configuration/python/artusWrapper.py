@@ -57,7 +57,7 @@ class ArtusWrapper(object):
 		exitCode = 0
 
 		#Expand Config
-		self.expandConfig()
+		# self.expandConfig()
 		self.projectPath = None
 		self.localProjectPath = None
 		self.remote_se = False
