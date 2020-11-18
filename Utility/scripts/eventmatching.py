@@ -38,6 +38,8 @@ def main():
 		help="Max. number of entries to be copied to only1/2 output trees. (default: all)")
 	parser.add_argument('-d', '--dictionary', type=str, nargs='+', default=None,
 		help="Translation of branchnames between the trees in the form branchname1:branchname2")
+	parser.add_argument('--include-refid', action='store_true', default=False,
+		help="Include reference (gen) object ID during matchin. (default: %(default)s)")
 
 	args = parser.parse_args()
 	if len(args.input_files) < 2:
@@ -59,52 +61,56 @@ def main():
 	print "\nGet list of runs, lumis, events:"
 	lists = []
 	for tree in trees:
-		lst = getRunLumiEvent(tree)
+		if args.include_refid:
+			lst = getRunLumiEventRefID(tree)
+		else:
+			lst = getRunLumiEvent(tree)
 		lists.append(sorted(lst))
 	stopWatch()
 
+	n_comp = 4 if args.include_refid else 3
 	print "\nCompare lists:"
-	com12, o1, o2 = compareLists(lists[0], lists[1])
+	com12, o1, o2 = compareLists(lists[0], lists[1], n_comp)
 	if len(args.input_files) == 3:
-		com123, ocom12, o3 = compareLists(com12, lists[2])
+		com123, ocom12, o3 = compareLists(com12, lists[2], n_comp)
 		# Calculate new only lists if requested
 		if not args.common:
-			com13, tmp, tmp = compareLists(lists[0], lists[2])
-			com23, tmp, tmp = compareLists(lists[1], lists[2])
-			tmp, tmp, o2 = compareLists(com13, lists[1])
-			tmp, tmp, o1 = compareLists(com23, lists[0])
+			com13, tmp, tmp = compareLists(lists[0], lists[2], n_comp)
+			com23, tmp, tmp = compareLists(lists[1], lists[2], n_comp)
+			tmp, tmp, o2 = compareLists(com13, lists[1], n_comp)
+			tmp, tmp, o1 = compareLists(com23, lists[0], n_comp)
 	stopWatch()
-	
+
 	print "\nCopy to output trees:"
 	fout = ROOT.TFile(args.out, "RECREATE")
 	if len(args.input_files) == 3:
-		c1 = cpTree(com123, trees[0], "common" + args.nicks[0], 0, jsonConfigsDir=args.json_output_dir)
+		c1 = cpTree(com123, trees[0], "common" + args.nicks[0], 0, treeIndexOffset=n_comp, jsonConfigsDir=args.json_output_dir)
 		stopWatch()
-		c2 = cpTree(com123, trees[1], "common" + args.nicks[1], 1, jsonConfigsDir=args.json_output_dir)
+		c2 = cpTree(com123, trees[1], "common" + args.nicks[1], 1, treeIndexOffset=n_comp, jsonConfigsDir=args.json_output_dir)
 		stopWatch()
-		c3 = cpTree(com123, trees[2], "common" + args.nicks[2], 2, jsonConfigsDir=args.json_output_dir)
+		c3 = cpTree(com123, trees[2], "common" + args.nicks[2], 2, treeIndexOffset=n_comp, jsonConfigsDir=args.json_output_dir)
 		stopWatch()
 		if not args.common:
-			cpTree(o1, trees[0], "only" + args.nicks[0], 0, jsonConfigsDir=args.json_output_dir, nMaxEntries=args.n_max_entries)
+			cpTree(o1, trees[0], "only" + args.nicks[0], 0, treeIndexOffset=n_comp, jsonConfigsDir=args.json_output_dir, nMaxEntries=args.n_max_entries)
 			stopWatch()
-			cpTree(o2, trees[1], "only" + args.nicks[1], 0, jsonConfigsDir=args.json_output_dir, nMaxEntries=args.n_max_entries)  # treeIndex 0 is correct
+			cpTree(o2, trees[1], "only" + args.nicks[1], 0, treeIndexOffset=n_comp, jsonConfigsDir=args.json_output_dir, nMaxEntries=args.n_max_entries)  # treeIndex 0 is correct
 			stopWatch()
-			cpTree(o3, trees[2], "only" + args.nicks[2], 0, jsonConfigsDir=args.json_output_dir, nMaxEntries=args.n_max_entries)  # treeIndex 0 is correct
+			cpTree(o3, trees[2], "only" + args.nicks[2], 0, treeIndexOffset=n_comp, jsonConfigsDir=args.json_output_dir, nMaxEntries=args.n_max_entries)  # treeIndex 0 is correct
 			stopWatch()
 	else:
-		c1 = cpTree(com12, trees[0], "common" + args.nicks[0], 0, jsonConfigsDir=args.json_output_dir)
+		c1 = cpTree(com12, trees[0], "common" + args.nicks[0], 0, treeIndexOffset=n_comp, jsonConfigsDir=args.json_output_dir)
 		stopWatch()
-		c2 = cpTree(com12, trees[1], "common" + args.nicks[1], 1, jsonConfigsDir=args.json_output_dir)
+		c2 = cpTree(com12, trees[1], "common" + args.nicks[1], 1, treeIndexOffset=n_comp, jsonConfigsDir=args.json_output_dir)
 		stopWatch()
 		if not args.common:
-			cpTree(o1, trees[0], "only" + args.nicks[0], 0, jsonConfigsDir=args.json_output_dir, nMaxEntries=args.n_max_entries)
+			cpTree(o1, trees[0], "only" + args.nicks[0], 0, treeIndexOffset=n_comp, jsonConfigsDir=args.json_output_dir, nMaxEntries=args.n_max_entries)
 			stopWatch()
-			cpTree(o2, trees[1], "only" + args.nicks[1], 0, jsonConfigsDir=args.json_output_dir, nMaxEntries=args.n_max_entries)  # treeIndex 0 is correct
+			cpTree(o2, trees[1], "only" + args.nicks[1], 0, treeIndexOffset=n_comp, jsonConfigsDir=args.json_output_dir, nMaxEntries=args.n_max_entries)  # treeIndex 0 is correct
 			stopWatch()
 
 	fout.Write()
 	print "\nTrees written to file", fout.GetName()
-	
+
 	if args.verbose:
 		translation = {}
 		if args.dictionary:
@@ -120,7 +126,7 @@ def main():
 			compareTrees(c2, c3, args.ignore)
 
 	stopWatch(overall=True)
-	
+
 def stopWatch(n=[], overall=False):
 	"""print the time needed since last call"""
 	n.append(time.time())
@@ -146,7 +152,7 @@ def getRunLumiEvent(tree):
 			break
 	
 	eventbranch = None
-	for name in ['event', 'Event', 'evt', 'eventnr', 'EventNumber']:
+	for name in ['event', 'Event', 'evt', 'eventnr', 'EventNumber', 'tau_eventid']:
 		if hasattr(tree, name):
 			eventbranch = name
 			break
@@ -159,11 +165,52 @@ def getRunLumiEvent(tree):
 		result.append((run, lumi, event, i))
 		if i % 1000 == 0:
 			print "\r  %7d/%d" % (i, nevt),
-			sys.stdout.flush() 
+			sys.stdout.flush()
 	print "\r  %7d/%d" % (i+1, nevt)
 	return result
 
-def compareLists(list1, list2):
+def getRunLumiEventRefID(tree):
+	"""get list of (run, lumi, event, refobject id, entry index) from a tree"""
+	result = []
+	nevt = tree.GetEntries()
+
+	runbranch = None
+	for name in ['run', 'Run', 'tau_run']:
+		if hasattr(tree, name):
+			runbranch = name
+
+	lumibranch = None
+	for name in ['lumi', 'Lumi', 'LumiSection', 'tau_lumi']:
+		if hasattr(tree, name):
+			lumibranch = name
+			break
+
+	eventbranch = None
+	for name in ['event', 'Event', 'evt', 'eventnr', 'EventNumber', 'tau_eventid']:
+		if hasattr(tree, name):
+			eventbranch = name
+			break
+
+	refobjbranch = None
+	for name in ['tau_refidx']:
+		if hasattr(tree, name):
+			refobjbranch = name
+			break
+
+	for i in xrange(nevt):
+		tree.GetEntry(i)
+		run = int(getattr(tree, runbranch)) if runbranch else 1
+		lumi = int(getattr(tree, lumibranch)) if lumibranch else 1
+		event = int(getattr(tree, eventbranch)) if eventbranch else 1
+		refid = int(getattr(tree, refobjbranch)) if refobjbranch else 1
+		result.append((run, lumi, event, refid, i))
+		if i % 1000 == 0:
+			print "\r  %7d/%d" % (i, nevt),
+			sys.stdout.flush()
+	print "\r  %7d/%d" % (i+1, nevt)
+	return result
+
+def compareLists(list1, list2, n_comp=3):
 	"""Compare two lists of (run, lumi, evt, index) and sort them into
 	   three lists: common events, events only in list 1 and events only
 	   in list 2"""
@@ -176,14 +223,14 @@ def compareLists(list1, list2):
 		if n % 1000 == 0 or m % 1000 == 0 and m != 0 and n!=0:
 			print "\r  tree1:%7d/%d, tree2:%7d/%d -> common:%7d, tree1: %5d, tree2: %5d" % (
 				n, len(list1), m, len(list2), len(common), len(only1), len(only2)),
-		if list1[n][:3] == list2[m][:3]:
-			common.append(list1[n] + (list2[m][3],))  # the common list has two indices
+		if list1[n][:n_comp] == list2[m][:n_comp]:
+			common.append(list1[n] + (list2[m][n_comp],))  # the common list has two indices
 			n += 1
 			m += 1
-		elif list1[n][:3] < list2[m][:3]:
+		elif list1[n][:n_comp] < list2[m][:n_comp]:
 			only1.append(list1[n])
 			n += 1
-		elif list1[n][:3] > list2[m][:3]:
+		elif list1[n][:n_comp] > list2[m][:n_comp]:
 			only2.append(list2[m])
 			m += 1
 		else:
@@ -193,7 +240,7 @@ def compareLists(list1, list2):
 	return common, only1, only2
 
 
-def cpTree(eventList, tree, name, treeIndex=0, deactivate=None, jsonConfigsDir=None, nMaxEntries=-1):
+def cpTree(eventList, tree, name, treeIndex=0, treeIndexOffset=3, deactivate=None, jsonConfigsDir=None, nMaxEntries=-1):
 	"""Copy the events in eventList[i][3+treeIndex] from tree to a new tree of name 'name'"""
 	if deactivate:
 		for q in quantities:
@@ -213,10 +260,10 @@ def cpTree(eventList, tree, name, treeIndex=0, deactivate=None, jsonConfigsDir=N
 	if nMaxEntries >= 0:
 		iterations = iterations[:nMaxEntries]
 	for i, evt in iterations:
-		# evt is (run, lumi, event, index in tree1, index in tree2)
-		tree.GetEntry(evt[3 + treeIndex])
+		# evt is (run, lumi, event, [refid if used,] index in tree1, index in tree2)
+		tree.GetEntry(evt[treeIndexOffset + treeIndex])
 		if 'TNtuple' in str(type(tree)):
-			outputTree.Fill(evt[3 + treeIndex])
+			outputTree.Fill(evt[treeIndexOffset + treeIndex])
 		else:
 			outputTree.Fill()
 		if i % 100 == 0:
