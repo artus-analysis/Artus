@@ -21,10 +21,12 @@ class ProfileX(analysisbase.AnalysisBase):
 				help="Nick names for the Histograms to be Profiled. Default: all TH2 Histograms.")
 		self.profileX_options.add_argument("--profileX-result-nicks", type=str, nargs="+",
 				help="Nick names for the resulting TProfile.")
+		self.profileX_options.add_argument("--profileX-error-option", type=str, default='',
+				help="TProfile error bar option. See https://root.cern.ch/doc/master/classTProfile.html for reference. Options are: '', 's', 'i', 'g'. Default: ''")
 
 	def prepare_args(self, parser, plotData):
 		super(ProfileX, self).prepare_args(parser, plotData)
-		self.prepare_list_args(plotData, ["profileX_nicks", "profileX_result_nicks"])
+		self.prepare_list_args(plotData, ["profileX_nicks", "profileX_result_nicks", "profileX_error_option"])
 
 	def run(self, plotData=None):
 		super(ProfileX, self).run(plotData)
@@ -38,4 +40,6 @@ class ProfileX(analysisbase.AnalysisBase):
 			histogram_2D = plotData.plotdict["root_objects"][old_nick]
 			if isinstance(histogram_2D, ROOT.TH2):
 				del plotData.plotdict["root_objects"][old_nick]
-				plotData.plotdict["root_objects"][new_nick] = histogram_2D.ProfileX()
+				profile_plot = histogram_2D.ProfileX()
+				profile_plot.SetErrorOption(plotData.plotdict["profileX_error_option"][0])
+				plotData.plotdict["root_objects"][new_nick] = profile_plot
