@@ -137,7 +137,9 @@ class PlotRoot(plotbase.PlotBase):
 		                                     help="Legend position. The four arguments define the rectangle (x1 y1 x2 y2) for the legend. Without (or with too few) arguments, the default values from [0.6, 0.6, 0.9, 0.9] are used. [Default: %(default)s]")
 		self.formatting_options.add_argument("--legend-markers", type=str, nargs="+",
 		                                     help="Draw options for legend entries.")
-		self.formatting_options.add_argument("--legend-fill-style", type=int, default=0, help="Legend fill stayle. 3001 - for transparent. [Default: %(default)s]")
+		self.formatting_options.add_argument("--legend-fill-style", type=int, default=0, help="Legend fill style. 3001 - for transparent. [Default: %(default)s]")
+		self.formatting_options.add_argument("--legend-text-size", type=float, default=None, help="Legend text size. Choose values between 0.02 to 0.05 as reasonable text sizes. [Default: When not specified set automatically by ROOT depending on legend size and amount of entries.]")
+		self.formatting_options.add_argument("--legend-column-separation", type=float, default=0.1, help="Legend column separation. [Default: %(default)s]")
 		self.formatting_options.add_argument("--extra-text", type=str, nargs="?", default = "",
 		                                     help="Extra text written on plot, e.g. \"Preliminary\" ")
 		self.formatting_options.add_argument("--cms", nargs="?", type="bool", default=False, const=True,
@@ -820,7 +822,7 @@ class PlotRoot(plotbase.PlotBase):
 			ROOT.gStyle.SetLegendBorderSize(0)
 			self.legend = ROOT.TLegend(*transformed_legend_pos)
 			self.legend.SetNColumns(plotData.plotdict["legend_cols"])
-			self.legend.SetColumnSeparation(0.1)
+			self.legend.SetColumnSeparation(plotData.plotdict["legend_column_separation"])
 
 			for subplot, nick, label, legend_marker in zip(
 					plotData.plotdict["subplots"],
@@ -847,6 +849,8 @@ class PlotRoot(plotbase.PlotBase):
 			defaultrootstyle.set_legend_style(self.legend)
 			if plotData.plotdict["legend_fill_style"]:
 				self.legend.SetFillStyle(plotData.plotdict["legend_fill_style"])
+			if plotData.plotdict["legend_text_size"]:
+				self.legend.SetTextSize(plotData.plotdict["legend_text_size"])
 
 			self.legend.Draw()
 
