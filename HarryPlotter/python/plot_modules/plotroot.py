@@ -872,7 +872,7 @@ class PlotRoot(plotbase.PlotBase):
 		self.text_box.SetFillStyle(0)
 		self.text_box.SetBorderSize(0)
 		self.text_box.SetShadowColor(0)
-		self.text_box.SetTextAlign(22)
+		self.text_box.SetTextAlign(12)
 
 		text_size = self.axes_histogram.GetXaxis().GetLabelSize()
 		if not self.subplot_axes_histogram is None:
@@ -880,10 +880,22 @@ class PlotRoot(plotbase.PlotBase):
 		self.text_box.SetTextSize(text_size)
 
 		for x, y, text, size in zip(plotData.plotdict["texts_x"], plotData.plotdict["texts_y"], plotData.plotdict["texts"], plotData.plotdict["texts_size"]):
-			if text.startswith('YIELD:'):
-				for nick, root_object in plotData.plotdict["root_objects"].iteritems():
+			for nick, root_object in plotData.plotdict["root_objects"].iteritems():
+				if text.startswith('YIELD:'):
 					if nick in text.replace('YIELD:', ""):
 						text = nick + ':' + format(root_object.Integral(), '.2f')
+						break
+					else:
+						log.warning("No matching nics found for : %s" % nick)
+				if text.startswith('MEAN:'):
+					if nick in text.replace('MEAN:', ""):
+						text = 'mean: ' + format(root_object.GetMean(), '.3f')
+						break
+					else:
+						log.warning("No matching nics found for : %s" % nick)
+				if text.startswith('RMS:'):
+					if nick in text.replace('RMS:', ""):
+						text = 'std: ' + format(root_object.GetRMS(), '.3f')
 						break
 					else:
 						log.warning("No matching nics found for : %s" % nick)
