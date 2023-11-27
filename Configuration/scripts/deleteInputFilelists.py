@@ -14,6 +14,7 @@ import subprocess
 filename_replacements = {
 	"root://dcache-cms-xrootd.desy.de:1094//store/user" : "srm://dcache-se-cms.desy.de:8443/srm/managerv2?SFN=/pnfs/desy.de/cms/tier2/store/user",
 	"root://grid-vo-cms.physik.rwth-aachen.de:1094//store/user/" : "srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN=/pnfs/physik.rwth-aachen.de/cms/store/user/",
+	"root://grid-cms-xrootd.physik.rwth-aachen.de:1094//store/user/" : "srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN=/pnfs/physik.rwth-aachen.de/cms/store/user/"
 }
 
 
@@ -22,10 +23,10 @@ def delete_filelist(filelist):
 		content = ""
 		with open(filelist) as filelist_file:
 			content = filelist_file.read()
-		
+
 		for line in content.split("\n"):
 			delete_filelist(line)
-	
+
 	if filelist.endswith(".root"):
 		for src, dst in filename_replacements.iteritems():
 			filelist = filelist.replace(src, dst)
@@ -51,9 +52,9 @@ def main():
 	parser.add_argument("filelists", nargs="+", help="Filelists.")
 	args = parser.parse_args()
 	logger.initLogger(args)
-	
+
 	for filelist in args.filelists:
-		delete_filelist(filelist)	
+		delete_filelist(filelist)
 
 if __name__ == "__main__":
 	main()
